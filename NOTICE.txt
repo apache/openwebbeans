@@ -1,0 +1,25 @@
+=========================================================================
+==  NOTICE file corresponding to section 4(d) of the Apache License,   ==
+==  Version 2.0, in this case for the OpenWebBeans                     ==
+=========================================================================
+
+This product includes software developed by 
+The Apache Software Foundation (http://www.apache.org/).
+
+This product uses junit-4.5.jar as binary, home page of the project is
+http://sourceforge.net/projects/junit/ with Common Public License 1.0.
+
+This products uses dom4j-1.6.1.jar as binary, home page of the project is
+http://www.dom4j.org/ with dom4j BSD Style licence.
+
+This product uses javassist-3.8.0.GA as binary, home page of the project is
+http://www.jboss.org/javassist/ with MPL licence.
+
+This product uses scannotation-1.0.2.jar as binary, home page of the project is
+http://sourceforge.net/projects/scannotation with Apache License V2.0 licence.
+
+This product uses jsr250-api-1.0.jar as binary, home page of the project is
+https://jsr250.dev.java.net/. with Common Development and Distribution License.
+
+See the LICENSE.txt file and licences folder for information on all licenses 
+associated with this software.
