@@ -1,0 +1,258 @@
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ * 
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+package org.apache.webbeans.intercept;
+
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.ejb.PostActivate;
+import javax.ejb.PrePassivate;
+import javax.ejb.Remove;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
+import javax.webbeans.Destructor;
+import javax.webbeans.Disposes;
+import javax.webbeans.Initializer;
+import javax.webbeans.InterceptorBindingType;
+import javax.webbeans.Observes;
+import javax.webbeans.Produces;
+import javax.webbeans.manager.InterceptionType;
+
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
+
+public final class InterceptorUtil
+{
+	private InterceptorUtil()
+	{
+		
+	}
+
+	public static boolean isWebBeansBusinessMethod(Method method)
+	{
+		Asserts.nullCheckForMethod(method);
+		
+		int modifiers = method.getModifiers();
+		
+		if(ClassUtil.isStatic(modifiers) || ClassUtil.isPrivate(modifiers) || ClassUtil.isFinal(modifiers))
+		{
+			return false;
+		}
+		
+		if(AnnotationUtil.isMethodHasAnnotation(method, Initializer.class))
+		{
+			return false;
+		}
+		
+		if(AnnotationUtil.isMethodHasAnnotation(method, Destructor.class) 
+				|| AnnotationUtil.isMethodHasAnnotation(method, Remove.class))
+		{
+			return false;
+		}
+		
+		if(AnnotationUtil.isMethodHasAnnotation(method, PreDestroy.class) 
+				|| AnnotationUtil.isMethodHasAnnotation(method, PostConstruct.class)
+				|| AnnotationUtil.isMethodHasAnnotation(method, AroundInvoke.class))
+		{
+			return false;
+		}
+		
+		if(AnnotationUtil.isMethodHasAnnotation(method, Produces.class) 
+				|| AnnotationUtil.isMethodParameterAnnotationExist(method, Disposes.class)
+				|| AnnotationUtil.isMethodParameterAnnotationExist(method, Observes.class))
+		{
+			return true;
+		}
+		
+		return true;
+	}
+	
+	public static Class<? extends Annotation> getInterceptorAnnotationClazz(InterceptionType type)
+	{
+		if(type.equals(InterceptionType.AROUND_INVOKE))
+		{
+			return AroundInvoke.class;
+		}
+		else if(type.equals(InterceptionType.POST_ACTIVATE))
+		{
+			return PostActivate.class;
+		}
+		else if(type.equals(InterceptionType.POST_CONSTRUCT))
+		{
+			return PostConstruct.class;
+		}
+		else if(type.equals(InterceptionType.PRE_DESTROY))
+		{
+			return PreDestroy.class;
+		}
+		else if(type.equals(InterceptionType.PRE_PASSIVATE))
+		{
+			return PrePassivate.class;
+		}
+		else
+		{
+			throw new WebBeansException("Undefined interceotion type");
+		}
+	}
+	
+	public static boolean isBusinessMethodInterceptor(Class<?> clazz)
+	{
+		Asserts.nullCheckForClass(clazz);
+		Method[] methods = clazz.getDeclaredMethods();
+		for(Method method : methods)
+		{
+			if (AnnotationUtil.isMethodHasAnnotation(method, AroundInvoke.class))
+			{
+				if (ClassUtil.isMethodHasParameter(method))
+				{
+					Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
+					if (params.length == 1 && params[0].equals(InvocationContext.class))
+					{
+						if (ClassUtil.getReturnType(method).equals(Object.class))
+						{
+							if (ClassUtil.isMethodHasException(method))
+							{
+								if (!ClassUtil.isStatic(method.getModifiers()) && !ClassUtil.isFinal(method.getModifiers()))
+								{
+									return true;
+								}
+							}
+						}
+					}
+					
+				}				
+			}			
+		}
+		
+		return false;
+	}
+	
+	public static boolean isLifecycleMethodInterceptor(Class<?> clazz)
+	{
+		Asserts.nullCheckForClass(clazz);
+		Method[] methods = clazz.getDeclaredMethods();
+		for(Method method : methods)
+		{
+			if (AnnotationUtil.isMethodHasAnnotation(method, PostConstruct.class) ||
+					AnnotationUtil.isMethodHasAnnotation(method, PreDestroy.class) ||
+					AnnotationUtil.isMethodHasAnnotation(method, PostActivate.class) || 
+					AnnotationUtil.isMethodHasAnnotation(method, PrePassivate.class))
+			{
+				if (ClassUtil.isMethodHasParameter(method))
+				{
+					Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
+					if (params.length == 1 && params[0].equals(InvocationContext.class))
+					{
+						if (ClassUtil.getReturnType(method).equals(Void.TYPE))
+						{
+							if (!ClassUtil.isMethodHasCheckedException(method))
+							{
+								if (!ClassUtil.isStatic(method.getModifiers()))
+								{
+									return true;
+								}
+							}
+						}
+					}
+					
+				}				
+			}			
+		}
+		
+		return false;
+	}
+	
+	public static void checkInterceptorConditions(Class<?> clazz)
+	{
+		Asserts.nullCheckForClass(clazz);
+		if(!AnnotationUtil.isMetaAnnotationExist(clazz.getDeclaredAnnotations(), InterceptorBindingType.class))
+		{
+			throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName() + " must have at least one @InterceptorBindingType annotation");
+		}
+		
+		if(isLifecycleMethodInterceptor(clazz) && !isBusinessMethodInterceptor(clazz))
+		{
+			Annotation[] anns = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), InterceptorBindingType.class);
+			
+			for(Annotation annotation : anns)
+			{
+				Target target = annotation.annotationType().getAnnotation(Target.class);
+				ElementType[] elementTypes = target.value();
+				
+				if(!(elementTypes.length == 1 && elementTypes[0].equals(ElementType.TYPE)))
+				{
+					throw new WebBeansConfigurationException("Lifecycle interceptor : " + clazz.getName()+ " interceptor binding type must be defined as @Target{TYPE}");
+				}
+			}
+		}		
+	}
+	
+	public static void checkSimpleWebBeansInterceptorConditions(Class<?> clazz)
+	{
+		Asserts.nullCheckForClass(clazz);
+		Annotation[] anns = clazz.getDeclaredAnnotations();
+		
+		boolean hasClassInterceptors = false;
+		if(AnnotationUtil.getMetaAnnotations(anns, InterceptorBindingType.class).length > 0)
+		{
+			hasClassInterceptors = true;
+		}else
+		{
+			Annotation[] stereoTypes = WebBeansUtil.getComponentStereoTypes(anns);
+			for(Annotation stero : stereoTypes)
+			{
+				if(AnnotationUtil.isMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations(), InterceptorBindingType.class))
+				{
+					hasClassInterceptors = true;
+					break;
+				}
+			}
+		}
+		
+		Method[] methods = clazz.getDeclaredMethods();
+		
+		for(Method method : methods)
+		{
+			int modifiers = method.getModifiers();
+			if(!ClassUtil.isStatic(modifiers) && !ClassUtil.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
+			{
+				if(hasClassInterceptors)
+				{
+					throw new WebBeansConfigurationException("Simple web bean class : " + clazz.getName() + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBindintType");
+				}
+				else
+				{
+					if(AnnotationUtil.isMetaAnnotationExist(method.getDeclaredAnnotations(), InterceptorBindingType.class))
+					{
+						throw new WebBeansConfigurationException("Method : "+ method.getName() + "in simple web bean class : " + clazz.getName() + 
+								" can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBindintType");
+					}
+				}
+			}
+		}
+		
+	}
+	
+}
