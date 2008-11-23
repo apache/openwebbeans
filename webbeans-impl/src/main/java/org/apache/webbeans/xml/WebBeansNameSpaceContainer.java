@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.xml;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Defines the web beans name space.
@@ -28,7 +28,7 @@ import java.util.Map;
 public class WebBeansNameSpaceContainer
 {
 	/**Hold namespace string to package name*/
-	private Map<String, String> nameSpaceToPackages = new HashMap<String, String>(); 
+	private Map<String, String> nameSpaceToPackages = new ConcurrentHashMap<String, String>(); 
 
 	/**Singleton instance*/
 	private static WebBeansNameSpaceContainer nameSpaceContainer = new WebBeansNameSpaceContainer();
