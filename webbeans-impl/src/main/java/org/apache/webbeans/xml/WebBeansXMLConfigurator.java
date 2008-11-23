@@ -113,6 +113,7 @@ public final class WebBeansXMLConfigurator
 
 	private static void configure(Element webBeansRoot)
 	{
+		List<Element> webBeanDeclerationList = new ArrayList<Element>();
 		List<Element> childs = webBeansRoot.elements();
 		Iterator<Element> it = childs.iterator();
 
@@ -123,13 +124,7 @@ public final class WebBeansXMLConfigurator
 
 			if (XMLUtil.isElementWebBeanDeclaration(child))
 			{
-				if (XMLUtil.isElementJMSDeclaration(child))
-				{
-					configureJMSEndpointComponent(child);
-				} else
-				{
-					configureNewWebBeanComponent(child);
-				}
+				webBeanDeclerationList.add(child);
 
 			} else if (XMLUtil.isElementDeployDeclaration(child))
 			{
@@ -174,6 +169,29 @@ public final class WebBeansXMLConfigurator
 			if (!DEPLOY_IS_DEFINED)
 			{
 				DeploymentTypeManager.getInstance().addNewDeploymentType(Production.class, 1);
+			}
+		}
+		
+		//Configures the WebBeans components
+		configureWebBeansComponents(webBeanDeclerationList);
+		
+	}
+	
+	private static void configureWebBeansComponents(List<Element> webBeanDecleration)
+	{
+		if(!webBeanDecleration.isEmpty())
+		{
+			Iterator<Element> it = webBeanDecleration.iterator();
+			while (it.hasNext())
+			{
+				Element child = it.next();
+				if (XMLUtil.isElementJMSDeclaration(child))
+				{
+					configureJMSEndpointComponent(child);
+				} else
+				{
+					configureNewWebBeanComponent(child);
+				}				
 			}
 		}
 	}
@@ -770,6 +788,12 @@ public final class WebBeansXMLConfigurator
 
 	}
 
+	/**
+	 * Configures the binding types of the web beans component.
+	 * 
+	 * @param component web beans xml component
+	 * @param anns annotations defined in the xml documents
+	 */
 	private static <T> void configureBindingType(XMLComponentImpl<T> component, Annotation[] anns)
 	{
 		boolean isDefined = AnnotationUtil.isMetaAnnotationExist(anns, BindingType.class);
