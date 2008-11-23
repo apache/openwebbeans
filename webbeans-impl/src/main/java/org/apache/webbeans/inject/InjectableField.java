@@ -75,6 +75,8 @@ public class InjectableField extends AbstractInjectable
 			if (type instanceof ParameterizedType)
 			{
 				ParameterizedType pt = (ParameterizedType) type;
+				
+				checkParametrizedTypeForInjectionPoint(pt);
 				args = new Type[1];
 				args = pt.getActualTypeArguments();
 

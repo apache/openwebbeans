@@ -33,6 +33,8 @@ import org.apache.webbeans.container.ResolutionUtil;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.context.WebBeansContext;
 import org.apache.webbeans.event.EventImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -174,6 +176,14 @@ public abstract class AbstractInjectable implements Injectable
 
 			return object;
 
+	}
+	
+	protected void checkParametrizedTypeForInjectionPoint(ParameterizedType pType)
+	{
+		if(!ClassUtil.checkParametrizedType(pType))
+		{
+			throw new WebBeansConfigurationException("Injection point with parametrized type : " + pType + " can not define Type variable or Wildcard type");
+		}
 	}
 
 	/**
