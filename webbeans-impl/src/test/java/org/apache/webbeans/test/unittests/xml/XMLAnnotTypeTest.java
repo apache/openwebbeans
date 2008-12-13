@@ -17,63 +17,50 @@
 package org.apache.webbeans.test.unittests.xml;
 
 import java.io.InputStream;
-
-import javax.servlet.ServletContext;
-import javax.webbeans.manager.Manager;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.test.servlet.TestContext;
-import org.apache.webbeans.xml.WebBeansXMLConfigurator;
-import org.junit.Before;
+import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 import org.junit.Test;
 
-
-public class XMLFieldTest extends TestContext
+public class XMLAnnotTypeTest extends TestContext
 {
-	Manager container = null;
-
-	public XMLFieldTest()
+	public XMLAnnotTypeTest()
 	{
-		super(XMLFieldTest.class.getSimpleName());
+		super(XMLAnnotTypeTest.class.getName());
 	}
 
-	public void endTests(ServletContext ctx)
-	{
-		
-	}
-
-	@Before
 	public void init()
-	{
-		super.init();
-		this.container = ManagerImpl.getManager();
-	}
-
-	public void startTests(ServletContext ctx)
 	{
 		
 	}
 	
 	
 	@Test
-	public void nameSpacesNotDeclared()
+	public void testBindingAnnotation()
 	{
-		Throwable e = null;
-		try
-		{
-			InputStream stream = XMLFieldTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/fieldTest.xml");			
-			Assert.assertNotNull(stream);
-			
-			WebBeansXMLConfigurator.configure(stream,"fieldTest.xml");
-			
-		}catch(Throwable e1)
-		{
-			e = e1;
-		}
+		InputStream stream = XMLFieldTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/bindingTypeAnnot.xml");			
+		Assert.assertNotNull(stream);
 		
-		Assert.assertNull(e);
+		configureFromXML(stream, "bindingTypeAnnot.xml");
+		
+		Set<Class<? extends Annotation>> aanns = XMLAnnotationTypeManager.getInstance().getBindingTypes();
+		
+		Assert.assertEquals(2, aanns.size());
 	}
 	
+	@Test
+	public void testInterceptorBindingAnnotation()
+	{
+		
+	}
+	
+	@Test
+	public void testStereotypeAnnotation()
+	{
+		
+	}
 }

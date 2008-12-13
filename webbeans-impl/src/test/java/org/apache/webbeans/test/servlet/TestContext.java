@@ -16,6 +16,7 @@
  */
 package org.apache.webbeans.test.servlet;
 
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,6 +59,7 @@ import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 public abstract class TestContext implements ITestContext
 {
@@ -247,6 +249,11 @@ public abstract class TestContext implements ITestContext
 	protected HttpSession getSession()
 	{
 		return new MockHttpSession();
+	}
+	
+	protected void configureFromXML(InputStream file, String fileName)
+	{
+		WebBeansXMLConfigurator.configure(file, fileName);
 	}
 	
 	private void initializeDeploymentType(Class<? extends Annotation> deploymentType, int precedence)

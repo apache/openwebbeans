@@ -297,6 +297,4 @@ public class ComponentForField
 		this.listEnumField = listEnumField;
 	}
 	
-	
-
 }
