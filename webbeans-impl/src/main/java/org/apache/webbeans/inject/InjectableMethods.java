@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -32,10 +33,10 @@ import org.apache.webbeans.util.ClassUtil;
 public class InjectableMethods<T> extends AbstractInjectable
 {
 	/** Injectable method */
-	private Method m;
+	protected Method m;
 
 	/** Component instance that owns the method */
-	private Object instance;
+	protected Object instance;
 
 	/**
 	 * Constructs new instance.
@@ -107,12 +108,10 @@ public class InjectableMethods<T> extends AbstractInjectable
 
 			return (T) m.invoke(instance, list.toArray());
 
-		} catch (Throwable e)
+		} catch (Exception e)
 		{
-			// no-op
-			e.printStackTrace();
+			throw new WebBeansException(e);
 		}
-		return null;
 	}
 
 }

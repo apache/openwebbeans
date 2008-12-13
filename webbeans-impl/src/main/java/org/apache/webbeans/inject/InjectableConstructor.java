@@ -45,7 +45,7 @@ import org.apache.webbeans.util.AnnotationUtil;
 public class InjectableConstructor<T> extends AbstractInjectable
 {
 	/** Injectable constructor instance */
-	private Constructor<T> con;
+	protected Constructor<T> con;
 
 	/**
 	 * Sets the constructor.
@@ -121,9 +121,8 @@ public class InjectableConstructor<T> extends AbstractInjectable
 				}				
 			}
 
-		} catch (Throwable e)
+		} catch (Exception e)
 		{
-			e.printStackTrace();
 			throw new WebBeansException(e);
 		}
 

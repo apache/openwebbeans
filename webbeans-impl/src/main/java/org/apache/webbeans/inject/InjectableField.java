@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -34,8 +35,8 @@ import org.apache.webbeans.util.ClassUtil;
  */
 public class InjectableField extends AbstractInjectable
 {
-	private Field field;
-	private Object instance;
+	protected Field field;
+	protected Object instance;
 
 	public InjectableField(Field field, Object instance, AbstractComponent<?> owner)
 	{
@@ -86,16 +87,18 @@ public class InjectableField extends AbstractInjectable
 				clazz = (Class<?>) type;
 			}
 
+			if(!field.isAccessible())
+			{
+				field.setAccessible(true);
+			}
+			
 			field.set(instance, inject(clazz, args, annots));
 
-		} catch (Throwable e)
+		} catch (Exception e)
 		{
-			// no-op
-			e.printStackTrace();
-
+			throw new WebBeansException(e);
 		}
 
 		return null;
 	}
-
 }
