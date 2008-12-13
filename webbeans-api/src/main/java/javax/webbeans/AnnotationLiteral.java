@@ -85,6 +85,7 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
 	@Override
 	public String toString()
 	{
+		
 		String string = "@" + annotationType().getName() + "(";
 		for (int i = 0; i < members.length; i++)
 		{
