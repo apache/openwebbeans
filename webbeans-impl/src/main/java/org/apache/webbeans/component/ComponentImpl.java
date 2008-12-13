@@ -92,7 +92,7 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
 	/*
 	 * Call before object constructor
 	 */
-	private void beforeConstructor()
+	protected void beforeConstructor()
 	{
 
 	}
@@ -100,7 +100,7 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
 	/*
 	 * Call after object construction
 	 */
-	private void afterConstructor(T instance)
+	protected void afterConstructor(T instance)
 	{
 		injectFields(instance);
 		injectMethods(instance);
@@ -133,7 +133,7 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
 	/*
 	 * Injectable fields
 	 */
-	private void injectFields(T instance)
+	protected void injectFields(T instance)
 	{
 		Set<Field> fields = getInjectedFields();
 		Iterator<Field> it = fields.iterator();
@@ -155,7 +155,7 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
 	 * Injectable methods
 	 */
 	@SuppressWarnings("unchecked")
-	private void injectMethods(T instance)
+	protected void injectMethods(T instance)
 	{
 		Set<Method> methods = getInjectedMethods();
 		Iterator<Method> it = methods.iterator();

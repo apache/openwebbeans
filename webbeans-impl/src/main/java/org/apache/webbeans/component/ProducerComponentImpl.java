@@ -42,13 +42,13 @@ import org.apache.webbeans.inject.InjectableMethods;
 public class ProducerComponentImpl<T> extends AbstractComponent<T>
 {	
 	/**Parent component that this producer method belongs*/
-	private AbstractComponent<?> parent;
+	protected AbstractComponent<?> parent;
 	
 	/**Creator method of the parent component*/
-	private Method creatorMethod;
+	protected Method creatorMethod;
 	
 	/**Disposal method*/
-	private Method disposalMethod;
+	protected Method disposalMethod;
 	
 	/*
 	 * Constructor
@@ -161,7 +161,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
 	
 	
 	@SuppressWarnings("unchecked")
-	private <K> void destroyBean(Bean<?> bean, Object instance)
+	protected <K> void destroyBean(Bean<?> bean, Object instance)
 	{
 		Bean<K> destroy = (Bean<K>)bean;
 		K inst = (K) instance;
@@ -191,14 +191,14 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
 	}
 	
 	
-	private Object getParentInstance()
+	protected Object getParentInstance()
 	{
 		Object parentInstance = ManagerImpl.getManager().getInstance(this.parent);
 		
 		return parentInstance;
 	}
 	
-	private void checkNullInstance(Object instance)
+	protected void checkNullInstance(Object instance)
 	{
 		if(instance == null)
 		{
@@ -209,7 +209,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
 		}		
 	}
 	
-	private void checkScopeType()
+	protected void checkScopeType()
 	{
 		//Scope type check
 		ScopeType scope = this.getScopeType().getAnnotation(ScopeType.class);

@@ -16,65 +16,157 @@
  */
 package org.apache.webbeans.component.xml;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
+import org.apache.webbeans.inject.xml.XMLInjectableField;
+import org.apache.webbeans.inject.xml.XMLInjectableMethods;
+import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
+import org.apache.webbeans.util.Asserts;
 
 public class XMLComponentImpl<T> extends ComponentImpl<T>
-{
-	private List<Type> constructorApiTypes = new ArrayList<Type>();
+{	
+	/**Constructor injection point decleration*/
+	private XMLInjectableConstructor<T> injectableConstructor = null;
 	
-	private Map<String, Type> fieldApiType = new HashMap<String, Type>();
+	/**Injection points for fields*/
+	private Map<Field,XMLInjectionPointModel> injectableFields = new HashMap<Field, XMLInjectionPointModel>();
 	
-	private Map<String, Type> methodApiType = new HashMap<String, Type>();
+	/**Injection points for initializer methods*/
+	private Map<Method,List<XMLInjectionPointModel>> injectableMethods = new HashMap<Method, List<XMLInjectionPointModel>>();
 	
+	/**Initial field values of the webbean defined in the XML*/
 	private Map<String, Object> fieldValues = new HashMap<String, Object>();
-	
-	
+		
+	/**
+	 * Creates new XML defined webbeans component.
+	 * 
+	 * @param returnType type of the webbeans component
+	 */
 	public XMLComponentImpl(Class<T> returnType)
 	{
 		super(returnType);
 	}
 	
-	public void addConstructorApiType(Type apiType)
+	
+	
+	/* (non-Javadoc)
+	 * @see org.apache.webbeans.component.ComponentImpl#createInstance()
+	 */
+	@Override
+	protected T createInstance()
 	{
-		constructorApiTypes.add(apiType);
+		T instance = null;
+		instance = this.injectableConstructor.doInjection();
+		
+		return instance;
+	}
+
+	
+	
+	/* (non-Javadoc)
+	 * @see org.apache.webbeans.component.ComponentImpl#injectFields(java.lang.Object)
+	 */
+	@Override
+	protected void injectFields(T instance)
+	{
+		Set<Field> fieldSet = this.injectableFields.keySet();
+		Iterator<Field> itField = fieldSet.iterator();
+		
+		while(itField.hasNext())
+		{	
+			Field field = itField.next();
+			XMLInjectionPointModel model = this.injectableFields.get(field);
+			XMLInjectableField injectableField = new XMLInjectableField(field, instance, this, model);
+			
+			injectableField.doInjection();
+		}
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.apache.webbeans.component.ComponentImpl#injectMethods(java.lang.Object)
+	 */
+	@Override
+	protected void injectMethods(T instance)
+	{
+		Set<Method> methodSet = this.injectableMethods.keySet();
+		Iterator<Method> itMethods = methodSet.iterator();
+		while(itMethods.hasNext())
+		{
+			Method method = itMethods.next();
+			List<XMLInjectionPointModel> listInjectionPointModel = this.injectableMethods.get(method);
+			XMLInjectableMethods<T> injectableMethod = new XMLInjectableMethods<T>(method, instance, this, listInjectionPointModel);
+			
+			injectableMethod.doInjection();
+		}
+		
+	}
+
+
+	/**
+	 * Sets injection point for constructor.
+	 * 
+	 * @param constructor constructor injection point
+	 */
+	public void setInjectableConstructor(XMLInjectableConstructor<T> constructor)
+	{
+		Asserts.assertNotNull(constructor, "constructor parameter can not be null");
+		this.injectableConstructor = constructor;
 	}
 	
-	public void addFieldApiType(Type apiType, String name)
+	/**
+	 * Adds new field injection point
+	 * 
+	 * @param field field injection point
+	 * @param model injection point model
+	 */
+	public void addFieldInjectionPoint(Field field, XMLInjectionPointModel model)
 	{
-		fieldApiType.put(name, apiType);
+		Asserts.assertNotNull(field,"field parameter can not be null");
+		Asserts.assertNotNull(model,"model parameter can not be null");
+		
+		this.injectableFields.put(field, model);
 	}
 	
-	public void addMethodApiType(Type apiType, String name)
+	/**
+	 * Adds new method injection point
+	 * 
+	 * @param method method injection point
+	 * @param model injection point model
+	 */
+	public void addMethodInjectionPoint(Method method, XMLInjectionPointModel model)
 	{
-		methodApiType.put(name, apiType);
-	}
+		Asserts.assertNotNull(method,"method parameter can not be null");
+		Asserts.assertNotNull(model,"model parameter can not be null");
+		
+		List<XMLInjectionPointModel> listModel = this.injectableMethods.get(method);
+		if(listModel == null)
+		{
+			listModel = new ArrayList<XMLInjectionPointModel>();
+			this.injectableMethods.put(method, listModel);
+		}
+		
+		listModel.add(model);
+	}	
 	
-	
+	/**
+	 * Add new field value.
+	 * 
+	 * @param name name of the field
+	 * @param value value of the field
+	 */
 	public void addFieldValue(String name, Object value)
 	{
 		fieldValues.put(name, value);
-	}
-
-	/**
-	 * @return the constructorApiTypes
-	 */
-	public List<Type> getConstructorApiTypes()
-	{
-		return constructorApiTypes;
-	}
-
-	/**
-	 * @return the fieldApiTypes
-	 */
-	public Map<String, Type> getFieldApiType()
-	{
-		return fieldApiType;
 	}
 
 	/**
@@ -84,17 +176,4 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
 	{
 		return fieldValues;
 	}
-
-	/**
-	 * @return the methodApiType
-	 */
-	public Map<String, Type> getMethodApiType()
-	{
-		return methodApiType;
-	}
-	
-	
-	
-	
-
 }
