@@ -17,8 +17,10 @@
 package org.apache.webbeans.proxy;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorHandler;
@@ -57,6 +59,27 @@ public final class JavassistProxyFactory
 			
 			result = fact.create(paramTypes, args); 
 		}catch(Throwable e)
+		{
+			throw new WebBeansException(e);
+		}
+		
+		return result;
+	}
+	
+	public static WebBeansAnnotation createNewAnnotationProxy(Class<? extends Annotation> annotationType)
+	{	
+		WebBeansAnnotation result = null;
+		
+		try
+		{
+			ProxyFactory pf = new ProxyFactory();
+			pf.setInterfaces(new Class<?>[]{annotationType,Annotation.class});
+			pf.setSuperclass(WebBeansAnnotation.class);
+			pf.setHandler(new WebBeansAnnotation(annotationType));
+			
+			result = (WebBeansAnnotation)pf.create(new Class[]{Class.class}, new Object[]{annotationType});
+			
+		}catch(Exception e)
 		{
 			throw new WebBeansException(e);
 		}
