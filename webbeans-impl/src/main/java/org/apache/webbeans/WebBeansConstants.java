@@ -70,7 +70,17 @@ public final class WebBeansConstants
 	
 	public static final String WEB_BEANS_XML_STANDART_ELEMENT = "Standard";
 	
+	public static final String WEB_BEANS_XML_BINDING_TYPE = "BindingType";
+	
+	public static final String WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE = "InterceptorBindingType";
+	
+	public static final String WEB_BEANS_XML_STEREOTYPE = "StereoType";
+	
 	public static final String WEB_BEANS_XML_VALUE_ELEMENT = "value";
+	
+	public static final String WEB_BEANS_XML_NAMED_ELEMENT = "Named";
+	
+	public static final String WEB_BEANS_XML_ARRAY_ELEMENT = "Array"; 
 	
 	public static final String WEB_BEANS_MANAGER_JNDI_NAME = "java:comp/Manager";
 	
