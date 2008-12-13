@@ -17,7 +17,6 @@
 package org.apache.webbeans.config;
 
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -37,20 +36,16 @@ import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
-import org.apache.webbeans.decorator.DecoratorsManager;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
-import org.apache.webbeans.intercept.InterceptorUtil;
-import org.apache.webbeans.intercept.InterceptorsManager;
-import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.JNDIUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
+import org.apache.webbeans.xml.XMLSpecializesManager;
 
 
 /**
@@ -242,13 +237,43 @@ public final class WebBeansContainerDeployer
 						  }
 					  }
 					  
-					  
 					  WebBeansUtil.configureSpecializations(specialClass);
 				  }				  
 			  }
 		  }
 		  
+		  //XML Defined Specializations
+		  checkXMLSpecializations();
+		  
 		  logger.info("Checking Specialization constraints is ended");
+	}
+	
+	private static void checkXMLSpecializations()
+	{
+		  //Check XML specializations
+		  Set<Class<?>> clazzes = XMLSpecializesManager.getInstance().getXMLSpecializationClasses();
+		  Iterator<Class<?>> it = clazzes.iterator();
+		  Class<?> superClass = null;
+		  Class<?> specialClass = null;
+		  while(it.hasNext())
+		  {
+			  specialClass = it.next();
+			  
+			  if(superClass == null)
+			  {
+				  superClass = specialClass.getSuperclass();
+			  }
+			  else
+			  {
+				  if(superClass.equals(specialClass.getSuperclass()))
+				  {
+					  throw new InconsistentSpecializationException("XML Specialization Error : More than one class that specialized the same super class : " + superClass.getName());
+				  }
+			  }
+			  
+			  WebBeansUtil.configureSpecializations(specialClass);
+			  
+		  }		
 	}
 	
 	public static void checkPassivationScopes()
@@ -325,36 +350,19 @@ public final class WebBeansContainerDeployer
 		}
 	}
 	
+	/**
+	 * Defines the new interceptor with given class.
+	 * 
+	 * @param clazz interceptor class
+	 */
 	private static <T> void defineSimpleWebBeansInterceptors(Class<T> clazz)
 	{
-		if(InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
-		{
-			ComponentImpl<T> component = null;
-			
-			InterceptorUtil.checkInterceptorConditions(clazz);
-			component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
-			
-			if(component != null)
-			{
-				WebBeansInterceptorConfig.configureInterceptorClass((ComponentImpl<Object>)component);	
-			}			
-		}
+		WebBeansUtil.defineSimpleWebBeansInterceptors(clazz);
 	}
 	
 	private static <T> void defineSimpleWebBeansDecorators(Class<T> clazz)
 	{
-		if(DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
-		{
-			ComponentImpl<T> component = null;
-			
-			DecoratorUtil.checkDecoratorConditions(clazz);
-			component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.DECORATOR);
-			
-			if(component != null)
-			{
-				WebBeansDecoratorConfig.configureDecoratorClass((ComponentImpl<Object>)component);
-			}			
-		}		
+		WebBeansUtil.defineSimpleWebBeansDecorators(clazz);
 	}
 	
 	
