@@ -98,7 +98,7 @@ public  final class DecoratorUtil
 			if(ClassUtil.isFinal(clazz.getModifiers()))
 			{
 				throw new WebBeansConfigurationException("Simple web bean component : " + component.getReturnType().getName() + 
-						" can not be declared final, because it has one o more decorators");
+						" can not be declared final, because it has one or more decorators");
 			}
 			
 			Method[] methods = clazz.getDeclaredMethods();
