@@ -1232,6 +1232,7 @@ public final class WebBeansUtil
 		}		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> void defineSimpleWebBeansInterceptors(Class<T> clazz)
 	{
 		if(InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
@@ -1249,6 +1250,7 @@ public final class WebBeansUtil
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> void defineSimpleWebBeansDecorators(Class<T> clazz)
 	{
 		if(DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
