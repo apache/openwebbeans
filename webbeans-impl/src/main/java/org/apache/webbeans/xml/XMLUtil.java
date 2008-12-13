@@ -17,18 +17,30 @@
 package org.apache.webbeans.xml;
 
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.webbeans.DuplicateBindingTypeException;
 import javax.webbeans.InterceptorBindingType;
+import javax.webbeans.NonexistentTypeException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.webbeans.WebBeansConstants;
+import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -36,8 +48,6 @@ import org.dom4j.ElementHandler;
 import org.dom4j.ElementPath;
 import org.dom4j.Namespace;
 import org.dom4j.io.SAXReader;
-
-
 
 /**
  * Used for getting information contained in the file web-beans.xml.
@@ -188,7 +198,10 @@ public class XMLUtil
 		
 		if(!isElementInWebBeansNameSpaceWithName(element,WebBeansConstants.WEB_BEANS_XML_DEPLOY_ELEMENT) &&
 				!isElementInWebBeansNameSpaceWithName(element,WebBeansConstants.WEB_BEANS_XML_INTERCEPTORS_ELEMENT) &&
-				!isElementInWebBeansNameSpaceWithName(element,WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT))
+				!isElementInWebBeansNameSpaceWithName(element,WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT) && 
+				!isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE) && 
+				!isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE) &&
+				!isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
 		{
 			return true;
 		}
@@ -196,6 +209,43 @@ public class XMLUtil
 		return false;
 		
 	}
+	
+	public static boolean isElementBindingTypeDecleration(Element element)
+	{
+		nullCheckForElement(element);
+		
+		if(isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE))
+		{
+			return true;
+		}
+		
+		return false;	
+	}
+	
+	public static boolean isElementInterceptorBindingTypeDecleration(Element element)
+	{
+		nullCheckForElement(element);
+		
+		if(isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE))
+		{
+			return true;
+		}
+		
+		return false;	
+	}
+	
+	public static boolean isElementStereoTypeDecleration(Element element)
+	{
+		nullCheckForElement(element);
+		
+		if(isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
+		{
+			return true;
+		}
+		
+		return false;	
+	}
+	
 	
 	public static boolean isElementDeployDeclaration(Element element)
 	{
@@ -294,6 +344,13 @@ public class XMLUtil
 		
 	}
 	
+	/**
+	 * Checks that given element is a webbeans method or not.
+	 * 
+	 * @param element dom element represents method decleration
+	 * @return true if the given element is a true element decleration
+	 * 		   false otherwise
+	 */
 	public static boolean isElementMethod(Element element)
 	{
 		Asserts.nullCheckForDomElement(element);
@@ -353,6 +410,17 @@ public class XMLUtil
 		return clazz;
 	}
 	
+	public static String getElementJavaClassName(Element element)
+	{
+		String ns  = getElementNameSpace(element);
+		String packageName = WebBeansNameSpaceContainer.getInstance().getPackageNameFromNameSpace(ns);
+		
+		String className = packageName + XMLUtil.getName(element);
+		
+		return className;
+	}
+	
+	
 	private static void nullCheckForElement(Element element)
 	{
 		Asserts.nullCheckForDomElement(element);
@@ -367,16 +435,314 @@ public class XMLUtil
 		return parent.element(childName) != null ? true : false;
 	}
 	
-	public Class<?> getJavaClassForElement(Element element)
+	
+	
+	/**
+	 * Creates new xml injection point model.
+	 * 
+	 * @param typeElement injection point API type
+	 * @param errorMessage error message 
+	 * 
+	 * @return new injection point model object
+	 */
+	public static XMLInjectionPointModel getInjectionPointModel(Element typeElement, String errorMessage)
 	{
-		nullCheckForElement(element);
+		Asserts.assertNotNull(typeElement, "typeElement parameter can not be null");
 		
-		String ns = getElementNameSpace(element);
-		String packageName = WebBeansNameSpaceContainer.getInstance().getPackageNameFromNameSpace(ns);
+		/*Element <Array>*/
+		if(typeElement.getName().equals(WebBeansConstants.WEB_BEANS_XML_ARRAY_ELEMENT))
+		{
+			return getArrayInjectionPointModel(typeElement, errorMessage);
+		}
+		/*Java class or interface*/
+		else
+		{
+			return getTypeInjectionPointModel(typeElement, errorMessage);
+		}
 		
-		String className = packageName + getName(element);
+	}
+	
+	/**
+	 * Injection point with Java type.
+	 * 
+	 * @param typeElement injection point API type
+	 * @param errorMessage error message 
+	 * 
+	 * @return new injection point model
+	 */
+	private static XMLInjectionPointModel getTypeInjectionPointModel(Element typeElement, String errorMessage)
+	{
+		XMLInjectionPointModel model = null;
 		
-		return ClassUtil.getClassFromName(className);
+		Class<?> clazz = getElementJavaType(typeElement);
+		if(clazz == null)
+		{
+			throw new NonexistentTypeException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is not found in the deployment");
+		}
 		
+		else if(clazz.isAnnotation() || clazz.isArray() || clazz.isEnum())
+		{
+			throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " must be class or interface type");
+		}
+		
+		else
+		{
+			TypeVariable[] typeVariables = clazz.getTypeParameters();
+			int actualTypeArgument = typeVariables.length;
+			List<Element> childElements =  typeElement.elements();
+			List<Type> typeArguments = new ArrayList<Type>();
+			List<Annotation> bindingAnnots = new ArrayList<Annotation>();
+			
+			Class<? extends Annotation> definedBindingType = null;
+			for(Element childElement : childElements)
+			{
+				Type actualType = getElementJavaType(childElement);
+				if(actualType == null)
+				{
+					throw new NonexistentTypeException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is not found in the deployment");
+				}
+				else if(((Class)actualType).isArray() || ((Class)actualType).isEnum())
+				{
+					throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " must be class or interface type");
+				}
+				else if(((Class)actualType).isAnnotation())
+				{
+					Class<? extends Annotation> annotClazz = (Class<? extends Annotation>)actualType;
+					if(!AnnotationUtil.isBindingAnnotation(annotClazz))
+					{
+						throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is not a @BindingType");
+					}
+					
+					if(definedBindingType == null)
+					{
+						definedBindingType = annotClazz;
+					}
+					else
+					{
+						if(definedBindingType.equals(annotClazz))
+						{
+							throw new DuplicateBindingTypeException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is duplicated");
+						}
+					}
+					
+					bindingAnnots.add(getInjectionPointAnnotationMember(childElement, annotClazz, errorMessage));
+				}
+				else
+				{
+					typeArguments.add(actualType);
+				}
+			}
+			
+			if(actualTypeArgument != typeArguments.size())
+			{
+				throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " actual type parameters size are not equals defined in the xml");
+			}
+			
+			int i = 0;
+			for(Type type : typeArguments)
+			{
+				TypeVariable typeVariable = typeVariables[i];
+				Type[] bounds = typeVariable.getBounds();
+				
+				Class<?> clazzBound = (Class<?>)bounds[0];
+				
+				if(!clazzBound.isAssignableFrom((Class<?>)type))
+				{
+					throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " actual type parameter bounded exception");
+				}
+				
+			}
+			
+			Type[] typeArray = new Type[typeArguments.size()];
+			typeArray = typeArguments.toArray(typeArray);
+			model = new XMLInjectionPointModel(clazz,typeArray);
+			
+			for(Annotation annot : bindingAnnots)
+			{
+				model.addBindingType(annot);
+			}
+		}		
+		
+		return model;
+	}
+	
+	/**
+	 * Creates new annotation with configured members values.
+	 * 
+	 * @param annotationElement annotation element
+	 * @param annotClazz annotation class
+	 * @param errorMessage error message
+	 * 
+	 * @return new annotation with members configures
+	 */
+	private static Annotation getInjectionPointAnnotationMember(Element annotationElement, Class<? extends Annotation> annotClazz, String errorMessage)
+	{
+		 String value = annotationElement.getTextTrim();
+		 List<Attribute> attrs = annotationElement.attributes();
+		 List<String> attrsNames = new ArrayList<String>();
+		 
+		 for(Attribute attr : attrs)
+		 {
+			 attrsNames.add(attr.getName());
+		 }
+		 
+		 /*Default value check*/
+		 if(value != null && !value.equals(""))
+		 {
+			 if(attrsNames.contains("value"))
+			 {
+				 throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " can not have both element 'value' attribute and body text");
+			 }
+		 }
+		 /*Check for attribute "value"*/
+		 else
+		 {
+			 if(attrsNames.contains("value"))
+			 {
+				 try
+				{
+					/*Contains value member method*/
+					annotClazz.getDeclaredMethod("value", new Class[]{});
+					
+				} catch (SecurityException e)
+				{
+					throw new WebBeansException(e);
+					
+				} catch (NoSuchMethodException e)
+				{
+					throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " must have 'value' method");
+				}
+			 }
+		 }
+		 
+		 /*Check annotation members with name attrs*/
+		 for(String attrName : attrsNames)
+		 {
+			 try
+				{
+					annotClazz.getDeclaredMethod(attrName, new Class[]{});
+					
+				} catch (SecurityException e)
+				{
+					throw new WebBeansException(e);
+					
+				} catch (NoSuchMethodException e)
+				{
+					throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " does not have member with name : " + attrName);
+				}
+		 }
+		 
+		 /*Non-default members must defined in the xml*/
+		 Method[] members = annotClazz.getDeclaredMethods();
+		 for(Method member : members)
+		 {
+			 if(member.getDefaultValue() == null)
+			 {
+				 if(!attrsNames.contains(member.getName()))
+				 {
+					 throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " with non-default member method with name : " + member.getName() + " has to defined in the xml element attribute.");
+				 }
+			 }
+		 }
+		 
+		
+		return createInjectionPointAnnotation(attrs, annotClazz, errorMessage);
+	}
+	
+	/**
+	 * Creates new annotation with its member values.
+	 * 
+	 * @param attrs list of annotation element attributes
+	 * @param annotClazz annotation class
+	 * @param errorMessage error message
+	 * 
+	 * @return new annotation
+	 */
+	private static WebBeansAnnotation createInjectionPointAnnotation(List<Attribute> attrs, Class<? extends Annotation> annotClazz, String errorMessage)
+	{
+		 WebBeansAnnotation annotation = JavassistProxyFactory.createNewAnnotationProxy(annotClazz);
+		 for(Attribute attr : attrs)
+		 {
+			 String attrName = attr.getName();
+			 String attrValue = attr.getValue();
+			 Class returnType = null;
+			 try
+				{
+					returnType = annotClazz.getDeclaredMethod(attrName, new Class[]{}).getReturnType();
+					Object value = null;
+					if(returnType.isPrimitive())
+					{
+						value = ClassUtil.isValueOkForPrimitiveOrWrapper(returnType, attrValue);
+					}
+					else if(returnType.equals(String.class))
+					{
+						value = attrValue;
+					}
+					else if(returnType.equals(Class.class))
+					{
+						value = ClassUtil.getClassFromName(attrValue);
+						
+					}
+					else if(returnType.isEnum())
+					{
+						value = ClassUtil.isValueOkForEnum(returnType, attrValue);
+					}
+					else
+					{
+						throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " with member : " + attrName  + " does not have sutiable member return type");
+					}
+					
+					if(value == null)
+					{
+						throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " with member : " + attrName + " value does not defined correctly");
+					}
+					
+					annotation.setMemberValue(attrName, value);
+					
+				} catch (SecurityException e)
+				{
+					throw new WebBeansException(e);
+					
+				} catch (NoSuchMethodException e)
+				{
+					throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " does not have member with name : " + attrName);
+				}
+		 }
+		
+		 return annotation;
+	}
+	
+	/**
+	 * Injection point with array type.
+	 * 
+	 * @param typeElement injection point API type
+	 * @param errorMessage error message 
+	 * 
+	 * @return new injection point model
+	 */	
+	private static XMLInjectionPointModel getArrayInjectionPointModel(Element typeElement, String errorMessage)
+	{
+		XMLInjectionPointModel model = null;
+		
+		List<Element> childElements =  typeElement.elements();
+		if(childElements.size() != 1)
+		{
+			throw new WebBeansConfigurationException(errorMessage + "<Array> element can not have more than one child element. It has one child element that declares its type");
+		}
+		else
+		{
+			Element child = childElements.get(0);
+			Class<?> arrayType = getElementJavaType(child);
+			if(arrayType == null)
+			{
+				throw new WebBeansConfigurationException(errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(child) + " is not found in the deployment");
+			}
+			else if(arrayType.isArray() || arrayType.isEnum())
+			{
+				throw new WebBeansConfigurationException(errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(typeElement) + " must be class or interface type");
+			}
+		}
+		
+		return model;
 	}
 }
