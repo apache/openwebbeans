@@ -27,6 +27,8 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -39,8 +41,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.webbeans.AnnotationLiteral;
 
 import org.apache.webbeans.exception.WebBeansException;
 
@@ -57,6 +57,8 @@ public final class ClassUtil
 
 	public static Set<Class<?>> VALUE_TYPES = new HashSet<Class<?>>();
 
+	public static Set<Class<?>> PRIMITIVE_WRAPPERS = new HashSet<Class<?>>();
+	
 	public static Set<Class<?>> PRIMITIVES = new HashSet<Class<?>>();
 
 	static
@@ -80,6 +82,11 @@ public final class ClassUtil
 		VALUE_TYPES.add(Class.class);
 		VALUE_TYPES.add(List.class);
 		VALUE_TYPES.add(Enum.class);
+		VALUE_TYPES.add(java.sql.Date.class);
+		VALUE_TYPES.add(Time.class);
+		VALUE_TYPES.add(Timestamp.class);
+		VALUE_TYPES.add(BigDecimal.class);
+		VALUE_TYPES.add(BigInteger.class);
 
 		PRIMITIVES.add(Integer.TYPE);
 		PRIMITIVES.add(Float.TYPE);
@@ -89,6 +96,15 @@ public final class ClassUtil
 		PRIMITIVES.add(Byte.TYPE);
 		PRIMITIVES.add(Short.TYPE);
 		PRIMITIVES.add(Boolean.TYPE);
+		
+		PRIMITIVE_WRAPPERS.add(Integer.class);
+		PRIMITIVE_WRAPPERS.add(Float.class);
+		PRIMITIVE_WRAPPERS.add(Double.class);
+		PRIMITIVE_WRAPPERS.add(Character.class);
+		PRIMITIVE_WRAPPERS.add(Long.class);
+		PRIMITIVE_WRAPPERS.add(Byte.class);
+		PRIMITIVE_WRAPPERS.add(Short.class);
+		PRIMITIVE_WRAPPERS.add(Boolean.class);
 
 	}
 
@@ -616,28 +632,6 @@ public final class ClassUtil
 		return false;
 	}
 
-	public static AnnotationLiteral<Annotation> getAnnotationLiteral(final Class<? extends Annotation> clazz)
-	{
-		Asserts.nullCheckForClass(clazz);
-
-		AnnotationLiteral<Annotation> literal = new AnnotationLiteral<Annotation>()
-		{
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see javax.webbeans.AnnotationLiteral#annotationType()
-			 */
-			@Override
-			public Class<? extends Annotation> annotationType()
-			{
-
-				return clazz;
-			}
-		};
-
-		return literal;
-	}
 
 	public static <T> Constructor<T>[] getConstructors(Class<T> clazz)
 	{
@@ -779,7 +773,14 @@ public final class ClassUtil
 		}
 
 	}
-
+	
+	/**
+	 * 
+	 * @param clazz webbeans implementation class
+	 * @param methodName name of the method that is searched
+	 * @param parameterTypes parameter types of the method(it can be subtype of the actual type arguments of the method)
+	 * @return the list of method that satisfies the condition
+	 */
 	public static List<Method> getClassMethodsWithTypes(Class<?> clazz, String methodName, List<Class<?>> parameterTypes)
 	{
 		Asserts.nullCheckForClass(clazz);
@@ -810,6 +811,8 @@ public final class ClassUtil
 				{
 					ok = false;
 				}
+				
+				j++;
 			}
 
 			if (ok)
@@ -884,6 +887,14 @@ public final class ClassUtil
 
 		return clazz.isPrimitive();
 	}
+	
+	public static boolean isPrimitiveWrapper(Class<?> clazz)
+	{
+		Asserts.nullCheckForClass(clazz);
+		
+		return PRIMITIVE_WRAPPERS.contains(clazz);
+		
+	}
 
 	public static boolean isArray(Class<?> clazz)
 	{
@@ -917,46 +928,58 @@ public final class ClassUtil
 		return result;
 	}
 
-	public static Object isValueOkForPrimitive(Class<?> type, String value)
+	/**
+	 * Gets the primitive/wrapper value of the parsed 
+	 * {@link String} parameter.
+	 * 
+	 * @param type primitive or wrapper of the primitive type
+	 * @param value value of the type
+	 * 
+	 * @return the parse of the given {@link String} 
+	 * 		   value into the corresponding value, if
+	 * 		   any exception occurs, returns null as the 
+	 * 		   value.
+	 */
+	public static Object isValueOkForPrimitiveOrWrapper(Class<?> type, String value)
 	{
 		try
 		{
-			if (type.equals(Integer.TYPE))
+			if (type.equals(Integer.TYPE) || type.equals(Integer.class))
 			{
 				return Integer.valueOf(value);
 			}
 
-			if (type.equals(Float.TYPE))
+			if (type.equals(Float.TYPE) || type.equals(Float.class))
 			{
 				return Float.valueOf(value);
 			}
 
-			if (type.equals(Double.TYPE))
+			if (type.equals(Double.TYPE) || type.equals(Double.class))
 			{
 				return Double.valueOf(value);
 			}
 
-			if (type.equals(Character.TYPE))
+			if (type.equals(Character.TYPE) || type.equals(Character.class))
 			{
 				return value.toCharArray()[0];
 			}
 
-			if (type.equals(Long.TYPE))
+			if (type.equals(Long.TYPE) || type.equals(Long.class))
 			{
 				return Long.valueOf(value);
 			}
 
-			if (type.equals(Byte.TYPE))
+			if (type.equals(Byte.TYPE) || type.equals(Byte.class))
 			{
 				return Byte.valueOf(value);
 			}
 
-			if (type.equals(Short.TYPE))
+			if (type.equals(Short.TYPE) || type.equals(Short.class))
 			{
 				return Short.valueOf(value);
 			}
 
-			if (type.equals(Boolean.TYPE))
+			if (type.equals(Boolean.TYPE) || type.equals(Boolean.class))
 			{
 				return Boolean.valueOf(value);
 			}
@@ -990,13 +1013,40 @@ public final class ClassUtil
 		try
 		{
 			Asserts.assertNotNull(value, "value parameter can not be null");
-
 			return DateFormat.getDateTimeInstance().parse(value);
 		} catch (ParseException e)
 		{
 			return null;
 		}
 
+	}
+	
+	public static Object isValueOkForBigDecimalOrInteger(Class<?> type, String value)
+	{
+		Asserts.assertNotNull(type);
+		Asserts.assertNotNull(value);
+		
+		try
+		{
+			if(type.equals(BigInteger.class))
+			{
+				return new BigInteger(value);
+			}
+			else if(type.equals(BigDecimal.class))
+			{
+				return new BigDecimal(value);
+			}
+			else
+			{
+				return new WebBeansException(new IllegalArgumentException("Argument is not valid"));
+			}
+			
+			
+		}catch(NumberFormatException e)
+		{
+			return null;
+		}
+		
 	}
 
 	public static boolean isParametrized(Class<?> clazz)
@@ -1128,6 +1178,20 @@ public final class ClassUtil
 		return true;
 	}
 	
+	public static boolean isFirstParametricTypeArgGeneric(ParameterizedType type)
+	{
+		Asserts.assertNotNull(type, "type parameter can not be null");
+		Type arg = type.getActualTypeArguments()[0];
+		
+		if((arg instanceof TypeVariable) || (arg instanceof WildcardType))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
 	public static List<Type[]> getGenericSuperInterfacesTypeArguments(Class<?> clazz)
 	{
 		Asserts.nullCheckForClass(clazz);
@@ -1226,6 +1290,5 @@ public final class ClassUtil
 		
 		
 		return found;
-	}
-	
+	}		
 }

@@ -32,6 +32,8 @@ import javax.webbeans.BindingType;
 import javax.webbeans.DuplicateBindingTypeException;
 import javax.webbeans.NonBinding;
 
+import org.apache.webbeans.xml.XMLAnnotationTypeManager;
+
 
 
 /**
@@ -660,6 +662,25 @@ public final class AnnotationUtil
 				}
 			}
 		}
+	}
+	
+	public static boolean isBindingAnnotation(Class<? extends Annotation> clazz)
+	{
+		Asserts.assertNotNull(clazz, "clazz parameter can not be null");
+		if(clazz.isAnnotationPresent(BindingType.class))
+		{
+			return true;
+		}
+		else
+		{
+			XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
+			if(manager.isBindingTypeExist(clazz))
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 }

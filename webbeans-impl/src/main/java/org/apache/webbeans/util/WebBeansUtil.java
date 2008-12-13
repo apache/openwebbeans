@@ -77,6 +77,7 @@ import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.annotation.StandardLiteral;
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.ConversationComponent;
 import org.apache.webbeans.component.ManagerComponentImpl;
 import org.apache.webbeans.component.NewComponentImpl;
@@ -86,6 +87,9 @@ import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.decorator.DecoratorUtil;
+import org.apache.webbeans.decorator.DecoratorsManager;
+import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
@@ -97,6 +101,9 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.intercept.InterceptorType;
+import org.apache.webbeans.intercept.InterceptorUtil;
+import org.apache.webbeans.intercept.InterceptorsManager;
+import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 
 /**
  * Contains some utility methods used in the all project.
@@ -199,6 +206,7 @@ public final class WebBeansUtil
 		boolean inAnnotation = false;
 		int j = 0;
 
+		/*Check for @Initializer*/
 		for (Constructor<T> constructor : constructors)
 		{
 			j++;
@@ -207,7 +215,8 @@ public final class WebBeansUtil
 				if (inAnnotation == true)// duplicate @In
 				{
 					throw new WebBeansConfigurationException("There are more than one Constrcutor with Initializer annotation in class " + clazz.getName());
-				} else
+				} 
+				else
 				{
 					inAnnotation = true;
 					result = constructor;
@@ -916,7 +925,7 @@ public final class WebBeansUtil
 			}
 		}
 		
-		//This does not defined in the Specification. Default deploymentType of the implementation class not defined in xML.
+		
 		if(result == null)
 		{
 			return new ProductionLiteral();
@@ -1223,4 +1232,37 @@ public final class WebBeansUtil
 		}		
 	}
 	
+	public static <T> void defineSimpleWebBeansInterceptors(Class<T> clazz)
+	{
+		if(InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
+		{
+			ComponentImpl<T> component = null;
+			
+			InterceptorUtil.checkInterceptorConditions(clazz);
+			component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
+			
+			if(component != null)
+			{
+				WebBeansInterceptorConfig.configureInterceptorClass((ComponentImpl<Object>)component);	
+			}			
+		}
+		
+	}
+	
+	public static <T> void defineSimpleWebBeansDecorators(Class<T> clazz)
+	{
+		if(DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
+		{
+			ComponentImpl<T> component = null;
+			
+			DecoratorUtil.checkDecoratorConditions(clazz);
+			component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.DECORATOR);
+			
+			if(component != null)
+			{
+				WebBeansDecoratorConfig.configureDecoratorClass((ComponentImpl<Object>)component);
+			}			
+		}		
+		
+	}
 }
