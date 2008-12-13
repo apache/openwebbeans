@@ -21,15 +21,12 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 
 import javax.webbeans.AmbiguousDependencyException;
-import javax.webbeans.ScopeType;
 import javax.webbeans.UnsatisfiedDependencyException;
 import javax.webbeans.manager.Bean;
 
-import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 public final class ResolutionUtil
 {
