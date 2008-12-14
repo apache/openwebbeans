@@ -132,11 +132,7 @@ public final class DefinitionUtil
 	 */			
 	public static <T> void defineProducerMethodApiTypes(AbstractComponent<T> component, Class<T> clazz)
 	{		
-		if(clazz.isInterface())
-		{
-			ClassUtil.setInterfaceTypeHierarchy(component.getTypes(), clazz);
-		}
-		else if(clazz.isPrimitive() || clazz.isArray())
+		if(clazz.isPrimitive() || clazz.isArray())
 		{
 			component.getTypes().add(clazz);
 		}
