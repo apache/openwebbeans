@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:s="http://jboss.com/products/seam/taglib">
+
+  <ui:composition template="template.xhtml">
+    <ui:define name="content">
+		<h:messages globalOnly="false" showSummary="true"></h:messages>
+		
+		<h:form id="form">
+			
+			<div align="center">
+				<h3>OpenWebBeans Examples</h3>
+				<span style="color:red;">User name : admin, Password : admin</span>
+			</div>
+			
+			<div align="center">
+			
+				<h:panelGrid columns="2">
+					
+					<h:outputLabel for="userName">
+						<h:outputText value="User Name : "></h:outputText>
+					</h:outputLabel>
+					<h:inputText id="userName" value="#{loginBean.userName}"></h:inputText>
+
+					<h:outputLabel for="password">
+						<h:outputText value="Password : "></h:outputText>
+					</h:outputLabel>
+					<h:inputSecret id="password" value="#{loginBean.password}"></h:inputSecret>
+					
+					<h:commandButton action="#{loginBean.login}" value="Login"></h:commandButton>
+					<h:commandButton onclick="document.getElementById('form').reset(); return false;" value="Reset"></h:commandButton>
+					
+				</h:panelGrid>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebBeans 	xmlns="urn:java:javax.webbeans"
+ 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="urn:java:javax.webbeans http://java.sun.com/jee/web-beans-1.0.xsd">
+	
+	<Deploy>
+		<Standard/>
+		<Production/>
+	</Deploy>
+	
+</WebBeans>
