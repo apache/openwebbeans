@@ -122,6 +122,31 @@ public final class DefinitionUtil
 		ClassUtil.setTypeHierarchy(component.getTypes(), clazz);	
 	}
 	
+	
+	/**
+	 * Configures the producer method web bean api types.
+	 * 
+	 * @param <T> generic class type
+	 * @param component configuring web beans component
+	 * @param clazz bean implementation class
+	 */			
+	public static <T> void defineProducerMethodApiTypes(AbstractComponent<T> component, Class<T> clazz)
+	{		
+		if(clazz.isInterface())
+		{
+			ClassUtil.setInterfaceTypeHierarchy(component.getTypes(), clazz);
+		}
+		else if(clazz.isPrimitive() || clazz.isArray())
+		{
+			component.getTypes().add(clazz);
+		}
+		else
+		{
+			ClassUtil.setTypeHierarchy(component.getTypes(), clazz);
+		}
+	}
+	
+	
 	/**
 	 * Configure web beans component binding type.
 	 * 
@@ -342,8 +367,7 @@ public final class DefinitionUtil
 
 		Annotation[] methodAnns = method.getAnnotations();
 
-		
-		DefinitionUtil.defineApiTypes(component, returnType);
+		DefinitionUtil.defineProducerMethodApiTypes(component, returnType);
 		DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() +  " must declare default @ScopeType annotation");
 		DefinitionUtil.defineBindingTypes(component, methodAnns);
 		DefinitionUtil.defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
