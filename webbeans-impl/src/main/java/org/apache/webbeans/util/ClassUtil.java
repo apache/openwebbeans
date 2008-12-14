@@ -572,7 +572,7 @@ public final class ClassUtil
 		Asserts.nullCheckForClass(clazz);
 		try
 		{
-			return clazz.getConstructor(new Class<?>[] {});
+			return clazz.getDeclaredConstructor(new Class<?>[] {});
 
 		} catch (Exception e)
 		{
@@ -636,7 +636,7 @@ public final class ClassUtil
 	public static <T> Constructor<T>[] getConstructors(Class<T> clazz)
 	{
 		Asserts.nullCheckForClass(clazz);
-		return clazz.getConstructors();
+		return clazz.getDeclaredConstructors();
 	}
 
 	public static <T> boolean isDefaultConstructorExist(Class<T> clazz)
@@ -644,7 +644,7 @@ public final class ClassUtil
 		Asserts.nullCheckForClass(clazz);
 		try
 		{
-			clazz.getConstructor(new Class<?>[] {});
+			clazz.getDeclaredConstructor(new Class<?>[] {});
 
 		} catch (SecurityException e)
 		{
