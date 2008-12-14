@@ -31,8 +31,9 @@
 	<description>Implementation of the Web Beans API</description>
 
 	<dependencies>
+		
 		<dependency>
-			<groupId>org.apache</groupId>
+			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>webbeans-api</artifactId>
 		</dependency>
 
