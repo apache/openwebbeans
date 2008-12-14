@@ -27,7 +27,7 @@
 	<artifactId>webbeans-impl</artifactId>
 	<name>OpenWebBeans :: WebBeans-Impl</name>
 	<packaging>jar</packaging>
-	<version>1.0.0-SNAPSHOT}</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<description>Implementation of the Web Beans API</description>
 	<dependencies>
 		<dependency>
