@@ -44,7 +44,6 @@ public class XMLAnnotTypeTest extends TestContext
 	{
 		InputStream stream = XMLFieldTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/bindingTypeAnnot.xml");			
 		Assert.assertNotNull(stream);
-		
 		configureFromXML(stream, "bindingTypeAnnot.xml");
 		
 		Set<Class<? extends Annotation>> aanns = XMLAnnotationTypeManager.getInstance().getBindingTypes();
