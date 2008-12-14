@@ -18,11 +18,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.apache</groupId>
-		<artifactId>apache</artifactId>
-		<version>4</version>
-	</parent>
 	<groupId>org.apache.openwebbeans</groupId>
 	<artifactId>openwebbeans</artifactId>
 	<name>OpenWebBeans</name>
@@ -64,6 +59,7 @@
 			<layout>legacy</layout>
 		</repository>
 	</repositories>
+	 <dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -71,7 +67,7 @@
 			<version>1.2.14</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache</groupId>
+			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>webbeans-api</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
@@ -141,5 +137,25 @@
 			<artifactId>geronimo-jsp_2.1_spec</artifactId>
 			<version>1.0.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>webbeans-api</artifactId>
+			<version>${openwebbeans.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>webbeans-impl</artifactId>
+			<version>${openwebbeans.version}</version>
+		</dependency>
+
+
 	</dependencies>
+	 </dependencyManagement>
+
+   <properties>
+      <openwebbeans.version>1.0.0-SNAPSHOT</openwebbeans.version>
+   </properties>
+
 </project>
