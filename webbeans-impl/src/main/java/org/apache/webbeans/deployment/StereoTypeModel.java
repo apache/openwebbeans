@@ -26,10 +26,11 @@ import javax.webbeans.DeploymentType;
 import javax.webbeans.ScopeType;
 import javax.webbeans.Stereotype;
 
+import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
-public class StereoTypeModel
+public class StereoTypeModel implements IStereoTypeModel 
 {
 	private String name;
 	
@@ -37,9 +38,13 @@ public class StereoTypeModel
 	
 	private Annotation defaultScopeType;
 	
+	private String defaultName = null;
+	
 	private Set<Class<? extends Annotation>> supportedScopes = null;
 	
 	private Set<Class<?>>  restrictedTypes = null;
+	
+	private Annotation interceptorBindingType;
 	
 	
 	public StereoTypeModel(Class<?> clazz)
@@ -102,6 +107,11 @@ public class StereoTypeModel
 		return defaultDeploymentType;
 	}
 
+	public String getDefaultName()
+	{
+		return this.defaultName;
+	}
+	
 	/**
 	 * @return the defaultScopeType
 	 */
@@ -110,6 +120,10 @@ public class StereoTypeModel
 		return defaultScopeType;
 	}
 
+	public Annotation getInterceptorBindingType()
+	{
+		return this.interceptorBindingType;
+	}
 
 	/**
 	 * @return the supportedScopes

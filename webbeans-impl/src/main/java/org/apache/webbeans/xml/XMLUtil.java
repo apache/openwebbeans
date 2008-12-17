@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.webbeans.DuplicateBindingTypeException;
-import javax.webbeans.InterceptorBindingType;
 import javax.webbeans.NonexistentTypeException;
 
 import org.apache.log4j.LogManager;
@@ -210,23 +209,39 @@ public class XMLUtil
 		
 	}
 	
+	/**
+	 * Returns true if element has a bindingtype child element in webbeans namespace
+	 * false otherwise.
+	 * 
+	 * @param element parent element
+	 * 
+	 * @return true if element has a bindingtype child element in webbeans namespace
+	 */
 	public static boolean isElementBindingTypeDecleration(Element element)
 	{
 		nullCheckForElement(element);
 		
-		if(isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE))
+		if(isElementChildExistWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE))
 		{
 			return true;
 		}
 		
 		return false;	
 	}
-	
+
+	/**
+	 * Returns true if element has a interceptor bindingtype child element in webbeans namespace
+	 * false otherwise.
+	 * 
+	 * @param element parent element
+	 * 
+	 * @return true if element has a interceptor bindingtype child element in webbeans namespace
+	 */	
 	public static boolean isElementInterceptorBindingTypeDecleration(Element element)
 	{
 		nullCheckForElement(element);
 		
-		if(isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE))
+		if(isElementChildExistWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE))
 		{
 			return true;
 		}
@@ -234,11 +249,19 @@ public class XMLUtil
 		return false;	
 	}
 	
+	/**
+	 * Returns true if element has a stereotype child element in webbeans namespace
+	 * false otherwise.
+	 * 
+	 * @param element parent element
+	 * 
+	 * @return true if element has a stereotype child element in webbeans namespace
+	 */		
 	public static boolean isElementStereoTypeDecleration(Element element)
 	{
 		nullCheckForElement(element);
 		
-		if(isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
+		if(isElementChildExistWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
 		{
 			return true;
 		}
@@ -324,7 +347,7 @@ public class XMLUtil
 				{
 					if(clazz.isAnnotation())
 					{
-						if(clazz.getAnnotation(InterceptorBindingType.class) != null)
+						if(AnnotationUtil.isInterceptorBindingAnnotation((Class<? extends Annotation>)clazz))
 						{
 							return false;
 						}
@@ -375,7 +398,7 @@ public class XMLUtil
 				{
 					if(clazz.isAnnotation())
 					{
-						if(clazz.getAnnotation(InterceptorBindingType.class) != null)
+						if(AnnotationUtil.isInterceptorBindingAnnotation((Class<? extends Annotation>)clazz))
 						{
 							return true;
 						}
@@ -434,6 +457,32 @@ public class XMLUtil
 		
 		return parent.element(childName) != null ? true : false;
 	}
+	
+	/**
+	 * Return child element within webbeans namespace with given child name.
+	 * 
+	 * @param parent parent element
+	 * @param childName child element name
+	 * 
+	 * @return if child element exist within webbeans namespace with given child name
+	 */
+	public static boolean isElementChildExistWithWebBeansNameSpace(Element parent, String childName)
+	{
+		Asserts.assertNotNull(parent, "parent parameter can not be null");
+		Asserts.assertNotNull(childName, "childName parameter can not be null");
+		
+		Element child = parent.element(childName);
+		if(child == null)
+		{
+			return false;
+		}
+		else
+		{
+			return isElementInWebBeansNameSpace(child);
+		}
+		
+	}
+	
 	
 	
 	
@@ -745,4 +794,5 @@ public class XMLUtil
 		
 		return model;
 	}
+	
 }

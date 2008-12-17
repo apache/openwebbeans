@@ -35,8 +35,10 @@ import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 /**
  * Defines the webbeans specific interceptors.
@@ -166,25 +168,45 @@ public class WebBeansInterceptor extends Interceptor
 		while(it.hasNext())
 		{
 			Class<? extends Annotation> clazzAnnot = it.next();
-			if(AnnotationUtil.isMetaAnnotationExist(clazzAnnot.getAnnotations(), InterceptorBindingType.class))
+			Set<Class<? extends Annotation>> declared = null; 
+			Annotation[] anns = null;
+			
+			if(XMLAnnotationTypeManager.getInstance().isInterceptorBindingTypeExist(clazzAnnot))
 			{
- 				Annotation[] anns =	AnnotationUtil.getMetaAnnotations(clazzAnnot.getAnnotations(), InterceptorBindingType.class);
+				declared = XMLAnnotationTypeManager.getInstance().getInterceptorBindingTypeInherites(clazzAnnot);
+				anns = new Annotation[declared.size()];
+				
+				int i  = 0;
+				for(Class<? extends Annotation> clz : declared)
+				{
+					anns[i] = JavassistProxyFactory.createNewAnnotationProxy(clz);
+					i++;
+				}
+				
+			}
+			
+			else if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazzAnnot.getAnnotations()))
+			{
+ 				anns =	AnnotationUtil.getInterceptorBindingMetaAnnotations(clazzAnnot.getAnnotations());
+			}
  				
- 				/*
- 				 * For example:
- 				 * 
- 				 * @InterceptorBindingType
- 				 * @Transactional
- 				 * @Action
- 				 * public @interface ActionTransactional
- 				 * 
- 				 * @ActionTransactional @Production
- 				 * {
- 				 * 
- 				 * }
- 				 * 
- 				 */
- 				
+			/*
+			 * For example:
+			 * 
+			 * @InterceptorBindingType
+			 * @Transactional
+			 * @Action
+			 * public @interface ActionTransactional
+			 * 
+			 * @ActionTransactional @Production
+			 * {
+			 * 
+			 * }
+			 * 
+			 */
+			
+			if(anns != null && anns.length > 0)
+			{
  				//For example : @Transactional @Action Interceptor
  				Set<Interceptor> metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns);
  				set.addAll(metas);
@@ -197,8 +219,9 @@ public class WebBeansInterceptor extends Interceptor
  					metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(simple);
  					set.addAll(metas);
  				}
- 				
+				
 			}
+				 				
 		}
 		
 		return set;

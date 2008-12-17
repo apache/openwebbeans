@@ -31,7 +31,6 @@ import javax.interceptor.InvocationContext;
 import javax.webbeans.Destructor;
 import javax.webbeans.Disposes;
 import javax.webbeans.Initializer;
-import javax.webbeans.InterceptorBindingType;
 import javax.webbeans.Observes;
 import javax.webbeans.Produces;
 import javax.webbeans.manager.InterceptionType;
@@ -187,14 +186,14 @@ public final class InterceptorUtil
 	public static void checkInterceptorConditions(Class<?> clazz)
 	{
 		Asserts.nullCheckForClass(clazz);
-		if(!AnnotationUtil.isMetaAnnotationExist(clazz.getDeclaredAnnotations(), InterceptorBindingType.class))
+		if(!AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
 		{
 			throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName() + " must have at least one @InterceptorBindingType annotation");
 		}
 		
 		if(isLifecycleMethodInterceptor(clazz) && !isBusinessMethodInterceptor(clazz))
 		{
-			Annotation[] anns = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), InterceptorBindingType.class);
+			Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
 			
 			for(Annotation annotation : anns)
 			{
@@ -215,7 +214,7 @@ public final class InterceptorUtil
 		Annotation[] anns = clazz.getDeclaredAnnotations();
 		
 		boolean hasClassInterceptors = false;
-		if(AnnotationUtil.getMetaAnnotations(anns, InterceptorBindingType.class).length > 0)
+		if(AnnotationUtil.getInterceptorBindingMetaAnnotations(anns).length > 0)
 		{
 			hasClassInterceptors = true;
 		}else
@@ -223,7 +222,7 @@ public final class InterceptorUtil
 			Annotation[] stereoTypes = WebBeansUtil.getComponentStereoTypes(anns);
 			for(Annotation stero : stereoTypes)
 			{
-				if(AnnotationUtil.isMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations(), InterceptorBindingType.class))
+				if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))
 				{
 					hasClassInterceptors = true;
 					break;
@@ -244,7 +243,7 @@ public final class InterceptorUtil
 				}
 				else
 				{
-					if(AnnotationUtil.isMetaAnnotationExist(method.getDeclaredAnnotations(), InterceptorBindingType.class))
+					if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(method.getDeclaredAnnotations()))
 					{
 						throw new WebBeansConfigurationException("Method : "+ method.getName() + "in simple web bean class : " + clazz.getName() + 
 								" can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBindintType");

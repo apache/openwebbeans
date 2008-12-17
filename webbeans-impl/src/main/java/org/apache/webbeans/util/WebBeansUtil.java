@@ -46,7 +46,6 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionListener;
 import javax.webbeans.ApplicationScoped;
-import javax.webbeans.BindingType;
 import javax.webbeans.Conversation;
 import javax.webbeans.ConversationScoped;
 import javax.webbeans.Decorator;
@@ -56,7 +55,6 @@ import javax.webbeans.Disposes;
 import javax.webbeans.DuplicateBindingTypeException;
 import javax.webbeans.InconsistentSpecializationException;
 import javax.webbeans.Initializer;
-import javax.webbeans.InterceptorBindingType;
 import javax.webbeans.Named;
 import javax.webbeans.New;
 import javax.webbeans.Observable;
@@ -65,7 +63,6 @@ import javax.webbeans.Produces;
 import javax.webbeans.RequestScoped;
 import javax.webbeans.ScopeType;
 import javax.webbeans.SessionScoped;
-import javax.webbeans.Stereotype;
 import javax.webbeans.UnproxyableDependencyException;
 import javax.webbeans.manager.Bean;
 import javax.webbeans.manager.Manager;
@@ -92,7 +89,7 @@ import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
-import org.apache.webbeans.deployment.StereoTypeModel;
+import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.ejb.orm.ORMUtil;
 import org.apache.webbeans.event.EventUtil;
@@ -860,7 +857,7 @@ public final class WebBeansUtil
 	{
 		Asserts.assertNotNull(anns, "Anns parameter can not be null");
 
-		if (AnnotationUtil.isMetaAnnotationExist(anns, Stereotype.class))
+		if (AnnotationUtil.isStereoTypeMetaAnnotationExist(anns))
 		{
 			return true;
 		}
@@ -873,7 +870,7 @@ public final class WebBeansUtil
 		Asserts.assertNotNull(anns, "Anns parameter can not be null");
 		if (isComponentHasStereoType(anns))
 		{
-			return AnnotationUtil.getMetaAnnotations(anns, Stereotype.class);
+			return AnnotationUtil.getStereotypeMetaAnnotations(anns);
 		}
 
 		return new Annotation[] {};
@@ -969,35 +966,43 @@ public final class WebBeansUtil
 		boolean scopeTypeFound = false;
 		for (Annotation annotation : annotations)
 		{
-			if (annotation.annotationType().isAnnotationPresent(DeploymentType.class))
+			Class<? extends Annotation> annotType = annotation.annotationType();
+			
+			if (annotType.isAnnotationPresent(DeploymentType.class))
 			{
 				if (deploymentTypeFound == true)
 				{
 					throw new WebBeansConfigurationException("@StereoType annotation can not contain more than one @DeploymentType annotation");
-				} else
+				} 
+				else
 				{
 					deploymentTypeFound = true;
 				}
-			} else if (annotation.annotationType().isAnnotationPresent(ScopeType.class))
+			} 
+			else if (annotType.isAnnotationPresent(ScopeType.class))
 			{
 				if (scopeTypeFound == true)
 				{
 					throw new WebBeansConfigurationException("@StereoType annotation can not contain more than one @ScopeType annotation");
-				} else
+				} 
+				else
 				{
 					scopeTypeFound = true;
 				}
-			} else if (annotation.annotationType().equals(Named.class))
+			} 
+			else if (annotType.equals(Named.class))
 			{
 				Named name = (Named) annotation;
 				if (!name.value().equals(""))
 				{
 					throw new WebBeansConfigurationException("@StereoType annotation can not define @Named annotation with value");
 				}
-			} else if (annotation.annotationType().isAnnotationPresent(BindingType.class))
+			} 
+			else if (AnnotationUtil.isBindingAnnotation(annotType))
 			{
 				throw new WebBeansConfigurationException("@StereoType annotation can not define @BindingType annotation");
-			}else if(annotation.annotationType().isAnnotationPresent(InterceptorBindingType.class))
+			}
+			else if(AnnotationUtil.isInterceptorBindingAnnotation(annotType))
 			{
 				Target target = clazz.getAnnotation(Target.class);
 				ElementType[] type = target.value();
@@ -1060,7 +1065,7 @@ public final class WebBeansUtil
 		Annotation[] stereoTypes = getComponentStereoTypes(anns);
 		for (Annotation stereoType : stereoTypes)
 		{
-			StereoTypeModel model = StereoTypeManager.getInstance().getStereoTypeModel(stereoType.annotationType().getName());
+			IStereoTypeModel model = StereoTypeManager.getInstance().getStereoTypeModel(stereoType.annotationType().getName());
 			Set<Class<?>> rtypes = model.getRestrictedTypes();
 
 			if (rtypes != null)
@@ -1163,10 +1168,12 @@ public final class WebBeansUtil
 					throw new DuplicateBindingTypeException("Manager.resolveInterceptors() method parameter interceptor binding types array argument can not define duplicate binding annotation with name : @" +  old.getClass().getName());
 				}
 				
-				if(!AnnotationUtil.isAnnotationExist(old.annotationType().getDeclaredAnnotations(), InterceptorBindingType.class))
+				if(!AnnotationUtil.isInterceptorBindingAnnotation(interceptorBindingType.annotationType()))
 				{
 					throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor binding types array can not contain other annotation that is not @InterceptorBindingType"); 
 				}
+				
+				old = interceptorBindingType;
 			}
 		}	
 	}
@@ -1187,15 +1194,17 @@ public final class WebBeansUtil
 			}
 			else
 			{
-				if(old.equals(bindingType))
+				if(old.annotationType().equals(bindingType.annotationType()))
 				{
 					throw new DuplicateBindingTypeException("Manager.resolveDecorators() method parameter binding types array argument can not define duplicate binding annotation with name : @" +  old.getClass().getName());
 				}
 				
-				if(!AnnotationUtil.isAnnotationExist(old.annotationType().getDeclaredAnnotations(), BindingType.class))
+				if(!AnnotationUtil.isBindingAnnotation(bindingType.annotationType()))
 				{
 					throw new IllegalArgumentException("Manager.resolveDecorators() method parameter binding types array can not contain other annotation that is not @BindingType"); 
 				}
+				
+				old = bindingType;
 			}
 		}
 		

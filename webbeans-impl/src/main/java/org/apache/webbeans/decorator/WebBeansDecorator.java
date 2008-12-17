@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.webbeans.BindingType;
 import javax.webbeans.Decorates;
 import javax.webbeans.manager.Decorator;
 
@@ -82,7 +81,7 @@ public class WebBeansDecorator extends Decorator
 		
 		for(Annotation ann : anns)
 		{
-			if(ann.annotationType().isAnnotationPresent(BindingType.class))
+			if(AnnotationUtil.isBindingAnnotation(ann.annotationType()))
 			{
 				this.delegateBindingTypes.add(ann);
 			}

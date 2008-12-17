@@ -19,13 +19,14 @@ package org.apache.webbeans.deployment;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.util.Asserts;
 
 public class StereoTypeManager
 {
 	private static StereoTypeManager instance = new StereoTypeManager();
 
-	private Map<String, StereoTypeModel> stereoTypeMap = new ConcurrentHashMap<String, StereoTypeModel>();
+	private Map<String, IStereoTypeModel> stereoTypeMap = new ConcurrentHashMap<String, IStereoTypeModel>();
 	
 	private StereoTypeManager()
 	{
@@ -37,14 +38,14 @@ public class StereoTypeManager
 		return instance;
 	}
 	
-	public void addStereoTypeModel(StereoTypeModel model)
+	public void addStereoTypeModel(IStereoTypeModel model)
 	{
 		Asserts.assertNotNull(model, "model parameter can not be null");
 		
 		getInstance().stereoTypeMap.put(model.getName(), model);
 	}
 	
-	public StereoTypeModel getStereoTypeModel(String modelName)
+	public IStereoTypeModel getStereoTypeModel(String modelName)
 	{
 		Asserts.assertNotNull(modelName, "modelName parameter can not be null");
 		

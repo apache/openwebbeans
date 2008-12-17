@@ -30,7 +30,9 @@ import java.util.StringTokenizer;
 
 import javax.webbeans.BindingType;
 import javax.webbeans.DuplicateBindingTypeException;
+import javax.webbeans.InterceptorBindingType;
 import javax.webbeans.NonBinding;
+import javax.webbeans.Stereotype;
 
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
@@ -290,7 +292,7 @@ public final class AnnotationUtil
 					continue;
 				}
 				
-				if(btype.isAnnotationPresent(BindingType.class))
+				if(AnnotationUtil.isBindingAnnotation(btype))
 				{
 					list.add(param);
 				}
@@ -460,7 +462,7 @@ public final class AnnotationUtil
 		
 		for(Annotation annot : annotations)
 		{
-			if(annot.annotationType().isAnnotationPresent(BindingType.class))
+			if(AnnotationUtil.isBindingAnnotation(annot.annotationType()))
 			{
 				set.add(annot);
 			}
@@ -641,7 +643,7 @@ public final class AnnotationUtil
 		
 		for(Annotation ann : bindignTypeAnnots)
 		{
-			if(!ann.annotationType().isAnnotationPresent(BindingType.class))
+			if(!AnnotationUtil.isBindingAnnotation(ann.annotationType()))
 			{
 				throw new IllegalArgumentException("Binding annotations must be annotated with @BindingType");
 			}
@@ -664,23 +666,169 @@ public final class AnnotationUtil
 		}
 	}
 	
+	/**
+	 * Returns true if the annotation is defined in xml or annotated with {@link BindingType}
+	 * false otherwise.
+	 * 
+	 * @param clazz type of the annotation
+	 * 
+	 * @return true if the annotation is defined in xml or annotated with {@link BindingType}
+	 * 		   false otherwise
+	 */
 	public static boolean isBindingAnnotation(Class<? extends Annotation> clazz)
 	{
 		Asserts.assertNotNull(clazz, "clazz parameter can not be null");
-		if(clazz.isAnnotationPresent(BindingType.class))
+		XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
+		if(manager.isBindingTypeExist(clazz))
 		{
 			return true;
 		}
-		else
+		else if(clazz.isAnnotationPresent(BindingType.class))
 		{
-			XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
-			if(manager.isBindingTypeExist(clazz))
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Returns true if the annotation is defined in xml or annotated with {@link InterceptorBindingType}
+	 * false otherwise.
+	 * 
+	 * @param clazz type of the annotation
+	 * 
+	 * @return true if the annotation is defined in xml or annotated with {@link InterceptorBindingType}
+	 * 		   false otherwise
+	 */
+	public static boolean isInterceptorBindingAnnotation(Class<? extends Annotation> clazz)
+	{
+		Asserts.assertNotNull(clazz, "clazz parameter can not be null");
+		XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
+		if(manager.isInterceptorBindingTypeExist(clazz))
+		{
+			return true;
+		}
+		else if(clazz.isAnnotationPresent(InterceptorBindingType.class))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * If candidate class has an interceptor binding annotation type then
+	 * return true, false otherwise.
+	 * 
+	 * @param clazz interceptor candidate class
+	 * 
+	 * @return true if candidate class has an interceptor binding annotation type
+	 * 		   false otherwise
+	 */
+	public static boolean isInterceptorBindingMetaAnnotationExist(Annotation[] anns)
+	{
+		Asserts.assertNotNull(anns, "anns parameter can not be null");
+
+		for(Annotation ann : anns)
+		{
+			if(isInterceptorBindingAnnotation(ann.annotationType()))
 			{
 				return true;
+			}
+			else
+			{
+				continue;
 			}
 		}
 		
 		return false;
 	}
+	
+	public static Annotation[] getInterceptorBindingMetaAnnotations(Annotation[] anns)
+	{
+		Asserts.assertNotNull(anns, "anns parameter can not be null");
+		List<Annotation> interAnns = new ArrayList<Annotation>();
+		
+		for(Annotation ann : anns)
+		{
+			if(isInterceptorBindingAnnotation(ann.annotationType()))
+			{
+				interAnns.add(ann);
+			}
+		}
+		
+		Annotation[] ret = new Annotation[interAnns.size()];
+		ret = interAnns.toArray(ret);
+		
+		return ret;
+	}
+	
+	public static Annotation[] getStereotypeMetaAnnotations(Annotation[] anns)
+	{
+		Asserts.assertNotNull(anns, "anns parameter can not be null");
+		List<Annotation> interAnns = new ArrayList<Annotation>();
+		
+		for(Annotation ann : anns)
+		{
+			if(isStereoTypeAnnotation(ann.annotationType()))
+			{
+				interAnns.add(ann);
+			}
+		}
+		
+		Annotation[] ret = new Annotation[interAnns.size()];
+		ret = interAnns.toArray(ret);
+		
+		return ret;
+	}
+	
+	
+	public static boolean isStereoTypeMetaAnnotationExist(Annotation[] anns)
+	{
+		Asserts.assertNotNull(anns, "anns parameter can not be null");
+
+		for(Annotation ann : anns)
+		{
+			if(isStereoTypeAnnotation(ann.annotationType()))
+			{
+				return true;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	
+	/**
+	 * Returns true if the annotation is defined in xml or annotated with {@link Stereotype}
+	 * false otherwise.
+	 * 
+	 * @param clazz type of the annotation
+	 * 
+	 * @return true if the annotation is defined in xml or annotated with {@link Stereotype}
+	 * 		   false otherwise
+	 */
+	public static boolean isStereoTypeAnnotation(Class<? extends Annotation> clazz)
+	{
+		Asserts.assertNotNull(clazz, "clazz parameter can not be null");
+		XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
+		if(manager.isStereoTypeExist(clazz))
+		{
+			return true;
+		}
+		else if(clazz.isAnnotationPresent(Stereotype.class))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
 	
 }

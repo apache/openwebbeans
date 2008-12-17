@@ -39,7 +39,6 @@ import javax.webbeans.AfterTransactionCompletion;
 import javax.webbeans.AfterTransactionFailure;
 import javax.webbeans.AfterTransactionSuccess;
 import javax.webbeans.BeforeTransactionCompletion;
-import javax.webbeans.BindingType;
 import javax.webbeans.DefinitionException;
 import javax.webbeans.DeploymentException;
 import javax.webbeans.DeploymentType;
@@ -47,7 +46,6 @@ import javax.webbeans.Destructor;
 import javax.webbeans.Disposes;
 import javax.webbeans.IfExists;
 import javax.webbeans.Initializer;
-import javax.webbeans.InterceptorBindingType;
 import javax.webbeans.NonexistentConstructorException;
 import javax.webbeans.NonexistentFieldException;
 import javax.webbeans.NonexistentMethodException;
@@ -56,7 +54,6 @@ import javax.webbeans.Observes;
 import javax.webbeans.Produces;
 import javax.webbeans.Production;
 import javax.webbeans.ScopeType;
-import javax.webbeans.Stereotype;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.component.AbstractComponent;
@@ -276,14 +273,9 @@ public final class WebBeansXMLConfigurator
 			clazzAnnot =  (Class<? extends Annotation>)clazz;
 		}
 		
-		if(clazz.isAnnotationPresent(BindingType.class))
-		{
-			throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Binding type with given class : " + bindingTypeElement.getName() + " is already defined as @BindingType");
-		}
-		
 		if(xmlAnnotTypeManager.isBindingTypeExist(clazzAnnot))
 		{
-			throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Binding type with given class : " + bindingTypeElement.getName() + " is already defined in the XML");
+			throw new DeploymentException(createConfigurationFailedMessage() + "Binding type with given class : " + bindingTypeElement.getName() + " is already defined in the XML");
 		}
 		
 		xmlAnnotTypeManager.addBindingType(clazzAnnot);
@@ -311,19 +303,28 @@ public final class WebBeansXMLConfigurator
 		{
 			clazzAnnot =  (Class<? extends Annotation>)clazz;
 		}
-		
-		if(clazz.isAnnotationPresent(InterceptorBindingType.class))
-		{
-			throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "InterceptorBinding type with given class : " + interceptorBindingTypeElement.getName() + " is already defined as @InterceptorBindingType");
-		}
-		
-		
+				
 		if(xmlAnnotTypeManager.isInterceptorBindingTypeExist(clazzAnnot))
 		{
-			throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "InterceptorBinding type with given class : " + interceptorBindingTypeElement.getName() + " is already defined in the XML");
+			throw new DeploymentException(createConfigurationFailedMessage() + "InterceptorBinding type with given class : " + interceptorBindingTypeElement.getName() + " is already defined in the XML");
 		}
 		
-		xmlAnnotTypeManager.addInterceotorBindingType(clazzAnnot);
+		List<Element> childs = interceptorBindingTypeElement.elements();
+		for(Element child : childs)
+		{
+			Class<?> clz = XMLUtil.getElementJavaType(child);
+			if(clz == null)
+			{
+				throw new NonexistentTypeException(createConfigurationFailedMessage() +"InterceptorBinding type with given class : " + XMLUtil.getElementJavaClassName(child) + " not found");
+			}
+			
+			if(!clz.isAnnotation() || !AnnotationUtil.isInterceptorBindingAnnotation((Class<? extends Annotation>)clz))
+			{
+				throw new WebBeansConfigurationException(createConfigurationFailedMessage() +"InterceptorBinding type with given class : " + XMLUtil.getElementJavaClassName(child) + " is not interceptor binding annotation type");
+			}
+			
+			xmlAnnotTypeManager.addInterceotorBindingTypeInheritAnnotation(clazzAnnot, (Class<? extends Annotation>)clz);
+		}
 		
 	}
 	
@@ -349,19 +350,13 @@ public final class WebBeansXMLConfigurator
 		{
 			clazzAnnot =  (Class<? extends Annotation>)clazz;
 		}
-		
-		if(clazz.isAnnotationPresent(Stereotype.class))
-		{
-			throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Stereotype with given class : " + stereoTypeElement.getName() + " is already defined as @StereoType");
-		}
-		
-		
+				
 		if(xmlAnnotTypeManager.isStereoTypeExist(clazzAnnot))
 		{
-			throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Stereotype with given class : " + stereoTypeElement.getName() + " is already defined in the XML");
+			throw new DeploymentException(createConfigurationFailedMessage() + "Stereotype with given class : " + stereoTypeElement.getName() + " is already defined in the XML");
 		}
 		
-		xmlAnnotTypeManager.addStereoType(clazzAnnot);
+		xmlAnnotTypeManager.addStereoType(clazzAnnot,stereoTypeElement,clazzAnnot.getName(),createConfigurationFailedMessage());
 		
 	}
 	
@@ -384,9 +379,10 @@ public final class WebBeansXMLConfigurator
 			if (clazz == null)
 			{
 				throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + XMLUtil.getName(child) + " not found");
-			} else
+			} 
+			else
 			{
-				if (!AnnotationUtil.isMetaAnnotationExist(clazz.getAnnotations(), InterceptorBindingType.class))
+				if (!AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
 				{
 					throw new WebBeansConfigurationException(createConfigurationFailedMessage() +"Interceptor class : " + XMLUtil.getName(child) + " must have at least one @InterceptorBindingType");
 				}
@@ -503,16 +499,12 @@ public final class WebBeansXMLConfigurator
 		} 
 		else
 		{
-			if (ClassUtil.isConcrete(clazz) && !ClassUtil.isParametrized(clazz))
-			{	
-				/*Simple WebBeans*/
-				if (SimpleWebBeansConfigurator.isSimpleWebBean(clazz))
-				{
-					// Configure Simple WebBean
-					configureSimpleWebBean(clazz, webBeanElement);
-					ok = true;
-				}
-
+			/*Simple WebBeans*/
+			if (SimpleWebBeansConfigurator.isSimpleWebBean(clazz))
+			{
+				// Configure Simple WebBean
+				configureSimpleWebBean(clazz, webBeanElement);
+				ok = true;
 			}
 		}
 
@@ -935,7 +927,7 @@ public final class WebBeansXMLConfigurator
 			else
 			{
 				if (childClazz.isAnnotation())
-				{
+				{	
 					if (childClazz.equals(Disposes.class))
 					{
 						if (isDefineType)
@@ -998,7 +990,7 @@ public final class WebBeansXMLConfigurator
 							type = 1;
 						}
 					}
-					else if(childClazz.isAnnotationPresent(InterceptorBindingType.class))
+					else if(AnnotationUtil.isInterceptorBindingAnnotation((Class<? extends Annotation>)childClazz))
 					{
 						//InterceptorBindingType with method
 						type = 5;

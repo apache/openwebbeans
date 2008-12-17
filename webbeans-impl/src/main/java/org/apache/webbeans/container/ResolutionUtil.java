@@ -63,7 +63,7 @@ public final class ResolutionUtil
 			throw new AmbiguousDependencyException("There is more than one api type with : " + type.getName());
 		}
 		
-		Bean<T> bean = resolvedSet.iterator().next();
+		//Bean<T> bean = resolvedSet.iterator().next();
 		//WebBeansUtil.checkUnproxiableApiType((AbstractComponent<?>), bean.getScopeType().getAnnotation(ScopeType.class));
 		
 	}

@@ -22,16 +22,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.webbeans.BindingType;
 import javax.webbeans.Decorator;
 import javax.webbeans.DeploymentType;
 import javax.webbeans.Interceptor;
-import javax.webbeans.InterceptorBindingType;
 import javax.webbeans.Named;
 import javax.webbeans.NonexistentTypeException;
 import javax.webbeans.ScopeType;
 import javax.webbeans.Specializes;
-import javax.webbeans.Stereotype;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.component.xml.XMLComponentImpl;
@@ -40,6 +37,7 @@ import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.dom4j.Element;
 
@@ -61,9 +59,9 @@ public final class XMLDefinitionUtil
 				Class<? extends Annotation> clazz = it.next();
 				if(clazz.isAnnotationPresent(DeploymentType.class) ||
 						clazz.isAnnotationPresent(ScopeType.class) ||
-						clazz.isAnnotationPresent(BindingType.class) ||
-						clazz.isAnnotationPresent(InterceptorBindingType.class) ||
-						clazz.isAnnotationPresent(Stereotype.class) ||
+						AnnotationUtil.isBindingAnnotation(clazz) ||
+						AnnotationUtil.isInterceptorBindingAnnotation(clazz) ||
+						AnnotationUtil.isStereoTypeAnnotation(clazz) ||
 						clazz.equals(Named.class) ||
 						clazz.equals(Specializes.class) ||
 						clazz.equals(Interceptor.class) ||
@@ -113,7 +111,7 @@ public final class XMLDefinitionUtil
 		while(it.hasNext())
 		{
 			Class<? extends Annotation> temp = it.next();
-			if(temp.isAnnotationPresent(BindingType.class))
+			if(AnnotationUtil.isBindingAnnotation(temp))
 			{
 				if(!found)
 				{
@@ -134,7 +132,7 @@ public final class XMLDefinitionUtil
 		while(it.hasNext())
 		{
 			Class<? extends Annotation> temp = it.next();
-			if(temp.isAnnotationPresent(InterceptorBindingType.class))
+			if(AnnotationUtil.isInterceptorBindingAnnotation(temp))
 			{
 				if(!found)
 				{
@@ -155,7 +153,7 @@ public final class XMLDefinitionUtil
 		while(it.hasNext())
 		{
 			Class<? extends Annotation> temp = it.next();
-			if(temp.isAnnotationPresent(Stereotype.class))
+			if(AnnotationUtil.isStereoTypeAnnotation(temp))
 			{
 				if(!found)
 				{

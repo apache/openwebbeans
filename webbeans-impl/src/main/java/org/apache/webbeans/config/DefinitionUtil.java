@@ -25,7 +25,6 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.webbeans.BindingType;
 import javax.webbeans.DeploymentType;
 import javax.webbeans.Destructor;
 import javax.webbeans.Disposes;
@@ -37,7 +36,6 @@ import javax.webbeans.Observes;
 import javax.webbeans.Produces;
 import javax.webbeans.ScopeType;
 import javax.webbeans.Specializes;
-import javax.webbeans.Stereotype;
 import javax.webbeans.UnsatisfiedDependencyException;
 import javax.webbeans.manager.Bean;
 
@@ -154,10 +152,11 @@ public final class DefinitionUtil
 		boolean find = false;
 		for(Annotation annotation : annotations)
 		{
-			Annotation var = annotation.annotationType().getAnnotation(BindingType.class);
-			if(var != null)
-			{
-				Method[] methods =annotation.annotationType().getDeclaredMethods();
+			Class<? extends Annotation> type = annotation.annotationType();
+			
+			if(AnnotationUtil.isBindingAnnotation(type))
+			{				
+				Method[] methods =type.getDeclaredMethods();
 				
 				for(Method method : methods)
 				{
@@ -176,10 +175,12 @@ public final class DefinitionUtil
 				{
 					find = true;					
 				}
+				
 				component.addBindingType(annotation);
 			}
 		}
 		
+		//No-binding annotation
 		if(!find)
 		{
 			component.addBindingType(new CurrentLiteral());
@@ -217,7 +218,7 @@ public final class DefinitionUtil
 		
 		if(!found)
 		{
-			Annotation[] stereos = AnnotationUtil.getMetaAnnotations(annotations, Stereotype.class);
+			Annotation[] stereos = AnnotationUtil.getStereotypeMetaAnnotations(annotations);
 			if(stereos.length == 0)
 			{
 				component.setImplScopeType(new DependentScopeLiteral());

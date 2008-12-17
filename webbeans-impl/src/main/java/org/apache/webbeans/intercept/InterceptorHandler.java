@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
-import javax.webbeans.InterceptorBindingType;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.exception.WebBeansException;
@@ -203,11 +202,15 @@ public class InterceptorHandler implements MethodHandler
 		boolean isMethodAnnotatedWithInterceptorClass = false;
 		boolean isMethodAnnotatedWithExcludeInterceptorClass = false;
 
-		if(AnnotationUtil.isMetaAnnotationExist(method.getDeclaredAnnotations(), InterceptorBindingType.class))
-			isMethodAnnotatedWithInterceptorClass = true;
+		if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(method.getDeclaredAnnotations()))
+		{
+			isMethodAnnotatedWithInterceptorClass = true;	
+		}
 		
 		if(AnnotationUtil.isMethodHasAnnotation(method, ExcludeClassInterceptors.class))
-			isMethodAnnotatedWithExcludeInterceptorClass = true;
+		{
+			isMethodAnnotatedWithExcludeInterceptorClass = true;	
+		}
 		
 		
 		Iterator<InterceptorData> it = stack.iterator();

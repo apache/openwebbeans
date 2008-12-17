@@ -17,6 +17,7 @@
 package org.apache.webbeans.config;
 
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +46,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.JNDIUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
+import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 import org.apache.webbeans.xml.XMLSpecializesManager;
 
 
@@ -311,20 +313,29 @@ public final class WebBeansContainerDeployer
 		  
 		Map<String, Set<String>>  stereotypeMap = WebBeansScanner.getScannerInstance().getANNOTATION_DB().getAnnotationIndex();
 		  if(stereotypeMap != null && stereotypeMap.size() > 0)
-		  {
-			  Set<String> stereoClassSet = stereotypeMap.keySet();
-			  Iterator<String> steIterator = stereoClassSet.iterator();
-			  while(steIterator.hasNext())
+		  {	
+			  if(stereotypeMap.containsKey(Stereotype.class.getName()))
 			  {
-				  String steroClassName = steIterator.next();
-				  Class<?> stereoClass = ClassUtil.getClassFromName(steroClassName);
-				  
-				  if(stereoClass.isAnnotationPresent(Stereotype.class))
+				  Set<String> stereoClassSet = stereotypeMap.keySet();
+				  Iterator<String> steIterator = stereoClassSet.iterator();
+				  while(steIterator.hasNext())
 				  {
-					  WebBeansUtil.checkStereoTypeClass(stereoClass);
-					  StereoTypeModel model = new StereoTypeModel(stereoClass);
-					  StereoTypeManager.getInstance().addStereoTypeModel(model);					  
-				  }				  
+					  String steroClassName = steIterator.next();
+					  Set<String> stereoSet = stereotypeMap.get(steroClassName);
+					  
+					  for(String clazz : stereoSet)
+					  {
+						  Class<? extends Annotation> stereoClass = (Class<? extends Annotation>)ClassUtil.getClassFromName(clazz);
+						  
+						  if(!XMLAnnotationTypeManager.getInstance().isStereoTypeExist(stereoClass))
+						  {
+							  WebBeansUtil.checkStereoTypeClass(stereoClass);
+							  StereoTypeModel model = new StereoTypeModel(stereoClass);
+							  StereoTypeManager.getInstance().addStereoTypeModel(model);					  							  
+						  }
+					  }					  
+				  }
+				  
 			  }
 		  }
 		  
