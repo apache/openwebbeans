@@ -72,6 +72,8 @@ public abstract class Component<T> extends Bean<T>
 	abstract public void addBindingType(Annotation bindingType);
 	
 	abstract public Set<Annotation> getImplBindingTypes();
+	
+	abstract public Set<Annotation> getStereoTypes();
 		
 	abstract public void setName(String name);
 	
