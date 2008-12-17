@@ -636,7 +636,7 @@ public final class ClassUtil
 	public static <T> Constructor<T>[] getConstructors(Class<T> clazz)
 	{
 		Asserts.nullCheckForClass(clazz);
-		return clazz.getDeclaredConstructors();
+		return (Constructor<T>[]) clazz.getDeclaredConstructors();
 	}
 
 	public static <T> boolean isDefaultConstructorExist(Class<T> clazz)

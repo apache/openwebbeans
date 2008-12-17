@@ -24,7 +24,6 @@
 		<artifactId>openwebbeans</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<groupId>org.apache.openwebbeans</groupId>
 	<artifactId>webbeans-impl</artifactId>
 	<name>OpenWebBeans :: WebBeans-Impl</name>
 	<packaging>jar</packaging>
