@@ -79,7 +79,11 @@ public abstract class AbstractComponent<T> extends Component<T>
 	/** Return type of the component */
 	protected Class<T> returnType;
 	
+	/**Dependent object map of the component*/
 	protected Map<Object, Bean<?>> dependentObjects = new WeakHashMap<Object, Bean<?>>();
+	
+	/**Stereotypes of the component*/
+	protected Set<Annotation> stereoTypes = new HashSet<Annotation>();
 	
 	/**
 	 * Holds the all of the interceptor related data, contains around-invoke,
@@ -269,6 +273,16 @@ public abstract class AbstractComponent<T> extends Component<T>
 	{
 		this.implBindingTypes.add(bindingType);
 	}
+	
+	/**
+	 * Add new stereotype.
+	 * 
+	 * @param stereoType new stereotype annotation
+	 */
+	public void addStereoType(Annotation stereoType)
+	{
+		this.stereoTypes.add(stereoType);
+	}
 
 	/**
 	 * Add new api type.
@@ -289,6 +303,16 @@ public abstract class AbstractComponent<T> extends Component<T>
 	public Set<Annotation> getImplBindingTypes()
 	{
 		return implBindingTypes;
+	}
+	
+	/**
+	 * Gets the stereotypes.
+	 * 
+	 * @return stereotypes of the component
+	 */
+	public Set<Annotation> getStereoTypes()
+	{
+		return this.stereoTypes;
 	}
 
 	/**
