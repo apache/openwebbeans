@@ -33,6 +33,7 @@ import javax.webbeans.manager.Context;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.xml.XMLComponentImpl;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.decorator.DecoratorUtil;
@@ -60,6 +61,7 @@ import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
+import org.dom4j.Element;
 
 public abstract class TestContext implements ITestContext
 {
@@ -82,28 +84,48 @@ public abstract class TestContext implements ITestContext
 	{
 		if (!init)
 		{
-			initializeDeploymentType(Production.class,1);
+			initDeploymentTypes();
+			initInterceptors();
+			initDecorators();
+			initStereoTypes();
 			
-			initializeStereoType(Interceptor.class);
-			initializeStereoType(Decorator.class);
-			initializeStereoType(StereoWithNonScope.class);
-			initializeStereoType(StereoWithRequestScope.class);
-			initializeStereoType(StereoWithSessionScope.class);
-			initializeStereoType(StereoWithSessionScope2.class);
-
-			initializeInterceptorType(WebBeansInterceptor.class);
-			initializeInterceptorType(WebBeanswithMetaInterceptor.class);
-			
-			initializeDecoratorType(DelegateAttributeIsnotInterface.class);
-			initializeDecoratorType(MoreThanOneDelegateAttribute.class);
-			initializeDecoratorType(PaymentDecorator.class);
-			initializeDecoratorType(DelegateAttributeMustImplementAllDecoratedTypes.class);
-			initializeDecoratorType(ServiceDecorator.class);
-			initializeDecoratorType(LargeTransactionDecorator.class);
-
 			init = true;
 		}
+	}
+	
+	protected void initDeploymentTypes()
+	{
+		initializeDeploymentType(Production.class,1);
 
+	}
+	
+	protected void initInterceptors()
+	{
+		initializeInterceptorType(WebBeansInterceptor.class);
+		initializeInterceptorType(WebBeanswithMetaInterceptor.class);
+		
+	}
+	
+	protected void initDecorators()
+	{
+		initializeDecoratorType(DelegateAttributeIsnotInterface.class);
+		initializeDecoratorType(MoreThanOneDelegateAttribute.class);
+		initializeDecoratorType(PaymentDecorator.class);
+		initializeDecoratorType(DelegateAttributeMustImplementAllDecoratedTypes.class);
+		initializeDecoratorType(ServiceDecorator.class);
+		initializeDecoratorType(LargeTransactionDecorator.class);
+		
+	}
+	
+	protected void initStereoTypes()
+	{
+		initializeStereoType(Interceptor.class);
+		initializeStereoType(Decorator.class);
+		initializeStereoType(StereoWithNonScope.class);
+		initializeStereoType(StereoWithRequestScope.class);
+		initializeStereoType(StereoWithSessionScope.class);
+		initializeStereoType(StereoWithSessionScope2.class);
+		
 	}
 	
 	protected void beforeTest(){}
@@ -166,6 +188,18 @@ public abstract class TestContext implements ITestContext
 		}			
 		
 		return bean;
+	}
+	
+	protected <T> void defineXMLSimpleWebBeans(Class<T> simpleClass, Element webBeanDecleration)
+	{
+		XMLComponentImpl<T> bean = null;
+		bean = WebBeansXMLConfigurator.configureSimpleWebBean(simpleClass, webBeanDecleration);
+		
+		if(bean != null)
+		{
+			getComponents().add(bean);
+			manager.addBean(bean);
+		}
 	}
 	
 	
@@ -256,26 +290,26 @@ public abstract class TestContext implements ITestContext
 		WebBeansXMLConfigurator.configure(file, fileName);
 	}
 	
-	private void initializeDeploymentType(Class<? extends Annotation> deploymentType, int precedence)
+	protected void initializeDeploymentType(Class<? extends Annotation> deploymentType, int precedence)
 	{
 		DeploymentTypeManager.getInstance().addNewDeploymentType(deploymentType, precedence);
 		
 	}
 
-	private void initializeStereoType(Class<?> stereoClass)
+	protected void initializeStereoType(Class<?> stereoClass)
 	{
 		WebBeansUtil.checkStereoTypeClass(stereoClass);
 		StereoTypeModel model = new StereoTypeModel(stereoClass);
 		StereoTypeManager.getInstance().addStereoTypeModel(model);
 	}
 
-	private void initializeInterceptorType(Class<?> interceptorClazz)
+	protected void initializeInterceptorType(Class<?> interceptorClazz)
 	{
 		InterceptorsManager.getInstance().addNewInterceptor(interceptorClazz);
 
 	}
 	
-	private void initializeDecoratorType(Class<?> decoratorClazz)
+	protected void initializeDecoratorType(Class<?> decoratorClazz)
 	{
 		DecoratorsManager.getInstance().addNewDecorator(decoratorClazz);
 
