@@ -193,7 +193,8 @@ public final class WebBeansUtil
 			throw e;
 		}
 	}
-
+	
+	
 	public static <T> Constructor<T> defineConstructor(Class<T> clazz) throws WebBeansConfigurationException
 	{
 		Asserts.nullCheckForClass(clazz);

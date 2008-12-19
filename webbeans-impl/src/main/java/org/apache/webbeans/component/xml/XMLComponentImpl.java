@@ -65,7 +65,15 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
 	protected T createInstance()
 	{
 		T instance = null;
-		instance = this.injectableConstructor.doInjection();
+		
+		if(this.injectableConstructor == null)
+		{
+			instance = super.createInstance();
+		}
+		else
+		{
+			instance = this.injectableConstructor.doInjection();	
+		}
 		
 		return instance;
 	}

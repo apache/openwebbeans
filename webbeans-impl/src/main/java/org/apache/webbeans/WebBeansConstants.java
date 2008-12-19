@@ -47,8 +47,12 @@ public final class WebBeansConstants
 	/**<Interceptors> XML Element*/
 	public static final String WEB_BEANS_XML_INTERCEPTORS_ELEMENT = "Interceptors";
 	
+	public static final String WEB_BEANS_XML_INTERCEPTOR_ELEMENT = "Interceptor";
+	
 	/**<Decorators>  XML Element*/
 	public static final String WEB_BEANS_XML_DECORATORS_ELEMENT = "Decorators";
+	
+	public static final String WEB_BEANS_XML_DECORATOR_ELEMENT = "Decorator";
 	
 	/**<Queue> XML Element*/
 	public static final String WEB_BEANS_XML_TOPIC_ELEMENT = "Queue";

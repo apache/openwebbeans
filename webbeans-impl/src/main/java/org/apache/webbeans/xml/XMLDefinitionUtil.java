@@ -38,6 +38,8 @@ import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.dom4j.Element;
 
@@ -48,6 +50,55 @@ public final class XMLDefinitionUtil
 	{
 		
 	}
+	
+	/**
+	 * Checks the conditions for simple webbeans class defined
+	 * in the XML file.
+	 * 
+	 * @param clazz simple webbeans class declared in XML
+	 * 
+	 * @throws WebBeansConfigurationException if check is fail
+	 */
+	public static void checkSimpleWebBeansInXML(Class<?> clazz, Element webBeanDecleration, String errorMessage) throws WebBeansConfigurationException
+	{
+		Asserts.nullCheckForClass(clazz);
+		if(errorMessage == null)
+		{
+			errorMessage = "XML defined simple webbeans failed. ";
+		}
+		
+		int modifier = clazz.getModifiers();
+		
+		if (ClassUtil.isParametrized(clazz))
+		{
+			throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " can not be parametrized type");	
+		}			
+		
+		if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
+		{
+			throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " can not be non-static inner class");	
+		}				
+		
+		if(clazz.isAnnotationPresent(Interceptor.class))
+		{
+			boolean found = XMLUtil.isElementChildExistWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_ELEMENT);
+			if(!found)
+			{
+				throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " must be declared as <Interceptor> element in the XML");
+			}
+		}
+		
+		if(clazz.isAnnotationPresent(Decorator.class))
+		{
+			boolean found = XMLUtil.isElementChildExistWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_DECORATOR_ELEMENT);
+			if(!found)
+			{
+				throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " must be declared as <Decorator> element in the XML");
+			}
+		}
+		
+	}
+	
 	
 	public static void checkTypeMetaDataClasses(Set<Class<? extends Annotation>> typeSet, String errorMessage)
 	{
@@ -235,7 +286,7 @@ public final class XMLDefinitionUtil
 				else
 				{
 					found = true;
-					WebBeansUtil.defineSimpleWebBeansInterceptors(temp);
+					WebBeansUtil.defineSimpleWebBeansDecorators(temp);
 				}
 			}
 		}
@@ -299,6 +350,5 @@ public final class XMLDefinitionUtil
 		
 		return null;
 	}
-	
 	
 }

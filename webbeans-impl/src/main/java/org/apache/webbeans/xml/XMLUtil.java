@@ -310,6 +310,15 @@ public class XMLUtil
 	}
 	
 	
+	/**
+	 * Returns true if this element defines JMS webbeans, false
+	 * otherwise.
+
+	 * @param element webbeans element decleration
+	 * 
+	 * @return true if this element defines JMS webbeans, false
+	 * otherwise 
+	 */
 	public static boolean isElementJMSDeclaration(Element element)
 	{
 		nullCheckForElement(element);
@@ -318,14 +327,21 @@ public class XMLUtil
 		{
 			if(isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_QUEUE_ELEMENT) ||
 					isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_TOPIC_ELEMENT))
-				
-				return true;
+			{
+				return true;	
+			}
 		}
 		
 		return false;
-		
 	}
 	
+	/**
+	 * Returns true if this element defines field, false otherwise.
+	 * 
+	 * @param element webbeans decleration child element
+	 * 
+	 * @return true if this element defines field, false otherwise
+	 */
 	public static boolean isElementField(Element element)
 	{
 		nullCheckForElement(element);

@@ -485,7 +485,7 @@ public final class WebBeansXMLConfigurator
 
 		if (clazz == null)
 		{
-			throw new NonexistentTypeException(createConfigurationFailedMessage() + "Class : " + className + " is not found");
+			throw new NonexistentTypeException(createConfigurationFailedMessage() + "Class with name : " + className + " is not found");
 		}
 
 		boolean ok = false;
@@ -505,25 +505,29 @@ public final class WebBeansXMLConfigurator
 				// Configure Simple WebBean
 				configureSimpleWebBean(clazz, webBeanElement);
 				ok = true;
-			}
+			}				
 		}
 
+		/*If not applicable for configuration*/
 		if (!ok)
 		{
-			// Actually this does not happen!
-			throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Given Java class : " + clazz.getName() + " is not resolved to any WebBeans type in {Simple WebBeans, Enterprise WebBeans}");
+			throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Given class with name : " + clazz.getName() + " is not resolved to any WebBeans type in {Simple WebBeans, Enterprise WebBeans, JMS WebBeans}");
 		}
 
 	}
 
 	/**
-	 * Configures the simple web bean from the class.
+	 * Configures the simple webbean from the class.
 	 * 
-	 * @param simpleClass concrete java class
-	 * @param webBeanDecleration webbeans element
+	 * @param simpleClass concrete java class defined in XML
+	 * @param webBeanDecleration webbeans decleration root element
 	 */
-	private static <T> void configureSimpleWebBean(Class<T> simpleClass, Element webBeanDecleration)
+	public static <T> XMLComponentImpl<T> configureSimpleWebBean(Class<T> simpleClass, Element webBeanDecleration)
 	{
+		/*Checking XML defined simple webbeans condition check. Spec : 3.2.4*/
+		XMLDefinitionUtil.checkSimpleWebBeansInXML(simpleClass, webBeanDecleration, createConfigurationFailedMessage());
+		
+		/*Create new XML component with class name*/
 		XMLComponentImpl<T> component = new XMLComponentImpl<T>(simpleClass);
 		
 		/*Configures API type of the webbeans component*/
@@ -532,19 +536,19 @@ public final class WebBeansXMLConfigurator
 		/*Configures child elements of this webbeans decleration element*/
 		configureWebBeanDeclerationChilds(component, webBeanDecleration);
 
-		// Check if the deployment type is enabled.
-		if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(component.getDeploymentType()))
+		/*Check if the deployment type is enabled.*/
+		if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(component.getDeploymentType())) //Maybe it is checked before the creation!
 		{
 			component = null;
-			return;
 			
 		} 
-		/*Add manager*/
+		/*Adda to the manager*/
 		else
 		{
 			ManagerImpl.getManager().addBean(component);
 		}
-
+		
+		return component;
 	}
 	
 	/**
@@ -1215,6 +1219,10 @@ public final class WebBeansXMLConfigurator
 			
 			DefinitionUtil.defineScopeType(component, component.getReturnType().getAnnotations(), createConfigurationFailedMessage() + "@ScopeType annotation is not configured correctly");
 		}
+		else
+		{
+			component.setImplScopeType(JavassistProxyFactory.createNewAnnotationProxy(scopeType));
+		}
 
 	}
 
@@ -1269,7 +1277,7 @@ public final class WebBeansXMLConfigurator
 		}
 		else
 		{
-			DefinitionUtil.defineName(component, component.getReturnType().getAnnotations(), WebBeansUtil.getSimpleWebBeanDefaultName(component.getReturnType().getName()));
+			DefinitionUtil.defineName(component, component.getReturnType().getAnnotations(), WebBeansUtil.getSimpleWebBeanDefaultName(component.getReturnType().getSimpleName()));
 		}
 	}
 
