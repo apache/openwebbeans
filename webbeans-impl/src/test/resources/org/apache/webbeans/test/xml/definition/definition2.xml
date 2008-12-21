@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebBeans 	xmlns="urn:java:javax.webbeans"
+		  	xmlns:myapp="urn:java:org.apache.webbeans.test.xml.definition"
+		  	xmlns:java="urn:java:java.lang"
+		  	xmlns:comp="urn:java:org.apache.webbeans.test.component"
+		  	xmlns:binding="urn:java:org.apache.webbeans.test.annotation.binding"
+ 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="urn:java:javax.webbeans http://java.sun.com/jee/web-beans-1.0.xsd">
+	
+	<myapp:Definition2>
+		
+		<myapp:produce>
+
+			<Produces>
+				<Array>
+					<java:Object/>
+					<binding:Binding1/>
+				</Array>
+				<RequestScoped/>
+				<Production/>
+			</Produces>
+
+			<comp:CheckWithCheckPayment>
+				<binding:Check type="CHECK"></binding:Check>
+			</comp:CheckWithCheckPayment>
+			
+			
+		</myapp:produce>
+		
+	</myapp:Definition2>	
+	
+</WebBeans>
