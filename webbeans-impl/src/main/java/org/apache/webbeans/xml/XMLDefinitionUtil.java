@@ -216,10 +216,10 @@ public final class XMLDefinitionUtil
 					found = true;
 				}
 				
-				i++;
-				
 				component.addBindingType(XMLUtil.getXMLDefinedAnnotationMember(annotationElementList.get(i), temp, errorMessage));
 			}
+			
+			i++;
 		}
 		
 		return found;

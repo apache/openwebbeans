@@ -723,7 +723,7 @@ public class XMLUtil
 		 Method[] members = annotClazz.getDeclaredMethods();
 		 for(Method member : members)
 		 {
-			 if(member.getDefaultValue() == null)
+			 if(member.getDefaultValue() == null && value == null)
 			 {
 				 if(!attrsNames.contains(member.getName()))
 				 {
@@ -733,7 +733,7 @@ public class XMLUtil
 		 }
 		 
 		
-		return createInjectionPointAnnotation(attrs, annotClazz, errorMessage);
+		return createInjectionPointAnnotation(attrs, annotClazz, value, errorMessage);
 	}
 	
 	/**
@@ -745,13 +745,23 @@ public class XMLUtil
 	 * 
 	 * @return new annotation
 	 */
-	private static WebBeansAnnotation createInjectionPointAnnotation(List<Attribute> attrs, Class<? extends Annotation> annotClazz, String errorMessage)
+	private static WebBeansAnnotation createInjectionPointAnnotation(List<Attribute> attrs, Class<? extends Annotation> annotClazz, String valueText, String errorMessage)
 	{
 		 WebBeansAnnotation annotation = JavassistProxyFactory.createNewAnnotationProxy(annotClazz);
+		 boolean isValueAttrDefined = false;
 		 for(Attribute attr : attrs)
 		 {
 			 String attrName = attr.getName();
 			 String attrValue = attr.getValue();
+			 
+			 if(!isValueAttrDefined)
+			 {
+				 if(attrName.equals("value"))
+				 {
+					 isValueAttrDefined = true;
+				 } 
+			 }		
+			 
 			 Class returnType = null;
 			 try
 				{
@@ -794,6 +804,14 @@ public class XMLUtil
 				{
 					throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " does not have member with name : " + attrName);
 				}
+		 }
+		 
+		 if(!isValueAttrDefined)
+		 {
+			 if(valueText != null && !valueText.equals(""))
+			 {
+				 annotation.setMemberValue("value", valueText);
+			 }
 		 }
 		
 		 return annotation;
