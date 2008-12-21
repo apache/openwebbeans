@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebBeans xmlns="urn:java:javax.webbeans"
+	xmlns:myapp="urn:java:org.apache.webbeans.test.xml.definition"
+	xmlns:java="urn:java:java.lang"
+	xmlns:comp="urn:java:org.apache.webbeans.test.component"
+	xmlns:binding="urn:java:org.apache.webbeans.test.annotation.binding"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:java:javax.webbeans http://java.sun.com/jee/web-beans-1.0.xsd">
+
+	<myapp:MockAsynchronousCreditCardPaymentProcessor>
+		<binding:Asynchronous />
+		<binding:PayBy>CREDIT_CARD</binding:PayBy>
+		<SessionScoped />
+		<binding:Mock />
+		<binding:Service transactional="true" />
+		<Named>asyncCreditCardPaymentProcessor</Named>
+		<myapp:synchronousProcessor>
+			<myapp:PaymentProcessor>
+				<binding:Synchronous />
+				<binding:PayBy>CREDIT_CARD</binding:PayBy>
+			</myapp:PaymentProcessor>
+		</myapp:synchronousProcessor>
+		<myapp:init>
+			<Initializer />
+			<myapp:SystemConfig />
+		</myapp:init>
+	</myapp:MockAsynchronousCreditCardPaymentProcessor>
+
+</WebBeans>
