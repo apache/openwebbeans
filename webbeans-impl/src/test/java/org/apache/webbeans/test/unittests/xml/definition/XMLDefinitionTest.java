@@ -85,4 +85,35 @@ public class XMLDefinitionTest extends TestContext
 		
 		
 	}
+	
+	@Test
+	public void testDefinition2()
+	{
+		Throwable e = null;
+		try
+		{
+			InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/definition/definition2.xml");			
+			Assert.assertNotNull(stream);
+			
+			clear();
+			
+			Element rootElement = XMLUtil.getRootElement(stream);
+			Element beanElement = (Element)rootElement.elements().get(0);
+			
+			Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
+			
+			defineXMLSimpleWebBeans(clazz, beanElement);
+			
+			
+		}catch(Throwable e1)
+		{
+			e1.printStackTrace();
+			e = e1;
+		}
+		
+		Assert.assertNull(e);
+		
+		
+	}
+	
 }

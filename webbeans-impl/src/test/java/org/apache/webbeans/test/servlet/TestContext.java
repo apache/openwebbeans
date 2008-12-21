@@ -215,7 +215,7 @@ public abstract class TestContext implements ITestContext
 			{
 				InterceptorUtil.checkInterceptorConditions(clazz);
 				component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
-				WebBeansInterceptorConfig.configureInterceptorClass((ComponentImpl<Object>)component);
+				WebBeansInterceptorConfig.configureInterceptorClass((ComponentImpl<Object>)component, clazz.getDeclaredAnnotations());
 			}
 			
 		}
