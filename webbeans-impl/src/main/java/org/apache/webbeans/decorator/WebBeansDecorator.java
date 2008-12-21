@@ -39,13 +39,16 @@ public class WebBeansDecorator extends Decorator
 	/**Decorator class*/
 	private Class<?> clazz; 
 	
+	/**Decorates api types*/
 	private Set<Class<?>> decoratedTypes = new HashSet<Class<?>>();
 	
-	private Class<?> delegateType;
+	/**Delegate field class type*/
+	protected Class<?> delegateType;
 	
-	private Set<Annotation> delegateBindingTypes = new HashSet<Annotation>();
+	/**Delegate field binding types*/
+	protected Set<Annotation> delegateBindingTypes = new HashSet<Annotation>();
 	
-	/**Simple Web Beans component*/
+	/**Delegated component*/
 	private AbstractComponent<Object> delegateComponent;
 	
 	
@@ -59,7 +62,7 @@ public class WebBeansDecorator extends Decorator
 	}
 	
 	
-	private void init()
+	protected void init()
 	{
 		ClassUtil.setInterfaceTypeHierarchy(this.decoratedTypes, this.clazz);
 		
@@ -72,7 +75,7 @@ public class WebBeansDecorator extends Decorator
 	}
 	
 	
-	private void initDelegate()
+	protected void initDelegate()
 	{
 		Field field = ClassUtil.getFieldWithAnnotation(this.clazz, Decorates.class);
 		this.delegateType = field.getType();

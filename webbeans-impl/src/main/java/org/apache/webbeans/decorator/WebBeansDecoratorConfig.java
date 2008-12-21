@@ -29,6 +29,8 @@ import javax.webbeans.manager.Decorator;
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
+import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.logger.WebBeansLogger;
 
 public final class WebBeansDecoratorConfig
@@ -43,11 +45,22 @@ public final class WebBeansDecoratorConfig
 	
 	public static void configureDecoratorClass(AbstractComponent<Object> delegate)
 	{
-		logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType().getName() + " started");
+		logger.info("Configuring the Web Beans Annoatated Decorator Class : " + delegate.getReturnType().getName() + " started");
 
 		WebBeansDecorator decorator = new WebBeansDecorator(delegate);
 
-		logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType() + " ended");
+		logger.info("Configuring the Web Beans Annotated Decorator Class : " + delegate.getReturnType() + " ended");
+
+		ManagerImpl.getManager().addDecorator(decorator);
+	}
+
+	public static void configureXMLDecoratorClass(AbstractComponent<Object> delegate, XMLInjectionPointModel model)
+	{
+		logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType().getName() + " started");
+
+		WebBeansXMLDecorator decorator = new WebBeansXMLDecorator(delegate,model);
+
+		logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType() + " ended");
 
 		ManagerImpl.getManager().addDecorator(decorator);
 	}

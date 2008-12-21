@@ -51,6 +51,8 @@ public class XMLStereoTypeModel implements IStereoTypeModel
 	private Set<Annotation> interceptorBindingTypes = new HashSet<Annotation>();
 	
 	private Annotation defaultName = null;
+	
+	private Set<Annotation> inherits = new HashSet<Annotation>();
 
 	
 	public XMLStereoTypeModel(Element stereoTypeDecleration, String name, String errorMessage)
@@ -84,6 +86,7 @@ public class XMLStereoTypeModel implements IStereoTypeModel
 				
 				annClazz = (Class<? extends Annotation>)clazz;
 				Annotation defaultAnn = JavassistProxyFactory.createNewAnnotationProxy(annClazz);
+				
 				if(clazz.isAnnotationPresent(ScopeType.class))
 				{
 					if(scopeTypeFound)
@@ -113,7 +116,8 @@ public class XMLStereoTypeModel implements IStereoTypeModel
 						throw new WebBeansConfigurationException(errorMessage + "Stereotype with @InterceptorBindingType must be defined as @Target{TYPE}");
 					}
 					
-					interceptorBindingTypes.add(defaultAnn);
+					
+					interceptorBindingTypes.add(XMLUtil.getXMLDefinedAnnotationMember(child, annClazz, errorMessage));
 				}
 				else if(clazz.equals(Named.class))
 				{
@@ -127,6 +131,45 @@ public class XMLStereoTypeModel implements IStereoTypeModel
 				else if (AnnotationUtil.isBindingAnnotation(annClazz))
 				{
 					throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not define @BindingType annotation");
+				}
+				
+				else if(AnnotationUtil.isStereoTypeAnnotation(annClazz))
+				{
+					Target innerStereo = clazz.getAnnotation(Target.class);
+					Class<?> outerStereoClass = XMLUtil.getElementJavaType(stereoTypeDecleration);
+					Target outerStereo = outerStereoClass.getAnnotation(Target.class);
+					
+					ElementType[] innerValues = innerStereo.value();
+					ElementType[] outerValues = outerStereo.value();
+					
+					for(ElementType innerValue : innerValues)
+					{
+						if(innerValue.equals(ElementType.METHOD))
+						{
+							for(ElementType outerValue : outerValues)
+							{
+								if(outerValue.equals(ElementType.TYPE))
+								{
+									throw new WebBeansConfigurationException(errorMessage + "Inherited StereoType with class name : " + clazz.getName() + 
+											" must have compatible @Target annotation with Stereotype class name : " + outerStereoClass.getName());
+								}
+							}
+						}
+						else if(innerValue.equals(ElementType.TYPE))
+						{
+							for(ElementType outerValue : outerValues)
+							{
+								if(outerValue.equals(ElementType.METHOD))
+								{
+									throw new WebBeansConfigurationException(errorMessage + "Inherited StereoType with class name : " + clazz.getName() + 
+											" must have compatible @Target annotation with Stereotype class name : " + outerStereoClass.getName());
+								}
+							}							
+						}
+					}
+					
+					this.inherits.add(defaultAnn);
+					
 				}
 				
 				else
@@ -147,9 +190,14 @@ public class XMLStereoTypeModel implements IStereoTypeModel
 		return this.defaultScopeType;
 	}
 	
-	public Set<Annotation> getInterceptorBindingType()
+	public Set<Annotation> getInterceptorBindingTypes()
 	{
 		return this.interceptorBindingTypes;
+	}
+	
+	public Set<Annotation> getInheritedStereoTypes()
+	{
+		return this.inherits;
 	}
 	
 	public Annotation getDefaultNamed()

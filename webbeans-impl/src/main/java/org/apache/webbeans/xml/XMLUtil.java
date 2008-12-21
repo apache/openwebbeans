@@ -18,12 +18,15 @@ package org.apache.webbeans.xml;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.webbeans.DuplicateBindingTypeException;
 import javax.webbeans.NonexistentTypeException;
@@ -31,7 +34,9 @@ import javax.webbeans.NonexistentTypeException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.webbeans.WebBeansConstants;
+import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.WebBeansAnnotation;
+import org.apache.webbeans.component.xml.XMLProducerComponentImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
@@ -335,6 +340,18 @@ public class XMLUtil
 		return false;
 	}
 	
+	
+	public static boolean isElementHasDecoratesChild(Element element)
+	{
+		nullCheckForElement(element);
+		if(isElementChildExistWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_DECORATES_ELEMENT))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Returns true if this element defines field, false otherwise.
 	 * 
@@ -590,7 +607,7 @@ public class XMLUtil
 						}
 					}
 					
-					bindingAnnots.add(getInjectionPointAnnotationMember(childElement, annotClazz, errorMessage));
+					bindingAnnots.add(getXMLDefinedAnnotationMember(childElement, annotClazz, errorMessage));
 				}
 				else
 				{
@@ -622,6 +639,11 @@ public class XMLUtil
 			typeArray = typeArguments.toArray(typeArray);
 			model = new XMLInjectionPointModel(clazz,typeArray);
 			
+			if(bindingAnnots.isEmpty())
+			{
+				model.addBindingType(new CurrentLiteral());
+			}
+			
 			for(Annotation annot : bindingAnnots)
 			{
 				model.addBindingType(annot);
@@ -640,7 +662,7 @@ public class XMLUtil
 	 * 
 	 * @return new annotation with members configures
 	 */
-	private static Annotation getInjectionPointAnnotationMember(Element annotationElement, Class<? extends Annotation> annotClazz, String errorMessage)
+	public static Annotation getXMLDefinedAnnotationMember(Element annotationElement, Class<? extends Annotation> annotClazz, String errorMessage)
 	{
 		 String value = annotationElement.getTextTrim();
 		 List<Attribute> attrs = annotationElement.attributes();
@@ -780,35 +802,111 @@ public class XMLUtil
 	/**
 	 * Injection point with array type.
 	 * 
-	 * @param typeElement injection point API type
+	 * @param typeElement array element
 	 * @param errorMessage error message 
 	 * 
 	 * @return new injection point model
 	 */	
-	private static XMLInjectionPointModel getArrayInjectionPointModel(Element typeElement, String errorMessage)
+	public static XMLInjectionPointModel getArrayInjectionPointModel(Element typeElement, String errorMessage)
 	{
 		XMLInjectionPointModel model = null;
 		
 		List<Element> childElements =  typeElement.elements();
-		if(childElements.size() != 1)
+		boolean isElementTypeDefined = false;
+		
+		Set<Annotation> anns = new HashSet<Annotation>();
+		for(Element childElement : childElements)
 		{
-			throw new WebBeansConfigurationException(errorMessage + "<Array> element can not have more than one child element. It has one child element that declares its type");
-		}
-		else
-		{
-			Element child = childElements.get(0);
-			Class<?> arrayType = getElementJavaType(child);
-			if(arrayType == null)
+			Class<?> clazz = XMLUtil.getElementJavaType(childElement);
+			
+			if(clazz == null)
 			{
-				throw new WebBeansConfigurationException(errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(child) + " is not found in the deployment");
+				throw new NonexistentTypeException(errorMessage + "Class with name : " + XMLUtil.getElementJavaClassName(childElement) + " is not found for Array element type");
 			}
-			else if(arrayType.isArray() || arrayType.isEnum())
+			
+			if(clazz.isAnnotation())
+			{
+				anns.add(getXMLDefinedAnnotationMember(childElement, (Class< ? extends Annotation>) clazz, errorMessage));
+			}
+			else if(clazz.isArray() || clazz.isEnum())
 			{
 				throw new WebBeansConfigurationException(errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(typeElement) + " must be class or interface type");
 			}
+			else
+			{
+				if(isElementTypeDefined)
+				{
+					throw new WebBeansConfigurationException(errorMessage + "<Array> element can not have more than one child element. It has one child element that declares its type");
+				}
+				else
+				{
+					model = new XMLInjectionPointModel(clazz);
+					isElementTypeDefined = true;
+				}
+			}
 		}
 		
+		if(anns.size() == 0)
+		{
+			model.addBindingType(new CurrentLiteral());
+		}
+		
+		for(Annotation ann : anns)
+		{
+			model.addBindingType(ann);
+		}
+				
 		return model;
 	}
+	
+	public static <T> void defineXMLProducerApiTypeFromArrayElement(XMLProducerComponentImpl<T> component, Element typeElement, String errorMessage)
+	{
+		List<Element> childElements =  typeElement.elements();
+		boolean isElementTypeDefined = false;
+		
+		Set<Annotation> anns = new HashSet<Annotation>();
+		for(Element childElement : childElements)
+		{
+			Class<?> clazz = XMLUtil.getElementJavaType(childElement);
+			
+			if(clazz == null)
+			{
+				throw new NonexistentTypeException(errorMessage + "Class with name : " + XMLUtil.getElementJavaClassName(childElement) + " is not found for Array element type");
+			}
+			
+			if(clazz.isAnnotation())
+			{
+				anns.add(getXMLDefinedAnnotationMember(childElement, (Class< ? extends Annotation>) clazz, errorMessage));
+			}
+			else if(clazz.isArray() || clazz.isEnum())
+			{
+				throw new WebBeansConfigurationException(errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(typeElement) + " must be class or interface type");
+			}
+			else
+			{
+				if(isElementTypeDefined)
+				{
+					throw new WebBeansConfigurationException(errorMessage + "<Array> element can not have more than one child element. It has one child element that declares its type");
+				}
+				else
+				{
+					isElementTypeDefined = true;
+					component.addApiType(Array.newInstance(clazz, 0).getClass());
+				}
+			}
+		}
+		
+		if(anns.size() == 0)
+		{
+			component.addBindingType(new CurrentLiteral());
+		}
+		
+		for(Annotation ann : anns)
+		{
+			component.addBindingType(ann);
+		}
+				
+	}
+	
 	
 }

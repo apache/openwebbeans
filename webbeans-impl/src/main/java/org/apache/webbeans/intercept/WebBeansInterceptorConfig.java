@@ -63,15 +63,13 @@ public final class WebBeansInterceptorConfig
 	 * @param interceptorClazz
 	 *            interceptor class
 	 */
-	public static void configureInterceptorClass(AbstractComponent<Object> delegate)
+	public static void configureInterceptorClass(AbstractComponent<Object> delegate, Annotation[] interceptorBindingTypes)
 	{
 		logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType().getName() + " started");
 
 		WebBeansInterceptor interceptor = new WebBeansInterceptor(delegate);
 
-		Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(delegate.getReturnType().getDeclaredAnnotations());
-
-		for (Annotation ann : anns)
+		for (Annotation ann : interceptorBindingTypes)
 		{
 			interceptor.addInterceptorBindingType(ann.annotationType(), ann);
 		}
@@ -102,7 +100,7 @@ public final class WebBeansInterceptorConfig
 				bindingTypeSet.add(ann);
 			}
 			
-			Annotation[] stereoTypes = WebBeansUtil.getComponentStereoTypes(clazz.getDeclaredAnnotations());
+			Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
 			for(Annotation stero : stereoTypes)
 			{
 				if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))
@@ -122,7 +120,7 @@ public final class WebBeansInterceptorConfig
 			Set<Interceptor> set = findDeployedWebBeansInterceptor(anns);
 
 			// Adding class interceptors
-			addComponentInterceptors(set, clazz, stack);
+			addComponentInterceptors(set, stack);
 		}
 
 		// Method level interceptors.
@@ -130,7 +128,7 @@ public final class WebBeansInterceptorConfig
 
 	}
 
-	private static void addComponentInterceptors(Set<Interceptor> set, Class<?> clazz, List<InterceptorData> stack)
+	public static void addComponentInterceptors(Set<Interceptor> set, List<InterceptorData> stack)
 	{
 		Iterator<Interceptor> it = set.iterator();
 		while (it.hasNext())
@@ -138,9 +136,9 @@ public final class WebBeansInterceptorConfig
 			WebBeansInterceptor interceptor = (WebBeansInterceptor) it.next();
 
 			// interceptor binding
-			WebBeansUtil.configureInterceptorMethods(interceptor.getClazz(), AroundInvoke.class, true, false, stack, null, true);
-			WebBeansUtil.configureInterceptorMethods(interceptor.getClazz(), PostConstruct.class, true, false, stack, null, true);
-			WebBeansUtil.configureInterceptorMethods(interceptor.getClazz(), PreDestroy.class, true, false, stack, null, true);
+			WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), AroundInvoke.class, true, false, stack, null, true);
+			WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), PostConstruct.class, true, false, stack, null, true);
+			WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), PreDestroy.class, true, false, stack, null, true);
 
 		}
 
@@ -170,7 +168,7 @@ public final class WebBeansInterceptorConfig
 					set.add(ann);
 				}
 				
-				Annotation[] stereoTypes = WebBeansUtil.getComponentStereoTypes(clazz.getDeclaredAnnotations());
+				Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
 				for(Annotation stero : stereoTypes)
 				{
 					if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))
@@ -194,9 +192,9 @@ public final class WebBeansInterceptorConfig
 				{
 					WebBeansInterceptor interceptor = (WebBeansInterceptor) it.next();
 
-					WebBeansUtil.configureInterceptorMethods(interceptor.getClazz(), AroundInvoke.class, false, true, stack, method, true);
-					WebBeansUtil.configureInterceptorMethods(interceptor.getClazz(), PostConstruct.class, false, true, stack, method, true);
-					WebBeansUtil.configureInterceptorMethods(interceptor.getClazz(), PreDestroy.class, false, true, stack, method, true);
+					WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), AroundInvoke.class, false, true, stack, method, true);
+					WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), PostConstruct.class, false, true, stack, method, true);
+					WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), PreDestroy.class, false, true, stack, method, true);
 				}
 
 			}

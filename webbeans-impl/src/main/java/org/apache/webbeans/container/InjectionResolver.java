@@ -17,6 +17,7 @@
 package org.apache.webbeans.container;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -286,4 +287,9 @@ public class InjectionResolver
 		
 		return result;
 	}		
+	
+	public static void main(String[] args)
+	{
+		System.out.println(Array.newInstance(Integer.class, 0).getClass());
+	}
 }

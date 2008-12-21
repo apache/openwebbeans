@@ -18,6 +18,7 @@ package org.apache.webbeans.intercept;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -69,6 +70,8 @@ public class InterceptorHandler implements MethodHandler
 			
 			//Run around invoke chain
 			List<InterceptorData> stack = component.getInterceptorStack();
+			
+			Collections.sort(stack, new InterceptorDataComparator());
 			
 			filterEJBInterceptorStackList(stack, method);
 			filterWebBeansInterceptorStackList(stack, method);

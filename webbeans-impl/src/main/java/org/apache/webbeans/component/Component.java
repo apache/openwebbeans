@@ -44,21 +44,7 @@ public abstract class Component<T> extends Bean<T>
 	{
 		super(manager);
 	}
-	
-	/**
-	 * Creates the new web beans component instance.
-	 * 
-	 * @return the new web beans component instance
-	 */
-	abstract public T create();
-
-	/**
-	 * Destorys the web beans component instance.
-	 * 
-	 * @param instance web beans component instance
-	 */
-	abstract public void destroy(T instance);
-	
+		
 	abstract public Annotation getType();
 	
 	abstract public void setType(Annotation type);
@@ -70,6 +56,10 @@ public abstract class Component<T> extends Bean<T>
 	abstract public WebBeansType getWebBeansType();
 	
 	abstract public void addBindingType(Annotation bindingType);
+	
+	abstract public void addStereoType(Annotation stereoType);
+	
+	abstract public void addApiType(Class<?> apiType);
 	
 	abstract public Set<Annotation> getImplBindingTypes();
 	

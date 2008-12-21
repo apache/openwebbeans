@@ -40,7 +40,6 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 public final class InterceptorUtil
 {
@@ -191,9 +190,16 @@ public final class InterceptorUtil
 			throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName() + " must have at least one @InterceptorBindingType annotation");
 		}
 		
+		checkLifecycleConditions(clazz, clazz.getDeclaredAnnotations(),"Lifecycle interceptor : " + clazz.getName()+ " interceptor binding type must be defined as @Target{TYPE}");
+	}
+	
+	public static <T> void checkLifecycleConditions(Class<T> clazz, Annotation[] annots, String errorMessage)
+	{
+		Asserts.nullCheckForClass(clazz);
+		
 		if(isLifecycleMethodInterceptor(clazz) && !isBusinessMethodInterceptor(clazz))
 		{
-			Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
+			Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(annots);
 			
 			for(Annotation annotation : anns)
 			{
@@ -202,10 +208,11 @@ public final class InterceptorUtil
 				
 				if(!(elementTypes.length == 1 && elementTypes[0].equals(ElementType.TYPE)))
 				{
-					throw new WebBeansConfigurationException("Lifecycle interceptor : " + clazz.getName()+ " interceptor binding type must be defined as @Target{TYPE}");
+					throw new WebBeansConfigurationException(errorMessage);
 				}
 			}
 		}		
+		
 	}
 	
 	public static void checkSimpleWebBeansInterceptorConditions(Class<?> clazz)
@@ -219,7 +226,7 @@ public final class InterceptorUtil
 			hasClassInterceptors = true;
 		}else
 		{
-			Annotation[] stereoTypes = WebBeansUtil.getComponentStereoTypes(anns);
+			Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getAnnotations());
 			for(Annotation stero : stereoTypes)
 			{
 				if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))

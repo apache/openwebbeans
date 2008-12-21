@@ -17,6 +17,8 @@
 package org.apache.webbeans.deployment;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,6 +29,7 @@ import javax.webbeans.ScopeType;
 import javax.webbeans.Stereotype;
 
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
@@ -44,7 +47,9 @@ public class StereoTypeModel implements IStereoTypeModel
 	
 	private Set<Class<?>>  restrictedTypes = null;
 	
-	private Annotation interceptorBindingType;
+	private Set<Annotation> interceptorBindingTypes = new HashSet<Annotation>();
+	
+	private Set<Annotation> inherits = new HashSet<Annotation>();
 	
 	
 	public StereoTypeModel(Class<?> clazz)
@@ -59,6 +64,59 @@ public class StereoTypeModel implements IStereoTypeModel
 		if(AnnotationUtil.isMetaAnnotationExist(clazz.getAnnotations(), ScopeType.class))
 		{
 			this.defaultScopeType = AnnotationUtil.getMetaAnnotations(clazz.getAnnotations(), ScopeType.class)[0];
+		}
+		
+		if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getAnnotations()))
+		{
+			Annotation[] ibs = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getAnnotations());
+			for(Annotation ann : ibs)
+			{
+				this.interceptorBindingTypes.add(ann);
+			}
+		}
+		
+		if(AnnotationUtil.isStereoTypeMetaAnnotationExist(clazz.getAnnotations()))
+		{
+			Annotation[] isy = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getAnnotations());
+			
+			Target outerStereo = clazz.getAnnotation(Target.class);
+			for(Annotation is : isy)
+			{
+				Target innerStereo = is.annotationType().getAnnotation(Target.class);
+				
+				ElementType[] innerValues = innerStereo.value();
+				ElementType[] outerValues = outerStereo.value();
+				
+				for(ElementType innerValue : innerValues)
+				{
+					if(innerValue.equals(ElementType.METHOD))
+					{
+						for(ElementType outerValue : outerValues)
+						{
+							if(outerValue.equals(ElementType.TYPE))
+							{
+								throw new WebBeansConfigurationException("Inherited StereoType with class name : " + clazz.getName() + 
+										" must have compatible @Target annotation with Stereotype class name : " + clazz.getName());
+							}
+						}
+					}
+					else if(innerValue.equals(ElementType.TYPE))
+					{
+						for(ElementType outerValue : outerValues)
+						{
+							if(outerValue.equals(ElementType.METHOD))
+							{
+								throw new WebBeansConfigurationException("Inherited StereoType with class name : " + clazz.getName() + 
+										" must have compatible @Target annotation with Stereotype class name : " + clazz.getName());
+							}
+						}							
+					}
+				}
+				
+				this.inherits.add(is);
+				
+			}
+						
 		}
 		
 		configureScopes(clazz);
@@ -120,9 +178,14 @@ public class StereoTypeModel implements IStereoTypeModel
 		return defaultScopeType;
 	}
 
-	public Annotation getInterceptorBindingType()
+	public Set<Annotation> getInterceptorBindingTypes()
 	{
-		return this.interceptorBindingType;
+		return this.interceptorBindingTypes;
+	}
+	
+	public Set<Annotation> getInheritedStereoTypes()
+	{
+		return this.inherits;
 	}
 
 	/**

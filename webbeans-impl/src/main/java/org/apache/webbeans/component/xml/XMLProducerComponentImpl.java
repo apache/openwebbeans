@@ -16,6 +16,7 @@
  */
 package org.apache.webbeans.component.xml;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,8 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
 	private List<XMLInjectionPointModel> producerMethodParameters = new ArrayList<XMLInjectionPointModel>();
 	
 	private List<XMLInjectionPointModel> disposalMethodParameters = new ArrayList<XMLInjectionPointModel>();
+	
+	private Type[] actualTypeArguments = new Type[0];
 	
 	public XMLProducerComponentImpl(AbstractComponent<?> parent, Class<T> returnType)
 	{
@@ -51,6 +54,21 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
 		this.disposalMethodParameters.add(model);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.apache.webbeans.component.ProducerComponentImpl#getActualTypeArguments()
+	 */
+	@Override
+	public Type[] getActualTypeArguments()
+	{
+		return this.actualTypeArguments; 
+	}
+	
+	public void setActualTypeArguments(Type[] actualTypeArguments)
+	{
+		this.actualTypeArguments = actualTypeArguments;
+	}
+	 
+
 	protected void destroyInstance(T instance)
 	{
 		if(disposalMethod != null)

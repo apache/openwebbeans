@@ -52,6 +52,16 @@ public class XMLInjectionPointModel
 	/**Injection point binding types*/
 	private Set<Annotation> bindingTypes = new HashSet<Annotation>();
 	
+	/**This injection model is array*/
+	private boolean array;
+	
+	
+	public XMLInjectionPointModel(Class<?> arrayElementType)
+	{
+		this.array = true;
+		this.injectionClassType = arrayElementType;
+	}
+	
 	/**
 	 * Creates new injection point model.
 	 * 
@@ -121,6 +131,14 @@ public class XMLInjectionPointModel
 	public Set<Annotation> getBindingTypes()
 	{
 		return Collections.unmodifiableSet(this.bindingTypes);
+	}
+	
+	/**
+	 * @return the array
+	 */
+	public boolean isArray()
+	{
+		return array;
 	}
 
 	/* (non-Javadoc)

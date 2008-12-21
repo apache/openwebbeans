@@ -135,7 +135,7 @@ public class BeanObserverImpl<T> implements Observer<T>
 		
 	}
 	
-	private List<Object> getMethodArguments(Object event)
+	protected List<Object> getMethodArguments(Object event)
 	{
 		Type[] types = this.observerMethod.getGenericParameterTypes();
 		Annotation[][] annots = this.observerMethod.getParameterAnnotations();

@@ -36,7 +36,7 @@ public class XMLAnnotationTypeManager
 	
 	private Set<Class<? extends Annotation>> xmlBindingTypes = new CopyOnWriteArraySet<Class<? extends Annotation>>();
 	
-	private Map<Class<? extends Annotation>, Set<Class<? extends Annotation>>> xmlInterceptorBindingTypes = new ConcurrentHashMap<Class<? extends Annotation>, Set<Class<? extends Annotation>>>();
+	private Map<Class<? extends Annotation>, Set<Annotation>> xmlInterceptorBindingTypes = new ConcurrentHashMap<Class<? extends Annotation>, Set<Annotation>>();
 	
 	private Set<Class<? extends Annotation>> xmlStereoTypes = new CopyOnWriteArraySet<Class<? extends Annotation>>();
 	
@@ -70,9 +70,9 @@ public class XMLAnnotationTypeManager
 		return false;
 	}
 	
-	public void addStereoType(Class<? extends Annotation> bindingType, Element decleration, String name, String errorMessage)
+	public void addStereoType(Class<? extends Annotation> stereoType, Element decleration, String name, String errorMessage)
 	{
-		WebBeansUtil.checkStereoTypeClass(bindingType);
+		WebBeansUtil.checkStereoTypeClass(stereoType);
 		
 		StereoTypeManager manager = StereoTypeManager.getInstance();
 		
@@ -80,12 +80,12 @@ public class XMLAnnotationTypeManager
 		manager.addStereoTypeModel(model);
 		
 		
-		xmlStereoTypes.add(bindingType);
+		xmlStereoTypes.add(stereoType);
 	}
 	
-	public boolean isStereoTypeExist(Class<? extends Annotation> bindingType)
+	public boolean isStereoTypeExist(Class<? extends Annotation> stereoType)
 	{
-		if(xmlStereoTypes.contains(bindingType))
+		if(xmlStereoTypes.contains(stereoType))
 		{
 			return true;
 		}
@@ -93,12 +93,12 @@ public class XMLAnnotationTypeManager
 		return false;
 	}
 
-	public void addInterceotorBindingTypeInheritAnnotation(Class<? extends Annotation> bindingType, Class<? extends Annotation> inherit)
+	public void addInterceotorBindingTypeInheritAnnotation(Class<? extends Annotation> bindingType, Annotation inherit)
 	{
-		Set<Class<? extends Annotation>> inherits =  xmlInterceptorBindingTypes.get(bindingType);
+		Set<Annotation> inherits =  xmlInterceptorBindingTypes.get(bindingType);
 		if(inherits == null)
 		{
-			inherits = new HashSet<Class<? extends Annotation>>();
+			inherits = new HashSet<Annotation>();
 			inherits.add(inherit);
 			xmlInterceptorBindingTypes.put(bindingType, inherits);
 		}
@@ -123,7 +123,7 @@ public class XMLAnnotationTypeManager
 		return Collections.unmodifiableSet(xmlBindingTypes);
 	}
 	
-	public Set<Class<? extends Annotation>> getInterceptorBindingTypeInherites(Class<? extends Annotation> interceptorBindingType)
+	public Set<Annotation> getInterceptorBindingTypeInherites(Class<? extends Annotation> interceptorBindingType)
 	{
 		return Collections.unmodifiableSet(xmlInterceptorBindingTypes.get(interceptorBindingType));
 	}

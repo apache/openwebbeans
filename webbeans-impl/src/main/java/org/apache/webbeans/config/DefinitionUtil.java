@@ -42,6 +42,7 @@ import javax.webbeans.manager.Bean;
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.Component;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.component.ProducerComponentImpl;
@@ -102,7 +103,7 @@ public final class DefinitionUtil
 		else
 		{
 			
-			component.setType(WebBeansUtil.getMaxPrecedenceSteroTypeDeploymentType(beanAnnotations));
+			component.setType(WebBeansUtil.getMaxPrecedenceSteroTypeDeploymentType(component));
 		}
 		
 		return component.getDeploymentType();
@@ -218,44 +219,66 @@ public final class DefinitionUtil
 		
 		if(!found)
 		{
-			Annotation[] stereos = AnnotationUtil.getStereotypeMetaAnnotations(annotations);
-			if(stereos.length == 0)
+			defineDefaultScopeType(component, exceptionMessage);
+		}	
+	}
+	
+	public static <T> void defineStereoTypes(Component<?> component, Class<T> clazz)
+	{
+		Annotation[] anns = clazz.getAnnotations();
+		
+		if(AnnotationUtil.isStereoTypeMetaAnnotationExist(anns))
+		{
+			Annotation[] steroAnns = AnnotationUtil.getStereotypeMetaAnnotations(anns);
+			
+			for(Annotation stereo : steroAnns)
 			{
-				component.setImplScopeType(new DependentScopeLiteral());
+				component.addStereoType(stereo);
+			}
+		}
+	}
+	
+	public static void defineDefaultScopeType(Component<?> component, String exceptionMessage)
+	{		
+		Set<Annotation> stereos = component.getStereoTypes();
+		if(stereos.size() == 0)
+		{
+			component.setImplScopeType(new DependentScopeLiteral());
+		}
+		else
+		{
+			Annotation defined = null;
+			Set<Annotation> anns = component.getStereoTypes();
+			for(Annotation stero : anns)
+			{
+				if(AnnotationUtil.isMetaAnnotationExist(stero.annotationType().getAnnotations(), ScopeType.class))
+				{
+					Annotation next = AnnotationUtil.getMetaAnnotations(stero.annotationType().getAnnotations(), ScopeType.class)[0];
+					
+					if(defined == null)
+					{
+						defined = next;
+					}
+					else
+					{
+						if(!defined.equals(next))
+						{
+						  throw new WebBeansConfigurationException(exceptionMessage);
+						}
+					}	
+				}
+			}
+			
+			if(defined != null)
+			{
+				component.setImplScopeType(defined);
 			}
 			else
 			{
-				Annotation defined = null;
-				for(Annotation stero : stereos)
-				{
-					if(AnnotationUtil.isMetaAnnotationExist(stero.annotationType().getAnnotations(), ScopeType.class))
-					{
-						Annotation next = AnnotationUtil.getMetaAnnotations(stero.annotationType().getAnnotations(), ScopeType.class)[0];
-						
-						if(defined == null)
-						{
-							defined = next;
-						}
-						else
-						{
-							if(!defined.equals(next))
-							{
-							  throw new WebBeansConfigurationException(exceptionMessage);
-							}
-						}	
-					}
-				}
-				
-				if(defined != null)
-				{
-					component.setImplScopeType(defined);
-				}
-				else
-				{
-					component.setImplScopeType(new DependentScopeLiteral());
-				}					
-			}				
-		}	
+				component.setImplScopeType(new DependentScopeLiteral());
+			}					
+		}				
+		
 	}
 	
 	/**
@@ -280,7 +303,7 @@ public final class DefinitionUtil
 		if(nameAnnot == null) //no @Named
 		{
 			//Check for stereottype
-			if(WebBeansUtil.isNamedExistOnStereoTypes(anns))
+			if(WebBeansUtil.isNamedExistOnStereoTypes(component))
 			{
 				isDefault = true;
 			}
@@ -369,7 +392,7 @@ public final class DefinitionUtil
 		DefinitionUtil.defineBindingTypes(component, methodAnns);
 		DefinitionUtil.defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
 		
-		WebBeansUtil.checkSteroTypeRequirements(component.getTypes(), component.getScopeType(), methodAnns , "WebBeans producer method : " + method.getName() + " in class : " + parent.getReturnType().getName());
+		WebBeansUtil.checkSteroTypeRequirements(component, methodAnns , "WebBeans producer method : " + method.getName() + " in class : " + parent.getReturnType().getName());
 		
 		
 		return component;

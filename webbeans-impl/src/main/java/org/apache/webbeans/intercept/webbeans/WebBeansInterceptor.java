@@ -35,7 +35,6 @@ import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
@@ -168,21 +167,14 @@ public class WebBeansInterceptor extends Interceptor
 		while(it.hasNext())
 		{
 			Class<? extends Annotation> clazzAnnot = it.next();
-			Set<Class<? extends Annotation>> declared = null; 
+			Set<Annotation> declared = null; 
 			Annotation[] anns = null;
 			
 			if(XMLAnnotationTypeManager.getInstance().isInterceptorBindingTypeExist(clazzAnnot))
 			{
 				declared = XMLAnnotationTypeManager.getInstance().getInterceptorBindingTypeInherites(clazzAnnot);
 				anns = new Annotation[declared.size()];
-				
-				int i  = 0;
-				for(Class<? extends Annotation> clz : declared)
-				{
-					anns[i] = JavassistProxyFactory.createNewAnnotationProxy(clz);
-					i++;
-				}
-				
+				anns = declared.toArray(anns);
 			}
 			
 			else if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazzAnnot.getAnnotations()))

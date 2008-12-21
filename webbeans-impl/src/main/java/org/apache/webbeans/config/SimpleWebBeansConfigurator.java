@@ -127,7 +127,7 @@ public final class SimpleWebBeansConfigurator
 
 		Annotation[] clazzAnns = clazz.getAnnotations();
 
-		
+		DefinitionUtil.defineStereoTypes(component,clazz);
 		DefinitionUtil.defineApiTypes(component, clazz);
 		DefinitionUtil.defineScopeType(component, clazzAnns, "WebBeans component implementation class : " + clazz.getName() + " must declare default @ScopeType annotation");
 		WebBeansUtil.checkPassivationScope(component, component.getScopeType().getAnnotation(ScopeType.class));
@@ -136,7 +136,7 @@ public final class SimpleWebBeansConfigurator
 		
 		component.setConstructor(WebBeansUtil.defineConstructor(clazz));
 		
-		WebBeansUtil.checkSteroTypeRequirements(component.getTypes(), component.getScopeType(), clazz.getAnnotations(),"WebBeans component  class : " + clazz.getName() );
+		WebBeansUtil.checkSteroTypeRequirements(component, clazz.getAnnotations(),"WebBeans component  class : " + clazz.getName() );
 		
 		Set<ProducerComponentImpl<?>> producerComponents = DefinitionUtil.defineProducerMethods(component);
 		ManagerImpl.getManager().getBeans().addAll(producerComponents);

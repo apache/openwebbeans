@@ -23,8 +23,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptors;
-import javax.webbeans.Interceptor;
+
 import javax.webbeans.InterceptorBindingType;
+import javax.webbeans.manager.Interceptor;
 
 /**
  * Web Beans general interceptor API contract. There are two types of interceptor
@@ -140,4 +141,8 @@ public interface InterceptorData
 	 * @return true if interceptor is configured with webbeans interceptor definition
 	 */
 	public boolean isDefinedWithWebBeansInterceptor();
+	
+	public void setWebBeansInterceptor(Interceptor webBeansInterceptor);
+	
+	public Interceptor getWebBeansInterceptor();
 }

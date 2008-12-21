@@ -14,53 +14,32 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.deployment.stereotype;
+package org.apache.webbeans.decorator.xml;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
+import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.decorator.WebBeansDecorator;
+import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 
-public interface IStereoTypeModel
+public class WebBeansXMLDecorator extends WebBeansDecorator
 {
-	/**
-	 * @return the name
-	 */
-	public String getName();
-
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name);
-
-	/**
-	 * @return the defaultDeploymentType
-	 */
-	public Annotation getDefaultDeploymentType();
-
-	/**
-	 * @return the defaultScopeType
-	 */
-	public Annotation getDefaultScopeType();
-
-	/**
-	 * @return the supportedScopes
-	 */
-	public Set<Class<? extends Annotation>> getSupportedScopes();
+	private XMLInjectionPointModel decoratesModel = null;
 	
-	/**
-	 * @return the restrictedTypes
+	public WebBeansXMLDecorator(AbstractComponent<Object> delegateComponent, XMLInjectionPointModel model)
+	{
+		super(delegateComponent);
+		this.decoratesModel = model;
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.apache.webbeans.decorator.WebBeansDecorator#initDelegate()
 	 */
-	public Set<Class<?>> getRestrictedTypes();
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public Set<Annotation> getInterceptorBindingTypes();
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public Set<Annotation> getInheritedStereoTypes();
+	@Override
+	protected void initDelegate()
+	{
+		this.delegateType = decoratesModel.getInjectionClassType();
+		this.delegateBindingTypes = decoratesModel.getBindingTypes();
+	}
+
 	
 }

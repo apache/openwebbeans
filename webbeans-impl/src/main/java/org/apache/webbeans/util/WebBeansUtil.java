@@ -65,6 +65,7 @@ import javax.webbeans.ScopeType;
 import javax.webbeans.SessionScoped;
 import javax.webbeans.UnproxyableDependencyException;
 import javax.webbeans.manager.Bean;
+import javax.webbeans.manager.Interceptor;
 import javax.webbeans.manager.Manager;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
@@ -74,6 +75,7 @@ import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.annotation.StandardLiteral;
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.Component;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.ConversationComponent;
 import org.apache.webbeans.component.ManagerComponentImpl;
@@ -682,7 +684,7 @@ public final class WebBeansUtil
 	 * @param isDefinedWithWebBeans
 	 *            if interceptor is defined with WebBeans spec, not EJB spec
 	 */
-	public static void configureInterceptorMethods(Class<?> clazz, Class<? extends Annotation> annotation, boolean definedInInterceptorClass, boolean definedInMethod, List<InterceptorData> stack, Method annotatedInterceptorClassMethod, boolean isDefinedWithWebBeans)
+	public static void configureInterceptorMethods(Interceptor webBeansInterceptor, Class<?> clazz, Class<? extends Annotation> annotation, boolean definedInInterceptorClass, boolean definedInMethod, List<InterceptorData> stack, Method annotatedInterceptorClassMethod, boolean isDefinedWithWebBeans)
 	{
 		InterceptorData intData = null;
 		Method method = null;
@@ -716,6 +718,7 @@ public final class WebBeansUtil
 			intData.setDefinedInInterceptorClass(definedInInterceptorClass);
 			intData.setDefinedInMethod(definedInMethod);
 			intData.setAnnotatedMethod(annotatedInterceptorClassMethod);
+			intData.setWebBeansInterceptor(webBeansInterceptor);
 
 			if (definedInInterceptorClass)
 			{
@@ -725,7 +728,8 @@ public final class WebBeansUtil
 					{
 						throw new WebBeansConfigurationException("Interceptor class : " + clazz.getName() + " must have no-arg constructor");
 					}
-
+					
+					
 					intData.setInterceptorInstance(clazz.newInstance());
 
 				} catch (WebBeansConfigurationException e1)
@@ -854,10 +858,13 @@ public final class WebBeansUtil
 	 *            annotation array
 	 * @return true if array contains the StereoType meta annotation
 	 */
-	public static boolean isComponentHasStereoType(Annotation[] anns)
+	public static boolean isComponentHasStereoType(Component<?> component)
 	{
-		Asserts.assertNotNull(anns, "Anns parameter can not be null");
+		Asserts.assertNotNull(component, "component parameter can not be null");
 
+		Set<Annotation> set = component.getStereoTypes();
+		Annotation[] anns = new Annotation[set.size()];
+		anns = set.toArray(anns);
 		if (AnnotationUtil.isStereoTypeMetaAnnotationExist(anns))
 		{
 			return true;
@@ -866,20 +873,24 @@ public final class WebBeansUtil
 		return false;
 	}
 
-	public static Annotation[] getComponentStereoTypes(Annotation[] anns)
+	public static Annotation[] getComponentStereoTypes(Component<?> component)
 	{
-		Asserts.assertNotNull(anns, "Anns parameter can not be null");
-		if (isComponentHasStereoType(anns))
+		Asserts.assertNotNull(component, "component parameter can not be null");
+		if (isComponentHasStereoType(component))
 		{
+			Set<Annotation> set = component.getStereoTypes();
+			Annotation[] anns = new Annotation[set.size()];
+			anns = set.toArray(anns);
+			
 			return AnnotationUtil.getStereotypeMetaAnnotations(anns);
 		}
 
 		return new Annotation[] {};
 	}
 
-	public static boolean isNamedExistOnStereoTypes(Annotation[] anns)
+	public static boolean isNamedExistOnStereoTypes(Component<?> component)
 	{
-		Annotation[] types = getComponentStereoTypes(anns);
+		Annotation[] types = getComponentStereoTypes(component);
 
 		for (Annotation ann : types)
 		{
@@ -892,9 +903,9 @@ public final class WebBeansUtil
 		return false;
 	}
 
-	public static Annotation getMaxPrecedenceSteroTypeDeploymentType(Annotation[] anns)
+	public static Annotation getMaxPrecedenceSteroTypeDeploymentType(Component<?> component)
 	{
-		Annotation[] deploymentTypes = getComponentStereoTypes(anns);
+		Annotation[] deploymentTypes = getComponentStereoTypes(component);
 		Class<? extends Annotation> maxPrecedDeploymentType = null;
 		Annotation result = null;
 		if (deploymentTypes.length > 0)
@@ -1061,9 +1072,9 @@ public final class WebBeansUtil
 		return null;
 	}
 
-	public static void checkSteroTypeRequirements(Set<Class<?>> apiTypes, Class<? extends Annotation> scope, Annotation[] anns, String errorMessage)
+	public static void checkSteroTypeRequirements(Component<?> component, Annotation[] anns, String errorMessage)
 	{
-		Annotation[] stereoTypes = getComponentStereoTypes(anns);
+		Annotation[] stereoTypes = getComponentStereoTypes(component);
 		for (Annotation stereoType : stereoTypes)
 		{
 			IStereoTypeModel model = StereoTypeManager.getInstance().getStereoTypeModel(stereoType.annotationType().getName());
@@ -1074,7 +1085,7 @@ public final class WebBeansUtil
 				Iterator<Class<?>> itTypes = rtypes.iterator();
 				while (itTypes.hasNext())
 				{
-					if (!apiTypes.contains(itTypes.next()))
+					if (!component.getTypes().contains(itTypes.next()))
 					{
 						throw new WebBeansConfigurationException(errorMessage + " must contains all supported api types in the @Stereotype annotation " + model.getName());
 
@@ -1087,7 +1098,7 @@ public final class WebBeansUtil
 			{
 				if (!suppScopes.isEmpty())
 				{
-					if (!suppScopes.contains(scope))
+					if (!suppScopes.contains(component.getScopeType()))
 					{
 						throw new WebBeansConfigurationException(errorMessage + " must contains all required scope types in the @Stereotype annotation " + model.getName());
 					}
@@ -1254,7 +1265,7 @@ public final class WebBeansUtil
 			
 			if(component != null)
 			{
-				WebBeansInterceptorConfig.configureInterceptorClass((ComponentImpl<Object>)component);	
+				WebBeansInterceptorConfig.configureInterceptorClass((ComponentImpl<Object>)component, clazz.getDeclaredAnnotations());	
 			}			
 		}
 		
@@ -1275,6 +1286,5 @@ public final class WebBeansUtil
 				WebBeansDecoratorConfig.configureDecoratorClass((ComponentImpl<Object>)component);
 			}			
 		}		
-		
 	}
 }

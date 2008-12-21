@@ -86,9 +86,9 @@ public final class EJBInterceptorConfig
 			configureInterceptorAnnots(superClass, stack, false,null);			
 		}
 
-		WebBeansUtil.configureInterceptorMethods(clazz, AroundInvoke.class,true,isMethod,stack,m,false);
-		WebBeansUtil.configureInterceptorMethods(clazz, PostConstruct.class,true,isMethod,stack,m,false);
-		WebBeansUtil.configureInterceptorMethods(clazz, PreDestroy.class,true,isMethod,stack,m,false);
+		WebBeansUtil.configureInterceptorMethods(null,clazz, AroundInvoke.class,true,isMethod,stack,m,false);
+		WebBeansUtil.configureInterceptorMethods(null,clazz, PostConstruct.class,true,isMethod,stack,m,false);
+		WebBeansUtil.configureInterceptorMethods(null,clazz, PreDestroy.class,true,isMethod,stack,m,false);
 		
 	}
 		
@@ -124,9 +124,9 @@ public final class EJBInterceptorConfig
 		configureBeanSuperClassAnnots(listSuperClazz,stack);
 		
 		//3- Bean itself
-		WebBeansUtil.configureInterceptorMethods(clazz, AroundInvoke.class,false,false,stack,null,false);
-		WebBeansUtil.configureInterceptorMethods(clazz, PostConstruct.class,false,false,stack,null,false);
-		WebBeansUtil.configureInterceptorMethods(clazz, PreDestroy.class,false,false,stack,null,false);
+		WebBeansUtil.configureInterceptorMethods(null,clazz, AroundInvoke.class,false,false,stack,null,false);
+		WebBeansUtil.configureInterceptorMethods(null,clazz, PostConstruct.class,false,false,stack,null,false);
+		WebBeansUtil.configureInterceptorMethods(null,clazz, PreDestroy.class,false,false,stack,null,false);
 		
 	}
 	
@@ -142,9 +142,9 @@ public final class EJBInterceptorConfig
 			Class<?> clazz = list.get(j);
 			if(!clazz.equals(Object.class))
 			{
-				WebBeansUtil.configureInterceptorMethods(clazz, AroundInvoke.class,false,false,stack,null,false);
-				WebBeansUtil.configureInterceptorMethods(clazz, PostConstruct.class,false,false,stack,null,false);
-				WebBeansUtil.configureInterceptorMethods(clazz, PreDestroy.class,false,false,stack,null,false);				
+				WebBeansUtil.configureInterceptorMethods(null,clazz, AroundInvoke.class,false,false,stack,null,false);
+				WebBeansUtil.configureInterceptorMethods(null,clazz, PostConstruct.class,false,false,stack,null,false);
+				WebBeansUtil.configureInterceptorMethods(null,clazz, PreDestroy.class,false,false,stack,null,false);				
 			}
 		}
 	}

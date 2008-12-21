@@ -18,6 +18,7 @@ package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,8 @@ import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.intercept.InterceptorData;
+import org.apache.webbeans.intercept.InterceptorDataComparator;
+import org.apache.webbeans.intercept.InterceptorDataImpl;
 
 /**
  * 
@@ -52,9 +55,6 @@ import org.apache.webbeans.intercept.InterceptorData;
  * 
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
- * @param <T>
- *            Type of the component instance that this Web Bean Component
- *            produces.
  */
 public abstract class AbstractComponent<T> extends Component<T>
 {
@@ -94,8 +94,10 @@ public abstract class AbstractComponent<T> extends Component<T>
 	/** Holds decorator stack */
 	protected List<Object> decoratorStack = new ArrayList<Object>();
 	
+	/**The bean is serializable or not*/
 	protected boolean serializable;
 	
+	/**The bean allows nullable object*/
 	protected boolean nullable;
 
 	/**
