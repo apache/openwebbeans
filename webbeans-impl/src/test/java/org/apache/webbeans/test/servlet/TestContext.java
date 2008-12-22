@@ -72,12 +72,15 @@ public abstract class TestContext implements ITestContext
 	private MockManager manager;
 
 	private static boolean init;
+	
+	protected WebBeansXMLConfigurator xmlConfigurator = null;
 
 	protected TestContext(String clazzName)
 	{
 		this.clazzName = clazzName;
 		testContexts.add(this);
 		this.manager = MockManager.getInstance();
+		this.xmlConfigurator = new WebBeansXMLConfigurator();
 	}
 
 	public void init()
@@ -193,7 +196,7 @@ public abstract class TestContext implements ITestContext
 	protected <T> void defineXMLSimpleWebBeans(Class<T> simpleClass, Element webBeanDecleration)
 	{
 		XMLComponentImpl<T> bean = null;
-		bean = WebBeansXMLConfigurator.configureSimpleWebBean(simpleClass, webBeanDecleration);
+		bean = this.xmlConfigurator.configureSimpleWebBean(simpleClass, webBeanDecleration);
 		
 		if(bean != null)
 		{
@@ -287,7 +290,7 @@ public abstract class TestContext implements ITestContext
 	
 	protected void configureFromXML(InputStream file, String fileName)
 	{
-		WebBeansXMLConfigurator.configure(file, fileName);
+		this.xmlConfigurator.configure(file, fileName);
 	}
 	
 	protected void initializeDeploymentType(Class<? extends Annotation> deploymentType, int precedence)

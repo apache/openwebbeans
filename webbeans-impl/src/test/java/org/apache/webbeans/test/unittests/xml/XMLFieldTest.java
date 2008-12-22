@@ -66,7 +66,7 @@ public class XMLFieldTest extends TestContext
 			InputStream stream = XMLFieldTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/fieldTest.xml");			
 			Assert.assertNotNull(stream);
 			
-			WebBeansXMLConfigurator.configure(stream,"fieldTest.xml");
+			this.xmlConfigurator.configure(stream,"fieldTest.xml");
 			
 		}catch(Throwable e1)
 		{
