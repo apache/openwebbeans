@@ -62,15 +62,13 @@ public final class WebBeansContainerDeployer
 {
 	private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansContainerDeployer.class);
 	
-	/**Check if deployment is already done*/
-	private static boolean deployed = false;
+	private boolean deployed = false;
 	
-	/**
-	 * Private constructor
-	 */
-	private WebBeansContainerDeployer()
+	private WebBeansXMLConfigurator xmlConfigurator = null;
+	
+	public WebBeansContainerDeployer(WebBeansXMLConfigurator xmlConfigurator)
 	{
-		throw new UnsupportedOperationException();
+		this.xmlConfigurator = xmlConfigurator;
 	}
 	
 	/**
@@ -81,9 +79,8 @@ public final class WebBeansContainerDeployer
 	 * </p>
 	 * @throws WebBeansDeploymentException if any deployment exception occurs
 	 */
-	public static void deploy() throws WebBeansDeploymentException
+	public void deploy(WebBeansScanner scanner) throws WebBeansDeploymentException
 	{
-		WebBeansScanner scanner = WebBeansScanner.getScannerInstance();
 		try
 		{
 			if(!deployed)
@@ -98,11 +95,11 @@ public final class WebBeansContainerDeployer
 				JNDIUtil.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, ManagerImpl.getManager());
 				
 				deployFromXML(scanner);
-				checkStereoTypes();				
+				checkStereoTypes(scanner);				
 				configureInterceptors(scanner);
 				configureDecorators(scanner);	
 				deployFromClassPath(scanner);
-				checkSpecializations();
+				checkSpecializations(scanner);
 				
 				deployed = true;
 			}
@@ -113,7 +110,7 @@ public final class WebBeansContainerDeployer
 		}
 	}
 	
-	private static void deployFromClassPath(WebBeansScanner scanner) throws ClassNotFoundException
+	private void deployFromClassPath(WebBeansScanner scanner) throws ClassNotFoundException
 	{
 		logger.info("Deploying configurations from class files is started");
 		
@@ -127,7 +124,7 @@ public final class WebBeansContainerDeployer
 			while(itPathClasses.hasNext())
 			{
 				String componentClassName = itPathClasses.next();
-				Class<?> implClass = Class.forName(componentClassName);
+				Class<?> implClass = ClassUtil.getClassFromName(componentClassName);
 				
 				if(SimpleWebBeansConfigurator.isSimpleWebBean(implClass))
 				{
@@ -146,7 +143,7 @@ public final class WebBeansContainerDeployer
 		
 	}
 	
-	private static void deployFromXML(WebBeansScanner scanner)
+	private void deployFromXML(WebBeansScanner scanner)
 	{
 		logger.info("Deploying configurations from XML files is started");
 		
@@ -157,13 +154,13 @@ public final class WebBeansContainerDeployer
 		while(it.hasNext())
 		{
 			String fileName = it.next();
-			WebBeansXMLConfigurator.configure(xmls.get(fileName), fileName);
+			this.xmlConfigurator.configure(xmls.get(fileName), fileName);
 		}
 		
 		logger.info("Deploying configurations from XML is ended succesfully");
 	}
 	
-	private static void configureInterceptors(WebBeansScanner scanner) throws ClassNotFoundException
+	private void configureInterceptors(WebBeansScanner scanner) throws ClassNotFoundException
 	{
 		logger.info("Configuring the Interceptors is started");
 		
@@ -175,7 +172,7 @@ public final class WebBeansContainerDeployer
 		{
 			for(String interceptorClazz : classes)
 			{
-				Class<?> implClass = Class.forName(interceptorClazz);
+				Class<?> implClass = ClassUtil.getClassFromName(interceptorClazz);
 					
 				logger.info("Simple WebBeans Interceptor Component with class name : " + interceptorClazz + " is found");
 				
@@ -187,7 +184,7 @@ public final class WebBeansContainerDeployer
 		
 	}
 	
-	private static void configureDecorators(WebBeansScanner scanner) throws ClassNotFoundException
+	private void configureDecorators(WebBeansScanner scanner) throws ClassNotFoundException
 	{
 		logger.info("Configuring the Decorators is started");
 		
@@ -198,7 +195,7 @@ public final class WebBeansContainerDeployer
 		{
 			for(String decoratorClazz : classes)
 			{
-				Class<?> implClass = Class.forName(decoratorClazz);
+				Class<?> implClass = ClassUtil.getClassFromName(decoratorClazz);
 				logger.info("Simple WebBeans Decorator Component with class name : " + decoratorClazz + " is found");
 				
 				defineSimpleWebBeansDecorators(implClass);
@@ -209,11 +206,11 @@ public final class WebBeansContainerDeployer
 		
 	}
 	
-	private static void checkSpecializations()
+	private void checkSpecializations(WebBeansScanner scanner)
 	{
 		logger.info("Checking Specialization constraints is started");
 		
-		  Map<String, Set<String>>  specialMap = WebBeansScanner.getScannerInstance().getANNOTATION_DB().getAnnotationIndex();
+		  Map<String, Set<String>>  specialMap = scanner.getANNOTATION_DB().getAnnotationIndex();
 		  if(specialMap != null && specialMap.size() > 0)
 		  {
 			  if(specialMap.containsKey(Specializes.class.getName()))
@@ -250,7 +247,7 @@ public final class WebBeansContainerDeployer
 		  logger.info("Checking Specialization constraints is ended");
 	}
 	
-	private static void checkXMLSpecializations()
+	private void checkXMLSpecializations()
 	{
 		  //Check XML specializations
 		  Set<Class<?>> clazzes = XMLSpecializesManager.getInstance().getXMLSpecializationClasses();
@@ -278,7 +275,7 @@ public final class WebBeansContainerDeployer
 		  }		
 	}
 	
-	public static void checkPassivationScopes()
+	public void checkPassivationScopes()
 	{
 		Set<Bean<?>> beans = ManagerImpl.getManager().getBeans();
 		
@@ -307,35 +304,30 @@ public final class WebBeansContainerDeployer
 		}
 	}
 	
-	public static void checkStereoTypes()
+	public void checkStereoTypes(WebBeansScanner scanner)
 	{
 		logger.info("Checking StereoTypes constraints is started");
 		  
-		Map<String, Set<String>>  stereotypeMap = WebBeansScanner.getScannerInstance().getANNOTATION_DB().getAnnotationIndex();
+		Map<String, Set<String>>  stereotypeMap = scanner.getANNOTATION_DB().getAnnotationIndex();
 		  if(stereotypeMap != null && stereotypeMap.size() > 0)
 		  {	
-			  if(stereotypeMap.containsKey(Stereotype.class.getName()))
+			  Set<String> stereoClassSet = stereotypeMap.keySet();
+			  Iterator<String> steIterator = stereoClassSet.iterator();
+			  while(steIterator.hasNext())
 			  {
-				  Set<String> stereoClassSet = stereotypeMap.keySet();
-				  Iterator<String> steIterator = stereoClassSet.iterator();
-				  while(steIterator.hasNext())
-				  {
-					  String steroClassName = steIterator.next();
-					  Set<String> stereoSet = stereotypeMap.get(steroClassName);
-					  
-					  for(String clazz : stereoSet)
-					  {
-						  Class<? extends Annotation> stereoClass = (Class<? extends Annotation>)ClassUtil.getClassFromName(clazz);
-						  
-						  if(!XMLAnnotationTypeManager.getInstance().isStereoTypeExist(stereoClass))
-						  {
-							  WebBeansUtil.checkStereoTypeClass(stereoClass);
-							  StereoTypeModel model = new StereoTypeModel(stereoClass);
-							  StereoTypeManager.getInstance().addStereoTypeModel(model);					  							  
-						  }
-					  }					  
-				  }
+				  String steroClassName = steIterator.next();
 				  
+				  Class<? extends Annotation> stereoClass = (Class<? extends Annotation>)ClassUtil.getClassFromName(steroClassName);
+				  
+				  if(AnnotationUtil.isStereoTypeAnnotation(stereoClass))
+				  {
+					  if(!XMLAnnotationTypeManager.getInstance().isStereoTypeExist(stereoClass))
+					  {
+						  WebBeansUtil.checkStereoTypeClass(stereoClass);
+						  StereoTypeModel model = new StereoTypeModel(stereoClass);
+						  StereoTypeManager.getInstance().addStereoTypeModel(model);					  							  
+					  }  
+				  }					  
 			  }
 		  }
 		  
@@ -343,7 +335,7 @@ public final class WebBeansContainerDeployer
 	}
 	
 	
-	private static <T> void defineSimpleWebBeans(Class<T> clazz)
+	private <T> void defineSimpleWebBeans(Class<T> clazz)
 	{
 		ComponentImpl<T> component = null;
 		
@@ -366,12 +358,12 @@ public final class WebBeansContainerDeployer
 	 * 
 	 * @param clazz interceptor class
 	 */
-	private static <T> void defineSimpleWebBeansInterceptors(Class<T> clazz)
+	private <T> void defineSimpleWebBeansInterceptors(Class<T> clazz)
 	{
 		WebBeansUtil.defineSimpleWebBeansInterceptors(clazz);
 	}
 	
-	private static <T> void defineSimpleWebBeansDecorators(Class<T> clazz)
+	private <T> void defineSimpleWebBeansDecorators(Class<T> clazz)
 	{
 		WebBeansUtil.defineSimpleWebBeansDecorators(clazz);
 	}

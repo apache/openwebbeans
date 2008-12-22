@@ -457,7 +457,7 @@ public final class XMLDefinitionUtil
 	 * 
 	 * @see XMLProducerComponentImpl
 	 */
-	public static <T> XMLProducerComponentImpl<T> defineXMLProducerMethod(XMLComponentImpl<T> component, Method producesMethod, Element producerMethodElement, String errorMessage)
+	public static <T> XMLProducerComponentImpl<T> defineXMLProducerMethod(WebBeansXMLConfigurator configurator,XMLComponentImpl<T> component, Method producesMethod, Element producerMethodElement, String errorMessage)
 	{
 		boolean producesDefined = false;
 		List<Element> childElements = producerMethodElement.elements();
@@ -541,7 +541,7 @@ public final class XMLDefinitionUtil
 		XMLProducerComponentImpl<T> producerComponentImpl = configureProduerMethod(component, producesMethod, injectedParameters, 
 				type, arrayElement, typeElement, errorMessage);
 		
-		configureProducerTypeLevelMetaData(producerComponentImpl, producesMethod, producerMethodElement, memberLevelMetaData, memberLevelElement, component, errorMessage);
+		configureProducerTypeLevelMetaData(configurator,producerComponentImpl, producesMethod, producerMethodElement, memberLevelMetaData, memberLevelElement, component, errorMessage);
 
 		
 		return producerComponentImpl;
@@ -614,7 +614,7 @@ public final class XMLDefinitionUtil
 	 * 
 	 * @see XMLProducerComponentImpl
 	 */
-	private static <T> XMLProducerComponentImpl<T> configureProducerTypeLevelMetaData(XMLProducerComponentImpl<T> producerComponentImpl, Method producesMethod, Element producerMethodElement,List<Class<? extends Annotation>> memberLevelMetaData,List<Element> memberLevelElement ,XMLComponentImpl<T> component,String errorMessage)
+	private static <T> XMLProducerComponentImpl<T> configureProducerTypeLevelMetaData(WebBeansXMLConfigurator configurator,XMLProducerComponentImpl<T> producerComponentImpl, Method producesMethod, Element producerMethodElement,List<Class<? extends Annotation>> memberLevelMetaData,List<Element> memberLevelElement ,XMLComponentImpl<T> component,String errorMessage)
 	{
 		
 		for(Class<? extends Annotation> memberLevelMetaDataClass : memberLevelMetaData)
@@ -629,7 +629,7 @@ public final class XMLDefinitionUtil
 			}
 		}
 		
-		WebBeansXMLConfigurator.configureProducerTypeLevelMetaData(producerComponentImpl, memberLevelMetaData, memberLevelElement, producerMethodElement);
+		configurator.configureProducerTypeLevelMetaData(producerComponentImpl, memberLevelMetaData, memberLevelElement, producerMethodElement);
 		
 		return producerComponentImpl;
 	}

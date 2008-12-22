@@ -36,6 +36,7 @@ import javax.webbeans.Observes;
 import javax.webbeans.TypeLiteral;
 
 import org.apache.webbeans.component.ObservesMethodsOwner;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -45,16 +46,13 @@ public final class NotificationManager implements Synchronization
 {
 	private static final WebBeansLogger logger = WebBeansLogger.getLogger(NotificationManager.class);
 	
-	@SuppressWarnings("unchecked")
-	private static NotificationManager instance = new NotificationManager();
-	
 	private Map<Class<?>, Set<ObserverImpl<?>>> observers = new ConcurrentHashMap<Class<?>, Set<ObserverImpl<?>>>();
 		
 	private TransactionManager transactionManager;
 	
 	private Set<TransactionalNotifier> transactionSet = new CopyOnWriteArraySet<TransactionalNotifier>();
 	
-	private NotificationManager()
+	public NotificationManager()
 	{
 		
 	}
@@ -62,6 +60,7 @@ public final class NotificationManager implements Synchronization
 	@SuppressWarnings("unchecked")
 	public static NotificationManager getInstance()
 	{
+		NotificationManager instance = (NotificationManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_NOTIFICATION_MANAGER);
 		return instance;
 	}
 	

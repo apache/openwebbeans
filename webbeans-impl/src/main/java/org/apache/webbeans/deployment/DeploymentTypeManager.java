@@ -22,26 +22,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.webbeans.Standard;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.util.Asserts;
 
 public class DeploymentTypeManager
 {
-	private static DeploymentTypeManager instance = null;
+	private Map<Class<? extends Annotation>, Integer> deploymentTypeMap = new ConcurrentHashMap<Class<? extends Annotation>, Integer>();  
 	
-	private Map<Class<? extends Annotation>, Integer> deploymentTypeMap = new ConcurrentHashMap<Class<? extends Annotation>, Integer>();
-
-	private DeploymentTypeManager()
+	public DeploymentTypeManager()
 	{
 		
 	}
 	
 	public static DeploymentTypeManager getInstance()
 	{
-		if(instance == null)
-		{
-			instance = new DeploymentTypeManager();
-			instance.deploymentTypeMap.put(Standard.class, Integer.valueOf(0));
-		}
+		DeploymentTypeManager instance = (DeploymentTypeManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_DEPLOYMENT_TYPE_MANAGER);
+		instance.deploymentTypeMap.put(Standard.class, Integer.valueOf(0));
 		
 		return instance;
 	}
@@ -54,9 +50,9 @@ public class DeploymentTypeManager
 		
 		if(!deploymentType.equals(Standard.class))
 		{
-			if(!instance.deploymentTypeMap.containsKey(deploymentType))
+			if(!deploymentTypeMap.containsKey(deploymentType))
 			{
-				instance.deploymentTypeMap.put(deploymentType, precedence);
+				deploymentTypeMap.put(deploymentType, precedence);
 			}
 		}
 	}
@@ -65,13 +61,13 @@ public class DeploymentTypeManager
 	{
 		Asserts.assertNotNull(deploymentType, "deploymentType parameter can not be null");
 		
-		if(!instance.deploymentTypeMap.containsKey(deploymentType))
+		if(!deploymentTypeMap.containsKey(deploymentType))
 		{
 			throw new IllegalArgumentException("Deployment type with annotation class : " + deploymentType.getName() + " is not applicable");
 		}
 		else
 		{
-			return instance.deploymentTypeMap.get(deploymentType);
+			return deploymentTypeMap.get(deploymentType);
 		}
 	}
 	
@@ -96,6 +92,6 @@ public class DeploymentTypeManager
 	public boolean isDeploymentTypeEnabled(Class<? extends Annotation> deploymentType)
 	{
 		Asserts.assertNotNull(deploymentType, "deploymentType parameter can not be null");
-		return instance.deploymentTypeMap.containsKey(deploymentType);
+		return deploymentTypeMap.containsKey(deploymentType);
 	}
 }

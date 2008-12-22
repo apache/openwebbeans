@@ -19,21 +19,21 @@ package org.apache.webbeans.intercept;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.util.Asserts;
 
 public class InterceptorsManager
 {
-	private static InterceptorsManager instance = new InterceptorsManager();
-
 	private List<Class<?>> enabledInterceptors = new CopyOnWriteArrayList<Class<?>>();
 
-	private InterceptorsManager()
+	public InterceptorsManager()
 	{
 
 	}
 
 	public static InterceptorsManager getInstance()
 	{
+		InterceptorsManager instance = (InterceptorsManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_INTERCEPTORS_MANAGER);
 		return instance;
 	}
 

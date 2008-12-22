@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.XMLStereoTypeModel;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -32,26 +33,20 @@ import org.dom4j.Element;
 
 public class XMLAnnotationTypeManager
 {
-	private static XMLAnnotationTypeManager manager = null;
-	
 	private Set<Class<? extends Annotation>> xmlBindingTypes = new CopyOnWriteArraySet<Class<? extends Annotation>>();
 	
 	private Map<Class<? extends Annotation>, Set<Annotation>> xmlInterceptorBindingTypes = new ConcurrentHashMap<Class<? extends Annotation>, Set<Annotation>>();
 	
 	private Set<Class<? extends Annotation>> xmlStereoTypes = new CopyOnWriteArraySet<Class<? extends Annotation>>();
 	
-	private XMLAnnotationTypeManager()
+	public XMLAnnotationTypeManager()
 	{
 		
 	}
 	
 	public static XMLAnnotationTypeManager getInstance()
 	{
-		if(manager == null)
-		{
-			manager = new XMLAnnotationTypeManager();
-		}
-		
+		XMLAnnotationTypeManager manager = (XMLAnnotationTypeManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_XML_ANNOTATION_TYPE_MANAGER);
 		return manager;
 	}
 	

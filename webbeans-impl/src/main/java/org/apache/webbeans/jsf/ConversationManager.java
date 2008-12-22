@@ -25,28 +25,24 @@ import javax.webbeans.Conversation;
 import javax.webbeans.manager.Bean;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.util.Asserts;
 
 public class ConversationManager
 {
-	private static ConversationManager manager = null;
-	
 	private Map<Conversation, ConversationContext> conversations = null;
 	
-	private ConversationManager()
+	public ConversationManager()
 	{
 		
 	}
 
 	public static ConversationManager getInstance()
 	{
-		if(manager == null)
-		{
-			manager = new ConversationManager();
-			manager.conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
-		}
+		ConversationManager manager = (ConversationManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_CONVERSATION_MANAGER);
+		manager.conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
 		
 		return manager;
 	}

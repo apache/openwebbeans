@@ -34,13 +34,14 @@ import org.apache.webbeans.lifecycle.WebBeansLifeCycle;
  */
 public class WebBeansConfigurationListener implements ServletContextListener,ServletRequestListener,HttpSessionListener
 {
+	private WebBeansLifeCycle lifeCycle = null;
 
 	/**
 	 * Performed when the servlet context destroyed.
 	 */
 	public void contextDestroyed(ServletContextEvent event)
 	{
-		WebBeansLifeCycle.applicationEnded(event);
+		this.lifeCycle.applicationEnded(event);
 	}
 
 	/**
@@ -48,7 +49,8 @@ public class WebBeansConfigurationListener implements ServletContextListener,Ser
 	 */
 	public void contextInitialized(ServletContextEvent event)
 	{
-		WebBeansLifeCycle.applicationStarted(event);
+		this.lifeCycle = new WebBeansLifeCycle();
+		this.lifeCycle.applicationStarted(event);
 	}
 
 	/**
@@ -56,7 +58,7 @@ public class WebBeansConfigurationListener implements ServletContextListener,Ser
 	 */
 	public void requestDestroyed(ServletRequestEvent event)
 	{
-		WebBeansLifeCycle.requestEnded(event);
+		this.lifeCycle.requestEnded(event);
 	}
 
 	/**
@@ -64,7 +66,7 @@ public class WebBeansConfigurationListener implements ServletContextListener,Ser
 	 */
 	public void requestInitialized(ServletRequestEvent event)
 	{
-		WebBeansLifeCycle.requestStarted(event);
+		this.lifeCycle.requestStarted(event);
 	}
 
 	/**
@@ -72,7 +74,7 @@ public class WebBeansConfigurationListener implements ServletContextListener,Ser
 	 */
 	public void sessionCreated(HttpSessionEvent event)
 	{
-		WebBeansLifeCycle.sessionStarted(event);
+		this.lifeCycle.sessionStarted(event);
 	}
 
 	/**
@@ -80,7 +82,7 @@ public class WebBeansConfigurationListener implements ServletContextListener,Ser
 	 */
 	public void sessionDestroyed(HttpSessionEvent event)
 	{
-		WebBeansLifeCycle.sessionEnded(event);
+		this.lifeCycle.sessionEnded(event);
 	}
 	
 }

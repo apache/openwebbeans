@@ -45,6 +45,7 @@ import javax.webbeans.manager.Interceptor;
 import javax.webbeans.manager.Manager;
 
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorComparator;
@@ -72,8 +73,6 @@ import org.apache.webbeans.util.WebBeansUtil;
 @SuppressWarnings("unchecked")
 public class ManagerImpl implements Manager, Referenceable
 {
-	private static ManagerImpl instance = null;
-		
 	private Map<Class<? extends Annotation>, Context> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, Context>();
 	
 	private Set<Bean<?>> components = new CopyOnWriteArraySet<Bean<?>>();
@@ -86,7 +85,8 @@ public class ManagerImpl implements Manager, Referenceable
 	
 	private InjectionResolver injectionResolver = null;
 	
-	private ManagerImpl()
+	
+	public ManagerImpl()
 	{		
 		injectionResolver = InjectionResolver.getInstance();
 		notificationManager = NotificationManager.getInstance();
@@ -94,10 +94,7 @@ public class ManagerImpl implements Manager, Referenceable
 	
 	public static ManagerImpl getManager()
 	{
-		if(instance == null)
-		{
-			instance = new ManagerImpl();
-		}
+		ManagerImpl instance = (ManagerImpl) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_MANAGER);
 		
 		return instance;
 	}

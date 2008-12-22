@@ -19,22 +19,22 @@ package org.apache.webbeans.deployment;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.util.Asserts;
 
 public class StereoTypeManager
 {
-	private static StereoTypeManager instance = new StereoTypeManager();
-
 	private Map<String, IStereoTypeModel> stereoTypeMap = new ConcurrentHashMap<String, IStereoTypeModel>();
 	
-	private StereoTypeManager()
+	public StereoTypeManager()
 	{
 		
 	}
 	
 	public static StereoTypeManager getInstance()
 	{
+		StereoTypeManager instance = (StereoTypeManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_STEREOTYPE_MANAGER);
 		return instance;
 	}
 	
@@ -42,16 +42,16 @@ public class StereoTypeManager
 	{
 		Asserts.assertNotNull(model, "model parameter can not be null");
 		
-		getInstance().stereoTypeMap.put(model.getName(), model);
+		stereoTypeMap.put(model.getName(), model);
 	}
 	
 	public IStereoTypeModel getStereoTypeModel(String modelName)
 	{
 		Asserts.assertNotNull(modelName, "modelName parameter can not be null");
 		
-		if(getInstance().stereoTypeMap.containsKey(modelName))
+		if(stereoTypeMap.containsKey(modelName))
 		{
-			return getInstance().stereoTypeMap.get(modelName);
+			return stereoTypeMap.get(modelName);
 		}
 		
 		return null;

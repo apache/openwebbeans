@@ -19,21 +19,22 @@ package org.apache.webbeans.decorator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.util.Asserts;
 
 public class DecoratorsManager
 {
-	private static DecoratorsManager instance = new DecoratorsManager();
-
 	private List<Class<?>> enabledDecorators = new CopyOnWriteArrayList<Class<?>>();
-
-	private DecoratorsManager()
+	
+	public DecoratorsManager()
 	{
 
 	}
 
-	public static DecoratorsManager getInstance()
+	public static  DecoratorsManager getInstance()
 	{
+		DecoratorsManager instance = (DecoratorsManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_DECORATORS_MANAGER);
+		
 		return instance;
 	}
 

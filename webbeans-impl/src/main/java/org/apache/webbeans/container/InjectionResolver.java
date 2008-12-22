@@ -29,6 +29,7 @@ import javax.webbeans.manager.Bean;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.ProducerComponentImpl;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -37,17 +38,14 @@ import org.apache.webbeans.util.ClassUtil;
 @SuppressWarnings("unchecked")
 public class InjectionResolver
 {
-	private static InjectionResolver instance = new InjectionResolver();
-	
-	private ManagerImpl manager = null;
-
-	private InjectionResolver()
+	public InjectionResolver()
 	{
-		manager = ManagerImpl.getManager();
+		
 	}
 	
 	public static InjectionResolver getInstance()
 	{
+		InjectionResolver instance = (InjectionResolver)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_INJECTION_RESOLVER);
 		return instance;
 	}
 	
@@ -55,9 +53,11 @@ public class InjectionResolver
 	{
 		Asserts.assertNotNull(name,"name parameter can not be null");
 		
+		ManagerImpl manager = ManagerImpl.getManager();
+		
 		Set<Bean<?>> resolvedComponents = new HashSet<Bean<?>>();
 		Bean<?> resolvedComponent = null;
-		Set<Bean<?>> deployedComponents = getInstance().manager.getBeans();
+		Set<Bean<?>> deployedComponents = manager.getBeans();
 		
 		Iterator<Bean<?>> it = deployedComponents.iterator();
 		while(it.hasNext())
@@ -98,6 +98,8 @@ public class InjectionResolver
 		Asserts.assertNotNull(apiType, "apiType parameter can not be null");
 		Asserts.assertNotNull(binding, "binding parameter can not be null");
 		
+		ManagerImpl manager = ManagerImpl.getManager();
+		
 		boolean currentBinding = false;
 		boolean returnAll = false;
 		
@@ -109,7 +111,7 @@ public class InjectionResolver
 		}
 		
 		Set<Bean<T>> results = new HashSet<Bean<T>>();
-		Set<Bean<?>> deployedComponents = getInstance().manager.getBeans();
+		Set<Bean<?>> deployedComponents = manager.getBeans();
 		
 		if(apiType.equals(Object.class) && currentBinding)
 		{

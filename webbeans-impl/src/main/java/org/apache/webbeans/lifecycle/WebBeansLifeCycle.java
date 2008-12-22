@@ -39,38 +39,47 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jsf.ConversationManager;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.JNDIUtil;
+import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 public final class WebBeansLifeCycle
 {
 	private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansLifeCycle.class);
 	
-	private static ScheduledExecutorService service = null;
+	private ScheduledExecutorService service = null;
+	
+	private WebBeansScanner scanner = null;
+	
+	private WebBeansContainerDeployer deployer = null; 
 
-	private WebBeansLifeCycle()
+	private WebBeansXMLConfigurator xmlDeployer = null;
+	
+	public WebBeansLifeCycle()
 	{
-		
+		this.scanner = new WebBeansScanner();
+		this.xmlDeployer = new WebBeansXMLConfigurator();
+		this.deployer = new WebBeansContainerDeployer(xmlDeployer);
 	}
 	
 
-	public static void requestStarted(ServletRequestEvent event)
+	public void requestStarted(ServletRequestEvent event)
 	{
 		logger.info("Initializing of the Request Context with Remote Address : " + event.getServletRequest().getRemoteAddr());
 		ContextFactory.initRequestContext((HttpServletRequest)event.getServletRequest());		
 	}
 	
-	public static void requestEnded(ServletRequestEvent event)
+	public void requestEnded(ServletRequestEvent event)
 	{
 		logger.info("Destroying of the Request Context with Remote Address : " + event.getServletRequest().getRemoteAddr());
 		ContextFactory.destroyRequestContext((HttpServletRequest)event.getServletRequest());		
 	}
 	
-	public static void sessionStarted(HttpSessionEvent event)
+	public void sessionStarted(HttpSessionEvent event)
 	{
 		logger.info("Initializing of the Session Context with session id : " + event.getSession().getId());
 		ContextFactory.initSessionContext(event.getSession());		
 	}
 	
-	public static void sessionEnded(HttpSessionEvent event)
+	public void sessionEnded(HttpSessionEvent event)
 	{
 		logger.info("Destroying of the Session Context with session id : " + event.getSession().getId());
 		ContextFactory.destroySessionContext(event.getSession());	
@@ -79,7 +88,7 @@ public final class WebBeansLifeCycle
 		conversationManager.destroyConversationContextWithSessionId(event.getSession().getId());		
 	}
 	
-	public static void applicationStarted(ServletContextEvent event)
+	public void applicationStarted(ServletContextEvent event)
 	{
 		//I do not know this is the correct way, spec is not so explicit.
 		service = Executors.newScheduledThreadPool(1);
@@ -98,12 +107,15 @@ public final class WebBeansLifeCycle
 		long begin = System.currentTimeMillis();
 		
 		logger.info("Scanning classpaths for WebBeans artifacts is started");
-		WebBeansScanner scanner = WebBeansScanner.getScannerInstance();
+		
 		scanner.scan(event.getServletContext());
+		
 		logger.info("Scanning is ended.");
 		
 		logger.info("Deploying the scanned WebBeans artifacts."); 
-		WebBeansContainerDeployer.deploy();
+		
+		deployer.deploy(this.scanner);
+		
 		logger.info("Deploying is ended.");
 		
 		long end = System.currentTimeMillis();
@@ -134,13 +146,20 @@ public final class WebBeansLifeCycle
 		
 	}
 	
-	public static void applicationEnded(ServletContextEvent event)
+	public void applicationEnded(ServletContextEvent event)
 	{
 		service.shutdownNow();
 		
 		logger.info("Destroying of the Application Context with Context Path : " + event.getServletContext().getContextPath());
 		ContextFactory.destroyApplicationContext(event.getServletContext());
-		JNDIUtil.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);		
+				
+		JNDIUtil.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
+		
+		this.deployer = null;
+		this.scanner = null;
+		this.service = null;
+		this.xmlDeployer = null;
+
 	}
 	
 }

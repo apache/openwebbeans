@@ -61,16 +61,9 @@ public final class WebBeansScanner
 	/**It is configured or not*/
 	private boolean configure = false;
 	
-	/**Single instance defines within the {@link ServletContext} insance*/
-	private static WebBeansScanner scannerInstance = new WebBeansScanner();
-	
 	private ServletContext servletContext = null;
 	
-	/**
-	 * Configuration constructor.
-	 * @param context servlet context instance
-	 */
-	private WebBeansScanner()
+	public WebBeansScanner()
 	{
 		
 	}
@@ -244,18 +237,5 @@ public final class WebBeansScanner
 	public AnnotationDB getANNOTATION_DB()
 	{	
 		return ANNOTATION_DB;
-	}
-	
-	/**
-	 * Gets the context defined single configuration instance.
-	 * @return configurator instance 
-	 */
-	public static WebBeansScanner getScannerInstance()
-	{
-		if(scannerInstance == null)
-			throw new NullPointerException("WebBeansScanner instance is null.");
-		
-		return scannerInstance;
-	}
-	
+	}	
 }

@@ -20,16 +20,14 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.util.Asserts;
 
 public class XMLSpecializesManager
 {
-
-	private static XMLSpecializesManager instance = null;
-	
 	private Set<Class<?>> specializeClasses = new CopyOnWriteArraySet<Class<?>>();
 	
-	private XMLSpecializesManager()
+	public XMLSpecializesManager()
 	{
 		
 	}
@@ -37,11 +35,7 @@ public class XMLSpecializesManager
 	
 	public static XMLSpecializesManager getInstance()
 	{
-		if(instance == null)
-		{
-			instance = new XMLSpecializesManager();
-		}
-		
+		XMLSpecializesManager instance = (XMLSpecializesManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_XML_SPECIALIZES_MANAGER);
 		return instance;
 	}
 	
