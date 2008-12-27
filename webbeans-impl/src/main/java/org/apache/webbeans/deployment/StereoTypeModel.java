@@ -89,7 +89,7 @@ public class StereoTypeModel implements IStereoTypeModel
 				
 				for(ElementType innerValue : innerValues)
 				{
-					if(innerValue.equals(ElementType.METHOD))
+					if(innerValue.equals(ElementType.METHOD) || innerValue.equals(ElementType.FIELD))
 					{
 						for(ElementType outerValue : outerValues)
 						{
@@ -104,7 +104,7 @@ public class StereoTypeModel implements IStereoTypeModel
 					{
 						for(ElementType outerValue : outerValues)
 						{
-							if(outerValue.equals(ElementType.METHOD))
+							if(outerValue.equals(ElementType.METHOD) || outerValue.equals(ElementType.FIELD))
 							{
 								throw new WebBeansConfigurationException("Inherited StereoType with class name : " + clazz.getName() + 
 										" must have compatible @Target annotation with Stereotype class name : " + clazz.getName());
