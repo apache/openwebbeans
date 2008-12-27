@@ -19,27 +19,38 @@ package org.apache.webbeans.test.servlet;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.webbeans.test.containertests.ComponentResolutionByTypeTest;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 
 /**
- * This test listener class is used for running the tests.
+ * This test listener class is used for running the tests
+ * from the web page.
  * 
+ * <p>
+ * NOT : Actually this is not used, it is created and used as an
+ * experimental.
+ * </p>
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
 public class TestListener implements ServletContextListener
 {
+	Logger log = Logger.getLogger(TestListener.class);
+	
 	private void init()
 	{
-		System.out.println("Initializing all of the test contexts");
-		new ComponentResolutionByTypeTest();
+		log.info("Initializing the test contexts");
 		TestContext.initTests();
 	}
 
+	/**
+	 * Ending all tests
+	 */
 	public void contextDestroyed(ServletContextEvent arg0)
 	{
+		log.info("Ending all tests");
+		
 		TestContext.endAllTests(arg0.getServletContext());
 	}
 
@@ -50,9 +61,15 @@ public class TestListener implements ServletContextListener
 		
 	}
 	
+	/**
+	 * Initialize and start all tests from the web application.
+	 */
 	public void contextInitialized(ServletContextEvent arg0)
 	{
 		init();
+		
+		log.info("Starting all tests");
+		
 		TestContext.startAllTests(arg0.getServletContext());
 	}
 

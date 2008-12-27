@@ -24,12 +24,15 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpSession;
 import javax.webbeans.Decorator;
 import javax.webbeans.Interceptor;
 import javax.webbeans.Production;
 import javax.webbeans.manager.Context;
+import javax.webbeans.manager.Manager;
 
+import org.apache.log4j.Logger;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
@@ -53,6 +56,7 @@ import org.apache.webbeans.test.component.decorator.clean.LargeTransactionDecora
 import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
 import org.apache.webbeans.test.component.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.WebBeanswithMetaInterceptor;
+import org.apache.webbeans.test.containertests.ComponentResolutionByTypeTest;
 import org.apache.webbeans.test.mock.MockHttpSession;
 import org.apache.webbeans.test.mock.MockManager;
 import org.apache.webbeans.test.sterotype.StereoWithNonScope;
@@ -63,26 +67,56 @@ import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.dom4j.Element;
 
+/**
+ * Superclass of all the unit test classes. It defines some methods
+ * for subclasses and also do some initializtions for running the
+ * tests succesfully.
+ * 
+ * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
+ * @since 1.0
+ */
 public abstract class TestContext implements ITestContext
 {
+	private Logger logger = Logger.getLogger(TestContext.class);
+	
+	/**All unit test classes. It is defined for starting the tests from the {@link ServletContextListener} methods*/
 	private static Set<ITestContext> testContexts = new HashSet<ITestContext>();
 
+	/**Test class name*/
 	private String clazzName;
 
+	/**MockManager is the mock implementation of the {@link Manager}*/
 	private MockManager manager;
-
+	
+	/**Tests initialization is already done or not*/
 	private static boolean init;
 	
+	/**Use for XML tests*/
 	protected WebBeansXMLConfigurator xmlConfigurator = null;
 
+	/**
+	 * Creates new test class.
+	 * 
+	 * @param clazzName class name of the test class
+	 */
 	protected TestContext(String clazzName)
 	{
 		this.clazzName = clazzName;
-		testContexts.add(this);
+		TestContext.testContexts.add(this);
 		this.manager = MockManager.getInstance();
 		this.xmlConfigurator = new WebBeansXMLConfigurator();
 	}
 
+	/**
+	 * Initialize the tests.
+	 * 
+	 * NOTE : Actually this has to be defined for each test classes.
+	 * But for the time being, this super-class globally defines some 
+	 * deployment types, interceptor types, decorator types and stereotypes.
+	 * 
+	 * If you would like to override default initialization, override these methods
+	 * in your test classes.
+	 */
 	public void init()
 	{
 		if (!init)
@@ -96,12 +130,18 @@ public abstract class TestContext implements ITestContext
 		}
 	}
 	
+	/**
+	 * Initialize deployment types.
+	 */
 	protected void initDeploymentTypes()
 	{
 		initializeDeploymentType(Production.class,1);
 
 	}
 	
+	/**
+	 * Initialize some predefined interceptors.
+	 */
 	protected void initInterceptors()
 	{
 		initializeInterceptorType(WebBeansInterceptor.class);
@@ -109,6 +149,9 @@ public abstract class TestContext implements ITestContext
 		
 	}
 	
+	/**
+	 * Initialize some predefined decorators.
+	 */
 	protected void initDecorators()
 	{
 		initializeDecoratorType(DelegateAttributeIsnotInterface.class);
@@ -120,6 +163,9 @@ public abstract class TestContext implements ITestContext
 		
 	}
 	
+	/**
+	 * Initialize some predefined stereotypes.
+	 */
 	protected void initStereoTypes()
 	{
 		initializeStereoType(Interceptor.class);
@@ -131,18 +177,56 @@ public abstract class TestContext implements ITestContext
 		
 	}
 	
-	protected void beforeTest(){}
+	/**
+	 * Call before test.
+	 */
+	protected void beforeTest()
+	{
+		
+	}
 
+	/**
+	 * This will be called whenever the test is failed.
+	 * 
+	 * NOT : This method is used for running the tests from the
+	 * {@link ServletContextListener}. It is not used for normal
+	 * unit tests.
+	 * 
+	 * @see TestListener
+	 * @see ComponentResolutionByTypeTest
+	 * @param methodName failed method name 
+	 */
 	public void fail(String methodName)
 	{
-		System.err.println("Test Class: " + clazzName + ",Method Name: " + methodName + " is FAILED");
+		logger.error("Test Class: " + clazzName + ",Method Name: " + methodName + " is FAILED");
 	}
 
+	/**
+	 * This will be called whenever the test is passed.
+	 * 
+	 * NOT : This method is used for running the tests from the
+	 * {@link ServletContextListener}. It is not used for normal
+	 * unit tests.
+	 * 
+	 * @see TestListener
+	 * @see ComponentResolutionByTypeTest
+	 * @param methodName passed method name 
+	 */	
 	public void pass(String methodName)
 	{
-		System.out.println("Test Class: " + clazzName + ",Method Name: " + methodName + " is PASSED");
+		logger.info("Test Class: " + clazzName + ",Method Name: " + methodName + " is PASSED");
 	}
 
+	/**
+	 * Initialize all tests.
+	 * 
+	 * NOT : This method is used for initializing the all tests classes 
+	 * from the {@link ServletContextListener}. It is not used for normal
+	 * unit tests.
+	 * 
+	 * @see TestListener
+	 * @see ComponentResolutionByTypeTest
+	 */
 	public static void initTests()
 	{
 		Iterator<ITestContext> it = testContexts.iterator();
@@ -153,6 +237,16 @@ public abstract class TestContext implements ITestContext
 
 	}
 
+	/**
+	 * Start all tests.
+	 * 
+	 * NOT : This method is used for starting the all tests classes 
+	 * from the {@link ServletContextListener}. It is not used for normal
+	 * unit tests.
+	 * 
+	 * @see TestListener
+	 * @see ComponentResolutionByTypeTest
+	 */	
 	public static void startAllTests(ServletContext ctx)
 	{
 		Iterator<ITestContext> it = testContexts.iterator();
@@ -163,6 +257,16 @@ public abstract class TestContext implements ITestContext
 
 	}
 
+	/**
+	 * Ending all tests.
+	 * 
+	 * NOT : This method is used for ending the all tests classes 
+	 * from the {@link ServletContextListener}. It is not used for normal
+	 * unit tests.
+	 * 
+	 * @see TestListener
+	 * @see ComponentResolutionByTypeTest
+	 */	
 	public static void endAllTests(ServletContext ctx)
 	{
 		Iterator<ITestContext> it = testContexts.iterator();
@@ -173,6 +277,12 @@ public abstract class TestContext implements ITestContext
 
 	}
 
+	/**
+	 * Defines simple webbeans from the given class.
+	 * 
+	 * @param clazz simple webbeans class
+	 * @return simple webbean
+	 */
 	protected <T> AbstractComponent<T> defineSimpleWebBean(Class<T> clazz)
 	{
 		ComponentImpl<T> bean = null;
@@ -193,6 +303,12 @@ public abstract class TestContext implements ITestContext
 		return bean;
 	}
 	
+	/**
+	 * Defines XML defined new simple webbean.
+	 * 
+	 * @param simpleClass webbeans class
+	 * @param webBeanDecleration element decleration defines simple webbeans
+	 */
 	protected <T> void defineXMLSimpleWebBeans(Class<T> simpleClass, Element webBeanDecleration)
 	{
 		XMLComponentImpl<T> bean = null;
@@ -206,6 +322,12 @@ public abstract class TestContext implements ITestContext
 	}
 	
 	
+	/**
+	 * Defines simple webbeans interceptor.
+	 * 
+	 * @param clazz interceptor class
+	 * @return the new interceptor
+	 */
 	@SuppressWarnings("unchecked")
 	protected <T> AbstractComponent<T> defineSimpleWebBeanInterceptor(Class<T> clazz)
 	{
@@ -226,6 +348,12 @@ public abstract class TestContext implements ITestContext
 		return component;
 	}
 	
+	/**
+	 * Defines the simple webbeans decorator.
+	 * 
+	 * @param clazz decorator class
+	 * @return the new decorator
+	 */
 	@SuppressWarnings("unchecked")
 	protected  <T> AbstractComponent<T> defineSimpleWebBeansDecorators(Class<T> clazz)
 	{
@@ -247,58 +375,116 @@ public abstract class TestContext implements ITestContext
 	}
 	
 	
-
+	/**
+	 * Clear all components in the {@link MockManager}
+	 */
 	protected void clear()
 	{
 		manager.clear();
 	}
 
+	/**
+	 * Gets the ith component in the {@link MockManager}
+	 * 
+	 * @param i ith component in the {@link MockManager}
+	 * @return the ith component in the list
+	 */
 	protected AbstractComponent<?> getComponent(int i)
 	{
 		return manager.getComponent(i);
 	}
 
+	/**
+	 * Gets all components in the {@link MockManager}
+	 * 
+	 * @return all components
+	 */
 	protected List<AbstractComponent<?>> getComponents()
 	{
 		return manager.getComponents();
 	}
 
+	/**
+	 * Return the size of the webbeans in the {@link MockManager}
+	 * 
+	 * @return the size of the components in the {@link MockManager}
+	 */
 	protected int getDeployedComponents()
 	{
 		return manager.getDeployedCompnents();
 	}
 
+	/**
+	 * Gets the webbeans instance.
+	 * 
+	 * @param name name of the webbean
+	 * @return the webbeans instance
+	 */
 	protected Object getInstanceByName(String name)
 	{
 		return manager.getInstanceByName(name);
 	}
 
+	/**
+	 * Gets the context with given scope type.
+	 * 
+	 * @param scopeType scope type
+	 * @return the context with given scope type
+	 */
 	protected Context getContext(Class<? extends Annotation> scopeType)
 	{
 		return manager.getContext(scopeType);
 	}
 
+	/**
+	 * Gets the {@link MockManager} instance.
+	 * 
+	 * @return manager instance
+	 */
 	protected MockManager getManager()
 	{
 		return manager;
 	}
 	
+	/**
+	 * Return new {@link MockHttpSession}
+	 * 
+	 * @return new mock session
+	 */
 	protected HttpSession getSession()
 	{
 		return new MockHttpSession();
 	}
 	
+	/**
+	 * Configuration of the webbeans XML file.
+	 * 
+	 * @param file input stream
+	 * @param fileName file name
+	 */
 	protected void configureFromXML(InputStream file, String fileName)
 	{
 		this.xmlConfigurator.configure(file, fileName);
 	}
 	
+	
+	/**
+	 * Add new deployment type with given precedence.
+	 * 
+	 * @param deploymentType deployment type
+	 * @param precedence precedence
+	 */
 	protected void initializeDeploymentType(Class<? extends Annotation> deploymentType, int precedence)
 	{
 		DeploymentTypeManager.getInstance().addNewDeploymentType(deploymentType, precedence);
 		
 	}
 
+	/**
+	 * Add new stereotype model.
+	 * 
+	 * @param stereoClass stereotype class
+	 */
 	protected void initializeStereoType(Class<?> stereoClass)
 	{
 		WebBeansUtil.checkStereoTypeClass(stereoClass);
@@ -306,24 +492,56 @@ public abstract class TestContext implements ITestContext
 		StereoTypeManager.getInstance().addStereoTypeModel(model);
 	}
 
+	/**
+	 * Add new interceptor class.
+	 * 
+	 * @param interceptorClazz interceptor class
+	 */
 	protected void initializeInterceptorType(Class<?> interceptorClazz)
 	{
 		InterceptorsManager.getInstance().addNewInterceptor(interceptorClazz);
 
 	}
 	
+	/**
+	 * Add new deocrator class.
+	 * 
+	 * @param decoratorClazz decorator class
+	 */
 	protected void initializeDecoratorType(Class<?> decoratorClazz)
 	{
 		DecoratorsManager.getInstance().addNewDecorator(decoratorClazz);
 
 	}
 	
+	/**
+	 * End tests for sub-class.
+	 * 
+	 * NOT : This method is used for ending the all test methods in sub-class 
+	 * from the {@link ServletContextListener}. It is not used for normal
+	 * unit tests.
+	 * 
+	 * @see TestListener
+	 * @see ComponentResolutionByTypeTest
+	 */			
 	public void endTests(ServletContext ctx)
 	{
+		
 	}
 
+	/**
+	 * Start tests for sub-class.
+	 * 
+	 * NOT : This method is used for starting the all test methods in sub-class 
+	 * from the {@link ServletContextListener}. It is not used for normal
+	 * unit tests.
+	 * 
+	 * @see TestListener
+	 * @see ComponentResolutionByTypeTest
+	 */		
 	public void startTests(ServletContext ctx)
 	{
+		
 	}
 	
 	
