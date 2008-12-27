@@ -17,7 +17,6 @@
 package org.apache.webbeans.container;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -143,7 +142,8 @@ public class InjectionResolver
 						Type[] actualArgs = null;
 						if(ClassUtil.isAssignable(apiType,componentApiType))
 						{
-							if(component instanceof ProducerComponentImpl)
+							/*Annotated Producer method or XML Defined Producer Method*/
+							if(ProducerComponentImpl.class.isAssignableFrom(component.getClass()))
 							{
 								actualArgs = ((ProducerComponentImpl<?>)component).getActualTypeArguments();
 								if(Arrays.equals(actualArgs, actualTypeArguments))
@@ -288,10 +288,5 @@ public class InjectionResolver
 		remainingSet = null;
 		
 		return result;
-	}		
-	
-	public static void main(String[] args)
-	{
-		System.out.println(Array.newInstance(Integer.class, 0).getClass());
-	}
+	}			
 }
