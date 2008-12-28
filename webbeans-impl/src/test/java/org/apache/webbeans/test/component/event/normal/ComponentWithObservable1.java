@@ -20,7 +20,7 @@ import java.lang.annotation.Annotation;
 
 import javax.webbeans.Current;
 import javax.webbeans.Event;
-import javax.webbeans.Observable;
+import javax.webbeans.Fires;
 import javax.webbeans.Production;
 import javax.webbeans.RequestScoped;
 
@@ -32,7 +32,7 @@ import org.apache.webbeans.test.event.LoggedInEvent;
 @Current
 public class ComponentWithObservable1
 {
-	private @Observable Event<LoggedInEvent> event;
+	private @Fires Event<LoggedInEvent> event;
 	
 	public void afterLoggedIn()
 	{
