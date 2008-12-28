@@ -23,7 +23,7 @@ import javax.faces.application.FacesMessage;
 import javax.webbeans.Current;
 import javax.webbeans.Event;
 import javax.webbeans.Named;
-import javax.webbeans.Observable;
+import javax.webbeans.Fires;
 import javax.webbeans.Observes;
 import javax.webbeans.Produces;
 import javax.webbeans.RequestScoped;
@@ -49,7 +49,7 @@ public class LoginBean
 	
 	private @Current FacesMessageUtil messageUtil;
 	
-	private @Observable Event<LoggedInEvent> event;
+	private @Fires Event<LoggedInEvent> event;
 	
 	public LoginBean()
 	{
