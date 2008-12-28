@@ -57,7 +57,7 @@ import javax.webbeans.InconsistentSpecializationException;
 import javax.webbeans.Initializer;
 import javax.webbeans.Named;
 import javax.webbeans.New;
-import javax.webbeans.Observable;
+import javax.webbeans.Fires;
 import javax.webbeans.Observes;
 import javax.webbeans.Produces;
 import javax.webbeans.RequestScoped;
@@ -226,7 +226,7 @@ public final class WebBeansUtil
 
 		if (result != null)
 		{
-			Type[] observableTypes = AnnotationUtil.getConstructorParameterGenericTypesWithGivenAnnotation(result, Observable.class);
+			Type[] observableTypes = AnnotationUtil.getConstructorParameterGenericTypesWithGivenAnnotation(result, Fires.class);
 			EventUtil.checkObservableMethodParameterConditions(observableTypes, "constructor parameter", "constructor : " + result.getName() + "in class : " + clazz.getName());
 			
 			Annotation[][] parameterAnns = result.getParameterAnnotations();
@@ -340,7 +340,7 @@ public final class WebBeansUtil
 
 	public static void checkProducerMethodDisposal(Method disposalMethod, String parentImplClazzName)
 	{
-		Type[] observableTypes = AnnotationUtil.getMethodParameterGenericTypesWithGivenAnnotation(disposalMethod, Observable.class);
+		Type[] observableTypes = AnnotationUtil.getMethodParameterGenericTypesWithGivenAnnotation(disposalMethod, Fires.class);
 		EventUtil.checkObservableMethodParameterConditions(observableTypes, "method parameter", "method : " + disposalMethod.getName() + "in class : " + parentImplClazzName);
 		
 		
@@ -1146,7 +1146,7 @@ public final class WebBeansUtil
 		Asserts.assertNotNull(method, "method parameter can not be null");
 		Asserts.nullCheckForClass(clazz);
 		
-		Type[] observableTypes = AnnotationUtil.getMethodParameterGenericTypesWithGivenAnnotation(method, Observable.class);
+		Type[] observableTypes = AnnotationUtil.getMethodParameterGenericTypesWithGivenAnnotation(method, Fires.class);
 		EventUtil.checkObservableMethodParameterConditions(observableTypes, "method parameter", "method : " + method.getName() + "in class : " + clazz.getName());
 
 		if(AnnotationUtil.isMethodParameterAnnotationExist(method, Disposes.class) ||
@@ -1226,7 +1226,7 @@ public final class WebBeansUtil
 	{
 		Asserts.nullCheckForClass(clazz);
 		
-		Field[] candidateFields = AnnotationUtil.getClazzFieldsWithGivenAnnotation(clazz, Observable.class);
+		Field[] candidateFields = AnnotationUtil.getClazzFieldsWithGivenAnnotation(clazz, Fires.class);
 		
 		for(Field candidateField : candidateFields)
 		{

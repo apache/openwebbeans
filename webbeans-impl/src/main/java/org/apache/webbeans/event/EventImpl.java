@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.webbeans.Event;
-import javax.webbeans.Observable;
+import javax.webbeans.Fires;
 import javax.webbeans.Observer;
 
 import org.apache.webbeans.container.ManagerImpl;
@@ -61,7 +61,7 @@ public class EventImpl<T> implements Event<T>
 		
 		for(Annotation binding : injectedBindings)
 		{
-			if(!binding.annotationType().equals(Observable.class))
+			if(!binding.annotationType().equals(Fires.class))
 			{
 				eventBindings.add(binding);
 			}

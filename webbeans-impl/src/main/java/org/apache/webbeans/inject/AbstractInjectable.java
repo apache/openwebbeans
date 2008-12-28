@@ -23,7 +23,7 @@ import java.util.Set;
 
 import javax.webbeans.Dependent;
 import javax.webbeans.New;
-import javax.webbeans.Observable;
+import javax.webbeans.Fires;
 import javax.webbeans.manager.Bean;
 
 import org.apache.webbeans.component.AbstractComponent;
@@ -125,7 +125,7 @@ public abstract class AbstractInjectable implements Injectable
 	{
 		for(Annotation ann : annotations)
 		{
-			if(ann.annotationType().equals(Observable.class))
+			if(ann.annotationType().equals(Fires.class))
 			{
 				return true;
 			}

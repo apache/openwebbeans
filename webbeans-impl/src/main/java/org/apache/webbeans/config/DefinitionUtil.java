@@ -31,7 +31,7 @@ import javax.webbeans.Disposes;
 import javax.webbeans.Initializer;
 import javax.webbeans.Named;
 import javax.webbeans.NonBinding;
-import javax.webbeans.Observable;
+import javax.webbeans.Fires;
 import javax.webbeans.Observes;
 import javax.webbeans.Produces;
 import javax.webbeans.ScopeType;
@@ -355,7 +355,7 @@ public final class DefinitionUtil
 					}
 				}
 				
-				Type[] observableTypes = AnnotationUtil.getMethodParameterGenericTypesWithGivenAnnotation(declaredMethod, Observable.class);
+				Type[] observableTypes = AnnotationUtil.getMethodParameterGenericTypesWithGivenAnnotation(declaredMethod, Fires.class);
 				EventUtil.checkObservableMethodParameterConditions(observableTypes, "method parameter","method : " + declaredMethod.getName() + "in class : " + clazz.getName());
 								
 				ProducerComponentImpl<?> newComponent = createProducerComponent(declaredMethod.getReturnType(), declaredMethod ,component);
