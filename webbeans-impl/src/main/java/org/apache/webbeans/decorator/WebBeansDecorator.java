@@ -19,6 +19,7 @@ package org.apache.webbeans.decorator;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,8 +27,11 @@ import javax.webbeans.Decorates;
 import javax.webbeans.manager.Decorator;
 
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.inject.InjectableField;
+import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
@@ -179,7 +183,33 @@ public class WebBeansDecorator extends Decorator
 	@Override
 	public Object create()
 	{
-		return delegateComponent.create();
+		Object proxy = ManagerImpl.getManager().getInstance(this);
+		
+		//Set injected fields
+		ComponentImpl<Object> delegate = (ComponentImpl<Object>)this.delegateComponent;
+		
+		Set<Field> injectedFields = delegate.getInjectedFields();
+		for(Field injectedField : injectedFields)
+		{
+			boolean isDecorates = injectedField.isAnnotationPresent(Decorates.class);
+			
+			if(!isDecorates)
+			{
+				InjectableField ife = new InjectableField(injectedField,proxy,this.delegateComponent);
+				ife.doInjection();				
+			}
+		}
+		
+		Set<Method> injectedMethods = delegate.getInjectedMethods();
+		for(Method injectedMethod : injectedMethods)
+		{
+			@SuppressWarnings("unchecked")
+			InjectableMethods<?> ife = new InjectableMethods(injectedMethod,proxy,this.delegateComponent);
+			ife.doInjection();
+		}
+		
+		
+		return proxy;
 	}
 
 	@Override

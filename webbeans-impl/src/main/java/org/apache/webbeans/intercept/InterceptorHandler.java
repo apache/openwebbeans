@@ -137,8 +137,7 @@ public class InterceptorHandler implements MethodHandler
 				throw new WebBeansException(e);
 			}
 				
-		}
-		
+		}		
 	}
 	
 	private <T> void callAroundInvokes(Object instance, Method proceed, Object[] arguments,  List<InterceptorData> stack) throws Exception

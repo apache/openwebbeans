@@ -78,7 +78,7 @@ public final class WebBeansDecoratorConfig
 		{
 			WebBeansDecorator decorator = (WebBeansDecorator)itList.next();
 			
-			Object decoratorInstance = ManagerImpl.getManager().getInstance(decorator);
+			Object decoratorInstance = decorator.create();
 			decorator.setDelegate(decoratorInstance, instance);
 		
 			component.getDecoratorStack().add(decoratorInstance);			
