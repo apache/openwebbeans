@@ -38,6 +38,7 @@ public abstract class ServiceDecorator implements IService
 	public String service()
 	{
 		this.delegateAttr = delegate.service();
+		 
 		
 		return "ServiceDecorator";
 	}

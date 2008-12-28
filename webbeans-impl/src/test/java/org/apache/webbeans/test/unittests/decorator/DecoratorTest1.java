@@ -31,6 +31,7 @@ import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.annotation.binding.Binding1Literal;
+import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.decorator.clean.Account;
 import org.apache.webbeans.test.component.decorator.clean.AccountComponent;
 import org.apache.webbeans.test.component.decorator.clean.LargeTransactionDecorator;
@@ -68,6 +69,7 @@ public class DecoratorTest1 extends TestContext
 	@Test
 	public void test1()
 	{
+		defineSimpleWebBean(CheckWithCheckPayment.class);
 		defineSimpleWebBeansDecorators(ServiceDecorator.class);
 		AbstractComponent<ServiceImpl1> component = defineSimpleWebBean(ServiceImpl1.class);
 	
