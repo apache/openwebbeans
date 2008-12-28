@@ -19,7 +19,6 @@ package org.apache.webbeans.test.unittests.intercept;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.webbeans.RequestScoped;
 
 import junit.framework.Assert;
 
@@ -89,7 +88,7 @@ public class EJBInterceptComponentTest extends TestContext
 		ContextFactory.initRequestContext(null);
 		List<AbstractComponent<?>> comps = getComponents();
 		
-		Object object = getContext(RequestScoped.class).get(comps.get(0), true);
+		Object object = getManager().getInstance(comps.get(0));
 		
 		Assert.assertTrue(object instanceof InterceptedComponent);
 		
@@ -110,7 +109,7 @@ public class EJBInterceptComponentTest extends TestContext
 		ContextFactory.initRequestContext(null);
 		List<AbstractComponent<?>> comps = getComponents();
 		
-		Object object = getContext(RequestScoped.class).get(comps.get(0), true);
+		Object object = getManager().getInstance(comps.get(0));
 		
 		Assert.assertTrue(object instanceof MultipleInterceptedComponent);
 		
@@ -137,7 +136,7 @@ public class EJBInterceptComponentTest extends TestContext
 		ContextFactory.initRequestContext(null);
 		List<AbstractComponent<?>> comps = getComponents();
 		
-		Object object = getContext(RequestScoped.class).get(comps.get(0), true);
+		Object object = getManager().getInstance(comps.get(0));
 		
 		Assert.assertTrue(object instanceof InterceptorWithSuperClassInterceptedComponent);
 		
@@ -164,7 +163,7 @@ public class EJBInterceptComponentTest extends TestContext
 		ContextFactory.initRequestContext(null);
 		List<AbstractComponent<?>> comps = getComponents();
 		
-		Object object = getContext(RequestScoped.class).get(comps.get(0), true);
+		Object object = getManager().getInstance(comps.get(0));
 		
 		Assert.assertTrue(object instanceof MultipleListOfInterceptedComponent);
 		
@@ -189,7 +188,7 @@ public class EJBInterceptComponentTest extends TestContext
 		ContextFactory.initRequestContext(null);
 		List<AbstractComponent<?>> comps = getComponents();
 		
-		Object object = getContext(RequestScoped.class).get(comps.get(0), true);
+		Object object = getManager().getInstance(comps.get(0));
 		
 		Assert.assertTrue(object instanceof MultipleListOfInterceptedWithExcludeClassComponent);
 		

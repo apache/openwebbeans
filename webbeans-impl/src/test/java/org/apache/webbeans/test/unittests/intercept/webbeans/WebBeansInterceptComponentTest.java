@@ -19,7 +19,6 @@ package org.apache.webbeans.test.unittests.intercept.webbeans;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.webbeans.RequestScoped;
 
 
 import junit.framework.Assert;
@@ -93,7 +92,7 @@ public class WebBeansInterceptComponentTest extends TestContext
 		ContextFactory.initRequestContext(null);
 		List<AbstractComponent<?>> comps = getComponents();
 		
-		Object object = getContext(RequestScoped.class).get(comps.get(0), true);
+		Object object = getManager().getInstance(comps.get(0));
 		
 		Assert.assertTrue(object instanceof WInterceptorComponent);
 		
@@ -117,7 +116,7 @@ public class WebBeansInterceptComponentTest extends TestContext
 		ContextFactory.initRequestContext(null);
 		List<AbstractComponent<?>> comps = getComponents();
 		
-		Object object =getContext(RequestScoped.class).get(comps.get(0), true);
+		Object object =getManager().getInstance(comps.get(0));
 		
 		Assert.assertTrue(object instanceof WMetaInterceptorComponent);
 		

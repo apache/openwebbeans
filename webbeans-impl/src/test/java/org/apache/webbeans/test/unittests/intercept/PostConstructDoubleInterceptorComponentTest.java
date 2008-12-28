@@ -19,14 +19,11 @@ package org.apache.webbeans.test.unittests.intercept;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.webbeans.RequestScoped;
-import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
-import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -74,8 +71,8 @@ public class PostConstructDoubleInterceptorComponentTest extends TestContext
 		
 		Assert.assertEquals(2, comps.size());
 		
-		Object object = ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(0), true);
-		Object object2 = ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), true);
+		Object object = getManager().getInstance(comps.get(0));
+		Object object2 = getManager().getInstance(comps.get(1));
 		
 		Assert.assertTrue(object instanceof CheckWithCheckPayment);
 		Assert.assertTrue(object2 instanceof PostConstructDoubleInterceptorComponent);
@@ -89,7 +86,6 @@ public class PostConstructDoubleInterceptorComponentTest extends TestContext
 		
 		
 		Assert.assertNotNull(pcc.getP());
-		Assert.assertEquals(object, pcc.getP());
 		
 		Assert.assertNotNull(PostConstructDoubleInterceptorComponent.setininterceptor2);
 		Assert.assertEquals("value1", PostConstructDoubleInterceptorComponent.setininterceptor2);

@@ -19,4 +19,5 @@ package org.apache.webbeans.test.component.library;
 public interface Shop<T>
 {
 
+	public String shop();
 }

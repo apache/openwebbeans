@@ -18,8 +18,6 @@ package org.apache.webbeans.test.unittests.annotation;
 
 import java.lang.annotation.Annotation;
 
-import javax.webbeans.AnnotationLiteral;
-
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;

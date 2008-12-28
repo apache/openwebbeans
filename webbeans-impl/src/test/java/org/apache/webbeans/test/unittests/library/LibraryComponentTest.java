@@ -19,18 +19,14 @@ package org.apache.webbeans.test.unittests.library;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.webbeans.RequestScoped;
-import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.component.InjectedTypeLiteralComponent;
-import org.apache.webbeans.test.component.TypeLiteralComponent;
+import org.apache.webbeans.test.component.library.Book;
 import org.apache.webbeans.test.component.library.BookShop;
+import org.apache.webbeans.test.component.library.Shop;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,6 +66,14 @@ public class LibraryComponentTest extends TestContext
 		ContextFactory.initRequestContext(null);
 		
 		Assert.assertEquals(1, comps.size());
+		
+		AbstractComponent<?> obj = comps.get(0);
+		
+		Object instance = getManager().getInstance(obj);
+		Assert.assertTrue(instance instanceof Shop);
+		
+		Shop<Book> shop = (Shop<Book>)instance;
+		shop.shop();
 		
 		ContextFactory.destroyRequestContext(null);
  	}

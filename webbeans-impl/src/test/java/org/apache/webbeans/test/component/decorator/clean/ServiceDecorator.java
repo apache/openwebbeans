@@ -29,7 +29,7 @@ import org.apache.webbeans.test.component.service.IService;
 @Named
 @RequestScoped
 @Current
-public class ServiceDecorator implements IService
+public abstract class ServiceDecorator implements IService
 {
 	@Decorates @Binding1 IService delegate;
 	

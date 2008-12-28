@@ -16,10 +16,25 @@
  */
 package org.apache.webbeans.test.component.library;
 
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
 import javax.webbeans.Production;
+import javax.webbeans.RequestScoped;
 
 @Production
+@RequestScoped
 public class BookShop extends Business implements Shop<Book>
 {
+
+	public String shop()
+	{
+		return "shop";
+	}
+	
+	@AroundInvoke
+	public Object intercept(InvocationContext context) throws Exception
+	{
+		return context.proceed();
+	}
 
 }

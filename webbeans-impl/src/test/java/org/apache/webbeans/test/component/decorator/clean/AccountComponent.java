@@ -39,12 +39,38 @@ public class AccountComponent implements Account
 
 	public BigDecimal getBalance()
 	{
-		return null;
+		return this.balance;
 	}
 
 	public void withdraw(BigDecimal amount)
 	{
 		
 	}
+
+	/**
+	 * @return the amount
+	 */
+	public BigDecimal getAmount()
+	{
+		return amount;
+	}
+
+	/**
+	 * @param amount the amount to set
+	 */
+	public void setAmount(BigDecimal amount)
+	{
+		this.amount = amount;
+	}
+
+	/**
+	 * @param balance the balance to set
+	 */
+	public void setBalance(BigDecimal balance)
+	{
+		this.balance = balance;
+	}
+	
+	
 
 }

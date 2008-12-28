@@ -18,11 +18,9 @@ package org.apache.webbeans.test.component;
 
 import java.util.List;
 
-import javax.webbeans.Current;
 import javax.webbeans.Initializer;
 import javax.webbeans.Production;
 import javax.webbeans.RequestScoped;
-import javax.webbeans.TypeLiteral;
 
 @Production
 @RequestScoped

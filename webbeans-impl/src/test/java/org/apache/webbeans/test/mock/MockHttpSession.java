@@ -17,7 +17,6 @@
 package org.apache.webbeans.test.mock;
 
 import java.util.Enumeration;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletContext;

@@ -21,7 +21,6 @@ import java.util.List;
 import javax.webbeans.Current;
 import javax.webbeans.Production;
 import javax.webbeans.RequestScoped;
-import javax.webbeans.TypeLiteral;
 
 @Production
 @RequestScoped

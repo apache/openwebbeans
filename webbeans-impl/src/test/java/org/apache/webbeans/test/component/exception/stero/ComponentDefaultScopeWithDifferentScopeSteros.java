@@ -19,7 +19,6 @@ package org.apache.webbeans.test.component.exception.stero;
 import javax.webbeans.Production;
 import javax.webbeans.SessionScoped;
 
-import org.apache.webbeans.test.sterotype.StereoWithNonScope;
 import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 
