@@ -18,14 +18,11 @@ package org.apache.webbeans.intercept;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Comparator;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.interceptor.AroundInvoke;
 import javax.webbeans.manager.Interceptor;
-
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 
 /**
  * Abstract implementation of the {@link InterceptorData} api

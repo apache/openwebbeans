@@ -18,7 +18,6 @@ package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -34,8 +33,6 @@ import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.intercept.InterceptorDataComparator;
-import org.apache.webbeans.intercept.InterceptorDataImpl;
 
 /**
  * 
@@ -436,18 +433,18 @@ public abstract class AbstractComponent<T> extends Component<T>
 	 * @see org.apache.webbeans.component.Component#setNullable()
 	 */
 	@Override
-	public void setNullable(boolean serializable)
+	public void setNullable(boolean nullable)
 	{
-		this.serializable = serializable;
+		this.nullable = nullable;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.apache.webbeans.component.Component#setSerializable()
 	 */
 	@Override
-	public void setSerializable(boolean nullable)
+	public void setSerializable(boolean serializable)
 	{
-		this.nullable = nullable;
+		this.serializable = serializable;
 		
 	}
 

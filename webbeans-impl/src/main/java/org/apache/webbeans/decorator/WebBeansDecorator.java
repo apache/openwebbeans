@@ -233,6 +233,15 @@ public class WebBeansDecorator extends Decorator
 	
 
 	/**
+	 * @return the delegateComponent
+	 */
+	public AbstractComponent<Object> getDelegateComponent()
+	{
+		return delegateComponent;
+	}
+
+
+	/**
 	 * @return the clazz
 	 */
 	public Class<?> getClazz()

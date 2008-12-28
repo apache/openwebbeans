@@ -29,7 +29,6 @@ import javax.webbeans.InconsistentSpecializationException;
 import javax.webbeans.Interceptor;
 import javax.webbeans.ScopeType;
 import javax.webbeans.Specializes;
-import javax.webbeans.Stereotype;
 import javax.webbeans.manager.Bean;
 
 import org.apache.webbeans.WebBeansConstants;

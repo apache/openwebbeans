@@ -76,15 +76,13 @@ public final class WebBeansDecoratorConfig
 		
 		while(itList.hasNext())
 		{
-			Decorator decorator = itList.next();
+			WebBeansDecorator decorator = (WebBeansDecorator)itList.next();
+			
 			Object decoratorInstance = ManagerImpl.getManager().getInstance(decorator);
-
 			decorator.setDelegate(decoratorInstance, instance);
 		
 			component.getDecoratorStack().add(decoratorInstance);			
 		}
-		
-		
 	}
 	
 	private static Set<Decorator> getWebBeansDecorators()

@@ -21,6 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -85,6 +87,7 @@ public class ManagerImpl implements Manager, Referenceable
 	
 	private InjectionResolver injectionResolver = null;
 	
+	private Map<Bean<?>, Object> proxyMap = Collections.synchronizedMap(new IdentityHashMap<Bean<?>, Object>());
 	
 	public ManagerImpl()
 	{		
@@ -258,9 +261,26 @@ public class ManagerImpl implements Manager, Referenceable
 				isSetOnThis = true;
 			}
 			
-			context = getContext(bean.getScopeType());
-			instance = context.get(bean, true);
+			if(!bean.getScopeType().equals(Dependent.class))
+			{
+				if(this.proxyMap.containsKey(bean))
+				{
+					instance = (T)this.proxyMap.get(bean);
+				}
+				else
+				{
+					instance =(T) JavassistProxyFactory.createNewProxyInstance(bean);
+					
+					this.proxyMap.put(bean, instance);
+				}
+			}
 			
+			else
+			{
+				context = getContext(bean.getScopeType());
+				instance = context.get(bean, true);					
+			}
+						
 		}finally
 		{
 			if(isSetOnThis)

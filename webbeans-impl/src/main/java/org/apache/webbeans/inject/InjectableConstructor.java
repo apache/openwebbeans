@@ -23,14 +23,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.webbeans.Dependent;
-
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 
 /**
@@ -111,14 +108,7 @@ public class InjectableConstructor<T> extends AbstractInjectable
 		{
 			if (!EJBUtil.isEJBSessionClass(con.getDeclaringClass()))
 			{
-				if(getInjectionOwnerComponent().getScopeType().equals(Dependent.class))
-				{
-					instance = con.newInstance(list.toArray());
-				}
-				else
-				{
-					instance = (T) JavassistProxyFactory.createNewProxyInstance(con.getDeclaringClass(), con.getParameterTypes(), list.toArray(), getInjectionOwnerComponent());					
-				}				
+				instance = con.newInstance(list.toArray());
 			}
 
 		} catch (Exception e)

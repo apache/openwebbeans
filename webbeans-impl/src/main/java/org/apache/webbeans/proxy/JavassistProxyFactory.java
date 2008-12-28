@@ -18,15 +18,19 @@ package org.apache.webbeans.proxy;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import javax.webbeans.manager.Bean;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorHandler;
-import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 
-import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 
 public final class JavassistProxyFactory
@@ -37,27 +41,44 @@ public final class JavassistProxyFactory
 	}
 	
 	
-	public static Object createNewProxyInstance(Class<?> superClazz, Class<?>[] paramTypes, Object[] args, AbstractComponent<?> component)
+	public static <T> Object createNewProxyInstance(Bean<T> bean)
 	{
 		Object result = null;
 		try
 		{
-			ProxyFactory fact = new ProxyFactory();
-			fact.setInterfaces(new Class[]{Serializable.class});
-			fact.setSuperclass(superClazz);
-			fact.setHandler(new InterceptorHandler(component));
-			fact.setFilter(new MethodFilter(){
-
-				public boolean isHandled(Method arg0)
+			Set<Class<?>> types = bean.getTypes();
+			List<Class<?>> interfaceList = new ArrayList<Class<?>>();
+			Class<?> superClass = null;
+			for(Class<?> type : types)
+			{
+				if(type.isInterface())
 				{
-					if(ClassUtil.isObjectMethod(arg0.getName()))
-						return false;
-					return true;
+					interfaceList.add(type);
 				}
+		        else if ((superClass == null) 
+		        		|| (superClass.isAssignableFrom(type) && type != Object.class ))
+		         {
+		        	superClass = type;
+		         }
 				
-			});
+			}
 			
-			result = fact.create(paramTypes, args); 
+			interfaceList.add(Serializable.class);
+			
+			Class<?>[] interfaceArray = new Class<?>[interfaceList.size()];
+			interfaceArray = interfaceList.toArray(interfaceArray);
+			
+			ProxyFactory fact = new ProxyFactory();
+			fact.setInterfaces(interfaceArray);
+			fact.setSuperclass(superClass);
+			
+			if(!(bean instanceof WebBeansDecorator) && !(bean instanceof WebBeansInterceptor))
+			{
+				fact.setHandler(new InterceptorHandler((AbstractComponent<?>)bean));
+			}
+			
+			result = fact.createClass().newInstance();
+			
 		}catch(Throwable e)
 		{
 			throw new WebBeansException(e);

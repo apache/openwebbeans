@@ -533,7 +533,10 @@ public final class ClassUtil
 		Method[] methods = clazz.getMethods();
 		for (Method method : methods)
 		{
-			list.add(method.getName());
+			if(!method.getName().equals("toString"))
+			{
+				list.add(method.getName());	
+			}
 		}
 
 		return list;

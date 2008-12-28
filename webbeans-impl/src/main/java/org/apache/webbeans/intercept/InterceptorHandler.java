@@ -24,8 +24,10 @@ import java.util.List;
 
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
+import javax.webbeans.manager.Context;
 
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -51,6 +53,9 @@ public class InterceptorHandler implements MethodHandler
 	
 	public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Throwable
 	{
+		Context webbeansContext = ManagerImpl.getManager().getContext(component.getScopeType());
+		Object webbeansInstance = webbeansContext.get(this.component, true);
+		
 		if(!ClassUtil.isObjectMethod(method.getName()) && InterceptorUtil.isWebBeansBusinessMethod(method))
 		{
 			if(this.calledMethod == null)
@@ -66,7 +71,6 @@ public class InterceptorHandler implements MethodHandler
 				this.calledMethod = method;
 				this.isSameDecMethod = false;
 			}
-			
 			
 			//Run around invoke chain
 			List<InterceptorData> stack = component.getInterceptorStack();
@@ -86,7 +90,7 @@ public class InterceptorHandler implements MethodHandler
 			
 		}
 		
-		return proceed.invoke(instance, arguments);
+		return method.invoke(webbeansInstance, arguments);
 	}
 	
 	private void callDecorators(List<Object> decorators, Method method, Object[] arguments)
