@@ -32,6 +32,9 @@ import org.apache.webbeans.test.component.producer.ParametrizedProducer;
 import org.apache.webbeans.test.component.producer.Producer1;
 import org.apache.webbeans.test.component.producer.Producer2;
 import org.apache.webbeans.test.component.producer.Producer3;
+import org.apache.webbeans.test.component.producer.Producer4;
+import org.apache.webbeans.test.component.producer.Producer4ConsumerComponent;
+import org.apache.webbeans.test.mock.MockHttpSession;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -112,6 +115,24 @@ public class ProducerComponentTest extends TestContext
 		Assert.assertNull(instance2);
 		Assert.assertTrue(ParametrizedProducer.callModel2);
 
+	}
+	
+	@Test
+	public void testProducer4()
+	{
+		defineSimpleWebBean(Producer4.class);
+		AbstractComponent<Producer4ConsumerComponent> component = defineSimpleWebBean(Producer4ConsumerComponent.class);
+		
+		ContextFactory.initSessionContext(new MockHttpSession());
+		
+		Producer4ConsumerComponent instance = getManager().getInstance(component);
+		
+		Assert.assertNotNull(instance);
+		
+		int count = instance.count();
+		
+		Assert.assertEquals(1, count);
+		
 	}
 
 }

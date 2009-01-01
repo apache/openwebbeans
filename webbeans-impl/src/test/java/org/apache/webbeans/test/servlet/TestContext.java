@@ -168,13 +168,21 @@ public abstract class TestContext implements ITestContext
 	 */
 	protected void initStereoTypes()
 	{
-		initializeStereoType(Interceptor.class);
-		initializeStereoType(Decorator.class);
+		initDefaultStereoTypes();
 		initializeStereoType(StereoWithNonScope.class);
 		initializeStereoType(StereoWithRequestScope.class);
 		initializeStereoType(StereoWithSessionScope.class);
 		initializeStereoType(StereoWithSessionScope2.class);
 		
+	}
+	
+	/**
+	 * Default stereo types
+	 */
+	protected void initDefaultStereoTypes()
+	{
+		initializeStereoType(Interceptor.class);
+		initializeStereoType(Decorator.class);		
 	}
 	
 	/**
@@ -294,7 +302,7 @@ public abstract class TestContext implements ITestContext
 		if(bean != null)
 		{
 			DecoratorUtil.checkSimpleWebBeanDecoratorConditions(bean);
-			DefinitionUtil.defineSimpleWebBeanInterceptorStack(bean);
+			//DefinitionUtil.defineSimpleWebBeanInterceptorStack(bean);
 			
 			getComponents().add((AbstractComponent<?>)bean);
 			manager.addBean(bean);

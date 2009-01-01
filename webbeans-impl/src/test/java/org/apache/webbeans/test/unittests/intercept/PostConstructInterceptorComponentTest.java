@@ -79,12 +79,13 @@ public class PostConstructInterceptorComponentTest extends TestContext
 		PostConstructInterceptorComponent pcc = (PostConstructInterceptorComponent)object2;
 		
 		ComponentImpl<PostConstructInterceptorComponent> s = (ComponentImpl<PostConstructInterceptorComponent>) comps.get(1);
+		
+		Assert.assertNotNull(pcc.getP());
+		
 		List<InterceptorData> stack = s.getInterceptorStack();
 		
 		Assert.assertEquals(2, stack.size());
 		
-		
-		Assert.assertNotNull(pcc.getP());
 		
 		ContextFactory.destroyRequestContext(null);
  	}

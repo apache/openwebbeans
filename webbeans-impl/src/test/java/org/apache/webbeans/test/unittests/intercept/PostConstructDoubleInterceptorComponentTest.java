@@ -80,12 +80,14 @@ public class PostConstructDoubleInterceptorComponentTest extends TestContext
 		PostConstructDoubleInterceptorComponent pcc = (PostConstructDoubleInterceptorComponent)object2;
 		
 		ComponentImpl<PostConstructDoubleInterceptorComponent> s = (ComponentImpl<PostConstructDoubleInterceptorComponent>) comps.get(1);
+		
+		Assert.assertNotNull(pcc.getP());
+		
 		List<InterceptorData> stack = s.getInterceptorStack();
 		
 		Assert.assertEquals(5, stack.size());
 		
 		
-		Assert.assertNotNull(pcc.getP());
 		
 		Assert.assertNotNull(PostConstructDoubleInterceptorComponent.setininterceptor2);
 		Assert.assertEquals("value1", PostConstructDoubleInterceptorComponent.setininterceptor2);

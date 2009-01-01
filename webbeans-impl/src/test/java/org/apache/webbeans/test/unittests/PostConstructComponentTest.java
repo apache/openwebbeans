@@ -75,13 +75,15 @@ public class PostConstructComponentTest extends TestContext
 		
 		Assert.assertEquals(2, comps.size());
 		
-		Object object = ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(0), true);
-		Object object2 = ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), true);
+		Object object = getManager().getInstance(comps.get(0));
+		Object object2 = getManager().getInstance(comps.get(1));
 		
 		Assert.assertTrue(object instanceof CheckWithCheckPayment);
 		Assert.assertTrue(object2 instanceof PostConstructComponent);
 		
 		PostConstructComponent pcc = (PostConstructComponent)object2;
+		
+		pcc.getP();
 		
 		ComponentImpl<PostConstructComponent> s = (ComponentImpl<PostConstructComponent>) comps.get(1);
 		List<InterceptorData> stack = s.getInterceptorStack();
