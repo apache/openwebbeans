@@ -90,6 +90,11 @@ public class InterceptorHandler implements MethodHandler
 			
 		}
 		
+		if(!method.isAccessible())
+		{
+			method.setAccessible(true);
+		}
+		
 		return method.invoke(webbeansInstance, arguments);
 	}
 	

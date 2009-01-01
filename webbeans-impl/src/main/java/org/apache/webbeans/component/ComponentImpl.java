@@ -26,7 +26,6 @@ import java.util.Set;
 import javax.webbeans.Decorates;
 
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.inject.InjectableField;
@@ -105,29 +104,25 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
 		injectFields(instance);
 		injectMethods(instance);
 		
-		//TODO Initial Values Set Defined in the XML
-		
 		if(getWebBeansType().equals(WebBeansType.SIMPLE))
 		{
+			DefinitionUtil.defineSimpleWebBeanInterceptorStack(this);
 			DefinitionUtil.defineWebBeanDecoratorStack(this, instance);	
 		}
 		
-		if(!EJBUtil.isEJBClass(getReturnType()))
-		{			
-			if(WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
+		if(WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
+		{
+			InvocationContextImpl impl = new InvocationContextImpl(instance,null,null,WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT),InterceptorType.POST_CONSTRUCT);
+			try
 			{
-				InvocationContextImpl impl = new InvocationContextImpl(instance,null,null,WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT),InterceptorType.POST_CONSTRUCT);
-				try
-				{
-					impl.proceed();
-					
-				}catch(Exception e)
-				{
-					throw new WebBeansException(e);
-				}				
-			}
-			
+				impl.proceed();
+				
+			}catch(Exception e)
+			{
+				throw new WebBeansException(e);
+			}				
 		}
+		
 	}
 	
 	/*
@@ -174,20 +169,16 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
 	@Override
 	protected void destroyInstance(T instance)
 	{
-		if(!EJBUtil.isEJBClass(getReturnType()))
+		if(WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
 		{
-			if(WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
+			InvocationContextImpl impl = new InvocationContextImpl(instance,null,null,WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY),InterceptorType.PRE_DESTROY);
+			try
 			{
-				InvocationContextImpl impl = new InvocationContextImpl(instance,null,null,WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY),InterceptorType.PRE_DESTROY);
-				try
-				{
-					impl.proceed();
-					
-				}catch(Exception e)
-				{
-					throw new WebBeansException(e);
-				}
+				impl.proceed();
 				
+			}catch(Exception e)
+			{
+				throw new WebBeansException(e);
 			}
 			
 		}

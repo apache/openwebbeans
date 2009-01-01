@@ -146,6 +146,11 @@ public class InvocationContextImpl implements InvocationContext
 						
 			Method method = intc.getAroundInvoke();
 			
+			if(!method.isAccessible())
+			{
+				method.setAccessible(true);
+			}
+			
 			Object t = intc.getInterceptorInstance();
 			if(t == null)
 			{
@@ -184,6 +189,10 @@ public class InvocationContextImpl implements InvocationContext
 				method = intc.getPreDestroy();
 			}		
 			
+			if(!method.isAccessible())
+			{
+				method.setAccessible(true);
+			}
 			
 			currentMethod++;
 			

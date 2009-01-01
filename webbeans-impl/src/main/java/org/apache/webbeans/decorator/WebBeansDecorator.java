@@ -33,6 +33,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -183,8 +184,13 @@ public class WebBeansDecorator extends Decorator
 	@Override
 	public Object create()
 	{
-		Object proxy = ManagerImpl.getManager().getInstance(this);
-		
+		Object proxy = JavassistProxyFactory.createNewProxyInstance(this);
+				
+		return proxy;
+	}
+	
+	public void setInjections(Object proxy)
+	{
 		//Set injected fields
 		ComponentImpl<Object> delegate = (ComponentImpl<Object>)this.delegateComponent;
 		
@@ -207,9 +213,6 @@ public class WebBeansDecorator extends Decorator
 			InjectableMethods<?> ife = new InjectableMethods(injectedMethod,proxy,this.delegateComponent);
 			ife.doInjection();
 		}
-		
-		
-		return proxy;
 	}
 
 	@Override

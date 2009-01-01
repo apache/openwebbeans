@@ -345,7 +345,9 @@ public final class WebBeansContainerDeployer
 			if(component != null)
 			{	
 				DecoratorUtil.checkSimpleWebBeanDecoratorConditions(component);
-				DefinitionUtil.defineSimpleWebBeanInterceptorStack(component);
+				
+				/*I have added this into the ComponentImpl.afterCreate();*/
+				//DefinitionUtil.defineSimpleWebBeanInterceptorStack(component);
 				
 				ManagerImpl.getManager().addBean(component);					
 			}			

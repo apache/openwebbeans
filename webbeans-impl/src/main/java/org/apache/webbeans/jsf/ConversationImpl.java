@@ -39,6 +39,11 @@ public class ConversationImpl implements Conversation
 	
 	private long activeTime = 0L;
 	
+	public ConversationImpl()
+	{
+		
+	}
+	
 	public ConversationImpl(String sessionId)
 	{
 		Asserts.assertNotNull(sessionId);

@@ -103,6 +103,8 @@ import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.jsf.ConversationImpl;
 
 /**
  * Contains some utility methods used in the all project.
@@ -518,6 +520,7 @@ public final class WebBeansUtil
 		ConversationComponent conversationComp = new ConversationComponent();
 		
 		conversationComp.addApiType(Conversation.class);
+		conversationComp.addApiType(ConversationImpl.class);
 		conversationComp.setImplScopeType(new RequestedScopeLiteral());
 		conversationComp.setType(new StandardLiteral());
 		conversationComp.addBindingType(new CurrentLiteral());
@@ -724,13 +727,24 @@ public final class WebBeansUtil
 			{
 				try
 				{
-					if (ClassUtil.isContaintNoArgConstructor(clazz) == null)
+					if(isDefinedWithWebBeans)
 					{
-						throw new WebBeansConfigurationException("Interceptor class : " + clazz.getName() + " must have no-arg constructor");
+						Object interceptorProxy = ManagerImpl.getManager().getInstance(webBeansInterceptor);
+						WebBeansInterceptor interceptor = (WebBeansInterceptor)webBeansInterceptor;
+						interceptor.setInjections(interceptorProxy);
+						
+						intData.setInterceptorInstance(interceptorProxy);						
+					}
+					else
+					{
+						if (ClassUtil.isContaintNoArgConstructor(clazz) == null)
+						{
+							throw new WebBeansConfigurationException("Interceptor class : " + clazz.getName() + " must have no-arg constructor");
+						}
+						
+						intData.setInterceptorInstance(clazz.newInstance());
 					}
 					
-					
-					intData.setInterceptorInstance(clazz.newInstance());
 
 				} catch (WebBeansConfigurationException e1)
 				{
