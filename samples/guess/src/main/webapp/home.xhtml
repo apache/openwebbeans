@@ -15,27 +15,27 @@
 		</div>
    
 	   	<h2>
-			<h:outputText value="Merhaba #{currentUser.userName} #{currentUser.password}"></h:outputText>
+			<h:outputText value="Hello #{currentUser.userName} #{currentUser.password}"></h:outputText>
 		</h2>
     	
-       <h1>Guess a number...</h1>
+       <h1>Please guess a number...</h1>
    
           <div style="color: red">
              <h:messages id="messages" globalOnly="true"/>
-             <h:outputText id="Higher" value="Higher!" rendered="#{game.number gt game.guess}"/>
-             <h:outputText id="Lower" value="Lower!" rendered="#{game.number lt game.guess}"/>
+             <h:outputText id="higher" value="Higher..." rendered="#{game.number gt game.guess}"/>
+             <h:outputText id="lower" value="Lower..." rendered="#{game.number lt game.guess}"/>
           </div>
    
           <div>
-             I'm thinking of a number between #{game.smallest} and #{game.biggest}. You have #{game.remainingGuesses} guesses.
+             Please guess a number between #{game.smallest} and #{game.biggest}. Your remaining guesses : #{game.remainingGuesses}.
           </div>
      
           <div>
-             Your guess: 
+             Your guessed number: 
              <h:inputText id="inputGuess" value="#{game.guess}" required="true" size="3">
                 <f:validateLongRange maximum="#{game.biggest}" minimum="#{game.smallest}"/>
              </h:inputText>
-            <h:commandButton id="GuessButton" value="Guess" action="#{game.check}"/>
+            <h:commandButton id="GuessButton" value="Guess Number" action="#{game.checkNumber}"/>
             <h:commandButton id="Restart" value="Restart" action="#{game.clear}"/>
           </div>
    
