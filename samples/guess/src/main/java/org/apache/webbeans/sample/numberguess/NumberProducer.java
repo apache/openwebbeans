@@ -17,23 +17,31 @@
 package org.apache.webbeans.sample.numberguess;
 
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.Random;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.webbeans.ApplicationScoped;
+import javax.webbeans.Produces;
 
-import javax.webbeans.BindingType;
-
-@Target( { TYPE, METHOD, PARAMETER, FIELD })
-@Retention(RUNTIME)
-@Documented
-@BindingType
-public @interface MaxNumber
-{
-
-}
+@ApplicationScoped
+public class NumberProducer {
+   
+   Random random = new Random( System.currentTimeMillis() );
+   
+   private int maxNumber = 100;
+   
+   java.util.Random getRandom()
+   {
+      return random;
+   }
+   
+   @Produces @MaxNum int getMaxNumber()
+   {
+      return maxNumber;
+   }
+   
+   
+   @Produces @Rand int next() { 
+      return getRandom().nextInt(maxNumber); 
+   }
+   
+} 

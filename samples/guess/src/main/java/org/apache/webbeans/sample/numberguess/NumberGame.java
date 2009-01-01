@@ -28,9 +28,9 @@ import javax.webbeans.Named;
 import javax.webbeans.SessionScoped;
 import javax.webbeans.manager.Manager;
 
-@Named
+@Named(value="game")
 @SessionScoped
-public class Game
+public class NumberGame
 {
    private int number;
    private boolean correct = false;
@@ -40,12 +40,12 @@ public class Game
    private int remainingGuesses;   
    private @Current Manager manager;
    
-   public Game()
+   public NumberGame()
    {
    }
    
    @Initializer
-   Game(@Random int number, @MaxNumber int maxNumber)
+   public NumberGame(@Rand int number, @MaxNum int maxNumber)
    {
       this.number = number;
       this.smallest = 1;
@@ -86,10 +86,10 @@ public class Game
    public String clear()
    {
 	   Annotation[] anns = new Annotation[1];
-	   anns[0] = new AnnotationLiteral<Random>(){};
+	   anns[0] = new AnnotationLiteral<Rand>(){};
 
 	   Annotation[] anns2 = new Annotation[1];
-	   anns2[0] = new AnnotationLiteral<MaxNumber>(){};
+	   anns2[0] = new AnnotationLiteral<MaxNum>(){};
 	   
       this.number = manager.getInstanceByType(int.class, anns);
       this.smallest = 1;
@@ -102,7 +102,7 @@ public class Game
    }
    
    
-   public String check()
+   public String checkNumber()
    {
  	  if(correct)
 	  {

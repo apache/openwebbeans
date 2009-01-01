@@ -29,11 +29,11 @@ import java.lang.annotation.Target;
 
 import javax.webbeans.BindingType;
 
+@BindingType
 @Target( { TYPE, METHOD, PARAMETER, FIELD })
 @Retention(RUNTIME)
 @Documented
-@BindingType
-public @interface Random
+public @interface MaxNum
 {
 
 }
