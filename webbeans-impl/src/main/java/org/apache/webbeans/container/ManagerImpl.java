@@ -261,7 +261,9 @@ public class ManagerImpl implements Manager, Referenceable
 				isSetOnThis = true;
 			}
 			
-			if(!bean.getScopeType().equals(Dependent.class))
+			
+			/*@ScopeType is normal*/
+			if(WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
 			{
 				if(this.proxyMap.containsKey(bean))
 				{
@@ -274,7 +276,7 @@ public class ManagerImpl implements Manager, Referenceable
 					this.proxyMap.put(bean, instance);
 				}
 			}
-			
+			/*@ScopeType is not normal*/
 			else
 			{
 				context = getContext(bean.getScopeType());

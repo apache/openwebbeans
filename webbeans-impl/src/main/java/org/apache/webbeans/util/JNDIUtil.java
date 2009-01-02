@@ -18,6 +18,7 @@ package org.apache.webbeans.util;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.TransactionManager;
 
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -25,6 +26,8 @@ import org.apache.webbeans.logger.WebBeansLogger;
 public final class JNDIUtil
 {
 	private static InitialContext initialContext = null;
+	
+	private static TransactionManager transactionManager = null;
 	
 	private static final WebBeansLogger LOGGER = WebBeansLogger.getLogger(JNDIUtil.class);
 	
@@ -81,6 +84,24 @@ public final class JNDIUtil
 			throw new WebBeansException("Unable to unbind object with name : " + name ,e);
 		}
 		
+	}
+	
+	public static TransactionManager getCurrentTransactionManager()
+	{
+		if(transactionManager == null)
+		{
+			try
+			{
+				transactionManager = (TransactionManager)getInitialContext().lookup("java:/TransactionManager");
+				
+			} catch (NamingException e)
+			{
+				LOGGER.error("Unable to get TransactionManager",e);
+				throw new WebBeansException(e);
+			}
+		}
+		
+		return transactionManager;
 	}
 
 }

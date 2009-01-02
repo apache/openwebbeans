@@ -583,7 +583,14 @@ public final class XMLDefinitionUtil
 			
 			producerComponentImpl.setActualTypeArguments(model.getActualTypeArguments());
 			producerComponentImpl.addApiType(model.getInjectionClassType());
+			
+			if(model.getInjectionClassType().isPrimitive())
+			{
+				producerComponentImpl.setNullable(false);
+			}
 		}
+		
+		producerComponentImpl.addApiType(Object.class);
 		
 		/*Set creator method*/
 		producerComponentImpl.setCreatorMethod(producesMethod);

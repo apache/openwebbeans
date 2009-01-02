@@ -40,6 +40,7 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.JNDIUtil;
 
 @SuppressWarnings("unchecked")
 public final class NotificationManager implements Synchronization
@@ -48,8 +49,6 @@ public final class NotificationManager implements Synchronization
 	
 	private Map<Class<?>, Set<ObserverImpl<?>>> observers = new ConcurrentHashMap<Class<?>, Set<ObserverImpl<?>>>();
 		
-	private TransactionManager transactionManager;
-	
 	private Set<TransactionalNotifier> transactionSet = new CopyOnWriteArraySet<TransactionalNotifier>();
 	
 	public NotificationManager()
@@ -206,7 +205,7 @@ public final class NotificationManager implements Synchronization
 					TransactionalObserverType type = beanObserver.getType();
 					if(!type.equals(TransactionalObserverType.NONE))
 					{
-						Transaction transaction = this.transactionManager.getTransaction();
+						Transaction transaction = JNDIUtil.getCurrentTransactionManager().getTransaction();
 						if(transaction != null)
 						{
 							transaction.registerSynchronization(this);
@@ -238,7 +237,8 @@ public final class NotificationManager implements Synchronization
 						{
 							observer.notify(event);
 						}
-					}else
+					}
+					else
 					{
 						observer.notify(event);
 					}
@@ -294,38 +294,24 @@ public final class NotificationManager implements Synchronization
 		{
 			Iterator<TransactionalNotifier> it = this.transactionSet.iterator();
 			
-			if(status == Status.STATUS_COMMITTED)
+			while(it.hasNext())
 			{
-				//Call @AfterTransactionSuccess
-				while(it.hasNext())
+				TransactionalNotifier notifier = it.next();				
+
+				notifier.notifyAfterCompletion();
+
+				if(status == Status.STATUS_COMMITTED)
 				{
-					TransactionalNotifier notifier = it.next();
 					notifier.notifyAfterCompletionSuccess();
+
 				}
-				
-			}
-			else if(status == Status.STATUS_ROLLEDBACK)
-			{
-				//Call @AfterTransactionFailure
-				while(it.hasNext())
+				else if(status == Status.STATUS_ROLLEDBACK)
 				{
-					TransactionalNotifier notifier = it.next();
 					notifier.notifyAfterCompletionFailure();
 				}
+					
+			}			
 				
-			}
-			else
-			{
-				//Call @AfterTransactionCompletion
-				while(it.hasNext())
-				{
-					TransactionalNotifier notifier = it.next();
-					notifier.notifyAfterCompletion();
-				}
-				
-			}
-			
-			
 		}catch(Throwable e)
 		{
 			logger.error("Exception is occured in the transational observer ",e);

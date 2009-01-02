@@ -30,8 +30,10 @@ import javax.webbeans.Interceptor;
 import javax.webbeans.ScopeType;
 import javax.webbeans.Specializes;
 import javax.webbeans.manager.Bean;
+import javax.webbeans.manager.Manager;
 
 import org.apache.webbeans.WebBeansConstants;
+import org.apache.webbeans.annotation.InitializedManagerLiteral;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.ManagerImpl;
@@ -106,6 +108,11 @@ public final class WebBeansContainerDeployer
 		}catch(Throwable e)
 		{
 			throw new WebBeansDeploymentException(e);
+		}
+		finally
+		{
+			Manager manager = ManagerImpl.getManager();
+			manager.fireEvent(manager, new Annotation[]{new InitializedManagerLiteral()});
 		}
 	}
 	

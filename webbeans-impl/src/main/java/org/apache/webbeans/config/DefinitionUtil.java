@@ -134,6 +134,7 @@ public final class DefinitionUtil
 		if(clazz.isPrimitive() || clazz.isArray())
 		{
 			component.getTypes().add(clazz);
+			component.getTypes().add(Object.class);
 		}
 		else
 		{
@@ -374,6 +375,11 @@ public final class DefinitionUtil
 	{
 		ProducerComponentImpl<T> component = new ProducerComponentImpl<T>(parent, returnType);
 		component.setCreatorMethod(method);
+		
+		if(returnType.isPrimitive())
+		{
+			component.setNullable(false);
+		}
 		
 		defineSerializable(component);
 		

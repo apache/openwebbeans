@@ -67,6 +67,7 @@ public abstract class AbstractInjectable implements Injectable
 	{
 		DependentContext context = (DependentContext)ManagerImpl.getManager().getContext(Dependent.class);
 		boolean isSetOnThis = false;
+		
 		try
 		{
 			if(!context.isActive())
@@ -89,10 +90,14 @@ public abstract class AbstractInjectable implements Injectable
 			ResolutionUtil.checkResolvedBeans(componentSet, type);
 			
 			AbstractComponent<?> component = (AbstractComponent<?>)componentSet.iterator().next();
+			
+			/*Nullable check*/
+			WebBeansUtil.checkNullable(type, component);
 
 			if (component.getScopeType().equals(Dependent.class))
 			{
 				return injectForDependent(component);
+				
 			} else
 			{
 				return injectForComponent(component);

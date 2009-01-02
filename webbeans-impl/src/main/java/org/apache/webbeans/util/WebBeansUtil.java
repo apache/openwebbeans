@@ -58,6 +58,7 @@ import javax.webbeans.Initializer;
 import javax.webbeans.Named;
 import javax.webbeans.New;
 import javax.webbeans.Fires;
+import javax.webbeans.NullableDependencyException;
 import javax.webbeans.Observes;
 import javax.webbeans.Produces;
 import javax.webbeans.RequestScoped;
@@ -469,6 +470,7 @@ public final class WebBeansUtil
 		comp.addBindingType(new NewLiteral());
 		comp.setName(null);
 		comp.addApiType(clazz);
+		comp.addApiType(Object.class);
 		comp.setType(new ProductionLiteral());
 
 		return comp;
@@ -511,6 +513,7 @@ public final class WebBeansUtil
 		managerComponent.setType(new StandardLiteral());
 		managerComponent.addBindingType(new CurrentLiteral());
 		managerComponent.addApiType(Manager.class);
+		managerComponent.addApiType(Object.class);
 		
 		return managerComponent;
 	}
@@ -521,6 +524,7 @@ public final class WebBeansUtil
 		
 		conversationComp.addApiType(Conversation.class);
 		conversationComp.addApiType(ConversationImpl.class);
+		conversationComp.addApiType(Object.class);
 		conversationComp.setImplScopeType(new RequestedScopeLiteral());
 		conversationComp.setType(new StandardLiteral());
 		conversationComp.addBindingType(new CurrentLiteral());
@@ -1121,21 +1125,57 @@ public final class WebBeansUtil
 		}
 	}
 
-	public static void checkUnproxiableApiType(Class<?> apiType, ScopeType scopeType)
+	public static void checkUnproxiableApiType(Bean<?> bean, ScopeType scopeType)
 	{
-		Asserts.assertNotNull("apiType", "apiType parameter can not be null");
+		Asserts.assertNotNull("bean", "bean parameter can not be null");
 		Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
 
-		Constructor<?> cons = ClassUtil.isContaintNoArgConstructor(apiType);
-		if (ClassUtil.isPrivate(cons.getModifiers()) || 
-				ClassUtil.isPrimitive(apiType) || 
-				ClassUtil.isArray(apiType) || 
-				ClassUtil.isFinal(apiType.getModifiers()) 
-				|| ClassUtil.hasFinalMethod(apiType))
+		Set<Class<?>> types = bean.getTypes();
+		Class<?> superClass = null;
+		for(Class<?> type : types)
 		{
-			if (!scopeType.normal())
+	        if(!type.isInterface())
+	        {
+				if ((superClass == null) 
+		        		|| (superClass.isAssignableFrom(type) && type != Object.class ))
+		         {
+		        	superClass = type;
+		         }
+	
+	        }			
+		}
+				
+		if(superClass != null)
+		{
+			Constructor<?> cons = ClassUtil.isContaintNoArgConstructor(superClass);
+			
+			if ( ClassUtil.isPrimitive(superClass) 
+					|| ClassUtil.isArray(superClass) 
+					|| ClassUtil.isFinal(superClass.getModifiers()) 
+					|| ClassUtil.hasFinalMethod(superClass)
+					|| (cons == null || ClassUtil.isPrivate(cons.getModifiers())))
 			{
-				throw new UnproxyableDependencyException("WebBeans with api type with normal scope must be proxiable to inject, but class : " + apiType.getName() + " is not proxiable type");
+				if (scopeType.normal())
+				{
+					throw new UnproxyableDependencyException("WebBeans with api type with normal scope must be proxiable to inject, but class : " + superClass.getName() + " is not proxiable type");
+				}
+			}
+			
+		}
+		
+	}
+	
+	
+	public static void checkNullable(Class<?> type ,AbstractComponent<?> component)
+	{
+		Asserts.assertNotNull(type,"type parameter can not be null");
+		Asserts.assertNotNull(component,"component parameter can not be null");
+		
+		if(type.isPrimitive())
+		{
+			if(component.isNullable())
+			{
+				throw new NullableDependencyException("Injection point for primitive type resolves webbeans component with return type : " + component.getReturnType().getName() + " with nullable");
 			}
 		}
 	}
@@ -1300,5 +1340,29 @@ public final class WebBeansUtil
 				WebBeansDecoratorConfig.configureDecoratorClass((ComponentImpl<Object>)component);
 			}			
 		}		
+	}
+	
+	public static boolean isScopeTypeNormal(Class<? extends Annotation> scopeType)
+	{
+		Asserts.assertNotNull(scopeType, "scopeType argument can not be null");
+		
+		if(scopeType.isAnnotationPresent(ScopeType.class))
+		{
+			ScopeType scope = scopeType.getAnnotation(ScopeType.class);
+			if(scope.normal())
+			{
+				return true;
+			}
+			
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			throw new IllegalArgumentException("scopeType argument must be annotated with @ScopeType");
+		}
+		
 	}
 }

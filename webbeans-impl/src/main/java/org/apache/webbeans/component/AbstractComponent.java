@@ -95,7 +95,7 @@ public abstract class AbstractComponent<T> extends Component<T>
 	protected boolean serializable;
 	
 	/**The bean allows nullable object*/
-	protected boolean nullable;
+	protected boolean nullable = true;
 
 	/**
 	 * Constructor definiton. Each subclass redefines its own constructor with

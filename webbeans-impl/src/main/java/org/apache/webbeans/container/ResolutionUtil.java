@@ -21,12 +21,15 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 
 import javax.webbeans.AmbiguousDependencyException;
+import javax.webbeans.ScopeType;
 import javax.webbeans.UnsatisfiedDependencyException;
 import javax.webbeans.manager.Bean;
 
+import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 public final class ResolutionUtil
 {
@@ -63,8 +66,8 @@ public final class ResolutionUtil
 			throw new AmbiguousDependencyException("There is more than one api type with : " + type.getName());
 		}
 		
-		//Bean<T> bean = resolvedSet.iterator().next();
-		//WebBeansUtil.checkUnproxiableApiType((AbstractComponent<?>), bean.getScopeType().getAnnotation(ScopeType.class));
+		Bean<T> bean = resolvedSet.iterator().next();
+		WebBeansUtil.checkUnproxiableApiType(bean, bean.getScopeType().getAnnotation(ScopeType.class));
 		
 	}
 }
