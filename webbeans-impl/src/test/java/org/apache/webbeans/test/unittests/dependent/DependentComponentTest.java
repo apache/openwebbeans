@@ -27,6 +27,8 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
 import org.apache.webbeans.test.component.dependent.DependentOwnerComponent;
+import org.apache.webbeans.test.component.dependent.circular.DependentA;
+import org.apache.webbeans.test.component.dependent.circular.DependentB;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,6 +79,20 @@ public class DependentComponentTest extends TestContext
 		Assert.assertNotNull(dc);
 		
 		ContextFactory.destroyRequestContext(null);
+	}
+	
+	@Test
+	public void testDependentCircular()
+	{
+		clear();
+		
+		AbstractComponent<DependentA> componentA =  defineSimpleWebBean(DependentA.class);
+		AbstractComponent<DependentB> componentB =  defineSimpleWebBean(DependentB.class);
+		
+		DependentA dependentA = componentA.create();
+		
+		
+		
 	}
 
 }
