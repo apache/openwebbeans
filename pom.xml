@@ -26,12 +26,27 @@
 	<name>OpenWebBeans</name>
 	<packaging>pom</packaging>
 	<version>1.0.0-SNAPSHOT</version>
+
 	<description> Apache OpenWebBeans is an open source implementation of
-		JSR-299 WebBeans </description>
+		JSR-299 WebBeans 
+	</description>
+
 	<organization>
 		<name>The Apache OpenWebBeans development community</name>
 		<url>http://incubator.apache.org/openwebbeans</url>
 	</organization>
+
+	<scm>
+	    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</connection>
+	    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</developerConnection>
+	    <url>https://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</url>
+       </scm>
+
+ 	<issueManagement>
+          <system>jira</system>
+          <url>http://issues.apache.org/jira/browse/OWB</url>
+        </issueManagement>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -156,4 +171,20 @@
 	<properties>
 		<openwebbeans.version>1.0.0-SNAPSHOT</openwebbeans.version>
 	</properties>
+  
+   <profiles>
+        <profile>
+            <id>release-profile</id>
+            <activation>
+                <property>
+                    <name>distribute</name>
+                    <value>true</value>
+                </property>
+            </activation>
+	    <modules>
+		<module>distribution</module>
+            </modules>
+        </profile>
+    </profiles>
+
 </project>

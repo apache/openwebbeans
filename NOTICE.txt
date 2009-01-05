@@ -21,5 +21,11 @@ http://sourceforge.net/projects/scannotation with Apache License V2.0 licence.
 This product uses jsr250-api-1.0.jar as binary, home page of the project is
 https://jsr250.dev.java.net/. with Common Development and Distribution License.
 
+This product uses the some Java EE API jars developed by the Apache Geronimo project. 
+The project home page is http://geronimo.apache.org/
+
+This product uses the some JSF API jars developed by the Apache MyFaces project. 
+The project home page is http://myfaces.apache.org/
+
 See the LICENSE.txt file and licences folder for information on all licenses 
 associated with this software.
