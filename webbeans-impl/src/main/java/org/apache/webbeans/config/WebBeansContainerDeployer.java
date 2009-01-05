@@ -18,6 +18,7 @@ package org.apache.webbeans.config;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.rmi.Naming;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -94,6 +95,8 @@ public final class WebBeansContainerDeployer
 				
 				//JNDI bind
 				JNDIUtil.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, ManagerImpl.getManager());
+				
+				
 				
 				deployFromXML(scanner);
 				checkStereoTypes(scanner);				

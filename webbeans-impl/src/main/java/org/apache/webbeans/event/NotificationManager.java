@@ -28,7 +28,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import javax.webbeans.IfExists;
 import javax.webbeans.Observer;
 import javax.webbeans.ObserverException;
@@ -38,9 +37,9 @@ import javax.webbeans.TypeLiteral;
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.transaction.TransactionUtil;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.JNDIUtil;
 
 @SuppressWarnings("unchecked")
 public final class NotificationManager implements Synchronization
@@ -205,7 +204,7 @@ public final class NotificationManager implements Synchronization
 					TransactionalObserverType type = beanObserver.getType();
 					if(!type.equals(TransactionalObserverType.NONE))
 					{
-						Transaction transaction = JNDIUtil.getCurrentTransactionManager().getTransaction();
+						Transaction transaction = TransactionUtil.getCurrentTransactionManager().getTransaction();
 						if(transaction != null)
 						{
 							transaction.registerSynchronization(this);

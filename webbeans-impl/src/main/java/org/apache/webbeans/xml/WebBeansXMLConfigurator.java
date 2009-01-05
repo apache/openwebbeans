@@ -1490,7 +1490,7 @@ public final class WebBeansXMLConfigurator
 				
 				if ((objVal = ClassUtil.isValueOkForPrimitiveOrWrapper(fieldType, value)) != null)
 				{
-					component.addFieldValue(field.getName(), objVal);
+					component.addFieldValue(field, objVal);
 					
 				} else
 				{
@@ -1508,13 +1508,13 @@ public final class WebBeansXMLConfigurator
 					throw new WebBeansConfigurationException(errorMessage);
 				}
 
-				component.addFieldValue(field.getName(), enumValue);
+				component.addFieldValue(field, enumValue);
 				
 			} 
 			else if (fieldType.equals(String.class)) /*String value*/
 			{
 				String value = child.getTextTrim();
-				component.addFieldValue(field.getName(), value);
+				component.addFieldValue(field, value);
 
 			} 
 			else if (fieldType.equals(Date.class) /*Date, Time, Sql Date, Time stamp, Calendar value*/ 
@@ -1532,7 +1532,7 @@ public final class WebBeansXMLConfigurator
 				} 
 				else
 				{
-					component.addFieldValue(field.getName(), value);
+					component.addFieldValue(field, value);
 				}
 
 			} 
@@ -1547,7 +1547,7 @@ public final class WebBeansXMLConfigurator
 				} 
 				else
 				{
-					component.addFieldValue(field.getName(), bigValue);
+					component.addFieldValue(field, bigValue);
 				}
 				
 			}
@@ -1562,7 +1562,7 @@ public final class WebBeansXMLConfigurator
 				} 
 				else
 				{
-					component.addFieldValue(field.getName(), value);
+					component.addFieldValue(field, value);
 				}
 			} 
 			else if (List.class.isAssignableFrom(fieldType)) /*List value*/
@@ -1665,7 +1665,7 @@ public final class WebBeansXMLConfigurator
 			}
 		}
 		
-		component.addFieldValue(field.getName(), list);	
+		component.addFieldValue(field, list);	
 	}
 	
 	/**
@@ -1757,7 +1757,7 @@ public final class WebBeansXMLConfigurator
 			}
 		}
 
-		component.addFieldValue(field.getName(), set);
+		component.addFieldValue(field, set);
 	}
 	
 	/**

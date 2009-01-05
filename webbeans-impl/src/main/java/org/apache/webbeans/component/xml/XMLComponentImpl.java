@@ -26,14 +26,18 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
 import org.apache.webbeans.inject.xml.XMLInjectableField;
 import org.apache.webbeans.inject.xml.XMLInjectableMethods;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
 
 public class XMLComponentImpl<T> extends ComponentImpl<T>
 {	
+	private static WebBeansLogger logger = WebBeansLogger.getLogger(XMLComponentImpl.class);
+	
 	/**Constructor injection point decleration*/
 	private XMLInjectableConstructor<T> injectableConstructor = null;
 	
@@ -44,7 +48,7 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
 	private Map<Method,List<XMLInjectionPointModel>> injectableMethods = new HashMap<Method, List<XMLInjectionPointModel>>();
 	
 	/**Initial field values of the webbean defined in the XML*/
-	private Map<String, Object> fieldValues = new HashMap<String, Object>();
+	private Map<Field, Object> fieldValues = new HashMap<Field, Object>();
 		
 	/**
 	 * Creates new XML defined webbeans component.
@@ -72,7 +76,14 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
 		}
 		else
 		{
-			instance = this.injectableConstructor.doInjection();	
+			instance = this.injectableConstructor.doInjection();
+			super.afterConstructor(instance);
+		}
+		
+		/*Inject initial field values*/
+		if(instance != null)
+		{
+			injectFieldValues(instance);	
 		}
 		
 		return instance;
@@ -99,6 +110,36 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
 		}
 	}
 
+	protected void injectFieldValues(T instance)
+	{
+		Set<Field> fieldSet = this.fieldValues.keySet();
+		Iterator<Field> itField = fieldSet.iterator();
+		
+		while(itField.hasNext())
+		{	
+			Field field = itField.next();
+			if(!field.isAccessible())
+			{
+				field.setAccessible(true);
+			}
+			
+			try
+			{
+				field.set(instance, this.fieldValues.get(field));
+				
+			} catch (IllegalArgumentException e)
+			{
+				logger.error("IllegalArgumentException is occured while calling the field : " + field.getName() + " on class " + instance.getClass().getName());
+				throw new WebBeansException(e);
+				
+			} catch (IllegalAccessException e)
+			{
+				logger.error("IllegalAccessException is occured while calling the field : " + field.getName() + " on class " + instance.getClass().getName());				
+				throw new WebBeansException(e);
+			}
+		}
+	}
+	
 
 	/* (non-Javadoc)
 	 * @see org.apache.webbeans.component.ComponentImpl#injectMethods(java.lang.Object)
@@ -172,7 +213,7 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
 	 * @param name name of the field
 	 * @param value value of the field
 	 */
-	public void addFieldValue(String name, Object value)
+	public void addFieldValue(Field name, Object value)
 	{
 		fieldValues.put(name, value);
 	}
@@ -180,7 +221,7 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
 	/**
 	 * @return the fieldValues
 	 */
-	public Map<String, Object> getFieldValues()
+	public Map<Field, Object> getFieldValues()
 	{
 		return fieldValues;
 	}
