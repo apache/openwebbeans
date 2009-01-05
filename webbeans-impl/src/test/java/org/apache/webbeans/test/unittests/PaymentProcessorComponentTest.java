@@ -25,7 +25,6 @@ import javax.webbeans.manager.Manager;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;

@@ -16,9 +16,9 @@
  */
 package org.apache.webbeans.test.unittests;
 
-import junit.framework.JUnit4TestAdapter;
-import junit.framework.Test;
-import junit.framework.TestSuite;
+//import junit.framework.JUnit4TestAdapter;
+//import junit.framework.Test;
+//import junit.framework.TestSuite;
 
 public final class RunUnitTests
 {

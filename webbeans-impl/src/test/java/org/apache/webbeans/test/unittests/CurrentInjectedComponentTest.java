@@ -22,7 +22,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.webbeans.RequestScoped;
 import javax.webbeans.SessionScoped;
-import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 

@@ -31,6 +31,7 @@ import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Assert;
 import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class EventExceptionTest extends TestContext
 {
 	public EventExceptionTest()

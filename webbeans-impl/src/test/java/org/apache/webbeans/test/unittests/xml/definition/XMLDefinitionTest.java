@@ -24,7 +24,6 @@ import org.apache.webbeans.component.xml.XMLComponentImpl;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.test.xml.definition.Definition1;
-import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.apache.webbeans.xml.XMLUtil;
 import org.dom4j.Element;
 import org.junit.Before;

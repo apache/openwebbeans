@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.webbeans.ApplicationScoped;
-import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 

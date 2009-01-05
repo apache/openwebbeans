@@ -21,18 +21,13 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.webbeans.ApplicationScoped;
 import javax.webbeans.RequestScoped;
-import javax.webbeans.manager.Bean;
 import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.annotation.ApplicationScopeLiteral;
-import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.config.WebBeansContainerDeployer;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.test.component.DisposalMethodComponent;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.ServiceImpl1;

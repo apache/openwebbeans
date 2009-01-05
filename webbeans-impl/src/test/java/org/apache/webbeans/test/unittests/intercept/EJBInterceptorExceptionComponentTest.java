@@ -21,7 +21,6 @@ import javax.servlet.ServletContext;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.test.component.intercept.MultpleInterceptor;

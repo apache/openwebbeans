@@ -37,7 +37,6 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.xml.XMLComponentImpl;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;

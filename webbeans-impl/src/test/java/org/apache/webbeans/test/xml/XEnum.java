@@ -16,7 +16,6 @@
  */
 package org.apache.webbeans.test.xml;
 
-import org.junit.Test;
 
 public enum XEnum
 {

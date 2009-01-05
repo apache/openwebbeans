@@ -16,10 +16,7 @@
  */
 package org.apache.webbeans.test.unittests.clazz;
 
-import java.lang.reflect.Type;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -34,18 +31,8 @@ public class ClazzTest
 	{
 		Set<Class<?>> set = new HashSet<Class<?>>();
 		ClassUtil.setTypeHierarchy(set, Student.class);
+
 		Assert.assertEquals(5, set.size());
-		
-		Iterator<Class<?>> it = set.iterator();
-		
-		while(it.hasNext())
-		{
-			Class<?> clazz = it.next();
-			Type[] stypes = ClassUtil.getGenericSuperClassTypeArguments(clazz);
-			
-			List<Type[]> itypes = ClassUtil.getGenericSuperInterfacesTypeArguments(clazz);
-		}
-		
 		
 	}
 	

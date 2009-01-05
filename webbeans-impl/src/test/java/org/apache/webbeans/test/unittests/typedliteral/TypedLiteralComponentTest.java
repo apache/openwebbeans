@@ -25,7 +25,6 @@ import javax.webbeans.Current;
 import javax.webbeans.RequestScoped;
 import javax.webbeans.TypeLiteral;
 import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 

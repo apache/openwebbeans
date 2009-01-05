@@ -17,29 +17,18 @@
 package org.apache.webbeans.test.unittests.xml;
 
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.TypeVariable;
 
 import javax.servlet.ServletContext;
-import javax.webbeans.AnnotationLiteral;
 import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.test.servlet.TestContext;
-import org.apache.webbeans.test.xml.annot.BindingType1;
-import org.apache.webbeans.xml.XMLDefinitionUtil;
 import org.apache.webbeans.xml.XMLUtil;
 import org.dom4j.Element;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.builders.AnnotatedBuilder;
-
-import sun.reflect.annotation.AnnotationType;
-
 
 public class XMLTest extends TestContext
 {

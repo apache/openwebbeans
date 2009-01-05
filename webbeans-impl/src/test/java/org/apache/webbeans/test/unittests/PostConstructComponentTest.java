@@ -19,14 +19,12 @@ package org.apache.webbeans.test.unittests;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.webbeans.RequestScoped;
 import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
-import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;

@@ -16,8 +16,6 @@
  */
 package org.apache.webbeans.test.component.dependent.circular;
 
-import javax.webbeans.Current;
-
 public class DependentB
 {
 	//private @Current DependentA dependentA;

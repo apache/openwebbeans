@@ -72,6 +72,7 @@ public class LibraryComponentTest extends TestContext
 		Object instance = getManager().getInstance(obj);
 		Assert.assertTrue(instance instanceof Shop);
 		
+		@SuppressWarnings("unchecked")
 		Shop<Book> shop = (Shop<Book>)instance;
 		shop.shop();
 		

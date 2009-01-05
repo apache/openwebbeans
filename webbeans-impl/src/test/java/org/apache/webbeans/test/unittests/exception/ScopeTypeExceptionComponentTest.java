@@ -24,8 +24,6 @@ import javax.webbeans.manager.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.container.ManagerImpl;
-import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.component.exception.stero.ComponentDefaultScopeWithDifferentScopeSteros;
 import org.apache.webbeans.test.component.exception.stero.ComponentDefaultScopeWithNonScopeStero;
@@ -36,12 +34,7 @@ import org.apache.webbeans.test.component.exception.stero.ComponentWithNonScopeS
 import org.apache.webbeans.test.component.exception.stero.ComponentWithSameScopeSteros;
 import org.apache.webbeans.test.component.exception.stero.ComponentWithoutScopeStero;
 import org.apache.webbeans.test.servlet.TestContext;
-import org.apache.webbeans.test.sterotype.StereoWithNonScope;
-import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
-import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
-import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 

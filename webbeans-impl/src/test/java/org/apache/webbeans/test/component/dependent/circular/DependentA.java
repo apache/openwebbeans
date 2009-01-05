@@ -27,4 +27,21 @@ public class DependentA
 		
 	}
 
+	/**
+	 * @return the dependentB
+	 */
+	public DependentB getDependentB()
+	{
+		return dependentB;
+	}
+
+	/**
+	 * @param dependentB the dependentB to set
+	 */
+	public void setDependentB(DependentB dependentB)
+	{
+		this.dependentB = dependentB;
+	}
+
+	
 }

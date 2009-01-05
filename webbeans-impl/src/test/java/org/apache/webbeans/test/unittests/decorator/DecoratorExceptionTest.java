@@ -26,7 +26,6 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.test.annotation.binding.DummyAnnotationLiteral;
-import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithCheckPaymentDecoratorField;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
