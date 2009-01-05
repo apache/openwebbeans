@@ -61,7 +61,7 @@
                 <include>log4j:log4j</include>           
                 <include>dom4j:dom4j</include>
                 <include>javassist:javassist</include>
-                <include>>net.sf.scannotation:scannotation</include>
+                <include>net.sf.scannotation:scannotation</include>
             </includes>
     </dependencySet>
 
@@ -76,6 +76,7 @@
                 <include>org.apache.geronimo.specs:geronimo-interceptor_3.0_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jsp_2.1_spec</include>
+                <include>org.apache.geronimo.specs:geronimo-jpa_3.0_spec</include>
             </includes>
         </dependencySet>
 
