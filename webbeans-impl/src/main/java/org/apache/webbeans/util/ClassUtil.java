@@ -1023,14 +1023,8 @@ public final class ClassUtil
 		{
 			//Check for simple date format
 			SimpleDateFormat format = new SimpleDateFormat(WEBBEANS_DATE_FORMAT);
-			try
-			{
-				return format.parse(value);
-				
-			} catch (ParseException e1)
-			{
-				throw e1;
-			}
+			
+			return format.parse(value);
 		}
 	}
 	
