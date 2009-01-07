@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -1480,108 +1481,118 @@ public final class WebBeansXMLConfigurator
 			
 			String value = child.getTextTrim();
 			
-			if (!ClassUtil.isInValueTypes(fieldType))
+			try
 			{
-				throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Field type with field name : " + field.getName() + " is not compatible for initial value assignment");
-			}
-
-			if (ClassUtil.isPrimitive(fieldType) || ClassUtil.isPrimitiveWrapper(fieldType)) /*Primitive type value*/
-			{
-				Object objVal = null;
-				
-				if ((objVal = ClassUtil.isValueOkForPrimitiveOrWrapper(fieldType, value)) != null)
-				{
-					component.addFieldValue(field, objVal);
-					
-				} else
-				{
-					throw new WebBeansConfigurationException(errorMessage);
-				}
-				
-			} 
-			else if (ClassUtil.isEnum(fieldType)) /*Enumeration value*/
-			{
-				Enum enumValue = ClassUtil.isValueOkForEnum(fieldType, value);
-
-				if (enumValue == null)
-				{
-					throw new WebBeansConfigurationException(errorMessage);
-				}
-
-				component.addFieldValue(field, enumValue);
-				
-			} 
-			else if (fieldType.equals(String.class)) /*String value*/
-			{
-				component.addFieldValue(field, value);
-
-			} 
-			else if (fieldType.equals(Date.class) /*Date, Time, Sql Date, Time stamp, Calendar value*/ 
-					|| fieldType.equals(java.sql.Date.class)
-					|| fieldType.equals(Time.class)
-					|| fieldType.equals(Timestamp.class))
-			{
-				Date date = ClassUtil.isValueOkForDate(value);
-
-				if (date == null)
-				{
-					throw new WebBeansConfigurationException(errorMessage);
-				} 
-				else
-				{
-					component.addFieldValue(field, date);
-				}
-
-			} 
-			else if(fieldType.equals(Calendar.class))
-			{
-				Calendar calendar = ClassUtil.isValueOkForCalendar(value);
-				
-				if (calendar == null)
-				{
-					throw new WebBeansConfigurationException(errorMessage);
-				} 
-				else
-				{
-					component.addFieldValue(field, calendar);
-				}
-				
-			}
 			
-			else if(fieldType.equals(BigDecimal.class) || fieldType.equals(BigInteger.class)) /*BigDecimal or BigInteger value*/
-			{
-				Object bigValue = ClassUtil.isValueOkForBigDecimalOrInteger(fieldType, value);
-				
-				if (bigValue == null)
+				if (!ClassUtil.isInValueTypes(fieldType))
 				{
-					throw new WebBeansConfigurationException(errorMessage);
-				} 
-				else
-				{
-					component.addFieldValue(field, bigValue);
+					throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Field type with field name : " + field.getName() + " is not compatible for initial value assignment");
 				}
-				
-			}
-			else if (fieldType.equals(Class.class)) /*Class value*/
-			{
-				Class<?> clazz = ClassUtil.getClassFromName(value);
 
-				if (clazz == null)
+				if (ClassUtil.isPrimitive(fieldType) || ClassUtil.isPrimitiveWrapper(fieldType)) /*Primitive type value*/
 				{
-					throw new WebBeansConfigurationException(errorMessage);
+					Object objVal = null;
+					
+					if ((objVal = ClassUtil.isValueOkForPrimitiveOrWrapper(fieldType, value)) != null)
+					{
+						component.addFieldValue(field, objVal);
+						
+					} else
+					{
+						throw new WebBeansConfigurationException(errorMessage);
+					}
+					
 				} 
-				else
+				else if (ClassUtil.isEnum(fieldType)) /*Enumeration value*/
 				{
-					component.addFieldValue(field, clazz);
+					Enum enumValue = ClassUtil.isValueOkForEnum(fieldType, value);
+
+					if (enumValue == null)
+					{
+						throw new WebBeansConfigurationException(errorMessage);
+					}
+
+					component.addFieldValue(field, enumValue);
+					
+				} 
+				else if (fieldType.equals(String.class)) /*String value*/
+				{
+					component.addFieldValue(field, value);
+
+				} 
+				else if (fieldType.equals(Date.class) /*Date, Time, Sql Date, Time stamp, Calendar value*/ 
+						|| fieldType.equals(java.sql.Date.class)
+						|| fieldType.equals(Time.class)
+						|| fieldType.equals(Timestamp.class))
+				{
+					Date date = ClassUtil.isValueOkForDate(value);
+
+					if (date == null)
+					{
+						throw new WebBeansConfigurationException(errorMessage);
+					} 
+					else
+					{
+						component.addFieldValue(field, date);
+					}
+
+				} 
+				else if(fieldType.equals(Calendar.class))
+				{
+					Calendar calendar = ClassUtil.isValueOkForCalendar(value);
+					
+					if (calendar == null)
+					{
+						throw new WebBeansConfigurationException(errorMessage);
+					} 
+					else
+					{
+						component.addFieldValue(field, calendar);
+					}
+					
 				}
-			} 
-			else if (List.class.isAssignableFrom(fieldType)) /*List value*/
-			{
-				configureFieldListValue(component, field, child, errorMessage);
+				
+				else if(fieldType.equals(BigDecimal.class) || fieldType.equals(BigInteger.class)) /*BigDecimal or BigInteger value*/
+				{
+					Object bigValue = ClassUtil.isValueOkForBigDecimalOrInteger(fieldType, value);
+					
+					if (bigValue == null)
+					{
+						throw new WebBeansConfigurationException(errorMessage);
+					} 
+					else
+					{
+						component.addFieldValue(field, bigValue);
+					}
+					
+				}
+				else if (fieldType.equals(Class.class)) /*Class value*/
+				{
+					Class<?> clazz = ClassUtil.getClassFromName(value);
+
+					if (clazz == null)
+					{
+						throw new WebBeansConfigurationException(errorMessage);
+					} 
+					else
+					{
+						component.addFieldValue(field, clazz);
+					}
+				} 
+				else if (List.class.isAssignableFrom(fieldType)) /*List value*/
+				{
+					configureFieldListValue(component, field, child, errorMessage);
+				}
+				else if(Set.class.isAssignableFrom(fieldType)) /*Set value*/
+				{
+					configureFieldSetValue(component, field, child, errorMessage);
+				}
+				
+				
 			}
-			else if(Set.class.isAssignableFrom(fieldType)) /*Set value*/
+			catch(ParseException e)
 			{
-				configureFieldSetValue(component, field, child, errorMessage);
+				throw new WebBeansConfigurationException(errorMessage,e);
 			}
 		}
 	}

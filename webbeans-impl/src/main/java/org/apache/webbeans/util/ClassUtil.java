@@ -1011,7 +1011,7 @@ public final class ClassUtil
 
 	}
 
-	public static Date isValueOkForDate(String value)
+	public static Date isValueOkForDate(String value) throws ParseException
 	{
 		try
 		{
@@ -1029,12 +1029,12 @@ public final class ClassUtil
 				
 			} catch (ParseException e1)
 			{
-				return null;
+				throw e1;
 			}
 		}
 	}
 	
-	public static Calendar isValueOkForCalendar(String value)
+	public static Calendar isValueOkForCalendar(String value) throws ParseException
 	{
 		Calendar calendar = null;
 		
