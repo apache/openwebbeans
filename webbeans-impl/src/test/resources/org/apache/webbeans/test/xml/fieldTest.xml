@@ -6,12 +6,13 @@
 
 	<myapp:ComponentForField>
 		
+		<Named>componentForField</Named>
 		<myapp:intField>35</myapp:intField>
 		<myapp:floatField>35.3f</myapp:floatField>
 		<myapp:doubleField>35.5d</myapp:doubleField>
 		<myapp:charField>a</myapp:charField>
-		<myapp:longField>35</myapp:longField>
-		<myapp:byteField>0</myapp:byteField>
+		<myapp:longField>37</myapp:longField>
+		<myapp:byteField>1</myapp:byteField>
 		<myapp:shortField>5</myapp:shortField>
 		<myapp:booleanField>true</myapp:booleanField>
 		<myapp:enum1Field>ENUM1</myapp:enum1Field>
