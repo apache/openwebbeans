@@ -316,7 +316,7 @@ public abstract class TestContext implements ITestContext
 	 * @param simpleClass webbeans class
 	 * @param webBeanDecleration element decleration defines simple webbeans
 	 */
-	protected <T> void defineXMLSimpleWebBeans(Class<T> simpleClass, Element webBeanDecleration)
+	protected <T> XMLComponentImpl<T> defineXMLSimpleWebBeans(Class<T> simpleClass, Element webBeanDecleration)
 	{
 		XMLComponentImpl<T> bean = null;
 		bean = this.xmlConfigurator.configureSimpleWebBean(simpleClass, webBeanDecleration);
@@ -326,6 +326,8 @@ public abstract class TestContext implements ITestContext
 			getComponents().add(bean);
 			manager.addBean(bean);
 		}
+		
+		return bean;
 	}
 	
 	
