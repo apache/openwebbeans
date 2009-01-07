@@ -31,6 +31,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -60,6 +61,8 @@ public final class ClassUtil
 	public static Set<Class<?>> PRIMITIVE_WRAPPERS = new HashSet<Class<?>>();
 	
 	public static Set<Class<?>> PRIMITIVES = new HashSet<Class<?>>();
+	
+	public static final String WEBBEANS_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
 	static
 	{
@@ -1014,9 +1017,20 @@ public final class ClassUtil
 		{
 			Asserts.assertNotNull(value, "value parameter can not be null");
 			return DateFormat.getDateTimeInstance().parse(value);
-		} catch (ParseException e)
+			
+		} 
+		catch (ParseException e)
 		{
-			return null;
+			//Check for simple date format
+			SimpleDateFormat format = new SimpleDateFormat(WEBBEANS_DATE_FORMAT);
+			try
+			{
+				return format.parse(value);
+				
+			} catch (ParseException e1)
+			{
+				return null;
+			}
 		}
 	}
 	
@@ -1024,18 +1038,19 @@ public final class ClassUtil
 	{
 		Calendar calendar = null;
 		
-		try
-		{
-			Asserts.assertNotNull(value, "value parameter can not be null");
-			Date date = DateFormat.getDateTimeInstance().parse(value);
-			
-			calendar = Calendar.getInstance();
-			calendar.setTime(date);
-			
-		} catch (ParseException e)
+		Asserts.assertNotNull(value, "value parameter can not be null");
+		Date date = isValueOkForDate(value);
+		
+		if(date == null)
 		{
 			return null;
 		}
+		else
+		{
+			calendar = Calendar.getInstance();
+			calendar.setTime(date);	
+		}
+					
 		
 		return calendar;
 	}
