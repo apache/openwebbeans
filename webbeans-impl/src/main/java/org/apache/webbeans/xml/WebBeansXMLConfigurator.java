@@ -1532,7 +1532,7 @@ public final class WebBeansXMLConfigurator
 				} 
 				else
 				{
-					component.addFieldValue(field, value);
+					component.addFieldValue(field, date);
 				}
 
 			} 
@@ -1562,7 +1562,7 @@ public final class WebBeansXMLConfigurator
 				} 
 				else
 				{
-					component.addFieldValue(field, value);
+					component.addFieldValue(field, clazz);
 				}
 			} 
 			else if (List.class.isAssignableFrom(fieldType)) /*List value*/
