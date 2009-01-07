@@ -86,6 +86,8 @@ public class XMLFieldTest extends TestContext
 			Assert.assertEquals("dskfj", cff.getStrField());
 			Assert.assertNotNull(cff.getDateField());
 			Assert.assertNotNull(cff.getCalendarField());
+			Assert.assertNotNull(cff.getDateField2());
+			Assert.assertNotNull(cff.getCalendarField2());			
 			Assert.assertEquals(ComponentForField.class, cff.getClazzField());
 			Assert.assertNotNull(cff.getListStrField());
 			Assert.assertNotNull(cff.getListEnumField());

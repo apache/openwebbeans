@@ -46,6 +46,10 @@ public class ComponentForField
 	
 	private Calendar calendarField;
 	
+	private Date dateField2;
+	
+	private Calendar calendarField2;
+	
 	private Class<?> clazzField;
 	
 	private List<String> listStrField;
@@ -296,5 +300,54 @@ public class ComponentForField
 	{
 		this.listEnumField = listEnumField;
 	}
+
+	/**
+	 * @return the enum1Field
+	 */
+	public XEnum getEnum1Field()
+	{
+		return enum1Field;
+	}
+
+	/**
+	 * @param enum1Field the enum1Field to set
+	 */
+	public void setEnum1Field(XEnum enum1Field)
+	{
+		this.enum1Field = enum1Field;
+	}
+
+	/**
+	 * @return the dateField2
+	 */
+	public Date getDateField2()
+	{
+		return dateField2;
+	}
+
+	/**
+	 * @param dateField2 the dateField2 to set
+	 */
+	public void setDateField2(Date dateField2)
+	{
+		this.dateField2 = dateField2;
+	}
+
+	/**
+	 * @return the calendarField2
+	 */
+	public Calendar getCalendarField2()
+	{
+		return calendarField2;
+	}
+
+	/**
+	 * @param calendarField2 the calendarField2 to set
+	 */
+	public void setCalendarField2(Calendar calendarField2)
+	{
+		this.calendarField2 = calendarField2;
+	}
+	
 	
 }
