@@ -1018,7 +1018,26 @@ public final class ClassUtil
 		{
 			return null;
 		}
-
+	}
+	
+	public static Calendar isValueOkForCalendar(String value)
+	{
+		Calendar calendar = null;
+		
+		try
+		{
+			Asserts.assertNotNull(value, "value parameter can not be null");
+			Date date = DateFormat.getDateTimeInstance().parse(value);
+			
+			calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			
+		} catch (ParseException e)
+		{
+			return null;
+		}
+		
+		return calendar;
 	}
 	
 	public static Object isValueOkForBigDecimalOrInteger(Class<?> type, String value)

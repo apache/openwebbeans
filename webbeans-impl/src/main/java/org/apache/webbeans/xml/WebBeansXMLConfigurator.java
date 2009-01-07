@@ -1478,6 +1478,8 @@ public final class WebBeansXMLConfigurator
 			/*Field type*/
 			Class<?> fieldType = field.getType();
 			
+			String value = child.getTextTrim();
+			
 			if (!ClassUtil.isInValueTypes(fieldType))
 			{
 				throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Field type with field name : " + field.getName() + " is not compatible for initial value assignment");
@@ -1485,7 +1487,6 @@ public final class WebBeansXMLConfigurator
 
 			if (ClassUtil.isPrimitive(fieldType) || ClassUtil.isPrimitiveWrapper(fieldType)) /*Primitive type value*/
 			{
-				String value = child.getTextTrim();
 				Object objVal = null;
 				
 				if ((objVal = ClassUtil.isValueOkForPrimitiveOrWrapper(fieldType, value)) != null)
@@ -1500,7 +1501,6 @@ public final class WebBeansXMLConfigurator
 			} 
 			else if (ClassUtil.isEnum(fieldType)) /*Enumeration value*/
 			{
-				String value = child.getTextTrim();
 				Enum enumValue = ClassUtil.isValueOkForEnum(fieldType, value);
 
 				if (enumValue == null)
@@ -1513,17 +1513,14 @@ public final class WebBeansXMLConfigurator
 			} 
 			else if (fieldType.equals(String.class)) /*String value*/
 			{
-				String value = child.getTextTrim();
 				component.addFieldValue(field, value);
 
 			} 
 			else if (fieldType.equals(Date.class) /*Date, Time, Sql Date, Time stamp, Calendar value*/ 
-					|| fieldType.equals(Calendar.class)
 					|| fieldType.equals(java.sql.Date.class)
 					|| fieldType.equals(Time.class)
 					|| fieldType.equals(Timestamp.class))
 			{
-				String value = child.getTextTrim();
 				Date date = ClassUtil.isValueOkForDate(value);
 
 				if (date == null)
@@ -1536,9 +1533,23 @@ public final class WebBeansXMLConfigurator
 				}
 
 			} 
+			else if(fieldType.equals(Calendar.class))
+			{
+				Calendar calendar = ClassUtil.isValueOkForCalendar(value);
+				
+				if (calendar == null)
+				{
+					throw new WebBeansConfigurationException(errorMessage);
+				} 
+				else
+				{
+					component.addFieldValue(field, calendar);
+				}
+				
+			}
+			
 			else if(fieldType.equals(BigDecimal.class) || fieldType.equals(BigInteger.class)) /*BigDecimal or BigInteger value*/
 			{
-				String value = child.getTextTrim();
 				Object bigValue = ClassUtil.isValueOkForBigDecimalOrInteger(fieldType, value);
 				
 				if (bigValue == null)
@@ -1553,7 +1564,6 @@ public final class WebBeansXMLConfigurator
 			}
 			else if (fieldType.equals(Class.class)) /*Class value*/
 			{
-				String value = child.getTextTrim();
 				Class<?> clazz = ClassUtil.getClassFromName(value);
 
 				if (clazz == null)
