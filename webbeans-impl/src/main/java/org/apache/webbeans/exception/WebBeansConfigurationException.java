@@ -46,4 +46,10 @@ public class WebBeansConfigurationException extends DefinitionException
 		super(e);
 	}
 	
+	public WebBeansConfigurationException(String message,Throwable e)
+	{
+		super(message,e);
+	}
+	
+	
 }
