@@ -34,65 +34,65 @@ import org.junit.Test;
 
 public class Producer1ConsumerComponentTest extends TestContext
 {
-	Manager container = null;
+    Manager container = null;
 
-	public Producer1ConsumerComponentTest()
-	{
-		super(Producer1ConsumerComponentTest.class.getSimpleName());
-	}
+    public Producer1ConsumerComponentTest()
+    {
+        super(Producer1ConsumerComponentTest.class.getSimpleName());
+    }
 
-	public void endTests(ServletContext ctx)
-	{
+    public void endTests(ServletContext ctx)
+    {
 
-	}
+    }
 
-	@Before
-	public void init()
-	{
-		super.init();
-		this.container = ManagerImpl.getManager();
-	}
+    @Before
+    public void init()
+    {
+        super.init();
+        this.container = ManagerImpl.getManager();
+    }
 
-	public void startTests(ServletContext ctx)
-	{
+    public void startTests(ServletContext ctx)
+    {
 
-	}
+    }
 
-	@Test
-	public void testTypedComponent() throws Throwable
-	{
-		clear();
+    @Test
+    public void testTypedComponent() throws Throwable
+    {
+        clear();
 
-		defineSimpleWebBean(ServiceImpl1.class);
-		defineSimpleWebBean(Producer1.class);
-		defineSimpleWebBean(Producer1ConsumerComponent.class);
+        defineSimpleWebBean(ServiceImpl1.class);
+        defineSimpleWebBean(Producer1.class);
+        defineSimpleWebBean(Producer1ConsumerComponent.class);
 
-		List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractComponent<?>> comps = getComponents();
 
-		ContextFactory.initRequestContext(null);
-		ContextFactory.initApplicationContext(null);
+        ContextFactory.initRequestContext(null);
+        ContextFactory.initApplicationContext(null);
 
-		Assert.assertEquals(4, getDeployedComponents());
+        Assert.assertEquals(4, getDeployedComponents());
 
-		Object obj = getContext(ApplicationScoped.class).get(comps.get(0), true);
+        Object obj = getContext(ApplicationScoped.class).get(comps.get(0), true);
 
-		getInstanceByName("service");
+        getInstanceByName("service");
 
-		getContext(ApplicationScoped.class).get(comps.get(1), true);
+        getContext(ApplicationScoped.class).get(comps.get(1), true);
 
-		Object object = getContext(ApplicationScoped.class).get(comps.get(2), true);
+        Object object = getContext(ApplicationScoped.class).get(comps.get(2), true);
 
-		Assert.assertTrue(object instanceof Producer1ConsumerComponent);
+        Assert.assertTrue(object instanceof Producer1ConsumerComponent);
 
-		Producer1ConsumerComponent single = (Producer1ConsumerComponent) object;
+        Producer1ConsumerComponent single = (Producer1ConsumerComponent) object;
 
-		IService service = single.getService();
+        IService service = single.getService();
 
-		Assert.assertNotNull(service);
-		Assert.assertEquals(service, obj);
+        Assert.assertNotNull(service);
+        Assert.assertEquals(service, obj);
 
-		ContextFactory.destroyApplicationContext(null);
-		ContextFactory.destroyRequestContext(null);
-	}
+        ContextFactory.destroyApplicationContext(null);
+        ContextFactory.destroyRequestContext(null);
+    }
 
 }

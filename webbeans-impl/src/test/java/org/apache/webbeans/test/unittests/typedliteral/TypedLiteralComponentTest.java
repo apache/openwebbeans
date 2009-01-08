@@ -1,18 +1,15 @@
 /*
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- * 
- *       http://www.apache.org/licenses/LICENSE-2.0
- * 
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.apache.webbeans.test.unittests.typedliteral;
 
@@ -38,79 +35,81 @@ import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class TypedLiteralComponentTest extends TestContext
 {
-	public TypedLiteralComponentTest()
-	{
-		super(TypedLiteralComponentTest.class.getSimpleName());
-	}
+    public TypedLiteralComponentTest()
+    {
+        super(TypedLiteralComponentTest.class.getSimpleName());
+    }
 
-	public void endTests(ServletContext ctx)
-	{
-		
-	}
+    public void endTests(ServletContext ctx)
+    {
 
-	@Before
-	public void init()
-	{
-		super.init();
-	}
+    }
 
-	public void startTests(ServletContext ctx)
-	{
-		
-	}
-	
-	@Test
-	public void testTypedComponent() throws Throwable
-	{
-		clear();
-		
-		defineSimpleWebBean(TypeLiteralComponent.class);
-		defineSimpleWebBean(InjectedTypeLiteralComponent.class);
-		List<AbstractComponent<?>> comps = getComponents();
-		
-		ContextFactory.initRequestContext(null);
-		
-		Assert.assertEquals(2, comps.size());
-		
-		TypeLiteralComponent userComponent = (TypeLiteralComponent) ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(0), true);
-		InjectedTypeLiteralComponent tc = (InjectedTypeLiteralComponent) ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), true);
-		
-		Assert.assertNotNull(tc.getComponent());
-		Assert.assertNotNull(userComponent);
-		
-		Assert.assertTrue(tc.getComponent() instanceof TypeLiteralComponent);
-		
-		Assert.assertEquals("GURKAN", TypeLiteralComponent.STR);
-		
-		ContextFactory.destroyRequestContext(null);
- 	}
-	
-	@Test
-	public void testTypedLiteralComponent() throws Throwable
-	{
-		clear();
-		
-		defineSimpleWebBean(TypeLiteralComponent.class);
-		List<AbstractComponent<?>> comps = getComponents();
-		
-		ContextFactory.initRequestContext(null);
-		
-		Assert.assertEquals(1, comps.size());
-		
-		TypeLiteral<ITypeLiteralComponent<List<String>>> tl = new TypeLiteral<ITypeLiteralComponent<List<String>>>(){};
-		
-		Annotation[] anns = new Annotation[1];
-		anns[0] = new AnnotationLiteral<Current>(){
-			
-		};
-		
-		Bean<ITypeLiteralComponent<List<String>>> s = ManagerImpl.getManager().resolveByType(tl, anns).iterator().next();
-		Assert.assertNotNull(s);
-		
-		ContextFactory.destroyRequestContext(null);
- 	}	
-	
+    @Before
+    public void init()
+    {
+        super.init();
+    }
+
+    public void startTests(ServletContext ctx)
+    {
+
+    }
+
+    @Test
+    public void testTypedComponent() throws Throwable
+    {
+        clear();
+
+        defineSimpleWebBean(TypeLiteralComponent.class);
+        defineSimpleWebBean(InjectedTypeLiteralComponent.class);
+        List<AbstractComponent<?>> comps = getComponents();
+
+        ContextFactory.initRequestContext(null);
+
+        Assert.assertEquals(2, comps.size());
+
+        TypeLiteralComponent userComponent = (TypeLiteralComponent) ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(0), true);
+        InjectedTypeLiteralComponent tc = (InjectedTypeLiteralComponent) ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), true);
+
+        Assert.assertNotNull(tc.getComponent());
+        Assert.assertNotNull(userComponent);
+
+        Assert.assertTrue(tc.getComponent() instanceof TypeLiteralComponent);
+
+        Assert.assertEquals("GURKAN", TypeLiteralComponent.STR);
+
+        ContextFactory.destroyRequestContext(null);
+    }
+
+    @Test
+    public void testTypedLiteralComponent() throws Throwable
+    {
+        clear();
+
+        defineSimpleWebBean(TypeLiteralComponent.class);
+        List<AbstractComponent<?>> comps = getComponents();
+
+        ContextFactory.initRequestContext(null);
+
+        Assert.assertEquals(1, comps.size());
+
+        TypeLiteral<ITypeLiteralComponent<List<String>>> tl = new TypeLiteral<ITypeLiteralComponent<List<String>>>()
+        {
+        };
+
+        Annotation[] anns = new Annotation[1];
+        anns[0] = new AnnotationLiteral<Current>()
+        {
+
+        };
+
+        Bean<ITypeLiteralComponent<List<String>>> s = ManagerImpl.getManager().resolveByType(tl, anns).iterator().next();
+        Assert.assertNotNull(s);
+
+        ContextFactory.destroyRequestContext(null);
+    }
+
 }

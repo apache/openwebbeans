@@ -1,18 +1,15 @@
 /*
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- * 
- *       http://www.apache.org/licenses/LICENSE-2.0
- * 
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.apache.webbeans.test.xml;
 
@@ -22,332 +19,331 @@ import java.util.List;
 
 public class ComponentForField
 {
-	private int intField;
-	
-	private float floatField;
-	
-	private double doubleField;
-	
-	private char charField;
-	
-	private long longField;
-	
-	private byte byteField;
-	
-	private short shortField;
-	
-	private boolean booleanField;
-	
-	private XEnum enum1Field;
-	
-	private String strField;
-	
-	private Date dateField;
-	
-	private Calendar calendarField;
-	
-	private Date dateField2;
-	
-	private Calendar calendarField2;
-	
-	private Class<?> clazzField;
-	
-	private List<String> listStrField;
-	
-	private List<XEnum> listEnumField;
-	
-	public ComponentForField()
-	{
-		
-	}
+    private int intField;
 
-	/**
-	 * @return the intField
-	 */
-	public int getIntField()
-	{
-		return intField;
-	}
+    private float floatField;
 
-	/**
-	 * @param intField the intField to set
-	 */
-	public void setIntField(int intField)
-	{
-		this.intField = intField;
-	}
+    private double doubleField;
 
-	/**
-	 * @return the floatField
-	 */
-	public float getFloatField()
-	{
-		return floatField;
-	}
+    private char charField;
 
-	/**
-	 * @param floatField the floatField to set
-	 */
-	public void setFloatField(float floatField)
-	{
-		this.floatField = floatField;
-	}
+    private long longField;
 
-	/**
-	 * @return the doubleField
-	 */
-	public double getDoubleField()
-	{
-		return doubleField;
-	}
+    private byte byteField;
 
-	/**
-	 * @param doubleField the doubleField to set
-	 */
-	public void setDoubleField(double doubleField)
-	{
-		this.doubleField = doubleField;
-	}
+    private short shortField;
 
-	/**
-	 * @return the charField
-	 */
-	public char getCharField()
-	{
-		return charField;
-	}
+    private boolean booleanField;
 
-	/**
-	 * @param charField the charField to set
-	 */
-	public void setCharField(char charField)
-	{
-		this.charField = charField;
-	}
+    private XEnum enum1Field;
 
-	/**
-	 * @return the longField
-	 */
-	public long getLongField()
-	{
-		return longField;
-	}
+    private String strField;
 
-	/**
-	 * @param longField the longField to set
-	 */
-	public void setLongField(long longField)
-	{
-		this.longField = longField;
-	}
+    private Date dateField;
 
-	/**
-	 * @return the byteField
-	 */
-	public byte getByteField()
-	{
-		return byteField;
-	}
+    private Calendar calendarField;
 
-	/**
-	 * @param byteField the byteField to set
-	 */
-	public void setByteField(byte byteField)
-	{
-		this.byteField = byteField;
-	}
+    private Date dateField2;
 
-	/**
-	 * @return the shortField
-	 */
-	public short getShortField()
-	{
-		return shortField;
-	}
+    private Calendar calendarField2;
 
-	/**
-	 * @param shortField the shortField to set
-	 */
-	public void setShortField(short shortField)
-	{
-		this.shortField = shortField;
-	}
+    private Class<?> clazzField;
 
-	/**
-	 * @return the booleanField
-	 */
-	public boolean isBooleanField()
-	{
-		return booleanField;
-	}
+    private List<String> listStrField;
 
-	/**
-	 * @param booleanField the booleanField to set
-	 */
-	public void setBooleanField(boolean booleanField)
-	{
-		this.booleanField = booleanField;
-	}
+    private List<XEnum> listEnumField;
 
-	/**
-	 * @return the enum1
-	 */
-	public XEnum getEnum1()
-	{
-		return enum1Field;
-	}
+    public ComponentForField()
+    {
 
-	/**
-	 * @param enum1 the enum1 to set
-	 */
-	public void setEnum1(XEnum enum1)
-	{
-		this.enum1Field = enum1;
-	}
+    }
 
-	/**
-	 * @return the strField
-	 */
-	public String getStrField()
-	{
-		return strField;
-	}
+    /**
+     * @return the intField
+     */
+    public int getIntField()
+    {
+        return intField;
+    }
 
-	/**
-	 * @param strField the strField to set
-	 */
-	public void setStrField(String strField)
-	{
-		this.strField = strField;
-	}
+    /**
+     * @param intField the intField to set
+     */
+    public void setIntField(int intField)
+    {
+        this.intField = intField;
+    }
 
-	/**
-	 * @return the dateField
-	 */
-	public Date getDateField()
-	{
-		return dateField;
-	}
+    /**
+     * @return the floatField
+     */
+    public float getFloatField()
+    {
+        return floatField;
+    }
 
-	/**
-	 * @param dateField the dateField to set
-	 */
-	public void setDateField(Date dateField)
-	{
-		this.dateField = dateField;
-	}
+    /**
+     * @param floatField the floatField to set
+     */
+    public void setFloatField(float floatField)
+    {
+        this.floatField = floatField;
+    }
 
-	/**
-	 * @return the calendarField
-	 */
-	public Calendar getCalendarField()
-	{
-		return calendarField;
-	}
+    /**
+     * @return the doubleField
+     */
+    public double getDoubleField()
+    {
+        return doubleField;
+    }
 
-	/**
-	 * @param calendarField the calendarField to set
-	 */
-	public void setCalendarField(Calendar calendarField)
-	{
-		this.calendarField = calendarField;
-	}
+    /**
+     * @param doubleField the doubleField to set
+     */
+    public void setDoubleField(double doubleField)
+    {
+        this.doubleField = doubleField;
+    }
 
-	/**
-	 * @return the clazzField
-	 */
-	public Class<?> getClazzField()
-	{
-		return clazzField;
-	}
+    /**
+     * @return the charField
+     */
+    public char getCharField()
+    {
+        return charField;
+    }
 
-	/**
-	 * @param clazzField the clazzField to set
-	 */
-	public void setClazzField(Class<?> clazzField)
-	{
-		this.clazzField = clazzField;
-	}
+    /**
+     * @param charField the charField to set
+     */
+    public void setCharField(char charField)
+    {
+        this.charField = charField;
+    }
 
-	/**
-	 * @return the listStrField
-	 */
-	public List<String> getListStrField()
-	{
-		return listStrField;
-	}
+    /**
+     * @return the longField
+     */
+    public long getLongField()
+    {
+        return longField;
+    }
 
-	/**
-	 * @param listStrField the listStrField to set
-	 */
-	public void setListStrField(List<String> listStrField)
-	{
-		this.listStrField = listStrField;
-	}
+    /**
+     * @param longField the longField to set
+     */
+    public void setLongField(long longField)
+    {
+        this.longField = longField;
+    }
 
-	/**
-	 * @return the listEnumField
-	 */
-	public List<XEnum> getListEnumField()
-	{
-		return listEnumField;
-	}
+    /**
+     * @return the byteField
+     */
+    public byte getByteField()
+    {
+        return byteField;
+    }
 
-	/**
-	 * @param listEnumField the listEnumField to set
-	 */
-	public void setListEnumField(List<XEnum> listEnumField)
-	{
-		this.listEnumField = listEnumField;
-	}
+    /**
+     * @param byteField the byteField to set
+     */
+    public void setByteField(byte byteField)
+    {
+        this.byteField = byteField;
+    }
 
-	/**
-	 * @return the enum1Field
-	 */
-	public XEnum getEnum1Field()
-	{
-		return enum1Field;
-	}
+    /**
+     * @return the shortField
+     */
+    public short getShortField()
+    {
+        return shortField;
+    }
 
-	/**
-	 * @param enum1Field the enum1Field to set
-	 */
-	public void setEnum1Field(XEnum enum1Field)
-	{
-		this.enum1Field = enum1Field;
-	}
+    /**
+     * @param shortField the shortField to set
+     */
+    public void setShortField(short shortField)
+    {
+        this.shortField = shortField;
+    }
 
-	/**
-	 * @return the dateField2
-	 */
-	public Date getDateField2()
-	{
-		return dateField2;
-	}
+    /**
+     * @return the booleanField
+     */
+    public boolean isBooleanField()
+    {
+        return booleanField;
+    }
 
-	/**
-	 * @param dateField2 the dateField2 to set
-	 */
-	public void setDateField2(Date dateField2)
-	{
-		this.dateField2 = dateField2;
-	}
+    /**
+     * @param booleanField the booleanField to set
+     */
+    public void setBooleanField(boolean booleanField)
+    {
+        this.booleanField = booleanField;
+    }
 
-	/**
-	 * @return the calendarField2
-	 */
-	public Calendar getCalendarField2()
-	{
-		return calendarField2;
-	}
+    /**
+     * @return the enum1
+     */
+    public XEnum getEnum1()
+    {
+        return enum1Field;
+    }
 
-	/**
-	 * @param calendarField2 the calendarField2 to set
-	 */
-	public void setCalendarField2(Calendar calendarField2)
-	{
-		this.calendarField2 = calendarField2;
-	}
-	
-	
+    /**
+     * @param enum1 the enum1 to set
+     */
+    public void setEnum1(XEnum enum1)
+    {
+        this.enum1Field = enum1;
+    }
+
+    /**
+     * @return the strField
+     */
+    public String getStrField()
+    {
+        return strField;
+    }
+
+    /**
+     * @param strField the strField to set
+     */
+    public void setStrField(String strField)
+    {
+        this.strField = strField;
+    }
+
+    /**
+     * @return the dateField
+     */
+    public Date getDateField()
+    {
+        return dateField;
+    }
+
+    /**
+     * @param dateField the dateField to set
+     */
+    public void setDateField(Date dateField)
+    {
+        this.dateField = dateField;
+    }
+
+    /**
+     * @return the calendarField
+     */
+    public Calendar getCalendarField()
+    {
+        return calendarField;
+    }
+
+    /**
+     * @param calendarField the calendarField to set
+     */
+    public void setCalendarField(Calendar calendarField)
+    {
+        this.calendarField = calendarField;
+    }
+
+    /**
+     * @return the clazzField
+     */
+    public Class<?> getClazzField()
+    {
+        return clazzField;
+    }
+
+    /**
+     * @param clazzField the clazzField to set
+     */
+    public void setClazzField(Class<?> clazzField)
+    {
+        this.clazzField = clazzField;
+    }
+
+    /**
+     * @return the listStrField
+     */
+    public List<String> getListStrField()
+    {
+        return listStrField;
+    }
+
+    /**
+     * @param listStrField the listStrField to set
+     */
+    public void setListStrField(List<String> listStrField)
+    {
+        this.listStrField = listStrField;
+    }
+
+    /**
+     * @return the listEnumField
+     */
+    public List<XEnum> getListEnumField()
+    {
+        return listEnumField;
+    }
+
+    /**
+     * @param listEnumField the listEnumField to set
+     */
+    public void setListEnumField(List<XEnum> listEnumField)
+    {
+        this.listEnumField = listEnumField;
+    }
+
+    /**
+     * @return the enum1Field
+     */
+    public XEnum getEnum1Field()
+    {
+        return enum1Field;
+    }
+
+    /**
+     * @param enum1Field the enum1Field to set
+     */
+    public void setEnum1Field(XEnum enum1Field)
+    {
+        this.enum1Field = enum1Field;
+    }
+
+    /**
+     * @return the dateField2
+     */
+    public Date getDateField2()
+    {
+        return dateField2;
+    }
+
+    /**
+     * @param dateField2 the dateField2 to set
+     */
+    public void setDateField2(Date dateField2)
+    {
+        this.dateField2 = dateField2;
+    }
+
+    /**
+     * @return the calendarField2
+     */
+    public Calendar getCalendarField2()
+    {
+        return calendarField2;
+    }
+
+    /**
+     * @param calendarField2 the calendarField2 to set
+     */
+    public void setCalendarField2(Calendar calendarField2)
+    {
+        this.calendarField2 = calendarField2;
+    }
+
 }

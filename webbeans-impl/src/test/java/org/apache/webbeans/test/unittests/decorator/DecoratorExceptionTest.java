@@ -1,18 +1,15 @@
 /*
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- * 
- *       http://www.apache.org/licenses/LICENSE-2.0
- * 
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.apache.webbeans.test.unittests.decorator;
 
@@ -39,177 +36,176 @@ import org.junit.Test;
 
 public class DecoratorExceptionTest extends TestContext
 {
-	public DecoratorExceptionTest()
-	{
-		super(DecoratorExceptionTest.class.getName());
-	}
+    public DecoratorExceptionTest()
+    {
+        super(DecoratorExceptionTest.class.getName());
+    }
 
-	@Before
-	public void init()
-	{
-		super.init();
-	}
+    @Before
+    public void init()
+    {
+        super.init();
+    }
 
-	public void endTests(ServletContext ctx)
-	{
+    public void endTests(ServletContext ctx)
+    {
 
-	}
+    }
 
-	public void startTests(ServletContext ctx)
-	{
+    public void startTests(ServletContext ctx)
+    {
 
-	}
+    }
 
-	@Test
-	public void testDelegateAttributeIsnotInterface()
-	{
-		Exception exc = null;
-		try
-		{
-			defineSimpleWebBeansDecorators(DelegateAttributeIsnotInterface.class);
-		} catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			exc = e;
-		}
+    @Test
+    public void testDelegateAttributeIsnotInterface()
+    {
+        Exception exc = null;
+        try
+        {
+            defineSimpleWebBeansDecorators(DelegateAttributeIsnotInterface.class);
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            exc = e;
+        }
 
-		Asserts.assertNotNull(exc);
-	}
+        Asserts.assertNotNull(exc);
+    }
 
-	@Test
-	public void testMoreThanOneDelegateAttribute()
-	{
-		Exception exc = null;
-		try
-		{
-			defineSimpleWebBeansDecorators(MoreThanOneDelegateAttribute.class);
-		} catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			exc = e;
-		}
+    @Test
+    public void testMoreThanOneDelegateAttribute()
+    {
+        Exception exc = null;
+        try
+        {
+            defineSimpleWebBeansDecorators(MoreThanOneDelegateAttribute.class);
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            exc = e;
+        }
 
-		Asserts.assertNotNull(exc);
+        Asserts.assertNotNull(exc);
 
-	}
+    }
 
-	@Test
-	public void testApplyToSimpleWebBeanFinal()
-	{
-		Exception excp = null;
+    @Test
+    public void testApplyToSimpleWebBeanFinal()
+    {
+        Exception excp = null;
 
-		Assert.assertNull(excp);
+        Assert.assertNull(excp);
 
-	}
+    }
 
-	@Test
-	public void testApplyToSimpleWebBeanFinalMethodsDecoratorImplements()
-	{
-		Exception exc = null;
+    @Test
+    public void testApplyToSimpleWebBeanFinalMethodsDecoratorImplements()
+    {
+        Exception exc = null;
 
-		try
-		{
-			defineSimpleWebBeansDecorators(PaymentDecorator.class);
-			defineSimpleWebBean(CheckWithCheckPaymentDecoratorField.class);
+        try
+        {
+            defineSimpleWebBeansDecorators(PaymentDecorator.class);
+            defineSimpleWebBean(CheckWithCheckPaymentDecoratorField.class);
 
-		} catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			exc = e;
-		}
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            exc = e;
+        }
 
-		Assert.assertNotNull(exc);
+        Assert.assertNotNull(exc);
 
-	}
+    }
 
-	@Test
-	public void testDelegateAttributeMustImplementAllDecoratedTypes()
-	{
-		Exception exc = null;
-		try
-		{
-			defineSimpleWebBeansDecorators(DelegateAttributeMustImplementAllDecoratedTypes.class);
-		} catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			exc = e;
-		}
+    @Test
+    public void testDelegateAttributeMustImplementAllDecoratedTypes()
+    {
+        Exception exc = null;
+        try
+        {
+            defineSimpleWebBeansDecorators(DelegateAttributeMustImplementAllDecoratedTypes.class);
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            exc = e;
+        }
 
-		Asserts.assertNotNull(exc);
+        Asserts.assertNotNull(exc);
 
-	}
+    }
 
-	@Test
-	public void testResolveDuplicateBindingParameterType()
-	{
-		Exception exc = null;
-		try
-		{
+    @Test
+    public void testResolveDuplicateBindingParameterType()
+    {
+        Exception exc = null;
+        try
+        {
 
-			Set<Class<?>> api = new HashSet<Class<?>>();
-			api.add(IPayment.class);
+            Set<Class<?>> api = new HashSet<Class<?>>();
+            api.add(IPayment.class);
 
-			Annotation[] anns = new Annotation[2];
-			anns[0] = new DummyAnnotationLiteral();
-			anns[1] = new DummyAnnotationLiteral();
+            Annotation[] anns = new Annotation[2];
+            anns[0] = new DummyAnnotationLiteral();
+            anns[1] = new DummyAnnotationLiteral();
 
-			getManager().resolveDecorators(api, anns);
-		} catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			exc = e;
-		}
+            getManager().resolveDecorators(api, anns);
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            exc = e;
+        }
 
-		Asserts.assertNotNull(exc);
+        Asserts.assertNotNull(exc);
 
-	}
+    }
 
-	@Test
-	public void testResolveNonBindingTypeAnnotation()
-	{
-		Exception exc = null;
-		try
-		{
+    @Test
+    public void testResolveNonBindingTypeAnnotation()
+    {
+        Exception exc = null;
+        try
+        {
 
-			Set<Class<?>> api = new HashSet<Class<?>>();
-			api.add(IPayment.class);
+            Set<Class<?>> api = new HashSet<Class<?>>();
+            api.add(IPayment.class);
 
-			Annotation[] anns = new Annotation[2];
-			anns[0] = new RequestedScopeLiteral();
+            Annotation[] anns = new Annotation[2];
+            anns[0] = new RequestedScopeLiteral();
 
-			getManager().resolveDecorators(api, anns);
-		} catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			exc = e;
-		}
+            getManager().resolveDecorators(api, anns);
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            exc = e;
+        }
 
-		Asserts.assertNotNull(exc);
-		
-	}
+        Asserts.assertNotNull(exc);
 
-	@Test
-	public void testResolveApiTypesEmpty()
-	{
-		Exception exc = null;
-		try
-		{
+    }
 
-			Set<Class<?>> api = new HashSet<Class<?>>();
+    @Test
+    public void testResolveApiTypesEmpty()
+    {
+        Exception exc = null;
+        try
+        {
 
-			Annotation[] anns = new Annotation[2];
-			anns[0] = new DummyAnnotationLiteral();
+            Set<Class<?>> api = new HashSet<Class<?>>();
 
-			getManager().resolveDecorators(api, anns);
-		} catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			exc = e;
-		}
+            Annotation[] anns = new Annotation[2];
+            anns[0] = new DummyAnnotationLiteral();
 
-		Asserts.assertNotNull(exc);
+            getManager().resolveDecorators(api, anns);
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            exc = e;
+        }
 
+        Asserts.assertNotNull(exc);
 
-	}
+    }
 
 }
