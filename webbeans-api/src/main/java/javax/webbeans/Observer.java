@@ -2,5 +2,5 @@ package javax.webbeans;
 
 public interface Observer<T>
 {
-   public void notify(T event);
+    public void notify(T event);
 }
