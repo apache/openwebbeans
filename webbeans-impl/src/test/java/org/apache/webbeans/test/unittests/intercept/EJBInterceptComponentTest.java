@@ -116,9 +116,7 @@ public class EJBInterceptComponentTest extends TestContext
         String[] arr = (String[]) obj;
 
         Assert.assertEquals(2, arr.length);
-        Assert.assertEquals("key", arr[0]);
-        Assert.assertEquals("key2", arr[1]);
-
+        Assert.assertTrue("key".equals(arr[0]) && "key2".equals(arr[1]) || "key".equals(arr[1]) && "key2".equals(arr[0]));
         ContextFactory.destroyRequestContext(null);
     }
 
@@ -143,9 +141,7 @@ public class EJBInterceptComponentTest extends TestContext
         String[] arr = (String[]) obj;
 
         Assert.assertEquals(2, arr.length);
-        Assert.assertEquals("key", arr[0]);
-        Assert.assertEquals("key0", arr[1]);
-
+        Assert.assertTrue("key".equals(arr[0]) && "key0".equals(arr[1]) || "key".equals(arr[1]) && "key0".equals(arr[0]));
         ContextFactory.destroyRequestContext(null);
     }
 
