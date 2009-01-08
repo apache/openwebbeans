@@ -1,18 +1,15 @@
 /*
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- * 
- *       http://www.apache.org/licenses/LICENSE-2.0
- * 
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.apache.webbeans.decorator;
 
@@ -35,96 +32,94 @@ import org.apache.webbeans.logger.WebBeansLogger;
 
 public final class WebBeansDecoratorConfig
 {
-	private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansDecoratorConfig.class);
+    private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansDecoratorConfig.class);
 
+    private WebBeansDecoratorConfig()
+    {
 
-	private WebBeansDecoratorConfig()
-	{
-		
-	}
-	
-	public static void configureDecoratorClass(AbstractComponent<Object> delegate)
-	{
-		logger.info("Configuring the Web Beans Annoatated Decorator Class : " + delegate.getReturnType().getName() + " started");
+    }
 
-		WebBeansDecorator decorator = new WebBeansDecorator(delegate);
+    public static void configureDecoratorClass(AbstractComponent<Object> delegate)
+    {
+        logger.info("Configuring the Web Beans Annoatated Decorator Class : " + delegate.getReturnType().getName() + " started");
 
-		logger.info("Configuring the Web Beans Annotated Decorator Class : " + delegate.getReturnType() + " ended");
+        WebBeansDecorator decorator = new WebBeansDecorator(delegate);
 
-		ManagerImpl.getManager().addDecorator(decorator);
-	}
+        logger.info("Configuring the Web Beans Annotated Decorator Class : " + delegate.getReturnType() + " ended");
 
-	public static void configureXMLDecoratorClass(AbstractComponent<Object> delegate, XMLInjectionPointModel model)
-	{
-		logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType().getName() + " started");
+        ManagerImpl.getManager().addDecorator(decorator);
+    }
 
-		WebBeansXMLDecorator decorator = new WebBeansXMLDecorator(delegate,model);
+    public static void configureXMLDecoratorClass(AbstractComponent<Object> delegate, XMLInjectionPointModel model)
+    {
+        logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType().getName() + " started");
 
-		logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType() + " ended");
+        WebBeansXMLDecorator decorator = new WebBeansXMLDecorator(delegate, model);
 
-		ManagerImpl.getManager().addDecorator(decorator);
-	}
-	
-	public static void configureDecarotors(AbstractComponent<?> component, Object instance)
-	{
-		Set<Annotation> bindingTypes = component.getBindingTypes();
-		Annotation[] anns = new Annotation[bindingTypes.size()];
-		anns = bindingTypes.toArray(anns);
-		
-		List<Decorator> decoratorList = ManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
-		Iterator<Decorator> itList = decoratorList.iterator();
-		
-		while(itList.hasNext())
-		{
-			WebBeansDecorator decorator = (WebBeansDecorator)itList.next();
-			
-			Object decoratorInstance =  ManagerImpl.getManager().getInstance(decorator);
-			
-			decorator.setInjections(decoratorInstance);
-			decorator.setDelegate(decoratorInstance, instance);
-		
-			component.getDecoratorStack().add(decoratorInstance);			
-		}
-	}
-	
-	private static Set<Decorator> getWebBeansDecorators()
-	{
-		return Collections.unmodifiableSet(ManagerImpl.getManager().getDecorators());
-	}
+        logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType() + " ended");
 
-	
-	public static Set<Decorator> findDeployedWebBeansDecorator(Set<Class<?>> apiType, Annotation...anns)
-	{
-		Set<Decorator> set = new HashSet<Decorator>();
+        ManagerImpl.getManager().addDecorator(decorator);
+    }
 
-		Iterator<Decorator> it = getWebBeansDecorators().iterator();
-		WebBeansDecorator decorator = null;
+    public static void configureDecarotors(AbstractComponent<?> component, Object instance)
+    {
+        Set<Annotation> bindingTypes = component.getBindingTypes();
+        Annotation[] anns = new Annotation[bindingTypes.size()];
+        anns = bindingTypes.toArray(anns);
 
-		List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
-		Set<Annotation> listAnnot = new HashSet<Annotation>();
-		for (Annotation ann : anns)
-		{
-			bindingTypes.add(ann.annotationType());
-			listAnnot.add(ann);
-		}
-		
-		if(listAnnot.isEmpty())
-		{
-			listAnnot.add(new CurrentLiteral());
-		}
+        List<Decorator> decoratorList = ManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
+        Iterator<Decorator> itList = decoratorList.iterator();
 
-		while (it.hasNext())
-		{
-			decorator = (WebBeansDecorator) it.next();
-			
-			if(decorator.isDecoratorMatch(apiType, listAnnot))
-			{
-				set.add(decorator);
-			}
-		}
+        while (itList.hasNext())
+        {
+            WebBeansDecorator decorator = (WebBeansDecorator) itList.next();
 
-		return set;
-		
-	}
-	
+            Object decoratorInstance = ManagerImpl.getManager().getInstance(decorator);
+
+            decorator.setInjections(decoratorInstance);
+            decorator.setDelegate(decoratorInstance, instance);
+
+            component.getDecoratorStack().add(decoratorInstance);
+        }
+    }
+
+    private static Set<Decorator> getWebBeansDecorators()
+    {
+        return Collections.unmodifiableSet(ManagerImpl.getManager().getDecorators());
+    }
+
+    public static Set<Decorator> findDeployedWebBeansDecorator(Set<Class<?>> apiType, Annotation... anns)
+    {
+        Set<Decorator> set = new HashSet<Decorator>();
+
+        Iterator<Decorator> it = getWebBeansDecorators().iterator();
+        WebBeansDecorator decorator = null;
+
+        List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
+        Set<Annotation> listAnnot = new HashSet<Annotation>();
+        for (Annotation ann : anns)
+        {
+            bindingTypes.add(ann.annotationType());
+            listAnnot.add(ann);
+        }
+
+        if (listAnnot.isEmpty())
+        {
+            listAnnot.add(new CurrentLiteral());
+        }
+
+        while (it.hasNext())
+        {
+            decorator = (WebBeansDecorator) it.next();
+
+            if (decorator.isDecoratorMatch(apiType, listAnnot))
+            {
+                set.add(decorator);
+            }
+        }
+
+        return set;
+
+    }
+
 }

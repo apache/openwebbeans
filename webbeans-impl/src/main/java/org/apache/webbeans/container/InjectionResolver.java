@@ -34,251 +34,251 @@ import org.apache.webbeans.util.ClassUtil;
 @SuppressWarnings("unchecked")
 public class InjectionResolver
 {
-	public InjectionResolver()
-	{
+    public InjectionResolver()
+    {
 
-	}
+    }
 
-	public static InjectionResolver getInstance()
-	{
-		InjectionResolver instance = (InjectionResolver) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_INJECTION_RESOLVER);
-		return instance;
-	}
+    public static InjectionResolver getInstance()
+    {
+        InjectionResolver instance = (InjectionResolver) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_INJECTION_RESOLVER);
+        return instance;
+    }
 
-	public Set<Bean<?>> implResolveByName(String name)
-	{
-		Asserts.assertNotNull(name, "name parameter can not be null");
+    public Set<Bean<?>> implResolveByName(String name)
+    {
+        Asserts.assertNotNull(name, "name parameter can not be null");
 
-		ManagerImpl manager = ManagerImpl.getManager();
+        ManagerImpl manager = ManagerImpl.getManager();
 
-		Set<Bean<?>> resolvedComponents = new HashSet<Bean<?>>();
-		Bean<?> resolvedComponent = null;
-		Set<Bean<?>> deployedComponents = manager.getBeans();
+        Set<Bean<?>> resolvedComponents = new HashSet<Bean<?>>();
+        Bean<?> resolvedComponent = null;
+        Set<Bean<?>> deployedComponents = manager.getBeans();
 
-		Iterator<Bean<?>> it = deployedComponents.iterator();
-		while (it.hasNext())
-		{
-			Bean<?> component = it.next();
+        Iterator<Bean<?>> it = deployedComponents.iterator();
+        while (it.hasNext())
+        {
+            Bean<?> component = it.next();
 
-			if (component.getName() != null)
-			{
-				if (component.getName().equals(name))
-				{
-					if (resolvedComponent == null)
-					{
-						resolvedComponent = component;
-						resolvedComponents.add(resolvedComponent);
-					} else
-					{
-						if (DeploymentTypeManager.getInstance().comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) > 0)
-						{
-							resolvedComponents.clear();
-							resolvedComponent = component;
-							resolvedComponents.add(resolvedComponent);
-						} else if (DeploymentTypeManager.getInstance().comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) == 0)
-						{
-							resolvedComponents.add(component);
-						}
-					}
-				}
-			}
-		}
+            if (component.getName() != null)
+            {
+                if (component.getName().equals(name))
+                {
+                    if (resolvedComponent == null)
+                    {
+                        resolvedComponent = component;
+                        resolvedComponents.add(resolvedComponent);
+                    } else
+                    {
+                        if (DeploymentTypeManager.getInstance().comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) > 0)
+                        {
+                            resolvedComponents.clear();
+                            resolvedComponent = component;
+                            resolvedComponents.add(resolvedComponent);
+                        } else if (DeploymentTypeManager.getInstance().comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) == 0)
+                        {
+                            resolvedComponents.add(component);
+                        }
+                    }
+                }
+            }
+        }
 
-		return resolvedComponents;
-	}
+        return resolvedComponents;
+    }
 
-	public <T> Set<Bean<T>> implResolveByType(Class<?> apiType, Type[] actualTypeArguments, Annotation... binding)
-	{
-		Asserts.assertNotNull(apiType, "apiType parameter can not be null");
-		Asserts.assertNotNull(binding, "binding parameter can not be null");
+    public <T> Set<Bean<T>> implResolveByType(Class<?> apiType, Type[] actualTypeArguments, Annotation... binding)
+    {
+        Asserts.assertNotNull(apiType, "apiType parameter can not be null");
+        Asserts.assertNotNull(binding, "binding parameter can not be null");
 
-		ManagerImpl manager = ManagerImpl.getManager();
+        ManagerImpl manager = ManagerImpl.getManager();
 
-		boolean currentBinding = false;
-		boolean returnAll = false;
+        boolean currentBinding = false;
+        boolean returnAll = false;
 
-		if (binding.length == 0)
-		{
-			binding = new Annotation[1];
-			binding[0] = new CurrentLiteral();
-			currentBinding = true;
-		}
+        if (binding.length == 0)
+        {
+            binding = new Annotation[1];
+            binding[0] = new CurrentLiteral();
+            currentBinding = true;
+        }
 
-		Set<Bean<T>> results = new HashSet<Bean<T>>();
-		Set<Bean<?>> deployedComponents = manager.getBeans();
+        Set<Bean<T>> results = new HashSet<Bean<T>>();
+        Set<Bean<?>> deployedComponents = manager.getBeans();
 
-		if (apiType.equals(Object.class) && currentBinding)
-		{
-			returnAll = true;
-		}
+        if (apiType.equals(Object.class) && currentBinding)
+        {
+            returnAll = true;
+        }
 
-		Iterator<Bean<?>> it = deployedComponents.iterator();
+        Iterator<Bean<?>> it = deployedComponents.iterator();
 
-		while (it.hasNext())
-		{
-			Bean<?> component = it.next();
+        while (it.hasNext())
+        {
+            Bean<?> component = it.next();
 
-			if (returnAll)
-			{
-				results.add((Bean<T>) component);
-				continue;
-			}
+            if (returnAll)
+            {
+                results.add((Bean<T>) component);
+                continue;
+            }
 
-			else
-			{
-				Set<Class<?>> componentApiTypes = component.getTypes();
-				Iterator<Class<?>> itComponentApiTypes = componentApiTypes.iterator();
-				while (itComponentApiTypes.hasNext())
-				{
-					Class<?> componentApiType = itComponentApiTypes.next();
+            else
+            {
+                Set<Class<?>> componentApiTypes = component.getTypes();
+                Iterator<Class<?>> itComponentApiTypes = componentApiTypes.iterator();
+                while (itComponentApiTypes.hasNext())
+                {
+                    Class<?> componentApiType = itComponentApiTypes.next();
 
-					if (actualTypeArguments.length > 0)
-					{
-						Type[] actualArgs = null;
-						if (ClassUtil.isAssignable(apiType, componentApiType))
-						{
-							/*
-							 * Annotated Producer method or XML Defined Producer
-							 * Method
-							 */
-							if (ProducerComponentImpl.class.isAssignableFrom(component.getClass()))
-							{
-								actualArgs = ((ProducerComponentImpl<?>) component).getActualTypeArguments();
-								if (Arrays.equals(actualArgs, actualTypeArguments))
-								{
-									results.add((Bean<T>) component);
-									break;
-								}
+                    if (actualTypeArguments.length > 0)
+                    {
+                        Type[] actualArgs = null;
+                        if (ClassUtil.isAssignable(apiType, componentApiType))
+                        {
+                            /*
+                             * Annotated Producer method or XML Defined Producer
+                             * Method
+                             */
+                            if (ProducerComponentImpl.class.isAssignableFrom(component.getClass()))
+                            {
+                                actualArgs = ((ProducerComponentImpl<?>) component).getActualTypeArguments();
+                                if (Arrays.equals(actualArgs, actualTypeArguments))
+                                {
+                                    results.add((Bean<T>) component);
+                                    break;
+                                }
 
-							}
+                            }
 
-							else
-							{
-								actualArgs = ClassUtil.getGenericSuperClassTypeArguments(componentApiType);
-								if (Arrays.equals(actualArgs, actualTypeArguments))
-								{
-									results.add((Bean<T>) component);
-									break;
-								} else
-								{
-									List<Type[]> listActualArgs = ClassUtil.getGenericSuperInterfacesTypeArguments(componentApiType);
-									Iterator<Type[]> itListActualArgs = listActualArgs.iterator();
-									while (itListActualArgs.hasNext())
-									{
-										actualArgs = itListActualArgs.next();
+                            else
+                            {
+                                actualArgs = ClassUtil.getGenericSuperClassTypeArguments(componentApiType);
+                                if (Arrays.equals(actualArgs, actualTypeArguments))
+                                {
+                                    results.add((Bean<T>) component);
+                                    break;
+                                } else
+                                {
+                                    List<Type[]> listActualArgs = ClassUtil.getGenericSuperInterfacesTypeArguments(componentApiType);
+                                    Iterator<Type[]> itListActualArgs = listActualArgs.iterator();
+                                    while (itListActualArgs.hasNext())
+                                    {
+                                        actualArgs = itListActualArgs.next();
 
-										if (Arrays.equals(actualArgs, actualTypeArguments))
-										{
-											results.add((Bean<T>) component);
-											break;
-										}
+                                        if (Arrays.equals(actualArgs, actualTypeArguments))
+                                        {
+                                            results.add((Bean<T>) component);
+                                            break;
+                                        }
 
-									}
-								}
+                                    }
+                                }
 
-							}
+                            }
 
-						}
-					} else
-					{
-						if (apiType instanceof Class)
-						{
-							if (ClassUtil.isAssignable((Class<?>) apiType, componentApiType))
-							{
-								results.add((Bean<T>) component);
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
+                        }
+                    } else
+                    {
+                        if (apiType instanceof Class)
+                        {
+                            if (ClassUtil.isAssignable((Class<?>) apiType, componentApiType))
+                            {
+                                results.add((Bean<T>) component);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-		results = findByBindingType(results, binding);
+        results = findByBindingType(results, binding);
 
-		if (results != null && !results.isEmpty())
-		{
-			results = findByPrecedence(results);
-		}
+        if (results != null && !results.isEmpty())
+        {
+            results = findByPrecedence(results);
+        }
 
-		return results;
-	}
+        return results;
+    }
 
-	private <T> Set<Bean<T>> findByPrecedence(Set<Bean<T>> result)
-	{
-		Bean<T> resolvedComponent = null;
-		Iterator<Bean<T>> it = result.iterator();
-		Set<Bean<T>> res = new HashSet<Bean<T>>();
+    private <T> Set<Bean<T>> findByPrecedence(Set<Bean<T>> result)
+    {
+        Bean<T> resolvedComponent = null;
+        Iterator<Bean<T>> it = result.iterator();
+        Set<Bean<T>> res = new HashSet<Bean<T>>();
 
-		while (it.hasNext())
-		{
-			Bean<T> component = it.next();
+        while (it.hasNext())
+        {
+            Bean<T> component = it.next();
 
-			if (resolvedComponent == null)
-			{
-				resolvedComponent = component;
-				res.add(resolvedComponent);
-			} else
-			{
-				DeploymentTypeManager typeManager = DeploymentTypeManager.getInstance();
+            if (resolvedComponent == null)
+            {
+                resolvedComponent = component;
+                res.add(resolvedComponent);
+            } else
+            {
+                DeploymentTypeManager typeManager = DeploymentTypeManager.getInstance();
 
-				if (typeManager.comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) < 0)
-				{
-					continue;
-				} else if (typeManager.comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) > 0)
-				{
-					res.clear();
-					resolvedComponent = component;
-					res.add(resolvedComponent);
+                if (typeManager.comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) < 0)
+                {
+                    continue;
+                } else if (typeManager.comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) > 0)
+                {
+                    res.clear();
+                    resolvedComponent = component;
+                    res.add(resolvedComponent);
 
-				} else
-				{
-					res.add(component);
-				}
-			}
-		}
+                } else
+                {
+                    res.add(component);
+                }
+            }
+        }
 
-		return res;
-	}
+        return res;
+    }
 
-	private <T> Set<Bean<T>> findByBindingType(Set<Bean<T>> remainingSet, Annotation... annotations)
-	{
-		Iterator<Bean<T>> it = remainingSet.iterator();
-		Set<Bean<T>> result = new HashSet<Bean<T>>();
+    private <T> Set<Bean<T>> findByBindingType(Set<Bean<T>> remainingSet, Annotation... annotations)
+    {
+        Iterator<Bean<T>> it = remainingSet.iterator();
+        Set<Bean<T>> result = new HashSet<Bean<T>>();
 
-		while (it.hasNext())
-		{
-			Bean<T> component = it.next();
-			Set<Annotation> bTypes = component.getBindingTypes();
+        while (it.hasNext())
+        {
+            Bean<T> component = it.next();
+            Set<Annotation> bTypes = component.getBindingTypes();
 
-			int i = 0;
-			for (Annotation annot : annotations)
-			{
-				Iterator<Annotation> itBindingTypes = bTypes.iterator();
-				while (itBindingTypes.hasNext())
-				{
-					Annotation bindingType = itBindingTypes.next();
-					if (annot.annotationType().equals(bindingType.annotationType()))
-					{
-						if (AnnotationUtil.isAnnotationMemberExist(bindingType.annotationType(), bindingType, annot))
-						{
-							i++;
-						}
-					}
+            int i = 0;
+            for (Annotation annot : annotations)
+            {
+                Iterator<Annotation> itBindingTypes = bTypes.iterator();
+                while (itBindingTypes.hasNext())
+                {
+                    Annotation bindingType = itBindingTypes.next();
+                    if (annot.annotationType().equals(bindingType.annotationType()))
+                    {
+                        if (AnnotationUtil.isAnnotationMemberExist(bindingType.annotationType(), bindingType, annot))
+                        {
+                            i++;
+                        }
+                    }
 
-				}
-			}
+                }
+            }
 
-			if (i == annotations.length)
-			{
-				result.add(component);
-				i = 0;
-			}
+            if (i == annotations.length)
+            {
+                result.add(component);
+                i = 0;
+            }
 
-		}
+        }
 
-		remainingSet = null;
+        remainingSet = null;
 
-		return result;
-	}
+        return result;
+    }
 }

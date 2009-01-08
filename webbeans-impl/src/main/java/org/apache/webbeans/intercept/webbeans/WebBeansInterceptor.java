@@ -56,315 +56,315 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
  */
 public class WebBeansInterceptor extends Interceptor
 {
-	/** InterceptorBindingTypes exist on the interceptor class */
-	private Map<Class<? extends Annotation>, Annotation> interceptorBindingSet = new HashMap<Class<? extends Annotation>, Annotation>();
+    /** InterceptorBindingTypes exist on the interceptor class */
+    private Map<Class<? extends Annotation>, Annotation> interceptorBindingSet = new HashMap<Class<? extends Annotation>, Annotation>();
 
-	/** Interceptor class */
-	private Class<?> clazz;
+    /** Interceptor class */
+    private Class<?> clazz;
 
-	/** Simple Web Beans component */
-	private AbstractComponent<Object> delegateComponent;
+    /** Simple Web Beans component */
+    private AbstractComponent<Object> delegateComponent;
 
-	public WebBeansInterceptor(AbstractComponent<Object> delegateComponent)
-	{
-		super(ManagerImpl.getManager());
-		this.delegateComponent = delegateComponent;
-		this.clazz = getDelegate().getReturnType();
+    public WebBeansInterceptor(AbstractComponent<Object> delegateComponent)
+    {
+        super(ManagerImpl.getManager());
+        this.delegateComponent = delegateComponent;
+        this.clazz = getDelegate().getReturnType();
 
-	}
+    }
 
-	public AbstractComponent<Object> getDelegate()
-	{
-		return this.delegateComponent;
-	}
+    public AbstractComponent<Object> getDelegate()
+    {
+        return this.delegateComponent;
+    }
 
-	/**
-	 * Add new binding type to the interceptor.
-	 * 
-	 * @param bindingType interceptor binding type annot. class
-	 * @param annot binding type annotation
-	 */
-	public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation annot)
-	{
-		Method[] methods = bindingType.getDeclaredMethods();
+    /**
+     * Add new binding type to the interceptor.
+     * 
+     * @param bindingType interceptor binding type annot. class
+     * @param annot binding type annotation
+     */
+    public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation annot)
+    {
+        Method[] methods = bindingType.getDeclaredMethods();
 
-		for (Method method : methods)
-		{
-			Class<?> clazz = method.getReturnType();
-			if (clazz.isArray() || clazz.isAnnotation())
-			{
-				if (!AnnotationUtil.isAnnotationExist(method.getAnnotations(), NonBinding.class))
-				{
-					throw new WebBeansConfigurationException("Interceptor definition class : " + getClazz().getName() + " @InterceptorBindingType : " + bindingType.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
-				}
-			}
-		}
+        for (Method method : methods)
+        {
+            Class<?> clazz = method.getReturnType();
+            if (clazz.isArray() || clazz.isAnnotation())
+            {
+                if (!AnnotationUtil.isAnnotationExist(method.getAnnotations(), NonBinding.class))
+                {
+                    throw new WebBeansConfigurationException("Interceptor definition class : " + getClazz().getName() + " @InterceptorBindingType : " + bindingType.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                }
+            }
+        }
 
-		interceptorBindingSet.put(bindingType, annot);
-	}
+        interceptorBindingSet.put(bindingType, annot);
+    }
 
-	/**
-	 * Checks whether this interceptor has given binding types with
-	 * {@link NonBinding} member values.
-	 * 
-	 * @param bindingTypes binding types
-	 * @param annots binding types annots.
-	 * @return true if binding types exist ow false
-	 */
-	public boolean isBindingTypesExist(List<Class<? extends Annotation>> bindingTypes, List<Annotation> annots)
-	{
-		boolean result = false;
+    /**
+     * Checks whether this interceptor has given binding types with
+     * {@link NonBinding} member values.
+     * 
+     * @param bindingTypes binding types
+     * @param annots binding types annots.
+     * @return true if binding types exist ow false
+     */
+    public boolean isBindingTypesExist(List<Class<? extends Annotation>> bindingTypes, List<Annotation> annots)
+    {
+        boolean result = false;
 
-		if (bindingTypes != null && annots != null && (bindingTypes.size() == annots.size()))
-		{
-			int i = 0;
-			for (Class<? extends Annotation> bindingType : bindingTypes)
-			{
-				if (this.interceptorBindingSet.containsKey(bindingType))
-				{
-					Annotation target = this.interceptorBindingSet.get(bindingType);
-					if (AnnotationUtil.isAnnotationMemberExist(bindingType, annots.get(i), target))
-					{
-						result = true;
-					} else
-					{
-						return false;
-					}
-				} else
-				{
-					return false;
-				}
+        if (bindingTypes != null && annots != null && (bindingTypes.size() == annots.size()))
+        {
+            int i = 0;
+            for (Class<? extends Annotation> bindingType : bindingTypes)
+            {
+                if (this.interceptorBindingSet.containsKey(bindingType))
+                {
+                    Annotation target = this.interceptorBindingSet.get(bindingType);
+                    if (AnnotationUtil.isAnnotationMemberExist(bindingType, annots.get(i), target))
+                    {
+                        result = true;
+                    } else
+                    {
+                        return false;
+                    }
+                } else
+                {
+                    return false;
+                }
 
-				i++;
-			}
-		}
+                i++;
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Gets the interceptor class.
-	 * 
-	 * @return interceptor class
-	 */
-	public Class<?> getClazz()
-	{
-		return clazz;
-	}
+    /**
+     * Gets the interceptor class.
+     * 
+     * @return interceptor class
+     */
+    public Class<?> getClazz()
+    {
+        return clazz;
+    }
 
-	public Set<Interceptor> getMetaInceptors()
-	{
-		Set<Interceptor> set = new HashSet<Interceptor>();
+    public Set<Interceptor> getMetaInceptors()
+    {
+        Set<Interceptor> set = new HashSet<Interceptor>();
 
-		Set<Class<? extends Annotation>> keys = interceptorBindingSet.keySet();
-		Iterator<Class<? extends Annotation>> it = keys.iterator();
+        Set<Class<? extends Annotation>> keys = interceptorBindingSet.keySet();
+        Iterator<Class<? extends Annotation>> it = keys.iterator();
 
-		while (it.hasNext())
-		{
-			Class<? extends Annotation> clazzAnnot = it.next();
-			Set<Annotation> declared = null;
-			Annotation[] anns = null;
+        while (it.hasNext())
+        {
+            Class<? extends Annotation> clazzAnnot = it.next();
+            Set<Annotation> declared = null;
+            Annotation[] anns = null;
 
-			if (XMLAnnotationTypeManager.getInstance().isInterceptorBindingTypeExist(clazzAnnot))
-			{
-				declared = XMLAnnotationTypeManager.getInstance().getInterceptorBindingTypeInherites(clazzAnnot);
-				anns = new Annotation[declared.size()];
-				anns = declared.toArray(anns);
-			}
+            if (XMLAnnotationTypeManager.getInstance().isInterceptorBindingTypeExist(clazzAnnot))
+            {
+                declared = XMLAnnotationTypeManager.getInstance().getInterceptorBindingTypeInherites(clazzAnnot);
+                anns = new Annotation[declared.size()];
+                anns = declared.toArray(anns);
+            }
 
-			else if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazzAnnot.getAnnotations()))
-			{
-				anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazzAnnot.getAnnotations());
-			}
+            else if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazzAnnot.getAnnotations()))
+            {
+                anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazzAnnot.getAnnotations());
+            }
 
-			/*
-			 * For example: @InterceptorBindingType @Transactional @Action
-			 * public @interface ActionTransactional @ActionTransactional
-			 * @Production { }
-			 */
+            /*
+             * For example: @InterceptorBindingType @Transactional @Action
+             * public @interface ActionTransactional @ActionTransactional
+             * @Production { }
+             */
 
-			if (anns != null && anns.length > 0)
-			{
-				// For example : @Transactional @Action Interceptor
-				Set<Interceptor> metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns);
-				set.addAll(metas);
+            if (anns != null && anns.length > 0)
+            {
+                // For example : @Transactional @Action Interceptor
+                Set<Interceptor> metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns);
+                set.addAll(metas);
 
-				// For each @Transactional and @Action Interceptor
-				for (Annotation ann : anns)
-				{
-					Annotation[] simple = new Annotation[1];
-					simple[0] = ann;
-					metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(simple);
-					set.addAll(metas);
-				}
+                // For each @Transactional and @Action Interceptor
+                for (Annotation ann : anns)
+                {
+                    Annotation[] simple = new Annotation[1];
+                    simple[0] = ann;
+                    metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(simple);
+                    set.addAll(metas);
+                }
 
-			}
+            }
 
-		}
+        }
 
-		return set;
-	}
+        return set;
+    }
 
-	/**
-	 * Sets interceptor class.
-	 * 
-	 * @param clazz class instance
-	 */
-	public void setClazz(Class<?> clazz)
-	{
-		this.clazz = clazz;
-	}
+    /**
+     * Sets interceptor class.
+     * 
+     * @param clazz class instance
+     */
+    public void setClazz(Class<?> clazz)
+    {
+        this.clazz = clazz;
+    }
 
-	@Override
-	public Set<Annotation> getInterceptorBindingTypes()
-	{
-		Set<Annotation> set = new HashSet<Annotation>();
-		Set<Class<? extends Annotation>> keySet = this.interceptorBindingSet.keySet();
-		Iterator<Class<? extends Annotation>> itSet = keySet.iterator();
+    @Override
+    public Set<Annotation> getInterceptorBindingTypes()
+    {
+        Set<Annotation> set = new HashSet<Annotation>();
+        Set<Class<? extends Annotation>> keySet = this.interceptorBindingSet.keySet();
+        Iterator<Class<? extends Annotation>> itSet = keySet.iterator();
 
-		while (itSet.hasNext())
-		{
-			set.add(this.interceptorBindingSet.get(itSet.next()));
-		}
+        while (itSet.hasNext())
+        {
+            set.add(this.interceptorBindingSet.get(itSet.next()));
+        }
 
-		return set;
-	}
+        return set;
+    }
 
-	@Override
-	public Method getMethod(InterceptionType type)
-	{
-		Class<? extends Annotation> interceptorTypeAnnotationClazz = InterceptorUtil.getInterceptorAnnotationClazz(type);
-		Method method = WebBeansUtil.checkCommonAnnotationCriterias(getClazz(), interceptorTypeAnnotationClazz, true);
+    @Override
+    public Method getMethod(InterceptionType type)
+    {
+        Class<? extends Annotation> interceptorTypeAnnotationClazz = InterceptorUtil.getInterceptorAnnotationClazz(type);
+        Method method = WebBeansUtil.checkCommonAnnotationCriterias(getClazz(), interceptorTypeAnnotationClazz, true);
 
-		return method;
-	}
+        return method;
+    }
 
-	@Override
-	public Object create()
-	{
-		Object proxy = JavassistProxyFactory.createNewProxyInstance(this);
+    @Override
+    public Object create()
+    {
+        Object proxy = JavassistProxyFactory.createNewProxyInstance(this);
 
-		return proxy;
+        return proxy;
 
-		// return delegateComponent.create();
-	}
+        // return delegateComponent.create();
+    }
 
-	public void setInjections(Object proxy)
-	{
-		// Set injected fields
-		ComponentImpl<Object> delegate = (ComponentImpl<Object>) this.delegateComponent;
+    public void setInjections(Object proxy)
+    {
+        // Set injected fields
+        ComponentImpl<Object> delegate = (ComponentImpl<Object>) this.delegateComponent;
 
-		Set<Field> injectedFields = delegate.getInjectedFields();
-		for (Field injectedField : injectedFields)
-		{
-			InjectableField ife = new InjectableField(injectedField, proxy, this.delegateComponent);
-			ife.doInjection();
-		}
+        Set<Field> injectedFields = delegate.getInjectedFields();
+        for (Field injectedField : injectedFields)
+        {
+            InjectableField ife = new InjectableField(injectedField, proxy, this.delegateComponent);
+            ife.doInjection();
+        }
 
-		Set<Method> injectedMethods = delegate.getInjectedMethods();
-		for (Method injectedMethod : injectedMethods)
-		{
-			@SuppressWarnings("unchecked")
-			InjectableMethods<?> ife = new InjectableMethods(injectedMethod, proxy, this.delegateComponent);
-			ife.doInjection();
-		}
+        Set<Method> injectedMethods = delegate.getInjectedMethods();
+        for (Method injectedMethod : injectedMethods)
+        {
+            @SuppressWarnings("unchecked")
+            InjectableMethods<?> ife = new InjectableMethods(injectedMethod, proxy, this.delegateComponent);
+            ife.doInjection();
+        }
 
-	}
+    }
 
-	@Override
-	public void destroy(Object instance)
-	{
-		delegateComponent.destroy(instance);
-	}
+    @Override
+    public void destroy(Object instance)
+    {
+        delegateComponent.destroy(instance);
+    }
 
-	@Override
-	public Set<Annotation> getBindingTypes()
-	{
-		return delegateComponent.getBindingTypes();
-	}
+    @Override
+    public Set<Annotation> getBindingTypes()
+    {
+        return delegateComponent.getBindingTypes();
+    }
 
-	@Override
-	public Class<? extends Annotation> getDeploymentType()
-	{
-		return delegateComponent.getDeploymentType();
-	}
+    @Override
+    public Class<? extends Annotation> getDeploymentType()
+    {
+        return delegateComponent.getDeploymentType();
+    }
 
-	@Override
-	public String getName()
-	{
-		return delegateComponent.getName();
-	}
+    @Override
+    public String getName()
+    {
+        return delegateComponent.getName();
+    }
 
-	@Override
-	public Class<? extends Annotation> getScopeType()
-	{
-		return delegateComponent.getScopeType();
-	}
+    @Override
+    public Class<? extends Annotation> getScopeType()
+    {
+        return delegateComponent.getScopeType();
+    }
 
-	@Override
-	public Set<Class<?>> getTypes()
-	{
-		return delegateComponent.getTypes();
-	}
+    @Override
+    public Set<Class<?>> getTypes()
+    {
+        return delegateComponent.getTypes();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-			return true;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
 
-		WebBeansInterceptor o = null;
+        WebBeansInterceptor o = null;
 
-		if (obj instanceof WebBeansInterceptor)
-		{
-			o = (WebBeansInterceptor) obj;
+        if (obj instanceof WebBeansInterceptor)
+        {
+            o = (WebBeansInterceptor) obj;
 
-			if (o.clazz != null && this.clazz != null)
-			{
-				return o.clazz.equals(this.clazz);
-			}
+            if (o.clazz != null && this.clazz != null)
+            {
+                return o.clazz.equals(this.clazz);
+            }
 
-		}
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode()
-	{
-		return this.clazz != null ? clazz.hashCode() : 0;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        return this.clazz != null ? clazz.hashCode() : 0;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString()
-	{
-		return "WebBeans Interceptor with class : " + "[" + this.clazz.getName() + "]";
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return "WebBeans Interceptor with class : " + "[" + this.clazz.getName() + "]";
+    }
 
-	@Override
-	public boolean isNullable()
-	{
-		return delegateComponent.isNullable();
-	}
+    @Override
+    public boolean isNullable()
+    {
+        return delegateComponent.isNullable();
+    }
 
-	@Override
-	public boolean isSerializable()
-	{
-		return delegateComponent.isSerializable();
-	}
+    @Override
+    public boolean isSerializable()
+    {
+        return delegateComponent.isSerializable();
+    }
 }

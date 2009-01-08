@@ -1,18 +1,15 @@
 /*
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- * 
- *       http://www.apache.org/licenses/LICENSE-2.0
- * 
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.apache.webbeans.intercept;
 
@@ -46,201 +43,198 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public final class WebBeansInterceptorConfig
 {
-	/** Logger instance */
-	private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptorConfig.class);
+    /** Logger instance */
+    private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptorConfig.class);
 
-	/*
-	 * Private
-	 */
-	private WebBeansInterceptorConfig()
-	{
+    /*
+     * Private
+     */
+    private WebBeansInterceptorConfig()
+    {
 
-	}
+    }
 
-	/**
-	 * Configures WebBeans specific interceptor class.
-	 * 
-	 * @param interceptorClazz
-	 *            interceptor class
-	 */
-	public static void configureInterceptorClass(AbstractComponent<Object> delegate, Annotation[] interceptorBindingTypes)
-	{
-		logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType().getName() + " started");
+    /**
+     * Configures WebBeans specific interceptor class.
+     * 
+     * @param interceptorClazz interceptor class
+     */
+    public static void configureInterceptorClass(AbstractComponent<Object> delegate, Annotation[] interceptorBindingTypes)
+    {
+        logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType().getName() + " started");
 
-		WebBeansInterceptor interceptor = new WebBeansInterceptor(delegate);
+        WebBeansInterceptor interceptor = new WebBeansInterceptor(delegate);
 
-		for (Annotation ann : interceptorBindingTypes)
-		{
-			interceptor.addInterceptorBindingType(ann.annotationType(), ann);
-		}
+        for (Annotation ann : interceptorBindingTypes)
+        {
+            interceptor.addInterceptorBindingType(ann.annotationType(), ann);
+        }
 
-		logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType() + " ended");
+        logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType() + " ended");
 
-		ManagerImpl.getManager().addInterceptor(interceptor);
+        ManagerImpl.getManager().addInterceptor(interceptor);
 
-	}
+    }
 
-	/**
-	 * Configures the given class for applicable interceptors.
-	 * 
-	 * @param clazz
-	 *            configuration interceptors for this
-	 */
-	public static void configure(Class<?> clazz, List<InterceptorData> stack)
-	{
-		if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
-		{
-			
-			Set<Annotation> bindingTypeSet = new HashSet<Annotation>();
-			
-			Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
-			
-			for(Annotation ann : anns)
-			{
-				bindingTypeSet.add(ann);
-			}
-			
-			Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
-			for(Annotation stero : stereoTypes)
-			{
-				if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))
-				{
-					Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
-					
-					for(Annotation ann : steroInterceptorBindings)
-					{
-						bindingTypeSet.add(ann);
-					}
-				}
-			}
-			
-			anns = new Annotation[bindingTypeSet.size()];
-			anns = bindingTypeSet.toArray(anns);
-			
-			Set<Interceptor> set = findDeployedWebBeansInterceptor(anns);
+    /**
+     * Configures the given class for applicable interceptors.
+     * 
+     * @param clazz configuration interceptors for this
+     */
+    public static void configure(Class<?> clazz, List<InterceptorData> stack)
+    {
+        if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
+        {
 
-			// Adding class interceptors
-			addComponentInterceptors(set, stack);
-		}
+            Set<Annotation> bindingTypeSet = new HashSet<Annotation>();
 
-		// Method level interceptors.
-		addMethodInterceptors(clazz, stack);
+            Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
 
-	}
+            for (Annotation ann : anns)
+            {
+                bindingTypeSet.add(ann);
+            }
 
-	public static void addComponentInterceptors(Set<Interceptor> set, List<InterceptorData> stack)
-	{
-		Iterator<Interceptor> it = set.iterator();
-		while (it.hasNext())
-		{
-			WebBeansInterceptor interceptor = (WebBeansInterceptor) it.next();
+            Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
+            for (Annotation stero : stereoTypes)
+            {
+                if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))
+                {
+                    Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
 
-			// interceptor binding
-			WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), AroundInvoke.class, true, false, stack, null, true);
-			WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), PostConstruct.class, true, false, stack, null, true);
-			WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), PreDestroy.class, true, false, stack, null, true);
+                    for (Annotation ann : steroInterceptorBindings)
+                    {
+                        bindingTypeSet.add(ann);
+                    }
+                }
+            }
 
-		}
+            anns = new Annotation[bindingTypeSet.size()];
+            anns = bindingTypeSet.toArray(anns);
 
-	}
+            Set<Interceptor> set = findDeployedWebBeansInterceptor(anns);
 
-	private static void addMethodInterceptors(Class<?> clazz, List<InterceptorData> stack)
-	{
-		Method[] methods = clazz.getDeclaredMethods();
+            // Adding class interceptors
+            addComponentInterceptors(set, stack);
+        }
 
-		for (Method method : methods)
-		{
-			if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(method.getAnnotations()))
-			{
-				Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(method.getDeclaredAnnotations());
-				Annotation[] annsClazz = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
-				
+        // Method level interceptors.
+        addMethodInterceptors(clazz, stack);
 
-				Set<Annotation> set = new HashSet<Annotation>();
+    }
 
-				for (Annotation ann : anns)
-				{
-					set.add(ann);
-				}
+    public static void addComponentInterceptors(Set<Interceptor> set, List<InterceptorData> stack)
+    {
+        Iterator<Interceptor> it = set.iterator();
+        while (it.hasNext())
+        {
+            WebBeansInterceptor interceptor = (WebBeansInterceptor) it.next();
 
-				for (Annotation ann : annsClazz)
-				{
-					set.add(ann);
-				}
-				
-				Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
-				for(Annotation stero : stereoTypes)
-				{
-					if(AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))
-					{
-						Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
-						
-						for(Annotation ann : steroInterceptorBindings)
-						{
-							set.add(ann);
-						}
-					}
-				}
-				
-				Annotation[] result = new Annotation[set.size()];
-				result = set.toArray(result);
+            // interceptor binding
+            WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), AroundInvoke.class, true, false, stack, null, true);
+            WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PostConstruct.class, true, false, stack, null, true);
+            WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PreDestroy.class, true, false, stack, null, true);
 
-				Set<Interceptor> setInterceptors = findDeployedWebBeansInterceptor(result);
-				Iterator<Interceptor> it = setInterceptors.iterator();
+        }
 
-				while (it.hasNext())
-				{
-					WebBeansInterceptor interceptor = (WebBeansInterceptor) it.next();
+    }
 
-					WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), AroundInvoke.class, false, true, stack, method, true);
-					WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), PostConstruct.class, false, true, stack, method, true);
-					WebBeansUtil.configureInterceptorMethods(interceptor,interceptor.getClazz(), PreDestroy.class, false, true, stack, method, true);
-				}
+    private static void addMethodInterceptors(Class<?> clazz, List<InterceptorData> stack)
+    {
+        Method[] methods = clazz.getDeclaredMethods();
 
-			}
-		}
+        for (Method method : methods)
+        {
+            if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(method.getAnnotations()))
+            {
+                Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(method.getDeclaredAnnotations());
+                Annotation[] annsClazz = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
 
-	}
+                Set<Annotation> set = new HashSet<Annotation>();
 
-	/**
-	 * Gets the configured webbeans interceptors.
-	 * 
-	 * @return the configured webbeans interceptors
-	 */
-	private static Set<Interceptor> getWebBeansInterceptors()
-	{
-		return Collections.unmodifiableSet(ManagerImpl.getManager().getInterceptors());
-	}
+                for (Annotation ann : anns)
+                {
+                    set.add(ann);
+                }
 
-	/*
-	 * Find the deployed interceptors with given interceptor binding types.
-	 */
-	public static Set<Interceptor> findDeployedWebBeansInterceptor(Annotation[] anns)
-	{
-		Set<Interceptor> set = new HashSet<Interceptor>();
+                for (Annotation ann : annsClazz)
+                {
+                    set.add(ann);
+                }
 
-		Iterator<Interceptor> it = getWebBeansInterceptors().iterator();
-		WebBeansInterceptor interceptor = null;
+                Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
+                for (Annotation stero : stereoTypes)
+                {
+                    if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))
+                    {
+                        Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
 
-		List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
-		List<Annotation> listAnnot = new ArrayList<Annotation>();
-		for (Annotation ann : anns)
-		{
-			bindingTypes.add(ann.annotationType());
-			listAnnot.add(ann);
-		}
+                        for (Annotation ann : steroInterceptorBindings)
+                        {
+                            set.add(ann);
+                        }
+                    }
+                }
 
-		while (it.hasNext())
-		{
-			interceptor = (WebBeansInterceptor) it.next();
+                Annotation[] result = new Annotation[set.size()];
+                result = set.toArray(result);
 
-			if (interceptor.isBindingTypesExist(bindingTypes, listAnnot))
-			{
-				set.add(interceptor);
-				set.addAll(interceptor.getMetaInceptors());
-			}
-		}
+                Set<Interceptor> setInterceptors = findDeployedWebBeansInterceptor(result);
+                Iterator<Interceptor> it = setInterceptors.iterator();
 
-		return set;
-	}
+                while (it.hasNext())
+                {
+                    WebBeansInterceptor interceptor = (WebBeansInterceptor) it.next();
+
+                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), AroundInvoke.class, false, true, stack, method, true);
+                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PostConstruct.class, false, true, stack, method, true);
+                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PreDestroy.class, false, true, stack, method, true);
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * Gets the configured webbeans interceptors.
+     * 
+     * @return the configured webbeans interceptors
+     */
+    private static Set<Interceptor> getWebBeansInterceptors()
+    {
+        return Collections.unmodifiableSet(ManagerImpl.getManager().getInterceptors());
+    }
+
+    /*
+     * Find the deployed interceptors with given interceptor binding types.
+     */
+    public static Set<Interceptor> findDeployedWebBeansInterceptor(Annotation[] anns)
+    {
+        Set<Interceptor> set = new HashSet<Interceptor>();
+
+        Iterator<Interceptor> it = getWebBeansInterceptors().iterator();
+        WebBeansInterceptor interceptor = null;
+
+        List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
+        List<Annotation> listAnnot = new ArrayList<Annotation>();
+        for (Annotation ann : anns)
+        {
+            bindingTypes.add(ann.annotationType());
+            listAnnot.add(ann);
+        }
+
+        while (it.hasNext())
+        {
+            interceptor = (WebBeansInterceptor) it.next();
+
+            if (interceptor.isBindingTypesExist(bindingTypes, listAnnot))
+            {
+                set.add(interceptor);
+                set.addAll(interceptor.getMetaInceptors());
+            }
+        }
+
+        return set;
+    }
 }

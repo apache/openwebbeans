@@ -1,18 +1,15 @@
 /*
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- * 
- *       http://www.apache.org/licenses/LICENSE-2.0
- * 
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.apache.webbeans.inject;
 
@@ -32,86 +29,84 @@ import org.apache.webbeans.util.ClassUtil;
 @SuppressWarnings("unchecked")
 public class InjectableMethods<T> extends AbstractInjectable
 {
-	/** Injectable method */
-	protected Method m;
+    /** Injectable method */
+    protected Method m;
 
-	/** Component instance that owns the method */
-	protected Object instance;
+    /** Component instance that owns the method */
+    protected Object instance;
 
-	/**
-	 * Constructs new instance.
-	 * 
-	 * @param m
-	 *            injectable method
-	 * @param instance
-	 *            component instance
-	 */
-	public InjectableMethods(Method m, Object instance, AbstractComponent<?> owner)
-	{
-		super(owner);
-		this.m = m;
-		this.instance = instance;
-	}
+    /**
+     * Constructs new instance.
+     * 
+     * @param m injectable method
+     * @param instance component instance
+     */
+    public InjectableMethods(Method m, Object instance, AbstractComponent<?> owner)
+    {
+        super(owner);
+        this.m = m;
+        this.instance = instance;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.apache.webbeans.inject.Injectable#doInjection()
-	 */
-	public T doInjection()
-	{
-		Type[] types = m.getGenericParameterTypes();
-		Annotation[][] annots = m.getParameterAnnotations();
-		List<Object> list = new ArrayList<Object>();
-		if (types.length > 0)
-		{
-			int i = 0;
-			for (Type type : types)
-			{
-				Annotation[] annot = annots[i];
-				if (annot.length == 0)
-				{
-					annot = new Annotation[1];
-					annot[0] = new CurrentLiteral();
-				}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.webbeans.inject.Injectable#doInjection()
+     */
+    public T doInjection()
+    {
+        Type[] types = m.getGenericParameterTypes();
+        Annotation[][] annots = m.getParameterAnnotations();
+        List<Object> list = new ArrayList<Object>();
+        if (types.length > 0)
+        {
+            int i = 0;
+            for (Type type : types)
+            {
+                Annotation[] annot = annots[i];
+                if (annot.length == 0)
+                {
+                    annot = new Annotation[1];
+                    annot[0] = new CurrentLiteral();
+                }
 
-				Type[] args = new Type[0];
-				Class<?> clazz = null;
-				if (type instanceof ParameterizedType)
-				{
-					ParameterizedType pt = (ParameterizedType) type;
-					
-					checkParametrizedTypeForInjectionPoint(pt);
-					args = new Type[1];
-					args = pt.getActualTypeArguments();
+                Type[] args = new Type[0];
+                Class<?> clazz = null;
+                if (type instanceof ParameterizedType)
+                {
+                    ParameterizedType pt = (ParameterizedType) type;
 
-					clazz = (Class<?>) pt.getRawType();
-				} else
-				{
-					clazz = (Class<?>) type;
-				}
+                    checkParametrizedTypeForInjectionPoint(pt);
+                    args = new Type[1];
+                    args = pt.getActualTypeArguments();
 
-				list.add(inject(clazz, args, AnnotationUtil.getBindingAnnotations(annot)));
+                    clazz = (Class<?>) pt.getRawType();
+                } else
+                {
+                    clazz = (Class<?>) type;
+                }
 
-				i++;
+                list.add(inject(clazz, args, AnnotationUtil.getBindingAnnotations(annot)));
 
-			}
+                i++;
 
-		}
+            }
 
-		try
-		{
-			if (!ClassUtil.isPublic(m.getModifiers()))
-			{
-				m.setAccessible(true);
-			}
+        }
 
-			return (T) m.invoke(instance, list.toArray());
+        try
+        {
+            if (!ClassUtil.isPublic(m.getModifiers()))
+            {
+                m.setAccessible(true);
+            }
 
-		} catch (Exception e)
-		{
-			throw new WebBeansException(e);
-		}
-	}
+            return (T) m.invoke(instance, list.toArray());
+
+        } catch (Exception e)
+        {
+            throw new WebBeansException(e);
+        }
+    }
 
 }
