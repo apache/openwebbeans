@@ -17,10 +17,8 @@
 		<myapp:booleanField>true</myapp:booleanField>
 		<myapp:enum1Field>ENUM1</myapp:enum1Field>
 		<myapp:strField>dskfj</myapp:strField>
-		<myapp:dateField>September 30, 1998 10:45:30 PM CST</myapp:dateField>
-		<myapp:calendarField>September 30, 1998 10:45:30 PM CST</myapp:calendarField>
-		<myapp:dateField2>1998-09-30T22:45:30-0600</myapp:dateField2>
-		<myapp:calendarField2>1998-09-30T22:45:30-0600</myapp:calendarField2>		
+		<myapp:dateField>1998-09-30T22:45:30-0600</myapp:dateField>
+		<myapp:calendarField>1998-09-30T22:45:30-0600</myapp:calendarField>		
 		<myapp:clazzField>org.apache.webbeans.test.xml.ComponentForField</myapp:clazzField>
 		<myapp:listStrField>
 			<value>gurkan</value>
