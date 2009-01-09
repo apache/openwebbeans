@@ -19,51 +19,56 @@
         </file>
 
         <file>
-	    <source>../README.txt</source>
+            <source>../README.txt</source>
         </file>
 
         <file>
-	    <source>../KEYS</source>
+            <source>../KEYS</source>
         </file>
-	
-	<file>
-		<outputDirectory>config</outputDirectory>
-		<source>../samples/guess/src/main/webapp/WEB-INF/web.xml</source>
-	</file>        
 
-	<file>
-		<outputDirectory>config</outputDirectory>
-		<source>../samples/guess/src/main/webapp/WEB-INF/web-beans.xml</source>
-	</file>        
+        <file>
+            <outputDirectory>config</outputDirectory>
+            <source>../samples/guess/src/main/webapp/WEB-INF/web.xml</source>
+        </file>
+
+        <file>
+            <outputDirectory>config</outputDirectory>
+            <source>../samples/guess/src/main/webapp/WEB-INF/web-beans.xml</source>
+        </file>
 
     </files>
+
     <dependencySets>
 
         <dependencySet>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans:webbeans-api</include>           
+                <include>org.apache.openwebbeans:webbeans-api</include>
                 <include>org.apache.openwebbeans:webbeans-impl</include>
             </includes>
-	</dependencySet>
+	    <excludes>
+		<exclude>org.apache.openwebbeans:webbeans-api:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:webbeans-impl:jar:sources</exclude>
+	    </excludes>
+        </dependencySet>
 
 
         <dependencySet>
             <outputDirectory>samples</outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans:guess:war</include>           
+                <include>org.apache.openwebbeans:guess:war</include>
             </includes>
         </dependencySet>
 
         <dependencySet>
             <outputDirectory>lib/thirdparty</outputDirectory>
             <includes>
-                <include>log4j:log4j</include>           
+                <include>log4j:log4j</include>
                 <include>dom4j:dom4j</include>
                 <include>javassist:javassist</include>
                 <include>net.sf.scannotation:scannotation</include>
             </includes>
-    </dependencySet>
+        </dependencySet>
 
         <dependencySet>
             <outputDirectory>lib/javaee</outputDirectory>
@@ -80,26 +85,15 @@
             </includes>
         </dependencySet>
 
-     </dependencySets>
-
-    <fileSets>
-        <!--
-            Build the 'project' directory which includes the project sources
-        -->
-        <fileSet>
-            <directory>..</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
+        <dependencySet>
             <outputDirectory>src</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-		<exclude>KEYS</exclude>
-		<exclude>**/licences/**</exclude>
-		<exclude>LICENCE.txt</exclude>
-		<exclude>NOTICE.txt</exclude>
-		<exclude>README.txt</exclude>
-            </excludes>
-        </fileSet>
+            <includes>
+                <include>org.apache.openwebbeans:webbeans-api:jar:sources</include>
+                <include>org.apache.openwebbeans:webbeans-impl:jar:sources</include>
+                <include>org.apache.openwebbeans:guess:jar:sources</include>
+            </includes>
+        </dependencySet>
 
-    </fileSets>
+    </dependencySets>
 
 </assembly>

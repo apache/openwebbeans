@@ -40,12 +40,42 @@
 	    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</connection>
 	    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</developerConnection>
 	    <url>https://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</url>
-       </scm>
+    </scm>
 
- 	<issueManagement>
+    <issueManagement>
           <system>jira</system>
           <url>http://issues.apache.org/jira/browse/OWB</url>
-        </issueManagement>
+    </issueManagement>
+
+    <mailingLists>
+       <mailingList>
+          <name>OpenWebBeans Developer List</name>
+          <subscribe>openwebbeans-dev-subscribe@incubator.apache.org</subscribe>
+          <unsubscribe>openwebbeans-dev-unsubscribe@incubator.apache.org</unsubscribe>
+          <post>openwebbeans-dev@incubator.apache.org</post>
+          <archive>http://mail-archives.apache.org/mod_mbox/incubator-openwebbeans-dev/</archive>
+       </mailingList>
+       <mailingList>
+          <name>OpenWebBeans User List</name>
+          <subscribe>openwebbeans-user-subscribe@incubator.apache.org</subscribe>
+          <unsubscribe>openwebbeans-user-unsubscribe@incubator.apache.org</unsubscribe>
+          <post>openwebbeans-user@incubator.apache.org</post>
+          <archive>http://mail-archives.apache.org/mod_mbox/incubator-openwebbeans-user/</archive>
+       </mailingList>
+       <mailingList>
+          <name>OpenWebBeans Commits List</name>
+          <subscribe>openwebbeans-commits-subscribe@incubator.apache.org</subscribe>
+          <unsubscribe>openwebbeans-commits-unsubscribe@incubator.apache.org</unsubscribe>
+          <post>openwebbeans-commits@incubator.apache.org</post>
+          <archive>http://mail-archives.apache.org/mod_mbox/incubator-openwebbeans-commits/</archive>
+       </mailingList>
+       <mailingList>
+          <name>OpenWebBeans Private List</name>
+          <subscribe>openwebbeans-private-subscribe@incubator.apache.org</subscribe>
+          <unsubscribe>openwebbeans-private-unsubscribe@incubator.apache.org</unsubscribe>
+          <post>openwebbeans-private@incubator.apache.org</post>
+       </mailingList>
+    </mailingLists>
 
 	<build>
 		<plugins>
@@ -63,13 +93,27 @@
 				<executions>
 				</executions>
 			</plugin>
+            <!-- force generating a *-sources.jar when building a jar, e.g. for a snapshot release -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                <execution>
+                    <goals>
+                        <goal>jar</goal>
+                    </goals>
+                    </execution>
+                </executions>
+            </plugin>  
 		</plugins>
 	</build>
+    
 	<modules>
 		<module>webbeans-api</module>
 		<module>webbeans-impl</module>
 		<module>samples</module>
 	</modules>
+    
 	<repositories>
 		<repository>
 			<id>java.net</id>
