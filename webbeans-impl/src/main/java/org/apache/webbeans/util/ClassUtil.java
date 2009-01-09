@@ -539,8 +539,10 @@ public final class ClassUtil
         }
 
         if (i > 1)
+        {
             return true;
-
+        }
+        
         return false;
 
     }
@@ -914,51 +916,44 @@ public final class ClassUtil
      */
     public static Object isValueOkForPrimitiveOrWrapper(Class<?> type, String value)
     {
-        try
+        if (type.equals(Integer.TYPE) || type.equals(Integer.class))
         {
-            if (type.equals(Integer.TYPE) || type.equals(Integer.class))
-            {
-                return Integer.valueOf(value);
-            }
+            return Integer.valueOf(value);
+        }
 
-            if (type.equals(Float.TYPE) || type.equals(Float.class))
-            {
-                return Float.valueOf(value);
-            }
-
-            if (type.equals(Double.TYPE) || type.equals(Double.class))
-            {
-                return Double.valueOf(value);
-            }
-
-            if (type.equals(Character.TYPE) || type.equals(Character.class))
-            {
-                return value.toCharArray()[0];
-            }
-
-            if (type.equals(Long.TYPE) || type.equals(Long.class))
-            {
-                return Long.valueOf(value);
-            }
-
-            if (type.equals(Byte.TYPE) || type.equals(Byte.class))
-            {
-                return Byte.valueOf(value);
-            }
-
-            if (type.equals(Short.TYPE) || type.equals(Short.class))
-            {
-                return Short.valueOf(value);
-            }
-
-            if (type.equals(Boolean.TYPE) || type.equals(Boolean.class))
-            {
-                return Boolean.valueOf(value);
-            }
-
-        } catch (Throwable e)
+        if (type.equals(Float.TYPE) || type.equals(Float.class))
         {
-            return null;
+            return Float.valueOf(value);
+        }
+
+        if (type.equals(Double.TYPE) || type.equals(Double.class))
+        {
+            return Double.valueOf(value);
+        }
+
+        if (type.equals(Character.TYPE) || type.equals(Character.class))
+        {
+            return value.toCharArray()[0];
+        }
+
+        if (type.equals(Long.TYPE) || type.equals(Long.class))
+        {
+            return Long.valueOf(value);
+        }
+
+        if (type.equals(Byte.TYPE) || type.equals(Byte.class))
+        {
+            return Byte.valueOf(value);
+        }
+
+        if (type.equals(Short.TYPE) || type.equals(Short.class))
+        {
+            return Short.valueOf(value);
+        }
+
+        if (type.equals(Boolean.TYPE) || type.equals(Boolean.class))
+        {
+            return Boolean.valueOf(value);
         }
 
         return null;
@@ -969,15 +964,7 @@ public final class ClassUtil
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(value, "value parameter can not be null");
 
-        try
-        {
-            return Enum.valueOf(clazz, value);
-
-        } catch (Throwable e)
-        {
-            return null;
-        }
-
+        return Enum.valueOf(clazz, value);
     }
 
     public static Date isValueOkForDate(String value) throws ParseException
@@ -1020,24 +1007,16 @@ public final class ClassUtil
         Asserts.assertNotNull(type);
         Asserts.assertNotNull(value);
 
-        try
+        if (type.equals(BigInteger.class))
         {
-            if (type.equals(BigInteger.class))
-            {
-                return new BigInteger(value);
-            } else if (type.equals(BigDecimal.class))
-            {
-                return new BigDecimal(value);
-            } else
-            {
-                return new WebBeansException(new IllegalArgumentException("Argument is not valid"));
-            }
-
-        } catch (NumberFormatException e)
+            return new BigInteger(value);
+        } else if (type.equals(BigDecimal.class))
         {
-            return null;
+            return new BigDecimal(value);
+        } else
+        {
+            return new WebBeansException(new IllegalArgumentException("Argument is not valid"));
         }
-
     }
 
     public static boolean isParametrized(Class<?> clazz)
