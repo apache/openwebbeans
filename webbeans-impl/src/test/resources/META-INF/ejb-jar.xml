@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ejb-jar PUBLIC 
+   '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 1.1//EN' 
+   'http://java.sun.com/j2ee/dtds/ejb-jar_1_1.dtd'>
+
+<!-- 
+    This file is only needed to trigger the WebBeansScanner.
+    It does NOT contain a valid EJB configuration yet!
+    See the WebBeansScannerTest for further information.  
+-->
+
+<ejb-jar>
+   <enterprise-beans>
+
+      <!-- A minimal session EJB deployment -->
+      <session>
+         <ejb-name>testEJB</ejb-name>
+         <home>webbeans.testHome</home>
+         <remote>webbeans.test</remote>
+         <ejb-class>webbeans.TestBean</ejb-class>
+         <!-- or Stateless -->
+         <session-type>Stateful</session-type>
+         <transaction-type>Container</transaction-type>
+      </session>
+      
+      <!-- A minimal BMP entity EJB deployment -->
+      <entity>
+         <ejb-name>TestBMP</ejb-name>
+         <home>webbeans.TestBMPHome</home>
+         <remote>webbeans.TestBMP</remote>
+         <ejb-class>webbeans.TestBMPBean</ejb-class>
+         <persistence-type>Bean</persistence-type>
+         <prim-key-class>webbeans.TestBMPPK</prim-key-class>
+         <reentrant>False</reentrant>
+      </entity>
+
+   </enterprise-beans>
+</ejb-jar>
