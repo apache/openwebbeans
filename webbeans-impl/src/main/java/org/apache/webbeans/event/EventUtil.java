@@ -61,16 +61,20 @@ public final class EventUtil
         if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionCompletion.class))
         {
             return TransactionalObserverType.AFTER_TRANSACTION_COMPLETION;
-        } else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionSuccess.class))
+        }
+        else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionSuccess.class))
         {
             return TransactionalObserverType.AFTER_TRANSACTION_SUCCESS;
-        } else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionFailure.class))
+        }
+        else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionFailure.class))
         {
             return TransactionalObserverType.AFTER_TRANSACTION_FAILURE;
-        } else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, BeforeTransactionCompletion.class))
+        }
+        else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, BeforeTransactionCompletion.class))
         {
             return TransactionalObserverType.BEFORE_TRANSACTION_COMPLETION;
-        } else
+        }
+        else
         {
             return TransactionalObserverType.NONE;
         }
@@ -104,7 +108,8 @@ public final class EventUtil
         {
             ClassUtil.checkParametrizedType((ParameterizedType) type);
             eventType = (Class<?>) ((ParameterizedType) type).getRawType();
-        } else
+        }
+        else
         {
             eventType = (Class<?>) type;
         }
@@ -139,7 +144,8 @@ public final class EventUtil
         if (!ClassUtil.isParametrizedType(fieldType))
         {
             throw new WebBeansConfigurationException("@Observable field/method-parameter in " + errorMessage + " with field : " + fieldName + " must be ParametrizedType with actual type argument");
-        } else
+        }
+        else
         {
             ParameterizedType pType = (ParameterizedType) fieldType;
             Class<?> clazz = (Class<?>) pType.getRawType();

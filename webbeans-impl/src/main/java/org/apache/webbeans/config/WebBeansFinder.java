@@ -68,11 +68,13 @@ public class WebBeansFinder
                     object = clazz.newInstance();
                     managerMap.put(classLoader, object);
 
-                } catch (InstantiationException e)
+                }
+                catch (InstantiationException e)
                 {
                     throw new WebBeansException("Unable to instantiate class : " + singletonName, e);
 
-                } catch (IllegalAccessException e)
+                }
+                catch (IllegalAccessException e)
                 {
                     throw new WebBeansException("Illegal access exception in creating instance with class : " + singletonName, e);
                 }

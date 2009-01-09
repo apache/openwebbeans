@@ -91,7 +91,8 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
         {
             XMLInjectableMethods<T> methods = new XMLInjectableMethods<T>(creatorMethod, parentInstance, this, this.producerMethodParameters);
             methods.doInjection();
-        } finally
+        }
+        finally
         {
             if (getParent().getScopeType().equals(Dependent.class))
             {

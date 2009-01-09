@@ -156,13 +156,15 @@ public class ConversationImpl implements Conversation
         {
             if (other.id != null)
                 return false;
-        } else if (!id.equals(other.id))
+        }
+        else if (!id.equals(other.id))
             return false;
         if (sessionId == null)
         {
             if (other.sessionId != null)
                 return false;
-        } else if (!sessionId.equals(other.sessionId))
+        }
+        else if (!sessionId.equals(other.sessionId))
             return false;
         return true;
     }

@@ -54,7 +54,8 @@ public class WebBeansPhaseListener implements PhaseListener
 
                     ContextFactory.initConversationContext(null);
 
-                } else
+                }
+                else
                 {
                     logger.info("Propogation of the conversation with id : " + cid + " for view : " + JSFUtil.getViewId());
                     conversation = (ConversationImpl) conversationManager.getConversation(cid);
@@ -66,12 +67,14 @@ public class WebBeansPhaseListener implements PhaseListener
                         conversation = (ConversationImpl) conversationManager.createNewConversation(JSFUtil.getViewId());
 
                         ContextFactory.initConversationContext(null);
-                    } else
+                    }
+                    else
                     {
                         ContextFactory.initConversationContext(conversationManager.getConversationContext(conversation));
                     }
                 }
-            } else
+            }
+            else
             {
                 logger.info("Postback JSF Request for view id : " + JSFUtil.getViewId());
 

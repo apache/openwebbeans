@@ -60,7 +60,8 @@ public class DeploymentTypeManager
         if (!deploymentTypeMap.containsKey(deploymentType))
         {
             throw new IllegalArgumentException("Deployment type with annotation class : " + deploymentType.getName() + " is not applicable");
-        } else
+        }
+        else
         {
             return deploymentTypeMap.get(deploymentType);
         }

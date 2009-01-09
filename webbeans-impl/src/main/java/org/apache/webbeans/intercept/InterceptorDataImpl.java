@@ -74,10 +74,12 @@ public class InterceptorDataImpl implements InterceptorData
         if (annotation.equals(AroundInvoke.class))
         {
             setAroundInvoke(m);
-        } else if (annotation.equals(PostConstruct.class))
+        }
+        else if (annotation.equals(PostConstruct.class))
         {
             setPostConstruct(m);
-        } else if (annotation.equals(PreDestroy.class))
+        }
+        else if (annotation.equals(PreDestroy.class))
         {
             setPreDestroy(m);
         }

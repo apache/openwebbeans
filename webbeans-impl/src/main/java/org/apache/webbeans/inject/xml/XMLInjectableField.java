@@ -50,7 +50,8 @@ public class XMLInjectableField extends InjectableField
 
             field.set(instance, inject(this.injectionPointModel.getInjectionClassType(), this.injectionPointModel.getActualTypeArguments(), anns));
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new WebBeansException(e);
         }

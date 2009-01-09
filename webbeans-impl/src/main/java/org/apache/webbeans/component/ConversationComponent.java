@@ -36,7 +36,8 @@ public class ConversationComponent extends AbstractComponent<Conversation>
         if (conversationId != null)
         {
             conversation = ConversationManager.getInstance().getConversation(conversationId);
-        } else
+        }
+        else
         {
             conversation = new ConversationImpl(JSFUtil.getSession().getId());
         }

@@ -71,16 +71,20 @@ public abstract class AbstractContext implements WebBeansContext
         if (type.equals(ContextTypes.APPLICATION))
         {
             this.scopeType = ApplicationScoped.class;
-        } else if (type.equals(ContextTypes.SESSION))
+        }
+        else if (type.equals(ContextTypes.SESSION))
         {
             this.scopeType = SessionScoped.class;
-        } else if (type.equals(ContextTypes.REQUEST))
+        }
+        else if (type.equals(ContextTypes.REQUEST))
         {
             this.scopeType = RequestScoped.class;
-        } else if (type.equals(ContextTypes.DEPENDENT))
+        }
+        else if (type.equals(ContextTypes.DEPENDENT))
         {
             this.scopeType = Dependent.class;
-        } else if (type.equals(ContextTypes.CONVERSATION))
+        }
+        else if (type.equals(ContextTypes.CONVERSATION))
         {
             this.scopeType = ConversationScoped.class;
         }
@@ -105,7 +109,8 @@ public abstract class AbstractContext implements WebBeansContext
         if ((instance = componentInstanceMap.get(component)) != null)
         {
             return (T) instance;
-        } else
+        }
+        else
         {
             if (create)
             {
@@ -168,7 +173,8 @@ public abstract class AbstractContext implements WebBeansContext
         {
             componentInstanceMap.remove(component);
             removeInstance(component);
-        } else
+        }
+        else
         {
             throw new ContextRemoveException("Given component with " + component + " is not found in the current context with type : " + getType().getTypeName());
         }

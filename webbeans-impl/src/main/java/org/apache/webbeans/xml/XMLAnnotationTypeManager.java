@@ -91,7 +91,8 @@ public class XMLAnnotationTypeManager
             inherits = new HashSet<Annotation>();
             inherits.add(inherit);
             xmlInterceptorBindingTypes.put(bindingType, inherits);
-        } else
+        }
+        else
         {
             inherits.add(inherit);
         }

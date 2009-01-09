@@ -141,7 +141,8 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
             InjectableMethods<T> m = new InjectableMethods<T>(creatorMethod, parentInstance, this);
             instance = m.doInjection();
 
-        } finally
+        }
+        finally
         {
             if (getParent().getScopeType().equals(Dependent.class))
             {

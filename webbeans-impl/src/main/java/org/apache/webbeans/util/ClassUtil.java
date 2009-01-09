@@ -141,12 +141,14 @@ public final class ClassUtil
                         if (t.getName().equals(variable.getName()))
                         {
                             continue;
-                        } else
+                        }
+                        else
                         {
                             return false;
                         }
 
-                    } else
+                    }
+                    else
                     {
                         return false;
                     }
@@ -169,7 +171,8 @@ public final class ClassUtil
 
             return clazz;
 
-        } catch (ClassNotFoundException e)
+        }
+        catch (ClassNotFoundException e)
         {
             try
             {
@@ -177,7 +180,8 @@ public final class ClassUtil
 
                 return clazz;
 
-            } catch (ClassNotFoundException e1)
+            }
+            catch (ClassNotFoundException e1)
             {
                 try
                 {
@@ -185,7 +189,8 @@ public final class ClassUtil
 
                     return clazz;
 
-                } catch (ClassNotFoundException e2)
+                }
+                catch (ClassNotFoundException e2)
                 {
                     return null;
                 }
@@ -422,7 +427,8 @@ public final class ClassUtil
                 if (Error.class.isAssignableFrom(type) || RuntimeException.class.isAssignableFrom(type))
                 {
                     return false;
-                } else
+                }
+                else
                 {
                     return true;
                 }
@@ -475,7 +481,8 @@ public final class ClassUtil
             }
             return method.invoke(instance, args);
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             throw new WebBeansException("Exception occurs in the method call with method : " + method.getName() + " in class : " + instance.getClass().getName());
         }
@@ -542,7 +549,7 @@ public final class ClassUtil
         {
             return true;
         }
-        
+
         return false;
 
     }
@@ -554,7 +561,8 @@ public final class ClassUtil
         {
             return clazz.getDeclaredConstructor(new Class<?>[] {});
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             return null;
         }
@@ -623,10 +631,12 @@ public final class ClassUtil
         {
             clazz.getDeclaredConstructor(new Class<?>[] {});
 
-        } catch (SecurityException e)
+        }
+        catch (SecurityException e)
         {
             throw e;
-        } catch (NoSuchMethodException e)
+        }
+        catch (NoSuchMethodException e)
         {
             return false;
         }
@@ -642,12 +652,14 @@ public final class ClassUtil
         if (lhs instanceof ParameterizedType && rhs instanceof ParameterizedType)
         {
             return isAssignable((ParameterizedType) lhs, (ParameterizedType) rhs);
-        } else
+        }
+        else
         {
             if (lhs instanceof Class && rhs instanceof Class)
             {
                 return isAssignable((Class) lhs, (Class) rhs);
-            } else
+            }
+            else
             {
                 return false;
             }
@@ -695,11 +707,13 @@ public final class ClassUtil
 
             clazz.getDeclaredField(fieldName);
 
-        } catch (SecurityException e)
+        }
+        catch (SecurityException e)
         {
             // we must throw here!
             throw new WebBeansException(e);
-        } catch (NoSuchFieldException e2)
+        }
+        catch (NoSuchFieldException e2)
         {
             return false;
         }
@@ -721,7 +735,8 @@ public final class ClassUtil
                 if (ok)
                 {
                     return true;
-                } else
+                }
+                else
                 {
                     ok = true;
                 }
@@ -740,11 +755,13 @@ public final class ClassUtil
 
             return clazz.getDeclaredField(fieldName);
 
-        } catch (SecurityException e)
+        }
+        catch (SecurityException e)
         {
             // we must throw here!
             throw new WebBeansException(e);
-        } catch (NoSuchFieldException e2)
+        }
+        catch (NoSuchFieldException e2)
         {
             return null;
         }
@@ -784,7 +801,8 @@ public final class ClassUtil
                 if (defineType.isAssignableFrom(parameterTypes.get(j)))
                 {
                     ok = true;
-                } else
+                }
+                else
                 {
                     ok = false;
                 }
@@ -825,7 +843,8 @@ public final class ClassUtil
                 if (defineType.equals(parameterTypes.get(j)))
                 {
                     ok = true;
-                } else
+                }
+                else
                 {
                     ok = false;
                 }
@@ -974,7 +993,8 @@ public final class ClassUtil
             Asserts.assertNotNull(value, "value parameter can not be null");
             return DateFormat.getDateTimeInstance().parse(value);
 
-        } catch (ParseException e)
+        }
+        catch (ParseException e)
         {
             // Check for simple date format
             SimpleDateFormat format = new SimpleDateFormat(WEBBEANS_DATE_FORMAT);
@@ -993,7 +1013,8 @@ public final class ClassUtil
         if (date == null)
         {
             return null;
-        } else
+        }
+        else
         {
             calendar = Calendar.getInstance();
             calendar.setTime(date);
@@ -1010,10 +1031,12 @@ public final class ClassUtil
         if (type.equals(BigInteger.class))
         {
             return new BigInteger(value);
-        } else if (type.equals(BigDecimal.class))
+        }
+        else if (type.equals(BigDecimal.class))
         {
             return new BigDecimal(value);
-        } else
+        }
+        else
         {
             return new WebBeansException(new IllegalArgumentException("Argument is not valid"));
         }
@@ -1033,7 +1056,8 @@ public final class ClassUtil
         {
             return ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments();
 
-        } else
+        }
+        else
         {
             return new Type[0];
         }
@@ -1047,7 +1071,8 @@ public final class ClassUtil
         {
             return ((ParameterizedType) type).getActualTypeArguments();
 
-        } else
+        }
+        else
         {
             return new Type[0];
         }
@@ -1136,7 +1161,8 @@ public final class ClassUtil
             if (type instanceof ParameterizedType)
             {
                 return checkParametrizedType((ParameterizedType) type);
-            } else if ((type instanceof TypeVariable) || (type instanceof WildcardType))
+            }
+            else if ((type instanceof TypeVariable) || (type instanceof WildcardType))
             {
                 return false;
             }
@@ -1212,7 +1238,8 @@ public final class ClassUtil
         if (Arrays.equals(typeArguments, types))
         {
             return true;
-        } else
+        }
+        else
         {
             Class<?> superClazz = target.getSuperclass();
             if (superClazz != null)

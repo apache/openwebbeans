@@ -102,7 +102,8 @@ public class XMLUtil
                     if (element.getNamespaceURI() == null || element.getNamespaceURI().equals(""))
                     {
                         throw new WebBeansConfigurationException("All elements in the web-beans.xml file must have declared name space");
-                    } else
+                    }
+                    else
                     {
                         if (element.isRootElement())
                         {
@@ -125,7 +126,8 @@ public class XMLUtil
 
             return document.getRootElement();
 
-        } catch (DocumentException e)
+        }
+        catch (DocumentException e)
         {
             log.fatal("Unable to read root element of the given input stream", e);
             throw new WebBeansException("Unable to read root element of the given input stream", e);
@@ -366,7 +368,8 @@ public class XMLUtil
 
                 }
 
-            } else
+            }
+            else
             {
                 return false;
             }
@@ -396,7 +399,8 @@ public class XMLUtil
             {
                 return true;
 
-            } else
+            }
+            else
             {
                 Class<?> clazz = getElementJavaType(child);
                 if (clazz != null)
@@ -477,7 +481,8 @@ public class XMLUtil
         if (child == null)
         {
             return false;
-        } else
+        }
+        else
         {
             return isElementInWebBeansNameSpace(child);
         }
@@ -545,10 +550,12 @@ public class XMLUtil
                 if (actualType == null)
                 {
                     throw new NonexistentTypeException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is not found in the deployment");
-                } else if (((Class) actualType).isArray() || ((Class) actualType).isEnum())
+                }
+                else if (((Class) actualType).isArray() || ((Class) actualType).isEnum())
                 {
                     throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " must be class or interface type");
-                } else if (((Class) actualType).isAnnotation())
+                }
+                else if (((Class) actualType).isAnnotation())
                 {
                     Class<? extends Annotation> annotClazz = (Class<? extends Annotation>) actualType;
                     if (!AnnotationUtil.isBindingAnnotation(annotClazz))
@@ -559,7 +566,8 @@ public class XMLUtil
                     if (definedBindingType == null)
                     {
                         definedBindingType = annotClazz;
-                    } else
+                    }
+                    else
                     {
                         if (definedBindingType.equals(annotClazz))
                         {
@@ -568,7 +576,8 @@ public class XMLUtil
                     }
 
                     bindingAnnots.add(getXMLDefinedAnnotationMember(childElement, annotClazz, errorMessage));
-                } else
+                }
+                else
                 {
                     typeArguments.add(actualType);
                 }
@@ -649,11 +658,13 @@ public class XMLUtil
                     /* Contains value member method */
                     annotClazz.getDeclaredMethod("value", new Class[] {});
 
-                } catch (SecurityException e)
+                }
+                catch (SecurityException e)
                 {
                     throw new WebBeansException(e);
 
-                } catch (NoSuchMethodException e)
+                }
+                catch (NoSuchMethodException e)
                 {
                     throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " must have 'value' method");
                 }
@@ -667,11 +678,13 @@ public class XMLUtil
             {
                 annotClazz.getDeclaredMethod(attrName, new Class[] {});
 
-            } catch (SecurityException e)
+            }
+            catch (SecurityException e)
             {
                 throw new WebBeansException(e);
 
-            } catch (NoSuchMethodException e)
+            }
+            catch (NoSuchMethodException e)
             {
                 throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " does not have member with name : " + attrName);
             }
@@ -726,17 +739,21 @@ public class XMLUtil
                 if (returnType.isPrimitive())
                 {
                     value = ClassUtil.isValueOkForPrimitiveOrWrapper(returnType, attrValue);
-                } else if (returnType.equals(String.class))
+                }
+                else if (returnType.equals(String.class))
                 {
                     value = attrValue;
-                } else if (returnType.equals(Class.class))
+                }
+                else if (returnType.equals(Class.class))
                 {
                     value = ClassUtil.getClassFromName(attrValue);
 
-                } else if (returnType.isEnum())
+                }
+                else if (returnType.isEnum())
                 {
                     value = ClassUtil.isValueOkForEnum(returnType, attrValue);
-                } else
+                }
+                else
                 {
                     throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " with member : " + attrName + " does not have sutiable member return type");
                 }
@@ -748,11 +765,13 @@ public class XMLUtil
 
                 annotation.setMemberValue(attrName, value);
 
-            } catch (SecurityException e)
+            }
+            catch (SecurityException e)
             {
                 throw new WebBeansException(e);
 
-            } catch (NoSuchMethodException e)
+            }
+            catch (NoSuchMethodException e)
             {
                 throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " does not have member with name : " + attrName);
             }
@@ -796,15 +815,18 @@ public class XMLUtil
             if (clazz.isAnnotation())
             {
                 anns.add(getXMLDefinedAnnotationMember(childElement, (Class<? extends Annotation>) clazz, errorMessage));
-            } else if (clazz.isArray() || clazz.isEnum())
+            }
+            else if (clazz.isArray() || clazz.isEnum())
             {
                 throw new WebBeansConfigurationException(errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(typeElement) + " must be class or interface type");
-            } else
+            }
+            else
             {
                 if (isElementTypeDefined)
                 {
                     throw new WebBeansConfigurationException(errorMessage + "<Array> element can not have more than one child element. It has one child element that declares its type");
-                } else
+                }
+                else
                 {
                     model = new XMLInjectionPointModel(clazz);
                     isElementTypeDefined = true;
@@ -843,15 +865,18 @@ public class XMLUtil
             if (clazz.isAnnotation())
             {
                 anns.add(getXMLDefinedAnnotationMember(childElement, (Class<? extends Annotation>) clazz, errorMessage));
-            } else if (clazz.isArray() || clazz.isEnum())
+            }
+            else if (clazz.isArray() || clazz.isEnum())
             {
                 throw new WebBeansConfigurationException(errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(typeElement) + " must be class or interface type");
-            } else
+            }
+            else
             {
                 if (isElementTypeDefined)
                 {
                     throw new WebBeansConfigurationException(errorMessage + "<Array> element can not have more than one child element. It has one child element that declares its type");
-                } else
+                }
+                else
                 {
                     isElementTypeDefined = true;
                     component.addApiType(Array.newInstance(clazz, 0).getClass());

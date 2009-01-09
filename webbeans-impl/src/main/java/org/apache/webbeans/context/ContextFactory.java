@@ -199,7 +199,8 @@ public final class ContextFactory
         if (context == null)
         {
             conversationContext.set(new ConversationContext());
-        } else
+        }
+        else
         {
             conversationContext.set(context);
         }
@@ -268,17 +269,21 @@ public final class ContextFactory
         if (scopeType.equals(RequestScoped.class))
         {
             context = getRequestContext();
-        } else if (scopeType.equals(SessionScoped.class))
+        }
+        else if (scopeType.equals(SessionScoped.class))
         {
             context = getSessionContext();
-        } else if (scopeType.equals(ApplicationScoped.class))
+        }
+        else if (scopeType.equals(ApplicationScoped.class))
         {
             context = getApplicationContext();
-        } else if (scopeType.equals(ConversationScoped.class))
+        }
+        else if (scopeType.equals(ConversationScoped.class))
         {
             context = getConversationContext();
 
-        } else if (scopeType.equals(Dependent.class))
+        }
+        else if (scopeType.equals(Dependent.class))
         {
             context = getDependentContext();
         }

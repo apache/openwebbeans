@@ -125,13 +125,15 @@ public abstract class AbstractComponent<T> extends Component<T>
 
             instance = createInstance();
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             if (Exception.class.isAssignableFrom(e.getClass()))
             {
                 throw new CreationException(e);
             }
-        } finally
+        }
+        finally
         {
             if (isActiveSet)
             {
@@ -171,7 +173,8 @@ public abstract class AbstractComponent<T> extends Component<T>
             destroyInstance(instance);
             destroyDependents();
 
-        } finally
+        }
+        finally
         {
             if (isActiveSet)
             {

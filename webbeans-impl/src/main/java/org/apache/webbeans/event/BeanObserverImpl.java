@@ -83,7 +83,8 @@ public class BeanObserverImpl<T> implements Observer<T>
             if (ifExist)
             {
                 object = context.get(baseComponent, false);
-            } else
+            }
+            else
             {
                 object = context.get(baseComponent, true);
             }
@@ -100,18 +101,22 @@ public class BeanObserverImpl<T> implements Observer<T>
                 {
                     observerMethod.invoke(object, args);
 
-                } catch (IllegalArgumentException e)
+                }
+                catch (IllegalArgumentException e)
                 {
                     throw e;
 
-                } catch (IllegalAccessException e)
+                }
+                catch (IllegalAccessException e)
                 {
                     throw new RuntimeException(e);
 
-                } catch (InvocationTargetException e)
+                }
+                catch (InvocationTargetException e)
                 {
                     throw new RuntimeException(e);
-                } finally
+                }
+                finally
                 {
                     if (isActiveSet)
                     {
@@ -121,7 +126,8 @@ public class BeanObserverImpl<T> implements Observer<T>
 
             }
 
-        } finally
+        }
+        finally
         {
             if (isActiveSet)
             {
@@ -150,7 +156,8 @@ public class BeanObserverImpl<T> implements Observer<T>
                 {
                     annot = new Annotation[1];
                     annot[0] = new CurrentLiteral();
-                } else
+                }
+                else
                 {
                     for (Annotation observersAnnot : annot)
                     {
@@ -174,7 +181,8 @@ public class BeanObserverImpl<T> implements Observer<T>
                         args = pt.getActualTypeArguments();
 
                         clazz = (Class<?>) pt.getRawType();
-                    } else
+                    }
+                    else
                     {
                         clazz = (Class<?>) type;
                     }
@@ -184,7 +192,8 @@ public class BeanObserverImpl<T> implements Observer<T>
                     if (bindingTypes.length > 0)
                     {
                         list.add(manager.getInstance(InjectionResolver.getInstance().implResolveByType(clazz, args, bindingTypes).iterator().next()));
-                    } else
+                    }
+                    else
                     {
                         list.add(null);
                     }

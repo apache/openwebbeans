@@ -81,7 +81,8 @@ public class WebBeansELResolver extends ELResolver
 
             }
 
-        } finally
+        }
+        finally
         {
             if (isResolution)
             {

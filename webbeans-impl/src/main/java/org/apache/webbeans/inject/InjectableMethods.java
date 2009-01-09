@@ -81,7 +81,8 @@ public class InjectableMethods<T> extends AbstractInjectable
                     args = pt.getActualTypeArguments();
 
                     clazz = (Class<?>) pt.getRawType();
-                } else
+                }
+                else
                 {
                     clazz = (Class<?>) type;
                 }
@@ -103,7 +104,8 @@ public class InjectableMethods<T> extends AbstractInjectable
 
             return (T) m.invoke(instance, list.toArray());
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new WebBeansException(e);
         }

@@ -127,7 +127,8 @@ class TransactionalNotifier
         {
             if (other.event.getClass() != null)
                 return false;
-        } else if (!event.getClass().equals(other.event.getClass()))
+        }
+        else if (!event.getClass().equals(other.event.getClass()))
             return false;
         return true;
     }

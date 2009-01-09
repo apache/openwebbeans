@@ -70,7 +70,8 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
         if (this.injectableConstructor == null)
         {
             instance = super.createInstance();
-        } else
+        }
+        else
         {
             instance = this.injectableConstructor.doInjection();
             super.afterConstructor(instance);
@@ -123,12 +124,14 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
             {
                 field.set(instance, this.fieldValues.get(field));
 
-            } catch (IllegalArgumentException e)
+            }
+            catch (IllegalArgumentException e)
             {
                 logger.error("IllegalArgumentException is occured while calling the field : " + field.getName() + " on class " + instance.getClass().getName());
                 throw new WebBeansException(e);
 
-            } catch (IllegalAccessException e)
+            }
+            catch (IllegalAccessException e)
             {
                 logger.error("IllegalAccessException is occured while calling the field : " + field.getName() + " on class " + instance.getClass().getName());
                 throw new WebBeansException(e);

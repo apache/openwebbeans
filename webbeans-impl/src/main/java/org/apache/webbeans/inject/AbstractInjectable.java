@@ -93,12 +93,14 @@ public abstract class AbstractInjectable implements Injectable
             {
                 return injectForDependent(component);
 
-            } else
+            }
+            else
             {
                 return injectForComponent(component);
             }
 
-        } finally
+        }
+        finally
         {
             if (isSetOnThis)
             {
@@ -141,7 +143,8 @@ public abstract class AbstractInjectable implements Injectable
         if (type instanceof ParameterizedType)
         {
             clazz = (Class<?>) ((ParameterizedType) type).getRawType();
-        } else if (type instanceof Class)
+        }
+        else if (type instanceof Class)
         {
             clazz = (Class<?>) type;
         }

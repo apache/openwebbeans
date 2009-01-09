@@ -60,7 +60,8 @@ public class DependentContextReference extends WeakReference<Object>
         {
             if (other.object != null)
                 return false;
-        } else if (!object.equals(other.object))
+        }
+        else if (!object.equals(other.object))
             return false;
         return true;
     }

@@ -90,7 +90,8 @@ public final class SimpleWebBeansConfigurator
         {
             WebBeansUtil.isSimpleWebBeanClass(clazz);
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             return false;
         }

@@ -50,7 +50,8 @@ public final class JavassistProxyFactory
                 if (type.isInterface())
                 {
                     interfaceList.add(type);
-                } else if ((superClass == null) || (superClass.isAssignableFrom(type) && type != Object.class))
+                }
+                else if ((superClass == null) || (superClass.isAssignableFrom(type) && type != Object.class))
                 {
                     superClass = type;
                 }
@@ -73,7 +74,8 @@ public final class JavassistProxyFactory
 
             result = fact.createClass().newInstance();
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             throw new WebBeansException(e);
         }
@@ -94,7 +96,8 @@ public final class JavassistProxyFactory
 
             result = (WebBeansAnnotation) pf.create(new Class[] { Class.class }, new Object[] { annotationType });
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new WebBeansException(e);
         }

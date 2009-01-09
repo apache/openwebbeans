@@ -110,7 +110,8 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
             {
                 impl.proceed();
 
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 throw new WebBeansException(e);
             }
@@ -170,7 +171,8 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
             {
                 impl.proceed();
 
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 throw new WebBeansException(e);
             }

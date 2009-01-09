@@ -79,7 +79,8 @@ public class InjectableField extends AbstractInjectable
                 args = pt.getActualTypeArguments();
 
                 clazz = (Class<?>) pt.getRawType();
-            } else
+            }
+            else
             {
                 clazz = (Class<?>) type;
             }
@@ -91,7 +92,8 @@ public class InjectableField extends AbstractInjectable
 
             field.set(instance, inject(clazz, args, annots));
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new WebBeansException(e);
         }

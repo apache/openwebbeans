@@ -68,14 +68,16 @@ public class InjectionResolver
                     {
                         resolvedComponent = component;
                         resolvedComponents.add(resolvedComponent);
-                    } else
+                    }
+                    else
                     {
                         if (DeploymentTypeManager.getInstance().comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) > 0)
                         {
                             resolvedComponents.clear();
                             resolvedComponent = component;
                             resolvedComponents.add(resolvedComponent);
-                        } else if (DeploymentTypeManager.getInstance().comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) == 0)
+                        }
+                        else if (DeploymentTypeManager.getInstance().comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) == 0)
                         {
                             resolvedComponents.add(component);
                         }
@@ -159,7 +161,8 @@ public class InjectionResolver
                                 {
                                     results.add((Bean<T>) component);
                                     break;
-                                } else
+                                }
+                                else
                                 {
                                     List<Type[]> listActualArgs = ClassUtil.getGenericSuperInterfacesTypeArguments(componentApiType);
                                     Iterator<Type[]> itListActualArgs = listActualArgs.iterator();
@@ -179,7 +182,8 @@ public class InjectionResolver
                             }
 
                         }
-                    } else
+                    }
+                    else
                     {
                         if (apiType instanceof Class)
                         {
@@ -218,20 +222,23 @@ public class InjectionResolver
             {
                 resolvedComponent = component;
                 res.add(resolvedComponent);
-            } else
+            }
+            else
             {
                 DeploymentTypeManager typeManager = DeploymentTypeManager.getInstance();
 
                 if (typeManager.comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) < 0)
                 {
                     continue;
-                } else if (typeManager.comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) > 0)
+                }
+                else if (typeManager.comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) > 0)
                 {
                     res.clear();
                     resolvedComponent = component;
                     res.add(resolvedComponent);
 
-                } else
+                }
+                else
                 {
                     res.add(component);
                 }

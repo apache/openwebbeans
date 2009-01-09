@@ -39,7 +39,8 @@ public final class TransactionUtil
             {
                 transactionManager = (TransactionManager) JNDIUtil.getInitialContext().lookup("java:/TransactionManager");
 
-            } catch (NamingException e)
+            }
+            catch (NamingException e)
             {
                 logger.error("Unable to get TransactionManager", e);
                 throw new WebBeansException(e);

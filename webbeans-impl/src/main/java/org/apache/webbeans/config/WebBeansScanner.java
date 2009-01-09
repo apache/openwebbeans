@@ -102,7 +102,8 @@ public final class WebBeansScanner
 
             }
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             logger.error("Initializing of the WebBeans container is failed.", e);
             throw new WebBeansConfigurationException(e);
@@ -145,7 +146,8 @@ public final class WebBeansScanner
                 {
                     fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/META-INF/web-beans.xml";
                     addPath = new URL("jar:" + fileDir);
-                } else
+                }
+                else
                 {
                     addPath = new URL("file:" + url.getFile() + "META-INF/web-beans.xml");
                 }
@@ -173,7 +175,8 @@ public final class WebBeansScanner
                     {
                         fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/META-INF/ejb-jar.xml";
                         addPath = new URL("jar:" + fileDir);
-                    } else
+                    }
+                    else
                     {
                         addPath = new URL("file:" + ejbUrl.getFile() + "META-INF/ejb-jar.xml");
                     }

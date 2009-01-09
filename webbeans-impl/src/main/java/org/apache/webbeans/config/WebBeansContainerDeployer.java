@@ -101,10 +101,12 @@ public final class WebBeansContainerDeployer
                 deployed = true;
             }
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             throw new WebBeansDeploymentException(e);
-        } finally
+        }
+        finally
         {
             Manager manager = ManagerImpl.getManager();
             manager.fireEvent(manager, new Annotation[] { new InitializedManagerLiteral() });
@@ -131,7 +133,8 @@ public final class WebBeansContainerDeployer
                 {
                     logger.info("Simple WebBeans Component with class name : " + componentClassName + " is found");
                     defineSimpleWebBeans(implClass);
-                } else if (EJBWebBeansConfigurator.isEJBWebBean(implClass))
+                }
+                else if (EJBWebBeansConfigurator.isEJBWebBean(implClass))
                 {
                     logger.info("Enterprise WebBeans Component with class name : " + componentClassName + " is found");
                     defineEnterpriseWebBeans();
@@ -227,7 +230,8 @@ public final class WebBeansContainerDeployer
                     if (superClass == null)
                     {
                         superClass = specialClass.getSuperclass();
-                    } else
+                    }
+                    else
                     {
                         if (superClass.equals(specialClass.getSuperclass()))
                         {
@@ -260,7 +264,8 @@ public final class WebBeansContainerDeployer
             if (superClass == null)
             {
                 superClass = specialClass.getSuperclass();
-            } else
+            }
+            else
             {
                 if (superClass.equals(specialClass.getSuperclass()))
                 {

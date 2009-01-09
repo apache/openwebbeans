@@ -121,7 +121,8 @@ public class WebBeansDecorator extends Decorator
                 if (bindingOk)
                 {
                     allBindingsOk = true;
-                } else
+                }
+                else
                 {
                     allBindingsOk = false;
                     break;
@@ -162,12 +163,14 @@ public class WebBeansDecorator extends Decorator
         {
             field.set(instance, delegate);
 
-        } catch (IllegalArgumentException e)
+        }
+        catch (IllegalArgumentException e)
         {
             logger.error("Delegate field is not found on the given decorator class : " + instance.getClass().getName(), e);
             throw new WebBeansException(e);
 
-        } catch (IllegalAccessException e)
+        }
+        catch (IllegalAccessException e)
         {
             logger.error("Illegal access exception for field " + field.getName() + " in decorator class : " + instance.getClass().getName(), e);
         }
@@ -305,7 +308,8 @@ public class WebBeansDecorator extends Decorator
         {
             if (other.clazz != null)
                 return false;
-        } else if (!clazz.equals(other.clazz))
+        }
+        else if (!clazz.equals(other.clazz))
             return false;
         return true;
     }

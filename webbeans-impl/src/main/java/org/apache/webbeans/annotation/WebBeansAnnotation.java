@@ -144,7 +144,8 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
                 }
                 return true;
             }
-        } else if (other instanceof WebBeansAnnotation)
+        }
+        else if (other instanceof WebBeansAnnotation)
         {
             WebBeansAnnotation that = (WebBeansAnnotation) other;
             if (this.annotationType().equals(that.annotationType()))
@@ -191,13 +192,16 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
         {
             return method.invoke(instance);
 
-        } catch (IllegalArgumentException e)
+        }
+        catch (IllegalArgumentException e)
         {
             throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
-        } catch (IllegalAccessException e)
+        }
+        catch (IllegalAccessException e)
         {
             throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
-        } catch (InvocationTargetException e)
+        }
+        catch (InvocationTargetException e)
         {
             throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
         }

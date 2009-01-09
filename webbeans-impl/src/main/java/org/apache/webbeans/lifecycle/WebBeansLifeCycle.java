@@ -133,7 +133,8 @@ public final class WebBeansLifeCycle
                 applicationCtx.addELResolver(new WebBeansELResolver());
             }
 
-        } catch (MalformedURLException e)
+        }
+        catch (MalformedURLException e)
         {
             logger.error(e);
             throw new WebBeansException(e);

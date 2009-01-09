@@ -212,30 +212,37 @@ public final class NotificationManager implements Synchronization
                             if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_COMPLETION))
                             {
                                 transNotifier.addAfterCompletionObserver(observer);
-                            } else if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_SUCCESS))
+                            }
+                            else if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_SUCCESS))
                             {
                                 transNotifier.addAfterCompletionSuccessObserver(observer);
-                            } else if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_FAILURE))
+                            }
+                            else if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_FAILURE))
                             {
                                 transNotifier.addAfterCompletionFailureObserver(observer);
-                            } else if (type.equals(TransactionalObserverType.BEFORE_TRANSACTION_COMPLETION))
+                            }
+                            else if (type.equals(TransactionalObserverType.BEFORE_TRANSACTION_COMPLETION))
                             {
                                 transNotifier.addBeforeCompletionObserver(observer);
                             }
-                        } else
+                        }
+                        else
                         {
                             observer.notify(event);
                         }
-                    } else
+                    }
+                    else
                     {
                         observer.notify(event);
                     }
-                } else
+                }
+                else
                 {
                     observer.notify(event);
                 }
 
-            } catch (Throwable e)
+            }
+            catch (Throwable e)
             {
                 if (Exception.class.isAssignableFrom(e.getClass()))
                 {
@@ -290,17 +297,20 @@ public final class NotificationManager implements Synchronization
                 {
                     notifier.notifyAfterCompletionSuccess();
 
-                } else if (status == Status.STATUS_ROLLEDBACK)
+                }
+                else if (status == Status.STATUS_ROLLEDBACK)
                 {
                     notifier.notifyAfterCompletionFailure();
                 }
 
             }
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             logger.error("Exception is occured in the transational observer ", e);
-        } finally
+        }
+        finally
         {
             this.transactionSet.clear();
         }
@@ -318,7 +328,8 @@ public final class NotificationManager implements Synchronization
                 notifier.notifyBeforeCompletion();
             }
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             logger.error("Exception is occured in the transational observer ", e);
         }

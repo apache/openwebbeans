@@ -84,7 +84,8 @@ public final class DefinitionUtil
                 if (found == true)
                 {
                     throw new WebBeansConfigurationException(errorMessage);
-                } else
+                }
+                else
                 {
                     component.setType(annotation);// component type
                     found = true;
@@ -96,7 +97,8 @@ public final class DefinitionUtil
         {
             ProducerComponentImpl<?> p = (ProducerComponentImpl<?>) component;
             component.setType(p.getParent().getType());
-        } else
+        }
+        else
         {
 
             component.setType(WebBeansUtil.getMaxPrecedenceSteroTypeDeploymentType(component));
@@ -130,7 +132,8 @@ public final class DefinitionUtil
         {
             component.getTypes().add(clazz);
             component.getTypes().add(Object.class);
-        } else
+        }
+        else
         {
             ClassUtil.setTypeHierarchy(component.getTypes(), clazz);
         }
@@ -200,7 +203,8 @@ public final class DefinitionUtil
                 if (found)
                 {
                     throw new WebBeansConfigurationException(exceptionMessage);
-                } else
+                }
+                else
                 {
                     found = true;
                     component.setImplScopeType(annotation);
@@ -236,7 +240,8 @@ public final class DefinitionUtil
         if (stereos.size() == 0)
         {
             component.setImplScopeType(new DependentScopeLiteral());
-        } else
+        }
+        else
         {
             Annotation defined = null;
             Set<Annotation> anns = component.getStereoTypes();
@@ -249,7 +254,8 @@ public final class DefinitionUtil
                     if (defined == null)
                     {
                         defined = next;
-                    } else
+                    }
+                    else
                     {
                         if (!defined.equals(next))
                         {
@@ -262,7 +268,8 @@ public final class DefinitionUtil
             if (defined != null)
             {
                 component.setImplScopeType(defined);
-            } else
+            }
+            else
             {
                 component.setImplScopeType(new DependentScopeLiteral());
             }
@@ -297,13 +304,15 @@ public final class DefinitionUtil
                 isDefault = true;
             }
 
-        } else
+        }
+        else
         // yes @Named
         {
             if (nameAnnot.value().equals(""))
             {
                 isDefault = true;
-            } else
+            }
+            else
             {
                 component.setName(nameAnnot.value());
             }
@@ -336,7 +345,8 @@ public final class DefinitionUtil
                     if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Override.class))
                     {
                         WebBeansUtil.configureProducerSpecialization(component, declaredMethod, clazz.getSuperclass());
-                    } else
+                    }
+                    else
                     {
                         throw new WebBeansConfigurationException("Producer method : " + declaredMethod.getName() + " in class : " + clazz.getName() + " must override its super class method");
                     }
@@ -414,7 +424,8 @@ public final class DefinitionUtil
             if (previous == null)
             {
                 previous = pr;
-            } else
+            }
+            else
             {
                 // multiple same producer
                 if (previous.equals(pr))
@@ -488,7 +499,8 @@ public final class DefinitionUtil
                         component.addInjectedMethod(method);
                     }
 
-                } else
+                }
+                else
                 {
                     throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName() + " can not be annotated with @Produces or @Destructor");
                 }

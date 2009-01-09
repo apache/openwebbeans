@@ -31,7 +31,8 @@ public final class JNDIUtil
         {
             initialContext = new InitialContext();
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             LOGGER.error("Unable to initialize InitialContext object", e);
             throw new ExceptionInInitializerError(e);
@@ -57,7 +58,8 @@ public final class JNDIUtil
         {
             initialContext.bind(name, object);
 
-        } catch (NamingException e)
+        }
+        catch (NamingException e)
         {
             LOGGER.error("Unable to bind object with name : " + name, e);
         }
@@ -71,7 +73,8 @@ public final class JNDIUtil
         {
             initialContext.unbind(name);
 
-        } catch (NamingException e)
+        }
+        catch (NamingException e)
         {
             LOGGER.error(e);
             throw new WebBeansException("Unable to unbind object with name : " + name, e);

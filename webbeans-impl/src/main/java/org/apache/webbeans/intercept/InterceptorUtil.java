@@ -84,19 +84,24 @@ public final class InterceptorUtil
         if (type.equals(InterceptionType.AROUND_INVOKE))
         {
             return AroundInvoke.class;
-        } else if (type.equals(InterceptionType.POST_ACTIVATE))
+        }
+        else if (type.equals(InterceptionType.POST_ACTIVATE))
         {
             return PostActivate.class;
-        } else if (type.equals(InterceptionType.POST_CONSTRUCT))
+        }
+        else if (type.equals(InterceptionType.POST_CONSTRUCT))
         {
             return PostConstruct.class;
-        } else if (type.equals(InterceptionType.PRE_DESTROY))
+        }
+        else if (type.equals(InterceptionType.PRE_DESTROY))
         {
             return PreDestroy.class;
-        } else if (type.equals(InterceptionType.PRE_PASSIVATE))
+        }
+        else if (type.equals(InterceptionType.PRE_PASSIVATE))
         {
             return PrePassivate.class;
-        } else
+        }
+        else
         {
             throw new WebBeansException("Undefined interceotion type");
         }
@@ -208,7 +213,8 @@ public final class InterceptorUtil
         if (AnnotationUtil.getInterceptorBindingMetaAnnotations(anns).length > 0)
         {
             hasClassInterceptors = true;
-        } else
+        }
+        else
         {
             Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getAnnotations());
             for (Annotation stero : stereoTypes)
@@ -231,7 +237,8 @@ public final class InterceptorUtil
                 if (hasClassInterceptors)
                 {
                     throw new WebBeansConfigurationException("Simple web bean class : " + clazz.getName() + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBindintType");
-                } else
+                }
+                else
                 {
                     if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(method.getDeclaredAnnotations()))
                     {

@@ -33,19 +33,24 @@ public enum InterceptorType
         if (type.equals(InterceptionType.AROUND_INVOKE))
         {
             return AROUND_INVOKE;
-        } else if (type.equals(InterceptionType.POST_CONSTRUCT))
+        }
+        else if (type.equals(InterceptionType.POST_CONSTRUCT))
         {
             return POST_CONSTRUCT;
-        } else if (type.equals(InterceptionType.PRE_DESTROY))
+        }
+        else if (type.equals(InterceptionType.PRE_DESTROY))
         {
             return PRE_DESTROY;
-        } else if (type.equals(InterceptionType.PRE_PASSIVATE))
+        }
+        else if (type.equals(InterceptionType.PRE_PASSIVATE))
         {
             return PRE_PASSIVATE;
-        } else if (type.equals(InterceptionType.POST_ACTIVATE))
+        }
+        else if (type.equals(InterceptionType.POST_ACTIVATE))
         {
             return POST_ACTIVATE;
-        } else
+        }
+        else
         {
             throw new WebBeansException("Undefined interceptor type!");
         }

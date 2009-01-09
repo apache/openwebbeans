@@ -152,7 +152,8 @@ public final class WebBeansXMLConfigurator
                 if (DEPLOY_IS_DEFINED)
                 {
                     throw new DeploymentException("There can not be more than one web-beans.xml file that declares <Deploy> element");
-                } else
+                }
+                else
                 {
                     if (!XMLUtil.isElementChildExist(child, WebBeansConstants.WEB_BEANS_XML_STANDART_ELEMENT))
                     {
@@ -170,7 +171,8 @@ public final class WebBeansXMLConfigurator
                 if (INTERCEPTORS_IS_DEFINED)
                 {
                     throw new WebBeansConfigurationException("There can not be more than one web-beans.xml file that declares <Interceptors> element");
-                } else
+                }
+                else
                 {
                     configureInterceptorsElement(child);
                     INTERCEPTORS_IS_DEFINED = true;
@@ -183,7 +185,8 @@ public final class WebBeansXMLConfigurator
                 if (DECORATORS_IS_DEFINED)
                 {
                     throw new WebBeansConfigurationException("There can not be more than one web-beans.xml file that declares <Decorators> element");
-                } else
+                }
+                else
                 {
                     configureDecoratorsElement(child);
                     DECORATORS_IS_DEFINED = true;
@@ -268,7 +271,8 @@ public final class WebBeansXMLConfigurator
         if (!clazz.isAnnotation())
         {
             throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Binding type with given class : " + bindingTypeElement.getName() + " is not an annotation type");
-        } else
+        }
+        else
         {
             clazzAnnot = (Class<? extends Annotation>) clazz;
         }
@@ -298,7 +302,8 @@ public final class WebBeansXMLConfigurator
         if (!clazz.isAnnotation())
         {
             throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "InterceptorBinding type with given class : " + interceptorBindingTypeElement.getName() + " is not an annotation type");
-        } else
+        }
+        else
         {
             clazzAnnot = (Class<? extends Annotation>) clazz;
         }
@@ -345,7 +350,8 @@ public final class WebBeansXMLConfigurator
         if (!clazz.isAnnotation())
         {
             throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Stereotype with given class : " + stereoTypeElement.getName() + " is not an annotation type");
-        } else
+        }
+        else
         {
             clazzAnnot = (Class<? extends Annotation>) clazz;
         }
@@ -378,7 +384,8 @@ public final class WebBeansXMLConfigurator
             if (clazz == null)
             {
                 throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + XMLUtil.getName(child) + " not found");
-            } else
+            }
+            else
             {
                 if (!AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
                 {
@@ -416,7 +423,8 @@ public final class WebBeansXMLConfigurator
             if (clazz == null)
             {
                 throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Decorator class : " + XMLUtil.getName(child) + " not found");
-            } else
+            }
+            else
             {
 
                 if (manager.isDecoratorEnabled(clazz))
@@ -450,7 +458,8 @@ public final class WebBeansXMLConfigurator
             if (clazz == null)
             {
                 throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "@DeploymentType annotation with name : " + XMLUtil.getName(child) + " not found");
-            } else
+            }
+            else
             {
                 if (!clazz.isAnnotation())
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "@DeploymentType annotation with name : " + XMLUtil.getName(child) + " is not annotation type");
@@ -460,7 +469,8 @@ public final class WebBeansXMLConfigurator
                     if (ann == null)
                     {
                         throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "@DeploymentType annotation with name : " + XMLUtil.getName(child) + " is not deployment type annotation");
-                    } else
+                    }
+                    else
                     {
                         DeploymentTypeManager.getInstance().addNewDeploymentType((Class<? extends Annotation>) clazz, j++);
                     }
@@ -494,7 +504,8 @@ public final class WebBeansXMLConfigurator
             // Configure for EJB
             configureEJBWebBean(clazz);
             ok = true;
-        } else
+        }
+        else
         {
             /* Simple WebBeans */
             if (SimpleWebBeansConfigurator.isSimpleWebBean(clazz))
@@ -553,12 +564,12 @@ public final class WebBeansXMLConfigurator
 
         /* Check if the deployment type is enabled. */
         if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(component.getDeploymentType())) // Maybe
-                                                                                                            // it
-                                                                                                            // is
-                                                                                                            // checked
-                                                                                                            // before
-                                                                                                            // the
-                                                                                                            // creation!
+        // it
+        // is
+        // checked
+        // before
+        // the
+        // creation!
         {
             component = null;
 
@@ -619,7 +630,8 @@ public final class WebBeansXMLConfigurator
 
                     isElementApplicable = true;
 
-                } else
+                }
+                else
                 {
                     if (!isConstructor)
                     {
@@ -659,14 +671,16 @@ public final class WebBeansXMLConfigurator
 
                             isElementApplicable = true;
                         }
-                    } else
+                    }
+                    else
                     {
                         configureFieldOrMethodMetaData(component, child);
                         fieldOrMethodName = name;
 
                         isElementApplicable = true;
                     }
-                } else
+                }
+                else
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Parent and child namespace has to be the same for field/method element decleration");
                 }
@@ -691,7 +705,8 @@ public final class WebBeansXMLConfigurator
         {
             // Configure constructor parameters
             configureConstructorMetaData(component, constTypeList, constructorParameterElementList);
-        } else
+        }
+        else
         {
             // Default constructor
             component.setConstructor(WebBeansUtil.defineConstructor(component.getReturnType()));
@@ -820,7 +835,8 @@ public final class WebBeansXMLConfigurator
                         {
                             ok = true;
                         }
-                    } else
+                    }
+                    else
                     {
                         ok = false;
                     }
@@ -833,7 +849,8 @@ public final class WebBeansXMLConfigurator
                     if (found)
                     {
                         throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "More than one constructor decleration exist.");
-                    } else
+                    }
+                    else
                     {
                         found = true;
                         componentConstructor = constructor;
@@ -872,7 +889,8 @@ public final class WebBeansXMLConfigurator
         {
             configureField(component, child);
 
-        } else if (XMLUtil.isElementMethod(child))
+        }
+        else if (XMLUtil.isElementMethod(child))
         {
             configureMethod(component, child);
         }
@@ -930,13 +948,15 @@ public final class WebBeansXMLConfigurator
                     isApplicable = true;
                 }
 
-            } else
+            }
+            else
             {
                 Class<?> directChildType = XMLUtil.getElementJavaType(directChild);
                 if (!ClassUtil.isAssignable(field.getType(), directChildType))
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Declared field type is not assignable to class field type");
-                } else
+                }
+                else
                 {
                     XMLInjectionPointModel injectionPointModel = XMLUtil.getInjectionPointModel(directChild, createConfigurationFailedMessage());
                     component.addFieldInjectionPoint(field, injectionPointModel);
@@ -957,7 +977,8 @@ public final class WebBeansXMLConfigurator
             if (!isValueElement)
             {
                 throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "One of the direct childs of the field must be element <value>");
-            } else
+            }
+            else
             {
                 if (isValueElement && isTypeElement)
                 {
@@ -1017,7 +1038,8 @@ public final class WebBeansXMLConfigurator
             if (childClazz == null)
             {
                 throw new NonexistentTypeException(createConfigurationFailedMessage() + "Direct child element of method : " + XMLUtil.getName(methodChild) + " does not corresponds to any Java type");
-            } else
+            }
+            else
             {
                 if (childClazz.isAnnotation())
                 {
@@ -1026,61 +1048,72 @@ public final class WebBeansXMLConfigurator
                         if (isDefineType)
                         {
                             throw new WebBeansConfigurationException(moreThanOneChildTypeErrorMesg);
-                        } else
+                        }
+                        else
                         {
                             checkConfigureDisposes(component, methodChild);
                             isDefineType = true;
                             type = 2;
                         }
 
-                    } else if (childClazz.equals(Observes.class))
+                    }
+                    else if (childClazz.equals(Observes.class))
                     {
                         if (isDefineType)
                         {
                             throw new WebBeansConfigurationException(moreThanOneChildTypeErrorMesg);
-                        } else
+                        }
+                        else
                         {
                             checkConfigureObserves(component, methodChild);
                             isDefineType = true;
                             type = 3;
                         }
-                    } else if (childClazz.equals(Initializer.class))
+                    }
+                    else if (childClazz.equals(Initializer.class))
                     {
                         if (isDefineType)
                         {
                             throw new WebBeansConfigurationException(moreThanOneChildTypeErrorMesg);
-                        } else
+                        }
+                        else
                         {
                             isDefineType = true;
                             type = 0;
                         }
 
-                    } else if (childClazz.equals(Destructor.class))
+                    }
+                    else if (childClazz.equals(Destructor.class))
                     {
                         if (isDefineType)
                         {
                             throw new WebBeansConfigurationException(moreThanOneChildTypeErrorMesg);
-                        } else
+                        }
+                        else
                         {
                             isDefineType = true;
                             type = 4;
                         }
 
-                    } else if (childClazz.equals(Produces.class))
+                    }
+                    else if (childClazz.equals(Produces.class))
                     {
                         if (isDefineType)
                         {
                             throw new WebBeansConfigurationException(moreThanOneChildTypeErrorMesg);
-                        } else
+                        }
+                        else
                         {
                             isDefineType = true;
                             type = 1;
                         }
-                    } else if (AnnotationUtil.isInterceptorBindingAnnotation((Class<? extends Annotation>) childClazz))
+                    }
+                    else if (AnnotationUtil.isInterceptorBindingAnnotation((Class<? extends Annotation>) childClazz))
                     {
                         // InterceptorBindingType with method
                         type = 5;
-                    } else
+                    }
+                    else
                     {
                         throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Direct child element of method : " + XMLUtil.getName(methodChild) + " with Java type : " + childClazz + " is unknown");
                     }
@@ -1204,7 +1237,8 @@ public final class WebBeansXMLConfigurator
         {
             throw new NonexistentMethodException(createConfigurationFailedMessage() + "Method declaration with name " + XMLUtil.getName(child) + " is not found in the class : " + component.getReturnType().getName());
 
-        } else if (definedMethods.size() > 1)
+        }
+        else if (definedMethods.size() > 1)
         {
             throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "More than one method : " + XMLUtil.getName(child) + " is found in the class : " + component.getReturnType().getName());
         }
@@ -1249,7 +1283,8 @@ public final class WebBeansXMLConfigurator
         if (observesChilds.size() != 1)
         {
             throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Observes element : " + XMLUtil.getName(observes) + " can not contain more than one direct child elements");
-        } else
+        }
+        else
         {
             Element child = observesChilds.iterator().next();
             Class<?> clazz = XMLUtil.getElementJavaType(child);
@@ -1279,7 +1314,8 @@ public final class WebBeansXMLConfigurator
 
             // Default deployment type
             component.setType(stereoTypeDeploymentType);
-        } else
+        }
+        else
         {
             component.setType(JavassistProxyFactory.createNewAnnotationProxy(deploymentType));
         }
@@ -1299,7 +1335,8 @@ public final class WebBeansXMLConfigurator
         {
             // From stereotype
             DefinitionUtil.defineDefaultScopeType(component, createConfigurationFailedMessage() + "@ScopeType annotation is not configured correctly");
-        } else
+        }
+        else
         {
             component.setImplScopeType(JavassistProxyFactory.createNewAnnotationProxy(scopeType));
         }
@@ -1363,11 +1400,13 @@ public final class WebBeansXMLConfigurator
             if (name != null && !name.equals(""))
             {
                 component.setName(name);
-            } else
+            }
+            else
             {
                 component.setName(WebBeansUtil.getSimpleWebBeanDefaultName(component.getReturnType().getName()));
             }
-        } else
+        }
+        else
         {
             DefinitionUtil.defineName(component, component.getReturnType().getAnnotations(), WebBeansUtil.getSimpleWebBeanDefaultName(component.getReturnType().getSimpleName()));
         }
@@ -1466,12 +1505,14 @@ public final class WebBeansXMLConfigurator
                     {
                         component.addFieldValue(field, objVal);
 
-                    } else
+                    }
+                    else
                     {
                         throw new WebBeansConfigurationException(errorMessage);
                     }
 
-                } else if (ClassUtil.isEnum(fieldType)) /* Enumeration value */
+                }
+                else if (ClassUtil.isEnum(fieldType)) /* Enumeration value */
                 {
                     Enum enumValue = ClassUtil.isValueOkForEnum(fieldType, value);
 
@@ -1482,11 +1523,13 @@ public final class WebBeansXMLConfigurator
 
                     component.addFieldValue(field, enumValue);
 
-                } else if (fieldType.equals(String.class)) /* String value */
+                }
+                else if (fieldType.equals(String.class)) /* String value */
                 {
                     component.addFieldValue(field, value);
 
-                } else if (fieldType.equals(Date.class) /*
+                }
+                else if (fieldType.equals(Date.class) /*
                                                          * Date, Time, Sql Date,
                                                          * Time stamp, Calendar
                                                          * value
@@ -1498,19 +1541,22 @@ public final class WebBeansXMLConfigurator
                     if (date == null)
                     {
                         throw new WebBeansConfigurationException(errorMessage);
-                    } else
+                    }
+                    else
                     {
                         component.addFieldValue(field, date);
                     }
 
-                } else if (fieldType.equals(Calendar.class))
+                }
+                else if (fieldType.equals(Calendar.class))
                 {
                     Calendar calendar = ClassUtil.isValueOkForCalendar(value);
 
                     if (calendar == null)
                     {
                         throw new WebBeansConfigurationException(errorMessage);
-                    } else
+                    }
+                    else
                     {
                         component.addFieldValue(field, calendar);
                     }
@@ -1529,34 +1575,40 @@ public final class WebBeansXMLConfigurator
                     if (bigValue == null)
                     {
                         throw new WebBeansConfigurationException(errorMessage);
-                    } else
+                    }
+                    else
                     {
                         component.addFieldValue(field, bigValue);
                     }
 
-                } else if (fieldType.equals(Class.class)) /* Class value */
+                }
+                else if (fieldType.equals(Class.class)) /* Class value */
                 {
                     Class<?> clazz = ClassUtil.getClassFromName(value);
 
                     if (clazz == null)
                     {
                         throw new WebBeansConfigurationException(errorMessage);
-                    } else
+                    }
+                    else
                     {
                         component.addFieldValue(field, clazz);
                     }
-                } else if (List.class.isAssignableFrom(fieldType)) /*
+                }
+                else if (List.class.isAssignableFrom(fieldType)) /*
                                                                      * List
                                                                      * value
                                                                      */
                 {
                     configureFieldListValue(component, field, child, errorMessage);
-                } else if (Set.class.isAssignableFrom(fieldType)) /* Set value */
+                }
+                else if (Set.class.isAssignableFrom(fieldType)) /* Set value */
                 {
                     configureFieldSetValue(component, field, child, errorMessage);
                 }
 
-            } catch (ParseException e)
+            }
+            catch (ParseException e)
             {
                 throw new WebBeansConfigurationException(errorMessage, e);
             }
@@ -1601,17 +1653,20 @@ public final class WebBeansXMLConfigurator
                 {
                     isString = true;
                     list = new ArrayList<String>();
-                } else if (Enum.class.isAssignableFrom(argClazz))
+                }
+                else if (Enum.class.isAssignableFrom(argClazz))
                 {
                     isEnum = true;
                     list = new ArrayList<Enum>();
-                } else if (argClazz.equals(Class.class))
+                }
+                else if (argClazz.equals(Class.class))
                 {
                     isClazz = true;
                     list = new ArrayList<Class>();
                 }
             }
-        } else
+        }
+        else
         {
             throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "List field type with field name : " + field.getName() + " must be declared as ParametrizedType");
         }
@@ -1623,24 +1678,28 @@ public final class WebBeansXMLConfigurator
             if (isString)
             {
                 list.add(value);
-            } else if (isEnum)
+            }
+            else if (isEnum)
             {
                 Enum en = ClassUtil.isValueOkForEnum(argClazz, value);
                 if (en == null)
                 {
                     throw new WebBeansConfigurationException(errorMessage);
-                } else
+                }
+                else
                 {
                     list.add(en);
                 }
-            } else if (isClazz)
+            }
+            else if (isClazz)
             {
                 Class<?> clazz = ClassUtil.getClassFromName(value);
 
                 if (clazz == null)
                 {
                     throw new WebBeansConfigurationException(errorMessage);
-                } else
+                }
+                else
                 {
                     list.add(clazz);
                 }
@@ -1688,17 +1747,20 @@ public final class WebBeansXMLConfigurator
                 {
                     isString = true;
                     set = new HashSet<String>();
-                } else if (Enum.class.isAssignableFrom(argClazz))
+                }
+                else if (Enum.class.isAssignableFrom(argClazz))
                 {
                     isEnum = true;
                     set = new HashSet<Enum>();
-                } else if (argClazz.equals(Class.class))
+                }
+                else if (argClazz.equals(Class.class))
                 {
                     isClazz = true;
                     set = new HashSet<Class>();
                 }
             }
-        } else
+        }
+        else
         {
             throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Set field type with field name : " + field.getName() + " must be declared as ParametrizedType");
         }
@@ -1710,24 +1772,28 @@ public final class WebBeansXMLConfigurator
             if (isString)
             {
                 set.add(value);
-            } else if (isEnum)
+            }
+            else if (isEnum)
             {
                 Enum en = ClassUtil.isValueOkForEnum(argClazz, value);
                 if (en == null)
                 {
                     throw new WebBeansConfigurationException(errorMessage);
-                } else
+                }
+                else
                 {
                     set.add(en);
                 }
-            } else if (isClazz)
+            }
+            else if (isClazz)
             {
                 Class<?> clazz = ClassUtil.getClassFromName(value);
 
                 if (clazz == null)
                 {
                     throw new WebBeansConfigurationException(errorMessage);
-                } else
+                }
+                else
                 {
                     set.add(clazz);
                 }

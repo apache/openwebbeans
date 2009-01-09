@@ -189,7 +189,8 @@ public final class WebBeansUtil
             if (!isConstructureOk(clazz))
                 throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " must define at least one Constructor");
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             throw e;
         }
@@ -213,7 +214,8 @@ public final class WebBeansUtil
                 if (inAnnotation == true)// duplicate @In
                 {
                     throw new WebBeansConfigurationException("There are more than one Constrcutor with Initializer annotation in class " + clazz.getName());
-                } else
+                }
+                else
                 {
                     inAnnotation = true;
                     result = constructor;
@@ -235,7 +237,8 @@ public final class WebBeansUtil
                     if (btype != null)
                     {
                         throw new WebBeansConfigurationException("Constructor parameter binding type annotation can not be @Disposes annotation in class " + clazz.getName());
-                    } else
+                    }
+                    else
                     {
                         btype = param.annotationType().getAnnotation(Observes.class);
                         if (btype != null)
@@ -253,7 +256,8 @@ public final class WebBeansUtil
             if ((result = ClassUtil.isContaintNoArgConstructor(clazz)) != null)
             {
                 return result;
-            } else
+            }
+            else
             {
                 throw new WebBeansConfigurationException("No constructor is found for the class : " + clazz.getName());
             }
@@ -393,30 +397,36 @@ public final class WebBeansUtil
         if (src.equals(ConversationScoped.class))
         {
             return true;
-        } else if (src.equals(ApplicationScoped.class))
+        }
+        else if (src.equals(ApplicationScoped.class))
         {
             if (target.equals(ConversationScoped.class) || (target.equals(ApplicationScoped.class)))
             {
                 return false;
-            } else
+            }
+            else
             {
                 return true;
             }
 
-        } else if (src.equals(SessionScoped.class))
+        }
+        else if (src.equals(SessionScoped.class))
         {
             if (target.equals(ConversationScoped.class) || target.equals(ApplicationScoped.class) || target.equals(SessionScoped.class))
             {
                 return false;
-            } else
+            }
+            else
             {
                 return true;
             }
 
-        } else if (src.equals(RequestScoped.class))
+        }
+        else if (src.equals(RequestScoped.class))
         {
             return false;
-        } else
+        }
+        else
         {
             throw new WebBeansException("Scope is not correct");
         }
@@ -443,10 +453,12 @@ public final class WebBeansUtil
 
             DefinitionUtil.defineInjectedFields(comp);
             DefinitionUtil.defineInjectedMethods(comp);
-        } else if (EJBWebBeansConfigurator.isEJBWebBean(clazz))
+        }
+        else if (EJBWebBeansConfigurator.isEJBWebBean(clazz))
         {
             comp = new NewComponentImpl<T>(clazz, WebBeansType.ENTERPRISE);
-        } else
+        }
+        else
         {
             throw new WebBeansConfigurationException("@New annotation on type : " + clazz.getName() + " must defined as a simple or an enterprise web bean");
         }
@@ -474,11 +486,13 @@ public final class WebBeansUtil
         {
             constructor = returnType.getConstructor(new Class<?>[] { Annotation[].class, Class.class });
 
-        } catch (SecurityException e)
+        }
+        catch (SecurityException e)
         {
             throw new WebBeansException("Security exception for getting EventImpl class constructor", e);
 
-        } catch (NoSuchMethodException e)
+        }
+        catch (NoSuchMethodException e)
         {
             throw new WebBeansException("No constructor found in EventImpl class", e);
         }
@@ -549,7 +563,8 @@ public final class WebBeansUtil
                 if (found == true)
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotation is declared more than one method in the class : " + clazz.getName());
-                } else
+                }
+                else
                 {
                     found = true;
                     result = method;
@@ -622,7 +637,8 @@ public final class WebBeansUtil
                 if (found == true)
                 {
                     throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotation is declared more than one method in the class : " + clazz.getName());
-                } else
+                }
+                else
                 {
                     found = true;
                     result = method;
@@ -676,21 +692,25 @@ public final class WebBeansUtil
         if (annotation.equals(AroundInvoke.class))
         {
             method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(clazz);
-        } else if (annotation.equals(PostConstruct.class))
+        }
+        else if (annotation.equals(PostConstruct.class))
         {
             if (definedInInterceptorClass)
             {
                 method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PostConstruct.class, true);
-            } else
+            }
+            else
             {
                 method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PostConstruct.class, false);
             }
-        } else if (annotation.equals(PreDestroy.class))
+        }
+        else if (annotation.equals(PreDestroy.class))
         {
             if (definedInInterceptorClass)
             {
                 method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PreDestroy.class, true);
-            } else
+            }
+            else
             {
                 method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PreDestroy.class, false);
             }
@@ -715,7 +735,8 @@ public final class WebBeansUtil
                         interceptor.setInjections(interceptorProxy);
 
                         intData.setInterceptorInstance(interceptorProxy);
-                    } else
+                    }
+                    else
                     {
                         if (ClassUtil.isContaintNoArgConstructor(clazz) == null)
                         {
@@ -725,10 +746,12 @@ public final class WebBeansUtil
                         intData.setInterceptorInstance(clazz.newInstance());
                     }
 
-                } catch (WebBeansConfigurationException e1)
+                }
+                catch (WebBeansConfigurationException e1)
                 {
                     throw e1;
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     throw new WebBeansException(e);
                 }
@@ -758,11 +781,13 @@ public final class WebBeansUtil
             if (type.equals(InterceptorType.AROUND_INVOKE))
             {
                 m = data.getAroundInvoke();
-            } else if (type.equals(InterceptorType.POST_CONSTRUCT))
+            }
+            else if (type.equals(InterceptorType.POST_CONSTRUCT))
             {
                 m = data.getPostConstruct();
 
-            } else if (type.equals(InterceptorType.PRE_DESTROY))
+            }
+            else if (type.equals(InterceptorType.PRE_DESTROY))
             {
                 m = data.getPreDestroy();
             }
@@ -805,7 +830,8 @@ public final class WebBeansUtil
                     ai.add(data);
                 }
 
-            } else if (type.equals(InterceptorType.POST_CONSTRUCT))
+            }
+            else if (type.equals(InterceptorType.POST_CONSTRUCT))
             {
                 m = data.getPostConstruct();
                 if (m != null)
@@ -813,7 +839,8 @@ public final class WebBeansUtil
                     pc.add(data);
                 }
 
-            } else if (type.equals(InterceptorType.PRE_DESTROY))
+            }
+            else if (type.equals(InterceptorType.PRE_DESTROY))
             {
                 m = data.getPreDestroy();
                 if (m != null)
@@ -828,11 +855,13 @@ public final class WebBeansUtil
         if (type.equals(InterceptorType.AROUND_INVOKE))
         {
             return ai;
-        } else if (type.equals(InterceptorType.POST_CONSTRUCT))
+        }
+        else if (type.equals(InterceptorType.POST_CONSTRUCT))
         {
             return pc;
 
-        } else if (type.equals(InterceptorType.PRE_DESTROY))
+        }
+        else if (type.equals(InterceptorType.PRE_DESTROY))
         {
             return pd;
         }
@@ -909,7 +938,8 @@ public final class WebBeansUtil
                     {
                         maxPrecedDeploymentType = dtAnnot;
                         result = result2[0];
-                    } else
+                    }
+                    else
                     {
                         if (DeploymentTypeManager.getInstance().comparePrecedences(maxPrecedDeploymentType, dtAnnot) < 0)
                         {
@@ -948,7 +978,8 @@ public final class WebBeansUtil
             buffer.setCharAt(3, Character.toLowerCase(buffer.charAt(3)));
 
             return buffer.substring(3);
-        } else
+        }
+        else
         {
             buffer.setCharAt(0, Character.toLowerCase(buffer.charAt(0)));
             return buffer.toString();
@@ -972,30 +1003,36 @@ public final class WebBeansUtil
                 if (deploymentTypeFound == true)
                 {
                     throw new WebBeansConfigurationException("@StereoType annotation can not contain more than one @DeploymentType annotation");
-                } else
+                }
+                else
                 {
                     deploymentTypeFound = true;
                 }
-            } else if (annotType.isAnnotationPresent(ScopeType.class))
+            }
+            else if (annotType.isAnnotationPresent(ScopeType.class))
             {
                 if (scopeTypeFound == true)
                 {
                     throw new WebBeansConfigurationException("@StereoType annotation can not contain more than one @ScopeType annotation");
-                } else
+                }
+                else
                 {
                     scopeTypeFound = true;
                 }
-            } else if (annotType.equals(Named.class))
+            }
+            else if (annotType.equals(Named.class))
             {
                 Named name = (Named) annotation;
                 if (!name.value().equals(""))
                 {
                     throw new WebBeansConfigurationException("@StereoType annotation can not define @Named annotation with value");
                 }
-            } else if (AnnotationUtil.isBindingAnnotation(annotType))
+            }
+            else if (AnnotationUtil.isBindingAnnotation(annotType))
             {
                 throw new WebBeansConfigurationException("@StereoType annotation can not define @BindingType annotation");
-            } else if (AnnotationUtil.isInterceptorBindingAnnotation(annotType))
+            }
+            else if (AnnotationUtil.isInterceptorBindingAnnotation(annotType))
             {
                 Target target = clazz.getAnnotation(Target.class);
                 ElementType[] type = target.value();
@@ -1026,7 +1063,8 @@ public final class WebBeansUtil
                     throw new InconsistentSpecializationException("@Specializes exception. Class : " + clazz.getName() + " must have higher deployment type precedence from the class : " + superClass.getName());
                 }
                 parent.getBindingTypes().addAll(child.getBindingTypes());
-            } else
+            }
+            else
             {
                 throw new WebBeansConfigurationException("@Specializes exception. WebBean component class : " + clazz.getName() + " does not extends other WebBeans it specialize");
             }
@@ -1181,7 +1219,8 @@ public final class WebBeansUtil
             if (old == null)
             {
                 old = interceptorBindingType;
-            } else
+            }
+            else
             {
                 if (old.equals(interceptorBindingType))
                 {
@@ -1211,7 +1250,8 @@ public final class WebBeansUtil
             if (old == null)
             {
                 old = bindingType;
-            } else
+            }
+            else
             {
                 if (old.annotationType().equals(bindingType.annotationType()))
                 {
@@ -1310,7 +1350,8 @@ public final class WebBeansUtil
             {
                 return false;
             }
-        } else
+        }
+        else
         {
             throw new IllegalArgumentException("scopeType argument must be annotated with @ScopeType");
         }

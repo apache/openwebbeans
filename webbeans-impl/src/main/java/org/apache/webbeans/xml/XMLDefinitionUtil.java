@@ -124,7 +124,8 @@ public final class XMLDefinitionUtil
                 if (clazz.isAnnotationPresent(DeploymentType.class) || clazz.isAnnotationPresent(ScopeType.class) || AnnotationUtil.isBindingAnnotation(clazz) || AnnotationUtil.isInterceptorBindingAnnotation(clazz) || AnnotationUtil.isStereoTypeAnnotation(clazz) || clazz.equals(Named.class) || clazz.equals(Specializes.class) || clazz.equals(javax.webbeans.Interceptor.class) || clazz.equals(Decorator.class))
                 {
                     continue;
-                } else
+                }
+                else
                 {
                     throw new WebBeansConfigurationException(errorMessage + " TypeLevelMeta data configuration is failed because of the class : " + clazz.getName() + " is not applicable type");
                 }
@@ -159,7 +160,8 @@ public final class XMLDefinitionUtil
                 if (found)
                 {
                     throw new WebBeansConfigurationException(errorMessage);
-                } else
+                }
+                else
                 {
                     metaType = temp;
                     found = true;
@@ -342,11 +344,13 @@ public final class XMLDefinitionUtil
                 if (found)
                 {
                     throw new WebBeansConfigurationException(errorMessage + "More than one <Interceptor> element exist for class : " + component.getReturnType().getName());
-                } else
+                }
+                else
                 {
                     found = true;
                 }
-            } else if (AnnotationUtil.isInterceptorBindingAnnotation(temp))
+            }
+            else if (AnnotationUtil.isInterceptorBindingAnnotation(temp))
             {
                 Element annotationElement = annotationElementList.get(i);
                 Annotation bindingAnnotation = XMLUtil.getXMLDefinedAnnotationMember(annotationElement, temp, errorMessage);
@@ -380,7 +384,8 @@ public final class XMLDefinitionUtil
                 if (found)
                 {
                     throw new WebBeansConfigurationException(errorMessage + "More than one <Decorator> element exist");
-                } else
+                }
+                else
                 {
                     found = true;
                 }
@@ -413,7 +418,8 @@ public final class XMLDefinitionUtil
                     XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(type, errorMessage);
 
                     WebBeansDecoratorConfig.configureXMLDecoratorClass((AbstractComponent<Object>) component, model);
-                } else
+                }
+                else
                 {
                     throw new WebBeansConfigurationException(errorMessage + "Delegate decleration must defined exactly one child element with name Decorates");
                 }
@@ -449,7 +455,8 @@ public final class XMLDefinitionUtil
                 if (producesDefined == false)
                 {
                     producesDefined = true;
-                } else
+                }
+                else
                 {
                     throw new WebBeansConfigurationException(errorMessage + "More than one <Produces> element is defined");
                 }
@@ -463,7 +470,8 @@ public final class XMLDefinitionUtil
                     {
                         arrayElement = producesElementChild;
                         definedType = true;
-                    } else
+                    }
+                    else
                     {
                         type = (Class<T>) XMLUtil.getElementJavaType(producesElementChild);
                         if (type == null)
@@ -475,7 +483,8 @@ public final class XMLDefinitionUtil
                         {
                             memberLevelMetaData.add((Class<? extends Annotation>) type);
                             memberLevelElement.add(producesElementChild);
-                        } else
+                        }
+                        else
                         {
                             if (!type.isAssignableFrom(producesMethod.getReturnType()) && !producesMethod.getReturnType().isAssignableFrom(type))
                             {
@@ -485,7 +494,8 @@ public final class XMLDefinitionUtil
                             if (definedType)
                             {
                                 throw new WebBeansConfigurationException(errorMessage + "More than one Java type in the <Produces> element");
-                            } else
+                            }
+                            else
                             {
                                 typeElement = producesElementChild;
                                 definedType = true;
@@ -498,7 +508,8 @@ public final class XMLDefinitionUtil
                 {
                     throw new WebBeansConfigurationException(errorMessage + "<Produces> element must define at least one java type child");
                 }
-            } else
+            }
+            else
             {
                 XMLInjectionPointModel injectionPointModel = XMLUtil.getInjectionPointModel(childElement, errorMessage);
                 injectedParameters.add(injectionPointModel);
@@ -633,7 +644,8 @@ public final class XMLDefinitionUtil
                 if (disposalDefined == false)
                 {
                     disposalDefined = true;
-                } else
+                }
+                else
                 {
                     throw new WebBeansConfigurationException(errorMessage + "More than one <Disposal> element is defined for defining disposal method : " + disposalMethod.getName());
                 }

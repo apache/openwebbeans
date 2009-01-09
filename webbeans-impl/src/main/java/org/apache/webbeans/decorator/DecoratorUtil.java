@@ -55,7 +55,8 @@ public final class DecoratorUtil
                 if (found)
                 {
                     throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz.getName() + " can only contain one delegate attribute but find more than one!.");
-                } else
+                }
+                else
                 {
                     Class<?> fieldType = field.getType();
                     if (!ClassUtil.isInterface(fieldType.getModifiers()))
@@ -116,12 +117,14 @@ public final class DecoratorUtil
 
                             }
 
-                        } catch (SecurityException e)
+                        }
+                        catch (SecurityException e)
                         {
                             logger.error("Security exception, can not access decorator class : " + decClazz.getName() + " method : " + method.getName(), e);
                             throw new WebBeansException(e);
 
-                        } catch (NoSuchMethodException e)
+                        }
+                        catch (NoSuchMethodException e)
                         {
                             continue;
                         }

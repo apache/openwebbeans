@@ -121,12 +121,14 @@ public class InvocationContextImpl implements InvocationContext
             if (type.equals(InterceptorType.AROUND_INVOKE))
             {
                 return proceedAroundInvokes(this.interceptorDatas);
-            } else
+            }
+            else
             {
                 return proceedCommonAnnots(this.interceptorDatas, this.type);
             }
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             this.target = null; // destroy target instance
 
@@ -160,7 +162,8 @@ public class InvocationContextImpl implements InvocationContext
 
             currentMethod++;
             result = method.invoke(t, new Object[] { this });
-        } else
+        }
+        else
         {
             result = this.method.invoke(target, parameters);
         }
@@ -183,7 +186,8 @@ public class InvocationContextImpl implements InvocationContext
             if (type.equals(InterceptorType.POST_CONSTRUCT))
             {
                 method = intc.getPostConstruct();
-            } else if (type.equals(InterceptorType.PRE_DESTROY))
+            }
+            else if (type.equals(InterceptorType.PRE_DESTROY))
             {
                 method = intc.getPreDestroy();
             }
@@ -200,7 +204,8 @@ public class InvocationContextImpl implements InvocationContext
             {
                 t = target;
                 result = method.invoke(t, new Object[] {});
-            } else
+            }
+            else
             {
                 result = method.invoke(t, new Object[] { this });
             }
@@ -225,7 +230,8 @@ public class InvocationContextImpl implements InvocationContext
                 {
                     throw new IllegalArgumentException("Parameters is null");
                 }
-            } else
+            }
+            else
             {
                 List<Class<?>> src = new ArrayList<Class<?>>();
 

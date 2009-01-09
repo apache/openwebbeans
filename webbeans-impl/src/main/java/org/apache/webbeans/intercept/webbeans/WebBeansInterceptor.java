@@ -126,11 +126,13 @@ public class WebBeansInterceptor extends Interceptor
                     if (AnnotationUtil.isAnnotationMemberExist(bindingType, annots.get(i), target))
                     {
                         result = true;
-                    } else
+                    }
+                    else
                     {
                         return false;
                     }
-                } else
+                }
+                else
                 {
                     return false;
                 }

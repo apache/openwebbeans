@@ -174,13 +174,15 @@ public class XMLInjectionPointModel
         {
             if (other.bindingTypes != null)
                 return false;
-        } else if (!bindingTypes.equals(other.bindingTypes))
+        }
+        else if (!bindingTypes.equals(other.bindingTypes))
             return false;
         if (injectionClassType == null)
         {
             if (other.injectionClassType != null)
                 return false;
-        } else if (!injectionClassType.equals(other.injectionClassType))
+        }
+        else if (!injectionClassType.equals(other.injectionClassType))
             return false;
         if (parametrized != other.parametrized)
             return false;

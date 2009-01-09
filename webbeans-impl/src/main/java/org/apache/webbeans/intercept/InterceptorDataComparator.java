@@ -30,7 +30,8 @@ public class InterceptorDataComparator implements Comparator<InterceptorData>
         if (o1.equals(o2))
         {
             return 0;
-        } else
+        }
+        else
         {
             WebBeansInterceptor interceptorFirst = (WebBeansInterceptor) o1.getWebBeansInterceptor();
             WebBeansInterceptor interceptorSecond = (WebBeansInterceptor) o2.getWebBeansInterceptor();
@@ -44,10 +45,12 @@ public class InterceptorDataComparator implements Comparator<InterceptorData>
             {
 
                 return 1;
-            } else if (interceptorSecond == null)
+            }
+            else if (interceptorSecond == null)
             {
                 return -1;
-            } else
+            }
+            else
             {
                 Class<?> o1Clazz = interceptorFirst.getClazz();
                 Class<?> o2Clazz = interceptorSecond.getClazz();

@@ -262,7 +262,8 @@ public class ManagerImpl implements Manager, Referenceable
                 if (this.proxyMap.containsKey(bean))
                 {
                     instance = (T) this.proxyMap.get(bean);
-                } else
+                }
+                else
                 {
                     instance = (T) JavassistProxyFactory.createNewProxyInstance(bean);
 
@@ -276,7 +277,8 @@ public class ManagerImpl implements Manager, Referenceable
                 instance = context.get(bean, true);
             }
 
-        } finally
+        }
+        finally
         {
             if (isSetOnThis)
             {

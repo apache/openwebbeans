@@ -58,10 +58,12 @@ public class InterceptorHandler implements MethodHandler
             if (this.calledMethod == null)
             {
                 this.calledMethod = method;
-            } else if (this.calledMethod.equals(method))
+            }
+            else if (this.calledMethod.equals(method))
             {
                 this.isSameDecMethod = true;
-            } else
+            }
+            else
             {
                 this.calledMethod = method;
                 this.isSameDecMethod = false;
@@ -117,19 +119,23 @@ public class InterceptorHandler implements MethodHandler
                     }
                 }
 
-            } catch (SecurityException e)
+            }
+            catch (SecurityException e)
             {
                 logger.error("Method security access violation for method " + method.getName() + " for  decorator class : " + decorator.getClass().getName());
                 throw new WebBeansException(e);
 
-            } catch (NoSuchMethodException e)
+            }
+            catch (NoSuchMethodException e)
             {
                 continue;
-            } catch (InvocationTargetException e)
+            }
+            catch (InvocationTargetException e)
             {
                 logger.error("Exception in calling method " + method.getName() + " for  decorator class : " + decorator.getClass().getName() + ". Look log for target checked exception.", e.getTargetException());
                 throw new WebBeansException(e);
-            } catch (IllegalAccessException e)
+            }
+            catch (IllegalAccessException e)
             {
                 logger.error("Method illegal access for method " + method.getName() + " for  decorator class : " + decorator.getClass().getName());
                 throw new WebBeansException(e);
@@ -168,14 +174,16 @@ public class InterceptorHandler implements MethodHandler
                     if (!data.isDefinedInMethod() && data.isDefinedInInterceptorClass())
                     {
                         it.remove();
-                    } else if (data.isDefinedInMethod())
+                    }
+                    else if (data.isDefinedInMethod())
                     {
                         if (!data.getAnnotatedMethod().equals(method))
                         {
                             it.remove();
                         }
                     }
-                } else
+                }
+                else
                 {
                     if (data.isDefinedInMethod())
                     {
@@ -185,7 +193,8 @@ public class InterceptorHandler implements MethodHandler
                         }
                     }
                 }
-            } else
+            }
+            else
             {
                 if (data.isDefinedInMethod())
                 {
@@ -223,14 +232,16 @@ public class InterceptorHandler implements MethodHandler
                     if (!data.isDefinedInMethod() && data.isDefinedInInterceptorClass() && data.isDefinedWithWebBeansInterceptor())
                     {
                         it.remove();
-                    } else if (data.isDefinedInMethod() && data.isDefinedWithWebBeansInterceptor())
+                    }
+                    else if (data.isDefinedInMethod() && data.isDefinedWithWebBeansInterceptor())
                     {
                         if (!data.getAnnotatedMethod().equals(method))
                         {
                             it.remove();
                         }
                     }
-                } else
+                }
+                else
                 {
                     if (data.isDefinedInMethod() && data.isDefinedWithWebBeansInterceptor())
                     {
@@ -240,7 +251,8 @@ public class InterceptorHandler implements MethodHandler
                         }
                     }
                 }
-            } else
+            }
+            else
             {
                 if (data.isDefinedInMethod() && data.isDefinedWithWebBeansInterceptor())
                 {

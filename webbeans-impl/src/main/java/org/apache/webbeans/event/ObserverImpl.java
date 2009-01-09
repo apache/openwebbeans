@@ -77,7 +77,8 @@ public class ObserverImpl<T>
             {
                 ok = false;
                 break;
-            } else
+            }
+            else
             {
                 if (!AnnotationUtil.isAnnotationMemberExist(annot.annotationType(), annot, getAnnotation(annot.annotationType())))
                 {

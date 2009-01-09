@@ -28,7 +28,8 @@ public class DecoratorComparator implements Comparator<Decorator>
         if (o1.equals(o2))
         {
             return 0;
-        } else
+        }
+        else
         {
             Class<?> o1Clazz = src.getClazz();
             Class<?> o2Clazz = target.getClazz();

@@ -197,7 +197,8 @@ public final class AnnotationUtil
                     if (!found)
                     {
                         found = true;
-                    } else
+                    }
+                    else
                     {
                         return true;
                     }
@@ -249,7 +250,8 @@ public final class AnnotationUtil
         if (type instanceof ParameterizedType)
         {
             return (Class<?>) ((ParameterizedType) type).getRawType();
-        } else
+        }
+        else
         {
             return (Class<?>) type;
         }
@@ -377,7 +379,8 @@ public final class AnnotationUtil
                     }
                 }
 
-            } else
+            }
+            else
             {
                 list.add(method.getName());
             }
@@ -637,12 +640,14 @@ public final class AnnotationUtil
             if (before == null)
             {
                 before = ann;
-            } else
+            }
+            else
             {
                 if (before.equals(ann))
                 {
                     throw new DuplicateBindingTypeException("Binding annotations can not contain duplicate binding : @" + before.annotationType().getName());
-                } else
+                }
+                else
                 {
                     before = ann;
                 }
@@ -665,7 +670,8 @@ public final class AnnotationUtil
         if (manager.isBindingTypeExist(clazz))
         {
             return true;
-        } else if (clazz.isAnnotationPresent(BindingType.class))
+        }
+        else if (clazz.isAnnotationPresent(BindingType.class))
         {
             return true;
         }
@@ -688,7 +694,8 @@ public final class AnnotationUtil
         if (manager.isInterceptorBindingTypeExist(clazz))
         {
             return true;
-        } else if (clazz.isAnnotationPresent(InterceptorBindingType.class))
+        }
+        else if (clazz.isAnnotationPresent(InterceptorBindingType.class))
         {
             return true;
         }
@@ -713,7 +720,8 @@ public final class AnnotationUtil
             if (isInterceptorBindingAnnotation(ann.annotationType()))
             {
                 return true;
-            } else
+            }
+            else
             {
                 continue;
             }
@@ -769,7 +777,8 @@ public final class AnnotationUtil
             if (isStereoTypeAnnotation(ann.annotationType()))
             {
                 return true;
-            } else
+            }
+            else
             {
                 continue;
             }
@@ -793,7 +802,8 @@ public final class AnnotationUtil
         if (manager.isStereoTypeExist(clazz))
         {
             return true;
-        } else if (clazz.isAnnotationPresent(Stereotype.class))
+        }
+        else if (clazz.isAnnotationPresent(Stereotype.class))
         {
             return true;
         }

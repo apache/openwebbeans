@@ -87,7 +87,8 @@ public class InjectableConstructor<T> extends AbstractInjectable
                     args = pt.getActualTypeArguments();
 
                     clazz = (Class<?>) pt.getRawType();
-                } else
+                }
+                else
                 {
                     clazz = (Class<?>) type;
                 }
@@ -107,7 +108,8 @@ public class InjectableConstructor<T> extends AbstractInjectable
                 instance = con.newInstance(list.toArray());
             }
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new WebBeansException(e);
         }

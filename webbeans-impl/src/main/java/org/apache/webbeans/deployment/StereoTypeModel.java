@@ -94,7 +94,8 @@ public class StereoTypeModel implements IStereoTypeModel
                                 throw new WebBeansConfigurationException("Inherited StereoType with class name : " + clazz.getName() + " must have compatible @Target annotation with Stereotype class name : " + clazz.getName());
                             }
                         }
-                    } else if (innerValue.equals(ElementType.TYPE))
+                    }
+                    else if (innerValue.equals(ElementType.TYPE))
                     {
                         for (ElementType outerValue : outerValues)
                         {

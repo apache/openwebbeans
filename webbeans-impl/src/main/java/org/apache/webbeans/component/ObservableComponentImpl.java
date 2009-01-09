@@ -56,7 +56,8 @@ public class ObservableComponentImpl<T, K> extends ComponentImpl<T>
         {
             instance = getConstructor().newInstance(new Object[] { bindingTypes, eventType });
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             throw new WebBeansException("Exception in creating Observable implicit component for event type : " + eventType.getName());
         }
