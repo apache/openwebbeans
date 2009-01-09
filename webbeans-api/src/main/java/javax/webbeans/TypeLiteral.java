@@ -56,13 +56,16 @@ public abstract class TypeLiteral<T>
         if (type instanceof Class)
         {
             return (Class<T>) type;
-        } else if (type instanceof ParameterizedType)
+        }
+        else if (type instanceof ParameterizedType)
         {
             return (Class<T>) ((ParameterizedType) type).getRawType();
-        } else if (type instanceof GenericArrayType)
+        }
+        else if (type instanceof GenericArrayType)
         {
             return (Class<T>) Object[].class;
-        } else
+        }
+        else
         {
             throw new RuntimeException("Illegal type");
         }
@@ -75,10 +78,12 @@ public abstract class TypeLiteral<T>
         if (superclass.equals(TypeLiteral.class))
         {
             return clazz;
-        } else if (superclass.equals(Object.class))
+        }
+        else if (superclass.equals(Object.class))
         {
             return null;
-        } else
+        }
+        else
         {
             return (getTypeLiteralSubclass(superclass));
         }

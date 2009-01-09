@@ -50,10 +50,12 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
         if (superclass.equals(AnnotationLiteral.class))
         {
             return clazz;
-        } else if (superclass.equals(Object.class))
+        }
+        else if (superclass.equals(Object.class))
         {
             return null;
-        } else
+        }
+        else
         {
             return (getAnnotationLiteralSubclass(superclass));
         }
@@ -149,13 +151,16 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
         try
         {
             return method.invoke(instance);
-        } catch (IllegalArgumentException e)
+        }
+        catch (IllegalArgumentException e)
         {
             throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
-        } catch (IllegalAccessException e)
+        }
+        catch (IllegalAccessException e)
         {
             throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
-        } catch (InvocationTargetException e)
+        }
+        catch (InvocationTargetException e)
         {
             throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
         }
