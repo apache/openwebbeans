@@ -43,7 +43,8 @@ public class BrokenBindingComponentTest extends TestContext
         {
             defineSimpleWebBean(BindingWithNonBindingArrayTypeComponent.class);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -62,7 +63,8 @@ public class BrokenBindingComponentTest extends TestContext
         {
             defineSimpleWebBean(BindingWithNonBindingAnnotationTypeComponent.class);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;

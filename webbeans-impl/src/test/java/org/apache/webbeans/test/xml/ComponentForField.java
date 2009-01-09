@@ -309,4 +309,4 @@ public class ComponentForField
     {
         this.enum1Field = enum1Field;
     }
- }
+}

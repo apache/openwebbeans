@@ -67,7 +67,8 @@ public class ComponentResolutionByTypeTest extends TestContext
             testNonBindingTypeOk1();
             testNonBindingTypeOk2();
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
 
         }
@@ -85,7 +86,8 @@ public class ComponentResolutionByTypeTest extends TestContext
             testNonBindingTypeOk1();
             testNonBindingTypeOk2();
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
 
         }
@@ -98,7 +100,8 @@ public class ComponentResolutionByTypeTest extends TestContext
             cont.resolveByType(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s1").getAnnotations());
             pass("testBindingTypeOk");
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             fail("testBindingTypeOk");
 
@@ -113,7 +116,8 @@ public class ComponentResolutionByTypeTest extends TestContext
             cont.resolveByType(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s2").getAnnotations());
             fail("testBindingTypeNonOk");
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             pass("testBindingTypeNonOk");
 
@@ -128,7 +132,8 @@ public class ComponentResolutionByTypeTest extends TestContext
             cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s3").getAnnotations());
             pass("testNonBindingTypeOk1");
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             fail("testNonBindingTypeOk1");
 
@@ -143,7 +148,8 @@ public class ComponentResolutionByTypeTest extends TestContext
             cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s4").getAnnotations());
             pass("testNonBindingTypeOk2");
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             fail("testNonBindingTypeOk2");
 
@@ -158,7 +164,8 @@ public class ComponentResolutionByTypeTest extends TestContext
             cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s5").getAnnotations());
             fail("testNonBindingTypeNonOk");
 
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             pass("testNonBindingTypeNonOk");
 

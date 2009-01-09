@@ -65,7 +65,8 @@ public class XMLTest extends TestContext
 
             Assert.assertNotNull(root);
 
-        } catch (Throwable e1)
+        }
+        catch (Throwable e1)
         {
             e1.printStackTrace();
             e = e1;
@@ -85,7 +86,8 @@ public class XMLTest extends TestContext
 
             XMLUtil.getRootElement(stream);
 
-        } catch (Throwable e1)
+        }
+        catch (Throwable e1)
         {
             e = e1;
         }

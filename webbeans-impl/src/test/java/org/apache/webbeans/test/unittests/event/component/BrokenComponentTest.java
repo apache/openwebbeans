@@ -47,7 +47,8 @@ public class BrokenComponentTest extends TestContext
         {
             defineSimpleWebBean(BrokenObserverComponent1.class);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -65,7 +66,8 @@ public class BrokenComponentTest extends TestContext
         {
             defineSimpleWebBean(BrokenObserverComponent2.class);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -83,7 +85,8 @@ public class BrokenComponentTest extends TestContext
         {
             defineSimpleWebBean(BrokenObserverComponent3.class);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -101,7 +104,8 @@ public class BrokenComponentTest extends TestContext
         {
             defineSimpleWebBean(BrokenObserverComponent4.class);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -119,7 +123,8 @@ public class BrokenComponentTest extends TestContext
         {
             defineSimpleWebBean(BrokenObserverComponent5.class);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -137,7 +142,8 @@ public class BrokenComponentTest extends TestContext
         {
             defineSimpleWebBean(BrokenObserverComponent6.class);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;

@@ -60,7 +60,8 @@ public class EJBInterceptorExceptionComponentTest extends TestContext
 
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;

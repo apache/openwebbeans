@@ -32,7 +32,8 @@ public class PostConstructInterceptor
 
             context.proceed();
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new RuntimeException(e);
         }

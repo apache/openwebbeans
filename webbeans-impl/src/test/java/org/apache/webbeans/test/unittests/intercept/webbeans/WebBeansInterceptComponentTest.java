@@ -65,7 +65,8 @@ public class WebBeansInterceptComponentTest extends TestContext
             defineSimpleWebBeanInterceptor(WebBeansInterceptor.class);
             defineSimpleWebBean(WInterceptorComponent.class);
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;

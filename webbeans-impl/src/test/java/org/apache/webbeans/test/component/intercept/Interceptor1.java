@@ -35,7 +35,8 @@ public class Interceptor1
         try
         {
             ctx.proceed();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new RuntimeException(e);
         }

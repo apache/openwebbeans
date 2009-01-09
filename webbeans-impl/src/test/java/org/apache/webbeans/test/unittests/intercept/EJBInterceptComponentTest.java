@@ -64,7 +64,8 @@ public class EJBInterceptComponentTest extends TestContext
         {
             defineSimpleWebBean(InterceptedComponent.class);
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;

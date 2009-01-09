@@ -64,7 +64,8 @@ public class DecoratorExceptionTest extends TestContext
         try
         {
             defineSimpleWebBeansDecorators(DelegateAttributeIsnotInterface.class);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -80,7 +81,8 @@ public class DecoratorExceptionTest extends TestContext
         try
         {
             defineSimpleWebBeansDecorators(MoreThanOneDelegateAttribute.class);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -109,7 +111,8 @@ public class DecoratorExceptionTest extends TestContext
             defineSimpleWebBeansDecorators(PaymentDecorator.class);
             defineSimpleWebBean(CheckWithCheckPaymentDecoratorField.class);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -126,7 +129,8 @@ public class DecoratorExceptionTest extends TestContext
         try
         {
             defineSimpleWebBeansDecorators(DelegateAttributeMustImplementAllDecoratedTypes.class);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -151,7 +155,8 @@ public class DecoratorExceptionTest extends TestContext
             anns[1] = new DummyAnnotationLiteral();
 
             getManager().resolveDecorators(api, anns);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -175,7 +180,8 @@ public class DecoratorExceptionTest extends TestContext
             anns[0] = new RequestedScopeLiteral();
 
             getManager().resolveDecorators(api, anns);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -198,7 +204,8 @@ public class DecoratorExceptionTest extends TestContext
             anns[0] = new DummyAnnotationLiteral();
 
             getManager().resolveDecorators(api, anns);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;

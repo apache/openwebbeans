@@ -85,7 +85,8 @@ public class XMLFieldTest extends TestContext
             Assert.assertNotNull(cff.getListStrField());
             Assert.assertNotNull(cff.getListEnumField());
 
-        } catch (Throwable e1)
+        }
+        catch (Throwable e1)
         {
             e = e1;
         }

@@ -70,7 +70,8 @@ public class ScopeTypeExceptionComponentTest extends TestContext
 
             Assert.assertEquals(Dependent.class, bean.getScopeType());
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -92,7 +93,8 @@ public class ScopeTypeExceptionComponentTest extends TestContext
 
             Assert.assertEquals(SessionScoped.class, bean.getScopeType());
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -114,7 +116,8 @@ public class ScopeTypeExceptionComponentTest extends TestContext
 
             Assert.assertEquals(RequestScoped.class, bean.getScopeType());
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -133,7 +136,8 @@ public class ScopeTypeExceptionComponentTest extends TestContext
         {
             defineSimpleWebBean(ComponentWithDifferentScopeSteros.class);
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -155,7 +159,8 @@ public class ScopeTypeExceptionComponentTest extends TestContext
 
             Assert.assertEquals(Dependent.class, bean.getScopeType());
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -177,7 +182,8 @@ public class ScopeTypeExceptionComponentTest extends TestContext
 
             Assert.assertEquals(SessionScoped.class, bean.getScopeType());
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -199,7 +205,8 @@ public class ScopeTypeExceptionComponentTest extends TestContext
 
             Assert.assertEquals(SessionScoped.class, bean.getScopeType());
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -218,7 +225,8 @@ public class ScopeTypeExceptionComponentTest extends TestContext
         {
             defineSimpleWebBean(ComponentNonDefaultScopeWithDifferentScopeSteros.class);
 
-        } catch (WebBeansConfigurationException e)
+        }
+        catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
             exc = e;

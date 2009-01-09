@@ -33,7 +33,8 @@ public class SecureInterceptor
             CALL = true;
             return ctx.proceed();
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }

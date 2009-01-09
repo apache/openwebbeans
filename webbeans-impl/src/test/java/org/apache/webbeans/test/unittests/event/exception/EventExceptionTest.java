@@ -61,7 +61,8 @@ public class EventExceptionTest extends TestContext
 
             getManager().fireEvent(new BrokenEvent(), anns);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -85,7 +86,8 @@ public class EventExceptionTest extends TestContext
 
             getManager().fireEvent(new BrokenEvent(), anns);
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -117,7 +119,8 @@ public class EventExceptionTest extends TestContext
 
             Assert.assertEquals("ok", observer.getResult());
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;
@@ -146,7 +149,8 @@ public class EventExceptionTest extends TestContext
 
             Assert.assertEquals("ok", observer.getResult());
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             exc = e;

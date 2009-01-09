@@ -71,7 +71,8 @@ public class XMLDefinitionTest extends TestContext
             Assert.assertNotNull(instance);
             Assert.assertTrue(instance instanceof Definition1);
 
-        } catch (Throwable e1)
+        }
+        catch (Throwable e1)
         {
             e1.printStackTrace();
             e = e1;
@@ -99,7 +100,8 @@ public class XMLDefinitionTest extends TestContext
 
             defineXMLSimpleWebBeans(clazz, beanElement);
 
-        } catch (Throwable e1)
+        }
+        catch (Throwable e1)
         {
             e1.printStackTrace();
             e = e1;
@@ -127,7 +129,8 @@ public class XMLDefinitionTest extends TestContext
 
             defineXMLSimpleWebBeans(clazz, beanElement);
 
-        } catch (Throwable e1)
+        }
+        catch (Throwable e1)
         {
             e1.printStackTrace();
             e = e1;
