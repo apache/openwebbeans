@@ -39,7 +39,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>webbeans-api</artifactId>
+			<artifactId>openwebbeans-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
