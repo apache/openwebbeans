@@ -15,7 +15,6 @@ package org.apache.webbeans.config;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.rmi.Naming;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -102,7 +101,7 @@ public final class WebBeansContainerDeployer
             }
 
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             throw new WebBeansDeploymentException(e);
         }
