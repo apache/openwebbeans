@@ -13,17 +13,14 @@
  */
 package org.apache.webbeans.test.xml.definition;
 
-public class SystemConfig
+/**
+ * This test WebBean has no Named section neither via Annotation nor via XML definition. 
+ */
+public class TestBeanUnnamed
 {
-    private String value = "default";
-
-    public String getValue()
+    public TestBeanUnnamed()
     {
-        return value;
+
     }
 
-    public void setValue(String value)
-    {
-        this.value = value;
-    }
 }

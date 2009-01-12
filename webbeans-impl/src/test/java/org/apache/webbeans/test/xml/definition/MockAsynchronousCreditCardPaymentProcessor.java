@@ -16,9 +16,21 @@ package org.apache.webbeans.test.xml.definition;
 public class MockAsynchronousCreditCardPaymentProcessor
 {
     PaymentProcessor synchronousProcessor;
+    SystemConfig config;
 
     void init(SystemConfig config)
     {
+        this.config = config;
+    }
+
+    public SystemConfig getConfig()
+    {
+        return config;
+    }
+
+    public PaymentProcessor getPaymentProcessor()
+    {
+        return synchronousProcessor;
     }
 
 }

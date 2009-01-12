@@ -21,6 +21,11 @@ import org.apache.webbeans.component.xml.XMLComponentImpl;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.test.xml.definition.Definition1;
+import org.apache.webbeans.test.xml.definition.Definition2;
+import org.apache.webbeans.test.xml.definition.MockAsynchronousCreditCardPaymentProcessor;
+import org.apache.webbeans.test.xml.definition.PaymentProcessor;
+import org.apache.webbeans.test.xml.definition.SystemConfig;
+import org.apache.webbeans.test.xml.definition.TestBeanUnnamed;
 import org.apache.webbeans.xml.XMLUtil;
 import org.dom4j.Element;
 import org.junit.Before;
@@ -42,101 +47,98 @@ public class XMLDefinitionTest extends TestContext
     @Test
     public void testDefinition1()
     {
-        Throwable e = null;
-        try
-        {
-            InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/definition/definition1.xml");
-            Assert.assertNotNull(stream);
+        XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition1.xml");
 
-            clear();
+        Assert.assertEquals("definition1", compDef.getName());
 
-            Element rootElement = XMLUtil.getRootElement(stream);
-            Element beanElement = (Element) rootElement.elements().get(0);
+        Object instance = compDef.create();
 
-            Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
-
-            defineXMLSimpleWebBeans(clazz, beanElement);
-
-            Assert.assertEquals(1, getComponents().size());
-            Object def = getComponents().get(0);
-
-            Assert.assertTrue(def instanceof XMLComponentImpl);
-
-            XMLComponentImpl<?> comp = (XMLComponentImpl<?>) def;
-
-            Assert.assertEquals("definition1", comp.getName());
-
-            Object instance = comp.create();
-
-            Assert.assertNotNull(instance);
-            Assert.assertTrue(instance instanceof Definition1);
-
-        }
-        catch (Throwable e1)
-        {
-            e1.printStackTrace();
-            e = e1;
-        }
-
-        Assert.assertNull(e);
-
+        Assert.assertNotNull(instance);
+        Assert.assertTrue(instance instanceof Definition1);
     }
+
 
     @Test
     public void testDefinition2()
     {
-        Throwable e = null;
-        try
-        {
-            InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/definition/definition2.xml");
-            Assert.assertNotNull(stream);
+        XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition2.xml");
 
-            clear();
+        Object instance = compDef.create();
 
-            Element rootElement = XMLUtil.getRootElement(stream);
-            Element beanElement = (Element) rootElement.elements().get(0);
-
-            Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
-
-            defineXMLSimpleWebBeans(clazz, beanElement);
-
-        }
-        catch (Throwable e1)
-        {
-            e1.printStackTrace();
-            e = e1;
-        }
-
-        Assert.assertNull(e);
-
+        Assert.assertNotNull(instance);
+        Assert.assertTrue(instance instanceof Definition2);
     }
 
     @Test
     public void testDefinition3()
     {
-        Throwable e = null;
-        try
-        {
-            InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/definition/definition3.xml");
-            Assert.assertNotNull(stream);
+        XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition3.xml");
+        
+        // we have to additionally define the PaymentProcessor and SystemConfig
+        // which would in real world parsed by the scanner 
+        defineSimpleWebBean(PaymentProcessor.class);
+        defineSimpleWebBean(SystemConfig.class);
+        
+        Assert.assertEquals("asyncCreditCardPaymentProcessor", compDef.getName());
+        
+        Object instance = compDef.create();
 
-            clear();
+        Assert.assertNotNull(instance);
+        Assert.assertTrue(instance instanceof MockAsynchronousCreditCardPaymentProcessor);
+        
+        MockAsynchronousCreditCardPaymentProcessor ccProcessor = (MockAsynchronousCreditCardPaymentProcessor) instance;
+        
+        SystemConfig config = ccProcessor.getConfig();
+        Assert.assertEquals("default", config.getValue());
+        
+        PaymentProcessor paymentProcesor = ccProcessor.getPaymentProcessor();
+        Assert.assertNotNull(paymentProcesor);
+    }
 
-            Element rootElement = XMLUtil.getRootElement(stream);
-            Element beanElement = (Element) rootElement.elements().get(0);
+    @Test
+    public void testWebBeanUnnamed()
+    {
+        XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanUnnamed.xml");
+        
+        // an unnamed bean must not have a name 
+        Assert.assertNull(compDef.getName());
+        
+        Object instance = compDef.create();
+        Assert.assertNotNull(instance);
+        Assert.assertTrue(instance instanceof TestBeanUnnamed);
+    }
 
-            Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
+    
+    /**
+     * Private helper function which loads a WebBean definition from the given xmlResourcePath.
+     * This will first do a Class lookup and take his annotations as a base, later overlaying
+     * it with the definitions from the given XML.
+     *  
+     * @param xmlResourcePath
+     * @return XMLComponentImpl<?> with the WebBean definition 
+     */
+    private XMLComponentImpl<?> getWebBeanFromXml(String xmlResourcePath)
+    {
+        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
+        Assert.assertNotNull(stream);
 
-            defineXMLSimpleWebBeans(clazz, beanElement);
+        clear();
 
-        }
-        catch (Throwable e1)
-        {
-            e1.printStackTrace();
-            e = e1;
-        }
+        Element rootElement = XMLUtil.getRootElement(stream);
+        Element beanElement = (Element) rootElement.elements().get(0);
 
-        Assert.assertNull(e);
+        Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
+
+        defineXMLSimpleWebBeans(clazz, beanElement);
+
+        Assert.assertEquals(1, getComponents().size());
+        Object def = getComponents().get(0);
+        
+        Assert.assertNotNull(def);
+        
+        Assert.assertTrue(def instanceof XMLComponentImpl);
+
+        return (XMLComponentImpl<?>) def;
     }
 
 }
