@@ -38,6 +38,13 @@
 
     </files>
 
+   <fileSets>
+        <fileSet>
+            <directory>../licences</directory>
+            <outputDirectory>licences</outputDirectory>
+        </fileSet>
+    </fileSets>
+
     <dependencySets>
 
         <dependencySet>
