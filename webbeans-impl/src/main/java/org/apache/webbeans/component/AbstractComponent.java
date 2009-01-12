@@ -29,6 +29,7 @@ import javax.webbeans.manager.Bean;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorData;
 
 /**
@@ -126,12 +127,13 @@ public abstract class AbstractComponent<T> extends Component<T>
             instance = createInstance();
 
         }
-        catch (Throwable e)
+        catch (RuntimeException re)
         {
-            if (Exception.class.isAssignableFrom(e.getClass()))
-            {
-                throw new CreationException(e);
-            }
+           throw new CreationException(re);
+        }
+        catch (Exception e)
+        {
+           throw new WebBeansException(e);
         }
         finally
         {
@@ -364,7 +366,6 @@ public abstract class AbstractComponent<T> extends Component<T>
      * @see javax.webbeans.manager.Bean#getTypes()
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Set<Class<?>> getTypes()
     {
         return this.apiTypes;
