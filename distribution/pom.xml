@@ -78,12 +78,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>webbeans-api</artifactId>
+            <artifactId>openwebbeans-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>webbeans-impl</artifactId>
+            <artifactId>openwebbeans-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

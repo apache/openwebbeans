@@ -43,12 +43,12 @@
         <dependencySet>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans:webbeans-api</include>
-                <include>org.apache.openwebbeans:webbeans-impl</include>
+                <include>org.apache.openwebbeans:openwebbeans-api</include>
+                <include>org.apache.openwebbeans:openwebbeans-impl</include>
             </includes>
 	    <excludes>
-		<exclude>org.apache.openwebbeans:webbeans-api:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:webbeans-impl:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-api:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-impl:jar:sources</exclude>
 	    </excludes>
         </dependencySet>
 
