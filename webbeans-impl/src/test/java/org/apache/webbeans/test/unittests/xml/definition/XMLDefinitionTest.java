@@ -25,7 +25,7 @@ import org.apache.webbeans.test.xml.definition.Definition2;
 import org.apache.webbeans.test.xml.definition.MockAsynchronousCreditCardPaymentProcessor;
 import org.apache.webbeans.test.xml.definition.PaymentProcessor;
 import org.apache.webbeans.test.xml.definition.SystemConfig;
-import org.apache.webbeans.test.xml.definition.TestBeanUnnamed;
+import org.apache.webbeans.test.xml.definition.TstBeanUnnamed;
 import org.apache.webbeans.xml.XMLUtil;
 import org.dom4j.Element;
 import org.junit.Before;
@@ -105,7 +105,7 @@ public class XMLDefinitionTest extends TestContext
         
         Object instance = compDef.create();
         Assert.assertNotNull(instance);
-        Assert.assertTrue(instance instanceof TestBeanUnnamed);
+        Assert.assertTrue(instance instanceof TstBeanUnnamed);
     }
 
     
