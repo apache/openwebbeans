@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebBeans 	xmlns="urn:java:javax.webbeans"
+		  	xmlns:myapp="urn:java:org.apache.webbeans.test.xml.definition"
+		  	xmlns:lang="urn:java:java.lang"
+ 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="urn:java:javax.webbeans http://java.sun.com/jee/web-beans-1.0.xsd">
+
+    <!-- 
+      The constructor under test: public TstBeanConstructor(Integer ctParam)
+      Integer ctParam value 42 will be injected into the constructor.
+      
+      After bean creation, val2 will be injected via setter method.
+    -->
+    <myapp:TstBeanConstructor>
+        <RequestScoped/>          
+		
+		<myapp:setVal2>
+			<Initializer/>
+		</myapp:setVal2>
+		 
+    </myapp:TstBeanConstructor> 
+	
+</WebBeans>
