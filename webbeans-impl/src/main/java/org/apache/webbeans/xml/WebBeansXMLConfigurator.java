@@ -784,6 +784,8 @@ public final class WebBeansXMLConfigurator
      */
     public <T> void configureProducerTypeLevelMetaData(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, Element webBeanDecleration)
     {
+        configureBindingType(component, annotationSet, annotationElementList);
+        
         // StereoType
         configureStereoType(component, annotationSet, annotationElementList);
 
@@ -1183,10 +1185,17 @@ public final class WebBeansXMLConfigurator
      */
     private <T> void configureMethodInitializeAnnotation(XMLComponentImpl<T> component, Method initializeMethod, List<Element> methodParameterElements)
     {
-        for (Element element : methodParameterElements)
+        if(methodParameterElements.isEmpty())
         {
-            XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(element, createConfigurationFailedMessage());
-            component.addMethodInjectionPoint(initializeMethod, model);
+            component.addMethodInjectionPoint(initializeMethod, null);
+        }
+        else
+        {
+            for (Element element : methodParameterElements)
+            {
+                XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(element, createConfigurationFailedMessage());
+                component.addMethodInjectionPoint(initializeMethod, model);
+            }            
         }
     }
 
@@ -1349,7 +1358,7 @@ public final class WebBeansXMLConfigurator
      * @param component web beans xml component
      * @param anns annotations defined in the xml documents
      */
-    private <T> void configureBindingType(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
+    private <T> void configureBindingType(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
         boolean isDefined = XMLDefinitionUtil.defineXMLBindingType(component, annotationSet, annotationElementList, createConfigurationFailedMessage());
 

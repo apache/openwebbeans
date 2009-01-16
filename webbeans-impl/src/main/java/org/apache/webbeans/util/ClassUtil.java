@@ -788,32 +788,45 @@ public final class ClassUtil
         int j = 0;
         for (Method method : methods)
         {
-            Class<?>[] defineTypes = method.getParameterTypes();
-
-            if (defineTypes.length != parameterTypes.size())
+            if(method.getName().equals(methodName))
             {
-                continue;
-            }
+                Class<?>[] defineTypes = method.getParameterTypes();
 
-            boolean ok = false;
-            for (Class<?> defineType : defineTypes)
-            {
-                if (defineType.isAssignableFrom(parameterTypes.get(j)))
+                if (defineTypes.length != parameterTypes.size())
                 {
-                    ok = true;
+                    continue;
                 }
-                else
+
+                boolean ok = true;
+                
+                if(parameterTypes != null && parameterTypes.size() > 0)
                 {
                     ok = false;
                 }
+                
+                if(!ok)
+                {
+                    for (Class<?> defineType : defineTypes)
+                    {
+                        if (defineType.isAssignableFrom(parameterTypes.get(j)))
+                        {
+                            ok = true;
+                        }
+                        else
+                        {
+                            ok = false;
+                        }
 
-                j++;
+                        j++;
+                    }                    
+                }
+                
+                if (ok)
+                {
+                    methodList.add(method);
+                }                
             }
-
-            if (ok)
-            {
-                methodList.add(method);
-            }
+            
         }
 
         return methodList;

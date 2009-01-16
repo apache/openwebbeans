@@ -172,7 +172,7 @@ public final class XMLDefinitionUtil
         return metaType;
     }
 
-    public static <T> boolean defineXMLBindingType(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
+    public static <T> boolean defineXMLBindingType(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         boolean found = false;
@@ -556,7 +556,7 @@ public final class XMLDefinitionUtil
         else
         {
             /* Configures the java api types and actual type parameters */
-            XMLInjectionPointModel model = XMLUtil.getArrayInjectionPointModel(typeElement, errorMessage);
+            XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(typeElement, errorMessage);
 
             producerComponentImpl.setActualTypeArguments(model.getActualTypeArguments());
             producerComponentImpl.addApiType(model.getInjectionClassType());

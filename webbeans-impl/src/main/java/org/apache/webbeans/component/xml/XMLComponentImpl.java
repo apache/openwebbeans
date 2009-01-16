@@ -194,7 +194,6 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
     public void addMethodInjectionPoint(Method method, XMLInjectionPointModel model)
     {
         Asserts.assertNotNull(method, "method parameter can not be null");
-        Asserts.assertNotNull(model, "model parameter can not be null");
 
         List<XMLInjectionPointModel> listModel = this.injectableMethods.get(method);
         if (listModel == null)
@@ -202,8 +201,11 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
             listModel = new ArrayList<XMLInjectionPointModel>();
             this.injectableMethods.put(method, listModel);
         }
-
-        listModel.add(model);
+        
+        if(model != null)
+        {
+            listModel.add(model);   
+        }
     }
 
     /**
