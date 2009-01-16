@@ -29,6 +29,8 @@ import javax.webbeans.Production;
 import javax.webbeans.manager.Context;
 import javax.webbeans.manager.Manager;
 
+import junit.framework.Assert;
+
 import org.apache.log4j.Logger;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
@@ -59,8 +61,10 @@ import org.apache.webbeans.test.sterotype.StereoWithNonScope;
 import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
+import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
+import org.apache.webbeans.xml.XMLUtil;
 import org.dom4j.Element;
 
 /**
@@ -314,7 +318,65 @@ public abstract class TestContext implements ITestContext
 
         return bean;
     }
+    
+    /**
+     * Protected helper function which loads a WebBean definition from the given xmlResourcePath.
+     * This will first do a Class lookup and take his annotations as a base, later overlaying
+     * it with the definitions from the given XML.
+     *  
+     * @param xmlResourcePath
+     * @return XMLComponentImpl<?> with the WebBean definition 
+     */
+    protected XMLComponentImpl<?> getWebBeanFromXml(String xmlResourcePath)
+    {
+        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
+        Assert.assertNotNull(stream);
 
+        Element rootElement = XMLUtil.getRootElement(stream);
+        Element beanElement = (Element) rootElement.elements().get(0);
+
+        Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
+
+        XMLComponentImpl<?> def = defineXMLSimpleWebBeans(clazz, beanElement);
+
+        return def;
+    }
+    
+    /**
+     * Private helper function which loads a WebBean definition from the given xmlResourcePath.
+     * This will first do a Class lookup and take his annotations as a base, later overlaying
+     * it with the definitions from the given XML.
+     * 
+     *  
+     * @param xmlResourcePath
+     * @return XMLComponentImpl<?> with the WebBean definition 
+     */
+    @SuppressWarnings("unchecked")
+    protected AbstractComponent<?> getWebBeanFromXml(String xmlResourcePath, Class<?> desiredClazz)
+    {
+        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
+        Assert.assertNotNull(stream);
+
+        Element rootElement = XMLUtil.getRootElement(stream);
+          
+        for (Element beanElement : (List<Element>) rootElement.elements())
+        {
+            Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
+
+            defineXMLSimpleWebBeans(clazz, beanElement);
+        }
+        
+        for (AbstractComponent<?> def : getComponents())
+        {
+            if (def.getReturnType().equals(desiredClazz)) 
+            {
+                return def;
+            }
+        }
+        
+        return null;
+    }
+    
     /**
      * Defines simple webbeans interceptor.
      * 

@@ -13,21 +13,19 @@
  */
 package org.apache.webbeans.test.unittests.xml.definition;
 
-import java.io.InputStream;
-
 import junit.framework.Assert;
 
+import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.xml.XMLComponentImpl;
+import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.servlet.TestContext;
-import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.test.xml.definition.Definition1;
 import org.apache.webbeans.test.xml.definition.Definition2;
 import org.apache.webbeans.test.xml.definition.MockAsynchronousCreditCardPaymentProcessor;
 import org.apache.webbeans.test.xml.definition.PaymentProcessor;
 import org.apache.webbeans.test.xml.definition.SystemConfig;
+import org.apache.webbeans.test.xml.definition.TstBeanConstructor;
 import org.apache.webbeans.test.xml.definition.TstBeanUnnamed;
-import org.apache.webbeans.xml.XMLUtil;
-import org.dom4j.Element;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,6 +45,8 @@ public class XMLDefinitionTest extends TestContext
     @Test
     public void testDefinition1()
     {
+        clear();
+        
         XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition1.xml");
 
         Assert.assertEquals("definition1", compDef.getName());
@@ -61,6 +61,8 @@ public class XMLDefinitionTest extends TestContext
     @Test
     public void testDefinition2()
     {
+        clear();
+        
         XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition2.xml");
 
         Object instance = compDef.create();
@@ -72,6 +74,8 @@ public class XMLDefinitionTest extends TestContext
     @Test
     public void testDefinition3()
     {
+        clear();
+        
         XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition3.xml");
         
         // we have to additionally define the PaymentProcessor and SystemConfig
@@ -98,6 +102,8 @@ public class XMLDefinitionTest extends TestContext
     @Test
     public void testWebBeanUnnamed()
     {
+        clear();
+        
         XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanUnnamed.xml");
         
         // an unnamed bean must not have a name 
@@ -107,38 +113,40 @@ public class XMLDefinitionTest extends TestContext
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanUnnamed);
     }
-
     
-    /**
-     * Private helper function which loads a WebBean definition from the given xmlResourcePath.
-     * This will first do a Class lookup and take his annotations as a base, later overlaying
-     * it with the definitions from the given XML.
-     *  
-     * @param xmlResourcePath
-     * @return XMLComponentImpl<?> with the WebBean definition 
-     */
-    private XMLComponentImpl<?> getWebBeanFromXml(String xmlResourcePath)
+    @Test
+    public void testConstructorInjection1() 
     {
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
-        Assert.assertNotNull(stream);
-
         clear();
-
-        Element rootElement = XMLUtil.getRootElement(stream);
-        Element beanElement = (Element) rootElement.elements().get(0);
-
-        Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
-
-        defineXMLSimpleWebBeans(clazz, beanElement);
-
-        Assert.assertEquals(1, getComponents().size());
-        Object def = getComponents().get(0);
         
-        Assert.assertNotNull(def);
-        
-        Assert.assertTrue(def instanceof XMLComponentImpl);
+        AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor1.xml",
+                                                         TstBeanConstructor.class);
 
-        return (XMLComponentImpl<?>) def;
+        Object instance = compDef.create();
+        Assert.assertNotNull(instance);
+        Assert.assertTrue(instance instanceof TstBeanConstructor);
+        
+        TstBeanConstructor tbc = (TstBeanConstructor) instance;
+        Assert.assertEquals(4200, tbc.getVal1());
+        Assert.assertEquals(13  , tbc.getVal2());
     }
+    
+    @Test
+    public void testConstructorInjection2() 
+    {
+        clear();
+        
+        ContextFactory.initRequestContext(null);
+        
+        AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml",
+                                                         TstBeanConstructor.class);
 
+        Object instance = compDef.create();
+        Assert.assertNotNull(instance);
+        Assert.assertTrue(instance instanceof TstBeanConstructor);
+        
+        TstBeanConstructor tbc = (TstBeanConstructor) instance;
+        Assert.assertEquals(0, tbc.getVal1());
+        Assert.assertEquals(40  , tbc.getVal2());
+    }    
 }
