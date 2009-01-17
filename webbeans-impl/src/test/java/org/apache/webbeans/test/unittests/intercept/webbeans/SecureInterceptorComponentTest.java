@@ -33,7 +33,7 @@ public class SecureInterceptorComponentTest extends TestContext
     @Before
     public void init()
     {
-        initDeploymentTypes();
+        initDefaultDeploymentTypes();
         initDefaultStereoTypes();
         initializeInterceptorType(SecureInterceptor.class);
     }

@@ -120,7 +120,7 @@ public abstract class TestContext implements ITestContext
     {
         if (!init)
         {
-            initDeploymentTypes();
+            initDefaultDeploymentTypes();
             initInterceptors();
             initDecorators();
             initStereoTypes();
@@ -132,7 +132,7 @@ public abstract class TestContext implements ITestContext
     /**
      * Initialize deployment types.
      */
-    protected void initDeploymentTypes()
+    protected void initDefaultDeploymentTypes()
     {
         initializeDeploymentType(Production.class, 1);
 
