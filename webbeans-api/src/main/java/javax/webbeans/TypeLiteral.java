@@ -19,11 +19,13 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * *********************************************************************************************
- * This class and its method signatures is taken from the unpublished Web Beans
- * API related code from the <a
+ * *****************************************************************************
+ * **************** This class and its method signatures is taken from the
+ * unpublished Web Beans API related code from the <a
  * href="http://anonsvn.jboss.org/repos/webbeans/">Web Beans RI svn</a>
- * ********************************************************************************************
+ * *********
+ * *********************************************************************
+ * **************
  */
 public abstract class TypeLiteral<T>
 {
