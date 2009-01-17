@@ -16,14 +16,12 @@ package javax.webbeans.manager;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+import javax.webbeans.InjectionPoint;
+
 /**
  * Web Beans component contract.
- * 
- * @author gurkanerdogdu
- * @since 1.0
  */
-@SuppressWarnings("unchecked")
-public abstract class Bean<T>
+public abstract class Bean<T> implements Contextual<T>
 {
     /** Manager instance */
     private final Manager manager;
@@ -112,5 +110,7 @@ public abstract class Bean<T>
      * @return true if nullable
      */
     public abstract boolean isNullable();
+    
+    public abstract Set<InjectionPoint> getInjectionPoints();
 
 }
