@@ -97,8 +97,10 @@ public final class DefinitionUtil
         {
             ProducerComponentImpl<?> p = (ProducerComponentImpl<?>) component;
             component.setType(p.getParent().getType());
+            found = true;
         }
-        else
+        
+        if(!found)
         {
 
             component.setType(WebBeansUtil.getMaxPrecedenceSteroTypeDeploymentType(component));
@@ -331,8 +333,8 @@ public final class DefinitionUtil
         Set<ProducerComponentImpl<?>> producerComponents = new HashSet<ProducerComponentImpl<?>>();
 
         Class<?> clazz = component.getReturnType();
-
         Method[] declaredMethods = clazz.getDeclaredMethods();
+        boolean isSpecializes = false;
         for (Method declaredMethod : declaredMethods)
         {
             // Producer Method
@@ -342,20 +344,18 @@ public final class DefinitionUtil
 
                 if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Specializes.class))
                 {
-                    if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Override.class))
+                    if(ClassUtil.isStatic(declaredMethod.getModifiers()))
                     {
-                        WebBeansUtil.configureProducerSpecialization(component, declaredMethod, clazz.getSuperclass());
-                    }
-                    else
-                    {
-                        throw new WebBeansConfigurationException("Producer method : " + declaredMethod.getName() + " in class : " + clazz.getName() + " must override its super class method");
-                    }
+                        throw new WebBeansConfigurationException("Specializing producer method : " + declaredMethod.getName() + " in class : " + clazz.getName() + " can not be static");
+                    }                 
+                    
+                    isSpecializes = true;
                 }
 
                 Type[] observableTypes = AnnotationUtil.getMethodParameterGenericTypesWithGivenAnnotation(declaredMethod, Fires.class);
                 EventUtil.checkObservableMethodParameterConditions(observableTypes, "method parameter", "method : " + declaredMethod.getName() + "in class : " + clazz.getName());
 
-                ProducerComponentImpl<?> newComponent = createProducerComponent(declaredMethod.getReturnType(), declaredMethod, component);
+                ProducerComponentImpl<?> newComponent = createProducerComponent(declaredMethod.getReturnType(), declaredMethod, component,isSpecializes);
                 if (newComponent != null)
                 {
                     producerComponents.add(newComponent);
@@ -367,10 +367,15 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> ProducerComponentImpl<T> createProducerComponent(Class<T> returnType, Method method, AbstractComponent<?> parent)
+    private static <T> ProducerComponentImpl<T> createProducerComponent(Class<T> returnType, Method method, AbstractComponent<?> parent,boolean isSpecializes)
     {
         ProducerComponentImpl<T> component = new ProducerComponentImpl<T>(parent, returnType);
         component.setCreatorMethod(method);
+        
+        if(isSpecializes)
+        {
+            WebBeansUtil.configureProducerSpecialization(component, method, parent.getReturnType().getSuperclass());   
+        }
 
         if (returnType.isPrimitive())
         {
