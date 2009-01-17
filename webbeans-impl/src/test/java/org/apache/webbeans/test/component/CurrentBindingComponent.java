@@ -36,9 +36,7 @@ public class CurrentBindingComponent
     }
 
     @Initializer
-    public CurrentBindingComponent(@Binding1
-    @Binding2
-    ITyped2 typed2)
+    public CurrentBindingComponent(@Binding1 @Binding2 ITyped2 typed2)
     {
         this.typed2 = typed2;
     }

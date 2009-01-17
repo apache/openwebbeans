@@ -25,8 +25,7 @@ public class BrokenObserverComponent5
 {
 
     @Destructor
-    public CurrentBindingComponent observer(@Observes
-    LoggingEvent event1)
+    public CurrentBindingComponent observer(@Observes LoggingEvent event1)
     {
         return null;
     }

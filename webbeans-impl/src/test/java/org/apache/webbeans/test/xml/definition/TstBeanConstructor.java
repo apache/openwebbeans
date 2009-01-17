@@ -13,10 +13,8 @@
  */
 package org.apache.webbeans.test.xml.definition;
 
-
-
 /**
- * This test WebBean has a constructor which should be injected via XML 
+ * This test WebBean has a constructor which should be injected via XML
  */
 public class TstBeanConstructor
 {
@@ -25,9 +23,9 @@ public class TstBeanConstructor
 
     public TstBeanConstructor()
     {
-        
+
     }
-    
+
     public TstBeanConstructor(CtParameter ctParam)
     {
         this.val1 = ctParam.getValue() * 100;
@@ -42,13 +40,12 @@ public class TstBeanConstructor
     {
         this.val1 = ctParam * multiplier;
     }
-    
+
     public int getVal1()
     {
         return val1;
     }
-    
-    
+
     public void setVal1(int val1)
     {
         this.val1 = val1;

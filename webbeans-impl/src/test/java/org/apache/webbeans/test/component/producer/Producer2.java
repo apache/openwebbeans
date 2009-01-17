@@ -27,8 +27,7 @@ public class Producer2
     @Produces
     @RequestScoped
     @Binding1
-    public IService getService(@Binding1
-    IService service)
+    public IService getService(@Binding1 IService service)
     {
         return service;
     }
@@ -36,8 +35,7 @@ public class Producer2
     @Produces
     @RequestScoped
     @Binding2
-    public IService getService2(@Binding1
-    IService service)
+    public IService getService2(@Binding1 IService service)
     {
         return service;
     }

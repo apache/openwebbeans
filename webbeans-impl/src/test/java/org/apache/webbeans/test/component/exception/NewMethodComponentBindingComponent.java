@@ -26,8 +26,7 @@ public class NewMethodComponentBindingComponent
     String src;
 
     @Initializer
-    public void inject(@New
-    ITyped2<String, String> s)
+    public void inject(@New ITyped2<String, String> s)
     {
 
     }

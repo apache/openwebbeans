@@ -194,8 +194,8 @@ public abstract class TestContext implements ITestContext
 
     /**
      * This will be called whenever the test is failed. NOT : This method is
-     * used for running the tests from the {@link ServletContextListener}. It
-     * is not used for normal unit tests.
+     * used for running the tests from the {@link ServletContextListener}. It is
+     * not used for normal unit tests.
      * 
      * @see TestListener
      * @see ComponentResolutionByTypeTest
@@ -208,8 +208,8 @@ public abstract class TestContext implements ITestContext
 
     /**
      * This will be called whenever the test is passed. NOT : This method is
-     * used for running the tests from the {@link ServletContextListener}. It
-     * is not used for normal unit tests.
+     * used for running the tests from the {@link ServletContextListener}. It is
+     * not used for normal unit tests.
      * 
      * @see TestListener
      * @see ComponentResolutionByTypeTest
@@ -222,8 +222,8 @@ public abstract class TestContext implements ITestContext
 
     /**
      * Initialize all tests. NOT : This method is used for initializing the all
-     * tests classes from the {@link ServletContextListener}. It is not used
-     * for normal unit tests.
+     * tests classes from the {@link ServletContextListener}. It is not used for
+     * normal unit tests.
      * 
      * @see TestListener
      * @see ComponentResolutionByTypeTest
@@ -318,14 +318,15 @@ public abstract class TestContext implements ITestContext
 
         return bean;
     }
-    
+
     /**
-     * Protected helper function which loads a WebBean definition from the given xmlResourcePath.
-     * This will first do a Class lookup and take his annotations as a base, later overlaying
-     * it with the definitions from the given XML.
-     *  
+     * Protected helper function which loads a WebBean definition from the given
+     * xmlResourcePath. This will first do a Class lookup and take his
+     * annotations as a base, later overlaying it with the definitions from the
+     * given XML.
+     * 
      * @param xmlResourcePath
-     * @return XMLComponentImpl<?> with the WebBean definition 
+     * @return XMLComponentImpl<?> with the WebBean definition
      */
     protected XMLComponentImpl<?> getWebBeanFromXml(String xmlResourcePath)
     {
@@ -341,15 +342,15 @@ public abstract class TestContext implements ITestContext
 
         return def;
     }
-    
+
     /**
-     * Private helper function which loads a WebBean definition from the given xmlResourcePath.
-     * This will first do a Class lookup and take his annotations as a base, later overlaying
-     * it with the definitions from the given XML.
+     * Private helper function which loads a WebBean definition from the given
+     * xmlResourcePath. This will first do a Class lookup and take his
+     * annotations as a base, later overlaying it with the definitions from the
+     * given XML.
      * 
-     *  
      * @param xmlResourcePath
-     * @return XMLComponentImpl<?> with the WebBean definition 
+     * @return XMLComponentImpl<?> with the WebBean definition
      */
     @SuppressWarnings("unchecked")
     protected AbstractComponent<?> getWebBeanFromXml(String xmlResourcePath, Class<?> desiredClazz)
@@ -358,25 +359,25 @@ public abstract class TestContext implements ITestContext
         Assert.assertNotNull(stream);
 
         Element rootElement = XMLUtil.getRootElement(stream);
-          
+
         for (Element beanElement : (List<Element>) rootElement.elements())
         {
             Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
 
             defineXMLSimpleWebBeans(clazz, beanElement);
         }
-        
+
         for (AbstractComponent<?> def : getComponents())
         {
-            if (def.getReturnType().equals(desiredClazz)) 
+            if (def.getReturnType().equals(desiredClazz))
             {
                 return def;
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * Defines simple webbeans interceptor.
      * 

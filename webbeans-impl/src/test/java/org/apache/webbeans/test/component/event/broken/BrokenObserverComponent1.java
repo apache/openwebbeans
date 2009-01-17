@@ -22,8 +22,7 @@ import org.apache.webbeans.test.event.broke.BrokenEvent;
 public class BrokenObserverComponent1
 {
 
-    public void observer(@Observes
-    BrokenEvent<Integer> event)
+    public void observer(@Observes BrokenEvent<Integer> event)
     {
 
     }

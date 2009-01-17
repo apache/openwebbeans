@@ -40,7 +40,7 @@ public class WebBeansScannerTest extends TestContext
 
         ServletContext servletContext = new MockServletContext();
         scanner.scan(servletContext);
-        
+
         // try to re-run the scan
         scanner.scan(servletContext);
 
@@ -53,4 +53,4 @@ public class WebBeansScannerTest extends TestContext
 
         Assert.assertTrue(ArrayUtil.equalsIgnorePosition(testBeanAnnotations.toArray(), expectedAnnotations));
     }
- }
+}

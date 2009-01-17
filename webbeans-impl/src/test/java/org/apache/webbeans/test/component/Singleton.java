@@ -33,8 +33,7 @@ public class Singleton
 
     @SuppressWarnings("unchecked")
     @Initializer
-    public void inject(@Binding1
-    ITyped2 typed2)
+    public void inject(@Binding1 ITyped2 typed2)
     {
         this.typed2 = typed2;
     }

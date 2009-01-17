@@ -14,7 +14,8 @@
 package org.apache.webbeans.test.xml.definition;
 
 /**
- * This test WebBean has no Named section neither via Annotation nor via XML definition. 
+ * This test WebBean has no Named section neither via Annotation nor via XML
+ * definition.
  */
 public class TstBeanUnnamed
 {

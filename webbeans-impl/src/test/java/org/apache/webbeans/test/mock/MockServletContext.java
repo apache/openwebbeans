@@ -22,112 +22,94 @@ public class MockServletContext implements ServletContext
     @SuppressWarnings("unchecked")
     private Hashtable attributes = new Hashtable();
 
-    
     public Object getAttribute(String name)
     {
         return attributes.get(name);
     }
 
     @SuppressWarnings("unchecked")
-    
     public Enumeration getAttributeNames()
     {
         return attributes.keys();
     }
 
-    
     public ServletContext getContext(String uripath)
     {
         return this;
     }
 
-    
     public String getContextPath()
     {
         return "mockContextpath";
     }
 
-    
     public String getInitParameter(String name)
     {
         return null;
     }
 
     @SuppressWarnings("unchecked")
-    
     public Enumeration getInitParameterNames()
     {
         return new StringTokenizer(""); // 'standard' empty Enumeration
     }
 
-    
     public int getMajorVersion()
     {
         return 2;
     }
 
-    
     public String getMimeType(String file)
     {
         return null;
     }
 
-    
     public int getMinorVersion()
     {
         return 0;
     }
 
-    
     public RequestDispatcher getNamedDispatcher(String name)
     {
         return null;
     }
 
-    
     public String getRealPath(String path)
     {
         return "mockRealPath";
     }
 
-    
     public RequestDispatcher getRequestDispatcher(String path)
     {
         return null;
     }
 
-    
     public URL getResource(String path) throws MalformedURLException
     {
         return null;
     }
 
-    
     public InputStream getResourceAsStream(String path)
     {
         return null;
     }
 
     @SuppressWarnings("unchecked")
-    
     public Set getResourcePaths(String path)
     {
         return null;
     }
 
-    
     public String getServerInfo()
     {
         return "mockServer";
     }
 
-    
     public Servlet getServlet(String name) throws ServletException
     {
         return null;
     }
 
-    
     public String getServletContextName()
     {
         return null;

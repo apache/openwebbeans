@@ -17,7 +17,7 @@ import org.apache.webbeans.test.annotation.binding.PayBy;
 import org.apache.webbeans.test.annotation.binding.Synchronous;
 
 @Synchronous
-@PayBy(value="CREDIT_CARD")
+@PayBy(value = "CREDIT_CARD")
 public class PaymentProcessor
 {
 

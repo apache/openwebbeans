@@ -29,8 +29,7 @@ public class MoreThanOneConstructureComponent2
     }
 
     @Initializer
-    public MoreThanOneConstructureComponent2(@Binding1
-    ServiceImpl1 s)
+    public MoreThanOneConstructureComponent2(@Binding1 ServiceImpl1 s)
     {
 
     }

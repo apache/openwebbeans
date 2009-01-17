@@ -25,8 +25,7 @@ public class InjectedComponent
     private @Binding1
     IService service;
 
-    public void setService(@Binding1
-    IService service)
+    public void setService(@Binding1 IService service)
     {
         System.out.println("Field Service " + this.service);
         System.out.println("Method Service " + service);

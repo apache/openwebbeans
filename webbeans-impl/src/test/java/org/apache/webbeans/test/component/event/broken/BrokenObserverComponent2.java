@@ -22,9 +22,7 @@ import org.apache.log4j.spi.LoggingEvent;
 public class BrokenObserverComponent2
 {
 
-    public void observer(@Observes
-    LoggingEvent event1, @Observes
-    LoggingEvent event2)
+    public void observer(@Observes LoggingEvent event1, @Observes LoggingEvent event2)
     {
 
     }

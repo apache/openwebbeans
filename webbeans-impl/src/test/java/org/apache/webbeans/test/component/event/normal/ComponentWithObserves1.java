@@ -30,17 +30,13 @@ public class ComponentWithObserves1
 
     private String userNameWithMember;
 
-    public void afterLoggedIn(@Observes
-    @Current
-    LoggedInEvent event)
+    public void afterLoggedIn(@Observes @Current LoggedInEvent event)
     {
         this.userName = event.getUserName();
 
     }
 
-    public void afterLoggedInWithMember(@Observes
-    @Check(type = "CHECK")
-    LoggedInEvent event)
+    public void afterLoggedInWithMember(@Observes @Check(type = "CHECK") LoggedInEvent event)
     {
         this.userNameWithMember = event.getUserName();
 

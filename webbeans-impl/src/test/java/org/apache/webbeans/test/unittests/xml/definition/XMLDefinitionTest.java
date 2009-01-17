@@ -46,7 +46,7 @@ public class XMLDefinitionTest extends TestContext
     public void testDefinition1()
     {
         clear();
-        
+
         XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition1.xml");
 
         Assert.assertEquals("definition1", compDef.getName());
@@ -57,12 +57,11 @@ public class XMLDefinitionTest extends TestContext
         Assert.assertTrue(instance instanceof Definition1);
     }
 
-
     @Test
     public void testDefinition2()
     {
         clear();
-        
+
         XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition2.xml");
 
         Object instance = compDef.create();
@@ -75,26 +74,26 @@ public class XMLDefinitionTest extends TestContext
     public void testDefinition3()
     {
         clear();
-        
+
         XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition3.xml");
-        
+
         // we have to additionally define the PaymentProcessor and SystemConfig
-        // which would in real world parsed by the scanner 
+        // which would in real world parsed by the scanner
         defineSimpleWebBean(PaymentProcessor.class);
         defineSimpleWebBean(SystemConfig.class);
-        
+
         Assert.assertEquals("asyncCreditCardPaymentProcessor", compDef.getName());
-        
+
         Object instance = compDef.create();
 
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof MockAsynchronousCreditCardPaymentProcessor);
-        
+
         MockAsynchronousCreditCardPaymentProcessor ccProcessor = (MockAsynchronousCreditCardPaymentProcessor) instance;
-        
+
         SystemConfig config = ccProcessor.getConfig();
         Assert.assertEquals("default", config.getValue());
-        
+
         PaymentProcessor paymentProcesor = ccProcessor.getPaymentProcessor();
         Assert.assertNotNull(paymentProcesor);
     }
@@ -103,50 +102,48 @@ public class XMLDefinitionTest extends TestContext
     public void testWebBeanUnnamed()
     {
         clear();
-        
+
         XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanUnnamed.xml");
-        
-        // an unnamed bean must not have a name 
+
+        // an unnamed bean must not have a name
         Assert.assertNull(compDef.getName());
-        
+
         Object instance = compDef.create();
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanUnnamed);
     }
-    
+
     @Test
-    public void testConstructorInjection1() 
+    public void testConstructorInjection1()
     {
         clear();
-        
-        AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor1.xml",
-                                                         TstBeanConstructor.class);
+
+        AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor1.xml", TstBeanConstructor.class);
 
         Object instance = compDef.create();
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanConstructor);
-        
+
         TstBeanConstructor tbc = (TstBeanConstructor) instance;
         Assert.assertEquals(4200, tbc.getVal1());
-        Assert.assertEquals(13  , tbc.getVal2());
+        Assert.assertEquals(13, tbc.getVal2());
     }
-    
+
     @Test
-    public void testConstructorInjection2() 
+    public void testConstructorInjection2()
     {
         clear();
-        
+
         ContextFactory.initRequestContext(null);
-        
-        AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml",
-                                                         TstBeanConstructor.class);
+
+        AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml", TstBeanConstructor.class);
 
         Object instance = compDef.create();
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanConstructor);
-        
+
         TstBeanConstructor tbc = (TstBeanConstructor) instance;
         Assert.assertEquals(0, tbc.getVal1());
-        Assert.assertEquals(40  , tbc.getVal2());
-    }    
+        Assert.assertEquals(40, tbc.getVal2());
+    }
 }

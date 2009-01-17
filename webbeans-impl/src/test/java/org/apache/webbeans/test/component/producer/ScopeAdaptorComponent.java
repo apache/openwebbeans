@@ -31,8 +31,7 @@ public class ScopeAdaptorComponent
     @SessionScoped
     @Binding2
     @Named
-    public IPayment scope(@Check(type = "CHECK")
-    IPayment payment)
+    public IPayment scope(@Check(type = "CHECK") IPayment payment)
     {
         return payment;
     }

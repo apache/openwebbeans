@@ -24,9 +24,7 @@ import org.apache.webbeans.test.component.CurrentBindingComponent;
 public class BrokenObserverComponent6
 {
 
-    public CurrentBindingComponent observer(@Observes
-    LoggingEvent event1, @Disposes
-    CurrentBindingComponent com)
+    public CurrentBindingComponent observer(@Observes LoggingEvent event1, @Disposes CurrentBindingComponent com)
     {
         return null;
     }

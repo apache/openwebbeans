@@ -29,16 +29,14 @@ public class PaymentProcessorComponent
     private IPayment paymentMoney;
 
     @Initializer
-    public void setPaymentCheck(@Check(type = "CHECK")
-    IPayment payment)
+    public void setPaymentCheck(@Check(type = "CHECK") IPayment payment)
     {
         this.paymentCheck = payment;
 
     }
 
     @Initializer
-    public void setPaymentMoney(@Check(type = "MONEY")
-    IPayment payment)
+    public void setPaymentMoney(@Check(type = "MONEY") IPayment payment)
     {
         this.paymentMoney = payment;
     }

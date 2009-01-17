@@ -33,8 +33,7 @@ public class ProducerNewComponent
     @Produces
     @Dependent
     @Named("paymentProducer")
-    public IPayment create(@New
-    CheckWithCheckPayment comp)
+    public IPayment create(@New CheckWithCheckPayment comp)
     {
         this.component = comp;
         return comp;

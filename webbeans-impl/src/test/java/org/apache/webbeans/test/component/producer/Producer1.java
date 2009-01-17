@@ -32,8 +32,7 @@ public class Producer1
     @ApplicationScoped
     @ProducerBinding1
     @Named
-    public IService getService(@Binding1
-    IService service)
+    public IService getService(@Binding1 IService service)
     {
         return service;
     }

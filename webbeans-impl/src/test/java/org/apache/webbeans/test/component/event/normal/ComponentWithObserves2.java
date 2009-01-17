@@ -30,17 +30,13 @@ public class ComponentWithObserves2
 
     private String user;
 
-    public void afterLogin(@Observes
-    @Role(value = "USER")
-    LoggedInEvent event, PaymentProcessorComponent payment)
+    public void afterLogin(@Observes @Role(value = "USER") LoggedInEvent event, PaymentProcessorComponent payment)
     {
         this.payment = payment.getPaymentCheck();
         this.user = event.getUserName();
     }
 
-    public void afterAdminLogin(@Observes
-    @Role(value = "ADMIN")
-    LoggedInEvent event, PaymentProcessorComponent payment)
+    public void afterAdminLogin(@Observes @Role(value = "ADMIN") LoggedInEvent event, PaymentProcessorComponent payment)
     {
         this.payment = payment.getPaymentCheck();
         this.user = event.getUserName();
