@@ -308,11 +308,6 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
 
-        if (ClassUtil.isStatic(method.getModifiers()))
-        {
-            throw new WebBeansConfigurationException("Producer method  : " + method.getName() + " in the class " + parentImplClazzName + " can not be static");
-        }
-
         Type returnType = method.getGenericReturnType();
         if (returnType instanceof ParameterizedType)
         {
