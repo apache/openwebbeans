@@ -51,7 +51,7 @@ public class XMLDefinitionTest extends TestContext
 
         Assert.assertEquals("definition1", compDef.getName());
 
-        Object instance = compDef.create();
+        Object instance = compDef.create(null);
 
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof Definition1);
@@ -64,7 +64,7 @@ public class XMLDefinitionTest extends TestContext
 
         XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition2.xml");
 
-        Object instance = compDef.create();
+        Object instance = compDef.create(null);
 
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof Definition2);
@@ -84,7 +84,7 @@ public class XMLDefinitionTest extends TestContext
 
         Assert.assertEquals("asyncCreditCardPaymentProcessor", compDef.getName());
 
-        Object instance = compDef.create();
+        Object instance = compDef.create(null);
 
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof MockAsynchronousCreditCardPaymentProcessor);
@@ -108,7 +108,7 @@ public class XMLDefinitionTest extends TestContext
         // an unnamed bean must not have a name
         Assert.assertNull(compDef.getName());
 
-        Object instance = compDef.create();
+        Object instance = compDef.create(null);
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanUnnamed);
     }
@@ -120,7 +120,7 @@ public class XMLDefinitionTest extends TestContext
 
         AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor1.xml", TstBeanConstructor.class);
 
-        Object instance = compDef.create();
+        Object instance = compDef.create(null);
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanConstructor);
 
@@ -138,7 +138,7 @@ public class XMLDefinitionTest extends TestContext
 
         AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml", TstBeanConstructor.class);
 
-        Object instance = compDef.create();
+        Object instance = compDef.create(null);
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanConstructor);
 

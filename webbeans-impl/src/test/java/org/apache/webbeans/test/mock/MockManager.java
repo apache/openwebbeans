@@ -18,10 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.webbeans.InjectionPoint;
 import javax.webbeans.Observer;
 import javax.webbeans.TypeLiteral;
 import javax.webbeans.manager.Bean;
 import javax.webbeans.manager.Context;
+import javax.webbeans.manager.CreationalContext;
 import javax.webbeans.manager.Decorator;
 import javax.webbeans.manager.InterceptionType;
 import javax.webbeans.manager.Interceptor;
@@ -114,6 +116,16 @@ public class MockManager implements Manager
         return manager.getContext(scopeType);
     }
 
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
+    {
+        return manager.getInstanceToInject(injectionPoint, context);
+    }
+    
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint)
+    {
+        return manager.getInstanceToInject(injectionPoint);
+    }    
+    
     public <T> T getInstance(Bean<T> bean)
     {
         return manager.getInstance(bean);

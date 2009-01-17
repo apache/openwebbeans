@@ -68,7 +68,6 @@ public class XMLTest extends TestContext
         }
         catch (Throwable e1)
         {
-            e1.printStackTrace();
             e = e1;
         }
 

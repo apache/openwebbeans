@@ -85,7 +85,7 @@ public class DependentComponentTest extends TestContext
         AbstractComponent<DependentA> componentA = defineSimpleWebBean(DependentA.class);
         AbstractComponent<DependentB> componentB = defineSimpleWebBean(DependentB.class);
 
-        DependentA dependentA = componentA.create();
+        DependentA dependentA = componentA.create(null);
 
     }
 
