@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.webbeans.InjectionPoint;
 import javax.webbeans.InterceptorBindingType;
 import javax.webbeans.NonBinding;
 import javax.webbeans.manager.InterceptionType;
@@ -307,6 +308,12 @@ public class WebBeansInterceptor extends Interceptor
     public Set<Class<?>> getTypes()
     {
         return delegateComponent.getTypes();
+    }
+    
+    
+    public Set<InjectionPoint> getInjectionPoints()
+    {
+        return delegateComponent.getInjectionPoints();
     }
 
     /*

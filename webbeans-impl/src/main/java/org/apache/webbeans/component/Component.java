@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
+import javax.webbeans.InjectionPoint;
 import javax.webbeans.manager.Bean;
 import javax.webbeans.manager.Manager;
 
@@ -55,6 +56,8 @@ public abstract class Component<T> extends Bean<T>
     abstract public void addStereoType(Annotation stereoType);
 
     abstract public void addApiType(Class<?> apiType);
+    
+    abstract public void addInjectionPoint(InjectionPoint injectionPoint);
 
     abstract public Set<Annotation> getImplBindingTypes();
 

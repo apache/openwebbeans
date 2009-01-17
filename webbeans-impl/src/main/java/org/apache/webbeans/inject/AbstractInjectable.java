@@ -40,7 +40,6 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-@SuppressWarnings("unchecked")
 public abstract class AbstractInjectable implements Injectable
 {
     /** Owner component */

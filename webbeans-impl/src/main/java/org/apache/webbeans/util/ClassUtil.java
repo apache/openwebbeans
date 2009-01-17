@@ -51,19 +51,16 @@ import org.apache.webbeans.exception.WebBeansException;
 @SuppressWarnings("unchecked")
 public final class ClassUtil
 {
-    public static Map<Class<?>, Object> PRIMITIVE_CLASS_DEFAULT_VALUES = null;
+    public static final Map<Class<?>, Object> PRIMITIVE_CLASS_DEFAULT_VALUES = new HashMap<Class<?>, Object>();;
 
-    public static Set<Class<?>> VALUE_TYPES = new HashSet<Class<?>>();
+    public static final Set<Class<?>> VALUE_TYPES = new HashSet<Class<?>>();
 
-    public static Set<Class<?>> PRIMITIVE_WRAPPERS = new HashSet<Class<?>>();
-
-    public static Set<Class<?>> PRIMITIVES = new HashSet<Class<?>>();
+    public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP = new HashMap<Class<?>, Class<?>>();
 
     public static final String WEBBEANS_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     static
-    {
-        PRIMITIVE_CLASS_DEFAULT_VALUES = new HashMap<Class<?>, Object>();
+    { 
         PRIMITIVE_CLASS_DEFAULT_VALUES.put(Integer.class, Integer.MIN_VALUE);
         PRIMITIVE_CLASS_DEFAULT_VALUES.put(Float.class, Float.MIN_VALUE);
         PRIMITIVE_CLASS_DEFAULT_VALUES.put(Double.class, Double.MIN_VALUE);
@@ -87,25 +84,15 @@ public final class ClassUtil
         VALUE_TYPES.add(Timestamp.class);
         VALUE_TYPES.add(BigDecimal.class);
         VALUE_TYPES.add(BigInteger.class);
-
-        PRIMITIVES.add(Integer.TYPE);
-        PRIMITIVES.add(Float.TYPE);
-        PRIMITIVES.add(Double.TYPE);
-        PRIMITIVES.add(Character.TYPE);
-        PRIMITIVES.add(Long.TYPE);
-        PRIMITIVES.add(Byte.TYPE);
-        PRIMITIVES.add(Short.TYPE);
-        PRIMITIVES.add(Boolean.TYPE);
-
-        PRIMITIVE_WRAPPERS.add(Integer.class);
-        PRIMITIVE_WRAPPERS.add(Float.class);
-        PRIMITIVE_WRAPPERS.add(Double.class);
-        PRIMITIVE_WRAPPERS.add(Character.class);
-        PRIMITIVE_WRAPPERS.add(Long.class);
-        PRIMITIVE_WRAPPERS.add(Byte.class);
-        PRIMITIVE_WRAPPERS.add(Short.class);
-        PRIMITIVE_WRAPPERS.add(Boolean.class);
-
+        
+        PRIMITIVE_TO_WRAPPERS_MAP.put(Integer.TYPE,Integer.class);
+        PRIMITIVE_TO_WRAPPERS_MAP.put(Float.TYPE,Float.class);
+        PRIMITIVE_TO_WRAPPERS_MAP.put(Double.TYPE,Double.class);
+        PRIMITIVE_TO_WRAPPERS_MAP.put(Character.TYPE,Character.class);
+        PRIMITIVE_TO_WRAPPERS_MAP.put(Long.TYPE,Long.class);
+        PRIMITIVE_TO_WRAPPERS_MAP.put(Byte.TYPE,Byte.class);
+        PRIMITIVE_TO_WRAPPERS_MAP.put(Short.TYPE,Short.class);
+        PRIMITIVE_TO_WRAPPERS_MAP.put(Boolean.TYPE,Boolean.class);
     }
 
     /*
@@ -337,6 +324,31 @@ public final class ClassUtil
 
         return null;
 
+    }
+    
+    public static Class<?>  getPrimitiveWrapper(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        
+        return PRIMITIVE_TO_WRAPPERS_MAP.get(clazz);
+
+    }
+    
+    public static Class<?> getWrapperPrimitive(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        
+        Set<Class<?>> keySet = PRIMITIVE_TO_WRAPPERS_MAP.keySet();
+        
+        for(Class<?> key : keySet)
+        {
+             if(PRIMITIVE_TO_WRAPPERS_MAP.get(key).equals(clazz))
+             {
+                 return key;
+             }
+        }
+        
+        return null;
     }
 
     /**
@@ -912,7 +924,7 @@ public final class ClassUtil
     {
         Asserts.nullCheckForClass(clazz);
 
-        return PRIMITIVE_WRAPPERS.contains(clazz);
+        return PRIMITIVE_TO_WRAPPERS_MAP.containsValue(clazz);
 
     }
 
@@ -934,7 +946,7 @@ public final class ClassUtil
 
         if (!result)
         {
-            result = PRIMITIVES.contains(clazz);
+            result = clazz.isPrimitive();
         }
 
         if (!result)
@@ -1306,4 +1318,5 @@ public final class ClassUtil
 
         return found;
     }
+    
 }

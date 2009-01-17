@@ -24,6 +24,7 @@ import java.util.WeakHashMap;
 
 import javax.webbeans.CreationException;
 import javax.webbeans.Dependent;
+import javax.webbeans.InjectionPoint;
 import javax.webbeans.manager.Bean;
 
 import org.apache.webbeans.container.ManagerImpl;
@@ -45,7 +46,6 @@ import org.apache.webbeans.intercept.InterceptorData;
  * {@link AbstractComponent#destroyInstance(Object)} methods.
  * </p>
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
 public abstract class AbstractComponent<T> extends Component<T>
@@ -91,6 +91,8 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /** The bean allows nullable object */
     protected boolean nullable = true;
+    
+    protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
 
     /**
      * Constructor definiton. Each subclass redefines its own constructor with
@@ -464,6 +466,16 @@ public abstract class AbstractComponent<T> extends Component<T>
             Bean<K> bean = (Bean<K>) this.dependentObjects.get(instance);
             bean.destroy(instance);
         }
+    }
+    
+    public void addInjectionPoint(InjectionPoint injectionPoint)
+    {
+        this.injectionPoints.add(injectionPoint);
+    }
+    
+    public Set<InjectionPoint> getInjectionPoints()
+    {
+        return this.injectionPoints;
     }
 
 }

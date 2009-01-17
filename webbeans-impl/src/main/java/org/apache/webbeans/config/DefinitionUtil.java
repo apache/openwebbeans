@@ -130,13 +130,26 @@ public final class DefinitionUtil
      */
     public static <T> void defineProducerMethodApiTypes(AbstractComponent<T> component, Class<T> clazz)
     {
+        Set<Class<?>> types = component.getTypes();
+        
         if (clazz.isPrimitive() || clazz.isArray())
         {
-            component.getTypes().add(clazz);
-            component.getTypes().add(Object.class);
+            types.add(clazz);
+            types.add(Object.class);
+            
+            if(clazz.isPrimitive())
+            {
+                types.add(ClassUtil.getPrimitiveWrapper(clazz));              
+            }
+            
         }
         else
         {
+            if(ClassUtil.isPrimitiveWrapper(clazz))
+            {
+                types.add(ClassUtil.getWrapperPrimitive(clazz));
+            }
+            
             ClassUtil.setTypeHierarchy(component.getTypes(), clazz);
         }
     }

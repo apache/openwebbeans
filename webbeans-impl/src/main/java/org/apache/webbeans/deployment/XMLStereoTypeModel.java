@@ -57,7 +57,6 @@ public class XMLStereoTypeModel implements IStereoTypeModel
         setName(name);
     }
 
-    @SuppressWarnings("unchecked")
     private void configure(Element stereoTypeDecleration, String errorMessage)
     {
         List<Element> childs = stereoTypeDecleration.elements();

@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.webbeans.Decorates;
+import javax.webbeans.InjectionPoint;
 import javax.webbeans.manager.Decorator;
 
 import org.apache.webbeans.component.AbstractComponent;
@@ -265,6 +266,11 @@ public class WebBeansDecorator extends Decorator
     public AbstractComponent<Object> getDelegateComponent()
     {
         return delegateComponent;
+    }
+    
+    public Set<InjectionPoint> getInjectionPoints()
+    {
+        return delegateComponent.getInjectionPoints();
     }
 
     /**

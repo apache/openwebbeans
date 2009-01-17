@@ -63,7 +63,6 @@ import org.apache.webbeans.util.WebBeansUtil;
  * Implementation of the {@link WebBeansManager} contract of the web beans
  * container.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  * @see java.webbeans.WebBeansManager
  */
