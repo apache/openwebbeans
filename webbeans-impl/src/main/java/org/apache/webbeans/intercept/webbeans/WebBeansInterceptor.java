@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.webbeans.InjectionPoint;
 import javax.webbeans.InterceptorBindingType;
 import javax.webbeans.NonBinding;
+import javax.webbeans.manager.CreationalContext;
 import javax.webbeans.manager.InterceptionType;
 import javax.webbeans.manager.Interceptor;
 
@@ -243,7 +244,7 @@ public class WebBeansInterceptor extends Interceptor
     }
 
     @Override
-    public Object create()
+    public Object create(CreationalContext<Object> creationalContext)
     {
         Object proxy = JavassistProxyFactory.createNewProxyInstance(this);
 

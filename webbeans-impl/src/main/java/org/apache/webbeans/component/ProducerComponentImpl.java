@@ -21,6 +21,7 @@ import javax.webbeans.Dependent;
 import javax.webbeans.IllegalProductException;
 import javax.webbeans.ScopeType;
 import javax.webbeans.manager.Bean;
+import javax.webbeans.manager.CreationalContext;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -130,7 +131,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
      * @see org.apache.webbeans.component.AbstractComponent#createInstance()
      */
     @Override
-    protected T createInstance()
+    protected T createInstance(CreationalContext<T> creationalContext)
     {
         T instance = null;
         Object parentInstance = getParentInstance();

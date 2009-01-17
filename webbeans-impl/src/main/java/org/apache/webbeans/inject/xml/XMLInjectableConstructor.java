@@ -41,7 +41,6 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
      * @see org.apache.webbeans.inject.InjectableConstructor#doInjection()
      */
     @Override
-    @SuppressWarnings("unchecked")
     public T doInjection()
     {
         T instance = null;

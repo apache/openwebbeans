@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.webbeans.manager.CreationalContext;
+
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
@@ -62,13 +64,13 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
      * @see org.apache.webbeans.component.ComponentImpl#createInstance()
      */
     @Override
-    protected T createInstance()
+    protected T createInstance(CreationalContext<T> creationalContext)
     {
         T instance = null;
 
         if (this.injectableConstructor == null)
         {
-            instance = super.createInstance();
+            instance = super.createInstance(creationalContext);
         }
         else
         {

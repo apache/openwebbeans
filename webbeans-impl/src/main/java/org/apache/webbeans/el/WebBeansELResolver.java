@@ -29,7 +29,7 @@ import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.DependentContext;
 
 public class WebBeansELResolver extends ELResolver
-{
+{    
 
     @Override
     public Class<?> getCommonPropertyType(ELContext arg0, Object arg1)

@@ -14,6 +14,7 @@
 package org.apache.webbeans.component;
 
 import javax.webbeans.Conversation;
+import javax.webbeans.manager.CreationalContext;
 
 import org.apache.webbeans.jsf.ConversationImpl;
 import org.apache.webbeans.jsf.ConversationManager;
@@ -28,7 +29,7 @@ public class ConversationComponent extends AbstractComponent<Conversation>
     }
 
     @Override
-    protected Conversation createInstance()
+    protected Conversation createInstance(CreationalContext<Conversation> creationalContext)
     {
         String conversationId = JSFUtil.getConversationId();
         Conversation conversation = null;

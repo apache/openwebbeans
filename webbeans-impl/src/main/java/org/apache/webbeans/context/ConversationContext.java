@@ -15,7 +15,7 @@ package org.apache.webbeans.context;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.webbeans.manager.Bean;
+import javax.webbeans.manager.Contextual;
 
 import org.apache.webbeans.context.type.ContextTypes;
 
@@ -38,7 +38,7 @@ public class ConversationContext extends AbstractContext
     @Override
     public void setComponentInstanceMap()
     {
-        this.componentInstanceMap = new ConcurrentHashMap<Bean<?>, Object>();
+        this.componentInstanceMap = new ConcurrentHashMap<Contextual<?>, Object>();
 
     }
 

@@ -15,7 +15,7 @@ package org.apache.webbeans.context;
 
 import java.util.HashMap;
 
-import javax.webbeans.manager.Bean;
+import javax.webbeans.manager.Contextual;
 
 import org.apache.webbeans.context.type.ContextTypes;
 
@@ -38,7 +38,7 @@ public class RequestContext extends AbstractContext
     @Override
     public void setComponentInstanceMap()
     {
-        this.componentInstanceMap = new HashMap<Bean<?>, Object>();
+        this.componentInstanceMap = new HashMap<Contextual<?>, Object>();
 
     }
 

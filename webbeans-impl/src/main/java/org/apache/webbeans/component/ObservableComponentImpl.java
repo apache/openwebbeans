@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import javax.webbeans.New;
+import javax.webbeans.manager.CreationalContext;
 
 import org.apache.webbeans.exception.WebBeansException;
 
@@ -43,7 +44,7 @@ public class ObservableComponentImpl<T, K> extends ComponentImpl<T>
     }
 
     @Override
-    protected T createInstance()
+    protected T createInstance(CreationalContext<T> creationalContext)
     {
         Set<Annotation> setBindingTypes = getBindingTypes();
         Annotation[] bindingTypes = new Annotation[setBindingTypes.size()];

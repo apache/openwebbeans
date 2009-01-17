@@ -26,6 +26,8 @@ import javax.webbeans.Dependent;
 import javax.webbeans.RequestScoped;
 import javax.webbeans.SessionScoped;
 import javax.webbeans.manager.Bean;
+import javax.webbeans.manager.Contextual;
+import javax.webbeans.manager.CreationalContext;
 import javax.webbeans.manager.Manager;
 
 import org.apache.webbeans.context.type.ContextTypes;
@@ -33,9 +35,6 @@ import org.apache.webbeans.exception.ContextRemoveException;
 
 /**
  * Abstract implementation of the {@link WebBeansContext} interfaces.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public abstract class AbstractContext implements WebBeansContext
 {
@@ -43,7 +42,7 @@ public abstract class AbstractContext implements WebBeansContext
 
     protected ContextTypes type;
 
-    protected Map<Bean<?>, Object> componentInstanceMap = null;
+    protected Map<Contextual<?>, Object> componentInstanceMap = null;
 
     protected Class<? extends Annotation> scopeType;
 
@@ -90,19 +89,24 @@ public abstract class AbstractContext implements WebBeansContext
         }
 
     }
+    
+    public <T> T get(Contextual<T> component, boolean create)
+    {
+        return get(component, create, null);
+    }
 
-    public <T> T get(Bean<T> component, boolean create)
+    public <T> T get(Contextual<T> component, boolean create,CreationalContext<T> creationalContext)
     {
         if (!active)
         {
             throw new ContextNotActiveException("WebBeans context with scope type annotation @" + getScopeType().getName() + " is not active with respect to the current thread");
         }
 
-        return getInstance(component, create);
+        return getInstance(component, create, creationalContext);
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T getInstance(Bean<T> component, boolean create)
+    protected <T> T getInstance(Contextual<T> component, boolean create,CreationalContext<T> creationalContext)
     {
         Object instance = null;
 
@@ -114,7 +118,7 @@ public abstract class AbstractContext implements WebBeansContext
         {
             if (create)
             {
-                instance = component.create();
+                instance = component.create(creationalContext);
                 if (instance != null)
                 {
                     componentInstanceMap.put(component, instance);
@@ -152,10 +156,10 @@ public abstract class AbstractContext implements WebBeansContext
     @SuppressWarnings("unchecked")
     public <T> void destroy()
     {
-        Set<Entry<Bean<?>, Object>> entrySet = componentInstanceMap.entrySet();
-        Iterator<Entry<Bean<?>, Object>> it = entrySet.iterator();
+        Set<Entry<Contextual<?>, Object>> entrySet = componentInstanceMap.entrySet();
+        Iterator<Entry<Contextual<?>, Object>> it = entrySet.iterator();
 
-        Bean<?> component = null;
+        Contextual<?> component = null;
         while (it.hasNext())
         {
             component = it.next().getKey();
@@ -211,7 +215,7 @@ public abstract class AbstractContext implements WebBeansContext
         return type;
     }
 
-    public Map<Bean<?>, Object> getComponentInstanceMap()
+    public Map<Contextual<?>, Object> getComponentInstanceMap()
     {
         return componentInstanceMap;
     }

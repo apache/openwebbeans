@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.webbeans.Decorates;
 import javax.webbeans.InjectionPoint;
+import javax.webbeans.manager.CreationalContext;
 import javax.webbeans.manager.Decorator;
 
 import org.apache.webbeans.component.AbstractComponent;
@@ -179,7 +180,7 @@ public class WebBeansDecorator extends Decorator
     }
 
     @Override
-    public Object create()
+    public Object create(CreationalContext<Object> context)
     {
         Object proxy = JavassistProxyFactory.createNewProxyInstance(this);
 
@@ -318,4 +319,5 @@ public class WebBeansDecorator extends Decorator
         return true;
     }
 
+ 
 }

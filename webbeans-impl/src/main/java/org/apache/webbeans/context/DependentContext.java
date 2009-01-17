@@ -16,6 +16,8 @@ package org.apache.webbeans.context;
 import javax.webbeans.ContextNotActiveException;
 import javax.webbeans.Dependent;
 import javax.webbeans.manager.Bean;
+import javax.webbeans.manager.Contextual;
+import javax.webbeans.manager.CreationalContext;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.type.ContextTypes;
@@ -43,13 +45,13 @@ public class DependentContext extends AbstractContext
     }
 
     @Override
-    protected <T> T getInstance(Bean<T> component, boolean create)
+    protected <T> T getInstance(Contextual<T> component, boolean create,CreationalContext<T> creationalContext)
     {
         if (isActive())
         {
             if (create)
             {
-                T object = component.create();
+                T object = component.create(creationalContext);
 
                 return object;
             }

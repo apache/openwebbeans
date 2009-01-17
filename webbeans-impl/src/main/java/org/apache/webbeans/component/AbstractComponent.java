@@ -26,6 +26,7 @@ import javax.webbeans.CreationException;
 import javax.webbeans.Dependent;
 import javax.webbeans.InjectionPoint;
 import javax.webbeans.manager.Bean;
+import javax.webbeans.manager.CreationalContext;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.DependentContext;
@@ -112,7 +113,7 @@ public abstract class AbstractComponent<T> extends Component<T>
      * (non-Javadoc)
      * @see javax.webbeans.component.Component#create()
      */
-    public T create()
+    public T create(CreationalContext<T> creationalContext)
     {
         DependentContext context = (DependentContext) getManager().getContext(Dependent.class);
         boolean isActiveSet = false;
@@ -125,7 +126,7 @@ public abstract class AbstractComponent<T> extends Component<T>
                 isActiveSet = true;
             }
 
-            instance = createInstance();
+            instance = createInstance(creationalContext);
 
         }
         catch (RuntimeException re)
@@ -153,7 +154,7 @@ public abstract class AbstractComponent<T> extends Component<T>
      * 
      * @return instance of the component
      */
-    protected abstract T createInstance();
+    protected abstract T createInstance(CreationalContext<T> creationalContext);
 
     /*
      * (non-Javadoc)

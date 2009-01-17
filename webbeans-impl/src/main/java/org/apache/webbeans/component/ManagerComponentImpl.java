@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.component;
 
+import javax.webbeans.manager.CreationalContext;
 import javax.webbeans.manager.Manager;
 
 import org.apache.webbeans.container.ManagerImpl;
@@ -27,7 +28,7 @@ public class ManagerComponentImpl extends AbstractComponent<Manager>
     }
 
     @Override
-    protected Manager createInstance()
+    protected Manager createInstance(CreationalContext<Manager> creationalContext)
     {
         if (this.manager == null)
         {

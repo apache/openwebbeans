@@ -14,6 +14,7 @@
 package org.apache.webbeans.component;
 
 import javax.webbeans.New;
+import javax.webbeans.manager.CreationalContext;
 
 /**
  * Component definition with {@link New} binding annotation.
@@ -35,9 +36,9 @@ public class NewComponentImpl<T> extends ComponentImpl<T>
     }
 
     @Override
-    protected T createInstance()
+    protected T createInstance(CreationalContext<T> creationalContext)
     {
-        return super.createInstance();
+        return super.createInstance(creationalContext);
     }
 
     @Override

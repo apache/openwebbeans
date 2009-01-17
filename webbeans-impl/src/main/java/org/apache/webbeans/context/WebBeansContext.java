@@ -15,29 +15,8 @@ package org.apache.webbeans.context;
 
 import javax.webbeans.manager.Bean;
 
-/**
- * Extends the unpublished {@link javax.webbeans.manager.Context} interface for
- * backward capability with EDR-1 of the specification.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
 public interface WebBeansContext extends javax.webbeans.manager.Context
 {
-    /**
-     * Gets the web beans component from the context.
-     * <p>
-     * If the create argument is true and the instance is not contained in the
-     * context, new instance is created and returned.
-     * </p>
-     * 
-     * @param <T> generic type
-     * @param component web beans component
-     * @param create create or not flag
-     * @return the web beans component instance
-     */
-    public <T> T get(Bean<T> component, boolean create);
-
     /**
      * Removes the given web beans component from the context.
      * 

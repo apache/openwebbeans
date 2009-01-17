@@ -33,10 +33,12 @@ import javax.naming.StringRefAddr;
 import javax.webbeans.AmbiguousDependencyException;
 import javax.webbeans.ContextNotActiveException;
 import javax.webbeans.Dependent;
+import javax.webbeans.InjectionPoint;
 import javax.webbeans.Observer;
 import javax.webbeans.TypeLiteral;
 import javax.webbeans.manager.Bean;
 import javax.webbeans.manager.Context;
+import javax.webbeans.manager.CreationalContext;
 import javax.webbeans.manager.Decorator;
 import javax.webbeans.manager.InterceptionType;
 import javax.webbeans.manager.Interceptor;
@@ -165,6 +167,20 @@ public class ManagerImpl implements Manager, Referenceable
 
         return object;
     }
+    
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
+    {
+        T instance = null;
+        
+        return instance;
+    }
+    
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint)
+    {
+        T instance = null;
+        
+        return instance;
+    }
 
     public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes)
     {
@@ -193,6 +209,8 @@ public class ManagerImpl implements Manager, Referenceable
 
     public <T> Set<Bean<T>> resolveByType(Class<T> apiType, Annotation... bindingTypes)
     {
+        ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
+        
         return this.injectionResolver.implResolveByType(apiType, new Type[0], bindingTypes);
     }
 
@@ -201,6 +219,8 @@ public class ManagerImpl implements Manager, Referenceable
         ParameterizedType ptype = (ParameterizedType) apiType.getType();
         ResolutionUtil.resolveByTypeConditions(ptype);
 
+        ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
+        
         Type[] args = ptype.getActualTypeArguments();
         return this.injectionResolver.implResolveByType(apiType.getRawType(), args, bindingTypes);
     }

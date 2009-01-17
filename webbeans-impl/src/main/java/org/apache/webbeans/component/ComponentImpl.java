@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.webbeans.Decorates;
+import javax.webbeans.manager.CreationalContext;
 
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.exception.WebBeansException;
@@ -66,7 +67,7 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
      * @see org.apache.webbeans.component.AbstractComponent#createInstance()
      */
     @Override
-    protected T createInstance()
+    protected T createInstance(CreationalContext<T> creationalContext)
     {
         beforeConstructor();
 
@@ -74,7 +75,7 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
         InjectableConstructor<T> ic = new InjectableConstructor<T>(con, this);
 
         T instance = ic.doInjection();
-
+        
         afterConstructor(instance);
 
         return instance;
