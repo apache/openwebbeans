@@ -39,8 +39,9 @@ public class BeanObserverXMLImpl<T> extends BeanObserverImpl<T>
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.event.BeanObserverImpl#getMethodArguments(java.lang.Object)
+     * @see
+     * org.apache.webbeans.event.BeanObserverImpl#getMethodArguments(java.lang
+     * .Object)
      */
     @Override
     protected List<Object> getMethodArguments(Object event)

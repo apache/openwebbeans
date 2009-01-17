@@ -124,7 +124,6 @@ public class ConversationImpl implements Conversation
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -139,7 +138,6 @@ public class ConversationImpl implements Conversation
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

@@ -53,8 +53,9 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.component.ProducerComponentImpl#getActualTypeArguments()
+     * @see
+     * org.apache.webbeans.component.ProducerComponentImpl#getActualTypeArguments
+     * ()
      */
     @Override
     public Type[] getActualTypeArguments()

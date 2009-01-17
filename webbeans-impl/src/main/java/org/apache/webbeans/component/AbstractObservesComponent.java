@@ -28,8 +28,9 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.component.ObservableComponent#addObservableMethod(java.lang.reflect.Method)
+     * @see
+     * org.apache.webbeans.component.ObservableComponent#addObservableMethod
+     * (java.lang.reflect.Method)
      */
     public void addObservableMethod(Method observerMethod)
     {
@@ -38,8 +39,8 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.component.ObservableComponent#getObservableMethods()
+     * @see
+     * org.apache.webbeans.component.ObservableComponent#getObservableMethods()
      */
     public Set<Method> getObservableMethods()
     {

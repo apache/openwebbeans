@@ -22,7 +22,6 @@ public class InterceptorDataComparator implements Comparator<InterceptorData>
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare(InterceptorData o1, InterceptorData o2)

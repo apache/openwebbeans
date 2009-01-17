@@ -65,9 +65,9 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#setInterceptor(java.lang.reflect.Method,
-     *      java.lang.Class)
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#setInterceptor(java.lang
+     * .reflect.Method, java.lang.Class)
      */
     public void setInterceptor(Method m, Class<? extends Annotation> annotation)
     {
@@ -87,8 +87,9 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#addAroundInvoke(java.lang.reflect.Method)
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#addAroundInvoke(java.lang
+     * .reflect.Method)
      */
     protected void setAroundInvoke(Method m)
     {
@@ -97,8 +98,9 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#addPostConstruct(java.lang.reflect.Method)
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#addPostConstruct(java.lang
+     * .reflect.Method)
      */
     protected void setPostConstruct(Method m)
     {
@@ -107,8 +109,9 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#addPreDestroy(java.lang.reflect.Method)
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#addPreDestroy(java.lang
+     * .reflect.Method)
      */
     protected void setPreDestroy(Method m)
     {
@@ -117,7 +120,6 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.intercept.InterceptorData#getPostConstruct()
      */
     public Method getPostConstruct()
@@ -127,7 +129,6 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.intercept.InterceptorData#getPreDestroy()
      */
     public Method getPreDestroy()
@@ -137,7 +138,6 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.intercept.InterceptorData#getAroundInvoke()
      */
     public Method getAroundInvoke()
@@ -147,8 +147,8 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#getInterceptorInstance()
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#getInterceptorInstance()
      */
     public Object getInterceptorInstance()
     {
@@ -157,8 +157,9 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#setInterceptorInstance(java.lang.Object)
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#setInterceptorInstance(
+     * java.lang.Object)
      */
     public void setInterceptorInstance(Object interceptorInstance)
     {
@@ -167,8 +168,9 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#isDefinedInInterceptorClass()
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#isDefinedInInterceptorClass
+     * ()
      */
     public boolean isDefinedInInterceptorClass()
     {
@@ -177,8 +179,9 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#setDefinedInInterceptorClass(boolean)
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#setDefinedInInterceptorClass
+     * (boolean)
      */
     public void setDefinedInInterceptorClass(boolean definedInInterceptorClass)
     {
@@ -187,7 +190,6 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.intercept.InterceptorData#isDefinedInMethod()
      */
     public boolean isDefinedInMethod()
@@ -197,8 +199,8 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#setDefinedInMethod(boolean)
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#setDefinedInMethod(boolean)
      */
     public void setDefinedInMethod(boolean definedInMethod)
     {
@@ -207,7 +209,6 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.intercept.InterceptorData#getAnnotatedMethod()
      */
     public Method getAnnotatedMethod()
@@ -217,8 +218,9 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#setAnnotatedMethod(java.lang.reflect.Method)
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#setAnnotatedMethod(java
+     * .lang.reflect.Method)
      */
     public void setAnnotatedMethod(Method annotatedMethod)
     {
@@ -227,8 +229,8 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.intercept.InterceptorData#isDefinedWithWebBeansInterceptor()
+     * @seeorg.apache.webbeans.intercept.InterceptorData#
+     * isDefinedWithWebBeansInterceptor()
      */
     public boolean isDefinedWithWebBeansInterceptor()
     {

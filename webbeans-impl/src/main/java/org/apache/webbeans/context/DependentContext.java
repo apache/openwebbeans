@@ -71,7 +71,6 @@ public class DependentContext extends AbstractContext
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.context.AbstractContext#destroy()
      */
     @Override

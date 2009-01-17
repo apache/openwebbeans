@@ -29,7 +29,6 @@ public class DependentContextReference extends WeakReference<Object>
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -43,7 +42,6 @@ public class DependentContextReference extends WeakReference<Object>
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

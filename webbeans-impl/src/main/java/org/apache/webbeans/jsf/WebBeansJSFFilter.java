@@ -46,8 +46,9 @@ public class WebBeansJSFFilter implements Filter
 
             /*
              * (non-Javadoc)
-             * 
-             * @see javax.servlet.http.HttpServletResponseWrapper#sendRedirect(java.lang.String)
+             * @see
+             * javax.servlet.http.HttpServletResponseWrapper#sendRedirect(java
+             * .lang.String)
              */
             @Override
             public void sendRedirect(String location) throws IOException

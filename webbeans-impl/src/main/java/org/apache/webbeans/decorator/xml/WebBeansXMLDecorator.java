@@ -30,7 +30,6 @@ public class WebBeansXMLDecorator extends WebBeansDecorator
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.decorator.WebBeansDecorator#initDelegate()
      */
     @Override

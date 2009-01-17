@@ -59,7 +59,6 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.component.ComponentImpl#createInstance()
      */
     @Override
@@ -88,8 +87,9 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.component.ComponentImpl#injectFields(java.lang.Object)
+     * @see
+     * org.apache.webbeans.component.ComponentImpl#injectFields(java.lang.Object
+     * )
      */
     @Override
     protected void injectFields(T instance)
@@ -141,8 +141,9 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.component.ComponentImpl#injectMethods(java.lang.Object)
+     * @see
+     * org.apache.webbeans.component.ComponentImpl#injectMethods(java.lang.Object
+     * )
      */
     @Override
     protected void injectMethods(T instance)
@@ -201,10 +202,10 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
             listModel = new ArrayList<XMLInjectionPointModel>();
             this.injectableMethods.put(method, listModel);
         }
-        
-        if(model != null)
+
+        if (model != null)
         {
-            listModel.add(model);   
+            listModel.add(model);
         }
     }
 

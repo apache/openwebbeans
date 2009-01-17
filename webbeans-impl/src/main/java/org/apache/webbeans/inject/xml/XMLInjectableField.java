@@ -32,7 +32,6 @@ public class XMLInjectableField extends InjectableField
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.inject.InjectableField#doInjection()
      */
     @Override

@@ -16,8 +16,8 @@ package org.apache.webbeans.component;
 import javax.webbeans.Produces;
 
 /**
- * There are different <i>Web Beans Component</i> with regard to the
- * definition. These are the;
+ * There are different <i>Web Beans Component</i> with regard to the definition.
+ * These are the;
  * <ul>
  * <li>Bean Implementation Class Components</li>
  * <li>Producer Method Components</li>

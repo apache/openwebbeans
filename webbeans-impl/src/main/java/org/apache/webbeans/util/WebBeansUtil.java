@@ -1177,14 +1177,14 @@ public final class WebBeansUtil
         {
             throw new WebBeansConfigurationException("Producer method specialization is failed. Method " + method.getName() + " not found in super class : " + superClass.getName());
         }
-        
-        if(!AnnotationUtil.isAnnotationExist(superMethod.getAnnotations(), Produces.class))
+
+        if (!AnnotationUtil.isAnnotationExist(superMethod.getAnnotations(), Produces.class))
         {
             throw new WebBeansConfigurationException("Producer method specialization is failed. Method " + method.getName() + " found in super class : " + superClass.getName() + " is not annotated with @Produces");
         }
 
         Annotation[] anns = AnnotationUtil.getBindingAnnotations(superMethod.getAnnotations());
-        
+
         for (Annotation ann : anns)
         {
             component.addBindingType(ann);

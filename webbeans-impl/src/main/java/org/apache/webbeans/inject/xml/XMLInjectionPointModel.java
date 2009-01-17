@@ -138,7 +138,6 @@ public class XMLInjectionPointModel
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -155,7 +154,6 @@ public class XMLInjectionPointModel
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

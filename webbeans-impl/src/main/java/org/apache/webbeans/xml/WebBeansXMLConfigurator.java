@@ -785,7 +785,7 @@ public final class WebBeansXMLConfigurator
     public <T> void configureProducerTypeLevelMetaData(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, Element webBeanDecleration)
     {
         configureBindingType(component, annotationSet, annotationElementList);
-        
+
         // StereoType
         configureStereoType(component, annotationSet, annotationElementList);
 
@@ -1185,7 +1185,7 @@ public final class WebBeansXMLConfigurator
      */
     private <T> void configureMethodInitializeAnnotation(XMLComponentImpl<T> component, Method initializeMethod, List<Element> methodParameterElements)
     {
-        if(methodParameterElements.isEmpty())
+        if (methodParameterElements.isEmpty())
         {
             component.addMethodInjectionPoint(initializeMethod, null);
         }
@@ -1195,7 +1195,7 @@ public final class WebBeansXMLConfigurator
             {
                 XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(element, createConfigurationFailedMessage());
                 component.addMethodInjectionPoint(initializeMethod, model);
-            }            
+            }
         }
     }
 
@@ -1503,10 +1503,10 @@ public final class WebBeansXMLConfigurator
                 }
 
                 if (ClassUtil.isPrimitive(fieldType) || ClassUtil.isPrimitiveWrapper(fieldType)) /*
-                                                                                                     * Primitive
-                                                                                                     * type
-                                                                                                     * value
-                                                                                                     */
+                                                                                                  * Primitive
+                                                                                                  * type
+                                                                                                  * value
+                                                                                                  */
                 {
                     Object objVal = null;
 
@@ -1539,10 +1539,10 @@ public final class WebBeansXMLConfigurator
 
                 }
                 else if (fieldType.equals(Date.class) /*
-                                                         * Date, Time, Sql Date,
-                                                         * Time stamp, Calendar
-                                                         * value
-                                                         */
+                                                       * Date, Time, Sql Date,
+                                                       * Time stamp, Calendar
+                                                       * value
+                                                       */
                         || fieldType.equals(java.sql.Date.class) || fieldType.equals(Time.class) || fieldType.equals(Timestamp.class))
                 {
                     Date date = ClassUtil.isValueOkForDate(value);
@@ -1573,11 +1573,11 @@ public final class WebBeansXMLConfigurator
                 }
 
                 else if (fieldType.equals(BigDecimal.class) || fieldType.equals(BigInteger.class)) /*
-                                                                                                     * BigDecimal
-                                                                                                     * or
-                                                                                                     * BigInteger
-                                                                                                     * value
-                                                                                                     */
+                                                                                                    * BigDecimal
+                                                                                                    * or
+                                                                                                    * BigInteger
+                                                                                                    * value
+                                                                                                    */
                 {
                     Object bigValue = ClassUtil.isValueOkForBigDecimalOrInteger(fieldType, value);
 
@@ -1605,9 +1605,8 @@ public final class WebBeansXMLConfigurator
                     }
                 }
                 else if (List.class.isAssignableFrom(fieldType)) /*
-                                                                     * List
-                                                                     * value
-                                                                     */
+                                                                  * List value
+                                                                  */
                 {
                     configureFieldListValue(component, field, child, errorMessage);
                 }
@@ -1642,9 +1641,9 @@ public final class WebBeansXMLConfigurator
         List list = null;
 
         if (type instanceof ParameterizedType) /*
-                                                 * Type must be parametrized
-                                                 * type to mark type
-                                                 */
+                                                * Type must be parametrized type
+                                                * to mark type
+                                                */
         {
             ParameterizedType pt = (ParameterizedType) type;
             Type arg = pt.getActualTypeArguments()[0];
@@ -1736,9 +1735,9 @@ public final class WebBeansXMLConfigurator
         Set set = null;
 
         if (type instanceof ParameterizedType) /*
-                                                 * Type must be parametrized
-                                                 * type to mark type
-                                                 */
+                                                * Type must be parametrized type
+                                                * to mark type
+                                                */
         {
             ParameterizedType pt = (ParameterizedType) type;
             Type arg = pt.getActualTypeArguments()[0];

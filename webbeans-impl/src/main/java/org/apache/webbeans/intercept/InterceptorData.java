@@ -31,7 +31,7 @@ import javax.webbeans.manager.Interceptor;
  * <ul>
  * <li>EJB related interceptors with {@link Interceptors} annotation</li>
  * <li>WebBeans specific interceptor definition with using
- * {@link InterceptorBindingType} and {@link Interceptor} </li>
+ * {@link InterceptorBindingType} and {@link Interceptor}</li>
  * </ul>
  * </p>
  * <p>

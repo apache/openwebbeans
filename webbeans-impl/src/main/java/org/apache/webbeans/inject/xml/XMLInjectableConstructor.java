@@ -38,7 +38,6 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.inject.InjectableConstructor#doInjection()
      */
     @Override

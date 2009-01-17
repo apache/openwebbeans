@@ -35,7 +35,6 @@ public class XMLInjectableMethods<T> extends InjectableMethods<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.inject.InjectableMethods#doInjection()
      */
     @Override

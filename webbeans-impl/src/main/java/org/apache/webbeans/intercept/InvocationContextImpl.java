@@ -71,7 +71,6 @@ public class InvocationContextImpl implements InvocationContext
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.interceptor.InvocationContext#getContextData()
      */
     public Map<String, Object> getContextData()
@@ -81,7 +80,6 @@ public class InvocationContextImpl implements InvocationContext
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.interceptor.InvocationContext#getMethod()
      */
     public Method getMethod()
@@ -91,7 +89,6 @@ public class InvocationContextImpl implements InvocationContext
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.interceptor.InvocationContext#getParameters()
      */
     public Object[] getParameters()
@@ -101,7 +98,6 @@ public class InvocationContextImpl implements InvocationContext
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.interceptor.InvocationContext#getTarget()
      */
     public Object getTarget()
@@ -111,7 +107,6 @@ public class InvocationContextImpl implements InvocationContext
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.interceptor.InvocationContext#proceed()
      */
     public Object proceed() throws Exception
@@ -217,8 +212,8 @@ public class InvocationContextImpl implements InvocationContext
 
     /*
      * (non-Javadoc)
-     * 
-     * @see javax.interceptor.InvocationContext#setParameters(java.lang.Object[])
+     * @see
+     * javax.interceptor.InvocationContext#setParameters(java.lang.Object[])
      */
     public void setParameters(Object[] params)
     {

@@ -108,7 +108,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.webbeans.component.Component#create()
      */
     public T create()
@@ -129,11 +128,11 @@ public abstract class AbstractComponent<T> extends Component<T>
         }
         catch (RuntimeException re)
         {
-           throw new CreationException(re);
+            throw new CreationException(re);
         }
         catch (Exception e)
         {
-           throw new WebBeansException(e);
+            throw new WebBeansException(e);
         }
         finally
         {
@@ -156,7 +155,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.webbeans.component.Component#destroy(java.lang.Object)
      */
     public void destroy(T instance)
@@ -329,7 +327,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.webbeans.manager.Bean#getBindingTypes()
      */
     @Override
@@ -340,7 +337,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.webbeans.manager.Bean#getDeploymentType()
      */
     @Override
@@ -351,7 +347,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.webbeans.manager.Bean#getScopeType()
      */
     @Override
@@ -362,7 +357,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.webbeans.manager.Bean#getTypes()
      */
     @Override
@@ -416,7 +410,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.component.Component#setNullable()
      */
     @Override
@@ -427,7 +420,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.component.Component#setSerializable()
      */
     @Override
@@ -439,7 +431,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.webbeans.manager.Bean#isNullable()
      */
     @Override
@@ -451,7 +442,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.webbeans.manager.Bean#isSerializable()
      */
     @Override

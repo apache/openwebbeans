@@ -788,7 +788,7 @@ public final class ClassUtil
         int j = 0;
         for (Method method : methods)
         {
-            if(method.getName().equals(methodName))
+            if (method.getName().equals(methodName))
             {
                 Class<?>[] defineTypes = method.getParameterTypes();
 
@@ -798,13 +798,13 @@ public final class ClassUtil
                 }
 
                 boolean ok = true;
-                
-                if(parameterTypes != null && parameterTypes.size() > 0)
+
+                if (parameterTypes != null && parameterTypes.size() > 0)
                 {
                     ok = false;
                 }
-                
-                if(!ok)
+
+                if (!ok)
                 {
                     for (Class<?> defineType : defineTypes)
                     {
@@ -818,15 +818,15 @@ public final class ClassUtil
                         }
 
                         j++;
-                    }                    
+                    }
                 }
-                
+
                 if (ok)
                 {
                     methodList.add(method);
-                }                
+                }
             }
-            
+
         }
 
         return methodList;
@@ -843,9 +843,9 @@ public final class ClassUtil
         int j = 0;
         for (Method method : methods)
         {
-            if(method.getName().equals(methodName))
-            {             
-                if(parameterTypes != null && parameterTypes.size() > 0)
+            if (method.getName().equals(methodName))
+            {
+                if (parameterTypes != null && parameterTypes.size() > 0)
                 {
                     Class<?>[] defineTypes = method.getParameterTypes();
 
@@ -853,9 +853,9 @@ public final class ClassUtil
                     {
                         continue;
                     }
-                    
+
                     boolean ok = false;
-                    
+
                     for (Class<?> defineType : defineTypes)
                     {
                         if (defineType.equals(parameterTypes.get(j)))
@@ -871,13 +871,13 @@ public final class ClassUtil
                     if (ok)
                     {
                         return method;
-                    }                    
+                    }
                 }
                 else
                 {
                     return method;
                 }
-            }         
+            }
         }
 
         return null;

@@ -59,10 +59,10 @@ import org.dom4j.io.SAXReader;
 @SuppressWarnings("unchecked")
 public final class XMLUtil
 {
-	
-	private XMLUtil()
-	{
-	}
+
+    private XMLUtil()
+    {
+    }
 
     private static final Logger log = LogManager.getLogger(XMLUtil.class);
 

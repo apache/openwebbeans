@@ -199,7 +199,6 @@ public class StereoTypeModel implements IStereoTypeModel
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -220,7 +219,6 @@ public class StereoTypeModel implements IStereoTypeModel
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

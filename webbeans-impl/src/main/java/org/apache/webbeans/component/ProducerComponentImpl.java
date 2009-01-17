@@ -127,7 +127,6 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.component.AbstractComponent#createInstance()
      */
     @Override
@@ -167,8 +166,9 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.webbeans.component.AbstractComponent#destroyInstance(java.lang.Object)
+     * @see
+     * org.apache.webbeans.component.AbstractComponent#destroyInstance(java.
+     * lang.Object)
      */
     @Override
     protected void destroyInstance(T instance)

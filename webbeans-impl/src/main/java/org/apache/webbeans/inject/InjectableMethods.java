@@ -50,7 +50,6 @@ public class InjectableMethods<T> extends AbstractInjectable
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.apache.webbeans.inject.Injectable#doInjection()
      */
     public T doInjection()
