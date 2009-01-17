@@ -262,7 +262,7 @@ public class ExceptionComponentTest extends TestContext
             exc = e;
         }
 
-        Assert.assertNotNull(exc);
+        Assert.assertNull(exc);
 
     }
 
