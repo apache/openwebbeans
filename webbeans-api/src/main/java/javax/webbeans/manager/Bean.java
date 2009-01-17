@@ -87,7 +87,7 @@ public abstract class Bean<T> implements Contextual<T>
      * @param container web beans container
      * @return the new web beans component instance
      */
-    public abstract T create();
+    public abstract T create(CreationalContext<T> context);
 
     /**
      * Destoy the precreated web beans component instance.

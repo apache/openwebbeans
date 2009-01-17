@@ -16,9 +16,10 @@
  */
 package javax.webbeans.manager;
 
-public interface Contextual<T>
-{
-    public T create(CreationalContext<T> context);
+import java.lang.annotation.Annotation;
 
-    public void destroy(T instance);    
+public interface Instance<T>
+{
+    T get(Annotation...annotations);
+
 }

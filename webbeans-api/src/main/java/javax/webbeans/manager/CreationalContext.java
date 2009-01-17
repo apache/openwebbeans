@@ -18,6 +18,8 @@ package javax.webbeans.manager;
 
 public interface CreationalContext<T>
 {
-    public void push(T incompleteInstance);
+    public void push(Bean<T> bean, T incompleteInstance);
+    
+    public T pop(Bean<T> bean);
 
 }

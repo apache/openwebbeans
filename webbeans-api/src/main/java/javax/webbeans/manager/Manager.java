@@ -13,11 +13,11 @@
  */
 package javax.webbeans.manager;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
+import javax.webbeans.InjectionPoint;
 import javax.webbeans.NonBinding;
 import javax.webbeans.Observer;
 import javax.webbeans.TypeLiteral;
@@ -63,11 +63,9 @@ import javax.webbeans.TypeLiteral;
  * component, otherwise</li> exceptin is thrown by the container.
  * </ul>
  * </p>
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
+
  * @since 1.0
  */
-@SuppressWarnings("unchecked")
 public interface Manager
 {
     public <T> Set<Bean<T>> resolveByType(Class<T> type, Annotation... bindings);
@@ -79,6 +77,10 @@ public interface Manager
     public <T> T getInstanceByType(TypeLiteral<T> type, Annotation... bindingTypes);
 
     public Set<Bean<?>> resolveByName(String name);
+    
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context);
+    
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint);
 
     public Object getInstanceByName(String name);
 
