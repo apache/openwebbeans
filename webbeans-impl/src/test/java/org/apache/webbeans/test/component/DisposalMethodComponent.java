@@ -35,8 +35,7 @@ public class DisposalMethodComponent
     @ApplicationScoped
     @Current
     @Named
-    public IService getService(@Binding1
-    IService service)
+    public IService getService(@Binding1 IService service)
     {
         this.service = service;
 
@@ -48,9 +47,7 @@ public class DisposalMethodComponent
         return this.service;
     }
 
-    public void dispose(@Disposes
-    @Current
-    IService service)
+    public void dispose(@Disposes @Current IService service)
     {
         service = null;
         this.service = null;
