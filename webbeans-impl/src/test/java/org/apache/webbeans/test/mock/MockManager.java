@@ -116,14 +116,16 @@ public class MockManager implements Manager
         return manager.getContext(scopeType);
     }
 
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context)
     {
         return manager.getInstanceToInject(injectionPoint, context);
     }
     
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint)
+    public Object getInstanceToInject(InjectionPoint injectionPoint)
     {
-        return manager.getInstanceToInject(injectionPoint);
+        Object instance = manager.getInstanceToInject(injectionPoint);
+        
+        return instance;
     }    
     
     public <T> T getInstance(Bean<T> bean)

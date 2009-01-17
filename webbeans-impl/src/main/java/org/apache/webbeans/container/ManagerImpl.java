@@ -168,16 +168,16 @@ public class ManagerImpl implements Manager, Referenceable
         return object;
     }
     
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context)
     {
         T instance = null;
         
         return instance;
     }
     
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint)
+    public Object getInstanceToInject(InjectionPoint injectionPoint)
     {
-        T instance = null;
+        Object instance = null;
         
         return instance;
     }
