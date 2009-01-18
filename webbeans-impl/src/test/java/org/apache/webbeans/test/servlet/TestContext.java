@@ -24,6 +24,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpSession;
 import javax.webbeans.Decorator;
+import javax.webbeans.Dependent;
 import javax.webbeans.Interceptor;
 import javax.webbeans.Production;
 import javax.webbeans.manager.Context;
@@ -37,6 +38,8 @@ import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.xml.XMLComponentImpl;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
+import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -124,6 +127,7 @@ public abstract class TestContext implements ITestContext
             initInterceptors();
             initDecorators();
             initStereoTypes();
+            initDependentContext();
 
             init = true;
         }
@@ -136,6 +140,12 @@ public abstract class TestContext implements ITestContext
     {
         initializeDeploymentType(Production.class, 1);
 
+    }
+    
+    protected void initDependentContext()
+    {
+        DependentContext dependentContext = (DependentContext)ContextFactory.getStandartContext(Dependent.class);
+        dependentContext.setActive(true);
     }
 
     /**
