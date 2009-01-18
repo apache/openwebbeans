@@ -18,27 +18,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.util.Asserts;
 
-public final class SessionContextManager
+public class SessionContextManager
 {
-    private static SessionContextManager sessionContextManager = null;
-
     private Map<String, SessionContext> sessionContexts = null;
 
-    private SessionContextManager()
+    public SessionContextManager()
     {
 
     }
 
     public static SessionContextManager getInstance()
     {
-        if (sessionContextManager == null)
-        {
-            sessionContextManager = new SessionContextManager();
-            sessionContextManager.sessionContexts = new ConcurrentHashMap<String, SessionContext>();
-        }
-
+        SessionContextManager sessionContextManager = (SessionContextManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_SESSION_CONTEXT_MANAGER);
+        sessionContextManager.sessionContexts = new ConcurrentHashMap<String, SessionContext>();
+        
         return sessionContextManager;
     }
 

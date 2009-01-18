@@ -41,6 +41,8 @@ public class WebBeansFinder
     public static final String SINGLETON_XML_SPECIALIZES_MANAGER = "org.apache.webbeans.xml.XMLSpecializesManager";
 
     public static final String SINGLETON_INJECTION_RESOLVER = "org.apache.webbeans.container.InjectionResolver";
+    
+    public static final String SINGLETON_SESSION_CONTEXT_MANAGER = "org.apache.webbeans.context.SessionContextManager";
 
     private static Map<String, Map<ClassLoader, Object>> singletonMap = new HashMap<String, Map<ClassLoader, Object>>();
 
