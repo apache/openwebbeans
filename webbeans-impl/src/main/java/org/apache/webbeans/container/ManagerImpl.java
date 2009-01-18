@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.naming.NamingException;
@@ -71,7 +72,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 @SuppressWarnings("unchecked")
 public class ManagerImpl implements Manager, Referenceable
 {
-    private Map<Class<? extends Annotation>, Context> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, Context>();
+    private Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
 
     private Set<Bean<?>> components = new CopyOnWriteArraySet<Bean<?>>();
 
@@ -102,22 +103,45 @@ public class ManagerImpl implements Manager, Referenceable
     {
         Asserts.assertNotNull(scopType, "scopeType paramter can not be null");
 
-        Context ctx = null;
+        List<Context> contexts = new ArrayList<Context>();
+        
+        Context standartContext = null;
 
-        ctx = ContextFactory.getStandartContext(scopType);
+        standartContext = ContextFactory.getStandartContext(scopType);
 
-        if (ctx == null)
+        if(standartContext != null)
         {
-            ctx = getManager().contextMap.get(scopType);
+            if(standartContext.isActive())
+            {
+                contexts.add(standartContext);   
+            }
         }
+        
+        List<Context> others = this.contextMap.get(scopType);
+        if(others != null)
+        {
+            for(Context otherContext : others)
+            {
+                if(otherContext.isActive())
+                {
+                    contexts.add(otherContext);
+                }
+            }
+        }
+        
 
         // Still null
-        if (ctx == null)
+        if (contexts.isEmpty())
         {
             throw new ContextNotActiveException("WebBeans context with scope type annotation @" + scopType.getSimpleName() + " is not exist within current thread");
         }
+        
+        else if(contexts.size() > 1)
+        {
+            throw new IllegalStateException("More than one context exist with scope type annotation @" + scopType.getSimpleName());
+        }
 
-        return ctx;
+        return contexts.get(0);
     }
 
     public Manager addBean(Bean<?> component)
@@ -384,7 +408,19 @@ public class ManagerImpl implements Manager, Referenceable
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
         Asserts.assertNotNull(context, "context parameter can not be null");
 
-        getManager().contextMap.put(scopeType, context);
+        List<Context> contextList = this.contextMap.get(scopeType);
+        
+        if(contextList == null)
+        {
+            contextList = new CopyOnWriteArrayList<Context>();
+            contextList.add(context);
+            
+            this.contextMap.put(scopeType, contextList);
+        }
+        else
+        {
+            contextList.add(context);
+        }
 
     }
 
