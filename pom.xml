@@ -322,11 +322,19 @@
 -->
 		</dependencies>
 	</dependencyManagement>
+
+    <distributionManagement>
+        <site>
+            <id>site.incubator</id>
+            <url>scp://people.apache.org/www/incubator.apache.org/openwebbeans/${project.artifactId}/</url>
+        </site>    
+    </distributionManagement>
+      
 	<properties>
 		<openwebbeans.version>1.0.0-SNAPSHOT</openwebbeans.version>
 	</properties>
-  
-   <profiles>
+
+    <profiles>
         <profile>
             <id>release-profile</id>
             <activation>
