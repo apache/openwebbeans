@@ -21,14 +21,16 @@
 		<artifactId>apache</artifactId>
 		<version>4</version>
 	</parent>
+    
 	<groupId>org.apache.openwebbeans</groupId>
 	<artifactId>openwebbeans</artifactId>
 	<name>OpenWebBeans</name>
 	<packaging>pom</packaging>
 	<version>1.0.0-SNAPSHOT</version>
 
-	<description> Apache OpenWebBeans is an open source implementation of
-		JSR-299 WebBeans 
+	<description> 
+        Apache OpenWebBeans is an open source implementation of
+	    JSR-299 WebBeans 
 	</description>
 
 	<organization>
@@ -77,7 +79,63 @@
        </mailingList>
     </mailingLists>
 
-	<build>
+    <developers>
+        <developer>
+            <id>gerdogdu</id>
+            <name>Gurkan Erdogdu</name>
+            <email>gerdogdu at apache dot org</email>
+            <roles>
+                <role>PMC</role>
+                <role>Project Lead</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>matzew</id>
+            <name>Matthias Wessendorf</name>
+            <email>matzew at apache dot org</email>
+            <organization>Oracle, Germany</organization>
+            <organizationUrl>http://www.oracle.com/</organizationUrl>
+            <roles>
+                <role>PMC</role>
+                <role>Mentor</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>kevan</id>
+            <name>Kevan Miller</name>
+            <email>kevan dot miller at gmail dot com</email>
+            <roles>
+                <role>PMC</role>
+                <role>Mentor</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>mnour</id>
+            <name>Mohammad Nour El-Din</name>
+            <email>nour dot mohammad at gmail dot com</email>
+            <roles>
+              <role>committer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>conny</id>
+            <name>Conny Lundgren</name>
+            <email>conny dot lundgren at gmail dot com</email>
+            <roles>
+              <role>committer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>struberg</id>
+            <name>Mark Struberg</name>
+            <email>struberg at yahoo dot de</email>
+            <roles>
+              <role>committer</role>
+            </roles>
+        </developer>
+    </developers>
+	
+    <build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -108,10 +166,55 @@
 		</plugins>
 	</build>
     
-	<modules>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>cim</report>
+                            <report>index</report>
+                            <report>issue-tracking</report>
+                            <report>mailing-list</report>
+                            <report>project-team</report>
+                            <report>scm</report>
+                            <report>summary</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <quiet>true</quiet>
+                    <links>
+                        <link>http://java.sun.com/j2ee/1.4/docs/api</link>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://myfaces.apache.org/core12/myfaces-api/apidocs/</link>
+                    </links>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>javadoc</report>
+                            <report>test-javadoc</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+	
+    <modules>
 		<module>webbeans-api</module>
 		<module>webbeans-impl</module>
 		<module>samples</module>
+<!--		<module>webbeans-tck</module>-->
 	</modules>
     
 	<repositories>
@@ -131,6 +234,11 @@
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>openwebbeans-api</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.openwebbeans</groupId>
+				<artifactId>openwebbeans-impl</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -205,11 +313,13 @@
 				<artifactId>openwebbeans-api</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
+<!--  this is used for TCK tests            
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>openwebbeans-impl</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
+-->
 		</dependencies>
 	</dependencyManagement>
 	<properties>
