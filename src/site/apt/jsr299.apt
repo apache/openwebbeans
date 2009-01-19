@@ -1,0 +1,9 @@
+JSR-299 WebBeans
+
+  The purpose of the WebBeans specification is to unify the JSF managed bean component model 
+  with the EJB component model, resulting in a significantly simplified programming model 
+  for web-based applications. 
+
+* Official Resources
+    
+  *  {{{http://www.jcp.org/en/jsr/detail?id=299}Java Specification Request 299}}
