@@ -39,8 +39,8 @@ How to Configure The OpenWebBeans
 
 There are two important jars for OpenWebBeans;
 
- - webbeans-api-1.0.0-SNAPSHOT.jar
- - webbeans-impl-1.0.0-SNAPSHOT.jar
+ - openwebbeans-api-1.0.0-SNAPSHOT.jar
+ - openwebbeans-impl-1.0.0-SNAPSHOT.jar
 
 There are also a dependent libraries. These dependent library jars
 are located in the directory "/lib/thirdparty". 
@@ -79,12 +79,12 @@ in your runtime. After Maven installation, just run the following command in the
 
 > mvn clean install
 
-This command will install all the Maven artifacts in your local Maven respository.
+This command will install all the Maven artifacts in your local Maven repository.
 
 If you wish to build all the artifacts of the project, just run the following command
-in the src/ folder : 
+in the src/distribution folder : 
 
-> mvn clean package -Ddistribute=true
+> mvn clean package
 
 This command will package the project artifacts of the project from the source and put it into the "src/distribution/target/"
 directory.
