@@ -88,6 +88,12 @@
     </dependencySets>
 
     <fileSets>
+
+        <fileSet>
+            <directory>../licences</directory>
+            <outputDirectory>licences</outputDirectory>
+        </fileSet>
+
         <fileSet>
             <directory>..</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
