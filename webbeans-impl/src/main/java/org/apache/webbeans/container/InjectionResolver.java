@@ -185,13 +185,10 @@ public class InjectionResolver
                     }
                     else
                     {
-                        if (apiType instanceof Class)
+                        if (ClassUtil.isAssignable(apiType, componentApiType))
                         {
-                            if (ClassUtil.isAssignable((Class<?>) apiType, componentApiType))
-                            {
-                                results.add((Bean<T>) component);
-                                break;
-                            }
+                            results.add((Bean<T>) component);
+                            break;
                         }
                     }
                 }
