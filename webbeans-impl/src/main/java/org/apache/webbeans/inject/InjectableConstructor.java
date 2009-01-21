@@ -35,7 +35,6 @@ import org.apache.webbeans.util.AnnotationUtil;
  * @since 1.0
  * @see AbstractInjectable
  */
-@SuppressWarnings("unchecked")
 public class InjectableConstructor<T> extends AbstractInjectable
 {
     /** Injectable constructor instance */
@@ -83,7 +82,6 @@ public class InjectableConstructor<T> extends AbstractInjectable
 
                     checkParametrizedTypeForInjectionPoint(pt);
 
-                    args = new Type[1];
                     args = pt.getActualTypeArguments();
 
                     clazz = (Class<?>) pt.getRawType();

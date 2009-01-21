@@ -74,7 +74,6 @@ public class InjectableField extends AbstractInjectable
                 ParameterizedType pt = (ParameterizedType) type;
 
                 checkParametrizedTypeForInjectionPoint(pt);
-                args = new Type[1];
                 args = pt.getActualTypeArguments();
 
                 clazz = (Class<?>) pt.getRawType();
@@ -92,7 +91,7 @@ public class InjectableField extends AbstractInjectable
             field.set(instance, inject(clazz, args, annots));
 
         }
-        catch (Exception e)
+        catch (IllegalAccessException e)
         {
             throw new WebBeansException(e);
         }

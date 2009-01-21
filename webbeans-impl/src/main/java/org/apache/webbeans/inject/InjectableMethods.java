@@ -76,7 +76,6 @@ public class InjectableMethods<T> extends AbstractInjectable
                     ParameterizedType pt = (ParameterizedType) type;
 
                     checkParametrizedTypeForInjectionPoint(pt);
-                    args = new Type[1];
                     args = pt.getActualTypeArguments();
 
                     clazz = (Class<?>) pt.getRawType();
