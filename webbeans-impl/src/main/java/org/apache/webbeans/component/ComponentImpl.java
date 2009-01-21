@@ -179,8 +179,6 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
             }
 
         }
-
-        instance = null;
     }
 
     /**

@@ -79,8 +79,6 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
             methods.doInjection();
 
         }
-
-        instance = null;
     }
 
     protected T createInstance()

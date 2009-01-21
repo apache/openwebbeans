@@ -177,7 +177,6 @@ public class BeanObserverImpl<T> implements Observer<T>
                     if (type instanceof ParameterizedType)
                     {
                         ParameterizedType pt = (ParameterizedType) type;
-                        args = new Type[1];
                         args = pt.getActualTypeArguments();
 
                         clazz = (Class<?>) pt.getRawType();

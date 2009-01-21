@@ -183,9 +183,6 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
             m.doInjection();
 
         }
-
-        instance = null;
-
     }
 
     protected Object getParentInstance()

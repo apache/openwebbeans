@@ -284,8 +284,6 @@ public class InjectionResolver
 
         }
 
-        remainingSet = null;
-
         return result;
     }
 }
