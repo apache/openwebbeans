@@ -90,7 +90,7 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
         try
         {
             XMLInjectableMethods<T> methods = new XMLInjectableMethods<T>(creatorMethod, parentInstance, this, this.producerMethodParameters);
-            methods.doInjection();
+            instance = methods.doInjection();
         }
         finally
         {
