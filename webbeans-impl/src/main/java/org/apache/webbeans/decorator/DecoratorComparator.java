@@ -13,12 +13,16 @@
  */
 package org.apache.webbeans.decorator;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import javax.webbeans.manager.Decorator;
 
-public class DecoratorComparator implements Comparator<Decorator>
+public class DecoratorComparator implements Comparator<Decorator>, Serializable
 {
+
+    /** default serial version UID */
+    private static final long serialVersionUID = 1L;
 
     public int compare(Decorator o1, Decorator o2)
     {
