@@ -36,6 +36,7 @@ import org.apache.webbeans.context.type.ContextTypes;
  */
 public class DependentContext extends AbstractContext
 {
+    //X TODO owner never gets set currently?!?
     private AbstractComponent<?> owner;
 
     public DependentContext()
@@ -59,7 +60,9 @@ public class DependentContext extends AbstractContext
 
         else
         {
-            throw new ContextNotActiveException("Dependent  context with WebBeans component class : " + owner.getReturnType() + " is not active");
+            throw new ContextNotActiveException("Dependent  context with WebBeans component class : " + 
+                                                (owner != null ? owner.getReturnType() : "null") + 
+                                                " is not active");
         }
 
         return null;
