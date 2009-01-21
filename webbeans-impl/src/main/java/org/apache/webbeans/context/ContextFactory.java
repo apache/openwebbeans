@@ -226,6 +226,7 @@ public final class ContextFactory
      * 
      * @return the current context
      * @throws ContextNotActiveException if context is not active
+     * @throws IllegalArgumentException if the type is not a standard context
      */
     public static WebBeansContext getStandartContext(ContextTypes type) throws ContextNotActiveException
     {
@@ -233,24 +234,28 @@ public final class ContextFactory
 
         switch (type.getName())
         {
-        case 0:
-            context = getRequestContext();
-            break;
-
-        case 1:
-            context = getSessionContext();
-            break;
-
-        case 2:
-            context = getApplicationContext();
-            break;
-
-        case 3:
-            context = getConversationContext();
-
-        case 4:
-            context = getDependentContext();
-
+            case 0:
+                context = getRequestContext();
+                break;
+    
+            case 1:
+                context = getSessionContext();
+                break;
+    
+            case 2:
+                context = getApplicationContext();
+                break;
+    
+            case 3:
+                context = getConversationContext();
+                break;
+                
+            case 4:
+                context = getDependentContext();
+                break;
+            
+            default:
+                throw new IllegalArgumentException("There is no such a standard context with name id=" + type.getName());
         }
 
         return context;
@@ -261,6 +266,7 @@ public final class ContextFactory
      * 
      * @return the current context
      * @throws ContextNotActiveException if context is not active
+     * @throws IllegalArgumentException if the type is not a standard context
      */
     public static WebBeansContext getStandartContext(Class<? extends Annotation> scopeType) throws ContextNotActiveException
     {
@@ -287,7 +293,11 @@ public final class ContextFactory
         {
             context = getDependentContext();
         }
-
+        else 
+        {
+            throw new IllegalArgumentException("There is no such a standard context with name id=" + scopeType.getName());
+        }
+        
         return context;
     }
 
