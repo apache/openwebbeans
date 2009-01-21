@@ -36,4 +36,10 @@ public class ManagersImpl implements Managers
         }
     }
 
+    public Manager createManager( List<Class<? extends Annotation>> enabledDeploymentTypes ) {
+        Manager manager = createManager();
+        setEnabledDeploymentTypes(enabledDeploymentTypes);
+        return manager;
+    }
+
 }
