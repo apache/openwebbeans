@@ -293,13 +293,13 @@ public final class WebBeansContainerDeployer
                     ScopeType scope = component.getScopeType().getAnnotation(ScopeType.class);
                     if (scope.passivating())
                     {
-                        // Check constructor
+                        // TODO  Check constructor
 
-                        // Check non-transient fields
+                        // TODO Check non-transient fields
 
-                        // Check initializer methods
+                        // TODO Check initializer methods
 
-                        // Check producer methods
+                        // TODO Check producer methods
                     }
                 }
             }
