@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.webbeans.Dependent;
+import javax.webbeans.manager.CreationalContext;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ProducerComponentImpl;
@@ -81,7 +82,7 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
         }
     }
 
-    protected T createInstance()
+    protected T createInstance(CreationalContext<T> creationalContext)
     {
         T instance = null;
         Object parentInstance = getParentInstance();
