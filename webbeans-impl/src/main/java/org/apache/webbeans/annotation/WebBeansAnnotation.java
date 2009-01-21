@@ -112,17 +112,19 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
     public String toString()
     {
 
-        String string = "@" + annotationType().getName() + "(";
+        StringBuilder sb = new StringBuilder("@" + annotationType().getName() + "(");
         for (int i = 0; i < members.length; i++)
         {
-            string += members[i].getName() + "=";
-            string += this.invoke(members[i]);
+            sb.append(members[i].getName()).append("=");
+            sb.append(this.invoke(members[i]));
             if (i < members.length - 1)
             {
-                string += ",";
+                sb.append(",");
             }
         }
-        return string + ")";
+        
+        sb.append(")");
+        return sb.toString();
     }
 
     @Override
