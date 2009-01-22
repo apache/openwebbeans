@@ -103,7 +103,7 @@ class TransactionalNotifier
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((event.getClass() == null) ? 0 : event.getClass().hashCode());
+        result = prime * result + ((event == null) ? 0 : event.getClass().hashCode());
         return result;
     }
 
@@ -121,9 +121,9 @@ class TransactionalNotifier
         if (getClass() != obj.getClass())
             return false;
         final TransactionalNotifier other = (TransactionalNotifier) obj;
-        if (event.getClass() == null)
+        if (event == null)
         {
-            if (other.event.getClass() != null)
+            if (other.event != null)
                 return false;
         }
         else if (!event.getClass().equals(other.event.getClass()))
