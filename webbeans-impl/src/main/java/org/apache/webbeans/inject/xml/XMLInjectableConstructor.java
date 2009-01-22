@@ -27,8 +27,6 @@ import org.apache.webbeans.util.Asserts;
 
 public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
 {
-    private Constructor<T> constructor;
-
     private List<XMLInjectionPointModel> injectionPointModelList = new ArrayList<XMLInjectionPointModel>();
 
     public XMLInjectableConstructor(Constructor<T> constructor, AbstractComponent<?> owner)
@@ -90,7 +88,7 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
      */
     public Constructor<T> getConstructor()
     {
-        return constructor;
+        return con;
     }
 
     public void addInjectionPointModel(XMLInjectionPointModel model)
