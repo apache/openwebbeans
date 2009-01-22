@@ -14,6 +14,8 @@
 package org.apache.webbeans.deployment;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,8 +36,10 @@ public class DeploymentTypeManager
     public static DeploymentTypeManager getInstance()
     {
         DeploymentTypeManager instance = (DeploymentTypeManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_DEPLOYMENT_TYPE_MANAGER);
-        instance.deploymentTypeMap.put(Standard.class, Integer.valueOf(0));
-
+        if (!instance.deploymentTypeMap.containsKey(Standard.class)) 
+        {
+            instance.deploymentTypeMap.put(Standard.class, Integer.valueOf(0));
+        }
         return instance;
     }
 
@@ -88,5 +92,13 @@ public class DeploymentTypeManager
     {
         Asserts.assertNotNull(deploymentType, "deploymentType parameter can not be null");
         return deploymentTypeMap.containsKey(deploymentType);
+    }
+    
+    public List<Class<? extends Annotation>> getEnabledDeploymentTypes()
+    {
+        ArrayList<Class<? extends Annotation>> enabledDeploymentTypes = new ArrayList<Class<? extends Annotation>>();
+        
+        enabledDeploymentTypes.addAll(deploymentTypeMap.keySet());
+        return enabledDeploymentTypes;
     }
 }
