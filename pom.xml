@@ -430,9 +430,9 @@
 
     <distributionManagement>
         <site>
-            <id>site.incubator</id>
-            <url>scp://people.apache.org/www/incubator.apache.org/openwebbeans/${project.artifactId}/</url>
-        </site>    
+            <id>apache.openwebbeans.site</id>
+            <url>scp://people.apache.org/www/incubator.apache.org/openwebbeans/${project.artifactId}/${project.version}</url>
+        </site>
     </distributionManagement>
       
 	<properties>
