@@ -13,12 +13,16 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 
-public class InterceptorDataComparator implements Comparator<InterceptorData>
+public class InterceptorDataComparator implements Comparator<InterceptorData>, Serializable
 {
+
+    /** default serial version */
+    private static final long serialVersionUID = 1L;
 
     /*
      * (non-Javadoc)
