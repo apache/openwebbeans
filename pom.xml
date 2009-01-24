@@ -431,7 +431,7 @@
     <distributionManagement>
         <site>
             <id>apache.openwebbeans.site</id>
-            <url>scp://people.apache.org/www/incubator.apache.org/openwebbeans/${project.artifactId}/${project.version}</url>
+            <url>scp://people.apache.org/www/incubator.apache.org/openwebbeans/${project.version}</url>
         </site>
     </distributionManagement>
       
