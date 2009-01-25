@@ -701,7 +701,7 @@ public final class ClassUtil
             Type[] lhsArgs = lhs.getActualTypeArguments();
             Type[] rhsArgs = rhs.getActualTypeArguments();
 
-            if (lhsArgs.equals(rhsArgs))
+            if (Arrays.equals(lhsArgs,rhsArgs))
             {
                 return true;
             }
