@@ -11,7 +11,6 @@
 	<name>OpenWebBeans :: Guess and Login Application</name>
 	<version>1.0.0-SNAPSHOT</version>
 	<description>Simple login and guess application</description>
-	<url>http://maven.apache.org</url>
 	<build>
 		<finalName>guess</finalName>
 	</build>
@@ -24,12 +23,18 @@
 		<dependency>
 			<groupId>org.apache.myfaces.core</groupId>
 			<artifactId>myfaces-api</artifactId>
-			<scope>provided</scope>
+			<version>1.2.5</version>
+<!--			<scope>provided</scope>-->
+		</dependency>
+		<dependency>
+			<groupId>org.apache.myfaces.core</groupId>
+			<artifactId>myfaces-impl</artifactId>
+			<version>1.2.5</version>
+<!--			<scope>provided</scope>-->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-servlet_2.5_spec
-			</artifactId>
+			<artifactId>geronimo-servlet_2.5_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -40,7 +45,40 @@
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-api</artifactId>
-			<scope>provided</scope>
+			<version>1.0.0-SNAPSHOT</version>
+<!--			<scope>provided</scope>-->
+		</dependency>
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-impl</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>jetty</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.mortbay.jetty</groupId>
+						<artifactId>maven-jetty-plugin</artifactId>
+						<configuration>
+							<scanIntervalSeconds>10</scanIntervalSeconds>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			<pluginRepositories>
+				<!-- Repository to get the jetty plugin -->
+				<pluginRepository>
+					<id>mortbay-repo</id>
+					<name>mortbay-repo</name>
+					<url>http://www.mortbay.org/maven2/snapshot
+					</url>
+				</pluginRepository>
+			</pluginRepositories>
+		</profile>
+	</profiles>
+
 </project>

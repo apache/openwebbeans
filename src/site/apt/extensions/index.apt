@@ -1,0 +1,15 @@
+Extensions over the JSR-299 Specification
+
+  This section contains a list of functionality in OpenWebBeans
+  which is not covered by the official specification.
+
+  OpenWebBeans is fully compatible with the JSR-299 standard if 
+  the default configuration is being used. Nevertheless some parts
+  of the behaviour may be changed and some functionality is 
+  additionally available.
+
+  Please note that using the mentioned functionality can cause
+  that your application may not be run on other WebBeans implementations.
+
+  OpenWebBeans may be configured that a WARNING message will be logged
+  whenever any of this additional functionality is being used.

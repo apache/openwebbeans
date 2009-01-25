@@ -16,19 +16,7 @@
   |
 -->
 
-<project name="OpenWebBeans-Impl">
-    <bannerLeft>
-        <name>Apache OpenWebBeans</name>
-        <src>http://incubator.apache.org/openwebbeans/images/openwebbeans.png</src>
-        <href>http://incubator.apache.org/openwebbeans</href>
-    </bannerLeft>
-    
-    <bannerRight>
-        <name>Apache Banner</name>
-        <src>http://incubator.apache.org/openwebbeans/images/apache-incubator-logo.png</src>
-        <href>http://incubator.apache.org/openwebbeans</href>
-    </bannerRight>
-    
+<project name="OpenWebBeans-Samples">
     <publishDate format="dd MMM yyyy" />
     <version position="left"/>
     
@@ -36,12 +24,10 @@
         <breadcrumbs>
         <item name="Incubator" href="http://incubator.apache.org"/>
         <item name="OpenWebBeans" href="http://incubator.apache.org/openwebbeans"/>
-        <item name="Impl" href="http://incubator.apache.org/openwebbeans/${project.version}/openwebbeans-impl"/>
+        <item name="Samples" href="http://incubator.apache.org/openwebbeans/${project.version}/samples"/>
         </breadcrumbs>
 
-        <menu name="Overview">
-            <item name="Introduction" href="index.html" />
-        </menu>
+        <menu ref="modules" />
 
     	<menu ref="reports"/>
     </body>

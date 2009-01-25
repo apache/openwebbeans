@@ -16,19 +16,7 @@
   |
 -->
 
-<project name="OpenWebBeans">
-    <bannerLeft>
-        <name>Apache OpenWebBeans</name>
-        <src>http://incubator.apache.org/openwebbeans/images/openwebbeans.png</src>
-        <href>http://incubator.apache.org/openwebbeans</href>
-    </bannerLeft>
-    
-    <bannerRight>
-        <name>Apache Banner</name>
-        <src>http://incubator.apache.org/openwebbeans/images/apache-incubator-logo.png</src>
-        <href>http://incubator.apache.org/openwebbeans</href>
-    </bannerRight>
-    
+<project name="OpenWebBeans-Samples-Guess">
     <publishDate format="dd MMM yyyy" />
     <version position="left"/>
     
@@ -36,27 +24,15 @@
         <breadcrumbs>
         <item name="Incubator" href="http://incubator.apache.org"/>
         <item name="OpenWebBeans" href="http://incubator.apache.org/openwebbeans"/>
+        <item name="Samples" href="http://incubator.apache.org/openwebbeans/${project.version}/samples"/>
+        <item name="Samples" href="http://incubator.apache.org/openwebbeans/${project.version}/samples/guess"/>
         </breadcrumbs>
 
         <menu name="Overview">
             <item name="Introduction" href="index.html" />
         </menu>
 
-        <menu name="OpenWebBeans">
-            <item name="JSR-299" href="jsr299.html" />
-            <item name="Contributing" href="contributing.html" />
-            <item name="IRC" href="irc.html" />
-            <item name="FAQ" href="faq.html" />
-            <item name="Extensions" href="extensions/index.html" />
-        </menu>
-
-        <menu ref="modules" />
-
-        <menu name="Examples">
-            <item name="guess" href="examples/guess.html" />
-        </menu>
-
-	<menu ref="reports"/>
+    	<menu ref="reports"/>
     </body>
 </project>
 

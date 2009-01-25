@@ -28,5 +28,5 @@
 	<name>OpenWebBeans :: WebBeans-API</name>
 	<packaging>jar</packaging>
 	<version>1.0.0-SNAPSHOT</version>
-	<description>Web Bean API</description>
+	<description>JSR-299 Application Programming Interface</description>
 </project>
