@@ -14,7 +14,6 @@
 package org.apache.webbeans.annotation;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
@@ -124,6 +123,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
         }
         
         sb.append(")");
+        
         return sb.toString();
     }
 
@@ -138,7 +138,8 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
                 for (Method member : members)
                 {
                     Object thisValue = this.invoke(member);
-                    Object thatValue = invoke(member, that);
+                    Object thatValue = callMethod(member, that);
+                    
                     if (!thisValue.equals(thatValue))
                     {
                         return false;
@@ -174,9 +175,9 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
         int hashCode = 0;
         for (Method member : members)
         {
-            int memberNameHashCode = 127 * member.getName().hashCode();
-            int memberValueHashCode = invoke(member).hashCode();
-            hashCode += memberNameHashCode ^ memberValueHashCode;
+            int hashCodeName = 31 * member.getName().hashCode();
+            int hashCodeValue = invoke(member).hashCode();
+            hashCode += hashCodeName ^ hashCodeValue;
         }
         return hashCode;
     }
@@ -188,24 +189,16 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
         return this.annotationMembersValueMap.get(memberName);
     }
 
-    private static Object invoke(Method method, Object instance)
+    private static Object callMethod(Method method, Object instance)
     {
         try
         {
             return method.invoke(instance);
 
         }
-        catch (IllegalArgumentException e)
+        catch (Exception e)
         {
-            throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
-        }
-        catch (InvocationTargetException e)
-        {
-            throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
+            throw new ExecutionException(e);
         }
     }
 
