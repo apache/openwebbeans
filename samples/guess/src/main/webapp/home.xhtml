@@ -12,7 +12,7 @@
   
   <div id="container">
     <div id="content">
-        <h:form id="NumberGuessMain">			       
+        <h:form>			       
 
 	   	<div align="right">
 			<h:commandLink value="Logout" action="#{logoutBean.logout}" immediate="true"></h:commandLink>
@@ -22,31 +22,7 @@
 			<h:outputText value="Hello #{currentUser.userName} #{currentUser.password}"></h:outputText>
 		</h2>
     	
-       <h1>Please guess a number...</h1>
-   
-          <div style="color: red">
-             <h:messages id="messages" globalOnly="true"/>
-             <h:outputText id="higher" value="Higher..." rendered="#{game.number gt game.guess}"/>
-             <h:outputText id="lower" value="Lower..." rendered="#{game.number lt game.guess}"/>
-          </div>
-   
-          <div>
-             Please guess a number between #{game.smallest} and #{game.biggest}. Your remaining guesses : #{game.remainingGuesses}.
-          </div>
-     
-          <div>
-             Your guessed number: 
-             <h:inputText id="inputGuess" value="#{game.guess}" required="true" size="3">
-                <f:validateLongRange maximum="#{game.biggest}" minimum="#{game.smallest}"/>
-             </h:inputText>
-            <h:commandButton id="GuessButton" value="Guess Number" action="#{game.checkNumber}"/>
-            <h:commandButton id="Restart" value="Restart" action="#{game.clear}"/>
-          </div>
-   
-          <div>
-             <h:message id="message" for="inputGuess" style="color: red"/>
-          </div>
-       </h:form>
+        </h:form>
 		
     </div>
     
