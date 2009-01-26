@@ -16,6 +16,21 @@
  */
 package javax.webbeans.manager;
 
+/**
+ * The CreationalContext holds incomplete Bean instances.
+ * This may be caused by a situation like in the following example:
+ * <code>
+ * &#x0040;ApplicationScoped class Foo 
+ * { 
+ *   &#x0040;Current Bar _bar; 
+ * }
+ * 
+ * &#x0040;ApplicationScoped class Bar 
+ * { 
+ *   &#x0040;Current Foo _bar; 
+ * } 
+ * </code>
+ */
 public interface CreationalContext<T>
 {
     public void push(Bean<T> bean, T incompleteInstance);
