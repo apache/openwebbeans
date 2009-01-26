@@ -175,7 +175,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
         int hashCode = 0;
         for (Method member : members)
         {
-            int hashCodeName = 31 * member.getName().hashCode();
+            int hashCodeName = 127 * member.getName().hashCode();
             int hashCodeValue = invoke(member).hashCode();
             hashCode += hashCodeName ^ hashCodeValue;
         }
