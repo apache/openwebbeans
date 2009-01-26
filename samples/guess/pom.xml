@@ -8,9 +8,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>guess</artifactId>
 	<packaging>war</packaging>
-	<name>OpenWebBeans :: Guess and Login Application</name>
+	<name>OpenWebBeans :: Sample Application</name>
 	<version>1.0.0-SNAPSHOT</version>
-	<description>Simple login and guess application</description>
+	<description>Simple login application</description>
 	<build>
 		<finalName>guess</finalName>
 	</build>
