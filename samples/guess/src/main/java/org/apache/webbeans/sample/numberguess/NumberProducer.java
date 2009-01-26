@@ -20,28 +20,38 @@ package org.apache.webbeans.sample.numberguess;
 import java.util.Random;
 
 import javax.webbeans.ApplicationScoped;
+import javax.webbeans.Named;
 import javax.webbeans.Produces;
 
+@Named
 @ApplicationScoped
-public class NumberProducer {
-   
-   Random random = new Random( System.currentTimeMillis() );
+public class NumberProducer 
+{
+   private Random randomNumber = null;
    
    private int maxNumber = 100;
    
-   java.util.Random getRandom()
+   public NumberProducer()
    {
-      return random;
+       this.randomNumber = new Random(System.currentTimeMillis());
    }
    
-   @Produces @MaxNum int getMaxNumber()
+   public Random getRandom()
+   {
+      return randomNumber;
+   }
+   
+   @Produces
+   @MaxNum 
+   public int getMaxNumber()
    {
       return maxNumber;
    }
    
-   
-   @Produces @Rand int next() { 
-      return getRandom().nextInt(maxNumber); 
+   @Produces 
+   @Rand 
+   public int next() { 
+      return this.randomNumber.nextInt(maxNumber); 
    }
    
 } 
