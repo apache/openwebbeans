@@ -1,12 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:h="http://java.sun.com/jsf/html"
     xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:s="http://jboss.com/products/seam/taglib">
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
 
-  <ui:composition template="template.xhtml">
-    <ui:define name="content">
+<head>
+  <title>OpenWebBeans :: Examples</title>
+</head>
+
+<body>
+  
+  <div id="container">
+    <div id="content">
 		<h:messages globalOnly="false" showSummary="true"></h:messages>
 		
 		<h:form id="form">
@@ -36,6 +41,8 @@
 				</h:panelGrid>
 			</div>
 		</h:form>
-	</ui:define>
-</ui:composition>
+	    </div>
+    
+  </div>
+</body>
 </html>
