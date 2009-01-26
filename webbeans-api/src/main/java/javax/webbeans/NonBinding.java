@@ -19,14 +19,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * Defines that the annotation member values is not used in the equality
- * comparison of the annotations.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
 @Retention(RUNTIME)
 @Target(METHOD)
-public @interface NonBinding {
+public @interface NonBinding
+{
 }

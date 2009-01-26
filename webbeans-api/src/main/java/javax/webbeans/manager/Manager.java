@@ -63,8 +63,6 @@ import javax.webbeans.TypeLiteral;
  * component, otherwise</li> exceptin is thrown by the container.
  * </ul>
  * </p>
-
- * @since 1.0
  */
 public interface Manager
 {
@@ -77,9 +75,9 @@ public interface Manager
     public <T> T getInstanceByType(TypeLiteral<T> type, Annotation... bindingTypes);
 
     public Set<Bean<?>> resolveByName(String name);
-    
+
     public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context);
-    
+
     public Object getInstanceToInject(InjectionPoint injectionPoint);
 
     public Object getInstanceByName(String name);

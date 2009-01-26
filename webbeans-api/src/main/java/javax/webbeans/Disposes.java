@@ -18,16 +18,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Some producer method components defines it disposal method to dispose its
- * created object. This annotation is used at method parameter that corresponds
- * to the created producer component instance.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Disposes {
+public @interface Disposes
+{
 
 }

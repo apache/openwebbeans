@@ -16,104 +16,122 @@ package javax.webbeans;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
 
-/**
- * *****************************************************************************
- * **************** This class and its method signatures is taken from the
- * unpublished Web Beans API related code from the <a
- * href="http://anonsvn.jboss.org/repos/webbeans/">Web Beans RI svn</a>
- * *********
- * *********************************************************************
- * **************
- */
+@SuppressWarnings("unchecked")
 public abstract class TypeLiteral<T>
 {
-
-    private Type actualType;
+    private Type definedType;
 
     protected TypeLiteral()
     {
-        Class<?> typeLiteralSubclass = getTypeLiteralSubclass(this.getClass());
-        if (typeLiteralSubclass == null)
-        {
-            throw new RuntimeException(getClass() + " is not a subclass of TypeLiteral");
-        }
-        actualType = getTypeParameter(typeLiteralSubclass);
-        if (actualType == null)
-        {
-            throw new RuntimeException(getClass() + " is missing type parameter in TypeLiteral");
-        }
+        this.definedType = getDefinedType(this.getClass());
     }
 
     public final Type getType()
     {
-        return actualType;
+        return definedType;
     }
 
-    @SuppressWarnings("unchecked")
     public final Class<T> getRawType()
     {
-        Type type = getType();
-        if (type instanceof Class)
+        Class<T> rawType = null;
+
+        if (this.definedType instanceof Class)
         {
-            return (Class<T>) type;
+            rawType = (Class<T>) this.definedType;
         }
-        else if (type instanceof ParameterizedType)
+        else if (this.definedType instanceof ParameterizedType)
         {
-            return (Class<T>) ((ParameterizedType) type).getRawType();
+            ParameterizedType pt = (ParameterizedType) this.definedType;
+            rawType = (Class<T>) pt.getRawType();
+
         }
-        else if (type instanceof GenericArrayType)
+        else if (this.definedType instanceof GenericArrayType)
         {
-            return (Class<T>) Object[].class;
+            rawType = (Class<T>) Object[].class;
         }
         else
         {
-            throw new RuntimeException("Illegal type");
+            throw new ExecutionException("Illegal type for the Type Literal Class");
         }
+
+        return rawType;
     }
 
-    @SuppressWarnings("unchecked")
-    private static Class<?> getTypeLiteralSubclass(Class<?> clazz)
+    protected Type getDefinedType(Class<?> clazz)
     {
-        Class<?> superclass = clazz.getSuperclass();
-        if (superclass.equals(TypeLiteral.class))
-        {
-            return clazz;
-        }
-        else if (superclass.equals(Object.class))
-        {
-            return null;
-        }
-        else
-        {
-            return (getTypeLiteralSubclass(superclass));
-        }
-    }
+        Type type = null;
 
-    @SuppressWarnings("unchecked")
-    private static Type getTypeParameter(Class<?> superclass)
-    {
-        Type type = superclass.getGenericSuperclass();
-        if (type instanceof ParameterizedType)
+        if (clazz == null)
         {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            if (parameterizedType.getActualTypeArguments().length == 1)
+            throw new ExecutionException("Class parameter clazz can not be null");
+        }
+
+        Type superClazz = clazz.getGenericSuperclass();
+
+        if (superClazz.equals(Object.class))
+        {
+            throw new ExecutionException("Super class must be parametrized type");
+        }
+        else if (superClazz instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType) superClazz;
+            Type[] actualArgs = pt.getActualTypeArguments();
+
+            if (actualArgs.length == 1)
             {
-                return parameterizedType.getActualTypeArguments()[0];
+                type = actualArgs[0];
+
             }
+            else
+            {
+                throw new ExecutionException("More than one parametric type");
+            }
+
         }
-        return null;
-    }
-
-    public static void main(String[] args)
-    {
-        TypeLiteral<List<String>> s = new TypeLiteral<List<String>>()
+        else
         {
-        };
-        System.out.println(s.getRawType()); // List
-        System.out.println(s.getType()); // List<String>
+            type = getDefinedType((Class<?>) superClazz);
+        }
+
+        return type;
     }
 
-    // TODO: equals(), hashCode()
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((definedType == null) ? 0 : definedType.hashCode());
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TypeLiteral other = (TypeLiteral) obj;
+        if (definedType == null)
+        {
+            if (other.definedType != null)
+                return false;
+        }
+        else if (!definedType.equals(other.definedType))
+            return false;
+        return true;
+    }
+
 }

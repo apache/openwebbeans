@@ -20,15 +20,10 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * Defines the method as a producer method web beans component.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
 @Target(METHOD)
 @Retention(RUNTIME)
 @Documented
-public @interface Produces {
+public @interface Produces
+{
 
 }

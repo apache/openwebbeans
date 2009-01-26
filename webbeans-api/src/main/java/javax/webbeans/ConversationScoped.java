@@ -20,13 +20,11 @@ import java.lang.annotation.Target;
 
 /**
  * Conversation wide scope type.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 @ScopeType
 @Target( { ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ConversationScoped {
+public @interface ConversationScoped
+{
 
 }

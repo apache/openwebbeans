@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 @Target( { TYPE, METHOD })
 @Retention(RUNTIME)
 @Documented
-public @interface Specializes {
+public @interface Specializes
+{
 
 }

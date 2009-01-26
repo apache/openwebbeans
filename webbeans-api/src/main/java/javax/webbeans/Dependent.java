@@ -23,13 +23,11 @@ import java.lang.annotation.Target;
  * component. This parent web beans components saves this dependent web beans
  * components in its {@link Dependent} scope. This annotation is used for
  * marking the web beans scope as dependent.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 @ScopeType(normal = false)
 @Target( { ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Dependent {
+public @interface Dependent
+{
 
 }

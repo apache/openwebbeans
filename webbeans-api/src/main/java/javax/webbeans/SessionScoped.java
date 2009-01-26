@@ -21,16 +21,11 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * Session wide defined scope annotation.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
 @Target( { TYPE, METHOD })
 @Retention(RUNTIME)
 @Documented
 @ScopeType
-public @interface SessionScoped {
+public @interface SessionScoped
+{
 
 }

@@ -21,16 +21,11 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * Standart web beans component type.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
 @Target( { TYPE, METHOD })
 @Retention(RUNTIME)
 @Documented
 @DeploymentType
-public @interface Standard {
+public @interface Standard
+{
 
 }

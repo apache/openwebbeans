@@ -19,15 +19,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Meta-annotation used for defining new binding types.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
 @Target(value = { ElementType.ANNOTATION_TYPE })
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
-public @interface BindingType {
+public @interface BindingType
+{
 
 }

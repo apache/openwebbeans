@@ -24,7 +24,8 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(ANNOTATION_TYPE)
 @Documented
-public @interface Stereotype {
+public @interface Stereotype
+{
 
     public Class<? extends Annotation>[] supportedScopes() default {};
 

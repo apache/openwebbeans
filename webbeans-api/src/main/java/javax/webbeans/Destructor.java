@@ -19,13 +19,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * Specifies the destructor method for the EJB statefull web beans components.
- * 
- * @author gurkanerdogdu
- * @since 1.0
- */
 @Retention(RUNTIME)
 @Target(METHOD)
-public @interface Destructor {
+public @interface Destructor
+{
 }

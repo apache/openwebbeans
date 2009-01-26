@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 @Target( { METHOD, CONSTRUCTOR })
 @Retention(RUNTIME)
 @Documented
-public @interface Initializer {
+public @interface Initializer
+{
 
 }

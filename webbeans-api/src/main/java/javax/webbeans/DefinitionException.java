@@ -16,9 +16,6 @@ package javax.webbeans;
 /**
  * Defines the exception that is thrown when the definitons of the web beans
  * component is not logically correct.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public class DefinitionException extends RuntimeException
 {

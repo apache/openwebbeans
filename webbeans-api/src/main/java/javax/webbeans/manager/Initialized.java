@@ -25,6 +25,7 @@ import javax.webbeans.BindingType;
 @BindingType
 @Retention(RUNTIME)
 @Target( { FIELD, PARAMETER })
-public @interface Initialized {
+public @interface Initialized
+{
 
 }

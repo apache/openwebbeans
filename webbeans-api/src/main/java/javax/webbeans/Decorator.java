@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
 @Stereotype
-public @interface Decorator {
+public @interface Decorator
+{
 
 }

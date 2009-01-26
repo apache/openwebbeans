@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Documented
 @DeploymentType
-public @interface Production {
+public @interface Production
+{
 
 }

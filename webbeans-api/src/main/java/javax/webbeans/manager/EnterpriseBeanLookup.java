@@ -13,9 +13,6 @@
  */
 package javax.webbeans.manager;
 
-/**
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- */
 public interface EnterpriseBeanLookup
 {
 

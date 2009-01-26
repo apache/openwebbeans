@@ -110,7 +110,7 @@ public abstract class Bean<T> implements Contextual<T>
      * @return true if nullable
      */
     public abstract boolean isNullable();
-    
+
     public abstract Set<InjectionPoint> getInjectionPoints();
 
 }

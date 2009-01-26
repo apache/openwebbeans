@@ -14,66 +14,19 @@
 package javax.webbeans;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+@SuppressWarnings("unchecked")
 public abstract class AnnotationLiteral<T extends Annotation> implements Annotation
 {
-
     private Class<T> annotationType;
-    private Method[] members;
 
     protected AnnotationLiteral()
     {
-        Class<?> annotationLiteralSubclass = getAnnotationLiteralSubclass(this.getClass());
-        if (annotationLiteralSubclass == null)
-        {
-            throw new RuntimeException(getClass() + "is not a subclass of AnnotationLiteral ");
-        }
+        this.annotationType = getAnnotationType(getClass());
 
-        annotationType = getTypeParameter(annotationLiteralSubclass);
-
-        if (annotationType == null)
-        {
-            throw new RuntimeException(getClass() + " is missing type parameter in AnnotationLiteral");
-        }
-
-        this.members = annotationType.getDeclaredMethods();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Class<?> getAnnotationLiteralSubclass(Class<?> clazz)
-    {
-        Class<?> superclass = clazz.getSuperclass();
-        if (superclass.equals(AnnotationLiteral.class))
-        {
-            return clazz;
-        }
-        else if (superclass.equals(Object.class))
-        {
-            return null;
-        }
-        else
-        {
-            return (getAnnotationLiteralSubclass(superclass));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> Class<T> getTypeParameter(Class<?> annotationLiteralSuperclass)
-    {
-        Type type = annotationLiteralSuperclass.getGenericSuperclass();
-        if (type instanceof ParameterizedType)
-        {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            if (parameterizedType.getActualTypeArguments().length == 1)
-            {
-                return (Class<T>) parameterizedType.getActualTypeArguments()[0];
-            }
-        }
-        return null;
     }
 
     public Class<? extends Annotation> annotationType()
@@ -81,88 +34,135 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
         return annotationType;
     }
 
-    @Override
-    public String toString()
+    protected Class<T> getAnnotationType(Class<?> definedClazz)
     {
+        Type superClazz = definedClazz.getGenericSuperclass();
+        Class<T> clazz = null;
 
-        String string = "@" + annotationType().getName() + "(";
-        for (int i = 0; i < members.length; i++)
+        if (superClazz instanceof ParameterizedType)
         {
-            string += members[i].getName() + "=";
-            string += invoke(members[i], this);
-            if (i < members.length - 1)
+            ParameterizedType paramType = (ParameterizedType) superClazz;
+            Type[] actualArgs = paramType.getActualTypeArguments();
+
+            if (actualArgs.length == 1)
             {
-                string += ",";
+                Type type = actualArgs[0];
+                if (type instanceof Class)
+                {
+                    clazz = (Class<T>) type;
+                    return clazz;
+                }
+                else
+                {
+                    throw new ExecutionException("Not class type");
+                }
+
             }
+            else
+            {
+                throw new ExecutionException("More than one parametric type");
+            }
+
         }
-        return string + ")";
+        else
+        {
+            // Look for super, maybe inner
+            return getAnnotationType((Class<?>) superClazz);
+        }
+
     }
 
     @Override
     public boolean equals(Object other)
     {
+        Method[] methods = this.annotationType.getDeclaredMethods();
+
         if (other instanceof Annotation)
         {
-            Annotation that = (Annotation) other;
-            if (this.annotationType().equals(that.annotationType()))
+            Annotation annotOther = (Annotation) other;
+            if (this.annotationType().equals(annotOther.annotationType()))
             {
-                for (Method member : members)
+                for (Method method : methods)
                 {
-                    Object thisValue = invoke(member, this);
-                    Object thatValue = invoke(member, that);
-                    if (!thisValue.equals(thatValue))
+                    Object value = callMethod(this, method);
+                    Object annotValue = callMethod(annotOther, method);
+
+                    if (value != null && annotValue != null)
+                    {
+                        if (!value.equals(annotValue))
+                        {
+                            return false;
+                        }
+                    }
+                    else if ((value == null && annotValue != null) || (value != null && annotValue == null))
                     {
                         return false;
                     }
+
                 }
                 return true;
             }
         }
+
         return false;
     }
 
+    protected Object callMethod(Object instance, Method method)
+    {
+        try
+        {
+            return method.invoke(instance, new Object[] {});
+
+        }
+        catch (Exception e)
+        {
+            throw new ExecutionException("Exception in method call : " + method.getName());
+        }
+
+    }
+
     @Override
-    /*
-     * The hash code of a primitive value v is equal to
-     * WrapperType.valueOf(v).hashCode(), where WrapperType is the wrapper type
-     * corresponding to the primitive type of v (Byte, Character, Double, Float,
-     * Integer, Long, Short, or Boolean). The hash code of a string, enum,
-     * class, or annotation member-value I v is computed as by calling
-     * v.hashCode(). (In the case of annotation member values, this is a
-     * recursive definition.) The hash code of an array member-value is computed
-     * by calling the appropriate overloading of Arrays.hashCode on the value.
-     * (There is one overloading for each primitive type, and one for object
-     * reference types.)
-     */
     public int hashCode()
     {
+        Method[] methods = this.annotationType.getDeclaredMethods();
+
         int hashCode = 0;
-        for (Method member : members)
+        for (Method method : methods)
         {
-            int memberNameHashCode = 127 * member.getName().hashCode();
-            int memberValueHashCode = invoke(member, this).hashCode();
-            hashCode += memberNameHashCode ^ memberValueHashCode;
+            // Member name
+            int name = 127 * method.getName().hashCode();
+
+            // Member value
+            int value = callMethod(this, method).hashCode();
+            hashCode += name ^ value;
         }
         return hashCode;
     }
 
-    private static Object invoke(Method method, Object instance)
+    @Override
+    public String toString()
     {
-        try
+        Method[] methods = this.annotationType.getDeclaredMethods();
+
+        StringBuilder sb = new StringBuilder("@" + annotationType().getName() + "(");
+        int lenght = methods.length;
+
+        for (int i = 0; i < lenght; i++)
         {
-            return method.invoke(instance);
+            // Member name
+            sb.append(methods[i].getName()).append("=");
+
+            // Member value
+            sb.append(callMethod(this, methods[i]));
+
+            if (i < lenght - 1)
+            {
+                sb.append(",");
+            }
         }
-        catch (IllegalArgumentException e)
-        {
-            throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
-        }
-        catch (InvocationTargetException e)
-        {
-            throw new ExecutionException("Error checking value of member method " + method.getName() + " on " + method.getDeclaringClass(), e);
-        }
+
+        sb.append(")");
+
+        return sb.toString();
     }
 }

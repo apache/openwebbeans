@@ -16,9 +16,6 @@ package javax.webbeans.manager;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-/**
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- */
 public abstract class Decorator extends Bean<Object>
 {
 

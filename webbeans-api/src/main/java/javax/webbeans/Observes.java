@@ -20,15 +20,10 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * Defines the intention of the method as an observer.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
 @Target(PARAMETER)
 @Retention(RUNTIME)
 @Documented
-public @interface Observes {
+public @interface Observes
+{
 
 }

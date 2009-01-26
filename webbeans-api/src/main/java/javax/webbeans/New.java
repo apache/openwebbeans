@@ -27,14 +27,12 @@ import java.lang.annotation.Target;
  * Special binding. It is declared in the injection point. Every time injection
  * occurs, new instance of the injected component is created and put into the
  * dependent context.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 @Target( { METHOD, FIELD, PARAMETER, TYPE })
 @Retention(RUNTIME)
 @Documented
 @BindingType
-public @interface New {
+public @interface New
+{
 
 }

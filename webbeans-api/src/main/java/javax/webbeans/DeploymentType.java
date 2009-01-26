@@ -27,13 +27,11 @@ import java.lang.annotation.Target;
  * type, these are {@link Production} for application components and
  * {@link Standard} for standart components.
  * </p>
- * 
- * @author gurkanerdogdu
- * @since 1.0
  */
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
 @Documented
-public @interface DeploymentType {
+public @interface DeploymentType
+{
 
 }

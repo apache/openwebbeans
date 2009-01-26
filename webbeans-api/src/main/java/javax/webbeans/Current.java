@@ -25,14 +25,12 @@ import java.lang.annotation.Target;
 
 /**
  * Defines the current instance web beans component in the context.
- * 
- * @author gurkanerdogdu
- * @since 1.0
  */
 @Target( { TYPE, METHOD, PARAMETER, FIELD })
 @Retention(RUNTIME)
 @Documented
 @BindingType
-public @interface Current {
+public @interface Current
+{
 
 }

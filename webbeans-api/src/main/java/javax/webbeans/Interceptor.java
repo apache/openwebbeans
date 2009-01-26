@@ -19,15 +19,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * Web beans defined interceptor annotation.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
 @Retention(RUNTIME)
 @Target(TYPE)
 @Stereotype
-public @interface Interceptor {
+public @interface Interceptor
+{
 
 }

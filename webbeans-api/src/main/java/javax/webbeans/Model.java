@@ -29,6 +29,7 @@ import java.lang.annotation.Target;
 @Target( { TYPE, METHOD, FIELD })
 @Retention(RUNTIME)
 @Documented
-public @interface Model {
+public @interface Model
+{
 
 }

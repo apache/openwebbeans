@@ -19,8 +19,6 @@ import javax.webbeans.manager.Context;
  * If the {@link Context} is not avalaible in the time of web beans component
  * getting, this exception is thrown.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public class ContextNotActiveException extends ExecutionException
 {

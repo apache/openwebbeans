@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 @Target(FIELD)
 @Retention(RUNTIME)
 @Documented
-public @interface Decorates {
+public @interface Decorates
+{
 
 }
