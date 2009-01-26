@@ -475,13 +475,10 @@ public final class DefinitionUtil
                 {
                     WebBeansUtil.checkForNewBindingForDeployment(field.getGenericType(), clazz, field.getName(), anns);
 
-                    if (as.length > 0)
+                    int mod = field.getModifiers();
+                    if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
                     {
-                        int mod = field.getModifiers();
-                        if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
-                        {
-                            component.addInjectedField(field);
-                        }
+                        component.addInjectedField(field);
                     }
                 }
 
