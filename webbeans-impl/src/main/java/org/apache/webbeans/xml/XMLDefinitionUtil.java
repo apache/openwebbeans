@@ -22,20 +22,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Named;
+import javax.annotation.NonBinding;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.context.ScopeType;
+import javax.decorator.Decorator;
+import javax.inject.DeploymentType;
+import javax.inject.Specializes;
+import javax.inject.UnsatisfiedDependencyException;
+import javax.inject.manager.Bean;
+import javax.inject.manager.Interceptor;
 import javax.interceptor.AroundInvoke;
-import javax.webbeans.Decorator;
-import javax.webbeans.DeploymentType;
-import javax.webbeans.Named;
-import javax.webbeans.NonBinding;
-import javax.webbeans.NonexistentFieldException;
-import javax.webbeans.NonexistentTypeException;
-import javax.webbeans.ScopeType;
-import javax.webbeans.Specializes;
-import javax.webbeans.UnsatisfiedDependencyException;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.component.AbstractComponent;
@@ -47,6 +45,8 @@ import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.event.TransactionalObserverType;
 import org.apache.webbeans.event.xml.BeanObserverXMLImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.definition.NonexistentFieldException;
+import org.apache.webbeans.exception.definition.NonexistentTypeException;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorUtil;
@@ -93,7 +93,7 @@ public final class XMLDefinitionUtil
             throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " can not be non-static inner class");
         }
 
-        if (clazz.isAnnotationPresent(javax.webbeans.Interceptor.class))
+        if (clazz.isAnnotationPresent(javax.interceptor.Interceptor.class))
         {
             boolean found = XMLUtil.isElementChildExistWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_ELEMENT);
             if (!found)
@@ -121,7 +121,7 @@ public final class XMLDefinitionUtil
             while (it.hasNext())
             {
                 Class<? extends Annotation> clazz = it.next();
-                if (clazz.isAnnotationPresent(DeploymentType.class) || clazz.isAnnotationPresent(ScopeType.class) || AnnotationUtil.isBindingAnnotation(clazz) || AnnotationUtil.isInterceptorBindingAnnotation(clazz) || AnnotationUtil.isStereoTypeAnnotation(clazz) || clazz.equals(Named.class) || clazz.equals(Specializes.class) || clazz.equals(javax.webbeans.Interceptor.class) || clazz.equals(Decorator.class))
+                if (clazz.isAnnotationPresent(DeploymentType.class) || clazz.isAnnotationPresent(ScopeType.class) || AnnotationUtil.isBindingAnnotation(clazz) || AnnotationUtil.isInterceptorBindingAnnotation(clazz) || AnnotationUtil.isStereoTypeAnnotation(clazz) || clazz.equals(Named.class) || clazz.equals(Specializes.class) || clazz.equals(javax.interceptor.Interceptor.class) || clazz.equals(Decorator.class))
                 {
                     continue;
                 }
@@ -339,7 +339,7 @@ public final class XMLDefinitionUtil
         while (it.hasNext())
         {
             Class<? extends Annotation> temp = it.next();
-            if (temp.equals(javax.webbeans.Interceptor.class))
+            if (temp.equals(javax.interceptor.Interceptor.class))
             {
                 if (found)
                 {

@@ -21,8 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.webbeans.Decorates;
-import javax.webbeans.manager.Decorator;
+import javax.decorator.Decorates;
+import javax.inject.manager.Decorator;
 
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.container.ManagerImpl;

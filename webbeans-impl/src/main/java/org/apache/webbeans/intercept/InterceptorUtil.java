@@ -22,15 +22,13 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
+import javax.event.Observes;
+import javax.inject.Disposes;
+import javax.inject.Initializer;
+import javax.inject.Produces;
+import javax.inject.manager.InterceptionType;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
-import javax.webbeans.Destructor;
-import javax.webbeans.Disposes;
-import javax.webbeans.Initializer;
-import javax.webbeans.Observes;
-import javax.webbeans.Produces;
-import javax.webbeans.manager.InterceptionType;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -57,11 +55,6 @@ public final class InterceptorUtil
         }
 
         if (AnnotationUtil.isMethodHasAnnotation(method, Initializer.class))
-        {
-            return false;
-        }
-
-        if (AnnotationUtil.isMethodHasAnnotation(method, Destructor.class) || AnnotationUtil.isMethodHasAnnotation(method, Remove.class))
         {
             return false;
         }

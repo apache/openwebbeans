@@ -18,10 +18,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.webbeans.Dependent;
-import javax.webbeans.New;
-import javax.webbeans.Fires;
-import javax.webbeans.manager.Bean;
+import javax.context.Dependent;
+import javax.event.Fires;
+import javax.inject.New;
+import javax.inject.manager.Bean;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.InjectionResolver;

@@ -13,10 +13,10 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.webbeans.AnnotationLiteral;
-import javax.webbeans.Current;
-import javax.webbeans.Dependent;
-import javax.webbeans.RequestScoped;
+import javax.context.Dependent;
+import javax.context.RequestScoped;
+import javax.inject.AnnotationLiteral;
+import javax.inject.Current;
 
 /**
  * {@link Dependent} literal annotation.

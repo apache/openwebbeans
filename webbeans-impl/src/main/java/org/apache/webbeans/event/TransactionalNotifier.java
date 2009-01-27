@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.webbeans.Observer;
+import javax.event.Observer;
 
 import org.apache.webbeans.util.Asserts;
 

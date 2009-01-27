@@ -19,13 +19,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.webbeans.Decorator;
-import javax.webbeans.InconsistentSpecializationException;
-import javax.webbeans.Interceptor;
-import javax.webbeans.ScopeType;
-import javax.webbeans.Specializes;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.Manager;
+import javax.context.ScopeType;
+import javax.decorator.Decorator;
+import javax.inject.InconsistentSpecializationException;
+import javax.inject.Specializes;
+import javax.inject.manager.Bean;
+import javax.inject.manager.Manager;
+import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.InitializedManagerLiteral;

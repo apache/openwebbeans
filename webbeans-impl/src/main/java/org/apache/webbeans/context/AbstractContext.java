@@ -19,16 +19,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.webbeans.ApplicationScoped;
-import javax.webbeans.ContextNotActiveException;
-import javax.webbeans.ConversationScoped;
-import javax.webbeans.Dependent;
-import javax.webbeans.RequestScoped;
-import javax.webbeans.SessionScoped;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.Contextual;
-import javax.webbeans.manager.CreationalContext;
-import javax.webbeans.manager.Manager;
+import javax.context.ApplicationScoped;
+import javax.context.ContextNotActiveException;
+import javax.context.Contextual;
+import javax.context.ConversationScoped;
+import javax.context.CreationalContext;
+import javax.context.Dependent;
+import javax.context.RequestScoped;
+import javax.context.SessionScoped;
+import javax.inject.manager.Bean;
+import javax.inject.manager.Manager;
 
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.exception.ContextRemoveException;

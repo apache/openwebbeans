@@ -15,6 +15,8 @@ package org.apache.webbeans.jsf;
 
 import java.io.IOException;
 
+import javax.context.Conversation;
+import javax.inject.manager.Bean;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -23,8 +25,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import javax.webbeans.Conversation;
-import javax.webbeans.manager.Bean;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.container.ManagerImpl;

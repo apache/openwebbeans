@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.webbeans.AnnotationLiteral;
-import javax.webbeans.ApplicationScoped;
-import javax.webbeans.RequestScoped;
+import javax.context.ApplicationScoped;
+import javax.context.RequestScoped;
+import javax.inject.AnnotationLiteral;
 
 /**
  * {@link RequestScoped} literal annotation.

@@ -15,8 +15,8 @@ package org.apache.webbeans.annotation;
 
 import java.lang.annotation.Annotation;
 
-import javax.webbeans.AnnotationLiteral;
-import javax.webbeans.Production;
+import javax.inject.AnnotationLiteral;
+import javax.inject.Production;
 
 public class ProductionLiteral extends AnnotationLiteral<Production> implements Production
 {

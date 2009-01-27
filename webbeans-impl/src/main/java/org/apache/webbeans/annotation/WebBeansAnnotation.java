@@ -21,7 +21,7 @@ import java.util.Map;
 
 import javassist.util.proxy.MethodHandler;
 
-import javax.webbeans.ExecutionException;
+import javax.inject.ExecutionException;
 
 import org.apache.webbeans.util.Asserts;
 

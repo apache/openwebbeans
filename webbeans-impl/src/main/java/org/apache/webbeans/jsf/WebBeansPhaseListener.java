@@ -13,12 +13,12 @@
  */
 package org.apache.webbeans.jsf;
 
+import javax.context.ConversationScoped;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.html.HtmlInputHidden;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
-import javax.webbeans.ConversationScoped;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;

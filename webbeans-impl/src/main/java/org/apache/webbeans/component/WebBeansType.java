@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.component;
 
-import javax.webbeans.Produces;
+import javax.inject.Produces;
 
 /**
  * There are different <i>Web Beans Component</i> with regard to the definition.

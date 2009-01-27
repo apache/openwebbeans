@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.exception;
 
-import javax.webbeans.DefinitionException;
+import javax.inject.DefinitionException;
 
 /**
  * Exception that is thrown by the web beans container at the intialization

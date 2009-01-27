@@ -17,8 +17,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.webbeans.Dependent;
-import javax.webbeans.manager.CreationalContext;
+import javax.context.CreationalContext;
+import javax.context.Dependent;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ProducerComponentImpl;

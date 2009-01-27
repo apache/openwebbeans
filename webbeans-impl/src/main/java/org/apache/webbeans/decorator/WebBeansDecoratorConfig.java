@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.webbeans.manager.Decorator;
+import javax.inject.manager.Decorator;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;

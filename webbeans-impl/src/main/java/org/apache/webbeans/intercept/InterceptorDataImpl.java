@@ -18,8 +18,8 @@ import java.lang.reflect.Method;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.manager.Interceptor;
 import javax.interceptor.AroundInvoke;
-import javax.webbeans.manager.Interceptor;
 
 /**
  * Abstract implementation of the {@link InterceptorData} api contract.

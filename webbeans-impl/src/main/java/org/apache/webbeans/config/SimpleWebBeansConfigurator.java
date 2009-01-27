@@ -16,9 +16,9 @@ package org.apache.webbeans.config;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import javax.webbeans.Decorator;
-import javax.webbeans.Interceptor;
-import javax.webbeans.ScopeType;
+import javax.context.ScopeType;
+import javax.decorator.Decorator;
+import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.ProducerComponentImpl;

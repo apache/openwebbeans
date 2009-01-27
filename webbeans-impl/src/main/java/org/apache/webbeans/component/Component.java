@@ -17,9 +17,9 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
-import javax.webbeans.InjectionPoint;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.Manager;
+import javax.inject.manager.Bean;
+import javax.inject.manager.InjectionPoint;
+import javax.inject.manager.Manager;
 
 import org.apache.webbeans.intercept.InterceptorData;
 

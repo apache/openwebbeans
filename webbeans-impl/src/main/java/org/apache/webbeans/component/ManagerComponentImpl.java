@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.component;
 
-import javax.webbeans.manager.CreationalContext;
-import javax.webbeans.manager.Manager;
+import javax.context.CreationalContext;
+import javax.inject.manager.Manager;
 
 import org.apache.webbeans.container.ManagerImpl;
 

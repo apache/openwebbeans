@@ -13,11 +13,11 @@
  */
 package org.apache.webbeans.context;
 
-import javax.webbeans.ContextNotActiveException;
-import javax.webbeans.Dependent;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.Contextual;
-import javax.webbeans.manager.CreationalContext;
+import javax.context.ContextNotActiveException;
+import javax.context.Contextual;
+import javax.context.CreationalContext;
+import javax.context.Dependent;
+import javax.inject.manager.Bean;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.type.ContextTypes;

@@ -11,19 +11,32 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.annotation;
+package org.apache.webbeans.exception.definition;
 
-import javax.context.RequestScoped;
-import javax.inject.AnnotationLiteral;
-import javax.inject.Current;
+import javax.inject.DefinitionException;
 
-/**
- * {@link RequestScoped} literal annotation.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
-public class RequestedScopeLiteral extends AnnotationLiteral<RequestScoped> implements RequestScoped
+public class NonexistentTypeException extends DefinitionException
 {
+    private static final long serialVersionUID = 2340492433053441783L;
+
+    public NonexistentTypeException()
+    {
+        super();
+    }
+
+    public NonexistentTypeException(String message)
+    {
+        super(message);
+    }
+
+    public NonexistentTypeException(Throwable e)
+    {
+        super(e);
+    }
+
+    public NonexistentTypeException(String message, Throwable e)
+    {
+        super(message, e);
+    }
 
 }

@@ -27,23 +27,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.context.Context;
+import javax.context.ContextNotActiveException;
+import javax.context.CreationalContext;
+import javax.context.Dependent;
+import javax.event.Observer;
+import javax.inject.AmbiguousDependencyException;
+import javax.inject.TypeLiteral;
+import javax.inject.manager.Bean;
+import javax.inject.manager.Decorator;
+import javax.inject.manager.InjectionPoint;
+import javax.inject.manager.InterceptionType;
+import javax.inject.manager.Interceptor;
+import javax.inject.manager.Manager;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
-import javax.webbeans.AmbiguousDependencyException;
-import javax.webbeans.ContextNotActiveException;
-import javax.webbeans.Dependent;
-import javax.webbeans.InjectionPoint;
-import javax.webbeans.Observer;
-import javax.webbeans.TypeLiteral;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.Context;
-import javax.webbeans.manager.CreationalContext;
-import javax.webbeans.manager.Decorator;
-import javax.webbeans.manager.InterceptionType;
-import javax.webbeans.manager.Interceptor;
-import javax.webbeans.manager.Manager;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.config.WebBeansFinder;
@@ -403,7 +403,7 @@ public class ManagerImpl implements Manager, Referenceable
         return getManager().webBeansDecorators;
     }
 
-    private void addContext(Class<? extends Annotation> scopeType, javax.webbeans.manager.Context context)
+    private void addContext(Class<? extends Annotation> scopeType, javax.context.Context context)
     {
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
         Asserts.assertNotNull(context, "context parameter can not be null");

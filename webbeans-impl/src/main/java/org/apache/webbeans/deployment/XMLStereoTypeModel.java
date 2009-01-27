@@ -20,13 +20,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.webbeans.DeploymentType;
-import javax.webbeans.Named;
-import javax.webbeans.NonexistentTypeException;
-import javax.webbeans.ScopeType;
+import javax.annotation.Named;
+import javax.context.ScopeType;
+import javax.inject.DeploymentType;
 
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.definition.NonexistentTypeException;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.xml.XMLUtil;
@@ -70,13 +70,13 @@ public class XMLStereoTypeModel implements IStereoTypeModel
                 Class<?> clazz = XMLUtil.getElementJavaType(child);
                 if (clazz == null)
                 {
-                    throw new NonexistentTypeException(errorMessage + "Type is not exist with class name : " + XMLUtil.getElementJavaClassName(child));
+                    throw new NonexistentTypeException(errorMessage + "Type is not exist with class name : " + XMLUtil.getElementJavaClassName(child) + " in namespace : " + XMLUtil.getElementNameSpace(child) );
                 }
 
                 Class<? extends Annotation> annClazz = null;
                 if (!clazz.isAnnotation())
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "Type is not annotation type with class name : " + XMLUtil.getElementJavaClassName(child));
+                    throw new WebBeansConfigurationException(errorMessage + "Type is not annotation type with class name : " + XMLUtil.getElementJavaClassName(child) +  " in namespace : " + XMLUtil.getElementNameSpace(child));
                 }
 
                 annClazz = (Class<? extends Annotation>) clazz;

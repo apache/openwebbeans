@@ -18,16 +18,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.webbeans.AfterTransactionCompletion;
-import javax.webbeans.AfterTransactionFailure;
-import javax.webbeans.AfterTransactionSuccess;
-import javax.webbeans.BeforeTransactionCompletion;
-import javax.webbeans.Destructor;
-import javax.webbeans.Disposes;
-import javax.webbeans.Event;
-import javax.webbeans.Initializer;
-import javax.webbeans.Observes;
-import javax.webbeans.Produces;
+import javax.event.AfterTransactionCompletion;
+import javax.event.AfterTransactionFailure;
+import javax.event.AfterTransactionSuccess;
+import javax.event.BeforeTransactionCompletion;
+import javax.event.Event;
+import javax.event.Observes;
+import javax.inject.Disposes;
+import javax.inject.Initializer;
+import javax.inject.Produces;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -91,7 +90,7 @@ public final class EventUtil
             throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not define two parameters with annotated @Observes");
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Produces.class) || AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Initializer.class) || AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Destructor.class))
+        if (AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Produces.class) || AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Initializer.class))
         {
             throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
 

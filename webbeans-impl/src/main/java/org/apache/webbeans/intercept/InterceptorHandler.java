@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.context.Context;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
-import javax.webbeans.manager.Context;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;

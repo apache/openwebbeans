@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.webbeans.BindingType;
-import javax.webbeans.DuplicateBindingTypeException;
-import javax.webbeans.InterceptorBindingType;
-import javax.webbeans.NonBinding;
-import javax.webbeans.Stereotype;
+import javax.annotation.NonBinding;
+import javax.annotation.Stereotype;
+import javax.inject.BindingType;
+import javax.inject.DuplicateBindingTypeException;
+import javax.interceptor.InterceptorBindingType;
 
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 

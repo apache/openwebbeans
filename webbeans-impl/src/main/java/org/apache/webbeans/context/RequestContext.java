@@ -15,7 +15,7 @@ package org.apache.webbeans.context;
 
 import java.util.HashMap;
 
-import javax.webbeans.manager.Contextual;
+import javax.context.Contextual;
 
 import org.apache.webbeans.context.type.ContextTypes;
 

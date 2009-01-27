@@ -17,11 +17,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.webbeans.Dependent;
-import javax.webbeans.IllegalProductException;
-import javax.webbeans.ScopeType;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.CreationalContext;
+import javax.context.CreationalContext;
+import javax.context.Dependent;
+import javax.context.ScopeType;
+import javax.inject.IllegalProductException;
+import javax.inject.manager.Bean;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;

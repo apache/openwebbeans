@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.webbeans.manager.Manager;
+import javax.inject.manager.Manager;
 
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.container.InjectionResolver;

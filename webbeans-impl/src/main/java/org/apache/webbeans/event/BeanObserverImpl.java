@@ -21,10 +21,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.webbeans.Dependent;
-import javax.webbeans.Observer;
-import javax.webbeans.Observes;
-import javax.webbeans.manager.Context;
+import javax.context.Context;
+import javax.context.Dependent;
+import javax.event.Observer;
+import javax.event.Observes;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;

@@ -37,7 +37,7 @@ public final class WebBeansConstants
     public static final String CLASSPATH_URI_SCHEMA = "classpath:";
 
     /** WebBeans namespace */
-    public static final String WEB_BEANS_NAMESPACE = "urn:java:javax.webbeans";
+    public static final String WEB_BEANS_NAMESPACE = "urn:java:ee";
 
     /** <Deploy> XML Element */
     public static final String WEB_BEANS_XML_DEPLOY_ELEMENT = "Deploy";

@@ -21,9 +21,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.webbeans.DeploymentType;
-import javax.webbeans.ScopeType;
-import javax.webbeans.Stereotype;
+import javax.annotation.Stereotype;
+import javax.context.ScopeType;
+import javax.inject.DeploymentType;
 
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;

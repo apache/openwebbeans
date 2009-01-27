@@ -22,19 +22,18 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.webbeans.DeploymentType;
-import javax.webbeans.Destructor;
-import javax.webbeans.Disposes;
-import javax.webbeans.Initializer;
-import javax.webbeans.Named;
-import javax.webbeans.NonBinding;
-import javax.webbeans.Fires;
-import javax.webbeans.Observes;
-import javax.webbeans.Produces;
-import javax.webbeans.ScopeType;
-import javax.webbeans.Specializes;
-import javax.webbeans.UnsatisfiedDependencyException;
-import javax.webbeans.manager.Bean;
+import javax.annotation.Named;
+import javax.annotation.NonBinding;
+import javax.context.ScopeType;
+import javax.event.Fires;
+import javax.event.Observes;
+import javax.inject.DeploymentType;
+import javax.inject.Disposes;
+import javax.inject.Initializer;
+import javax.inject.Produces;
+import javax.inject.Specializes;
+import javax.inject.UnsatisfiedDependencyException;
+import javax.inject.manager.Bean;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
@@ -506,7 +505,7 @@ public final class DefinitionUtil
                     WebBeansUtil.checkForNewBindingForDeployment(t, clazz, method.getName(), a);
                 }
 
-                if (method.getAnnotation(Produces.class) == null && method.getAnnotation(Destructor.class) == null)
+                if (method.getAnnotation(Produces.class) == null)
                 {
                     WebBeansUtil.checkInjectedMethodParameterConditions(method, clazz);
                     if (!Modifier.isStatic(method.getModifiers()))

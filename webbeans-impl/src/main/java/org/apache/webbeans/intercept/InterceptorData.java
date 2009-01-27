@@ -18,11 +18,11 @@ import java.lang.reflect.Method;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.manager.Interceptor;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.InterceptorBindingType;
 import javax.interceptor.Interceptors;
 
-import javax.webbeans.InterceptorBindingType;
-import javax.webbeans.manager.Interceptor;
 
 /**
  * Web Beans general interceptor API contract. There are two types of

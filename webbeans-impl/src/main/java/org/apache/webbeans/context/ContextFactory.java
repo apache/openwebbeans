@@ -15,15 +15,15 @@ package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
 
+import javax.context.ApplicationScoped;
+import javax.context.ContextNotActiveException;
+import javax.context.ConversationScoped;
+import javax.context.Dependent;
+import javax.context.RequestScoped;
+import javax.context.SessionScoped;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.webbeans.ApplicationScoped;
-import javax.webbeans.ContextNotActiveException;
-import javax.webbeans.ConversationScoped;
-import javax.webbeans.Dependent;
-import javax.webbeans.RequestScoped;
-import javax.webbeans.SessionScoped;
 
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.jsf.ConversationManager;

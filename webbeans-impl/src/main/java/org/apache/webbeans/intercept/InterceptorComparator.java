@@ -15,7 +15,7 @@ package org.apache.webbeans.intercept;
 
 import java.util.Comparator;
 
-import javax.webbeans.manager.Interceptor;
+import javax.inject.manager.Interceptor;
 
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 

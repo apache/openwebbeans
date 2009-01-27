@@ -17,10 +17,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 
-import javax.webbeans.AmbiguousDependencyException;
-import javax.webbeans.ScopeType;
-import javax.webbeans.UnsatisfiedDependencyException;
-import javax.webbeans.manager.Bean;
+import javax.context.ScopeType;
+import javax.inject.AmbiguousDependencyException;
+import javax.inject.UnsatisfiedDependencyException;
+import javax.inject.manager.Bean;
 
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;

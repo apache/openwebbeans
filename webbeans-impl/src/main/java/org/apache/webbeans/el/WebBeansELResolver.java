@@ -16,14 +16,14 @@ package org.apache.webbeans.el;
 import java.beans.FeatureDescriptor;
 import java.util.Iterator;
 
+import javax.context.Dependent;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ELResolver;
 import javax.el.PropertyNotFoundException;
 import javax.el.PropertyNotWritableException;
-import javax.webbeans.Dependent;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.Manager;
+import javax.inject.manager.Bean;
+import javax.inject.manager.Manager;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.DependentContext;

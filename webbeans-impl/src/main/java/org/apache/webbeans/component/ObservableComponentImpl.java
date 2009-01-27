@@ -16,8 +16,8 @@ package org.apache.webbeans.component;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import javax.webbeans.New;
-import javax.webbeans.manager.CreationalContext;
+import javax.context.CreationalContext;
+import javax.inject.New;
 
 import org.apache.webbeans.exception.WebBeansException;
 

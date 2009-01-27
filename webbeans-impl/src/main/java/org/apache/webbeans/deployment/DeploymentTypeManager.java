@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.webbeans.Standard;
+import javax.inject.Standard;
 
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.util.Asserts;

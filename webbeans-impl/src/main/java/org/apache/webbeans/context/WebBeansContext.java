@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.context;
 
-import javax.webbeans.manager.Bean;
+import javax.inject.manager.Bean;
 
-public interface WebBeansContext extends javax.webbeans.manager.Context
+public interface WebBeansContext extends javax.context.Context
 {
     /**
      * Removes the given web beans component from the context.

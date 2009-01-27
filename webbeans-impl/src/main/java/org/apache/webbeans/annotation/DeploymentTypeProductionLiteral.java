@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.webbeans.AnnotationLiteral;
-import javax.webbeans.Production;
+import javax.inject.AnnotationLiteral;
+import javax.inject.Production;
 
 /**
  * {@link Production} literal annotation.

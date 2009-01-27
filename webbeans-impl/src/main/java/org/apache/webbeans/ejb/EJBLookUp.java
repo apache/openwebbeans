@@ -13,15 +13,7 @@
  */
 package org.apache.webbeans.ejb;
 
-import javax.webbeans.manager.EnterpriseBeanLookup;
-
-/**
- * This class is used for looking the EJBs in the container.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
-public class EJBLookUp implements EnterpriseBeanLookup
+public class EJBLookUp
 {
 
     /**

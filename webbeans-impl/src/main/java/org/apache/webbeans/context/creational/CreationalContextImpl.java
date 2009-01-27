@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.context.creational;
 
-import javax.webbeans.manager.CreationalContext;
+import javax.context.CreationalContext;
 
 /** {@inheritDoc} */
 public class CreationalContextImpl<T> implements CreationalContext<T>

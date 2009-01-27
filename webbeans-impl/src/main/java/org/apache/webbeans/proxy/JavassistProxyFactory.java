@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.webbeans.manager.Bean;
+import javax.inject.manager.Bean;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.AbstractComponent;

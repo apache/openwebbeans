@@ -33,27 +33,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.webbeans.AfterTransactionCompletion;
-import javax.webbeans.AfterTransactionFailure;
-import javax.webbeans.AfterTransactionSuccess;
-import javax.webbeans.BeforeTransactionCompletion;
-import javax.webbeans.Decorator;
-import javax.webbeans.DefinitionException;
-import javax.webbeans.DeploymentException;
-import javax.webbeans.DeploymentType;
-import javax.webbeans.Destructor;
-import javax.webbeans.Disposes;
-import javax.webbeans.IfExists;
-import javax.webbeans.Initializer;
-import javax.webbeans.Interceptor;
-import javax.webbeans.NonexistentConstructorException;
-import javax.webbeans.NonexistentFieldException;
-import javax.webbeans.NonexistentMethodException;
-import javax.webbeans.NonexistentTypeException;
-import javax.webbeans.Observes;
-import javax.webbeans.Produces;
-import javax.webbeans.Production;
-import javax.webbeans.ScopeType;
+import javax.context.ScopeType;
+import javax.decorator.Decorator;
+import javax.event.AfterTransactionCompletion;
+import javax.event.AfterTransactionFailure;
+import javax.event.AfterTransactionSuccess;
+import javax.event.BeforeTransactionCompletion;
+import javax.event.IfExists;
+import javax.event.Observes;
+import javax.inject.DefinitionException;
+import javax.inject.DeploymentException;
+import javax.inject.DeploymentType;
+import javax.inject.Disposes;
+import javax.inject.Initializer;
+import javax.inject.Produces;
+import javax.inject.Production;
+import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.CurrentLiteral;
@@ -67,6 +62,10 @@ import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.definition.NonexistentConstructorException;
+import org.apache.webbeans.exception.definition.NonexistentFieldException;
+import org.apache.webbeans.exception.definition.NonexistentMethodException;
+import org.apache.webbeans.exception.definition.NonexistentTypeException;
 import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.intercept.InterceptorsManager;
@@ -319,7 +318,7 @@ public final class WebBeansXMLConfigurator
             Class<?> clz = XMLUtil.getElementJavaType(child);
             if (clz == null)
             {
-                throw new NonexistentTypeException(createConfigurationFailedMessage() + "InterceptorBinding type with given class : " + XMLUtil.getElementJavaClassName(child) + " not found");
+                throw new NonexistentTypeException(createConfigurationFailedMessage() + "InterceptorBinding type with given class : " + XMLUtil.getElementJavaClassName(child) + " not found " + "in namespace : " + XMLUtil.getElementNameSpace(child));
             }
 
             if (!clz.isAnnotation() || !AnnotationUtil.isInterceptorBindingAnnotation((Class<? extends Annotation>) clz))
@@ -486,14 +485,11 @@ public final class WebBeansXMLConfigurator
      */
     private void configureNewWebBeanComponent(Element webBeanElement)
     {
-        String ns = XMLUtil.getElementNameSpace(webBeanElement);
-        String packageName = WebBeansNameSpaceContainer.getInstance().getPackageNameFromNameSpace(ns);
-        String className = packageName + XMLUtil.getName(webBeanElement);
-        Class<?> clazz = ClassUtil.getClassFromName(className);
+        Class<?> clazz = XMLUtil.getElementJavaType(webBeanElement);
 
         if (clazz == null)
         {
-            throw new NonexistentTypeException(createConfigurationFailedMessage() + "Class with name : " + className + " is not found");
+            throw new NonexistentTypeException(createConfigurationFailedMessage() + "Class with name : " + XMLUtil.getName(webBeanElement) + " is not found in namespace " + XMLUtil.getElementNameSpace(webBeanElement));
         }
 
         boolean ok = false;
@@ -1085,19 +1081,6 @@ public final class WebBeansXMLConfigurator
                         }
 
                     }
-                    else if (childClazz.equals(Destructor.class))
-                    {
-                        if (isDefineType)
-                        {
-                            throw new WebBeansConfigurationException(moreThanOneChildTypeErrorMesg);
-                        }
-                        else
-                        {
-                            isDefineType = true;
-                            type = 4;
-                        }
-
-                    }
                     else if (childClazz.equals(Produces.class))
                     {
                         if (isDefineType)
@@ -1166,10 +1149,6 @@ public final class WebBeansXMLConfigurator
             configureMethodObservesAnnotation(component, annotatedMethod, annotChild);
             break;
 
-        case 4:
-            configureMethodDestructorAnnotation(component, annotatedMethod, annotChild);
-            break;
-
         case 5:
             configureMethodInterceptorBindingTypeAnnotation(component, annotatedMethod, annotChild);
             break;
@@ -1197,11 +1176,6 @@ public final class WebBeansXMLConfigurator
                 component.addMethodInjectionPoint(initializeMethod, model);
             }
         }
-    }
-
-    private <T> void configureMethodDestructorAnnotation(XMLComponentImpl<T> component, Method destructorMethod, Element annotChild)
-    {
-        // TODO for EJB Stateful Session Bean
     }
 
     private <T> void configureMethodProducesAnnotation(XMLComponentImpl<T> component, Method producesMethod, Element annotChild)

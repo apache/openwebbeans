@@ -22,11 +22,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import javax.webbeans.CreationException;
-import javax.webbeans.Dependent;
-import javax.webbeans.InjectionPoint;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.CreationalContext;
+import javax.context.CreationalContext;
+import javax.context.Dependent;
+import javax.inject.CreationException;
+import javax.inject.manager.Bean;
+import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.DependentContext;

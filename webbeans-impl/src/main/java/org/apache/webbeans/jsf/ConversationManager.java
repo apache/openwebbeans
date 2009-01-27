@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.webbeans.Conversation;
-import javax.webbeans.manager.Bean;
+import javax.context.Conversation;
+import javax.inject.manager.Bean;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.config.WebBeansFinder;

@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.webbeans.DuplicateBindingTypeException;
-import javax.webbeans.NonexistentTypeException;
+import javax.inject.DefinitionException;
+import javax.inject.DuplicateBindingTypeException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -36,6 +36,7 @@ import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.xml.XMLProducerComponentImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.exception.definition.NonexistentTypeException;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -436,23 +437,48 @@ public final class XMLUtil
     public static Class<?> getElementJavaType(Element element)
     {
         String ns = getElementNameSpace(element);
-        String packageName = WebBeansNameSpaceContainer.getInstance().getPackageNameFromNameSpace(ns);
+        List<String> packageNames = WebBeansNameSpaceContainer.getInstance().getPackageNameFromNameSpace(ns);
+        
+        Class<?> clazz = null; 
+        Class<?> foundClazz = null;
+        if(packageNames != null)
+        {
+            boolean found = false;
 
-        String className = packageName + XMLUtil.getName(element);
-
-        Class<?> clazz = ClassUtil.getClassFromName(className);
-
-        return clazz;
+            for(String packageName : packageNames)
+            {
+                String className = packageName + XMLUtil.getName(element);
+                clazz = ClassUtil.getClassFromName(className);
+                
+                if(clazz != null)
+                {
+                   if(found)
+                   {
+                       throw new DefinitionException("Multiple class with name : " + clazz.getName());
+                   }
+                   else
+                   {
+                       foundClazz = clazz;
+                       found = true;
+                   }
+                }
+            }
+            
+        }
+        
+        return foundClazz;
     }
 
     public static String getElementJavaClassName(Element element)
     {
-        String ns = getElementNameSpace(element);
-        String packageName = WebBeansNameSpaceContainer.getInstance().getPackageNameFromNameSpace(ns);
-
-        String className = packageName + XMLUtil.getName(element);
-
-        return className;
+        Class<?> clazz = getElementJavaType(element);
+        
+        if(clazz != null)
+        {
+            return clazz.getName();
+        }
+        
+        return getName(element);
     }
 
     private static void nullCheckForElement(Element element)

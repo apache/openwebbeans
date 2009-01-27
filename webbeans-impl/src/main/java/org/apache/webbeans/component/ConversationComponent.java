@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.component;
 
-import javax.webbeans.Conversation;
-import javax.webbeans.manager.CreationalContext;
+import javax.context.Conversation;
+import javax.context.CreationalContext;
 
 import org.apache.webbeans.jsf.ConversationImpl;
 import org.apache.webbeans.jsf.ConversationManager;

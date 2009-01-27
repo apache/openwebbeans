@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.context.type;
 
-import javax.webbeans.manager.Context;
+import javax.context.Context;
 
 /**
  * Defines the enumaration of the standart context types in the web beans

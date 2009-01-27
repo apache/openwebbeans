@@ -22,14 +22,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.event.IfExists;
+import javax.event.Observer;
+import javax.event.ObserverException;
+import javax.event.Observes;
+import javax.inject.TypeLiteral;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
-import javax.webbeans.IfExists;
-import javax.webbeans.Observer;
-import javax.webbeans.ObserverException;
-import javax.webbeans.Observes;
-import javax.webbeans.TypeLiteral;
 
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.config.WebBeansFinder;

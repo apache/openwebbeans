@@ -20,8 +20,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.webbeans.Decorates;
-import javax.webbeans.manager.CreationalContext;
+import javax.context.CreationalContext;
+import javax.decorator.Decorates;
 
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.exception.WebBeansException;

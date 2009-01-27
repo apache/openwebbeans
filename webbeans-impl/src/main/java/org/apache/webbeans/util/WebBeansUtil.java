@@ -30,10 +30,32 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Named;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.context.ApplicationScoped;
+import javax.context.Conversation;
+import javax.context.ConversationScoped;
+import javax.context.RequestScoped;
+import javax.context.ScopeType;
+import javax.context.SessionScoped;
+import javax.decorator.Decorator;
 import javax.ejb.EnterpriseBean;
+import javax.event.Fires;
+import javax.event.Observes;
 import javax.faces.component.UIComponent;
+import javax.inject.DeploymentType;
+import javax.inject.Disposes;
+import javax.inject.DuplicateBindingTypeException;
+import javax.inject.InconsistentSpecializationException;
+import javax.inject.Initializer;
+import javax.inject.New;
+import javax.inject.NullableDependencyException;
+import javax.inject.Produces;
+import javax.inject.UnproxyableDependencyException;
+import javax.inject.manager.Bean;
+import javax.inject.manager.Interceptor;
+import javax.inject.manager.Manager;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.persistence.Entity;
@@ -42,29 +64,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionListener;
-import javax.webbeans.ApplicationScoped;
-import javax.webbeans.Conversation;
-import javax.webbeans.ConversationScoped;
-import javax.webbeans.Decorator;
-import javax.webbeans.DeploymentType;
-import javax.webbeans.Destructor;
-import javax.webbeans.Disposes;
-import javax.webbeans.DuplicateBindingTypeException;
-import javax.webbeans.InconsistentSpecializationException;
-import javax.webbeans.Initializer;
-import javax.webbeans.Named;
-import javax.webbeans.New;
-import javax.webbeans.Fires;
-import javax.webbeans.NullableDependencyException;
-import javax.webbeans.Observes;
-import javax.webbeans.Produces;
-import javax.webbeans.RequestScoped;
-import javax.webbeans.ScopeType;
-import javax.webbeans.SessionScoped;
-import javax.webbeans.UnproxyableDependencyException;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.Interceptor;
-import javax.webbeans.manager.Manager;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
@@ -324,7 +323,7 @@ public final class WebBeansUtil
             }
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(method, Initializer.class) || AnnotationUtil.isMethodHasAnnotation(method, Destructor.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Disposes.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Observes.class))
+        if (AnnotationUtil.isMethodHasAnnotation(method, Initializer.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Disposes.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Observes.class))
         {
             throw new WebBeansConfigurationException("Producer method : " + method.getName() + " in the class : " + parentImplClazzName + " can not be annotated with" + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
         }
@@ -340,7 +339,7 @@ public final class WebBeansUtil
             throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in class " + parentImplClazzName + " has multiple @Disposes annotation parameter");
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(disposalMethod, Initializer.class) || AnnotationUtil.isMethodHasAnnotation(disposalMethod, Destructor.class) || AnnotationUtil.isMethodParameterAnnotationExist(disposalMethod, Observes.class) || AnnotationUtil.isMethodHasAnnotation(disposalMethod, Produces.class))
+        if (AnnotationUtil.isMethodHasAnnotation(disposalMethod, Initializer.class) || AnnotationUtil.isMethodParameterAnnotationExist(disposalMethod, Observes.class) || AnnotationUtil.isMethodHasAnnotation(disposalMethod, Produces.class))
         {
             throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in the class : " + parentImplClazzName + " can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes");
         }

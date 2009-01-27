@@ -13,38 +13,32 @@
  */
 package org.apache.webbeans.xml;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.webbeans.WebBeansConstants;
+import org.apache.webbeans.config.WebBeansFinder;
+
 /**
  * Defines the web beans name space.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public class WebBeansNameSpaceContainer
 {
     /** Hold namespace string to package name */
-    private Map<String, String> nameSpaceToPackages = new ConcurrentHashMap<String, String>();
-
-    /** Singleton instance */
-    private static WebBeansNameSpaceContainer nameSpaceContainer = new WebBeansNameSpaceContainer();
-
-    /**
-     * Private constructor
-     */
-    private WebBeansNameSpaceContainer()
+    private Map<String, List<String>> nameSpaceToPackages = new ConcurrentHashMap<String, List<String>>();
+    
+    
+    public WebBeansNameSpaceContainer()
     {
-
+        
     }
 
-    /**
-     * Gets container instance.
-     * 
-     * @return singleton instance
-     */
     public static WebBeansNameSpaceContainer getInstance()
     {
+        WebBeansNameSpaceContainer nameSpaceContainer = (WebBeansNameSpaceContainer)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_WEBBEANS_NAMESPACE_CONTAINER);
+        
         return nameSpaceContainer;
     }
 
@@ -56,11 +50,46 @@ public class WebBeansNameSpaceContainer
     public void addNewPackageNameSpace(String nameSpace)
     {
         // Check that nameSpace starts with urn:java
-        if (nameSpace.startsWith("urn:java:"))
+        if (nameSpace.startsWith("urn:java:") && !nameSpace.equals(WebBeansConstants.WEB_BEANS_NAMESPACE))
         {
 
             String packageName = nameSpace.substring("urn:java:".length(), nameSpace.length()) + ".";
-            nameSpaceToPackages.put(nameSpace, packageName);
+            
+            if(this.nameSpaceToPackages.containsKey(packageName))
+            {
+                this.nameSpaceToPackages.get(nameSpace).add(packageName);
+            }
+            else
+            {
+                List<String> packageList = new ArrayList<String>();
+                packageList.add(packageName);
+                
+                this.nameSpaceToPackages.put(nameSpace, packageList);
+            }
+            
+        }
+        
+        if(nameSpace.equals(WebBeansConstants.WEB_BEANS_NAMESPACE))
+        {
+            if(!this.nameSpaceToPackages.containsKey(nameSpace))
+            {
+                List<String> eePackages = new ArrayList<String>();
+                eePackages.add("java.lang.");
+                eePackages.add("java.util.");
+                eePackages.add("javax.annotation.");
+                eePackages.add("javax.inject.");
+                eePackages.add("javax.context.");
+                eePackages.add("javax.interceptor.");
+                eePackages.add("javax.decorator.");
+                eePackages.add("javax.event.");
+                eePackages.add("javax.ejb.");
+                eePackages.add("javax.persistence.");
+                eePackages.add("javax.xml.ws.");
+                eePackages.add("javax.jms.");
+                eePackages.add("javax.sql.");
+                
+                this.nameSpaceToPackages.put(nameSpace, eePackages);
+            }
         }
     }
 
@@ -70,7 +99,7 @@ public class WebBeansNameSpaceContainer
      * @param nameSpace name space
      * @return package for namespace
      */
-    public String getPackageNameFromNameSpace(String nameSpace)
+    public List<String> getPackageNameFromNameSpace(String nameSpace)
     {
         if (nameSpaceToPackages.containsKey(nameSpace))
         {
