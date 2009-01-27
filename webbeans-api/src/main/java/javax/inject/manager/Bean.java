@@ -17,7 +17,6 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import javax.context.Contextual;
-import javax.context.CreationalContext;
 
 /**
  * Web Beans component contract.
@@ -59,7 +58,7 @@ public abstract class Bean<T> implements Contextual<T>
      * 
      * @return the binding types
      */
-    public abstract Set<Annotation> getBindingTypes();
+    public abstract Set<Annotation> getBindings();
 
     /**
      * Gets the scope type of the web beans component.
@@ -82,23 +81,7 @@ public abstract class Bean<T> implements Contextual<T>
      */
     public abstract String getName();
 
-    /**
-     * Creates the new web beans component instance.
-     * 
-     * @param container web beans container
-     * @return the new web beans component instance
-     */
-    public abstract T create(CreationalContext<T> context);
-
-    /**
-     * Destoy the precreated web beans component instance.
-     * 
-     * @param container web beans container
-     * @param instance web beans component instance
-     */
-    public abstract void destroy(T instance);
-
-    /**
+     /**
      * True if serializable.
      * 
      * @return true if serializable
