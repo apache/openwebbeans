@@ -294,7 +294,6 @@ public abstract class TestContext implements ITestContext
     {
         ComponentImpl<T> bean = null;
 
-        SimpleWebBeansConfigurator.checkSimpleWebBeanCondition(clazz);
         bean = SimpleWebBeansConfigurator.define(clazz, WebBeansType.SIMPLE);
 
         if (bean != null)
