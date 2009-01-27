@@ -25,6 +25,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.service.ITyped2;
 import org.apache.webbeans.test.component.service.Typed2;
 import org.apache.webbeans.test.component.service.TypedInjection;
@@ -60,6 +61,7 @@ public class TypedInjectedComponentTest extends TestContext
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testTypedComponent() throws Throwable
     {
         clear();
@@ -74,9 +76,9 @@ public class TypedInjectedComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        getContext(SessionScoped.class).get(comps.get(0), true);
+        getContext(SessionScoped.class).get(comps.get(0), new CreationalContextImpl());
 
-        Object object = getContext(SessionScoped.class).get(comps.get(1), true);
+        Object object = getContext(SessionScoped.class).get(comps.get(1), new CreationalContextImpl());
 
         Assert.assertTrue(object instanceof TypedInjection);
 
@@ -84,7 +86,7 @@ public class TypedInjectedComponentTest extends TestContext
 
         Assert.assertTrue(i.getV() instanceof ITyped2);
 
-        Object obj2 = getContext(SessionScoped.class).get(comps.get(0), false);
+        Object obj2 = getContext(SessionScoped.class).get(comps.get(0));
 
         Assert.assertEquals(i.getV(), obj2);
 
@@ -92,6 +94,7 @@ public class TypedInjectedComponentTest extends TestContext
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testTypedComponentWithoutArgument() throws Throwable
     {
         clear();
@@ -106,8 +109,8 @@ public class TypedInjectedComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        getContext(SessionScoped.class).get(comps.get(0), true);
-        Object object = getContext(SessionScoped.class).get(comps.get(1), true);
+        getContext(SessionScoped.class).get(comps.get(0), new CreationalContextImpl());
+        Object object = getContext(SessionScoped.class).get(comps.get(1), new CreationalContextImpl());
 
         Assert.assertTrue(object instanceof TypedInjectionWithoutArguments);
 
@@ -115,7 +118,7 @@ public class TypedInjectedComponentTest extends TestContext
 
         Assert.assertTrue(i.getV() instanceof ITyped2);
 
-        Object obj2 = getContext(SessionScoped.class).get(comps.get(0), false);
+        Object obj2 = getContext(SessionScoped.class).get(comps.get(0));
 
         Assert.assertEquals(i.getV(), obj2);
 

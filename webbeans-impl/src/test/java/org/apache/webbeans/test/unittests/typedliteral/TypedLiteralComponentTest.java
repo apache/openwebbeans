@@ -28,6 +28,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.ITypeLiteralComponent;
 import org.apache.webbeans.test.component.InjectedTypeLiteralComponent;
 import org.apache.webbeans.test.component.TypeLiteralComponent;
@@ -59,6 +60,7 @@ public class TypedLiteralComponentTest extends TestContext
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testTypedComponent() throws Throwable
     {
         clear();
@@ -71,8 +73,8 @@ public class TypedLiteralComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        TypeLiteralComponent userComponent = (TypeLiteralComponent) ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(0), true);
-        InjectedTypeLiteralComponent tc = (InjectedTypeLiteralComponent) ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), true);
+        TypeLiteralComponent userComponent = (TypeLiteralComponent) ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(0), new CreationalContextImpl());
+        InjectedTypeLiteralComponent tc = (InjectedTypeLiteralComponent) ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), new CreationalContextImpl());
 
         Assert.assertNotNull(tc.getComponent());
         Assert.assertNotNull(userComponent);

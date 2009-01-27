@@ -25,6 +25,7 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.PreDestroyComponent;
@@ -50,6 +51,7 @@ public class PreDestroyComponentTest extends TestContext
     public void init()
     {
         this.container = ManagerImpl.getManager();
+        super.init();
     }
 
     public void startTests(ServletContext ctx)
@@ -71,8 +73,8 @@ public class PreDestroyComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        Object object = getContext(RequestScoped.class).get(comps.get(0), true);
-        Object object2 = getContext(RequestScoped.class).get(comps.get(1), true);
+        Object object = getContext(RequestScoped.class).get(comps.get(0), new CreationalContextImpl());
+        Object object2 = getContext(RequestScoped.class).get(comps.get(1), new CreationalContextImpl());
 
         Assert.assertTrue(object instanceof CheckWithCheckPayment);
         Assert.assertTrue(object2 instanceof PreDestroyComponent);

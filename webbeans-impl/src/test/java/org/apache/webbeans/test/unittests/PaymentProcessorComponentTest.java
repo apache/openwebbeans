@@ -23,6 +23,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.IPayment;
@@ -71,10 +72,10 @@ public class PaymentProcessorComponentTest extends TestContext
 
         Assert.assertEquals(3, comps.size());
 
-        getContext(RequestScoped.class).get(comps.get(0), true);
-        getContext(RequestScoped.class).get(comps.get(1), true);
+        getContext(RequestScoped.class).get(comps.get(0), new CreationalContextImpl());
+        getContext(RequestScoped.class).get(comps.get(1), new CreationalContextImpl());
 
-        Object object = getContext(RequestScoped.class).get(comps.get(2), true);
+        Object object = getContext(RequestScoped.class).get(comps.get(2), new CreationalContextImpl());
         Assert.assertNotNull(object);
         Assert.assertTrue(object instanceof PaymentProcessorComponent);
 

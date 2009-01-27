@@ -25,6 +25,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.ContaintsCurrentComponent;
 import org.apache.webbeans.test.component.CurrentBindingComponent;
 import org.apache.webbeans.test.component.service.ITyped2;
@@ -73,10 +74,10 @@ public class CurrentInjectedComponentTest extends TestContext
 
         Assert.assertEquals(3, comps.size());
 
-        ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(0), true);
-        ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), true);
+        ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(0), new CreationalContextImpl());
+        ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), new CreationalContextImpl());
 
-        Object object = ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(2), true);
+        Object object = ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(2), new CreationalContextImpl());
 
         Assert.assertTrue(object instanceof ContaintsCurrentComponent);
 
@@ -84,7 +85,7 @@ public class CurrentInjectedComponentTest extends TestContext
 
         Assert.assertTrue(i.getInstance() instanceof CurrentBindingComponent);
 
-        Object obj2 = ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), false);
+        Object obj2 = ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1));
 
         Assert.assertEquals(i.getInstance(), obj2);
 

@@ -25,6 +25,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.BindingComponent;
 import org.apache.webbeans.test.component.NonBindingComponent;
 import org.apache.webbeans.test.servlet.TestContext;
@@ -70,8 +71,8 @@ public class InjectedComponentTestWithMember extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        getContext(SessionScoped.class).get(comps.get(0), true);
-        Object object = getContext(SessionScoped.class).get(comps.get(1), true);
+        getContext(SessionScoped.class).get(comps.get(0), new CreationalContextImpl());
+        Object object = getContext(SessionScoped.class).get(comps.get(1), new CreationalContextImpl());
 
         Assert.assertTrue(object instanceof NonBindingComponent);
 

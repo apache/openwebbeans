@@ -16,6 +16,7 @@ package org.apache.webbeans.test.unittests;
 import java.util.List;
 
 import javax.context.ApplicationScoped;
+import javax.context.CreationalContext;
 import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
 
@@ -24,6 +25,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.producer.Producer1;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.Producer1ConsumerComponent;
@@ -59,6 +61,7 @@ public class Producer1ConsumerComponentTest extends TestContext
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testTypedComponent() throws Throwable
     {
         clear();
@@ -74,13 +77,13 @@ public class Producer1ConsumerComponentTest extends TestContext
 
         Assert.assertEquals(4, getDeployedComponents());
 
-        Object obj = getContext(ApplicationScoped.class).get(comps.get(0), true);
+        Object obj = getContext(ApplicationScoped.class).get(comps.get(0), new CreationalContextImpl());
 
         getInstanceByName("service");
 
-        getContext(ApplicationScoped.class).get(comps.get(1), true);
+        getContext(ApplicationScoped.class).get(comps.get(1), new CreationalContextImpl());
 
-        Object object = getContext(ApplicationScoped.class).get(comps.get(2), true);
+        Object object = getContext(ApplicationScoped.class).get(comps.get(2), new CreationalContextImpl());
 
         Assert.assertTrue(object instanceof Producer1ConsumerComponent);
 

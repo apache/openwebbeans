@@ -22,6 +22,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
 import org.apache.webbeans.test.component.dependent.DependentOwnerComponent;
 import org.apache.webbeans.test.component.dependent.circular.DependentA;
@@ -68,7 +69,7 @@ public class DependentComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        DependentOwnerComponent comp = (DependentOwnerComponent) getContext(RequestScoped.class).get(comps.get(1), true);
+        DependentOwnerComponent comp = (DependentOwnerComponent) getContext(RequestScoped.class).get(comps.get(1), new CreationalContextImpl());
 
         DependentComponent dc = comp.getDependent();
 

@@ -25,6 +25,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.producer.ScopeAdaptorComponent;
 import org.apache.webbeans.test.component.producer.ScopeAdaptorInjectorComponent;
@@ -54,11 +55,11 @@ public class ScopeAdapterTest extends TestContext
 
     public void startTests(ServletContext ctx)
     {
-        // TODO Auto-generated method stub
 
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDependent()
     {
         clear();
@@ -76,10 +77,10 @@ public class ScopeAdapterTest extends TestContext
 
         Assert.assertEquals(4, getDeployedComponents());
 
-        ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(0), true);
-        ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(1), true);
+        ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(0), new CreationalContextImpl());
+        ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(1), new CreationalContextImpl());
         getInstanceByName("scope");
-        ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(2), true);
+        ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(2), new CreationalContextImpl());
 
         ContextFactory.destroyApplicationContext(null);
         ContextFactory.destroySessionContext(session);

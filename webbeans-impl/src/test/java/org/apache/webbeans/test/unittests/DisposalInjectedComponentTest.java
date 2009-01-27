@@ -25,6 +25,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.DisposalMethodComponent;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
@@ -50,6 +51,7 @@ public class DisposalInjectedComponentTest extends TestContext
     public void init()
     {
         this.container = ManagerImpl.getManager();
+        super.init();
     }
 
     public void startTests(ServletContext ctx)
@@ -58,6 +60,7 @@ public class DisposalInjectedComponentTest extends TestContext
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testTypedComponent() throws Throwable
     {
         clear();
@@ -72,9 +75,12 @@ public class DisposalInjectedComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        getContext(ApplicationScoped.class).get(getManager().resolveByName("service").iterator().next(), true);
-        Object disposalComp = getContext(RequestScoped.class).get(comps.get(1), true);
-        Object object = getContext(ApplicationScoped.class).get(comps.get(0), true);
+        Object producerResult = getContext(ApplicationScoped.class).get(getManager().resolveByName("service").iterator().next(), new CreationalContextImpl());
+        
+        IService producverService = (IService)producerResult;
+        
+        Object disposalComp = getContext(RequestScoped.class).get(comps.get(1));
+        Object object = getContext(ApplicationScoped.class).get(comps.get(0), new CreationalContextImpl());
 
         Assert.assertTrue(object instanceof ServiceImpl1);
         Assert.assertTrue(disposalComp instanceof DisposalMethodComponent);

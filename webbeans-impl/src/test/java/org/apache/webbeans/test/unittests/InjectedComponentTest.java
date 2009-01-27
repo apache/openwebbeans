@@ -23,6 +23,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.service.InjectedComponent;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
 import org.apache.webbeans.test.servlet.TestContext;
@@ -67,7 +68,7 @@ public class InjectedComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        Object object = ManagerImpl.getManager().getContext(ApplicationScoped.class).get(comps.get(0), true);
+        Object object = ManagerImpl.getManager().getContext(ApplicationScoped.class).get(comps.get(0), new CreationalContextImpl());
 
         Assert.assertTrue(object instanceof InjectedComponent);
 

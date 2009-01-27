@@ -22,6 +22,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
@@ -73,7 +74,7 @@ public class NewComponentTest extends TestContext
 
         Assert.assertEquals(3, comps.size());
 
-        NewComponent comp = (NewComponent) getContext(RequestScoped.class).get(comps.get(2), true);
+        NewComponent comp = (NewComponent) getContext(RequestScoped.class).get(comps.get(2), new CreationalContextImpl());
 
         DependentOwnerComponent own = comp.owner();
 
