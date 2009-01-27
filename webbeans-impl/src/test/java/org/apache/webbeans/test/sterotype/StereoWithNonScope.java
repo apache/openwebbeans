@@ -18,7 +18,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.webbeans.Stereotype;
+import javax.annotation.Stereotype;
 
 @Stereotype
 @Retention(RetentionPolicy.RUNTIME)

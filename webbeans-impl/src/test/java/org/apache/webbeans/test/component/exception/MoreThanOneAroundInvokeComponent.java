@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.test.component.exception;
 
+import javax.inject.Production;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
-import javax.webbeans.Production;
 
 @Production
 public class MoreThanOneAroundInvokeComponent

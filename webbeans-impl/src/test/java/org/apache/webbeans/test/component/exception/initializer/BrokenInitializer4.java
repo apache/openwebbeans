@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.test.component.exception.initializer;
 
-import javax.webbeans.Initializer;
-import javax.webbeans.Observes;
+import javax.event.Observes;
+import javax.inject.Initializer;
 
 public class BrokenInitializer4
 {

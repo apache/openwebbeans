@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.service;
 
-import javax.webbeans.ApplicationScoped;
-import javax.webbeans.Production;
+import javax.context.ApplicationScoped;
+import javax.inject.Production;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 

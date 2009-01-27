@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.test.component.producer;
 
-import javax.webbeans.Named;
-import javax.webbeans.Produces;
-import javax.webbeans.RequestScoped;
+import javax.annotation.Named;
+import javax.context.RequestScoped;
+import javax.inject.Produces;
 
 @RequestScoped
 public class StaticProducer1

@@ -18,8 +18,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.webbeans.InterceptorBindingType;
-import javax.webbeans.NonBinding;
+import javax.annotation.NonBinding;
+import javax.interceptor.InterceptorBindingType;
 
 @InterceptorBindingType
 @Retention(RetentionPolicy.RUNTIME)

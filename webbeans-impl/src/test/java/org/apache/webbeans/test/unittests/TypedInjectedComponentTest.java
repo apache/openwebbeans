@@ -15,10 +15,10 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
+import javax.context.SessionScoped;
+import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
-import javax.webbeans.SessionScoped;
-import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 

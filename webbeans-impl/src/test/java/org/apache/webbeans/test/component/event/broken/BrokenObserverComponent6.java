@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.test.component.event.broken;
 
-import javax.webbeans.Disposes;
-import javax.webbeans.Observes;
-import javax.webbeans.Production;
+import javax.event.Observes;
+import javax.inject.Disposes;
+import javax.inject.Production;
 
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.webbeans.test.component.CurrentBindingComponent;

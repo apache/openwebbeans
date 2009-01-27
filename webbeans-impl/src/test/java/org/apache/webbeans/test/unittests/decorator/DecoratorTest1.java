@@ -19,8 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.manager.Decorator;
 import javax.servlet.ServletContext;
-import javax.webbeans.manager.Decorator;
 
 import junit.framework.Assert;
 

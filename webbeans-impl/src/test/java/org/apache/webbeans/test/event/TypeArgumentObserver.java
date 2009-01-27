@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.event;
 
-import javax.webbeans.Observer;
+import javax.event.Observer;
 
 public class TypeArgumentObserver implements Observer<TypeArgumentBaseEvent>
 {

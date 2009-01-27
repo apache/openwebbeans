@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.test.component.decorator.broken;
 
-import javax.webbeans.Decorates;
-import javax.webbeans.Decorator;
-import javax.webbeans.RequestScoped;
+import javax.context.RequestScoped;
+import javax.decorator.Decorates;
+import javax.decorator.Decorator;
 
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.component.IPayment;

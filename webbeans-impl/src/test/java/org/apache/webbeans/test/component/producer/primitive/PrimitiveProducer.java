@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.test.component.producer.primitive;
 
-import javax.webbeans.Dependent;
-import javax.webbeans.Produces;
+import javax.context.Dependent;
+import javax.inject.Produces;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;

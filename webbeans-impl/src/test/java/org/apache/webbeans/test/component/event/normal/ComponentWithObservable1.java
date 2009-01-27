@@ -15,11 +15,11 @@ package org.apache.webbeans.test.component.event.normal;
 
 import java.lang.annotation.Annotation;
 
-import javax.webbeans.Current;
-import javax.webbeans.Event;
-import javax.webbeans.Fires;
-import javax.webbeans.Production;
-import javax.webbeans.RequestScoped;
+import javax.context.RequestScoped;
+import javax.event.Event;
+import javax.event.Fires;
+import javax.inject.Current;
+import javax.inject.Production;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.test.event.LoggedInEvent;

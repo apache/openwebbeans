@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.webbeans.Initializer;
-import javax.webbeans.Production;
+import javax.inject.Initializer;
+import javax.inject.Production;
 
 @Production
 public class MoreThanOneConstructureComponent

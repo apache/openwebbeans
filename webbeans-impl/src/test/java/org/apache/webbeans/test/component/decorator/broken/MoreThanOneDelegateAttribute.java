@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.decorator.broken;
 
-import javax.webbeans.Decorates;
-import javax.webbeans.Decorator;
+import javax.decorator.Decorates;
+import javax.decorator.Decorator;
 
 import org.apache.webbeans.test.component.IPayment;
 

@@ -1,7 +1,7 @@
 package org.apache.webbeans.test.unittests.config;
 
-import javax.webbeans.Named;
-import javax.webbeans.RequestScoped;
+import javax.annotation.Named;
+import javax.context.RequestScoped;
 
 /**
  * Test WebBean for the {@link WebBeansScannerTest}

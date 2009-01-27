@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.unittests.resolution;
 
-import javax.webbeans.manager.Manager;
+import javax.inject.manager.Manager;
 
 import junit.framework.Assert;
 

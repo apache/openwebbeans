@@ -13,12 +13,12 @@
  */
 package org.apache.webbeans.test.component.newcomp;
 
-import javax.webbeans.Dependent;
-import javax.webbeans.Named;
-import javax.webbeans.New;
-import javax.webbeans.Produces;
-import javax.webbeans.Production;
-import javax.webbeans.RequestScoped;
+import javax.annotation.Named;
+import javax.context.Dependent;
+import javax.context.RequestScoped;
+import javax.inject.New;
+import javax.inject.Produces;
+import javax.inject.Production;
 
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.IPayment;

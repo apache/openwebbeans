@@ -13,10 +13,10 @@
  */
 package org.apache.webbeans.test.component.intercept;
 
+import javax.context.RequestScoped;
+import javax.inject.Production;
 import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;
-import javax.webbeans.Production;
-import javax.webbeans.RequestScoped;
 
 @Production
 @RequestScoped

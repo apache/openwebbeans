@@ -16,12 +16,12 @@ package org.apache.webbeans.test.unittests.typedliteral;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import javax.context.RequestScoped;
+import javax.inject.AnnotationLiteral;
+import javax.inject.Current;
+import javax.inject.TypeLiteral;
+import javax.inject.manager.Bean;
 import javax.servlet.ServletContext;
-import javax.webbeans.AnnotationLiteral;
-import javax.webbeans.Current;
-import javax.webbeans.RequestScoped;
-import javax.webbeans.TypeLiteral;
-import javax.webbeans.manager.Bean;
 
 import junit.framework.Assert;
 

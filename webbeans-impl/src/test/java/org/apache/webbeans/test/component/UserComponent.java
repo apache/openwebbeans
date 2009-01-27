@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.test.component;
 
-import javax.webbeans.Named;
-import javax.webbeans.Production;
-import javax.webbeans.SessionScoped;
+import javax.annotation.Named;
+import javax.context.SessionScoped;
+import javax.inject.Production;
 
 @Production
 @SessionScoped

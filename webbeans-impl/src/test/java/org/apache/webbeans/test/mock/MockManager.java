@@ -18,16 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.webbeans.InjectionPoint;
-import javax.webbeans.Observer;
-import javax.webbeans.TypeLiteral;
-import javax.webbeans.manager.Bean;
-import javax.webbeans.manager.Context;
-import javax.webbeans.manager.CreationalContext;
-import javax.webbeans.manager.Decorator;
-import javax.webbeans.manager.InterceptionType;
-import javax.webbeans.manager.Interceptor;
-import javax.webbeans.manager.Manager;
+import javax.context.Context;
+import javax.context.CreationalContext;
+import javax.event.Observer;
+import javax.inject.TypeLiteral;
+import javax.inject.manager.Bean;
+import javax.inject.manager.Decorator;
+import javax.inject.manager.InjectionPoint;
+import javax.inject.manager.InterceptionType;
+import javax.inject.manager.Interceptor;
+import javax.inject.manager.Manager;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;

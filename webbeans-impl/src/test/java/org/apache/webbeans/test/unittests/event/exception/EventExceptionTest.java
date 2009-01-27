@@ -15,9 +15,9 @@ package org.apache.webbeans.test.unittests.event.exception;
 
 import java.lang.annotation.Annotation;
 
+import javax.context.ScopeType;
+import javax.inject.AnnotationLiteral;
 import javax.servlet.ServletContext;
-import javax.webbeans.AnnotationLiteral;
-import javax.webbeans.ScopeType;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.LoggedInEvent;

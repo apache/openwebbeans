@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.xml.definition;
 
-import javax.webbeans.Named;
+import javax.annotation.Named;
 
 @Named
 public class Definition1

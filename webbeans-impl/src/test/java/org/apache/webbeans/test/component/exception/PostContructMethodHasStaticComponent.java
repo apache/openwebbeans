@@ -14,7 +14,7 @@
 package org.apache.webbeans.test.component.exception;
 
 import javax.annotation.PostConstruct;
-import javax.webbeans.Production;
+import javax.inject.Production;
 
 @Production
 public class PostContructMethodHasStaticComponent

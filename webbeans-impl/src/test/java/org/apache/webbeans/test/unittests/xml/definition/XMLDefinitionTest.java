@@ -40,6 +40,7 @@ public class XMLDefinitionTest extends TestContext
     public void init()
     {
         initDefaultDeploymentTypes();
+        initDependentContext();
     }
 
     @Test

@@ -15,7 +15,7 @@ package org.apache.webbeans.test.component.producer;
 
 import java.util.List;
 
-import javax.webbeans.SessionScoped;
+import javax.context.SessionScoped;
 
 import org.apache.webbeans.test.annotation.binding.Users;
 

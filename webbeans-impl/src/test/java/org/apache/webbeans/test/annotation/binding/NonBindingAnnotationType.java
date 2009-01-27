@@ -18,8 +18,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.webbeans.BindingType;
-import javax.webbeans.Current;
+import javax.inject.BindingType;
+import javax.inject.Current;
 
 @BindingType
 @Retention(RetentionPolicy.RUNTIME)

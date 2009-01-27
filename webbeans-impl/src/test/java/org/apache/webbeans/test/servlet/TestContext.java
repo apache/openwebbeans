@@ -20,15 +20,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.context.Context;
+import javax.context.Dependent;
+import javax.decorator.Decorator;
+import javax.inject.Production;
+import javax.inject.manager.Manager;
+import javax.interceptor.Interceptor;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpSession;
-import javax.webbeans.Decorator;
-import javax.webbeans.Dependent;
-import javax.webbeans.Interceptor;
-import javax.webbeans.Production;
-import javax.webbeans.manager.Context;
-import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 

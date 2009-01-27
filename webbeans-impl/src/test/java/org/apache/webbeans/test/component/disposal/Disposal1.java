@@ -13,12 +13,12 @@
  */
 package org.apache.webbeans.test.component.disposal;
 
+import javax.annotation.Named;
+import javax.context.RequestScoped;
+import javax.context.SessionScoped;
+import javax.inject.Disposes;
+import javax.inject.Produces;
 import javax.persistence.EntityManager;
-import javax.webbeans.Disposes;
-import javax.webbeans.Named;
-import javax.webbeans.Produces;
-import javax.webbeans.RequestScoped;
-import javax.webbeans.SessionScoped;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.mock.MockEntityManager;

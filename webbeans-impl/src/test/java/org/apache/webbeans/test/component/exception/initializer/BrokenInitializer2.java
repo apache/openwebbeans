@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.test.component.exception.initializer;
 
-import javax.webbeans.Destructor;
-import javax.webbeans.Initializer;
+import javax.inject.Initializer;
+import javax.inject.Produces;
 
 public class BrokenInitializer2
 {
@@ -26,7 +26,7 @@ public class BrokenInitializer2
         
     }
     
-    @Initializer @Destructor
+    @Initializer @Produces
     public void init2()
     {
         

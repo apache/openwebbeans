@@ -13,11 +13,11 @@
  */
 package org.apache.webbeans.test.component.decorator.clean;
 
-import javax.webbeans.Current;
-import javax.webbeans.Decorates;
-import javax.webbeans.Decorator;
-import javax.webbeans.Named;
-import javax.webbeans.RequestScoped;
+import javax.annotation.Named;
+import javax.context.RequestScoped;
+import javax.decorator.Decorates;
+import javax.decorator.Decorator;
+import javax.inject.Current;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.service.IService;

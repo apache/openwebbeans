@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.webbeans.Production;
+import javax.inject.Production;
 
 public class InnerComponent
 {

@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.test.component.dependent;
 
-import javax.webbeans.Current;
-import javax.webbeans.RequestScoped;
+import javax.context.RequestScoped;
+import javax.inject.Current;
 
 @RequestScoped
 public class MultipleDependentComponent

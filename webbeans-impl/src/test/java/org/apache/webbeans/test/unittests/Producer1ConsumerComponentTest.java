@@ -15,9 +15,9 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
+import javax.context.ApplicationScoped;
+import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
-import javax.webbeans.ApplicationScoped;
-import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 

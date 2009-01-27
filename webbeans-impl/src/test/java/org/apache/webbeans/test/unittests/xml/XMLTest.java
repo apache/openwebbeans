@@ -15,8 +15,8 @@ package org.apache.webbeans.test.unittests.xml;
 
 import java.io.InputStream;
 
+import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
-import javax.webbeans.manager.Manager;
 
 import junit.framework.Assert;
 

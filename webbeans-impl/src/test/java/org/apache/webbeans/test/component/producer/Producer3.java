@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.test.component.producer;
 
-import javax.webbeans.Produces;
-import javax.webbeans.Production;
-import javax.webbeans.RequestScoped;
+import javax.context.RequestScoped;
+import javax.inject.Produces;
+import javax.inject.Production;
 
 @Production
 @RequestScoped

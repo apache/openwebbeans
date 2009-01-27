@@ -16,8 +16,8 @@ package org.apache.webbeans.test.unittests;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import javax.inject.TypeLiteral;
 import javax.servlet.ServletContext;
-import javax.webbeans.TypeLiteral;
 
 import junit.framework.Assert;
 

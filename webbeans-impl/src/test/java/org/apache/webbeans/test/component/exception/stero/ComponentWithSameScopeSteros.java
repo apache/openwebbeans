@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.exception.stero;
 
-import javax.webbeans.Production;
+import javax.inject.Production;
 
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;

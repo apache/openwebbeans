@@ -14,8 +14,8 @@
 package org.apache.webbeans.test.component.intercept.webbeans;
 
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import javax.webbeans.Interceptor;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
 

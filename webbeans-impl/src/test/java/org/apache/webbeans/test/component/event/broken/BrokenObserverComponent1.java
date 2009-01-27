@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.event.broken;
 
-import javax.webbeans.Observes;
-import javax.webbeans.Production;
+import javax.event.Observes;
+import javax.inject.Production;
 
 import org.apache.webbeans.test.event.broke.BrokenEvent;
 

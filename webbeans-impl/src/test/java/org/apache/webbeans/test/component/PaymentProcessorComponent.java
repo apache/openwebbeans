@@ -13,10 +13,10 @@
  */
 package org.apache.webbeans.test.component;
 
-import javax.webbeans.Current;
-import javax.webbeans.Initializer;
-import javax.webbeans.Production;
-import javax.webbeans.RequestScoped;
+import javax.context.RequestScoped;
+import javax.inject.Current;
+import javax.inject.Initializer;
+import javax.inject.Production;
 
 import org.apache.webbeans.test.annotation.binding.Check;
 

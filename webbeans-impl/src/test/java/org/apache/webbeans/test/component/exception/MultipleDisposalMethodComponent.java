@@ -13,11 +13,11 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.webbeans.ApplicationScoped;
-import javax.webbeans.Current;
-import javax.webbeans.Disposes;
-import javax.webbeans.Produces;
-import javax.webbeans.Production;
+import javax.context.ApplicationScoped;
+import javax.inject.Current;
+import javax.inject.Disposes;
+import javax.inject.Produces;
+import javax.inject.Production;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.service.IService;

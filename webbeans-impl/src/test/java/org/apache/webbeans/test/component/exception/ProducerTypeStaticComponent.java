@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.webbeans.Produces;
-import javax.webbeans.Production;
+import javax.inject.Produces;
+import javax.inject.Production;
 
 @Production
 public class ProducerTypeStaticComponent

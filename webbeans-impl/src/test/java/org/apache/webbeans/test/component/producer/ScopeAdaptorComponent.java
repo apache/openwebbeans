@@ -13,10 +13,10 @@
  */
 package org.apache.webbeans.test.component.producer;
 
-import javax.webbeans.Named;
-import javax.webbeans.Produces;
-import javax.webbeans.Production;
-import javax.webbeans.SessionScoped;
+import javax.annotation.Named;
+import javax.context.SessionScoped;
+import javax.inject.Produces;
+import javax.inject.Production;
 
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.annotation.binding.Check;

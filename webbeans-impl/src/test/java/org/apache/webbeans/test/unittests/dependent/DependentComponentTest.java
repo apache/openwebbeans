@@ -15,8 +15,8 @@ package org.apache.webbeans.test.unittests.dependent;
 
 import java.util.List;
 
+import javax.context.RequestScoped;
 import javax.servlet.ServletContext;
-import javax.webbeans.RequestScoped;
 
 import junit.framework.Assert;
 

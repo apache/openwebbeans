@@ -13,10 +13,10 @@
  */
 package org.apache.webbeans.test.component;
 
-import javax.webbeans.Initializer;
-import javax.webbeans.Named;
-import javax.webbeans.Production;
-import javax.webbeans.SessionScoped;
+import javax.annotation.Named;
+import javax.context.SessionScoped;
+import javax.inject.Initializer;
+import javax.inject.Production;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.SingletonBinding;

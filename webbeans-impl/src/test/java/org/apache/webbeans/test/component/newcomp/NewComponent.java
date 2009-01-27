@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.newcomp;
 
-import javax.webbeans.New;
-import javax.webbeans.Production;
+import javax.inject.New;
+import javax.inject.Production;
 
 import org.apache.webbeans.test.component.dependent.DependentOwnerComponent;
 

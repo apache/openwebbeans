@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.containertests;
 
+import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
-import javax.webbeans.manager.Manager;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;

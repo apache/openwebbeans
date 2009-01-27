@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.intercept;
 
+import javax.inject.Production;
 import javax.interceptor.Interceptors;
-import javax.webbeans.Production;
 
 @Production
 @Interceptors(value = { NoArgConstructorInterceptor.class })

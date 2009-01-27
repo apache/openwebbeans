@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.producer.specializes.superclazz;
 
-import javax.webbeans.Produces;
+import javax.inject.Produces;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
