@@ -70,9 +70,9 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
      * @param m method invoked method
      * @param proceed actual method on this proxy object self
      * @param args method arguments
-     * @throws Throwable if any exception occurs
+     * @throws Exception if any exception occurs
      */
-    public Object invoke(Object self, Method m, Method proceed, Object[] args) throws Throwable
+    public Object invoke(Object self, Method m, Method proceed, Object[] args) throws Exception
     {
         WebBeansAnnotation anno = (WebBeansAnnotation) self;
 

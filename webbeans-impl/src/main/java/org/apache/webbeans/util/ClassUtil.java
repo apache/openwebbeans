@@ -494,7 +494,7 @@ public final class ClassUtil
             return method.invoke(instance, args);
 
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             throw new WebBeansException("Exception occurs in the method call with method : " + method.getName() + " in class : " + instance.getClass().getName());
         }

@@ -49,7 +49,7 @@ public class InterceptorHandler implements MethodHandler
         this.component = component;
     }
 
-    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Throwable
+    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         Context webbeansContext = ManagerImpl.getManager().getContext(component.getScopeType());
         Object webbeansInstance = webbeansContext.get(this.component, new CreationalContextImpl());

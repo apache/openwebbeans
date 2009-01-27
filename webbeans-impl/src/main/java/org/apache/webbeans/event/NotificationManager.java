@@ -242,9 +242,9 @@ public final class NotificationManager implements Synchronization
                 }
 
             }
-            catch (Throwable e)
+            catch (Exception e)
             {
-                if (Exception.class.isAssignableFrom(e.getClass()))
+                if (!RuntimeException.class.isAssignableFrom(e.getClass()))
                 {
                     throw new ObserverException("Exception is thrown while handling event object with type : " + event.getClass().getName(), e);
                 }
@@ -306,7 +306,7 @@ public final class NotificationManager implements Synchronization
             }
 
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             logger.error("Exception is occured in the transational observer ", e);
         }
@@ -329,7 +329,7 @@ public final class NotificationManager implements Synchronization
             }
 
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             logger.error("Exception is occured in the transational observer ", e);
         }

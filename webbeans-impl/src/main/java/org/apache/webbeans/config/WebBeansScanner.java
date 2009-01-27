@@ -103,7 +103,7 @@ public final class WebBeansScanner
             }
 
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             logger.error("Initializing of the WebBeans container is failed.", e);
             throw new WebBeansConfigurationException(e);
@@ -112,7 +112,7 @@ public final class WebBeansScanner
     }
 
     /* Collects all URLs */
-    private Set<URL> getArchieves() throws Throwable
+    private Set<URL> getArchieves() throws Exception
     {
         Set<URL> lists = createURLFromMarkerFile();
         URL warUrl = createURLFromWARFile();
@@ -126,7 +126,7 @@ public final class WebBeansScanner
     }
 
     /* Creates URLs from the marker file */
-    private Set<URL> createURLFromMarkerFile() throws Throwable
+    private Set<URL> createURLFromMarkerFile() throws Exception
     {
         Set<URL> listURL = new HashSet<URL>();
         URL[] urls = null;
@@ -189,7 +189,7 @@ public final class WebBeansScanner
         return listURL;
     }
 
-    private URL createURLFromWARFile() throws Throwable
+    private URL createURLFromWARFile() throws Exception
     {
         URL url = this.servletContext.getResource("/WEB-INF/web-beans.xml");
 

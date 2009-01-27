@@ -75,7 +75,7 @@ public final class JavassistProxyFactory
             result = fact.createClass().newInstance();
 
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             throw new WebBeansException(e);
         }

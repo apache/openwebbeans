@@ -63,7 +63,7 @@ public class XMLInjectableMethods<T> extends InjectableMethods<T>
             return (T) m.invoke(instance, list.toArray());
 
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             // no-op
             e.printStackTrace();

@@ -32,7 +32,7 @@ public final class JNDIUtil
             initialContext = new InitialContext();
 
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             LOGGER.error("Unable to initialize InitialContext object", e);
             throw new ExceptionInInitializerError(e);

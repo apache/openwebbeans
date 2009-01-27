@@ -74,7 +74,7 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
             }
 
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             e.printStackTrace();
             throw new WebBeansException(e);

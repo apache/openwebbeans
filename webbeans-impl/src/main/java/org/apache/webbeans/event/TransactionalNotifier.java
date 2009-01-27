@@ -67,27 +67,27 @@ class TransactionalNotifier
         this.beforeCompletion.add(observer);
     }
 
-    public void notifyAfterCompletion() throws Throwable
+    public void notifyAfterCompletion() throws Exception
     {
         Iterator<Observer<Object>> it = this.afterCompletion.iterator();
         handleEvent(it);
     }
 
-    public void notifyAfterCompletionSuccess() throws Throwable
+    public void notifyAfterCompletionSuccess() throws Exception
     {
         Iterator<Observer<Object>> it = this.afterCompletionSuccess.iterator();
         handleEvent(it);
 
     }
 
-    public void notifyAfterCompletionFailure() throws Throwable
+    public void notifyAfterCompletionFailure() throws Exception
     {
         Iterator<Observer<Object>> it = this.afterCompletionFailure.iterator();
         handleEvent(it);
 
     }
 
-    public void notifyBeforeCompletion() throws Throwable
+    public void notifyBeforeCompletion() throws Exception
     {
         Iterator<Observer<Object>> it = this.beforeCompletion.iterator();
         handleEvent(it);
