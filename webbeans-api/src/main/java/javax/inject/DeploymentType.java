@@ -20,15 +20,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-
-/**
- * <p>
- * Every web beans components has some types. DeploymentType meta annotation is
- * used for definining new component types. There are two default deployment
- * type, these are {@link Production} for application components and
- * {@link Standard} for standart components.
- * </p>
- */
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
 @Documented

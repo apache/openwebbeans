@@ -18,12 +18,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Some web beans components is not lived without its parent web beans
- * component. This parent web beans components saves this dependent web beans
- * components in its {@link Dependent} scope. This annotation is used for
- * marking the web beans scope as dependent.
- */
 @ScopeType(normal = false)
 @Target( { ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

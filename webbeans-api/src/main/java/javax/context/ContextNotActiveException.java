@@ -15,11 +15,6 @@ package javax.context;
 
 import javax.inject.ExecutionException;
 
-/**
- * If the {@link Context} is not avalaible in the time of web beans component
- * getting, this exception is thrown.
- * 
- */
 public class ContextNotActiveException extends ExecutionException
 {
 

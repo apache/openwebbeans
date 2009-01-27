@@ -13,10 +13,6 @@
  */
 package javax.inject;
 
-/**
- * Defines the exception that is thrown when the definitons of the web beans
- * component is not logically correct.
- */
 public class DefinitionException extends RuntimeException
 {
     private static final long serialVersionUID = -6261526411795328050L;

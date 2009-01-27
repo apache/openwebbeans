@@ -17,54 +17,12 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.NonBinding;
 import javax.context.Context;
 import javax.context.CreationalContext;
 import javax.event.Observer;
 import javax.inject.TypeLiteral;
 
-/**
- * Resolution of the components contract of the <b>Web Beans Container</b>.
- * There are two ways with regarding to the resolving components in the web
- * beans container, resolution by type and resolution by name.
- * <p>
- * When resolving at the injection point, the web beans container uses the api
- * type and binding type of the injected instance of the web bean component.
- * Each web beans component has to be enabled for being candidate in regarding
- * to resolution. Web Beans Container applies the following resolution procedure
- * in order;
- * </p>
- * <p>
- * <ul>
- * <li>Inspect the type of the injected point to find all web beans component
- * that has this API type.</li>
- * <li>From the candidates, it selects the all components that satisfies the
- * binding types of the injected point. If the injected point annotation has
- * some member values, then it selects the web beans components with binding
- * type (with {@link NonBinding} annotated member) that has same member values
- * with the injected annoation value.</li>
- * <li>If there are some components that has exactly the same binding type with
- * the injected point, container narrows the component set containing just those
- * components.</li>
- * <li>Examine the precedence type of the narrowed set of components and selects
- * the higher precedence of the components. Otherwise exception is thrown by the
- * container.</li>
- * </ul>
- * </p>
- * <p>
- * Resolution by name procedure is as follows;
- * </p>
- * <p>
- * <ul>
- * <li>Container selects the set of enabled web beans components that has the
- * given name</li>
- * <li>Container selects the higher precedence from the set using the component
- * type precedence</li>
- * <li>If exactly one component is remained, the resolution results in that
- * component, otherwise</li> exceptin is thrown by the container.
- * </ul>
- * </p>
- */
+
 public interface Manager
 {
     public <T> Set<Bean<T>> resolveByType(Class<T> type, Annotation... bindings);

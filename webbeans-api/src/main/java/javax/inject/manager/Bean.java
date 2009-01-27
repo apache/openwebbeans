@@ -18,81 +18,32 @@ import java.util.Set;
 
 import javax.context.Contextual;
 
-/**
- * Web Beans component contract.
- */
 public abstract class Bean<T> implements Contextual<T>
 {
-    /** Manager instance */
     private final Manager manager;
 
-    /**
-     * Constructs new web bean.
-     * 
-     * @param manager manager instance
-     */
     protected Bean(Manager manager)
     {
         this.manager = manager;
     }
 
-    /**
-     * Gets manager.
-     * 
-     * @return the manager
-     */
     protected Manager getManager()
     {
         return manager;
     }
 
-    /**
-     * Gets the set of api types of the web beans component.
-     * 
-     * @return the set of api types
-     */
     public abstract Set<Class<?>> getTypes();
 
-    /**
-     * Gets the set of binding types of the web beans component.
-     * 
-     * @return the binding types
-     */
     public abstract Set<Annotation> getBindings();
 
-    /**
-     * Gets the scope type of the web beans component.
-     * 
-     * @return scope type
-     */
     public abstract Class<? extends Annotation> getScopeType();
 
-    /**
-     * Gets the deployment type of the web beans component.
-     * 
-     * @return deployment type
-     */
     public abstract Class<? extends Annotation> getDeploymentType();
 
-    /**
-     * Gets the name of the web beans component.
-     * 
-     * @return name of the component
-     */
     public abstract String getName();
 
-     /**
-     * True if serializable.
-     * 
-     * @return true if serializable
-     */
     public abstract boolean isSerializable();
 
-    /**
-     * True if nullable.
-     * 
-     * @return true if nullable
-     */
     public abstract boolean isNullable();
 
     public abstract Set<InjectionPoint> getInjectionPoints();

@@ -23,12 +23,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-
-/**
- * Special binding. It is declared in the injection point. Every time injection
- * occurs, new instance of the injected component is created and put into the
- * dependent context.
- */
 @Target( { METHOD, FIELD, PARAMETER, TYPE })
 @Retention(RUNTIME)
 @Documented
