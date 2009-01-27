@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<WebBeans 	xmlns="urn:java:javax.webbeans"
+<WebBeans 	xmlns="urn:java:ee"
 		  	xmlns:myapp="urn:java:org.apache.webbeans.test.xml.definition"
 		  	xmlns:lang="urn:java:java.lang"
  			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
