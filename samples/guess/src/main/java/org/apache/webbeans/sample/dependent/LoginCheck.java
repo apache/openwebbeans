@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.sample.dependent;
 
-import javax.webbeans.Dependent;
+import javax.context.Dependent;
 
 @Dependent
 public class LoginCheck

@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.sample.model;
 
-import javax.webbeans.Model;
+import javax.annotation.Model;
 
 /**
  * Simple model object for loginned users.

@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.sample.observer;
 
-import javax.webbeans.Observer;
+import javax.event.Observer;
 
 import org.apache.webbeans.sample.event.LoggedInEvent;
 import org.apache.webbeans.sample.model.User;

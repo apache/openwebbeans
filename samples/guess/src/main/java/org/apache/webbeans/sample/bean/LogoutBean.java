@@ -16,9 +16,9 @@
  */
 package org.apache.webbeans.sample.bean;
 
+import javax.annotation.Named;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
-import javax.webbeans.Named;
 
 import org.apache.webbeans.sample.bindings.LoggedInUser;
 import org.apache.webbeans.sample.model.User;
