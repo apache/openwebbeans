@@ -227,7 +227,7 @@ public final class XMLDefinitionUtil
             i++;
         }
 
-        Set<Annotation> stereoTypesSet = component.getStereoTypes();
+        Set<Annotation> stereoTypesSet = component.getStereotypes();
         Annotation[] stereoTypes = new Annotation[stereoTypesSet.size()];
         stereoTypes = stereoTypesSet.toArray(stereoTypes);
         for (Annotation stero : stereoTypes)

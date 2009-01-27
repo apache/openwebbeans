@@ -250,7 +250,7 @@ public final class DefinitionUtil
 
     public static void defineDefaultScopeType(Component<?> component, String exceptionMessage)
     {
-        Set<Annotation> stereos = component.getStereoTypes();
+        Set<Annotation> stereos = component.getStereotypes();
         if (stereos.size() == 0)
         {
             component.setImplScopeType(new DependentScopeLiteral());
@@ -258,7 +258,7 @@ public final class DefinitionUtil
         else
         {
             Annotation defined = null;
-            Set<Annotation> anns = component.getStereoTypes();
+            Set<Annotation> anns = component.getStereotypes();
             for (Annotation stero : anns)
             {
                 if (AnnotationUtil.isMetaAnnotationExist(stero.annotationType().getAnnotations(), ScopeType.class))

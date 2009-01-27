@@ -873,7 +873,7 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
-        Set<Annotation> set = component.getStereoTypes();
+        Set<Annotation> set = component.getStereotypes();
         Annotation[] anns = new Annotation[set.size()];
         anns = set.toArray(anns);
         if (AnnotationUtil.isStereoTypeMetaAnnotationExist(anns))
@@ -889,7 +889,7 @@ public final class WebBeansUtil
         Asserts.assertNotNull(component, "component parameter can not be null");
         if (isComponentHasStereoType(component))
         {
-            Set<Annotation> set = component.getStereoTypes();
+            Set<Annotation> set = component.getStereotypes();
             Annotation[] anns = new Annotation[set.size()];
             anns = set.toArray(anns);
 

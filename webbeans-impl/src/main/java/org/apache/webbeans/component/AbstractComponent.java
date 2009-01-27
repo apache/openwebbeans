@@ -301,7 +301,7 @@ public abstract class AbstractComponent<T> extends Component<T>
      * 
      * @return stereotypes of the component
      */
-    public Set<Annotation> getStereoTypes()
+    public Set<Annotation> getStereotypes()
     {
         return this.stereoTypes;
     }
