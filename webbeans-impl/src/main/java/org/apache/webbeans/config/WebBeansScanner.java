@@ -45,7 +45,7 @@ public final class WebBeansScanner
 {
     private WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansScanner.class);
 
-    /** Location of the web-beans.xml files. */
+    /** Location of the beans.xml files. */
     private Map<String, InputStream> WEBBEANS_XML_LOCATIONS = new HashMap<String, InputStream>();
 
     /** Location of the ejb-jar.xml files */
@@ -66,7 +66,7 @@ public final class WebBeansScanner
 
     /**
      * Configure the Web Beans Container with deployment information and fills
-     * annotation database and web-beans.xml stream database.
+     * annotation database and beans.xml stream database.
      * 
      * @throws WebBeansConfigurationException if any run time exception occurs
      */
@@ -131,8 +131,8 @@ public final class WebBeansScanner
         Set<URL> listURL = new HashSet<URL>();
         URL[] urls = null;
 
-        // Root with web-beans.xml marker.
-        urls = ClasspathUrlFinder.findResourceBases("META-INF/web-beans.xml", WebBeansUtil.getCurrentClassLoader());
+        // Root with beans.xml marker.
+        urls = ClasspathUrlFinder.findResourceBases("META-INF/beans.xml", WebBeansUtil.getCurrentClassLoader());
 
         if (urls != null)
         {
@@ -144,12 +144,12 @@ public final class WebBeansScanner
                 String fileDir = url.getFile();
                 if (fileDir.endsWith(".jar!/"))
                 {
-                    fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/META-INF/web-beans.xml";
+                    fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/META-INF/beans.xml";
                     addPath = new URL("jar:" + fileDir);
                 }
                 else
                 {
-                    addPath = new URL("file:" + url.getFile() + "META-INF/web-beans.xml");
+                    addPath = new URL("file:" + url.getFile() + "META-INF/beans.xml");
                 }
 
                 listURL.add(url);
@@ -164,7 +164,7 @@ public final class WebBeansScanner
         {
             for (URL ejbUrl : ejbUrls)
             {
-                // ok, web-beans.xml and ejb-jar.xml is in the same root
+                // ok, beans.xml and ejb-jar.xml is in the same root
                 if (listURL.contains(ejbUrl))
                 {
                     URL addPath = null;
@@ -191,7 +191,7 @@ public final class WebBeansScanner
 
     private URL createURLFromWARFile() throws Exception
     {
-        URL url = this.servletContext.getResource("/WEB-INF/web-beans.xml");
+        URL url = this.servletContext.getResource("/WEB-INF/beans.xml");
 
         if (url != null)
         {
@@ -204,7 +204,7 @@ public final class WebBeansScanner
     }
 
     /**
-     * Gets list of stream that points to the web-beans.xml file in the specific
+     * Gets list of stream that points to the beans.xml file in the specific
      * locations.
      * 
      * @return list of stream
