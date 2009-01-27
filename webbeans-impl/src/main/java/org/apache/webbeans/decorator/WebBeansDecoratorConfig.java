@@ -63,7 +63,7 @@ public final class WebBeansDecoratorConfig
 
     public static void configureDecarotors(AbstractComponent<?> component, Object instance)
     {
-        Set<Annotation> bindingTypes = component.getBindingTypes();
+        Set<Annotation> bindingTypes = component.getBindings();
         Annotation[] anns = new Annotation[bindingTypes.size()];
         anns = bindingTypes.toArray(anns);
 

@@ -29,6 +29,7 @@ import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.container.ResolutionUtil;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.context.WebBeansContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.ClassUtil;
@@ -166,13 +167,13 @@ public abstract class AbstractInjectable implements Injectable
         return object;
     }
 
-    private Object injectForComponent(AbstractComponent<?> component)
+    private <T> Object injectForComponent(AbstractComponent<T> component)
     {
         WebBeansContext context = null;
         Object object = null;
 
         context = (WebBeansContext) ManagerImpl.getManager().getContext(component.getScopeType());
-        object = context.get(component, true);
+        object = context.get(component, new CreationalContextImpl<T>());
 
         return object;
 

@@ -83,7 +83,7 @@ public final class DecoratorUtil
     {
         Asserts.assertNotNull("component", "component parameter can not be null");
 
-        Set<Annotation> annSet = component.getBindingTypes();
+        Set<Annotation> annSet = component.getBindings();
         Annotation[] anns = new Annotation[annSet.size()];
         anns = annSet.toArray(anns);
 

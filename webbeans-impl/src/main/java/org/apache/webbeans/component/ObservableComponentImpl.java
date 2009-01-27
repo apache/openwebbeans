@@ -46,7 +46,7 @@ public class ObservableComponentImpl<T, K> extends ComponentImpl<T>
     @Override
     protected T createInstance(CreationalContext<T> creationalContext)
     {
-        Set<Annotation> setBindingTypes = getBindingTypes();
+        Set<Annotation> setBindingTypes = getBindings();
         Annotation[] bindingTypes = new Annotation[setBindingTypes.size()];
 
         bindingTypes = setBindingTypes.toArray(bindingTypes);

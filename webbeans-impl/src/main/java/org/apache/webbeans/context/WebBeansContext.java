@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.context;
 
-import javax.inject.manager.Bean;
+import javax.context.Contextual;
 
 public interface WebBeansContext extends javax.context.Context
 {
@@ -23,5 +23,5 @@ public interface WebBeansContext extends javax.context.Context
      * @param <T> generic type
      * @param component web beans component
      */
-    public <T> void remove(Bean<T> component);
+    public <T> void remove(Contextual<T> component);
 }

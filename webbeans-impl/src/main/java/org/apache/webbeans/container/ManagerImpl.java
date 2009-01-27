@@ -49,6 +49,7 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.DependentContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -317,7 +318,7 @@ public class ManagerImpl implements Manager, Referenceable
             else
             {
                 context = getContext(bean.getScopeType());
-                instance = context.get(bean, true);
+                instance = context.get(bean, new CreationalContextImpl<T>());
             }
 
         }

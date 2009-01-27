@@ -179,7 +179,6 @@ public class WebBeansDecorator extends Decorator
 
     }
 
-    @Override
     public Object create(CreationalContext<Object> context)
     {
         Object proxy = JavassistProxyFactory.createNewProxyInstance(this);
@@ -213,16 +212,15 @@ public class WebBeansDecorator extends Decorator
         }
     }
 
-    @Override
     public void destroy(Object instance)
     {
         delegateComponent.destroy(instance);
     }
 
     @Override
-    public Set<Annotation> getBindingTypes()
+    public Set<Annotation> getBindings()
     {
-        return delegateComponent.getBindingTypes();
+        return delegateComponent.getBindings();
     }
 
     @Override

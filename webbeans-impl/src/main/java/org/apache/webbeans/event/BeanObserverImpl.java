@@ -32,6 +32,7 @@ import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.DependentContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 
 public class BeanObserverImpl<T> implements Observer<T>
@@ -82,11 +83,11 @@ public class BeanObserverImpl<T> implements Observer<T>
             Context context = manager.getContext(baseComponent.getScopeType());
             if (ifExist)
             {
-                object = context.get(baseComponent, false);
+                object = context.get(baseComponent);
             }
             else
             {
-                object = context.get(baseComponent, true);
+                object = context.get((AbstractComponent<T>)baseComponent, new CreationalContextImpl<T>());
             }
 
             if (object != null)

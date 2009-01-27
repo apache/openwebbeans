@@ -30,6 +30,7 @@ import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.DependentContext;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -333,7 +334,7 @@ public abstract class AbstractComponent<T> extends Component<T>
      * @see javax.webbeans.manager.Bean#getBindingTypes()
      */
     @Override
-    public Set<Annotation> getBindingTypes()
+    public Set<Annotation> getBindings()
     {
         return this.implBindingTypes;
     }
@@ -384,12 +385,13 @@ public abstract class AbstractComponent<T> extends Component<T>
      * @param dependentComponent dependent web beans component
      * @return the dependent component instance
      */
+    @SuppressWarnings("unchecked")
     public Object getDependent(Component<?> dependentComponent)
     {
         Object object = null;
         DependentContext context = (DependentContext) getManager().getContext(Dependent.class);
 
-        object = context.get(dependentComponent, true);
+        object = context.get(dependentComponent,new CreationalContextImpl());
 
         this.dependentObjects.put(object, dependentComponent);
 

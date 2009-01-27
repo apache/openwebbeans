@@ -1056,7 +1056,7 @@ public final class WebBeansUtil
                 {
                     throw new InconsistentSpecializationException("@Specializes exception. Class : " + clazz.getName() + " must have higher deployment type precedence from the class : " + superClass.getName());
                 }
-                parent.getBindingTypes().addAll(child.getBindingTypes());
+                parent.getBindings().addAll(child.getBindings());
             }
             else
             {

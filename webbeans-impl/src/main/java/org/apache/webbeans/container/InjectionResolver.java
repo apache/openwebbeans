@@ -253,7 +253,7 @@ public class InjectionResolver
         while (it.hasNext())
         {
             Bean<T> component = it.next();
-            Set<Annotation> bTypes = component.getBindingTypes();
+            Set<Annotation> bTypes = component.getBindings();
 
             int i = 0;
             for (Annotation annot : annotations)

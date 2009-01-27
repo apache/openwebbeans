@@ -13,24 +13,24 @@
  */
 package org.apache.webbeans.context.type;
 
-import javax.context.Context;
 
 /**
  * Defines the enumaration of the standart context types in the web beans
  * container.
+ * 
  * <p>
+ * 
  * Standart context types,
  * <ul>
- * <li>Request Context</li>
- * <li>Session Context</li>
- * <li>Application Context</li>
- * <li>Conversation Context</li>
+ *  <li>Dependent Context</li>
+ *  <li>Request Context</li>
+ *  <li>Session Context</li>
+ *  <li>Application Context</li>
+ *  <li>Conversation Context</li>
  * </ul>
+ * 
  * </p>
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- * @see Context
  */
 public enum ContextTypes
 {

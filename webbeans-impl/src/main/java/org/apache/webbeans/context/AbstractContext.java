@@ -89,49 +89,57 @@ public abstract class AbstractContext implements WebBeansContext
         }
 
     }
-    
-    public <T> T get(Contextual<T> component, boolean create)
+
+    @SuppressWarnings("unchecked")
+    public <T> T get(Contextual<T> component)
     {
-        return get(component, create, null);
+        return (T) componentInstanceMap.get(component);
     }
 
-    public <T> T get(Contextual<T> component, boolean create,CreationalContext<T> creationalContext)
+    public <T> T get(Contextual<T> component, CreationalContext<T> creationalContext)
     {
         if (!active)
         {
             throw new ContextNotActiveException("WebBeans context with scope type annotation @" + getScopeType().getName() + " is not active with respect to the current thread");
         }
 
-        return getInstance(component, create, creationalContext);
+        return getInstance(component, creationalContext);
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T getInstance(Contextual<T> component, boolean create,CreationalContext<T> creationalContext)
+    protected <T> T getInstance(Contextual<T> component, CreationalContext<T> creationalContext)
     {
-        Object instance = null;
+        T instance = (T)componentInstanceMap.get(component);
 
-        if ((instance = componentInstanceMap.get(component)) != null)
+        
+        if (instance != null)
         {
-            return (T) instance;
+            return instance;
         }
+
         else
         {
-            if (create)
+            if(creationalContext == null)
+            {
+                return null;
+            }
+            
+            else
             {
                 instance = component.create(creationalContext);
+
                 if (instance != null)
                 {
                     componentInstanceMap.put(component, instance);
                 }
-
-                return (T) instance;
-            }
+                
+            }            
         }
 
-        return null;
+        return  instance;
     }
 
-    public <T> void remove(Bean<T> component)
+    public <T> void remove(Contextual<T> component)
     {
         removeInstance(component);
     }
@@ -171,7 +179,7 @@ public abstract class AbstractContext implements WebBeansContext
         }
     }
 
-    protected <T> void removeInstance(Bean<T> component)
+    protected <T> void removeInstance(Contextual<T> component)
     {
         if (componentInstanceMap.get(component) != null)
         {

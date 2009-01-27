@@ -13,13 +13,10 @@
  */
 package org.apache.webbeans.context;
 
-import javax.context.ContextNotActiveException;
 import javax.context.Contextual;
 import javax.context.CreationalContext;
 import javax.context.Dependent;
-import javax.inject.manager.Bean;
 
-import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.type.ContextTypes;
 
 /**
@@ -36,58 +33,48 @@ import org.apache.webbeans.context.type.ContextTypes;
  */
 public class DependentContext extends AbstractContext
 {
-    //X TODO owner never gets set currently?!?
-    private AbstractComponent<?> owner;
-
     public DependentContext()
     {
         super(ContextTypes.DEPENDENT);
 
     }
+    
+    
 
     @Override
-    protected <T> T getInstance(Contextual<T> component, boolean create,CreationalContext<T> creationalContext)
+    protected <T> T getInstance(Contextual<T> component,CreationalContext<T> creationalContext)
     {
-        if (isActive())
+        T object = null;
+        
+        if(creationalContext == null)
         {
-            if (create)
-            {
-                T object = component.create(creationalContext);
-
-                return object;
-            }
+            return null;
         }
-
         else
         {
-            throw new ContextNotActiveException("Dependent  context with WebBeans component class : " + 
-                                                (owner != null ? owner.getReturnType() : "null") + 
-                                                " is not active");
+            object = component.create(creationalContext);
         }
+        
 
-        return null;
+        return object;
     }
 
-    @Override
-    protected <T> void removeInstance(Bean<T> component)
-    {
-        // no-op
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.webbeans.context.AbstractContext#destroy()
-     */
-    @Override
-    public <T> void destroy()
-    {
-
-    }
 
     @Override
     public void setComponentInstanceMap()
     {
 
+    }
+
+
+
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.context.AbstractContext#get(javax.context.Contextual)
+     */
+    @Override
+    public <T> T get(Contextual<T> component)
+    {
+        return null;
     }
 
 }
