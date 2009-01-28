@@ -53,7 +53,9 @@ public class InjectableField extends AbstractInjectable
         Annotation[] annots = field.getAnnotations();
 
         Annotation[] bindingAnnos = AnnotationUtil.getBindingAnnotations(annots);
-        Annotation[] resourceAnnos = AnnotationUtil.getResourceAnnotations(annots);
+        
+        //GE : Mark this is not used! I am commenting here!
+        //Annotation[] resourceAnnos = AnnotationUtil.getResourceAnnotations(annots);
 
         try
         {

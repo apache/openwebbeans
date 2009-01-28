@@ -31,15 +31,7 @@ import org.scannotation.ClasspathUrlFinder;
 import org.scannotation.WarUrlFinder;
 
 /**
- * Configures the <b>Web Beans Container</b> at the enterprise application
- * deployment time.
- * <p>
- * See the web beans specification section-10 for further details of how to
- * configure web beans container.
- * </p>
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ * Configures the web application to find beans.
  */
 public final class WebBeansScanner
 {
@@ -48,8 +40,7 @@ public final class WebBeansScanner
     /** Location of the beans.xml files. */
     private Map<String, InputStream> WEBBEANS_XML_LOCATIONS = new HashMap<String, InputStream>();
 
-    /** Location of the ejb-jar.xml files */
-    private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
+    //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 
     /** Annotation Database */
     private AnnotationDB ANNOTATION_DB = null;
@@ -153,38 +144,39 @@ public final class WebBeansScanner
                 }
 
                 listURL.add(url);
+                
                 WEBBEANS_XML_LOCATIONS.put(addPath.getFile(), addPath.openStream());
             }
         }
 
         // Scan for ejb-jar.xml
-        URL[] ejbUrls = ClasspathUrlFinder.findResourceBases("META-INF/ejb-jar.xml", WebBeansUtil.getCurrentClassLoader());
-
-        if (ejbUrls != null && ejbUrls.length > 0)
-        {
-            for (URL ejbUrl : ejbUrls)
-            {
-                // ok, beans.xml and ejb-jar.xml is in the same root
-                if (listURL.contains(ejbUrl))
-                {
-                    URL addPath = null;
-
-                    String fileDir = ejbUrl.getFile();
-
-                    if (fileDir.endsWith(".jar!/"))
-                    {
-                        fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/META-INF/ejb-jar.xml";
-                        addPath = new URL("jar:" + fileDir);
-                    }
-                    else
-                    {
-                        addPath = new URL("file:" + ejbUrl.getFile() + "META-INF/ejb-jar.xml");
-                    }
-
-                    EJB_XML_LOCATIONS.put(addPath.getFile(), addPath.openStream());
-                }
-            }
-        }
+//        URL[] ejbUrls = ClasspathUrlFinder.findResourceBases("META-INF/ejb-jar.xml", WebBeansUtil.getCurrentClassLoader());
+//
+//        if (ejbUrls != null && ejbUrls.length > 0)
+//        {
+//            for (URL ejbUrl : ejbUrls)
+//            {
+//                // ok, beans.xml and ejb-jar.xml is in the same root
+//                if (listURL.contains(ejbUrl))
+//                {
+//                    URL addPath = null;
+//
+//                    String fileDir = ejbUrl.getFile();
+//
+//                    if (fileDir.endsWith(".jar!/"))
+//                    {
+//                        fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/META-INF/ejb-jar.xml";
+//                        addPath = new URL("jar:" + fileDir);
+//                    }
+//                    else
+//                    {
+//                        addPath = new URL("file:" + ejbUrl.getFile() + "META-INF/ejb-jar.xml");
+//                    }
+//
+//                    EJB_XML_LOCATIONS.put(addPath.getFile(), addPath.openStream());
+//                }
+//            }
+//        }
 
         return listURL;
     }
@@ -220,10 +212,10 @@ public final class WebBeansScanner
      * 
      * @return list of stream
      */
-    public Map<String, InputStream> getEJB_XML_LOCATIONS()
-    {
-        return EJB_XML_LOCATIONS;
-    }
+//    public Map<String, InputStream> getEJB_XML_LOCATIONS()
+//    {
+//        return EJB_XML_LOCATIONS;
+//    }
 
     /**
      * Gets annotated classes.

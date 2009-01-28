@@ -15,11 +15,13 @@ package org.apache.webbeans.config;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Named;
@@ -34,6 +36,7 @@ import javax.inject.Produces;
 import javax.inject.Specializes;
 import javax.inject.UnsatisfiedDependencyException;
 import javax.inject.manager.Bean;
+import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
@@ -48,6 +51,7 @@ import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -57,9 +61,6 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Defines the web beans components common properties.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public final class DefinitionUtil
 {
@@ -371,6 +372,7 @@ public final class DefinitionUtil
                 if (newComponent != null)
                 {
                     producerComponents.add(newComponent);
+                    addMethodInjectionPointMetaData(newComponent, declaredMethod);                    
                 }
             }
         }
@@ -452,6 +454,8 @@ public final class DefinitionUtil
             }
 
             pr.setDisposalMethod(declaredMethod);
+            
+            addMethodInjectionPointMetaData(component, declaredMethod);
         }
     }
 
@@ -495,6 +499,7 @@ public final class DefinitionUtil
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
                     {
                         component.addInjectedField(field);
+                        addFieldInjectionPointMetaData(component, field);
                     }
                 }
                 
@@ -528,6 +533,7 @@ public final class DefinitionUtil
                     if (!Modifier.isStatic(method.getModifiers()))
                     {
                         component.addInjectedMethod(method);
+                        addMethodInjectionPointMetaData(component, method);
                     }
 
                 }
@@ -555,6 +561,7 @@ public final class DefinitionUtil
         WebBeansDecoratorConfig.configureDecarotors(component, object);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> void defineObserverMethods(ObservesMethodsOwner<T> component, Class<T> clazz)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
@@ -568,6 +575,8 @@ public final class DefinitionUtil
         {
             EventUtil.checkObserverMethodConditions(candidateMethod, clazz);
             component.addObservableMethod(candidateMethod);
+            
+            addMethodInjectionPointMetaData((AbstractComponent<T>)component, candidateMethod);
         }
 
         manager.addObservableComponentMethods(component);
@@ -582,4 +591,29 @@ public final class DefinitionUtil
             component.setSerializable(true);
         }
     }
+    
+    public static <T> void addFieldInjectionPointMetaData(AbstractComponent<T> owner, Field field)
+    {
+        InjectionPoint injectionPoint = InjectionPointFactory.getFieldInjectionPointData(owner, field);
+        owner.addInjectionPoint(injectionPoint);
+    }
+    
+    public static <T> void addMethodInjectionPointMetaData(AbstractComponent<T> owner, Method method)
+    {
+        List<InjectionPoint> injectionPoints = InjectionPointFactory.getMethodInjectionPointData(owner, method);
+        for(InjectionPoint injectionPoint : injectionPoints)
+        {
+            owner.addInjectionPoint(injectionPoint);
+        }
+    }
+    
+    public static <T> void addConstructorInjectionPointMetaData(AbstractComponent<T> owner, Constructor<T> constructor)
+    {
+        List<InjectionPoint> injectionPoints = InjectionPointFactory.getConstructorInjectionPointData(owner, constructor);
+        for(InjectionPoint injectionPoint : injectionPoints)
+        {
+            owner.addInjectionPoint(injectionPoint);
+        }
+    }
+    
 }

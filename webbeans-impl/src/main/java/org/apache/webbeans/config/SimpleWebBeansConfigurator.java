@@ -14,6 +14,7 @@
 package org.apache.webbeans.config;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.util.Set;
 
 import javax.context.ScopeType;
@@ -36,9 +37,6 @@ import org.apache.webbeans.util.WebBeansUtil;
  * <p>
  * Contains useful static methods for creating simple web beans.
  * </p>
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public final class SimpleWebBeansConfigurator
 {
@@ -104,8 +102,7 @@ public final class SimpleWebBeansConfigurator
      * 
      * @param clazz simple web bean implementation class
      * @return the newly simple web bean component
-     * @throws WebBeansConfigurationException if any configuration exception
-     *             occurs
+     * @throws WebBeansConfigurationException if any configuration exception occurs
      */
     public static <T> ComponentImpl<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
     {
@@ -132,7 +129,9 @@ public final class SimpleWebBeansConfigurator
         DefinitionUtil.defineBindingTypes(component, clazzAnns);
         DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
 
-        component.setConstructor(WebBeansUtil.defineConstructor(clazz));
+        Constructor<T> constructor = WebBeansUtil.defineConstructor(clazz);
+        component.setConstructor(constructor);
+        DefinitionUtil.addConstructorInjectionPointMetaData(component, constructor);
 
         WebBeansUtil.checkSteroTypeRequirements(component, clazz.getAnnotations(), "WebBeans component  class : " + clazz.getName());
 

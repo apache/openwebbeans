@@ -1412,6 +1412,6 @@ public final class WebBeansUtil
         {
             throw new IllegalArgumentException("scopeType argument must be annotated with @ScopeType");
         }
-
     }
-}
+    
+ }

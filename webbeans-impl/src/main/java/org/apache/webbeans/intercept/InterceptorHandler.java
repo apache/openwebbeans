@@ -49,6 +49,7 @@ public class InterceptorHandler implements MethodHandler
         this.component = component;
     }
 
+    @SuppressWarnings("unchecked")
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         Context webbeansContext = ManagerImpl.getManager().getContext(component.getScopeType());

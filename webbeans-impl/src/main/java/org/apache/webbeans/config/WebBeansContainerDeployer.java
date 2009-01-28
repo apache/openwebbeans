@@ -46,11 +46,8 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 import org.apache.webbeans.xml.XMLSpecializesManager;
 
 /**
- * Deploys the all components that are defined in the {@link WebBeansScanner} at
+ * Deploys the all beans that are defined in the {@link WebBeansScanner} at
  * the scanner phase.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 @SuppressWarnings("unchecked")
 public final class WebBeansContainerDeployer
@@ -118,6 +115,7 @@ public final class WebBeansContainerDeployer
 
         // Start from the class
         Map<String, Set<String>> classIndex = scanner.getANNOTATION_DB().getClassIndex();
+        
         if (classIndex != null)
         {
             Set<String> pathClasses = classIndex.keySet();
