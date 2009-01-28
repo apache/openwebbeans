@@ -72,6 +72,20 @@ The Apache Software Foundation (http://www.apache.org/).
 This product includes software developed by:
 The Apache Software Foundation (http://www.apache.org/)
 
+=========================================================================
+==  HSQLDB Notice                                              	       ==
+=========================================================================
+ORIGINAL LICENSE (a.k.a. "hypersonic_lic.txt")
+
+For content, code, and products originally developed by Thomas Mueller and the Hypersonic SQL Group:
+Copyright (c) 1995-2000 by the Hypersonic SQL Group.
+All rights reserved. 
+
+
+For work added by the HSQL Development Group (a.k.a. hsqldb_lic.txt):
+Copyright (c) 2001-2005, The HSQL Development Group
+All rights reserved.
+
 -------------------------------------------------------------------------------
 See the LICENSE.txt file and /licences folder for information on all licenses 
 associated with this software.
