@@ -30,6 +30,8 @@ import org.dom4j.Element;
 public class XMLAnnotationTypeManager
 {
     private Set<Class<? extends Annotation>> xmlBindingTypes = new CopyOnWriteArraySet<Class<? extends Annotation>>();
+    
+    private Set<Class<? extends Annotation>> xmlResources = new CopyOnWriteArraySet<Class<? extends Annotation>>();
 
     private Map<Class<? extends Annotation>, Set<Annotation>> xmlInterceptorBindingTypes = new ConcurrentHashMap<Class<? extends Annotation>, Set<Annotation>>();
 
@@ -51,9 +53,24 @@ public class XMLAnnotationTypeManager
         xmlBindingTypes.add(bindingType);
     }
 
+    public void addResource(Class<? extends Annotation> resource)
+    {
+        xmlResources.add(resource);
+    }
+
     public boolean isBindingTypeExist(Class<? extends Annotation> bindingType)
     {
         if (xmlBindingTypes.contains(bindingType))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isResourceExist(Class<? extends Annotation> resource)
+    {
+        if (xmlResources.contains(resource))
         {
             return true;
         }
@@ -111,6 +128,11 @@ public class XMLAnnotationTypeManager
     public Set<Class<? extends Annotation>> getBindingTypes()
     {
         return Collections.unmodifiableSet(xmlBindingTypes);
+    }
+
+    public Set<Class<? extends Annotation>> getResources()
+    {
+        return Collections.unmodifiableSet(xmlResources);
     }
 
     public Set<Annotation> getInterceptorBindingTypeInherites(Class<? extends Annotation> interceptorBindingType)

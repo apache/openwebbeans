@@ -23,6 +23,8 @@ import javax.event.Fires;
 import javax.inject.New;
 import javax.inject.manager.Bean;
 
+import javax.persistence.PersistenceUnit;
+
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
@@ -32,6 +34,8 @@ import org.apache.webbeans.context.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.jpa.JPAUtil;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -71,6 +75,12 @@ public abstract class AbstractInjectable implements Injectable
                 isSetOnThis = true;
             }
 
+            if (isResource(annotations))
+            {
+                //X TODO do we need the args too?
+                return injectResource(type, annotations);
+            }
+            
             if (isNewBinding(annotations))
             {
                 return injectForNew(type, annotations);
@@ -110,6 +120,19 @@ public abstract class AbstractInjectable implements Injectable
 
     }
 
+    private boolean isResource(Annotation... annotations)
+    {
+        for (Annotation anno : annotations)
+        {
+            if (AnnotationUtil.isResourceAnnotation(anno.annotationType()))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     private boolean isNewBinding(Annotation... annotations)
     {
         if (annotations.length == 1)
@@ -136,6 +159,29 @@ public abstract class AbstractInjectable implements Injectable
         return false;
     }
 
+    /**
+     * create the instance for injecting web beans resources.
+     * @see AnnotationUtil#isResourceAnnotation(Class)
+     * @param type the class type which should be created
+     * @param annotations which has been defined in the web bean
+     * @return the instance linked with the annotation
+     */
+    private Object injectResource(Type type, Annotation... annotations)
+    {
+        Object ret = null;
+        Annotation annot = AnnotationUtil.getAnnotation(annotations, PersistenceUnit.class);
+        if (annot != null)
+        {
+            PersistenceUnit pu = (PersistenceUnit) annot;
+            String unitName = pu.unitName();
+            
+            //X TODO what if the EntityManagerFactory is null?
+            return JPAUtil.getPersistenceUnit(unitName);
+        }
+        
+        return ret;
+    }
+    
     private Object injectForNew(Type type, Annotation... annotations)
     {
         Class<?> clazz = null;

@@ -25,6 +25,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
+import javax.xml.ws.WebServiceRef;
+
 import javax.annotation.NonBinding;
 import javax.annotation.Stereotype;
 import javax.inject.BindingType;
@@ -468,6 +474,33 @@ public final class AnnotationUtil
     }
 
     /**
+     * Gets the array of resource annotations on the given array.
+     * 
+     * @param annotations annotation array
+     * @return array containing resource type anns
+     */
+    public static Annotation[] getResourceAnnotations(Annotation... annotations)
+    {
+        Asserts.assertNotNull(annotations, "Annotations argument can not be null");
+
+        Set<Annotation> set = new HashSet<Annotation>();
+
+        for (Annotation annot : annotations)
+        {
+            if (AnnotationUtil.isResourceAnnotation(annot.annotationType()))
+            {
+                set.add(annot);
+            }
+        }
+
+        Annotation[] a = new Annotation[set.size()];
+        a = set.toArray(a);
+
+        return a;
+
+    }
+    
+    /**
      * Gets array of methods that has parameter with given annotation type.
      * 
      * @param clazz class for check
@@ -568,21 +601,30 @@ public final class AnnotationUtil
 
     public static boolean isAnnotationExist(Annotation[] anns, Class<? extends Annotation> annotation)
     {
+        return getAnnotation(anns, annotation) != null;
+    }
+
+    /**
+     * get the annotation of the given type from the array. 
+     * @param anns
+     * @param annotation
+     * @return the Annotation with the given type or <code>null</code> if no such found.
+     */
+    public static Annotation getAnnotation(Annotation[] anns, Class<? extends Annotation> annotation)
+    {
         Asserts.assertNotNull(anns, "anns argument can not be null");
         Asserts.assertNotNull(annotation, "annotation argument can not be null");
-
         for (Annotation annot : anns)
         {
             if (annot.annotationType().equals(annotation))
             {
-                return true;
+                return annot;
             }
         }
 
-        return false;
-
+        return null;
     }
-
+    
     public static Annotation[] getMetaAnnotations(Annotation[] anns, Class<? extends Annotation> metaAnnotation)
     {
         List<Annotation> annots = new ArrayList<Annotation>();
@@ -672,6 +714,48 @@ public final class AnnotationUtil
             return true;
         }
         else if (clazz.isAnnotationPresent(BindingType.class))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if the annotation is a valid WebBeans Resource,
+     * a resource defined in common annotations JSR-250, a remote EJB
+     * or a web service.
+     * The following annotations indicate resources
+     * <ol>
+     * <li>&#x0040;CustomerDataservice</li>
+     * <li>&#x0040;Resource</li>
+     * <li>&#x0040;PersistenceContext</li>
+     * <li>&#x0040;PersistenceUnit</li>
+     * <li>&#x0040;EJB</li>
+     * <li>&#x0040;WebServiceRef</li>
+     * <li>&#x0040;</li>
+     * </ol>
+     * 
+     * Please note that &#x0040;PersistenceContext(type=EXTENDED) 
+     * is not supported for simple beans.
+     * 
+     * @param clazz type of the annotation
+     * @return true if the annotation is defined in xml or annotated with
+     *         {@link BindingType} false otherwise
+     */
+    public static boolean isResourceAnnotation(Class<? extends Annotation> clazz)
+    {
+        Asserts.assertNotNull(clazz, "clazz parameter can not be null");
+        XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
+        if (manager.isResourceExist(clazz))
+        {
+            return true;
+        }
+        else if (clazz.equals(Resource.class) ||
+                 clazz.equals(PersistenceContext.class) ||
+                 clazz.equals(PersistenceUnit.class) ||
+                 clazz.equals(EJB.class) ||
+                 clazz.equals(WebServiceRef.class) )
         {
             return true;
         }

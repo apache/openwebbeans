@@ -125,19 +125,14 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
     protected void injectFields(T instance)
     {
         Set<Field> fields = getInjectedFields();
-        Iterator<Field> it = fields.iterator();
-
-        while (it.hasNext())
+        for (Field field : fields)
         {
-            Field field = it.next();
             if (field.getAnnotation(Decorates.class) == null)
             {
                 InjectableField f = new InjectableField(field, instance, this);
                 f.doInjection();
             }
-
         }
-
     }
 
     /*
@@ -147,11 +142,10 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
     protected void injectMethods(T instance)
     {
         Set<Method> methods = getInjectedMethods();
-        Iterator<Method> it = methods.iterator();
 
-        while (it.hasNext())
+        for (Method method : methods)
         {
-            InjectableMethods m = new InjectableMethods(it.next(), instance, this);
+            InjectableMethods m = new InjectableMethods(method, instance, this);
             m.doInjection();
         }
     }

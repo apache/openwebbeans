@@ -36,6 +36,10 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 		<dependency>
+		    <groupId>org.apache.geronimo.specs</groupId>
+		    <artifactId>geronimo-jaxws_2.1_spec</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-servlet_2.5_spec</artifactId>
 		</dependency>
@@ -63,11 +67,7 @@
 			<groupId>net.sf.scannotation</groupId>
 			<artifactId>scannotation</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>jsr250-api</artifactId>
@@ -92,6 +92,25 @@
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-api</artifactId>
 		</dependency>
+
+        <!-- the following dependencies are needed for tests only -->  
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>      
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+            <version>1.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.8.0.7</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
     <build>

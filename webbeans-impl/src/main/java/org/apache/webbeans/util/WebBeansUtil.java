@@ -350,8 +350,11 @@ public final class WebBeansUtil
      * Check conditions for the new binding.
      * 
      * @param annotations annotations
+     * @return Annotation[] with all binding annotations
+     * @throws WebBeansConfigurationException if &x0040;New plus any other binding annotation is set or
+     *         if &x0040;New is used for an Interface or an abstract class.
      */
-    public static void checkForNewBindingForDeployment(Type type, Class<?> clazz, String name, Annotation... annotations)
+    public static Annotation[] checkForNewBindingForDeployment(Type type, Class<?> clazz, String name, Annotation[] annotations)
     {
         Asserts.assertNotNull(type, "Type argument can not be null");
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
@@ -373,7 +376,8 @@ public final class WebBeansUtil
                 }
             }
         }
-
+        
+        return as;
     }
 
     /**

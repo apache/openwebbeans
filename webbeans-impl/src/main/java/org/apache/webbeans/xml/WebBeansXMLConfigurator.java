@@ -198,6 +198,9 @@ public final class WebBeansXMLConfigurator
                 addNewBindingType(child);
 
             }
+            
+            //X TODO <Resource> annotation element declaration */
+            
             /* <InterceptorBindingType> annotation element decleration */
             else if (XMLUtil.isElementInterceptorBindingTypeDecleration(child))
             {

@@ -13,7 +13,25 @@
  */
 package org.apache.webbeans.jpa;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+/**
+ * Helper class which contains various static functions for accessing JPA functionality.
+ */
 public class JPAUtil
 {
+
+    /**
+     * 
+     * @param unitName JPA persistence unit name
+     * @return EntityManagerFactory or <code>null</code> if not found
+     */
+    public static EntityManagerFactory getPersistenceUnit(String unitName)
+    {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(unitName);
+            
+        return emf;
+    }
 
 }

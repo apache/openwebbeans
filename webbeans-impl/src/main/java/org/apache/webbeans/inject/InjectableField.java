@@ -52,14 +52,15 @@ public class InjectableField extends AbstractInjectable
 
         Annotation[] annots = field.getAnnotations();
 
-        annots = AnnotationUtil.getBindingAnnotations(annots);
+        Annotation[] bindingAnnos = AnnotationUtil.getBindingAnnotations(annots);
+        Annotation[] resourceAnnos = AnnotationUtil.getResourceAnnotations(annots);
 
         try
         {
-            if (annots.length == 0)
+            if (bindingAnnos.length == 0)
             {
-                annots = new Annotation[1];
-                annots[0] = new CurrentLiteral();
+                bindingAnnos = new Annotation[1];
+                bindingAnnos[0] = new CurrentLiteral();
             }
 
             if (!ClassUtil.isPublic(field.getModifiers()))

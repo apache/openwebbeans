@@ -467,20 +467,33 @@ public final class DefinitionUtil
             for (Field field : fields)
             {
                 Annotation[] anns = field.getAnnotations();
-                Annotation[] as = AnnotationUtil.getBindingAnnotations(anns);
 
-                // injected fields must define binding types.
-                if (as.length > 0)
+                Annotation[] bindingAnns = AnnotationUtil.getBindingAnnotations(anns);
+                Annotation[] resourceAnns = AnnotationUtil.getResourceAnnotations(anns);
+                
+                // bindingAnns and resourceAnns are not allowed at the same time!
+                if (bindingAnns.length > 0 && resourceAnns.length > 0)
                 {
-                    WebBeansUtil.checkForNewBindingForDeployment(field.getGenericType(), clazz, field.getName(), anns);
-
+                    throw new WebBeansConfigurationException("Found binding and resource injection at the same time for the field : " 
+                                                             + field.getName() + " in class : " + clazz.getName());
+                }
+                
+                // injected fields must either be resources or define binding types, 
+                // otherwise it's binding &#x0040;Current.
+                if (bindingAnns.length > 0 || resourceAnns.length > 0)
+                {
+                    if (bindingAnns.length > 0)
+                    {
+                        WebBeansUtil.checkForNewBindingForDeployment(field.getGenericType(), clazz, field.getName(), anns);
+                    }
+                    
                     int mod = field.getModifiers();
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
                     {
                         component.addInjectedField(field);
                     }
                 }
-
+                
             }
         }
 
