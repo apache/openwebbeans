@@ -165,6 +165,7 @@ public abstract class AbstractInjectable implements Injectable
      * @param type the class type which should be created
      * @param annotations which has been defined in the web bean
      * @return the instance linked with the annotation
+     * @see WebBeansUtil#checkForValidResources(Type, Class, String, Annotation[])
      */
     private Object injectResource(Type type, Annotation... annotations)
     {

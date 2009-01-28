@@ -59,6 +59,10 @@ import javax.inject.manager.Manager;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.persistence.Entity;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
+import javax.persistence.PersistenceUnit;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextListener;
@@ -380,6 +384,55 @@ public final class WebBeansUtil
         return as;
     }
 
+    /**
+     * Check conditions for the resources.
+     * 
+     * @param annotations annotations
+     * @return Annotation[] with all binding annotations
+     * @throws WebBeansConfigurationException if resource annotations exists and do not fit to the fields type, etc.
+     * @see AnnotationUtil#isResourceAnnotation(Class)
+     */
+    public static Annotation[] checkForValidResources(Type type, Class<?> clazz, String name, Annotation[] annotations)
+    {
+        Asserts.assertNotNull(type, "Type argument can not be null");
+        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.assertNotNull(annotations, "Annotations argument can not be null");
+
+        Annotation[] as = AnnotationUtil.getResourceAnnotations(annotations);
+        for (Annotation a : annotations)
+        {
+            if (a.annotationType().equals(PersistenceUnit.class))
+            {
+                if (!type.equals(EntityManagerFactory.class))
+                {
+                    throw new WebBeansConfigurationException("@PersistenceUnit must only be injected into field with type EntityManagerFactory! class : "  
+                                                             + clazz.getName() + " in field/method : " + name);
+                }
+            }
+            
+            if (a.annotationType().equals(PersistenceContext.class))
+            {
+                PersistenceContext pc = (PersistenceContext) a;
+                
+                if (!type.equals(EntityManagerFactory.class))
+                {
+                    throw new WebBeansConfigurationException("@PersistenceContext must only be injected into field with type EntityManager! class : "  
+                                                             + clazz.getName() + " in field/method : " + name);
+                }
+             
+                if (pc.type().equals(PersistenceContextType.EXTENDED))
+                {
+                    throw new WebBeansConfigurationException("type of @PersistenceContext must not be 'EXTENDED'! class : "  
+                            + clazz.getName() + " in field/method : " + name);
+                    
+                }
+            }
+        }
+                
+        //X TODO add checks for other resources
+        return as;
+    }
+    
     /**
      * Returns true if src scope encloses the target.
      * 

@@ -486,6 +486,10 @@ public final class DefinitionUtil
                     {
                         WebBeansUtil.checkForNewBindingForDeployment(field.getGenericType(), clazz, field.getName(), anns);
                     }
+                    if (resourceAnns.length > 0)
+                    {
+                        WebBeansUtil.checkForValidResources(field.getGenericType(), clazz, field.getName(), anns);
+                    }
                     
                     int mod = field.getModifiers();
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
