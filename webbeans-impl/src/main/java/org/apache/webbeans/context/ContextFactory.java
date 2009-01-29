@@ -162,7 +162,8 @@ public final class ContextFactory
      */
     public static void initApplicationContext(ServletContext servletContext)
     {
-        if(currentApplicationContexts.containsKey(servletContext))
+        
+        if(servletContext != null && currentApplicationContexts.containsKey(servletContext))
         {
             applicationContext.set(currentApplicationContexts.get(servletContext));
         }
