@@ -421,13 +421,13 @@
       
 	<properties>
           <openwebbeans.version>1.0.0-incubating-SNAPSHOT</openwebbeans.version>
-	  <siteId>plugins/directory</siteId>
+	  <siteId>/OWB/1.0.0-incubating-M1/plugins</siteId>
 	</properties>
 
     <profiles>
         <!-- START release profile -->
         <profile>
-            <id>release</id>
+            <id>local</id>
             <build>
                 <plugins>
 

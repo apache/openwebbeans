@@ -28,10 +28,52 @@ OpenWebBeans M1 Release Content
 * Servlet Injection Support
 * Inheritance, Stereotype Inheritance and Realization Support
 * Common Annotations Support
-* Full Support for Validation Checks
 * Passivation Scope and Serialization Operations
 * Full Support for XML Configuration
 * Java EE Container Integration Support (SPI)
+
+---------------------------------------------
+Release Notes - OpenWebBeans - Version M1
+Bug
+
+    * [OWB-33] - bug in EJBInterceptComponentTest#testMultipleInterceptedComponent
+    * [OWB-34] - bug in ExceptionComponentTest
+    * [OWB-38] - Review all usages of catch(Throwable)
+    * [OWB-54] - Update Bean.getBindings Contract
+    * [OWB-61] - Refactor the annotations to match the new package schema.
+    * [OWB-62] - Refactor web-beans.xml to beans.xml
+
+Improvement
+
+    * [OWB-31] - various XML definition improvements
+    * [OWB-35] - cut back overly exception handling in ClassUtil
+    * [OWB-41] - M1-Release Corrections
+    * [OWB-58] - Dependent Context unused instance variable named : owner
+
+Task
+
+    * [OWB-7] - Manager initialization
+    * [OWB-9] - Check Client Proxy Implementation
+    * [OWB-17] - Test Events
+    * [OWB-20] - Compilation errors while building either webbeans-api or webbeans-impl modules
+    * [OWB-21] - No main pom.xml for OpenWebBeans
+    * [OWB-23] - pom.xml files are not well organized. A compilation erro while compiling inside Eclipse
+    * [OWB-27] - 5.2. Primitive types and null values
+    * [OWB-30] - 5.10. Instance resolution, check Unproxiable Api Type control
+    * [OWB-32] - Enabling more maven reports for site creation
+    * [OWB-44] - Object toString method check on the Proxy
+    * [OWB-60] - code cleanup unify getStereotype vs getStereoType in the sources
+    * [OWB-63] - M1-Release Content
+    * [OWB-70] - Change API copied from JBoss Impl.
+    * [OWB-72] - add hsqldb license to our NOTICE, LEGAL, etc
+    * [OWB-73] - add license headers to all XML files
+
+Test
+
+    * [OWB-22] - Unit tests failures in WebBeans-Impl module
+    * [OWB-36] - create a test for WebBeansScanner
+    * [OWB-40] - create test cases for XML constructor injection
+
 
 ---------------------------------------------
 How to Configure The OpenWebBeans
@@ -39,8 +81,8 @@ How to Configure The OpenWebBeans
 
 There are two important jars for OpenWebBeans;
 
- - openwebbeans-api-1.0.0-SNAPSHOT.jar
- - openwebbeans-impl-1.0.0-SNAPSHOT.jar
+ - openwebbeans-api-1.0.0-incubating-SNAPSHOT.jar
+ - openwebbeans-impl-1.0.0-incubating-SNAPSHOT.jar
 
 There are also a dependent libraries. These dependent library jars
 are located in the directory "/lib/thirdparty". 

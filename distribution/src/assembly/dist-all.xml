@@ -33,7 +33,7 @@
 
         <file>
             <outputDirectory>config</outputDirectory>
-            <source>../samples/guess/src/main/webapp/WEB-INF/web-beans.xml</source>
+            <source>../samples/guess/src/main/webapp/WEB-INF/beans.xml</source>
         </file>
 
     </files>
