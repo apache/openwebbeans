@@ -29,7 +29,7 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.container.ResolutionUtil;
-import org.apache.webbeans.context.DependentContext;
+import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.event.EventImpl;
@@ -64,17 +64,10 @@ public abstract class AbstractInjectable implements Injectable
      */
     public <T> Object inject(Class<T> type, Type[] args, Annotation... annotations)
     {
-        DependentContext context = (DependentContext) ManagerImpl.getManager().getContext(Dependent.class);
-        boolean isSetOnThis = false;
+        ContextFactory.getDependentContext().setActive(true);
 
         try
         {
-            if (!context.isActive())
-            {
-                context.setActive(true);
-                isSetOnThis = true;
-            }
-
             if (isResource(annotations))
             {
                 //X TODO do we need the args too?
@@ -112,10 +105,7 @@ public abstract class AbstractInjectable implements Injectable
         }
         finally
         {
-            if (isSetOnThis)
-            {
-                context.setActive(false);
-            }
+            ContextFactory.getDependentContext().setActive(false);
         }
 
     }

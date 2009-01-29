@@ -13,13 +13,15 @@
  */
 package org.apache.webbeans.exception;
 
+import javax.inject.DeploymentException;
+
 /**
  * Exception that is thrown by the web beans container at the deployment time.
  * 
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class WebBeansDeploymentException extends WebBeansException
+public class WebBeansDeploymentException extends DeploymentException
 {
 
     private static final long serialVersionUID = 1863095663133791175L;

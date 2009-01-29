@@ -29,6 +29,7 @@ import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
@@ -116,16 +117,10 @@ public abstract class AbstractComponent<T> extends Component<T>
      */
     public T create(CreationalContext<T> creationalContext)
     {
-        DependentContext context = (DependentContext) getManager().getContext(Dependent.class);
-        boolean isActiveSet = false;
+        ContextFactory.getDependentContext().setActive(true);
         T instance = null;
         try
         {
-            if (!context.isActive())
-            {
-                context.setActive(true);
-                isActiveSet = true;
-            }
 
             instance = createInstance(creationalContext);
 
@@ -140,10 +135,7 @@ public abstract class AbstractComponent<T> extends Component<T>
         }
         finally
         {
-            if (isActiveSet)
-            {
-                context.setActive(false);
-            }
+            ContextFactory.getDependentContext().setActive(false);
         }
 
         return instance;
@@ -163,16 +155,9 @@ public abstract class AbstractComponent<T> extends Component<T>
      */
     public void destroy(T instance)
     {
-        DependentContext context = (DependentContext) getManager().getContext(Dependent.class);
-        boolean isActiveSet = false;
-
         try
         {
-            if (!context.isActive())
-            {
-                context.setActive(true);
-                isActiveSet = true;
-            }
+            ContextFactory.getDependentContext().setActive(true);
 
             destroyInstance(instance);
             destroyDependents();
@@ -180,10 +165,7 @@ public abstract class AbstractComponent<T> extends Component<T>
         }
         finally
         {
-            if (isActiveSet)
-            {
-                context.setActive(false);
-            }
+            ContextFactory.getDependentContext().setActive(false);
         }
 
     }

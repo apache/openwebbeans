@@ -14,6 +14,7 @@
 package org.apache.webbeans.container;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,11 +23,13 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.manager.Bean;
+import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.ProducerComponentImpl;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -45,6 +48,39 @@ public class InjectionResolver
         return instance;
     }
 
+    public void checkInjectionPoints(InjectionPoint injectionPoint)
+    {
+        Type type = injectionPoint.getType();
+        Class<?> clazz = null;
+        Type[] args = new Type[0];
+        
+        if (type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType) type;
+
+            if (!ClassUtil.checkParametrizedType(pt))
+            {
+                throw new WebBeansConfigurationException("Injection point : " + injectionPoint + " can not defined type variable or wildcard");
+            }
+            
+            args = pt.getActualTypeArguments();
+
+            clazz = (Class<?>) pt.getRawType();
+        }
+        else
+        {
+            clazz = (Class<?>) type;
+        }
+        
+        Annotation[] bindingTypes = new Annotation[injectionPoint.getBindings().size()];
+        bindingTypes = injectionPoint.getBindings().toArray(bindingTypes);
+        
+        Set<Bean<Object>> beanSet = implResolveByType(clazz, args ,bindingTypes);
+        
+        ResolutionUtil.checkResolvedBeans(beanSet, clazz);
+        
+    }
+    
     public Set<Bean<?>> implResolveByName(String name)
     {
         Asserts.assertNotNull(name, "name parameter can not be null");

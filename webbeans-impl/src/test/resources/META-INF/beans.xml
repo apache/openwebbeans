@@ -17,9 +17,9 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<WebBeans 	xmlns="urn:java:javax.webbeans"
+<WebBeans 	xmlns="urn:java:ee"
  			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:schemaLocation="urn:java:javax.webbeans http://java.sun.com/jee/web-beans-1.0.xsd">
+			xsi:schemaLocation="urn:java:ee http://java.sun.com/jee/beans-1.0.xsd">
 <!-- 
     This file is only needed to trigger the WebBeansScanner.
     It does NOT contain a valid WebBeans configuration yet!

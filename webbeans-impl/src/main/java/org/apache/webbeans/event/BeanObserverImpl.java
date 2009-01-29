@@ -14,7 +14,6 @@
 package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -31,8 +30,9 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
-import org.apache.webbeans.context.DependentContext;
+import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.AnnotationUtil;
 
 public class BeanObserverImpl<T> implements Observer<T>
@@ -56,31 +56,24 @@ public class BeanObserverImpl<T> implements Observer<T>
         this.manager = ManagerImpl.getManager();
     }
 
+    @SuppressWarnings("unchecked")
     public void notify(T event)
     {
         AbstractComponent<?> baseComponent = (AbstractComponent<?>) bean;
         Object object = null;
-
-        boolean isActiveSet = false;
-        DependentContext dependentContext = (DependentContext) ManagerImpl.getManager().getContext(Dependent.class);
+        Context context = null;
+        boolean isDependentContext = false;
 
         try
         {
             if (baseComponent.getScopeType().equals(Dependent.class))
             {
-                dependentContext = (DependentContext) ManagerImpl.getManager().getContext(Dependent.class);
-
-                if (!dependentContext.isActive())
-                {
-                    isActiveSet = true;
-                    dependentContext.setActive(true);
-
-                }
-
-                object = ManagerImpl.getManager().getInstance(baseComponent);
+                isDependentContext = true;
+                ContextFactory.getDependentContext().setActive(true);                
             }
 
-            Context context = manager.getContext(baseComponent.getScopeType());
+            context = manager.getContext(baseComponent.getScopeType());
+            
             if (ifExist)
             {
                 object = context.get(baseComponent);
@@ -97,42 +90,18 @@ public class BeanObserverImpl<T> implements Observer<T>
 
                 args = new Object[argsObjects.size()];
                 args = argsObjects.toArray(args);
-
-                try
-                {
-                    observerMethod.invoke(object, args);
-
-                }
-                catch (IllegalArgumentException e)
-                {
-                    throw e;
-
-                }
-                catch (IllegalAccessException e)
-                {
-                    throw new RuntimeException(e);
-
-                }
-                catch (InvocationTargetException e)
-                {
-                    throw new RuntimeException(e);
-                }
-                finally
-                {
-                    if (isActiveSet)
-                    {
-                        object = null;
-                    }
-                }
-
+                observerMethod.invoke(object, args);
             }
 
-        }
+        }catch(Exception e)
+        {
+            throw new WebBeansException(e);
+        }        
         finally
         {
-            if (isActiveSet)
+            if(isDependentContext)
             {
-                dependentContext.setActive(false);
+                ContextFactory.getDependentContext().setActive(false);   
             }
         }
 

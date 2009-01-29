@@ -24,13 +24,16 @@ import javax.decorator.Decorator;
 import javax.inject.InconsistentSpecializationException;
 import javax.inject.Specializes;
 import javax.inject.manager.Bean;
+import javax.inject.manager.InjectionPoint;
 import javax.inject.manager.Manager;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
+import org.apache.webbeans.annotation.DeployedManagerLiteral;
 import org.apache.webbeans.annotation.InitializedManagerLiteral;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.deployment.StereoTypeManager;
@@ -93,7 +96,16 @@ public final class WebBeansContainerDeployer
                 configureDecorators(scanner);
                 deployFromClassPath(scanner);
                 checkSpecializations(scanner);
-
+                
+                //Fire @Initialized Event
+                fireInitializeEvent();
+                
+                //Validate injection Points
+                validateInjectionPoints();
+                
+                //Fire @Deployed Event
+                fireDeployedEvent();
+                
                 deployed = true;
             }
 
@@ -102,11 +114,43 @@ public final class WebBeansContainerDeployer
         {
             throw new WebBeansDeploymentException(e);
         }
-        finally
+    }
+    
+    private void fireInitializeEvent()
+    {
+        Manager manager = ManagerImpl.getManager();
+        manager.fireEvent(manager, new Annotation[] { new InitializedManagerLiteral() });
+    }
+    
+    
+    private void fireDeployedEvent()
+    {
+        Manager manager = ManagerImpl.getManager();
+        manager.fireEvent(manager, new Annotation[] { new DeployedManagerLiteral() });        
+        
+    }
+    
+    private void validateInjectionPoints()
+    {
+        logger.info("Validation injection points is started");
+        
+        ManagerImpl manager = ManagerImpl.getManager();
+        InjectionResolver resolver = InjectionResolver.getInstance();
+        Set<Bean<?>> beans = manager.getBeans();
+        
+        if(beans != null && beans.size() > 0)
         {
-            Manager manager = ManagerImpl.getManager();
-            manager.fireEvent(manager, new Annotation[] { new InitializedManagerLiteral() });
+            for(Bean<?> bean : beans)
+            {
+                Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
+                for(InjectionPoint injectionPoint : injectionPoints)
+                {
+                    resolver.checkInjectionPoints(injectionPoint);
+                }
+            }
         }
+        
+        logger.info("Injection points are validated succesfully");
     }
 
     private void deployFromClassPath(WebBeansScanner scanner) throws ClassNotFoundException

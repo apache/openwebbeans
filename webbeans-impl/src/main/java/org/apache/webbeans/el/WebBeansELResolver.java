@@ -26,7 +26,7 @@ import javax.inject.manager.Bean;
 import javax.inject.manager.Manager;
 
 import org.apache.webbeans.container.ManagerImpl;
-import org.apache.webbeans.context.DependentContext;
+import org.apache.webbeans.context.ContextFactory;
 
 public class WebBeansELResolver extends ELResolver
 {    
@@ -55,9 +55,8 @@ public class WebBeansELResolver extends ELResolver
         Manager manager = ManagerImpl.getManager();
 
         Object object = null;
-        DependentContext dependentContext = null;
         Bean<?> bean = null;
-        boolean isActiveSet = false;
+
         boolean isResolution = false;
         try
         {
@@ -65,13 +64,7 @@ public class WebBeansELResolver extends ELResolver
             {
                 isResolution = true;
 
-                dependentContext = (DependentContext) ManagerImpl.getManager().getContext(Dependent.class);
-
-                if (!dependentContext.isActive())
-                {
-                    dependentContext.setActive(true);
-                    isActiveSet = true;
-                }
+                ContextFactory.getDependentContext().setActive(true);
 
                 String name = (String) property;
                 object = manager.getInstanceByName(name);
@@ -91,10 +84,7 @@ public class WebBeansELResolver extends ELResolver
                     destroyBean(bean, object);
                 }
 
-                if (isActiveSet)
-                {
-                    dependentContext.setActive(false);
-                }
+                ContextFactory.getDependentContext().setActive(false);
             }
         }
 

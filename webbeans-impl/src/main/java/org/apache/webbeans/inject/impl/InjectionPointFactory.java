@@ -22,7 +22,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.event.Fires;
 import javax.event.Observes;
+import javax.inject.Obtains;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
@@ -40,8 +42,24 @@ public class InjectionPointFactory
 
         Annotation[] annots = null;
         annots = member.getAnnotations();
+        
 
-        return getGenericInjectionPoint(owner, annots, member.getGenericType(), member);
+        boolean firesOrObtainsAnnotation = false;
+
+        if(AnnotationUtil.isAnnotationExist(annots, Fires.class) || AnnotationUtil.isAnnotationExist(annots, Obtains.class))
+        {
+            firesOrObtainsAnnotation = true;
+        }
+        
+        if(!firesOrObtainsAnnotation)
+        {
+            return getGenericInjectionPoint(owner, annots, member.getGenericType(), member);   
+        }        
+        else
+        {
+            return null;
+        }
+
     }
 
     private static InjectionPoint getGenericInjectionPoint(Bean<?> owner, Annotation[] annots, Type type, Member member)
@@ -49,7 +67,6 @@ public class InjectionPointFactory
         InjectionPointImpl injectionPoint = null;
 
         Annotation[] bindingAnnots = AnnotationUtil.getBindingAnnotations(annots);
-
         injectionPoint = new InjectionPointImpl(owner, type, member);
 
         addAnnotation(injectionPoint, annots, false);

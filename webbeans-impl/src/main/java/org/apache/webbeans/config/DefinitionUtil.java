@@ -595,7 +595,10 @@ public final class DefinitionUtil
     public static <T> void addFieldInjectionPointMetaData(AbstractComponent<T> owner, Field field)
     {
         InjectionPoint injectionPoint = InjectionPointFactory.getFieldInjectionPointData(owner, field);
-        owner.addInjectionPoint(injectionPoint);
+        if(injectionPoint != null)
+        {
+            owner.addInjectionPoint(injectionPoint);   
+        }
     }
     
     public static <T> void addMethodInjectionPointMetaData(AbstractComponent<T> owner, Method method)

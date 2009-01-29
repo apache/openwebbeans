@@ -14,6 +14,8 @@
 package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.context.ApplicationScoped;
 import javax.context.ContextNotActiveException;
@@ -48,7 +50,7 @@ public final class ContextFactory
 
     private static ThreadLocal<DependentContext> dependentContext = null;
 
-    private static ApplicationContext currentApplicationContext = null;
+    private static Map<ServletContext, ApplicationContext> currentApplicationContexts = new ConcurrentHashMap<ServletContext, ApplicationContext>();
 
     private static SessionContextManager sessionCtxManager = SessionContextManager.getInstance();
 
@@ -82,6 +84,8 @@ public final class ContextFactory
         {
             HttpSession session = request.getSession();
             initSessionContext(session);
+            
+            initApplicationContext(request.getSession().getServletContext());
         }
     }
 
@@ -101,7 +105,7 @@ public final class ContextFactory
                 context.destroy();
             }
 
-            requestContext.remove();// unset thread local
+            requestContext.remove();
         }
     }
 
@@ -143,7 +147,7 @@ public final class ContextFactory
                 context.destroy();
             }
 
-            sessionContext.remove();// unset thread local
+            sessionContext.remove();
 
         }
 
@@ -158,14 +162,25 @@ public final class ContextFactory
      */
     public static void initApplicationContext(ServletContext servletContext)
     {
-        if (currentApplicationContext == null)
+        if(currentApplicationContexts.containsKey(servletContext))
         {
-            currentApplicationContext = new ApplicationContext();
-            currentApplicationContext.setActive(true);
+            applicationContext.set(currentApplicationContexts.get(servletContext));
         }
-
-        applicationContext.set(currentApplicationContext);
-
+        
+        else
+        {
+            ApplicationContext currentApplicationContext = new ApplicationContext();         
+            currentApplicationContext.setActive(true);
+            
+            if(servletContext != null)
+            {
+                currentApplicationContexts.put(servletContext, currentApplicationContext);
+                
+            }
+            
+            applicationContext.set(currentApplicationContext);
+   
+        }
     }
 
     /**
@@ -185,11 +200,15 @@ public final class ContextFactory
                 context.destroy();
             }
 
-            applicationContext.remove();// unset thread local
+            applicationContext.remove();
 
         }
-
-        currentApplicationContext = null;
+        
+        if(servletContext != null)
+        {
+            currentApplicationContexts.remove(servletContext);   
+        }
+        
         sessionCtxManager.destroyAllSessions();
         conversationManager.destroyAllConversations();
     }
@@ -198,10 +217,14 @@ public final class ContextFactory
     {
         if (context == null)
         {
-            conversationContext.set(new ConversationContext());
+            ConversationContext newContext = new ConversationContext();
+            newContext.setActive(true);
+            
+            conversationContext.set(newContext);
         }
         else
         {
+            context.setActive(true);
             conversationContext.set(context);
         }
     }
@@ -317,12 +340,9 @@ public final class ContextFactory
         return sessionContext.get();
     }
 
-    /*
-     * Get current application ctx.
-     */
-    private static ApplicationContext getApplicationContext()
+     private static ApplicationContext getApplicationContext()
     {
-        return currentApplicationContext;
+        return applicationContext.get();
     }
 
     /*
@@ -333,7 +353,7 @@ public final class ContextFactory
         return conversationContext.get();
     }
 
-    private static DependentContext getDependentContext()
+    public static DependentContext getDependentContext()
     {
         DependentContext dependentCtx = dependentContext.get();
 
@@ -345,5 +365,6 @@ public final class ContextFactory
 
         return dependentCtx;
     }
+     
 
 }

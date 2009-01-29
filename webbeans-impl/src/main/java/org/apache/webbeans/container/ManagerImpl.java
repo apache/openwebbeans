@@ -287,18 +287,11 @@ public class ManagerImpl implements Manager, Referenceable
     public <T> T getInstance(Bean<T> bean)
     {
         Context context = null;
-        DependentContext dependentContext = null;
         T instance = null;
-        boolean isSetOnThis = false;
 
         try
         {
-            dependentContext = (DependentContext) getContext(Dependent.class);
-            if (!dependentContext.isActive())
-            {
-                dependentContext.setActive(true);
-                isSetOnThis = true;
-            }
+            ContextFactory.getDependentContext().setActive(true);
 
             /* @ScopeType is normal */
             if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
@@ -324,10 +317,7 @@ public class ManagerImpl implements Manager, Referenceable
         }
         finally
         {
-            if (isSetOnThis)
-            {
-                dependentContext.setActive(false);
-            }
+            ContextFactory.getDependentContext().setActive(false);
         }
 
         return instance;
