@@ -21,11 +21,33 @@
 	   	<h2>
 			<h:outputText value="Hello #{currentUser.userName} #{currentUser.password}"></h:outputText>
 		</h2>
-    	
-        </h:form>
 		
-    </div>
-    
+      <h1>Please guess a number...</h1>
+   
+          <div style="color: red">
+             <h:messages id="messages" globalOnly="true"/>
+             <h:outputText id="higher" value="Higher..." rendered="#{game.no gt game.guess}"/>
+             <h:outputText id="lower" value="Lower..." rendered="#{game.no lt game.guess}"/>
+          </div>
+   
+          <div>
+             Please guess a number between #{game.smallRange} and #{game.maxRange}. Your remaining guesses : #{game.remainder}.
+          </div>
+     
+          <div>
+             Your guessed number: 
+             <h:inputText id="inputGuess" value="#{game.guess}" required="true" size="3">
+                <f:validateLongRange maximum="#{game.maxRange}" minimum="#{game.smallRange}"/>
+             </h:inputText>
+            <h:commandButton id="GuessButton" value="Guess Number" action="#{game.checkNumber}"/>
+            <h:commandButton id="Restart" value="Restart" action="#{game.clear}"/>
+          </div>
+   
+          <div>
+             <h:message id="message" for="inputGuess" style="color: red"/>
+          </div>
+        </h:form>
+    </div>    
   </div>
 </body>
 </html>
