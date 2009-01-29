@@ -26,7 +26,7 @@
 	<artifactId>openwebbeans</artifactId>
 	<name>OpenWebBeans</name>
 	<packaging>pom</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0-incubating-SNAPSHOT</version>
 
 	<description> 
         Apache OpenWebBeans is an open source implementation of
@@ -137,35 +137,35 @@
 	
     <build>
 	 <pluginManagement>
-		    <plugins>
-		       <plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-remote-resources-plugin</artifactId>
-			    <version>1.0</version>
-			    <executions>
-			        <execution>
-			            <goals>
-			                <goal>process</goal>
-			            </goals>
-			            <configuration>
-			                <resourceBundles>
-			                    <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
-			                </resourceBundles>
-			            </configuration>
-			        </execution>
-			    </executions>
-			</plugin>
-            <plugin>
+	    <plugins>
+	       <plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-remote-resources-plugin</artifactId>
+		    <version>1.0</version>
+		    <executions>
+		        <execution>
+		            <goals>
+		                <goal>process</goal>
+		            </goals>
+		            <configuration>
+		                <resourceBundles>
+		                    <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+		                </resourceBundles>
+		            </configuration>
+		        </execution>
+		    </executions>
+		</plugin>
+             
+	     <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>2.0-beta-7</version>
-            </plugin>
-        </plugins>
-	</pluginManagement>
+             </plugin>
+          </plugins>
+       </pluginManagement>
 
 	<plugins>
-
-		  <plugin>
+	      <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
                     <version>2.0.2</version>
@@ -205,62 +205,45 @@
 		            </archive>
 
                     </configuration>
-                </plugin>
+             </plugin>
 
-		 <plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-jar-plugin</artifactId>
-		        <configuration>
-		            <archive>
-		                <manifestEntries>
-		                    <Specification-Title>${project.name}</Specification-Title>
-		                    <Specification-Version>${project.version}</Specification-Version>
-		                    <Specification-Vendor>${project.organization.name}</Specification-Vendor>
-		                    <Implementation-Title>${project.name}</Implementation-Title>
-		                    <Implementation-Version>${project.version}</Implementation-Version>
-		                    <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-		                    <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
-		                </manifestEntries>
-		            </archive>
-		        </configuration>
-              </plugin>
+	     <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-jar-plugin</artifactId>
+	        <configuration>
+	            <archive>
+	                <manifestEntries>
+	                    <Specification-Title>${project.name}</Specification-Title>
+	                    <Specification-Version>${project.version}</Specification-Version>
+	                    <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+	                    <Implementation-Title>${project.name}</Implementation-Title>
+	                    <Implementation-Version>${project.version}</Implementation-Version>
+	                    <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+	                    <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
+	                </manifestEntries>
+	            </archive>
+	        </configuration>
+            </plugin>
+           
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Specification-Title>${project.name}</Specification-Title>
-                            <Specification-Version>${project.version}</Specification-Version>
-                            <Specification-Vendor>${project.organization.name}</Specification-Vendor>
-                            <Implementation-Title>${project.name}</Implementation-Title>
-                            <Implementation-Version>${project.version}</Implementation-Version>
-                            <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-                            <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-
-           <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-remote-resources-plugin</artifactId>
-            </plugin>
+             </plugin>
 
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.4.3</version>
-				<executions>
-				</executions>
-			</plugin>
+	     <plugin>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<configuration>
+			<source>1.5</source>
+			<target>1.5</target>
+		</configuration>
+	     </plugin>
+	     <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-surefire-plugin</artifactId>
+		<version>2.4.3</version>
+		<executions>
+		</executions>
+	    </plugin>
             <!-- force generating a *-sources.jar when building a jar, e.g. for a snapshot release -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -334,22 +317,13 @@
 			<layout>legacy</layout>
 		</repository>
 	</repositories>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>1.2.14</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.openwebbeans</groupId>
-				<artifactId>openwebbeans-api</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.openwebbeans</groupId>
-				<artifactId>openwebbeans-impl</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 			    <groupId>org.apache.geronimo.specs</groupId>
@@ -446,7 +420,8 @@
     </distributionManagement>
       
 	<properties>
-		<openwebbeans.version>1.0.0-SNAPSHOT</openwebbeans.version>
+          <openwebbeans.version>1.0.0-incubating-SNAPSHOT</openwebbeans.version>
+	  <siteId>plugins/directory</siteId>
 	</properties>
 
     <profiles>
@@ -455,6 +430,17 @@
             <id>release</id>
             <build>
                 <plugins>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <configuration>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <goals>deploy</goals>
+                            <arguments>-Prelease</arguments>
+                        </configuration>
+                    </plugin>
+
                 <!-- We want to deploy the artifact to a staging location for perusal -->
                     <plugin>
                         <inherited>true</inherited>
@@ -496,7 +482,5 @@
             </build>
         </profile>  
         <!-- END release profile -->
-        
     </profiles>
-
 </project>
