@@ -426,7 +426,7 @@
     <profiles>
         <!-- START release profile -->
         <profile>
-            <id>local</id>
+            <id>release</id>
             <build>
                 <plugins>
 
