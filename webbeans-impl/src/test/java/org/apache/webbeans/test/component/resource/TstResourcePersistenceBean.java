@@ -32,7 +32,10 @@ public class TstResourcePersistenceBean
 
     @PersistenceContext(unitName="openwebbeanstest")
     private EntityManager em;
-    
+
+    @PersistenceContext(unitName="openwebbeanstest", name="anotherEm")
+    private EntityManager em2;
+
     public EntityManagerFactory getEntityManagerFactory()
     {
         return emf;
@@ -41,6 +44,11 @@ public class TstResourcePersistenceBean
     public EntityManager getEntityManager()
     {
         return em;
+    }
+    
+    public EntityManager getEntityManager2()
+    {
+        return em2;
     }
     
 }

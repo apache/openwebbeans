@@ -176,9 +176,10 @@ public abstract class AbstractInjectable implements Injectable
         {
             PersistenceContext pc = (PersistenceContext) annot;
             String unitName = pc.unitName();
+            String name = pc.name();
             
             //X TODO what if the EntityManager is null?
-            return JPAUtil.getPersistenceContext(unitName);
+            return JPAUtil.getPersistenceContext(unitName, name);
         }
 
         return ret;

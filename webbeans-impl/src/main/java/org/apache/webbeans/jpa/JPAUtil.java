@@ -13,15 +13,22 @@
  */
 package org.apache.webbeans.jpa;
 
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+
+import org.apache.webbeans.config.WebBeansFinder;
 
 /**
  * Helper class which contains various static functions for accessing JPA functionality.
  */
 public class JPAUtil
 {
+
+    
+    public static final String SINGLETON_WEBBEANS_ENTITYMANAGERS_MAP = "org.apache.webbeans.jpa.EntityManagersManager";
 
     /**
      * get the EntityManagerFactory with the given name.
@@ -44,19 +51,21 @@ public class JPAUtil
      * TODO: from the SPEC: the EntityManger must have dependent scope, but this 
      * does not make sense for e.g. &#x0040;ApplicationScoped.
      * TODO: currently this returns an extended EntityManager, so we have to wrap it
-     * @param unitName
+     * @param unitName the name of the persistence unit. Can be empty or <code>null</code>
+     * @param name the name of the EntityManager. Can be empty or <code>null</code>
      * @return a transactional EntityManager
      */
-    public static EntityManager getPersistenceContext(String unitName)
+    public static EntityManager getPersistenceContext(String unitName, String name)
     {
         EntityManagerFactory emf = getPersistenceUnit(unitName);
-        ThreadLocal<EntityManager> tl = new ThreadLocal<EntityManager>();
         
-        EntityManager em = tl.get();
+        EntityManagersManager entityManagersMgr = (EntityManagersManager) WebBeansFinder.getSingletonInstance(SINGLETON_WEBBEANS_ENTITYMANAGERS_MAP);
+        
+        EntityManager em = entityManagersMgr.get(unitName, name);
         if (em == null)
         {
             em = emf.createEntityManager();
-            tl.set(em);
+            entityManagersMgr.set(unitName, name, em);
         }
         
         return em;
