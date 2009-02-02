@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.jpa;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
@@ -23,15 +24,41 @@ public class JPAUtil
 {
 
     /**
-     * 
+     * get the EntityManagerFactory with the given name.
+     * TODO: this should later be implemented via a SPI and either look at 
+     *  JNDI if running in a J2EE or Persistence factory if running in a SE environment.
      * @param unitName JPA persistence unit name
      * @return EntityManagerFactory or <code>null</code> if not found
      */
     public static EntityManagerFactory getPersistenceUnit(String unitName)
     {
+        //X TODO this currently ignores JNDI
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(unitName);
             
         return emf;
     }
 
+    /**
+     * Get a transactional EntityManager for the current thread using a 
+     * ThreadLocal.
+     * TODO: from the SPEC: the EntityManger must have dependent scope, but this 
+     * does not make sense for e.g. &#x0040;ApplicationScoped.
+     * TODO: currently this returns an extended EntityManager, so we have to wrap it
+     * @param unitName
+     * @return a transactional EntityManager
+     */
+    public static EntityManager getPersistenceContext(String unitName)
+    {
+        EntityManagerFactory emf = getPersistenceUnit(unitName);
+        ThreadLocal<EntityManager> tl = new ThreadLocal<EntityManager>();
+        
+        EntityManager em = tl.get();
+        if (em == null)
+        {
+            em = emf.createEntityManager();
+            tl.set(em);
+        }
+        
+        return em;
+    }
 }

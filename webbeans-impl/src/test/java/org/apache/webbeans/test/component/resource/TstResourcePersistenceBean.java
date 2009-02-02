@@ -14,7 +14,9 @@
 package org.apache.webbeans.test.component.resource;
 
 import javax.annotation.Named;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
 /**
@@ -27,10 +29,18 @@ public class TstResourcePersistenceBean
 
     @PersistenceUnit(unitName="openwebbeanstest")
     private EntityManagerFactory emf;
+
+    @PersistenceContext(unitName="openwebbeanstest")
+    private EntityManager em;
     
     public EntityManagerFactory getEntityManagerFactory()
     {
         return emf;
+    }
+
+    public EntityManager getEntityManager()
+    {
+        return em;
     }
     
 }

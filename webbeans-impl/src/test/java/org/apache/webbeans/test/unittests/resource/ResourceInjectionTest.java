@@ -14,6 +14,7 @@
 package org.apache.webbeans.test.unittests.resource;
 
 import javax.inject.manager.Manager;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.webbeans.component.AbstractComponent;
@@ -56,5 +57,8 @@ public class ResourceInjectionTest extends TestContext
         
         EntityManagerFactory emf = persBean.getEntityManagerFactory();
         Assert.assertNotNull(emf);
+
+        EntityManager em = persBean.getEntityManager();
+        Assert.assertNotNull(em);
      }
 }
