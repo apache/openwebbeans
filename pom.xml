@@ -25,7 +25,7 @@
 	<artifactId>openwebbeans</artifactId>
 	<name>OpenWebBeans</name>
 	<packaging>pom</packaging>
-	<version>1.0.0-incubating-M1-SNAPSHOT</version>
+	<version>1.0.0-incubating-SNAPSHOT</version>
 
 	<description> 
         Apache OpenWebBeans is an open source implementation of
@@ -436,7 +436,7 @@
     </distributionManagement>
       
 	<properties>
-          <openwebbeans.version>1.0.0-incubating-M1</openwebbeans.version>
+          <openwebbeans.version>1.0.0-incubating-SNAPSHOT</openwebbeans.version>
 	  <siteId>/OWB/1.0.0-incubating-M1/plugins</siteId>
 	</properties>
 
