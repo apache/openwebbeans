@@ -1,7 +1,7 @@
 --------------------------------
 What is OpenWebBeans?
 --------------------------------
-OpenWebBeans is an ASL-License implementation of the JSR-299, WebBeans Specification.
+OpenWebBeans is an ASL-License implementation of the JSR-299, Java Context and Dependency Injection Specification.
 
 Project web page could be found at the URL : 
 http://incubator.apache.org/projects/openwebbeans.html
@@ -19,6 +19,7 @@ OpenWebBeans M1 Release Content
 * Experimental XML Configuration Support
 * Lookup and Dependency Injection Support
 * Java EE Plugin Support (via ServetContextListener interface)
+* Experimental JPA injection support.
 
 - M1 Release Does not Supports the followings
 --------------------------------------------
@@ -27,7 +28,7 @@ OpenWebBeans M1 Release Content
 * Producer Field Support
 * Servlet Injection Support
 * Inheritance, Stereotype Inheritance and Realization Support
-* Common Annotations Support
+* Full Common Annotations Support
 * Passivation Scope and Serialization Operations
 * Full Support for XML Configuration
 * Java EE Container Integration Support (SPI)
@@ -81,55 +82,72 @@ How to Configure The OpenWebBeans
 
 There are two important jars for OpenWebBeans;
 
- - openwebbeans-api-1.0.0-incubating-SNAPSHOT.jar
- - openwebbeans-impl-1.0.0-incubating-SNAPSHOT.jar
+ - openwebbeans-api-1.0.0-incubating-M1.jar
+ - openwebbeans-impl-1.0.0-incubating-M1.jar
 
-There are also a dependent libraries. These dependent library jars
-are located in the directory "/lib/thirdparty". 
+There are also third party dependent libraries. These dependent library jars
+are located in the directory "/lib/thirdparty" in the distribution. 
 
-Java EE APIs jars used by the project are located in the directory
-"lib/javaee" folder. You could put necessary Java EE jars into the 
-server classpath if the server is not contains these jars already. 
+Java EE APIs jars that are used by the project are located in the directory
+"lib/javaee" directory in the distribution. You could put the necessary Java EE 
+jars into the  server classpath if the server is not contains these jars already. 
 
 To run openwebbeans applications in the Java EE based application server, 
 you could add OpenWebBeans API, Implementation and dependent jars into 
-the common classpath of the Java EE Application Server or your WEB-INF/lib 
+the common classpath of the Java EE Application Server or your "WEB-INF/lib"
 directory of the Java EE Web Application.
 
 In this release, we can not support the OpenWebBeans as an integrated
 functionality of the Java EE Application Servers. So, you have to manage the
-configuration of the OpenWebBeans within your "web.xml" file. A sample web.xml
+configuration of the OpenWebBeans within your "web.xml" file. A sample "web.xml"
 file can be found in the "config" directory.
 
 ---------------------------------------------
 How to Run The Samples
 ---------------------------------------------
 
-In this release, there is a sample application called "Login and Guess". It is
-located in the "/samples" directory of the root folder. In the distribution, there are
-binary and source versions of the samples project could be found. Name of the binary 
-file is the "samples/guess.war", you can deploy it into the any Java EE web container. 
+In this release, there is a sample application located in the "/samples" directory 
+of the distribution.
 
-Before this, you have to configure OpenWebBeans runtime, 
-see "How to Configure OpenWebBeans.
+Name of the binary file is the "samples/guess.war", you can deploy it 
+into the any Java EE web container. Source is included in the "source" distribution of the
+OpenWebBeans.
 
 --------------------------------------------
-Build and Package  From the Source
+Configuration of the Samples
 --------------------------------------------
+
+"Third party" and "OpenWebBeans" jars are included within the WAR deployment(In WEB-INF/lib). 
+But it still requires the "lib/javaee" Java EE API jars for running sucessfully. 
+If your server does not include any of them, simply take the necessary jar from the "lib/javaee" and
+put it into your server classpath.
+
+After that;
+
+Hit the url : http://localhost:8080/guess 
+
+--------------------------------------------
+Maven Install and Package From the Source
+--------------------------------------------
+
+Firstly you have to download the "source/all" version of the OpenWebBeans project that
+contains the all source codes of the OpenWebBeans.
+
 To install the Maven artifacts of the project from the source, Maven must be installed
-in your runtime. After Maven installation, just run the following command in the src/ folder : 
+in your runtime. After Maven installation, just run the following command in the top level
+directory that contains the main "pom.xml" : 
 
 > mvn clean install
 
-This command will install all the Maven artifacts in your local Maven repository.
+This command will install all the Maven artifacts into your local Maven repository.
 
-If you wish to build all the artifacts of the project, just run the following command
-in the src/distribution folder : 
+If you wish to package all artifacts of the project, just run the following command
+in in the top level directory that contains the main "pom.xml" : 
 
 > mvn clean package
 
-This command will package the project artifacts of the project from the source and put it into the "src/distribution/target/"
-directory.
+This command will package the project artifacts from the source and put these artifacts into the each modules
+respective "target" directory.
 
 -------------------------------------------
 OpenWebBeans User Mail List
