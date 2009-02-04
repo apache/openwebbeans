@@ -25,7 +25,7 @@
     </parent>
 
     <groupId>org.apache.openwebbeans</groupId>
-    <artifactId>distribution</artifactId>
+    <artifactId>apache-openwebbeans-distribution</artifactId>
     <packaging>pom</packaging>
 
     <name>OpenWebBeans :: Distribution</name>
