@@ -149,6 +149,7 @@
 		            <configuration>
 		                <resourceBundles>
 		                    <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+				    <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
 		                </resourceBundles>
 		            </configuration>
 		        </execution>
@@ -183,11 +184,13 @@
                         -->
                         <webResources>
                             <resource>
-                                <directory>${project.build.outputDirectory}</directory>
+                                <directory>.</directory>
+				<targetPath>META-INF</targetPath>
                                 <includes>
-                                    <include>META-INF/LICENSE*</include>
-                                    <include>META-INF/NOTICE*</include>
-                                    <include>META-INF/DISCLAIMER*</include>
+                                    <include>LICENCE.txt</include>
+                                    <include>NOTICE.txt</include>
+				    <include>licences/*</include>
+                                    <include>DISCLAIMER</include>
                                 </includes>
                             </resource>
                         </webResources>
@@ -254,7 +257,11 @@
                     </goals>
                     </execution>
                 </executions>
-            </plugin>  
+            </plugin>
+	    <plugin>
+	        <groupId>org.codehaus.mojo</groupId>
+       		 <artifactId>rat-maven-plugin</artifactId>
+             </plugin>  
 	</plugins>
     </build>
     
@@ -401,13 +408,12 @@
 				<artifactId>openwebbeans-api</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
-<!--  this is used for TCK tests            
+<!--  this is used for TCK tests        -->
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>openwebbeans-impl</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
--->
 		</dependencies>
 	</dependencyManagement>
 
@@ -416,6 +422,19 @@
             <id>apache.openwebbeans.site</id>
             <url>scp://people.apache.org/www/incubator.apache.org/openwebbeans/${project.version}</url>
         </site>
+
+	<repository>
+	    <id>apache.openwebbeans.stage</id>
+	    <url>scp://people.apache.org/home/gerdogdu/public_html/staging-repo/${siteId}</url>
+	</repository>
+	
+	<snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>apache.incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>scp://people.apache.org/www/people.apache.org/repo/m2-incubating-repository</url>
+        </snapshotRepository>
+
     </distributionManagement>
       
 	<properties>
@@ -426,7 +445,7 @@
     <profiles>
         <!-- START release profile -->
         <profile>
-            <id>local</id>
+            <id>release</id>
             <build>
                 <plugins>
 

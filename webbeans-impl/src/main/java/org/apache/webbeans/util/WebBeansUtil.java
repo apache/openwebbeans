@@ -59,6 +59,7 @@ import javax.inject.manager.Manager;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
@@ -414,7 +415,7 @@ public final class WebBeansUtil
             {
                 PersistenceContext pc = (PersistenceContext) a;
                 
-                if (!type.equals(EntityManagerFactory.class))
+                if (!type.equals(EntityManager.class))
                 {
                     throw new WebBeansConfigurationException("@PersistenceContext must only be injected into field with type EntityManager! class : "  
                                                              + clazz.getName() + " in field/method : " + name);

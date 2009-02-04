@@ -23,6 +23,7 @@ import javax.event.Fires;
 import javax.inject.New;
 import javax.inject.manager.Bean;
 
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
 import org.apache.webbeans.component.AbstractComponent;
@@ -170,6 +171,17 @@ public abstract class AbstractInjectable implements Injectable
             return JPAUtil.getPersistenceUnit(unitName);
         }
         
+        annot = AnnotationUtil.getAnnotation(annotations, PersistenceContext.class);
+        if (annot != null)
+        {
+            PersistenceContext pc = (PersistenceContext) annot;
+            String unitName = pc.unitName();
+            String name = pc.name();
+            
+            //X TODO what if the EntityManager is null?
+            return JPAUtil.getPersistenceContext(unitName, name);
+        }
+
         return ret;
     }
     

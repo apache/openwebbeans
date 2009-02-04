@@ -17,18 +17,8 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.apache.openwebbeans</groupId>
-		<artifactId>openwebbeans</artifactId>
-		<version>1.0.0-incubating-M1</version>
-	</parent>
-	<artifactId>samples</artifactId>
-	<packaging>pom</packaging>
-	<name>OpenWebBeans :: Samples</name>
-	<description>Contains samples project for openwebbeans.</description>
-	<modules>
-		<module>guess</module>
-	</modules>
-</project>
+<WebBeans 	xmlns="urn:java:ee"
+ 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="urn:java:ee http://java.sun.com/jee/beans-1.0.xsd">
+	
+</WebBeans>
