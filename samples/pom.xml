@@ -22,7 +22,7 @@ under the License.
 	<parent>
 		<groupId>org.apache.openwebbeans</groupId>
 		<artifactId>openwebbeans</artifactId>
-		<version>1.0.0-incubating-M1</version>
+		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	<artifactId>samples</artifactId>
 	<packaging>pom</packaging>
