@@ -45,6 +45,10 @@ under the License.
         </file>
 
         <file>
+            <source>../DISCLAIMER</source>
+        </file>
+
+        <file>
             <outputDirectory>config</outputDirectory>
             <source>../samples/guess/src/main/webapp/WEB-INF/web.xml</source>
         </file>
