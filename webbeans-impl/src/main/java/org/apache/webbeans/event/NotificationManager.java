@@ -34,7 +34,9 @@ import javax.transaction.Transaction;
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.transaction.TransactionUtil;
+import org.apache.webbeans.spi.ServiceLoader;
+import org.apache.webbeans.spi.TransactionService;
+import org.apache.webbeans.spi.ee.TransactionServiceJndiImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
@@ -46,6 +48,8 @@ public final class NotificationManager implements Synchronization
     private Map<Class<?>, Set<ObserverImpl<?>>> observers = new ConcurrentHashMap<Class<?>, Set<ObserverImpl<?>>>();
 
     private Set<TransactionalNotifier> transactionSet = new CopyOnWriteArraySet<TransactionalNotifier>();
+    
+    private TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
 
     public NotificationManager()
     {
@@ -198,7 +202,7 @@ public final class NotificationManager implements Synchronization
                     TransactionalObserverType type = beanObserver.getType();
                     if (!type.equals(TransactionalObserverType.NONE))
                     {
-                        Transaction transaction = TransactionUtil.getCurrentTransactionManager().getTransaction();
+                        Transaction transaction = transactionService.getTransaction();
                         if (transaction != null)
                         {
                             transaction.registerSynchronization(this);

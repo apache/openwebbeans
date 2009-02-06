@@ -40,9 +40,9 @@ import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.ee.JNDIServiceEnterpriseImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.JNDIUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
@@ -88,7 +88,7 @@ public final class WebBeansContainerDeployer
                 ManagerImpl.getManager().addBean(WebBeansUtil.getConversationComponent());
 
                 // JNDI bind
-                JNDIUtil.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, ManagerImpl.getManager());
+                //X TODO JNDIUtil.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, ManagerImpl.getManager());
 
                 deployFromXML(scanner);
                 checkStereoTypes(scanner);

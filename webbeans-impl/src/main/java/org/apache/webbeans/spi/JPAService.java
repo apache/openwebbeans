@@ -11,63 +11,34 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.jpa;
-
-import java.util.Map;
+package org.apache.webbeans.spi;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
-import org.apache.webbeans.config.WebBeansFinder;
 
 /**
- * Helper class which contains various static functions for accessing JPA functionality.
+ * 
+ * TODO there is currently no Implementation for OpenEJB integration
  */
-public class JPAUtil
+public interface JPAService
 {
-
-    
-    public static final String SINGLETON_WEBBEANS_ENTITYMANAGERS_MAP = "org.apache.webbeans.jpa.EntityManagersManager";
 
     /**
      * get the EntityManagerFactory with the given name.
-     * TODO: this should later be implemented via a SPI and either look at 
-     *  JNDI if running in a J2EE or Persistence factory if running in a SE environment.
      * @param unitName JPA persistence unit name
      * @return EntityManagerFactory or <code>null</code> if not found
      */
-    public static EntityManagerFactory getPersistenceUnit(String unitName)
-    {
-        //X TODO this currently ignores JNDI
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(unitName);
-            
-        return emf;
-    }
+    public abstract EntityManagerFactory getPersistenceUnit(String unitName);
 
     /**
      * Get a transactional EntityManager for the current thread using a 
      * ThreadLocal.
      * TODO: from the SPEC: the EntityManger must have dependent scope, but this 
      * does not make sense for e.g. &#x0040;ApplicationScoped.
-     * TODO: currently this returns an extended EntityManager, so we have to wrap it
      * @param unitName the name of the persistence unit. Can be empty or <code>null</code>
      * @param name the name of the EntityManager. Can be empty or <code>null</code>
      * @return a transactional EntityManager
      */
-    public static EntityManager getPersistenceContext(String unitName, String name)
-    {
-        EntityManagerFactory emf = getPersistenceUnit(unitName);
-        
-        EntityManagersManager entityManagersMgr = (EntityManagersManager) WebBeansFinder.getSingletonInstance(SINGLETON_WEBBEANS_ENTITYMANAGERS_MAP);
-        
-        EntityManager em = entityManagersMgr.get(unitName, name);
-        if (em == null)
-        {
-            em = emf.createEntityManager();
-            entityManagersMgr.set(unitName, name, em);
-        }
-        
-        return em;
-    }
+    public abstract EntityManager getPersistenceContext(String unitName, String name);
+
 }

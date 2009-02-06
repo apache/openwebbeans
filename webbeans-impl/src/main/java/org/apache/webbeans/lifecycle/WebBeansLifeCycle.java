@@ -35,7 +35,8 @@ import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jsf.ConversationManager;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.util.JNDIUtil;
+import org.apache.webbeans.spi.JNDIService;
+import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 public final class WebBeansLifeCycle
@@ -49,12 +50,15 @@ public final class WebBeansLifeCycle
     private WebBeansContainerDeployer deployer = null;
 
     private WebBeansXMLConfigurator xmlDeployer = null;
+    
+    private JNDIService jndiService = null;
 
     public WebBeansLifeCycle()
     {
         this.scanner = new WebBeansScanner();
         this.xmlDeployer = new WebBeansXMLConfigurator();
         this.deployer = new WebBeansContainerDeployer(xmlDeployer);
+        this.jndiService = ServiceLoader.getService(JNDIService.class);
     }
 
     public void requestStarted(ServletRequestEvent event)
@@ -149,7 +153,7 @@ public final class WebBeansLifeCycle
         logger.info("Destroying of the Application Context with Context Path : " + event.getServletContext().getContextPath());
         ContextFactory.destroyApplicationContext(event.getServletContext());
 
-        JNDIUtil.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
+        jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
 
         this.deployer = null;
         this.scanner = null;

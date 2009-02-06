@@ -35,7 +35,9 @@ import org.apache.webbeans.context.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.jpa.JPAUtil;
+import org.apache.webbeans.spi.JPAService;
+import org.apache.webbeans.spi.ServiceLoader;
+import org.apache.webbeans.spi.se.JPAServicePersistenceImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -168,7 +170,7 @@ public abstract class AbstractInjectable implements Injectable
             String unitName = pu.unitName();
             
             //X TODO what if the EntityManagerFactory is null?
-            return JPAUtil.getPersistenceUnit(unitName);
+            return getJPAService().getPersistenceUnit(unitName);
         }
         
         annot = AnnotationUtil.getAnnotation(annotations, PersistenceContext.class);
@@ -179,7 +181,7 @@ public abstract class AbstractInjectable implements Injectable
             String name = pc.name();
             
             //X TODO what if the EntityManager is null?
-            return JPAUtil.getPersistenceContext(unitName, name);
+            return getJPAService().getPersistenceContext(unitName, name);
         }
 
         return ret;
@@ -246,4 +248,8 @@ public abstract class AbstractInjectable implements Injectable
         return injectionOwnerComponent;
     }
 
+    protected JPAService getJPAService()
+    {
+        return ServiceLoader.getService(JPAService.class);
+    }
 }

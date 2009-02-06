@@ -11,43 +11,46 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.transaction;
-
-import javax.naming.NamingException;
-import javax.transaction.TransactionManager;
+package org.apache.webbeans.spi.ee;
 
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.util.JNDIUtil;
 
-public final class TransactionUtil
+/**
+ * SPI Implementation of the JNDIService.
+ * This version performs JNDI handling in J2EE environments where
+ * the java:comp and java:app context can be written
+ *
+ * @see org.apache.webbeans.spi.se.JNDIServiceStaticImpl
+ */
+public final class JNDIServiceEnterpriseImpl implements JNDIService
 {
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(TransactionUtil.class);
-
-    private static TransactionManager transactionManager = null;
-
-    private TransactionUtil()
+    private JNDIServiceEnterpriseImpl()
     {
-
     }
 
-    public static TransactionManager getCurrentTransactionManager()
+    /** 
+     * {@inheritDoc}
+     */
+    public void bind(String name, Object object) throws WebBeansException
     {
-        if (transactionManager == null)
-        {
-            try
-            {
-                transactionManager = (TransactionManager) JNDIUtil.getInitialContext().lookup("java:/TransactionManager");
-
-            }
-            catch (NamingException e)
-            {
-                logger.error("Unable to get TransactionManager", e);
-                throw new WebBeansException(e);
-            }
-        }
-
-        return transactionManager;
+        JNDIUtil.bind(name, object);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
+    public void unbind(String name) throws WebBeansException
+    {
+        JNDIUtil.unbind(name);
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public <T> T getObject(String name, Class<? extends T> expectedClass) throws WebBeansException
+    {
+        return JNDIUtil.lookup(name, expectedClass);
+    }
 }

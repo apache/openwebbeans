@@ -19,6 +19,10 @@ import javax.naming.NamingException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 
+/**
+ * This is the internal helper class for low level access to JNDI
+ * @see org.apache.webbeans.spi.JNDIService for transparent access over SPI 
+ */
 public final class JNDIUtil
 {
     private static InitialContext initialContext = null;
@@ -79,6 +83,21 @@ public final class JNDIUtil
             LOGGER.error(e);
             throw new WebBeansException("Unable to unbind object with name : " + name, e);
         }
-
     }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T lookup(String name, Class<? extends T> expectedClass) throws WebBeansException
+    {
+        Asserts.assertNotNull(name, "name parameter can not be null");
+
+        try
+        {
+            return (T) initialContext.lookup(name);
+        } catch (NamingException e)
+        {
+            LOGGER.error(e);
+            throw new WebBeansException("Unable to lookup object with name : " + name, e);
+        }
+    }
+
 }
