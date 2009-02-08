@@ -40,11 +40,20 @@ import javax.inject.Produces;
  * For further details about the components, see Web Beans Specification
  * Chapter-2.
  * </p>
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public enum WebBeansType
 {
-    SIMPLE, PRODUCER, NEW, ENTERPRISE, JMS, DEPENDENT, INTERCEPTOR, DECORATOR, OBSERVABLE, MANAGER, CONVERSATION
+    SIMPLE, 
+    PRODUCER, 
+    PRODUCERFIELD,
+    NEW, 
+    ENTERPRISE, 
+    JMS, 
+    DEPENDENT, 
+    INTERCEPTOR, 
+    DECORATOR, 
+    OBSERVABLE, 
+    MANAGER, 
+    CONVERSATION,
+    INSTANCE
 }

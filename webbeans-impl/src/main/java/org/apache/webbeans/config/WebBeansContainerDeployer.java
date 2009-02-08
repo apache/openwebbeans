@@ -28,7 +28,6 @@ import javax.inject.manager.InjectionPoint;
 import javax.inject.manager.Manager;
 import javax.interceptor.Interceptor;
 
-import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.DeployedManagerLiteral;
 import org.apache.webbeans.annotation.InitializedManagerLiteral;
 import org.apache.webbeans.component.ComponentImpl;
@@ -40,7 +39,6 @@ import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.spi.ee.JNDIServiceEnterpriseImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;

@@ -95,6 +95,7 @@ public abstract class AbstractComponent<T> extends Component<T>
     /** The bean allows nullable object */
     protected boolean nullable = true;
     
+    /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
 
     /**

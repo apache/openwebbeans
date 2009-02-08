@@ -25,10 +25,20 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.util.Asserts;
 
+/**
+ * Defines the injectable constructor.
+ * @param <T> type of the constructor
+ */
 public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
 {
+    /**Constructor parameter injection models defined in the xml*/
     private List<XMLInjectionPointModel> injectionPointModelList = new ArrayList<XMLInjectionPointModel>();
 
+    /**
+     * Defines new <code>XMLInjectableConstructor</code> instance.
+     * @param constructor bean constructor
+     * @param owner constructor owner beans
+     */
     public XMLInjectableConstructor(Constructor<T> constructor, AbstractComponent<?> owner)
     {
         super(constructor, owner);
@@ -59,18 +69,6 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
             if (!EJBUtil.isEJBSessionClass(con.getDeclaringClass()))
             {
                 instance = con.newInstance(list.toArray());
-
-                // if(getInjectionOwnerComponent().getScopeType().equals(Dependent.class))
-                // {
-                //					
-                // }
-                // else
-                // {
-                // instance = (T)
-                // JavassistProxyFactory.createNewProxyInstance(con.getDeclaringClass(),
-                // con.getParameterTypes(), list.toArray(),
-                // getInjectionOwnerComponent());
-                // }
             }
 
         }
@@ -90,7 +88,11 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
     {
         return con;
     }
-
+    
+    /**
+     * Adds new constructor parameter injection model.
+     * @param model new injection point model for constructor parameter
+     */
     public void addInjectionPointModel(XMLInjectionPointModel model)
     {
         Asserts.assertNotNull(model, "model parameter can not be null");

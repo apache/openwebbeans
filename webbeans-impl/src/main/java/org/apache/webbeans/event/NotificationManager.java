@@ -36,7 +36,6 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.TransactionService;
-import org.apache.webbeans.spi.ee.TransactionServiceJndiImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
@@ -56,7 +55,6 @@ public final class NotificationManager implements Synchronization
 
     }
 
-    @SuppressWarnings("unchecked")
     public static NotificationManager getInstance()
     {
         NotificationManager instance = (NotificationManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_NOTIFICATION_MANAGER);
@@ -152,7 +150,6 @@ public final class NotificationManager implements Synchronization
         Set<ObserverImpl<?>> resolvedSet = new HashSet<ObserverImpl<?>>();
         Set<Observer<T>> unres = new HashSet<Observer<T>>();
 
-        @SuppressWarnings("unchecked")
         Class<T> eventType = (Class<T>) event.getClass();
 
         EventUtil.checkEventType(eventType);
@@ -173,7 +170,6 @@ public final class NotificationManager implements Synchronization
         Iterator<ObserverImpl<?>> it = resolvedSet.iterator();
         while (it.hasNext())
         {
-            @SuppressWarnings("unchecked")
             ObserverImpl<T> impl = (ObserverImpl<T>) it.next();
 
             if (impl.isObserverOfBindings(bindings))

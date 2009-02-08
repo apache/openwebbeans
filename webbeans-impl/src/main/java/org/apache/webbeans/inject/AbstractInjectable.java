@@ -20,7 +20,9 @@ import java.util.Set;
 
 import javax.context.Dependent;
 import javax.event.Fires;
+import javax.inject.Instance;
 import javax.inject.New;
+import javax.inject.Obtains;
 import javax.inject.manager.Bean;
 
 import javax.persistence.PersistenceContext;
@@ -37,7 +39,6 @@ import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.JPAService;
 import org.apache.webbeans.spi.ServiceLoader;
-import org.apache.webbeans.spi.se.JPAServicePersistenceImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -85,6 +86,11 @@ public abstract class AbstractInjectable implements Injectable
             if (isObservableBinding(annotations))
             {
                 return injectForObservable(args, annotations);
+            }
+            
+            if(isObtainsBinding(annotations))
+            {
+                return injectForObtains(type, args, annotations);
             }
 
             Set<Bean<T>> componentSet = InjectionResolver.getInstance().implResolveByType(type, args, annotations);
@@ -151,6 +157,20 @@ public abstract class AbstractInjectable implements Injectable
 
         return false;
     }
+    
+    private boolean isObtainsBinding(Annotation... annotations)
+    {
+        for (Annotation ann : annotations)
+        {
+            if (ann.annotationType().equals(Obtains.class))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
 
     /**
      * create the instance for injecting web beans resources.
@@ -203,11 +223,19 @@ public abstract class AbstractInjectable implements Injectable
         return injectForDependent(WebBeansUtil.createNewComponent(clazz));
     }
 
-    private <T> Object injectForObservable(Type[] args, Annotation... annotations)
+    private Object injectForObservable(Type[] args, Annotation... annotations)
     {
         Class<?> eventType = (Class<?>) args[0];
 
         return injectForDependent(WebBeansUtil.createObservableImplicitComponent(EventImpl.class, eventType, annotations));
+    }
+    
+    private <T> Object injectForObtains(Class<T> instanceType, Type[] args, Annotation...annotations)
+    {   
+        @SuppressWarnings("unchecked")
+        Class<Instance<T>> clazz = (Class<Instance<T>>)instanceType;
+        return injectForDependent(WebBeansUtil.createInstanceComponent(clazz, args[0] , annotations));
+        
     }
 
     private Object injectForDependent(AbstractComponent<?> component)

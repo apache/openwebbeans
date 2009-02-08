@@ -106,7 +106,7 @@ public final class XMLUtil
                     Element element = path.getCurrent();
                     if (element.getNamespaceURI() == null || element.getNamespaceURI().equals(""))
                     {
-                        throw new WebBeansConfigurationException("All elements in the web-beans.xml file must have declared name space");
+                        throw new WebBeansConfigurationException("All elements in the beans.xml file have to declare name space.");
                     }
                     else
                     {
@@ -119,7 +119,8 @@ public final class XMLUtil
 
                             while (itNs.hasNext())
                             {
-                                WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(((Namespace) itNs.next()).getURI());
+                                Namespace namespace = (Namespace)itNs.next();
+                                WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(namespace.getURI());
                             }
                         }
                     }

@@ -25,9 +25,6 @@ import org.xml.sax.SAXException;
 
 /**
  * Resolver for the web beans systemId's.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public class WebBeansResolver implements EntityResolver
 {
@@ -68,7 +65,7 @@ public class WebBeansResolver implements EntityResolver
         return null;
     }
 
-    /*
+    /**
      * Creates the new input source.
      */
     private InputSource createInputSource(InputStream stream, String publicId, String systemId)

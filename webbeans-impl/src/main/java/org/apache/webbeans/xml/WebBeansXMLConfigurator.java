@@ -66,7 +66,9 @@ import org.apache.webbeans.exception.definition.NonexistentConstructorException;
 import org.apache.webbeans.exception.definition.NonexistentFieldException;
 import org.apache.webbeans.exception.definition.NonexistentMethodException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
+import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
+import org.apache.webbeans.inject.xml.XMLInjectionModelType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
@@ -78,9 +80,6 @@ import org.dom4j.Element;
 
 /**
  * Configures the web beans from the xml declerations.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 @SuppressWarnings("unchecked")
 public final class WebBeansXMLConfigurator
@@ -100,6 +99,9 @@ public final class WebBeansXMLConfigurator
     /** Annotation type manager that manages the XML defined annotations */
     private XMLAnnotationTypeManager xmlAnnotTypeManager = XMLAnnotationTypeManager.getInstance();
 
+    /**
+     * Creates a new instance of the <code>WebBeansXMLConfigurator</code>
+     */
     public WebBeansXMLConfigurator()
     {
 
@@ -113,13 +115,15 @@ public final class WebBeansXMLConfigurator
      */
     public void configure(InputStream xmlStream, String fileName)
     {
-        Asserts.assertNotNull(xmlStream);
-        Asserts.assertNotNull(fileName);
-
+        Asserts.assertNotNull(xmlStream,"xmlStream parameter can not be null!");
+        Asserts.assertNotNull(fileName,"fileName parameter can not be null!");
+        
         CURRENT_SCAN_FILE_NAME = fileName;
-
+        
+        //Get root element of the XML document
         Element webBeansRoot = XMLUtil.getRootElement(xmlStream);
-
+        
+        //Start configuration
         configure(webBeansRoot);
     }
 
@@ -868,10 +872,24 @@ public final class WebBeansXMLConfigurator
         }
 
         XMLInjectableConstructor<T> injectableConstructor = new XMLInjectableConstructor<T>(componentConstructor, component);
+        int i = 0;
+        Constructor<?> constructor = injectableConstructor.getConstructor();
         for (Element element : constructorParameterListElement)
         {
             XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(element, createConfigurationFailedMessage());
             injectableConstructor.addInjectionPointModel(model);
+            
+            Annotation[] paramAnnos = constructor.getParameterAnnotations()[i++];            
+            
+            for(Annotation paramAnno : paramAnnos)
+            {
+                model.addAnnotation(paramAnno);
+            }
+            
+            model.setInjectionMember(constructor);
+            model.setType(XMLInjectionModelType.CONSTRUCTOR);
+          
+            component.addInjectionPoint(InjectionPointFactory.getXMLInjectionPointData(component, model));
         }
 
         component.setInjectableConstructor(injectableConstructor);
@@ -961,6 +979,16 @@ public final class WebBeansXMLConfigurator
                 {
                     XMLInjectionPointModel injectionPointModel = XMLUtil.getInjectionPointModel(directChild, createConfigurationFailedMessage());
                     component.addFieldInjectionPoint(field, injectionPointModel);
+                    
+                    Annotation[] annots = field.getAnnotations();
+                    for(Annotation annotation : annots)
+                    {
+                        injectionPointModel.addAnnotation(annotation);
+                    }
+                    
+                    injectionPointModel.setInjectionMember(field);
+                    injectionPointModel.setType(XMLInjectionModelType.FIELD);
+                    component.addInjectionPoint(InjectionPointFactory.getXMLInjectionPointData(component, injectionPointModel));
 
                     isTypeElement = true;
                     isApplicable = true;
@@ -1177,6 +1205,8 @@ public final class WebBeansXMLConfigurator
             {
                 XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(element, createConfigurationFailedMessage());
                 component.addMethodInjectionPoint(initializeMethod, model);
+                
+                component.addInjectionPoint(XMLDefinitionUtil.getXMLMethodInjectionPoint(component, model, initializeMethod));
             }
         }
     }

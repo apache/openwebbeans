@@ -1210,7 +1210,15 @@ public final class ClassUtil
     public static boolean isFirstParametricTypeArgGeneric(ParameterizedType type)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
-        Type arg = type.getActualTypeArguments()[0];
+        
+        Type[] args = type.getActualTypeArguments();
+        
+        if(args.length == 0)
+        {
+            return false;
+        }
+        
+        Type arg = args[0];
 
         if ((arg instanceof TypeVariable) || (arg instanceof WildcardType))
         {

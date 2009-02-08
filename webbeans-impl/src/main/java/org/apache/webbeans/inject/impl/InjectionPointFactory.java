@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.event.Fires;
 import javax.event.Observes;
@@ -29,11 +30,48 @@ import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.inject.xml.XMLInjectionModelType;
+import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
 public class InjectionPointFactory
 {
+    public static InjectionPoint getXMLInjectionPointData(Bean<?> owner, XMLInjectionPointModel xmlInjectionModel)
+    {
+        Asserts.assertNotNull(owner, "owner parameter can not be null");
+        Asserts.assertNotNull(xmlInjectionModel, "xmlInjectionModel parameter can not be null");
+        
+        InjectionPoint injectionPoint = null;
+        
+        Set<Annotation> setAnns = xmlInjectionModel.getAnnotations();
+        Annotation[] anns = new Annotation[setAnns.size()];
+        anns = setAnns.toArray(anns);
+        
+        boolean available = true;
+        
+        if(xmlInjectionModel.getType().equals(XMLInjectionModelType.FIELD))
+        {
+            if(checkFieldApplicable(anns))
+            {
+               available = false; 
+            }
+        }
+        else if(xmlInjectionModel.getType().equals(XMLInjectionModelType.METHOD))
+        {
+            if(checkMethodApplicable(anns))
+            {
+                available = false;
+            }
+        }
+        
+        if(available)
+        {
+            injectionPoint = getGenericInjectionPoint(owner, anns, xmlInjectionModel.getInjectionGenericType(), xmlInjectionModel.getInjectionMember());
+        }
+        
+        return injectionPoint;
+    }
 
     public static InjectionPoint getFieldInjectionPointData(Bean<?> owner, Field member)
     {
@@ -43,15 +81,7 @@ public class InjectionPointFactory
         Annotation[] annots = null;
         annots = member.getAnnotations();
         
-
-        boolean firesOrObtainsAnnotation = false;
-
-        if(AnnotationUtil.isAnnotationExist(annots, Fires.class) || AnnotationUtil.isAnnotationExist(annots, Obtains.class))
-        {
-            firesOrObtainsAnnotation = true;
-        }
-        
-        if(!firesOrObtainsAnnotation)
+        if(!checkFieldApplicable(annots))
         {
             return getGenericInjectionPoint(owner, annots, member.getGenericType(), member);   
         }        
@@ -60,6 +90,16 @@ public class InjectionPointFactory
             return null;
         }
 
+    }
+    
+    private static boolean checkFieldApplicable(Annotation[] anns)
+    {
+        if(AnnotationUtil.isAnnotationExist(anns, Fires.class) || AnnotationUtil.isAnnotationExist(anns, Obtains.class))
+        {
+            return true;
+        }
+     
+        return false;
     }
 
     private static InjectionPoint getGenericInjectionPoint(Bean<?> owner, Annotation[] annots, Type type, Member member)
@@ -90,7 +130,6 @@ public class InjectionPointFactory
         {
             int i = 0;
 
-            boolean observesAnnotation = false;
             for (Type type : types)
             {
                 Annotation[] annot = annots[i];
@@ -100,17 +139,8 @@ public class InjectionPointFactory
                     annot = new Annotation[1];
                     annot[0] = new CurrentLiteral();
                 }
-
-                for (Annotation observersAnnot : annot)
-                {
-                    if (observersAnnot.annotationType().equals(Observes.class))
-                    {
-                        observesAnnotation = true;
-                        break;
-                    }
-                }
-
-                if (!observesAnnotation)
+                
+                if (!checkMethodApplicable(annot))
                 {
                     lists.add(getGenericInjectionPoint(owner, annot, type, member));
                 }
@@ -120,6 +150,21 @@ public class InjectionPointFactory
         }
 
         return lists;
+    }
+    
+    
+    private static boolean checkMethodApplicable(Annotation[] annot)
+    {
+        for (Annotation observersAnnot : annot)
+        {
+            if (observersAnnot.annotationType().equals(Observes.class))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+        
     }
 
     public static List<InjectionPoint> getConstructorInjectionPointData(Bean<?> owner, Constructor<?> member)

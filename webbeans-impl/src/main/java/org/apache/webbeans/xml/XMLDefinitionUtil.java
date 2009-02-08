@@ -32,6 +32,7 @@ import javax.inject.DeploymentType;
 import javax.inject.Specializes;
 import javax.inject.UnsatisfiedDependencyException;
 import javax.inject.manager.Bean;
+import javax.inject.manager.InjectionPoint;
 import javax.inject.manager.Interceptor;
 import javax.interceptor.AroundInvoke;
 
@@ -47,6 +48,8 @@ import org.apache.webbeans.event.xml.BeanObserverXMLImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.NonexistentFieldException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
+import org.apache.webbeans.inject.impl.InjectionPointFactory;
+import org.apache.webbeans.inject.xml.XMLInjectionModelType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorUtil;
@@ -517,7 +520,7 @@ public final class XMLDefinitionUtil
             }
         }
 
-        XMLProducerComponentImpl<T> producerComponentImpl = configureProduerMethod(component, producesMethod, injectedParameters, type, arrayElement, typeElement, errorMessage);
+        XMLProducerComponentImpl<T> producerComponentImpl = configureProducerMethod(component, producesMethod, injectedParameters, type, arrayElement, typeElement, errorMessage);
 
         configureProducerTypeLevelMetaData(configurator, producerComponentImpl, producesMethod, producerMethodElement, memberLevelMetaData, memberLevelElement, component, errorMessage);
 
@@ -541,7 +544,7 @@ public final class XMLDefinitionUtil
      * @return new xml defines producer method component
      * @see XMLProducerComponentImpl
      */
-    private static <T> XMLProducerComponentImpl<T> configureProduerMethod(AbstractComponent<?> parentComponent, Method producesMethod, List<XMLInjectionPointModel> injectedParameters, Class<T> type, Element arrayElement, Element typeElement, String errorMessage)
+    private static <T> XMLProducerComponentImpl<T> configureProducerMethod(AbstractComponent<?> parentComponent, Method producesMethod, List<XMLInjectionPointModel> injectedParameters, Class<T> type, Element arrayElement, Element typeElement, String errorMessage)
     {
         /* New producer webbeans component */
         XMLProducerComponentImpl<T> producerComponentImpl = new XMLProducerComponentImpl<T>(parentComponent, type);
@@ -575,7 +578,8 @@ public final class XMLDefinitionUtil
         /* Configures producer method injected parameters */
         for (XMLInjectionPointModel injectionPointModel : injectedParameters)
         {
-            producerComponentImpl.addProducerMethodInjectionPointModel(injectionPointModel);
+            producerComponentImpl.addProducerMethodInjectionPointModel(injectionPointModel);            
+            producerComponentImpl.addInjectionPoint(getXMLMethodInjectionPoint(producerComponentImpl, injectionPointModel, producesMethod));
         }
 
         return producerComponentImpl;
@@ -654,6 +658,8 @@ public final class XMLDefinitionUtil
 
                 /* Find disposal method model */
                 XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(typeElement, errorMessage);
+                
+                component.addInjectionPoint(getXMLMethodInjectionPoint(component, model, disposalMethod));
 
                 /* Binding types for disposal method */
                 Set<Annotation> bindingTypes = model.getBindingTypes();
@@ -710,6 +716,8 @@ public final class XMLDefinitionUtil
 
                 /* Find observes method model */
                 XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(typeElement, errorMessage);
+                
+                component.addInjectionPoint(getXMLMethodInjectionPoint(component, model, observesMethod));
 
                 /* Binding types for disposal method */
                 Set<Annotation> bindingTypes = model.getBindingTypes();
@@ -734,5 +742,23 @@ public final class XMLDefinitionUtil
             XMLInjectionPointModel injectionPointParamModel = XMLUtil.getInjectionPointModel(otherElement, errorMessage);
             beanObserver.addXMLInjectionObservesParameter(injectionPointParamModel);
         }
+    }
+    
+    public static InjectionPoint getXMLMethodInjectionPoint(AbstractComponent<?> component, XMLInjectionPointModel model, Method method)
+    {
+        Asserts.assertNotNull(model,"model parameter can not be null");
+        Asserts.assertNotNull(method,"method parameter can not be null");
+        
+        Annotation[] annots = method.getAnnotations();
+        for(Annotation annotation : annots)
+        {
+            model.addAnnotation(annotation);
+        }
+        
+        model.setInjectionMember(method);
+        model.setType(XMLInjectionModelType.METHOD);
+        
+        return InjectionPointFactory.getXMLInjectionPointData(component, model);
+        
     }
 }

@@ -36,6 +36,7 @@ import javax.annotation.PreDestroy;
 import javax.context.ApplicationScoped;
 import javax.context.Conversation;
 import javax.context.ConversationScoped;
+import javax.context.Dependent;
 import javax.context.RequestScoped;
 import javax.context.ScopeType;
 import javax.context.SessionScoped;
@@ -44,13 +45,17 @@ import javax.ejb.EnterpriseBean;
 import javax.event.Fires;
 import javax.event.Observes;
 import javax.faces.component.UIComponent;
+import javax.inject.DefinitionException;
 import javax.inject.DeploymentType;
 import javax.inject.Disposes;
 import javax.inject.DuplicateBindingTypeException;
+import javax.inject.IllegalProductException;
 import javax.inject.InconsistentSpecializationException;
 import javax.inject.Initializer;
+import javax.inject.Instance;
 import javax.inject.New;
 import javax.inject.NullableDependencyException;
+import javax.inject.Obtains;
 import javax.inject.Produces;
 import javax.inject.UnproxyableDependencyException;
 import javax.inject.manager.Bean;
@@ -80,6 +85,7 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.Component;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.ConversationComponent;
+import org.apache.webbeans.component.InstanceComponentImpl;
 import org.apache.webbeans.component.ManagerComponentImpl;
 import org.apache.webbeans.component.NewComponentImpl;
 import org.apache.webbeans.component.ObservableComponentImpl;
@@ -301,7 +307,7 @@ public final class WebBeansUtil
 
         return false;
     }
-
+    
     /**
      * Check producer method is ok for deployment.
      * 
@@ -333,6 +339,33 @@ public final class WebBeansUtil
             throw new WebBeansConfigurationException("Producer method : " + method.getName() + " in the class : " + parentImplClazzName + " can not be annotated with" + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
         }
     }
+    
+    /**
+     * Check producer field is ok for deployment.
+     * 
+     * @param method producer method
+     * @param parentImplClazzName parent class name
+     */
+    public static void checkProducerFieldForDeployment(Field producerField, String parentImplClazzName)
+    {
+        Asserts.assertNotNull(producerField, "producerField argument can not be null");
+
+        Type returnType = producerField.getGenericType();
+        if (ClassUtil.isParametrizedType(returnType))
+        {
+            ParameterizedType pType = (ParameterizedType) returnType;
+
+            Type[] actualArguments = pType.getActualTypeArguments();
+
+            for (Type actualType : actualArguments)
+            {
+                if ((actualType instanceof TypeVariable) || (actualType instanceof WildcardType))
+                {
+                    throw new WebBeansConfigurationException("Producer field  : " + producerField.getName() + " in the class : " + parentImplClazzName + " can not return TypeVariable or WildcardType return type arguments.");
+                }
+            }
+        }
+    }    
 
     public static void checkProducerMethodDisposal(Method disposalMethod, String parentImplClazzName)
     {
@@ -567,6 +600,20 @@ public final class WebBeansUtil
         managerComponent.addApiType(Object.class);
 
         return managerComponent;
+    }
+    
+    public static <T> InstanceComponentImpl<T> createInstanceComponent(Class<Instance<T>> clazz, Type injectedType, Annotation...obtainsBindings)
+    {
+        InstanceComponentImpl<T> instanceComponent = new InstanceComponentImpl<T>(clazz,injectedType);
+        
+        instanceComponent.addApiType(clazz);
+        instanceComponent.addApiType(InstanceComponentImpl.class);
+        instanceComponent.addApiType(Object.class);
+        
+        DefinitionUtil.defineBindingTypes(instanceComponent, obtainsBindings);
+        instanceComponent.setImplScopeType(new DependentScopeLiteral());
+        
+        return instanceComponent;
     }
 
     public static ConversationComponent getConversationComponent()
@@ -1327,17 +1374,66 @@ public final class WebBeansUtil
 
     }
 
-    public static <T> void checkObservableFieldsConditions(Class<T> clazz)
+    public static <T> boolean checkObservableFieldsConditions(Class<T> clazz)
     {
         Asserts.nullCheckForClass(clazz);
 
+        boolean ok = false;
         Field[] candidateFields = AnnotationUtil.getClazzFieldsWithGivenAnnotation(clazz, Fires.class);
 
         for (Field candidateField : candidateFields)
         {
+            if(!ok)
+            {
+                ok = true;
+            }
             EventUtil.checkObservableFieldConditions(candidateField.getGenericType(), candidateField.getName(), clazz.getName());
         }
 
+        return ok; 
+    }
+    
+    /**
+     * Check bean <code>Obtains</code> field injection conditions.
+     * @param <T> bean class type
+     * @param clazz bean class
+     */
+    public static <T> void checkObtainsFieldConditions(Class<T> clazz)
+    {
+        Asserts.assertNotNull(clazz);
+        
+        Field[] candidateFields = AnnotationUtil.getClazzFieldsWithGivenAnnotation(clazz, Obtains.class);
+
+        for (Field candidateField : candidateFields)
+        {
+            Type fieldType = candidateField.getGenericType();
+            Class<?> rawType = null;
+            if(ClassUtil.isParametrizedType(fieldType))
+            {
+                ParameterizedType pt = (ParameterizedType)fieldType;
+                
+                rawType = (Class<?>) pt.getRawType();
+                if(!(rawType.getClass().equals(Instance.class)))
+                {
+                    throw new DefinitionException("@Obtains field with name : " + candidateField.getName() + " " +
+                            "in bean class : " + clazz.getName() + " must have type javax.inject.Instance");
+                }                
+                else
+                {
+                    if(ClassUtil.isFirstParametricTypeArgGeneric(pt))
+                    {
+                        throw new DefinitionException("@Obtains field with name : " + candidateField.getName() + " " +
+                                "in bean class : " + clazz.getName() + " must not have TypeVariable or WildCard generic type argument");                        
+                    }                    
+                }                                
+            }
+            else
+            {
+                throw new DefinitionException("@Obtains field with name : " + candidateField.getName() + " " +
+                		"in bean class : " + clazz.getName() + " must be defined as ParameterizedType with actual type argument");
+            }
+        }
+        
     }
 
     public static <T> void checkPassivationScope(AbstractComponent<T> component, ScopeType scope)
@@ -1414,5 +1510,31 @@ public final class WebBeansUtil
             throw new IllegalArgumentException("scopeType argument must be annotated with @ScopeType");
         }
     }
+    
+    public static void checkNullInstance(Object instance,Class<?> scopeType, String errorMessage)
+    {
+        if (instance == null)
+        {
+            if (!scopeType.equals(Dependent.class))
+            {
+                throw new IllegalProductException(errorMessage);
+            }
+        }
+        
+    }
+    
+    public static void checkSerializableScopeType(Class<?> scopeType, boolean isSerializable, String errorMessage)
+    {
+        // Scope type check
+        ScopeType scope = scopeType.getAnnotation(ScopeType.class);
+        if (scope.passivating())
+        {
+            if (!isSerializable)
+            {
+                throw new IllegalProductException(errorMessage);
+            }
+        }
+    }
+    
     
  }

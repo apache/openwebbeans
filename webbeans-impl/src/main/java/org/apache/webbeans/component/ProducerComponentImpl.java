@@ -19,13 +19,12 @@ import java.lang.reflect.Type;
 
 import javax.context.CreationalContext;
 import javax.context.Dependent;
-import javax.context.ScopeType;
-import javax.inject.IllegalProductException;
 import javax.inject.manager.Bean;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Concrete implementation of the {@link AbstractComponent}.
@@ -194,25 +193,14 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
 
     protected void checkNullInstance(Object instance)
     {
-        if (instance == null)
-        {
-            if (!this.getScopeType().equals(Dependent.class))
-            {
-                throw new IllegalProductException("WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.parent.getReturnType().getName() + " scope type must be @Dependent to create null instance");
-            }
-        }
+        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.parent.getReturnType().getName() + " scope type must be @Dependent to create null instance";
+        WebBeansUtil.checkNullInstance(instance, this.getScopeType(), errorMessage);        
     }
 
     protected void checkScopeType()
     {
-        // Scope type check
-        ScopeType scope = this.getScopeType().getAnnotation(ScopeType.class);
-        if (scope.passivating())
-        {
-            if (!this.isSerializable())
-            {
-                throw new IllegalProductException("WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.parent.getReturnType().getName() + " with passivating scope @" + scope.annotationType().getName() + " must be Serializable");
-            }
-        }
+        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.parent.getReturnType().getName() + " with passivating scope @" + this.getScopeType().getName() + " must be Serializable";
+        WebBeansUtil.checkSerializableScopeType(this.getScopeType(), this.isSerializable(), errorMessage);
+
     }
 }

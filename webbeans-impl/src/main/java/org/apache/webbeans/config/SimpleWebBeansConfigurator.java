@@ -23,6 +23,7 @@ import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.ProducerComponentImpl;
+import org.apache.webbeans.component.ProducerFieldComponent;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
@@ -106,6 +107,8 @@ public final class SimpleWebBeansConfigurator
      */
     public static <T> ComponentImpl<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
     {
+        ManagerImpl manager = ManagerImpl.getManager();        
+        
         checkSimpleWebBeanCondition(clazz);
 
         ComponentImpl<T> component = new ComponentImpl<T>(clazz, type);
@@ -136,7 +139,10 @@ public final class SimpleWebBeansConfigurator
         WebBeansUtil.checkSteroTypeRequirements(component, clazz.getAnnotations(), "WebBeans component  class : " + clazz.getName());
 
         Set<ProducerComponentImpl<?>> producerComponents = DefinitionUtil.defineProducerMethods(component);
-        ManagerImpl.getManager().getBeans().addAll(producerComponents);
+        manager.getBeans().addAll(producerComponents);
+        
+        Set<ProducerFieldComponent<?>> producerFields = DefinitionUtil.defineProduerFields(component);
+        manager.getBeans().addAll(producerFields);
 
         DefinitionUtil.defineDisposalMethods(component);
         DefinitionUtil.defineInjectedFields(component);

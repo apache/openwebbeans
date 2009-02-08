@@ -32,7 +32,7 @@ public class NewComponentImpl<T> extends ComponentImpl<T>
     public NewComponentImpl(Class<T> returnType, WebBeansType definedType)
     {
         super(returnType);
-        this.definedType = definedType;
+        this.definedType = definedType;        
     }
 
     @Override

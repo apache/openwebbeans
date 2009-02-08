@@ -14,12 +14,14 @@
 package org.apache.webbeans.inject.xml;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -30,9 +32,6 @@ import org.apache.webbeans.util.ClassUtil;
  * If injection point is a parametrized type, actual type arguments are defined
  * in the XML file. See specification for further details.
  * </p>
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public class XMLInjectionPointModel
 {
@@ -47,6 +46,18 @@ public class XMLInjectionPointModel
 
     /** Injection point binding types */
     private Set<Annotation> bindingTypes = new HashSet<Annotation>();
+    
+    /**All annotations*/
+    private Set<Annotation> annotations = new HashSet<Annotation>();
+    
+    /**Injection type*/
+    private Type injectionGenericType;
+    
+    /**Injection Member*/
+    private Member injectionMember;
+    
+    /**Type of the injection*/
+    private XMLInjectionModelType type;
 
     /** This injection model is array */
     private boolean array;
@@ -55,6 +66,7 @@ public class XMLInjectionPointModel
     {
         this.array = true;
         this.injectionClassType = arrayElementType;
+        this.injectionGenericType = arrayElementType;
     }
 
     /**
@@ -66,6 +78,7 @@ public class XMLInjectionPointModel
     public XMLInjectionPointModel(Class<?> injectionClassType, Type[] actualTypeArguments)
     {
         this.injectionClassType = injectionClassType;
+        this.injectionGenericType = injectionClassType;
 
         if (actualTypeArguments != null && actualTypeArguments.length > 0)
         {
@@ -127,6 +140,16 @@ public class XMLInjectionPointModel
     {
         return Collections.unmodifiableSet(this.bindingTypes);
     }
+    
+    
+    /**
+     * 
+     * @return annotations
+     */
+    public Set<Annotation> getAnnotations()
+    {
+        return Collections.unmodifiableSet(this.annotations);
+    }
 
     /**
      * @return the array
@@ -135,6 +158,56 @@ public class XMLInjectionPointModel
     {
         return array;
     }
+    
+    /**
+     * Add new injection point annotation
+     * @param annotation member annotation
+     */
+    public void addAnnotation(Annotation annotation)
+    {
+        Asserts.assertNotNull(annotation, "annotation parameter can not be null");
+        this.annotations.add(annotation);
+    }
+    
+    /**
+     * @return the injectionType
+     */
+    public Type getInjectionGenericType()
+    {
+        return injectionGenericType;
+    }
+
+    /**
+     * @return the injectionMember
+     */
+    public Member getInjectionMember()
+    {
+        return injectionMember;
+    }
+
+    /**
+     * @param injectionMember the injectionMember to set
+     */
+    public void setInjectionMember(Member injectionMember)
+    {
+        this.injectionMember = injectionMember;
+    }
+    
+    /**
+     * @return the type
+     */
+    public XMLInjectionModelType getType()
+    {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(XMLInjectionModelType type)
+    {
+        this.type = type;
+    }    
 
     /*
      * (non-Javadoc)
@@ -186,4 +259,4 @@ public class XMLInjectionPointModel
             return false;
         return true;
     }
-}
+ }

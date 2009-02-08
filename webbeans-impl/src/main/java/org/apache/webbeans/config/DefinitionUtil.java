@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.annotation.Named;
 import javax.annotation.NonBinding;
 import javax.context.ScopeType;
+import javax.decorator.Decorates;
 import javax.event.Fires;
 import javax.event.Observes;
 import javax.inject.DeploymentType;
@@ -45,6 +46,7 @@ import org.apache.webbeans.component.Component;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.component.ProducerComponentImpl;
+import org.apache.webbeans.component.ProducerFieldComponent;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
@@ -340,6 +342,35 @@ public final class DefinitionUtil
         }
 
     }
+    
+    /**
+     * Defines the set of {@link ProducerFieldComponent} components.
+     * 
+     * @param component producer field owner component
+     * 
+     * @return the set of producer field components
+     */
+    public static Set<ProducerFieldComponent<?>> defineProduerFields(AbstractComponent<?> component)
+    {
+        Set<ProducerFieldComponent<?>> producerFields = new HashSet<ProducerFieldComponent<?>>();
+        Field[] fields = component.getReturnType().getDeclaredFields();
+        
+        for(Field field : fields)
+        {
+            //Producer field
+            if(AnnotationUtil.isAnnotationExist(field.getAnnotations(), Produces.class))
+            {
+                ProducerFieldComponent<?> newComponent = createProducerFieldComponent(field.getType(), field, component);
+                if (newComponent != null)
+                {
+                    producerFields.add(newComponent);                    
+                }
+                
+            }
+        }
+        
+        return producerFields;
+    }
 
     public static Set<ProducerComponentImpl<?>> defineProducerMethods(AbstractComponent<?> component)
     {
@@ -417,6 +448,39 @@ public final class DefinitionUtil
 
         return component;
     }
+    
+    private static <T> ProducerFieldComponent<T> createProducerFieldComponent(Class<T> returnType, Field field, AbstractComponent<?> parent)
+    {
+        ProducerFieldComponent<T> component = new ProducerFieldComponent<T>(parent, returnType);
+        component.setProducerField(field);
+
+
+        if (returnType.isPrimitive())
+        {
+            component.setNullable(false);
+        }
+
+        defineSerializable(component);
+
+        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, field.getAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
+
+        // Check if the deployment type is enabled.
+        if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
+        {
+            return null;
+        }
+
+        Annotation[] fieldAnns = field.getAnnotations();
+
+        DefinitionUtil.defineProducerMethodApiTypes(component, returnType);
+        DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName() + " must declare default @ScopeType annotation");
+        DefinitionUtil.defineBindingTypes(component, fieldAnns);
+        DefinitionUtil.defineName(component, fieldAnns,field.getName());
+
+        //WebBeansUtil.checkSteroTypeRequirements(component, fieldAnns, "WebBeans producer method : " + method.getName() + " in class : " + parent.getReturnType().getName());
+
+        return component;
+    }    
 
     public static <T> void defineDisposalMethods(AbstractComponent<T> component)
     {
@@ -463,7 +527,10 @@ public final class DefinitionUtil
     {
         Class<T> clazz = component.getReturnType();
 
-        WebBeansUtil.checkObservableFieldsConditions(clazz);
+        if(!WebBeansUtil.checkObservableFieldsConditions(clazz))
+        {
+            WebBeansUtil.checkObtainsFieldConditions(clazz);   
+        }
 
         Field[] fields = clazz.getDeclaredFields();
         if (fields.length != 0)
@@ -472,6 +539,13 @@ public final class DefinitionUtil
             {
                 Annotation[] anns = field.getAnnotations();
 
+                //Injected fields can not be @Decorates or @Produces
+                if(AnnotationUtil.isAnnotationExist(anns, Produces.class) || 
+                        AnnotationUtil.isAnnotationExist(anns, Decorates.class))
+                {
+                    return;
+                }
+                
                 Annotation[] bindingAnns = AnnotationUtil.getBindingAnnotations(anns);
                 Annotation[] resourceAnns = AnnotationUtil.getResourceAnnotations(anns);
                 

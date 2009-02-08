@@ -35,6 +35,7 @@ import org.apache.webbeans.util.Asserts;
 
 public class XMLComponentImpl<T> extends ComponentImpl<T>
 {
+    /**Logger instance*/
     private static WebBeansLogger logger = WebBeansLogger.getLogger(XMLComponentImpl.class);
 
     /** Constructor injection point decleration */
