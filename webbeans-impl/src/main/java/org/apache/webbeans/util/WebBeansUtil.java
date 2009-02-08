@@ -1413,7 +1413,7 @@ public final class WebBeansUtil
                 ParameterizedType pt = (ParameterizedType)fieldType;
                 
                 rawType = (Class<?>) pt.getRawType();
-                if(!(rawType.getClass().equals(Instance.class)))
+                if(!(rawType.equals(Instance.class)))
                 {
                     throw new DefinitionException("@Obtains field with name : " + candidateField.getName() + " " +
                             "in bean class : " + clazz.getName() + " must have type javax.inject.Instance");
