@@ -1420,7 +1420,8 @@ public final class WebBeansUtil
                 }                
                 else
                 {
-                    if(ClassUtil.isFirstParametricTypeArgGeneric(pt))
+                    
+                    if(!ClassUtil.checkParametrizedType(pt))
                     {
                         throw new DefinitionException("@Obtains field with name : " + candidateField.getName() + " " +
                                 "in bean class : " + clazz.getName() + " must not have TypeVariable or WildCard generic type argument");                        
