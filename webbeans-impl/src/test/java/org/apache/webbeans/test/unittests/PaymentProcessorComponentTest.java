@@ -32,6 +32,7 @@ import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class PaymentProcessorComponentTest extends TestContext
 {
     Manager container = null;
