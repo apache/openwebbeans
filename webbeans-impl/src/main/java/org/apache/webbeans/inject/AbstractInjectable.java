@@ -119,17 +119,13 @@ public abstract class AbstractInjectable implements Injectable
 
     }
 
-    private boolean isResource(Annotation... annotations)
+    /**
+     * check if any of the given resources is a resource annotation
+     * @see AnnotationUtil#isResourceAnnotation(Class)
+     */
+    protected boolean isResource(Annotation... annotations)
     {
-        for (Annotation anno : annotations)
-        {
-            if (AnnotationUtil.isResourceAnnotation(anno.annotationType()))
-            {
-                return true;
-            }
-        }
-        
-        return false;
+        return AnnotationUtil.hasResourceAnnotation(annotations);
     }
 
     private boolean isNewBinding(Annotation... annotations)

@@ -587,38 +587,82 @@ public final class DefinitionUtil
         Asserts.assertNotNull(component, "component parameter can not be null");
 
         Class<T> clazz = component.getReturnType();
-        Method[] methods = AnnotationUtil.getMethodsWithAnnotation(clazz, Initializer.class);
-        if (methods.length != 0)
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods)
         {
-            for (Method method : methods)
+            boolean isInitializer = AnnotationUtil.isMethodHasAnnotation(method, Initializer.class);
+            boolean isResource    = AnnotationUtil.isMethodHasResourceAnnotation(method);
+            
+            if (isInitializer && isResource)
             {
-                Annotation[][] anns = method.getParameterAnnotations();
-                Type[] type = method.getGenericParameterTypes();
-                for (int i = 0; i < anns.length; i++)
-                {
-                    Annotation[] a = anns[i];
-                    Type t = type[i];
-                    WebBeansUtil.checkForNewBindingForDeployment(t, clazz, method.getName(), a);
-                }
-
-                if (method.getAnnotation(Produces.class) == null)
-                {
-                    WebBeansUtil.checkInjectedMethodParameterConditions(method, clazz);
-                    if (!Modifier.isStatic(method.getModifiers()))
-                    {
-                        component.addInjectedMethod(method);
-                        addMethodInjectionPointMetaData(component, method);
-                    }
-
-                }
-                else
-                {
-                    throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName() + " can not be annotated with @Produces or @Destructor");
-                }
+                throw new WebBeansConfigurationException("Found Initializer and resource injection at the same time for the method : " 
+                                                         + method.getName() + " in class : " + clazz.getName());
             }
+            
+            if (isInitializer)
+            {
+                checkForInjectedInitializerMethod(component, clazz, method);
+            }
+            else if (isResource)
+            {
+                checkForValidResourceMethod(component, clazz, method);
+            }
+            else
+            {
+                continue;
+            }
+         
+            if (!Modifier.isStatic(method.getModifiers()))
+            {
+                component.addInjectedMethod(method);
+                addMethodInjectionPointMetaData(component, method);
+            }
+
         }
     }
 
+    /**
+     * add the definitions for a &#x0040;Initializer method.
+     */
+    private static <T> void checkForInjectedInitializerMethod(ComponentImpl<T> component, Class<T> clazz, Method method)
+    {
+        Annotation[][] anns = method.getParameterAnnotations();
+        Type[] type = method.getGenericParameterTypes();
+        for (int i = 0; i < anns.length; i++)
+        {
+            Annotation[] a = anns[i];
+            Type t = type[i];
+            WebBeansUtil.checkForNewBindingForDeployment(t, clazz, method.getName(), a);
+        }
+
+        if (method.getAnnotation(Produces.class) == null)
+        {
+            WebBeansUtil.checkInjectedMethodParameterConditions(method, clazz);
+        }
+        else
+        {
+            throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName() 
+                                                     + " can not be annotated with @Produces or @Destructor");
+        }
+    }
+
+    /**
+     * add the definitions for a &#x0040;Initializer method.
+     */
+    private static <T> void checkForValidResourceMethod(ComponentImpl<T> component, Class<T> clazz, Method method)
+    {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if (parameterTypes == null || parameterTypes.length != 1)
+        {
+            throw new WebBeansConfigurationException("Resource method : " + method.getName() + " in class : " + clazz.getName() 
+                                                     + " must only have exactly 1 parameter with a valid resource type");
+        }
+        
+        Annotation[] anns = method.getAnnotations();
+        WebBeansUtil.checkForValidResources(parameterTypes[0], clazz, method.getName(), anns);
+    }
+
+    
     public static void defineSimpleWebBeanInterceptorStack(AbstractComponent<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can no be null");

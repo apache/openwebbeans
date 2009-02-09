@@ -439,7 +439,7 @@ public final class WebBeansUtil
             {
                 if (!type.equals(EntityManagerFactory.class))
                 {
-                    throw new WebBeansConfigurationException("@PersistenceUnit must only be injected into field with type EntityManagerFactory! class : "  
+                    throw new WebBeansConfigurationException("@PersistenceUnit must only be injected into field/method with type EntityManagerFactory! class : "  
                                                              + clazz.getName() + " in field/method : " + name);
                 }
             }
@@ -450,7 +450,7 @@ public final class WebBeansUtil
                 
                 if (!type.equals(EntityManager.class))
                 {
-                    throw new WebBeansConfigurationException("@PersistenceContext must only be injected into field with type EntityManager! class : "  
+                    throw new WebBeansConfigurationException("@PersistenceContext must only be injected into field/method with type EntityManager! class : "  
                                                              + clazz.getName() + " in field/method : " + name);
                 }
              

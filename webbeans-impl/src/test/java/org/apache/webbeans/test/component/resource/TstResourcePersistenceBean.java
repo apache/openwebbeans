@@ -34,21 +34,47 @@ public class TstResourcePersistenceBean
     private EntityManager em;
 
     @PersistenceContext(unitName="openwebbeanstest", name="anotherEm")
-    private EntityManager em2;
+    private EntityManager emNamed;
 
-    public EntityManagerFactory getEntityManagerFactory()
+    private EntityManagerFactory emfMethodInjected;
+
+    private EntityManager emMethodInjected;
+
+    public EntityManagerFactory getFieldInjectedEntityManagerFactory()
     {
         return emf;
     }
 
-    public EntityManager getEntityManager()
+    public EntityManager getFieldInjectedEntityManager()
     {
         return em;
     }
     
-    public EntityManager getEntityManager2()
+    public EntityManager getFieldInjectedEntityManager2()
     {
-        return em2;
+        return emNamed;
     }
-    
+
+    public EntityManagerFactory getMethodInjectedEntityManagerFactory()
+    {
+        return emfMethodInjected;
+    }
+
+    @PersistenceUnit(unitName="openwebbeanstest")
+    public void setMethodInjectedEntityManagerFactory(EntityManagerFactory emf2)
+    {
+        this.emfMethodInjected = emf2;
+    }
+
+    public EntityManager getMethodInjectedEntityManager()
+    {
+        return emMethodInjected;
+    }
+
+    @PersistenceContext(unitName="openwebbeanstest")
+    public void setMethodInjectedEntityManager(EntityManager em3)
+    {
+        this.emMethodInjected = em3;
+    }
+
 }

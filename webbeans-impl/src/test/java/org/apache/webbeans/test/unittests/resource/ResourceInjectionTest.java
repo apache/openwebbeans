@@ -55,15 +55,23 @@ public class ResourceInjectionTest extends TestContext
         TstResourcePersistenceBean persBean = (TstResourcePersistenceBean) getInstanceByName("tstResourcePersistenceBean");
         Assert.assertNotNull(persBean);
         
-        EntityManagerFactory emf = persBean.getEntityManagerFactory();
+        // test field injection
+        EntityManagerFactory emf = persBean.getFieldInjectedEntityManagerFactory();
         Assert.assertNotNull(emf);
 
-        EntityManager em = persBean.getEntityManager();
+        EntityManager em = persBean.getFieldInjectedEntityManager();
         Assert.assertNotNull(em);
     
-        EntityManager em2 = persBean.getEntityManager2();
+        EntityManager em2 = persBean.getFieldInjectedEntityManager2();
         Assert.assertNotNull(em2);
 
         Assert.assertTrue(em != em2);
+        
+        // test method injection
+        EntityManagerFactory emf2 = persBean.getMethodInjectedEntityManagerFactory();
+        Assert.assertNotNull(emf2);
+        
+        EntityManager em3 = persBean.getMethodInjectedEntityManager();
+        Assert.assertNotNull(em3);
     }
 }

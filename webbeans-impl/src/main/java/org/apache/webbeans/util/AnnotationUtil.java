@@ -79,6 +79,20 @@ public final class AnnotationUtil
     }
 
     /**
+     * Check if a resource annotation exist on the method.
+     * 
+     * @param method method
+     * @return <code>true</code> if any resource annotation exists for the given method
+     */
+    public static boolean isMethodHasResourceAnnotation(Method method)
+    {
+        Asserts.assertNotNull(method, "Method argument can not be null");
+        
+        Annotation[] anns = method.getDeclaredAnnotations();
+        return hasResourceAnnotation(anns);
+    }
+    
+    /**
      * Check given annotation exist in the any parameter of the given method.
      * Return true if exist false otherwise.
      * 
@@ -718,6 +732,23 @@ public final class AnnotationUtil
             return true;
         }
 
+        return false;
+    }
+
+    /**
+     * check if any of the given resources is a resource annotation
+     * @see AnnotationUtil#isResourceAnnotation(Class)
+     */
+    public static boolean hasResourceAnnotation(Annotation[] annotations)
+    {
+        for (Annotation anno : annotations)
+        {
+            if (AnnotationUtil.isResourceAnnotation(anno.annotationType()))
+            {
+                return true;
+            }
+        }
+        
         return false;
     }
 

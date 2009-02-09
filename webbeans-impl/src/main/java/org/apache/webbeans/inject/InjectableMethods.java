@@ -55,44 +55,57 @@ public class InjectableMethods<T> extends AbstractInjectable
     public T doInjection()
     {
         Type[] types = m.getGenericParameterTypes();
-        Annotation[][] annots = m.getParameterAnnotations();
         List<Object> list = new ArrayList<Object>();
-        if (types.length > 0)
+        
+        Annotation[] methodAnnots = m.getAnnotations();
+        if (isResource(methodAnnots))
         {
-            int i = 0;
-            for (Type type : types)
-            {
-                Annotation[] annot = annots[i];
-                if (annot.length == 0)
-                {
-                    annot = new Annotation[1];
-                    annot[0] = new CurrentLiteral();
-                }
-
-                Type[] args = new Type[0];
-                Class<?> clazz = null;
-                if (type instanceof ParameterizedType)
-                {
-                    ParameterizedType pt = (ParameterizedType) type;
-
-                    checkParametrizedTypeForInjectionPoint(pt);
-                    args = pt.getActualTypeArguments();
-
-                    clazz = (Class<?>) pt.getRawType();
-                }
-                else
-                {
-                    clazz = (Class<?>) type;
-                }
-
-                list.add(inject(clazz, args, AnnotationUtil.getBindingAnnotations(annot)));
-
-                i++;
-
-            }
-
+            // if the method itself is resource annotated, e.g. @PersistenceUnit
+            Type[] args = new Type[0];
+            Class<?> clazz = (Class<?>) types[0];
+            list.add(inject(clazz, args, methodAnnots));
         }
-
+        else 
+        {
+            // otherwise we inject the method parameters as usual
+            Annotation[][] annots = m.getParameterAnnotations();
+            if (types.length > 0)
+            {
+                int i = 0;
+                for (Type type : types)
+                {
+                    Annotation[] annot = annots[i];
+                    if (annot.length == 0)
+                    {
+                        annot = new Annotation[1];
+                        annot[0] = new CurrentLiteral();
+                    }
+    
+                    Type[] args = new Type[0];
+                    Class<?> clazz = null;
+                    if (type instanceof ParameterizedType)
+                    {
+                        ParameterizedType pt = (ParameterizedType) type;
+    
+                        checkParametrizedTypeForInjectionPoint(pt);
+                        args = pt.getActualTypeArguments();
+    
+                        clazz = (Class<?>) pt.getRawType();
+                    }
+                    else
+                    {
+                        clazz = (Class<?>) type;
+                    }
+    
+                    list.add(inject(clazz, args, AnnotationUtil.getBindingAnnotations(annot)));
+    
+                    i++;
+    
+                }
+    
+            }
+        }
+        
         try
         {
             if (!ClassUtil.isPublic(m.getModifiers()))
