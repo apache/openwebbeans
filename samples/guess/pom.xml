@@ -97,27 +97,33 @@
                     <artifactId>myfaces-impl</artifactId>
                 </dependency>
             </dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.mortbay.jetty</groupId>
-						<artifactId>maven-jetty-plugin</artifactId>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.mortbay.jetty</groupId>
+                        <artifactId>maven-jetty-plugin</artifactId>
                         <version>6.1.14</version>
-						<configuration>
-							<scanIntervalSeconds>10</scanIntervalSeconds>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-			<pluginRepositories>
-				<!-- Repository to get the jetty plugin -->
-				<pluginRepository>
-					<id>mortbay-repo</id>
-					<name>mortbay-repo</name>
-					<url>http://www.mortbay.org/maven2/snapshot
-					</url>
-				</pluginRepository>
-			</pluginRepositories>
+                        <configuration>
+                            <scanIntervalSeconds>10</scanIntervalSeconds>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.mortbay.jetty</groupId>
+                                <artifactId>jetty</artifactId>
+                                <version>6.1-SNAPSHOT</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+            <pluginRepositories>
+                <!-- Repository to get the jetty plugin -->
+                <pluginRepository>
+                     <id>mortbay-repo</id>
+                     <name>mortbay-repo</name>
+                     <url>http://www.mortbay.org/maven2/snapshot</url>
+                </pluginRepository>
+            </pluginRepositories>
             <properties>
                 <envlibscope>compile</envlibscope>
             </properties>
