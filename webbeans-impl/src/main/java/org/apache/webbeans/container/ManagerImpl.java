@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.container;
 
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -60,6 +61,7 @@ import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 /**
  * Implementation of the {@link WebBeansManager} contract of the web beans
@@ -84,6 +86,8 @@ public class ManagerImpl implements Manager, Referenceable
     private InjectionResolver injectionResolver = null;
 
     private Map<Bean<?>, Object> proxyMap = Collections.synchronizedMap(new IdentityHashMap<Bean<?>, Object>());
+    
+    private WebBeansXMLConfigurator xmlConfigurator = null;
 
     public ManagerImpl()
     {
@@ -98,6 +102,16 @@ public class ManagerImpl implements Manager, Referenceable
         return instance;
     }
 
+    public void setXMLConfigurator(WebBeansXMLConfigurator xmlConfigurator)
+    {
+        if(xmlConfigurator != null)
+        {
+            throw new IllegalStateException("There is already defined WebBeansXMLConfigurator");
+        }
+        
+        this.xmlConfigurator = xmlConfigurator;
+    }
+    
     public Context getContext(Class<? extends Annotation> scopType)
     {
         Asserts.assertNotNull(scopType, "scopeType paramter can not be null");
@@ -416,6 +430,19 @@ public class ManagerImpl implements Manager, Referenceable
     public Reference getReference() throws NamingException
     {
         return new Reference(ManagerImpl.class.getName(), new StringRefAddr("ManagerImpl", "ManagerImpl"), ManagerObjectFactory.class.getName(), null);
+    }
+
+    /**
+     * Parse the given XML input stream for adding XML defined artifacts.
+     * 
+     * @param xmlStream beans xml definitions
+     * @return {@link Manager} instance 
+     */
+    public Manager parse(InputStream xmlStream)
+    {
+        this.xmlConfigurator.configure(xmlStream);
+        
+        return this;
     }
 
 }

@@ -29,7 +29,9 @@ import javax.servlet.jsp.JspFactory;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.config.WebBeansContainerDeployer;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.config.WebBeansScanner;
+import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.exception.WebBeansException;
@@ -59,6 +61,8 @@ public final class WebBeansLifeCycle
         this.xmlDeployer = new WebBeansXMLConfigurator();
         this.deployer = new WebBeansContainerDeployer(xmlDeployer);
         this.jndiService = ServiceLoader.getService(JNDIService.class);
+        
+        ManagerImpl.getManager().setXMLConfigurator(this.xmlDeployer);
     }
 
     public void requestStarted(ServletRequestEvent event)
@@ -159,6 +163,8 @@ public final class WebBeansLifeCycle
         this.scanner = null;
         this.service = null;
         this.xmlDeployer = null;
+        
+        WebBeansFinder.clearInstances();
 
     }
 

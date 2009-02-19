@@ -106,6 +106,11 @@ public final class WebBeansXMLConfigurator
     {
 
     }
+    
+    public void configure(InputStream xmlStream)
+    {
+        configure(xmlStream, "No-name XML Stream");
+    }
 
     /**
      * Configures the web beans from the given input stream.
