@@ -567,17 +567,11 @@ public final class WebBeansXMLConfigurator
 
         /* Check if the deployment type is enabled. */
         if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(component.getDeploymentType())) // Maybe
-        // it
-        // is
-        // checked
-        // before
-        // the
-        // creation!
         {
             component = null;
 
         }
-        /* Adda to the manager */
+        /* Add to the manager */
         else
         {
             ManagerImpl.getManager().addBean(component);
@@ -1508,12 +1502,9 @@ public final class WebBeansXMLConfigurator
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Field type with field name : " + field.getName() + " is not compatible for initial value assignment");
                 }
-
-                if (ClassUtil.isPrimitive(fieldType) || ClassUtil.isPrimitiveWrapper(fieldType)) /*
-                                                                                                  * Primitive
-                                                                                                  * type
-                                                                                                  * value
-                                                                                                  */
+                
+                /*Primitive type*/
+                if (ClassUtil.isPrimitive(fieldType) || ClassUtil.isPrimitiveWrapper(fieldType)) 
                 {
                     Object objVal = null;
 
@@ -1528,7 +1519,8 @@ public final class WebBeansXMLConfigurator
                     }
 
                 }
-                else if (ClassUtil.isEnum(fieldType)) /* Enumeration value */
+                /* Enumeration value */
+                else if (ClassUtil.isEnum(fieldType))
                 {
                     Enum enumValue = ClassUtil.isValueOkForEnum(fieldType, value);
 
@@ -1540,16 +1532,19 @@ public final class WebBeansXMLConfigurator
                     component.addFieldValue(field, enumValue);
 
                 }
-                else if (fieldType.equals(String.class)) /* String value */
+                /* String value */
+                else if (fieldType.equals(String.class))
                 {
                     component.addFieldValue(field, value);
 
                 }
-                else if (fieldType.equals(Date.class) /*
-                                                       * Date, Time, Sql Date,
-                                                       * Time stamp, Calendar
-                                                       * value
-                                                       */
+                
+                /*
+                 * Date, Time, Sql Date,
+                 * Time stamp, Calendar
+                 * value
+                 */                
+                else if (fieldType.equals(Date.class)
                         || fieldType.equals(java.sql.Date.class) || fieldType.equals(Time.class) || fieldType.equals(Timestamp.class))
                 {
                     Date date = ClassUtil.isValueOkForDate(value);
@@ -1578,13 +1573,12 @@ public final class WebBeansXMLConfigurator
                     }
 
                 }
-
-                else if (fieldType.equals(BigDecimal.class) || fieldType.equals(BigInteger.class)) /*
-                                                                                                    * BigDecimal
-                                                                                                    * or
-                                                                                                    * BigInteger
-                                                                                                    * value
-                                                                                                    */
+                /*
+                 * BigDecimal
+                 * or
+                 * BigInteger
+                 */                
+                else if (fieldType.equals(BigDecimal.class) || fieldType.equals(BigInteger.class)) 
                 {
                     Object bigValue = ClassUtil.isValueOkForBigDecimalOrInteger(fieldType, value);
 
@@ -1598,7 +1592,8 @@ public final class WebBeansXMLConfigurator
                     }
 
                 }
-                else if (fieldType.equals(Class.class)) /* Class value */
+                /* Class value */
+                else if (fieldType.equals(Class.class))
                 {
                     Class<?> clazz = ClassUtil.getClassFromName(value);
 
@@ -1611,13 +1606,17 @@ public final class WebBeansXMLConfigurator
                         component.addFieldValue(field, clazz);
                     }
                 }
-                else if (List.class.isAssignableFrom(fieldType)) /*
-                                                                  * List value
-                                                                  */
+                
+                /*
+                 * List value
+                 */
+                else if (List.class.isAssignableFrom(fieldType)) 
                 {
                     configureFieldListValue(component, field, child, errorMessage);
                 }
-                else if (Set.class.isAssignableFrom(fieldType)) /* Set value */
+                
+                /* Set value */
+                else if (Set.class.isAssignableFrom(fieldType)) 
                 {
                     configureFieldSetValue(component, field, child, errorMessage);
                 }
@@ -1647,10 +1646,11 @@ public final class WebBeansXMLConfigurator
         Class<?> argClazz = null;
         List list = null;
 
-        if (type instanceof ParameterizedType) /*
-                                                * Type must be parametrized type
-                                                * to mark type
-                                                */
+        /*
+         * Type must be parametrized type
+         * to mark type
+         */        
+        if (type instanceof ParameterizedType) 
         {
             ParameterizedType pt = (ParameterizedType) type;
             Type arg = pt.getActualTypeArguments()[0];
@@ -1741,10 +1741,11 @@ public final class WebBeansXMLConfigurator
         Class<?> argClazz = null;
         Set set = null;
 
-        if (type instanceof ParameterizedType) /*
-                                                * Type must be parametrized type
-                                                * to mark type
-                                                */
+        /*
+         * Type must be parametrized type
+         * to mark type
+         */        
+        if (type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType) type;
             Type arg = pt.getActualTypeArguments()[0];
