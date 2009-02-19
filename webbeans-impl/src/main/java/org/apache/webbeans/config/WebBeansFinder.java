@@ -86,6 +86,14 @@ public class WebBeansFinder
         }
 
         return object;
-
+    }
+    
+    /**
+     * Clear all deployment instances when the application is undeployed.
+     */
+    public static void clearInstances()
+    {
+        singletonMap.clear();
+        singletonMap = null;
     }
 }
