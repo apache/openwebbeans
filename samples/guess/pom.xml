@@ -17,46 +17,53 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<artifactId>samples</artifactId>
-		<groupId>org.apache.openwebbeans</groupId>
-		<version>1.0.0-incubating-SNAPSHOT</version>
+	     <artifactId>samples</artifactId>
+	     <groupId>org.apache.openwebbeans</groupId>
+	     <version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>guess</artifactId>
 	<packaging>war</packaging>
 	<name>OpenWebBeans :: Sample Application</name>
 	<description>Simple login application</description>
+
 	<build>
 		<finalName>guess</finalName>
 	</build>
+
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.facelets</groupId>
-			<artifactId>jsf-facelets</artifactId>
-			<version>1.1.11</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>openwebbeans-api</artifactId>
-			<version>1.0.0-incubating-SNAPSHOT</version>
+	  <dependency>
+	     <groupId>junit</groupId>
+             <artifactId>junit</artifactId>
+	     <scope>test</scope>
+	  </dependency>
+	  
+          <dependency>
+	     <groupId>com.sun.facelets</groupId>
+	     <artifactId>jsf-facelets</artifactId>
+	     <version>1.1.11</version>
+	  </dependency>
+	  
+          <dependency>
+	     <groupId>org.apache.openwebbeans</groupId>
+	     <artifactId>openwebbeans-api</artifactId>
+	     <version>1.0.0-incubating-SNAPSHOT</version>
             <scope>provided</scope>
-		</dependency>
-        <dependency>
+	 </dependency>
+         
+         <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        
+	<dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
             <scope>provided</scope>
         </dependency>
-	</dependencies>
+	
+      </dependencies>
 
     <properties>
         <envlibscope>provided</envlibscope>
@@ -66,37 +73,44 @@
 		<profile>
 			<id>jetty</id>
             <dependencies>
-                <dependency>
+                
+		<dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-api</artifactId>
                     <version>1.0.0-incubating-SNAPSHOT</version>
                     <scope>compile</scope> <!-- we need this if we run in jetty! -->
                 </dependency>
-                <dependency>
+                
+		<dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-impl</artifactId>
                     <version>1.0.0-incubating-SNAPSHOT</version>
                 </dependency>
+
                 <dependency>
                     <groupId>org.apache.openjpa</groupId>
                     <artifactId>openjpa</artifactId>
                     <version>1.2.0</version>
                 </dependency>
+
                 <dependency>
                     <groupId>hsqldb</groupId>
                     <artifactId>hsqldb</artifactId>
                     <version>1.8.0.7</version>
                 </dependency>
+
                 <dependency>
                     <groupId>org.apache.myfaces.core</groupId>
                     <artifactId>myfaces-api</artifactId>
                     <scope>compile</scope> <!-- we need this if we run in jetty! -->
                 </dependency>
+
                 <dependency>
                     <groupId>org.apache.myfaces.core</groupId>
                     <artifactId>myfaces-impl</artifactId>
                 </dependency>
             </dependencies>
+
             <build>
                 <plugins>
                     <plugin>
@@ -116,6 +130,7 @@
                     </plugin>
                 </plugins>
             </build>
+
             <pluginRepositories>
                 <!-- Repository to get the jetty plugin -->
                 <pluginRepository>
@@ -124,10 +139,12 @@
                      <url>http://www.mortbay.org/maven2/snapshot</url>
                 </pluginRepository>
             </pluginRepositories>
+
             <properties>
                 <envlibscope>compile</envlibscope>
             </properties>
-		</profile>
-	</profiles>
+	
+	</profile>
+     </profiles>
 
 </project>
