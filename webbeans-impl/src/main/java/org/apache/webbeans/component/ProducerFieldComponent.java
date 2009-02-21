@@ -40,6 +40,7 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T>
     /**Owner of the producer field component*/
     private AbstractComponent<?> ownerComponent;
     
+    
     /**
      * Defines the new producer field component.
      * 

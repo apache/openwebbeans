@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.test.mock;
 
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -186,5 +187,11 @@ public class MockManager implements Manager
     public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings)
     {
         return manager.resolveObservers(event, bindings);
+    }
+
+    public Manager parse(InputStream xmlStream)
+    {
+        manager.parse(xmlStream);
+        return manager;
     }
 }

@@ -45,6 +45,8 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
 
     /** Disposal method */
     protected Method disposalMethod;
+    
+    protected boolean fromRealizes;
 
     /*
      * Constructor
@@ -55,6 +57,8 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
         this.parent = parent;
     }
 
+    
+    
     /**
      * Gets the creator method.
      * 
@@ -202,5 +206,25 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
         String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.parent.getReturnType().getName() + " with passivating scope @" + this.getScopeType().getName() + " must be Serializable";
         WebBeansUtil.checkSerializableScopeType(this.getScopeType(), this.isSerializable(), errorMessage);
 
+    }
+
+
+
+    /**
+     * @return the fromRealizes
+     */
+    public boolean isFromRealizes()
+    {
+        return fromRealizes;
+    }
+
+
+
+    /**
+     * @param fromRealizes the fromRealizes to set
+     */
+    public void setFromRealizes(boolean fromRealizes)
+    {
+        this.fromRealizes = fromRealizes;
     }
 }

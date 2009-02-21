@@ -20,12 +20,16 @@ import java.util.Set;
 public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> implements ObservesMethodsOwner<T>
 {
     private Set<Method> observableMethods = new HashSet<Method>();
+    
+    protected boolean fromRealizes;
 
     protected AbstractObservesComponent(WebBeansType webBeansType, Class<T> returnType)
     {
         super(webBeansType, returnType);
     }
 
+    
+    
     /*
      * (non-Javadoc)
      * @see
@@ -45,6 +49,26 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
     public Set<Method> getObservableMethods()
     {
         return this.observableMethods;
+    }
+
+
+
+    /**
+     * @return the fromRealizes
+     */
+    public boolean isFromRealizes()
+    {
+        return fromRealizes;
+    }
+
+
+
+    /**
+     * @param fromRealizes the fromRealizes to set
+     */
+    public void setFromRealizes(boolean fromRealizes)
+    {
+        this.fromRealizes = fromRealizes;
     }
 
 }

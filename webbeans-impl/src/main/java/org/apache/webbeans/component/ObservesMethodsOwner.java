@@ -21,5 +21,8 @@ public interface ObservesMethodsOwner<T>
     public Set<Method> getObservableMethods();
 
     public void addObservableMethod(Method observerMethod);
-
+    
+    public boolean isFromRealizes();
+    
+    public void setFromRealizes(boolean realized);
 }

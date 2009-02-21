@@ -277,7 +277,7 @@ public final class WebBeansContainerDeployer
                             throw new InconsistentSpecializationException("More than one class that specialized the same super class : " + superClass.getName());
                         }
                     }
-
+                    
                     WebBeansUtil.configureSpecializations(specialClass);
                 }
             }

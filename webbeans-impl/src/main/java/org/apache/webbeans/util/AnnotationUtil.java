@@ -35,6 +35,7 @@ import javax.annotation.NonBinding;
 import javax.annotation.Stereotype;
 import javax.inject.BindingType;
 import javax.inject.DuplicateBindingTypeException;
+import javax.inject.Realizes;
 import javax.interceptor.InterceptorBindingType;
 
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
@@ -924,6 +925,49 @@ public final class AnnotationUtil
         }
 
         return false;
+    }
+    
+    /**
+     * If the bean extends generic class via {@link Realizes}
+     * annotation, realized based producer methods, fields and observer
+     * methods binding type is 
+     * 
+     * <ul>
+     *  <li>Binding types on the definitions</li>
+     *  <li>Plus class binding types</li>
+     *  <li>Minus generic class binding types</li>
+     * </ul>
+     * 
+     * @param clazz realized definition class
+     * @param anns binding annotations array
+     */
+    public static Annotation[] getRealizesGenericAnnotations(Class<?> clazz, Annotation[] anns)
+    {
+       Set<Annotation> setAnnots = new HashSet<Annotation>();
+        
+        for(Annotation definedAnn : anns)
+        {
+            setAnnots.add(definedAnn);
+        }
+        
+        Annotation[] genericReliazesAnns = AnnotationUtil.getBindingAnnotations(clazz.getSuperclass().getAnnotations());
+        
+        for(Annotation generic : genericReliazesAnns)
+        {
+            setAnnots.remove(generic);
+        }
+        
+        genericReliazesAnns = AnnotationUtil.getBindingAnnotations(clazz.getAnnotations());
+
+        for(Annotation generic : genericReliazesAnns)
+        {
+            setAnnots.add(generic);
+        }            
+        
+        Annotation[] annots = new Annotation[setAnnots.size()];
+        annots = setAnnots.toArray(annots);
+        
+        return annots;
     }
 
 }

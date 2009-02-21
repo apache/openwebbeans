@@ -20,8 +20,14 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.event.Observes;
+import javax.inject.Disposes;
+
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.component.ObservesMethodsOwner;
+import org.apache.webbeans.component.ProducerComponentImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
@@ -96,8 +102,18 @@ public class InjectableMethods<T> extends AbstractInjectable
                     {
                         clazz = (Class<?>) type;
                     }
-    
-                    list.add(inject(clazz, args, AnnotationUtil.getBindingAnnotations(annot)));
+                    
+                    Annotation anns[] = AnnotationUtil.getBindingAnnotations(annot);                                        
+                    
+                    //check producer component for @Disposes,@Observes via @Realizes
+                    Annotation[] fromRealizes = configureRealizesDisposeOrObserves(annot, anns);
+                    
+                    if(fromRealizes != null && fromRealizes.length > 0)
+                    {
+                        anns = fromRealizes;
+                    }
+                                         
+                    list.add(inject(clazz, args, anns));
     
                     i++;
     
@@ -121,5 +137,45 @@ public class InjectableMethods<T> extends AbstractInjectable
             throw new WebBeansException(e);
         }
     }
+    
+    private Annotation[] configureRealizesDisposeOrObserves(Annotation[] annot, Annotation[] anns)
+    {
+        Annotation[] setAnnots = null;
+        Class<?> clazz = null;
+        boolean isDefined = false;
+        //Disposes annotations from the @Realizations
+        if(AnnotationUtil.isAnnotationExist(annot, Disposes.class))
+        {                        
+            if(getInjectionOwnerComponent() instanceof ProducerComponentImpl)
+            {
+                ProducerComponentImpl<?> producerComponent = (ProducerComponentImpl<?>)getInjectionOwnerComponent();
+                if(producerComponent.isFromRealizes())
+                {
+                     isDefined = true;
+                     clazz = producerComponent.getParent().getReturnType();
+                }
+                
+            }                        
+        }
+        else if(AnnotationUtil.isAnnotationExist(annot, Observes.class))
+        {
+            if(getInjectionOwnerComponent() instanceof ObservesMethodsOwner)
+            {
+                ComponentImpl<?> owner = (ComponentImpl<?>)getInjectionOwnerComponent();
+                if(owner.isFromRealizes())
+                {
+                    isDefined = true;
+                    clazz = owner.getReturnType();
+                }
+            }
+            
+        }
+        
+        if(isDefined)
+        {
+            setAnnots = AnnotationUtil.getRealizesGenericAnnotations(clazz, anns);
+        }
 
+        return setAnnots;        
+    }
 }

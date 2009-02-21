@@ -68,7 +68,7 @@ public final class WebBeansLifeCycle
     public void requestStarted(ServletRequestEvent event)
     {
         logger.info("Initializing of the Request Context with Remote Address : " + event.getServletRequest().getRemoteAddr());
-        ContextFactory.initRequestContext((HttpServletRequest) event.getServletRequest());
+        ContextFactory.initRequestContext(event);
     }
 
     public void requestEnded(ServletRequestEvent event)

@@ -18,9 +18,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.inject.BindingType;
+import javax.inject.DeploymentType;
 
-@BindingType
+@DeploymentType
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.FIELD, ElementType.METHOD, ElementType.TYPE, ElementType.PARAMETER })
 public @interface Mock {

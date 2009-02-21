@@ -34,6 +34,7 @@ import javax.inject.DeploymentType;
 import javax.inject.Disposes;
 import javax.inject.Initializer;
 import javax.inject.Produces;
+import javax.inject.Realizes;
 import javax.inject.Specializes;
 import javax.inject.UnsatisfiedDependencyException;
 import javax.inject.manager.Bean;
@@ -347,7 +348,6 @@ public final class DefinitionUtil
      * Defines the set of {@link ProducerFieldComponent} components.
      * 
      * @param component producer field owner component
-     * 
      * @return the set of producer field components
      */
     public static Set<ProducerFieldComponent<?>> defineProduerFields(AbstractComponent<?> component)
@@ -355,61 +355,178 @@ public final class DefinitionUtil
         Set<ProducerFieldComponent<?>> producerFields = new HashSet<ProducerFieldComponent<?>>();
         Field[] fields = component.getReturnType().getDeclaredFields();
         
+        //From normal class
+        createProducerFieldWithRealizations(component, producerFields, fields, false);
+        
+        //From @Realizations
+       fields = new Field[0];
+        
+        if(component.getReturnType().getAnnotation(Realizes.class) != null)
+        {
+            fields = AnnotationUtil.getClazzFieldsWithGivenAnnotation(component.getReturnType().getSuperclass(), Produces.class);
+            
+            //from @Realizations
+            createProducerFieldWithRealizations(component, producerFields, fields, true);
+        }
+        
+        
+        return producerFields;
+    }
+    
+    private static void createProducerFieldWithRealizations(AbstractComponent<?> component,Set<ProducerFieldComponent<?>> producerFields, Field[] fields, boolean isRealizes)
+    {
         for(Field field : fields)
         {
+            if(isRealizes)
+            {
+                int modifiers = field.getModifiers();
+                if(Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                {
+                    continue;
+                }
+            }
+            
             //Producer field
             if(AnnotationUtil.isAnnotationExist(field.getAnnotations(), Produces.class))
             {
                 ProducerFieldComponent<?> newComponent = createProducerFieldComponent(field.getType(), field, component);
+                
+                if (newComponent != null)
+                {
+                    if(isRealizes)
+                    {
+                        //Add Binding types from the parent and removes from the generic super class via @Realizes
+                        Set<Annotation> fromParents = component.getBindings();
+                        for(Annotation fromParent : fromParents)
+                        {
+                            newComponent.addBindingType(fromParent);
+                        }
+                        
+                        //Removes the @BindingTypes from @Realizes
+                        Annotation[] fromGenerics = AnnotationUtil.getBindingAnnotations(component.getReturnType().getSuperclass().getDeclaredAnnotations());
+                        for(Annotation fromGeneric : fromGenerics)
+                        {
+                            newComponent.getBindings().remove(fromGeneric);
+                        }
+                        
+                        //Deployment type is the same as parent
+                        newComponent.setType(component.getType());
+                        
+                    }
+                }
+                
+                
                 if (newComponent != null)
                 {
                     producerFields.add(newComponent);                    
                 }
                 
             }
+            
         }
-        
-        return producerFields;
+                
     }
-
+    
+    /**
+     * Defines the {@link Bean} producer methods. Moreover,
+     * it configures the producer methods with using the {@link Realizes} annotations.
+     * 
+     * @param component
+     * @return the set of producer components
+     * @throws WebBeansConfigurationException if any exception occurs
+     */
     public static Set<ProducerComponentImpl<?>> defineProducerMethods(AbstractComponent<?> component)
     {
+        Asserts.assertNotNull(component, "component parameter can not be null");
+        
         Set<ProducerComponentImpl<?>> producerComponents = new HashSet<ProducerComponentImpl<?>>();
 
         Class<?> clazz = component.getReturnType();
         Method[] declaredMethods = clazz.getDeclaredMethods();
+        
+        //From @Realizations
+        Method[] realizedProducers = new Method[0];
+        
+        if(clazz.getAnnotation(Realizes.class) != null)
+        {
+            realizedProducers = AnnotationUtil.getMethodsWithAnnotation(clazz.getSuperclass(), Produces.class);
+            
+        }
+        
         boolean isSpecializes = false;
+        
+        //This methods defined in the class
         for (Method declaredMethod : declaredMethods)
         {
-            // Producer Method
-            if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Produces.class))
+            createProducerComponentsWithReliazes(component, producerComponents, declaredMethod, clazz, isSpecializes,false);
+        }
+
+        //This methods defined in the @Realizations generic class
+        for (Method declaredMethod : realizedProducers)
+        {
+            int modifiers = declaredMethod.getModifiers();
+            if(!Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers))
             {
-                WebBeansUtil.checkProducerMethodForDeployment(declaredMethod, clazz.getName());
-
-                if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Specializes.class))
-                {
-                    if (ClassUtil.isStatic(declaredMethod.getModifiers()))
-                    {
-                        throw new WebBeansConfigurationException("Specializing producer method : " + declaredMethod.getName() + " in class : " + clazz.getName() + " can not be static");
-                    }
-
-                    isSpecializes = true;
-                }
-
-                Type[] observableTypes = AnnotationUtil.getMethodParameterGenericTypesWithGivenAnnotation(declaredMethod, Fires.class);
-                EventUtil.checkObservableMethodParameterConditions(observableTypes, "method parameter", "method : " + declaredMethod.getName() + "in class : " + clazz.getName());
-
-                ProducerComponentImpl<?> newComponent = createProducerComponent(declaredMethod.getReturnType(), declaredMethod, component, isSpecializes);
-                if (newComponent != null)
-                {
-                    producerComponents.add(newComponent);
-                    addMethodInjectionPointMetaData(newComponent, declaredMethod);                    
-                }
+                createProducerComponentsWithReliazes(component, producerComponents, declaredMethod, clazz.getSuperclass(), isSpecializes,true);   
             }
         }
 
         return producerComponents;
 
+    }
+    
+    
+    private static  <T>  void createProducerComponentsWithReliazes(AbstractComponent<T> component, Set<ProducerComponentImpl<?>> producerComponents, Method declaredMethod, Class<?> clazz,boolean isSpecializes,boolean isRealizes)
+    {
+        // Producer Method
+        if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Produces.class))
+        {
+            WebBeansUtil.checkProducerMethodForDeployment(declaredMethod, clazz.getName());
+
+            if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Specializes.class))
+            {
+                if (ClassUtil.isStatic(declaredMethod.getModifiers()))
+                {
+                    throw new WebBeansConfigurationException("Specializing producer method : " + declaredMethod.getName() + " in class : " + clazz.getName() + " can not be static");
+                }
+
+                isSpecializes = true;
+            }
+
+            Type[] observableTypes = AnnotationUtil.getMethodParameterGenericTypesWithGivenAnnotation(declaredMethod, Fires.class);
+            EventUtil.checkObservableMethodParameterConditions(observableTypes, "method parameter", "method : " + declaredMethod.getName() + "in class : " + clazz.getName());
+
+            ProducerComponentImpl<?> newComponent = createProducerComponent(declaredMethod.getReturnType(), declaredMethod, component, isSpecializes);
+            if (newComponent != null)
+            {
+                if(isRealizes)
+                {
+                    newComponent.setFromRealizes(true);
+                    
+                    //Add Binding types from the parent and removes from the generic super class via @Realizes
+                    Set<Annotation> fromParents = component.getBindings();
+                    for(Annotation fromParent : fromParents)
+                    {
+                        newComponent.addBindingType(fromParent);
+                    }
+                    
+                    //Removes the @BindingTypes from @Realizes
+                    Annotation[] fromGenerics = AnnotationUtil.getBindingAnnotations(component.getReturnType().getSuperclass().getDeclaredAnnotations());
+                    for(Annotation fromGeneric : fromGenerics)
+                    {
+                        newComponent.getBindings().remove(fromGeneric);
+                    }
+                    
+                    //Deployment type is the same as parent
+                    newComponent.setType(component.getType());
+                    
+                }
+                
+                producerComponents.add(newComponent);
+                addMethodInjectionPointMetaData(newComponent, declaredMethod);                    
+            }
+        }
+        
     }
 
     private static <T> ProducerComponentImpl<T> createProducerComponent(Class<T> returnType, Method method, AbstractComponent<?> parent, boolean isSpecializes)
@@ -486,22 +603,58 @@ public final class DefinitionUtil
     {
         Class<?> clazz = component.getReturnType();
 
-        Method[] methods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Disposes.class);
+        Method[] methods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Disposes.class);        
 
+        Method[] genericMethods = new Method[0];
+        if(clazz.getAnnotation(Realizes.class) != null)
+        {
+            genericMethods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz.getSuperclass(), Disposes.class);
+        }       
+        
+        //From Normal
+        createDisposalMethodsWithRealizations(component, methods, clazz,false);
+        
+        //From @Realizations
+        createDisposalMethodsWithRealizations(component, genericMethods, clazz.getSuperclass(),true);
+     }
+    
+    
+    private static <T> void createDisposalMethodsWithRealizations(AbstractComponent<T> component,Method[] methods, Class<?> clazz, boolean isRealizes)
+    {
         ProducerComponentImpl<?> previous = null;
         for (Method declaredMethod : methods)
         {
+            if(isRealizes)
+            {
+                int modifiers = declaredMethod.getModifiers();
+                if(Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                {
+                    continue;
+                }
+            }
+            
             WebBeansUtil.checkProducerMethodDisposal(declaredMethod, clazz.getName());
 
             Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(declaredMethod, Disposes.class);
             Annotation[] annot = AnnotationUtil.getMethodFirstParameterBindingTypesWithGivenAnnotation(declaredMethod, Disposes.class);
-
+            
+            if(isRealizes)
+            {
+                annot = AnnotationUtil.getRealizesGenericAnnotations(component.getReturnType(), annot);
+            }
+                        
             Set<Bean<T>> set = InjectionResolver.getInstance().implResolveByType(ClassUtil.getFirstRawType(type), ClassUtil.getActualTypeArguements(type), annot);
-            ProducerComponentImpl<?> pr = (ProducerComponentImpl<?>) set.iterator().next();
-
-            if (pr == null)
+            Bean<T> bean =  set.iterator().next();
+            ProducerComponentImpl<?> pr = null;
+            
+            if (bean == null || !(bean instanceof ProducerComponentImpl))
             {
                 throw new UnsatisfiedDependencyException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + clazz.getName() + "is not found");
+            }
+            
+            else
+            {
+                pr = (ProducerComponentImpl<?>)bean;
             }
 
             if (previous == null)
@@ -520,6 +673,7 @@ public final class DefinitionUtil
             pr.setDisposalMethod(declaredMethod);
             
             addMethodInjectionPointMetaData(component, declaredMethod);
+            
         }
     }
 
@@ -679,26 +833,54 @@ public final class DefinitionUtil
         WebBeansDecoratorConfig.configureDecarotors(component, object);
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> void defineObserverMethods(ObservesMethodsOwner<T> component, Class<T> clazz)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         Asserts.nullCheckForClass(clazz);
 
         NotificationManager manager = NotificationManager.getInstance();
-
+                
         Method[] candidateMethods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Observes.class);
 
+        //From @Relizations
+        Method[] genericMethods = new Method[0];
+        if(clazz.getAnnotation(Realizes.class) != null)
+        {
+            genericMethods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz.getSuperclass(), Observes.class);
+        }       
+        
+        //From normal
+        createObserverMethodsWithRealizes(component, clazz, candidateMethods, false);
+        
+        //From @Realizations
+        createObserverMethodsWithRealizes(component, clazz.getSuperclass(), genericMethods, true);
+        
+        manager.addObservableComponentMethods(component);
+
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <T> void createObserverMethodsWithRealizes(ObservesMethodsOwner<T> component,Class<?> clazz, Method[] candidateMethods, boolean isRealizes)
+    {
+        
         for (Method candidateMethod : candidateMethods)
         {
+            if(isRealizes)
+            {
+                int modifiers = candidateMethod.getModifiers();
+                if(Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                {
+                    continue;
+                }
+            }
+                        
             EventUtil.checkObserverMethodConditions(candidateMethod, clazz);
             component.addObservableMethod(candidateMethod);
+            component.setFromRealizes(isRealizes);
             
             addMethodInjectionPointMetaData((AbstractComponent<T>)component, candidateMethod);
         }
-
-        manager.addObservableComponentMethods(component);
-
+        
     }
 
     public static <T> void defineSerializable(AbstractComponent<T> component)
@@ -736,5 +918,4 @@ public final class DefinitionUtil
             owner.addInjectionPoint(injectionPoint);
         }
     }
-    
 }

@@ -26,6 +26,7 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +34,7 @@ import java.util.Set;
 import javax.annotation.Named;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Stereotype;
 import javax.context.ApplicationScoped;
 import javax.context.Conversation;
 import javax.context.ConversationScoped;
@@ -1145,36 +1147,76 @@ public final class WebBeansUtil
         }
     }
 
-    public static void configureSpecializations(Class<?> clazz)
+    /**
+     * Configures the bean specializations.
+     * <p>
+     * Specialized beans inherit the <code>name</code> property
+     * from their parents. Specialized bean deployment priority
+     * must be higher than its super class related bean.
+     * </p>
+     * 
+     * @param specializedClass specialized class
+     * @throws DefinitionException if name is defined
+     * @throws InconsistentSpecializationException related with priority
+     * @throws WebBeansConfigurationException any other exception
+     */
+    public static void configureSpecializations(Class<?> specializedClass)
     {
-        Asserts.nullCheckForClass(clazz);
+        Asserts.nullCheckForClass(specializedClass);
 
         Bean<?> parent = null;
         Bean<?> child = null;
-        if ((parent = isConfiguredWebBeans(clazz)) != null)
+        Set<Bean<?>> resolvers = null;
+        if ((resolvers = isConfiguredWebBeans(specializedClass)) != null)
         {
-            Class<?> superClass = clazz.getSuperclass();
-            if ((child = isConfiguredWebBeans(superClass)) != null)
+            parent = resolvers.iterator().next();
+            Class<?> superClass = specializedClass.getSuperclass();
+            
+            resolvers = isConfiguredWebBeans(superClass);
+            
+            if(resolvers.size() > 2)
+            {
+                throw new WebBeansConfigurationException("There are more than bean for specialized component class : " + specializedClass);
+            }
+            
+            resolvers.remove(parent);             
+            
+            if ((child = resolvers.iterator().next()) != null)
             {
                 int res = DeploymentTypeManager.getInstance().comparePrecedences(parent.getDeploymentType(), child.getDeploymentType());
                 if (res <= 0)
                 {
-                    throw new InconsistentSpecializationException("@Specializes exception. Class : " + clazz.getName() + " must have higher deployment type precedence from the class : " + superClass.getName());
+                    throw new InconsistentSpecializationException("@Specializes exception. Class : " + specializedClass.getName() + " must have higher deployment type precedence from the class : " + superClass.getName());
                 }
+                
+                AbstractComponent<?> comp = (AbstractComponent<?>)parent;
+
+                if(child.getName() != null)
+                {
+                    if(comp.getName() != null)
+                    {
+                        throw new DefinitionException("@Specialized Class : " + specializedClass.getName() + " may not explicitly declare a bean name");
+                    }                    
+                    
+                    comp.setName(child.getName());
+                }
+                                
                 parent.getBindings().addAll(child.getBindings());
             }
             else
             {
-                throw new WebBeansConfigurationException("@Specializes exception. WebBean component class : " + clazz.getName() + " does not extends other WebBeans it specialize");
+                throw new WebBeansConfigurationException("@Specializes exception. WebBean component class : " + specializedClass.getName() + " does not extends other WebBeans it specialize");
             }
         }
 
     }
 
-    public static Bean<?> isConfiguredWebBeans(Class<?> clazz)
-    {
+    public static Set<Bean<?>> isConfiguredWebBeans(Class<?> clazz)
+    {   
         Asserts.nullCheckForClass(clazz);
-
+        
+        Set<Bean<?>> beans = new HashSet<Bean<?>>();
+        
         Set<Bean<?>> components = ManagerImpl.getManager().getComponents();
         Iterator<Bean<?>> it = components.iterator();
 
@@ -1183,11 +1225,11 @@ public final class WebBeansUtil
             Bean<?> bean = it.next();
             if (bean.getTypes().contains(clazz))
             {
-                return bean;
+                beans.add(bean);
             }
         }
 
-        return null;
+        return beans;
     }
 
     public static void checkSteroTypeRequirements(Component<?> component, Annotation[] anns, String errorMessage)
@@ -1274,6 +1316,16 @@ public final class WebBeansUtil
         }
     }
 
+    /**
+     * Configures the producer method specialization.
+     * 
+     * @param component producer method component
+     * @param method specialized producer method
+     * @param superClass bean super class that has overriden method
+     * @throws DefinitionException if the name is exist on the producer method when
+     *         parent also has name
+     * @throws WebBeansConfigurationException any other exceptions
+     */
     public static void configureProducerSpecialization(AbstractComponent<?> component, Method method, Class<?> superClass)
     {
         Method superMethod = ClassUtil.getClassMethodWithTypes(superClass, method.getName(), Arrays.asList(method.getParameterTypes()));
@@ -1281,7 +1333,7 @@ public final class WebBeansUtil
         {
             throw new WebBeansConfigurationException("Producer method specialization is failed. Method " + method.getName() + " not found in super class : " + superClass.getName());
         }
-
+        
         if (!AnnotationUtil.isAnnotationExist(superMethod.getAnnotations(), Produces.class))
         {
             throw new WebBeansConfigurationException("Producer method specialization is failed. Method " + method.getName() + " found in super class : " + superClass.getName() + " is not annotated with @Produces");
@@ -1293,8 +1345,64 @@ public final class WebBeansUtil
         {
             component.addBindingType(ann);
         }
+        
+        configuredProducerSpecializedName(component, method, superMethod);
+        
     }
-
+    
+    /**
+     * Configures the name of the producer method for specializing the parent.
+     * 
+     * @param component producer method component
+     * @param method specialized producer method
+     * @param superMethod overriden super producer method
+     */
+    public static void configuredProducerSpecializedName(AbstractComponent<?> component,Method method,Method superMethod)
+    {
+        Asserts.assertNotNull(component,"component parameter can not be null");
+        Asserts.assertNotNull(method,"method parameter can not be null");
+        Asserts.assertNotNull(superMethod,"superMethod parameter can not be null");
+        
+        String name = null;
+        boolean hasName = false;
+        if(AnnotationUtil.isMethodHasAnnotation(superMethod, Named.class))
+        {
+          Named named =  superMethod.getAnnotation(Named.class);
+          if(!named.value().equals(""))
+          {
+              hasName = true;
+              name = named.value();
+          }
+        }
+        else 
+        {
+            Annotation[] anns = AnnotationUtil.getStereotypeMetaAnnotations(superMethod.getAnnotations());
+            for(Annotation ann : anns)
+            {
+                if(ann.annotationType().isAnnotationPresent(Stereotype.class))
+                {
+                    hasName = true;
+                    name = getProducerDefaultName(superMethod.getName());
+                    break;
+                }
+            }                        
+        }
+        
+        if(hasName)
+        {
+            if(AnnotationUtil.isMethodHasAnnotation(method, Named.class))
+            {
+                throw new DefinitionException("Specialized method : " + method.getName() + " in class : " + component.getReturnType().getName() + " may not define @Named annotation");
+            }                        
+        }
+        
+        else
+        {
+            component.setName(name);
+        }
+        
+    }
+    
     public static void checkInjectedMethodParameterConditions(Method method, Class<?> clazz)
     {
         Asserts.assertNotNull(method, "method parameter can not be null");

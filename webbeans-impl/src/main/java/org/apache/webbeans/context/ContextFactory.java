@@ -24,6 +24,7 @@ import javax.context.Dependent;
 import javax.context.RequestScoped;
 import javax.context.SessionScoped;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -75,17 +76,28 @@ public final class ContextFactory
      * 
      * @param request http servlet request object
      */
-    public static void initRequestContext(HttpServletRequest request)
+    public static void initRequestContext(ServletRequestEvent event)
     {
         requestContext.set(new RequestContext());// set thread local
         requestContext.get().setActive(true);
-
-        if (request != null)
+        
+        if(event != null)
         {
-            HttpSession session = request.getSession();
-            initSessionContext(session);
+            HttpServletRequest request = (HttpServletRequest) event.getServletRequest();
             
-            initApplicationContext(request.getSession().getServletContext());
+            if (request != null)
+            {
+                //Re-initialize thread local for session
+                HttpSession session = request.getSession(false);
+                
+                if(session != null)
+                {
+                    initSessionContext(session);    
+                }
+                            
+                //Re-initialize thread local for application
+                initApplicationContext(event.getServletContext());
+            }            
         }
     }
 
