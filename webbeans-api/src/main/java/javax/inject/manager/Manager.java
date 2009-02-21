@@ -13,6 +13,7 @@
  */
 package javax.inject.manager;
 
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
@@ -68,5 +69,7 @@ public interface Manager
     public List<Interceptor> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings);
 
     public List<Decorator> resolveDecorators(Set<Class<?>> types, Annotation... bindingTypes);
+    
+    public Manager parse(InputStream xmlStream);
 
 }
