@@ -16,13 +16,13 @@ package org.apache.webbeans.test.tck;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import javax.webbeans.manager.Manager;
+import javax.inject.manager.Manager;
 
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.test.mock.MockHttpSession;
 import org.apache.webbeans.test.mock.MockManager;
-import org.jboss.webbeans.tck.api.Managers;
+import org.jboss.jsr299.tck.spi.Managers;
 
 public class ManagersImpl implements Managers
 {
@@ -49,9 +49,9 @@ public class ManagersImpl implements Managers
         }
     }
 
-    public Manager createManager( List<Class<? extends Annotation>> enabledDeploymentTypes ) {
+
+    public Manager getManager() {
         Manager manager = createManager();
-        setEnabledDeploymentTypes(enabledDeploymentTypes);
         return manager;
     }
 

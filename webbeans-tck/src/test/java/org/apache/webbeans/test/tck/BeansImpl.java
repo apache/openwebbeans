@@ -17,7 +17,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import javax.webbeans.manager.Bean;
+import javax.inject.manager.Bean;
+
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
@@ -25,7 +26,7 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.test.mock.MockManager;
-import org.jboss.webbeans.tck.api.Beans;
+import org.jboss.jsr299.tck.spi.Beans;
 
 public class BeansImpl implements Beans
 {

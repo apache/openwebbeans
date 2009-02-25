@@ -54,14 +54,14 @@
             <artifactId>openwebbeans-impl</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.webbeans.tck</groupId>
-            <artifactId>webbeans-tck-api</artifactId>
+            <groupId>org.jboss.jsr299.tck</groupId>
+            <artifactId>jsr299-tck-api</artifactId>
             <version>${webbeans.tck.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.webbeans.tck</groupId>
-            <artifactId>webbeans-tck-impl</artifactId>
+            <groupId>org.jboss.jsr299.tck</groupId>
+            <artifactId>jsr299-tck-impl</artifactId>
             <version>${webbeans.tck.version}</version>
             <scope>test</scope>
         </dependency>
@@ -97,8 +97,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.jboss.webbeans.tck</groupId>
-                                    <artifactId>webbeans-tck-impl</artifactId>
+                                    <groupId>org.jboss.jsr299.tck</groupId>
+                                    <artifactId>jsr299-tck-impl</artifactId>
                                     <version>${webbeans.tck.version}</version>
                                     <type>xml</type>
                                     <classifier>suite</classifier>
@@ -114,7 +114,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>${project.build.directory}/dependency/webbeans-tck-impl-${webbeans.tck.version}-suite.xml</suiteXmlFile>
+                        <suiteXmlFile>${project.build.directory}/dependency/jsr299-tck-impl-${webbeans.tck.version}-suite.xml</suiteXmlFile>
                     </suiteXmlFiles>
                 </configuration>
             </plugin>

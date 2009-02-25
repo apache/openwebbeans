@@ -13,15 +13,19 @@
  */
 package org.apache.webbeans.test.tck;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.webbeans.manager.Manager;
+import javax.inject.manager.Manager;
+
 
 import org.apache.log4j.Logger;
 import org.apache.webbeans.test.mock.MockManager;
-import org.jboss.webbeans.tck.api.Containers;
+import org.jboss.jsr299.tck.api.DeploymentException;
+import org.jboss.jsr299.tck.spi.Containers;
 
 public class ContainersImpl implements Containers {
 
@@ -46,6 +50,37 @@ public class ContainersImpl implements Containers {
     public Manager deploy( List<Class<? extends Annotation>> enabledDeploymentTypes, Class<?>... classes ) {
         //X TODO Auto-generated method stub
         return null;
+    }
+
+    public <T> T evaluateMethodExpression( String expression, Class<T> expectedType, Class<?>[] expectedParamTypes,
+            Object[] expectedParams ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public <T> T evaluateValueExpression( String expression, Class<T> expectedType ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void cleanup() throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void deploy( InputStream archive, String name ) throws DeploymentException, IOException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setup() throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void undeploy( String name ) throws IOException {
+        // TODO Auto-generated method stub
+        
     }
 
 }

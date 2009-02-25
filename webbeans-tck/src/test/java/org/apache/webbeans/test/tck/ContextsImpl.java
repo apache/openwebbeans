@@ -16,7 +16,7 @@ package org.apache.webbeans.test.tck;
 import org.apache.webbeans.context.AbstractContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.type.ContextTypes;
-import org.jboss.webbeans.tck.api.Contexts;
+import org.jboss.jsr299.tck.spi.Contexts;
 
 public class ContextsImpl implements Contexts<AbstractContext>
 {
