@@ -13,7 +13,6 @@
  */
 package org.apache.webbeans.test.tck;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -30,13 +29,6 @@ import org.jboss.jsr299.tck.spi.Beans;
 
 public class BeansImpl implements Beans
 {
-
-    /** {@inheritDoc} */
-    public <T> Bean<T> createEnterpriseBean(Class<T> clazz)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     /** {@inheritDoc} */
     public <T> Bean<T> createProducerMethodBean(Method method, Bean<?> declaringBean)
@@ -76,11 +68,6 @@ public class BeansImpl implements Beans
         }
 
         return bean;
-    }
-
-    public <T> Bean<T> createProducerFieldBean( Field field, Bean<?> declaringBean ) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public boolean isEnterpriseBean( Class<?> clazz ) {

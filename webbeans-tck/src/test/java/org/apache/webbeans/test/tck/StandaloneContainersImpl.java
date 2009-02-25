@@ -13,37 +13,44 @@
  */
 package org.apache.webbeans.test.tck;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.net.URL;
+import java.util.List;
 
-
-
-import org.apache.log4j.Logger;
 import org.jboss.jsr299.tck.api.DeploymentException;
-import org.jboss.jsr299.tck.spi.Containers;
+import org.jboss.jsr299.tck.spi.StandaloneContainers;
 
-public class ContainersImpl implements Containers {
+public class StandaloneContainersImpl implements StandaloneContainers {
 
-    private Logger logger = Logger.getLogger(ContainersImpl.class);
-
-    public void cleanup() throws IOException {
+    public void cleanup() {
         // TODO Auto-generated method stub
-        
+
     }
 
-    public void deploy( InputStream archive, String name ) throws DeploymentException, IOException {
+    public void deploy( Iterable<Class<?>> classes ) throws DeploymentException {
         // TODO Auto-generated method stub
-        
+
     }
 
-    public void setup() throws IOException {
+    public void deploy( List<Class<? extends Annotation>> enabledDeploymentTypes, Iterable<Class<?>> classes )
+            throws DeploymentException {
         // TODO Auto-generated method stub
-        
+
     }
 
-    public void undeploy( String name ) throws IOException {
+    public void deploy( Iterable<Class<?>> classes, Iterable<URL> beansXmls ) throws DeploymentException {
         // TODO Auto-generated method stub
-        
+
+    }
+
+    public void setup() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void undeploy() {
+        // TODO Auto-generated method stub
+
     }
 
 }
