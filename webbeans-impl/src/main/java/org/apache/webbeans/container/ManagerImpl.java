@@ -118,15 +118,15 @@ public class ManagerImpl implements Manager, Referenceable
 
         List<Context> contexts = new ArrayList<Context>();
         
-        Context standartContext = null;
+        Context standardContext = null;
 
-        standartContext = ContextFactory.getStandardContext(scopType);
+        standardContext = ContextFactory.getStandardContext(scopType);
 
-        if(standartContext != null)
+        if(standardContext != null)
         {
-            if(standartContext.isActive())
+            if(standardContext.isActive())
             {
-                contexts.add(standartContext);   
+                contexts.add(standardContext);   
             }
         }
         
@@ -422,6 +422,10 @@ public class ManagerImpl implements Manager, Referenceable
         }
         else
         {
+            if (context.isActive() && containsActiveContext(contextList))
+            {
+                throw new IllegalArgumentException("There is already an active Context registered for this scope! Context=" + context);
+            }
             contextList.add(context);
         }
 
@@ -445,4 +449,20 @@ public class ManagerImpl implements Manager, Referenceable
         return this;
     }
 
+    /**
+     * Check if the given contextList contains an active Context
+     * @param contextList
+     * @return <code>true</code> if the given contextList contains an active Context, <code>false</code> otherwise
+     */
+    private boolean containsActiveContext(List<Context> contextList)
+    {
+        for (Context c : contextList)
+        {
+            if (c.isActive())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
