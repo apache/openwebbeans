@@ -144,7 +144,7 @@ public abstract class TestContext implements ITestContext
     
     protected void initDependentContext()
     {
-        DependentContext dependentContext = (DependentContext)ContextFactory.getStandartContext(Dependent.class);
+        DependentContext dependentContext = (DependentContext)ContextFactory.getStandardContext(Dependent.class);
         dependentContext.setActive(true);
     }
 

@@ -120,7 +120,7 @@ public class ManagerImpl implements Manager, Referenceable
         
         Context standartContext = null;
 
-        standartContext = ContextFactory.getStandartContext(scopType);
+        standartContext = ContextFactory.getStandardContext(scopType);
 
         if(standartContext != null)
         {

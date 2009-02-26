@@ -298,13 +298,11 @@ public final class ContextFactory
     }
 
     /**
-     * Gets the current context with given scope type.
+     * Gets the standard context with given scope type.
      * 
-     * @return the current context
-     * @throws ContextNotActiveException if context is not active
-     * @throws IllegalArgumentException if the type is not a standard context
+     * @return the current context, or <code>null</code> if no standard context exists for the given scopeType
      */
-    public static WebBeansContext getStandartContext(Class<? extends Annotation> scopeType) throws ContextNotActiveException
+    public static WebBeansContext getStandardContext(Class<? extends Annotation> scopeType)
     {
         WebBeansContext context = null;
 
@@ -328,10 +326,6 @@ public final class ContextFactory
         else if (scopeType.equals(Dependent.class))
         {
             context = getDependentContext();
-        }
-        else 
-        {
-            throw new IllegalArgumentException("There is no such a standard context with name id=" + scopeType.getName());
         }
         
         return context;
