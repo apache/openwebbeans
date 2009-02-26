@@ -22,6 +22,7 @@
 	     <version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.apache.openwebbeans.samples</groupId>
 	<artifactId>guess</artifactId>
 	<packaging>war</packaging>
 	<name>OpenWebBeans :: Sample Application</name>
@@ -116,17 +117,10 @@
                     <plugin>
                         <groupId>org.mortbay.jetty</groupId>
                         <artifactId>maven-jetty-plugin</artifactId>
-                        <version>6.1.14</version>
+                        <version>6.1.15.rc4</version>
                         <configuration>
                             <scanIntervalSeconds>10</scanIntervalSeconds>
                         </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.mortbay.jetty</groupId>
-                                <artifactId>jetty</artifactId>
-                                <version>6.1-SNAPSHOT</version>
-                            </dependency>
-                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
