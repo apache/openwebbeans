@@ -146,12 +146,12 @@ public class ManagerImpl implements Manager, Referenceable
         // Still null
         if (contexts.isEmpty())
         {
-            throw new ContextNotActiveException("WebBeans context with scope type annotation @" + scopType.getSimpleName() + " is not exist within current thread");
+            throw new ContextNotActiveException("WebBeans context with scope type annotation @" + scopType.getSimpleName() + " does not exist within current thread");
         }
         
         else if(contexts.size() > 1)
         {
-            throw new IllegalStateException("More than one context exist with scope type annotation @" + scopType.getSimpleName());
+            throw new IllegalStateException("More than one active context exists with scope type annotation @" + scopType.getSimpleName());
         }
 
         return contexts.get(0);
