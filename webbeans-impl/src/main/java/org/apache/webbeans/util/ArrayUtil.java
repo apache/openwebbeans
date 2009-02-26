@@ -22,10 +22,7 @@ public final class ArrayUtil
     }
 
     /**
-     * TODO please review this function and move to some place where all tests
-     * can use it! See also
-     * EJBInterceptComponentTest#testMultipleInterceptedComponent and other test
-     * functions Compare two arrays regardless of the position of the elements
+     * Compare two arrays regardless of the position of the elements
      * in the arrays. The complex handling with temporary flags is necessary due
      * to the possibility of having multiple occurrences of the same element in
      * the arrays. In this case both arrays have to contain the exactly same
