@@ -104,9 +104,9 @@ public class ManagerImpl implements Manager, Referenceable
 
     public void setXMLConfigurator(WebBeansXMLConfigurator xmlConfigurator)
     {
-        if(xmlConfigurator != null)
+        if(this.xmlConfigurator != null)
         {
-            throw new IllegalStateException("There is already defined WebBeansXMLConfigurator");
+            throw new IllegalStateException("There is a WebBeansXMLConfigurator defined already");
         }
         
         this.xmlConfigurator = xmlConfigurator;
