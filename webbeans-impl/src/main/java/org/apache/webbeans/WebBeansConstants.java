@@ -84,6 +84,6 @@ public final class WebBeansConstants
 
     public static final String WEB_BEANS_XML_ARRAY_ELEMENT = "Array";
 
-    public static final String WEB_BEANS_MANAGER_JNDI_NAME = "java:comp/Manager";
+    public static final String WEB_BEANS_MANAGER_JNDI_NAME = "java:app/Manager";
 
 }
