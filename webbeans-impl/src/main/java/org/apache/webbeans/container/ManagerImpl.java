@@ -424,7 +424,7 @@ public class ManagerImpl implements Manager, Referenceable
         {
             if (context.isActive() && containsActiveContext(contextList))
             {
-                throw new IllegalArgumentException("There is already an active Context registered for this scope! Context=" + context);
+                throw new IllegalStateException("There is already an active Context registered for this scope! Context=" + context);
             }
             contextList.add(context);
         }

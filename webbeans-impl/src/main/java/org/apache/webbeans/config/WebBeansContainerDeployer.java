@@ -51,13 +51,13 @@ import org.apache.webbeans.xml.XMLSpecializesManager;
  * the scanner phase.
  */
 @SuppressWarnings("unchecked")
-public final class WebBeansContainerDeployer
+public class WebBeansContainerDeployer
 {
     private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansContainerDeployer.class);
 
-    private boolean deployed = false;
+    protected boolean deployed = false;
 
-    private WebBeansXMLConfigurator xmlConfigurator = null;
+    protected WebBeansXMLConfigurator xmlConfigurator = null;
 
     public WebBeansContainerDeployer(WebBeansXMLConfigurator xmlConfigurator)
     {
@@ -151,7 +151,7 @@ public final class WebBeansContainerDeployer
         logger.info("Injection points are validated succesfully");
     }
 
-    private void deployFromClassPath(WebBeansScanner scanner) throws ClassNotFoundException
+    protected void deployFromClassPath(WebBeansScanner scanner) throws ClassNotFoundException
     {
         logger.info("Deploying configurations from class files is started");
 
@@ -185,7 +185,7 @@ public final class WebBeansContainerDeployer
 
     }
 
-    private void deployFromXML(WebBeansScanner scanner)
+    protected void deployFromXML(WebBeansScanner scanner)
     {
         logger.info("Deploying configurations from XML files is started");
 
@@ -202,7 +202,7 @@ public final class WebBeansContainerDeployer
         logger.info("Deploying configurations from XML is ended succesfully");
     }
 
-    private void configureInterceptors(WebBeansScanner scanner) throws ClassNotFoundException
+    protected void configureInterceptors(WebBeansScanner scanner) throws ClassNotFoundException
     {
         logger.info("Configuring the Interceptors is started");
 
@@ -226,7 +226,7 @@ public final class WebBeansContainerDeployer
 
     }
 
-    private void configureDecorators(WebBeansScanner scanner) throws ClassNotFoundException
+    protected void configureDecorators(WebBeansScanner scanner) throws ClassNotFoundException
     {
         logger.info("Configuring the Decorators is started");
 
@@ -248,7 +248,7 @@ public final class WebBeansContainerDeployer
 
     }
 
-    private void checkSpecializations(WebBeansScanner scanner)
+    protected void checkSpecializations(WebBeansScanner scanner)
     {
         logger.info("Checking Specialization constraints is started");
 
@@ -317,7 +317,7 @@ public final class WebBeansContainerDeployer
         }
     }
 
-    public void checkPassivationScopes()
+    protected void checkPassivationScopes()
     {
         Set<Bean<?>> beans = ManagerImpl.getManager().getBeans();
 
@@ -346,7 +346,7 @@ public final class WebBeansContainerDeployer
         }
     }
 
-    public void checkStereoTypes(WebBeansScanner scanner)
+    protected void checkStereoTypes(WebBeansScanner scanner)
     {
         logger.info("Checking StereoTypes constraints is started");
 
@@ -376,7 +376,7 @@ public final class WebBeansContainerDeployer
         logger.info("Checking StereoTypes constraints is ended");
     }
 
-    private <T> void defineSimpleWebBeans(Class<T> clazz)
+    protected <T> void defineSimpleWebBeans(Class<T> clazz)
     {
         ComponentImpl<T> component = null;
 
@@ -399,17 +399,17 @@ public final class WebBeansContainerDeployer
      * 
      * @param clazz interceptor class
      */
-    private <T> void defineSimpleWebBeansInterceptors(Class<T> clazz)
+    protected <T> void defineSimpleWebBeansInterceptors(Class<T> clazz)
     {
         WebBeansUtil.defineSimpleWebBeansInterceptors(clazz);
     }
 
-    private <T> void defineSimpleWebBeansDecorators(Class<T> clazz)
+    protected <T> void defineSimpleWebBeansDecorators(Class<T> clazz)
     {
         WebBeansUtil.defineSimpleWebBeansDecorators(clazz);
     }
 
-    private static void defineEnterpriseWebBeans()
+    protected void defineEnterpriseWebBeans()
     {
 
     }

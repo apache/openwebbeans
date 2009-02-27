@@ -103,6 +103,11 @@ public class InjectableConstructor<T> extends AbstractInjectable
         {
             if (!EJBUtil.isEJBSessionClass(con.getDeclaringClass()))
             {
+                if(!con.isAccessible())
+                {
+                    con.setAccessible(true);
+                }
+                
                 instance = con.newInstance(list.toArray());
             }
 
