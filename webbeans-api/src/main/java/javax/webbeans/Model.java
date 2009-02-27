@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.annotation;
+package javax.webbeans;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
@@ -22,6 +22,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.annotation.Named;
+import javax.annotation.Stereotype;
 import javax.context.RequestScoped;
 import javax.inject.Production;
 
