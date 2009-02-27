@@ -31,6 +31,7 @@ public class BeansImpl implements Beans
 {
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     public <T> Bean<T> createProducerMethodBean(Method method, Bean<?> declaringBean)
     {
         //X TODO plz review! If the declaringBean has been already parsed, then the producer must be also.

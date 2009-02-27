@@ -13,44 +13,71 @@
  */
 package org.apache.webbeans.test.tck;
 
-import java.lang.annotation.Annotation;
 import java.net.URL;
-import java.util.List;
+import java.util.Iterator;
 
+import javax.inject.Production;
+
+import org.apache.webbeans.deployment.DeploymentTypeManager;
+import org.apache.webbeans.test.tck.mock.TCKManager;
+import org.apache.webbeans.test.tck.mock.TCKWebBeansContainerDeployer;
+import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.jboss.jsr299.tck.api.DeploymentException;
 import org.jboss.jsr299.tck.spi.StandaloneContainers;
 
-public class StandaloneContainersImpl implements StandaloneContainers {
+public class StandaloneContainersImpl implements StandaloneContainers
+{
+    private TCKWebBeansContainerDeployer tckContainerDeployer = null;
+    private TCKManager tckManager = null;
 
-    public void cleanup() {
-        // TODO Auto-generated method stub
-
+    public void cleanup()
+    {
+        this.tckContainerDeployer = null;
+        tckManager = null;
     }
 
-    public void deploy( Iterable<Class<?>> classes ) throws DeploymentException {
-        // TODO Auto-generated method stub
-
+    public void deploy(Iterable<Class<?>> classes) throws DeploymentException
+    {
+        Iterator<Class<?>> it = classes.iterator();
+        while(it.hasNext())
+        {
+            tckContainerDeployer.addBeanClass(it.next());
+        }
+        
+        tckContainerDeployer.deploy(null);
     }
 
-    public void deploy( List<Class<? extends Annotation>> enabledDeploymentTypes, Iterable<Class<?>> classes )
-            throws DeploymentException {
-        // TODO Auto-generated method stub
 
+    public void deploy(Iterable<Class<?>> classes, Iterable<URL> beansXmls) throws DeploymentException
+    {
+        Iterator<Class<?>> it = classes.iterator();
+        while(it.hasNext())
+        {
+            tckContainerDeployer.addBeanClass(it.next());
+        }
+        
+//        Iterator<URL> itUrl = beansXmls.iterator();
+//        while(itUrl.hasNext())
+//        {
+//            tckContainerDeployer.addBeanXml(itUrl.next());
+//        }
+        
+        tckContainerDeployer.deploy(null);
     }
 
-    public void deploy( Iterable<Class<?>> classes, Iterable<URL> beansXmls ) throws DeploymentException {
-        // TODO Auto-generated method stub
-
+    public void setup()
+    {
+        this.tckContainerDeployer = new TCKWebBeansContainerDeployer(new WebBeansXMLConfigurator());
+        this.tckManager = TCKManager.getInstance();
+        
+        DeploymentTypeManager.getInstance().addNewDeploymentType(Production.class, 1);
     }
 
-    public void setup() {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void undeploy() {
-        // TODO Auto-generated method stub
-
+    public void undeploy()
+    {
+        this.tckManager.clear();
+        this.tckContainerDeployer.clear();
+        
     }
 
 }

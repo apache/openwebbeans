@@ -16,34 +16,36 @@ package org.apache.webbeans.test.tck;
 import java.io.IOException;
 import java.io.InputStream;
 
-
-
-import org.apache.log4j.Logger;
 import org.jboss.jsr299.tck.api.DeploymentException;
 import org.jboss.jsr299.tck.spi.Containers;
 
-public class ContainersImpl implements Containers {
+public class ContainersImpl implements Containers
+{
 
-    private Logger logger = Logger.getLogger(ContainersImpl.class);
+  //  private Logger logger = Logger.getLogger(ContainersImpl.class);
 
-    public void cleanup() throws IOException {
+    public void cleanup() throws IOException
+    {
         // TODO Auto-generated method stub
-        
+
     }
 
-    public void deploy( InputStream archive, String name ) throws DeploymentException, IOException {
+    public void deploy(InputStream archive, String name) throws DeploymentException, IOException
+    {
         // TODO Auto-generated method stub
-        
+
     }
 
-    public void setup() throws IOException {
+    public void setup() throws IOException
+    {
         // TODO Auto-generated method stub
-        
+
     }
 
-    public void undeploy( String name ) throws IOException {
+    public void undeploy(String name) throws IOException
+    {
         // TODO Auto-generated method stub
-        
+
     }
 
 }
