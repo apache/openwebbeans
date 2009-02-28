@@ -56,11 +56,11 @@ public class StandaloneContainersImpl implements StandaloneContainers
             tckContainerDeployer.addBeanClass(it.next());
         }
         
-//        Iterator<URL> itUrl = beansXmls.iterator();
-//        while(itUrl.hasNext())
-//        {
-//            tckContainerDeployer.addBeanXml(itUrl.next());
-//        }
+        Iterator<URL> itUrl = beansXmls.iterator();
+        while(itUrl.hasNext())
+        {
+            tckContainerDeployer.addBeanXml(itUrl.next());
+        }
         
         tckContainerDeployer.deploy(null);
     }
