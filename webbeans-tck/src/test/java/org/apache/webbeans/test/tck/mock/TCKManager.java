@@ -188,6 +188,6 @@ public class TCKManager implements Manager
 
     public void clear()
     {
-        manager.getBeans().clear();
+        this.manager.clear();
     }
 }
