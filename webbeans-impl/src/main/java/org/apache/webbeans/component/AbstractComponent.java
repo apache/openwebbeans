@@ -463,5 +463,33 @@ public abstract class AbstractComponent<T> extends Component<T>
     {
         return this.injectionPoints;
     }
+    
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("{\n");
+        builder.append("\tAPI Types:\n");
+        builder.append("\t[\n");
+        
+        for(Class<?> clazz : this.apiTypes)
+        {
+            builder.append("\t\t\t"+clazz.getName()+ "\n");            
+        }
+        
+        builder.append("\t]\n");
+        builder.append("\t,\n");
+        builder.append("\tBinding Types:\n");
+        builder.append("\t[\n");
+        
+        for(Annotation ann : this.implBindingTypes)
+        {
+            builder.append("\t\t\t"+ann.annotationType().getName()+"\n");
+        }
+        
+        builder.append("\t]\n");
+        builder.append("}\n");
+        
+        return builder.toString();
+    }
 
 }

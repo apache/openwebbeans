@@ -233,5 +233,10 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
     {
         this.injectedMethods.add(method);
     }
+    
+    public String toString()
+    {
+        return super.toString();
+    }
 
 }

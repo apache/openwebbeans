@@ -32,7 +32,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * @param <T> Type of the field decleration
  */
-public class ProducerFieldComponent<T> extends AbstractComponent<T>
+public class ProducerFieldComponent<T> extends AbstractComponent<T> implements IComponentHasParent
 {
     /**Producer field that defines the component*/
     private Field producerField;
@@ -125,7 +125,18 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T>
     {
         String errorMessage = "WebBeans producer method : " + producerField.getName() + " return type in the component implementation class : " + this.ownerComponent.getReturnType().getName() + " with passivating scope @" + this.getScopeType().getName() + " must be Serializable";
         WebBeansUtil.checkSerializableScopeType(this.getScopeType(), this.isSerializable(), errorMessage);
+    }
 
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.component.IComponentHasParent#getParent()
+     */
+    public AbstractComponent<?> getParent()
+    {
+        return this.ownerComponent;
     }
     
+    public String toString()
+    {
+        return super.toString();
+    }
 }

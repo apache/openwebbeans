@@ -90,6 +90,12 @@ public class BeanObserverImpl<T> implements Observer<T>
 
                 args = new Object[argsObjects.size()];
                 args = argsObjects.toArray(args);
+                
+                if(!observerMethod.isAccessible())
+                {
+                    observerMethod.setAccessible(true);
+                }
+                
                 observerMethod.invoke(object, args);
             }
 

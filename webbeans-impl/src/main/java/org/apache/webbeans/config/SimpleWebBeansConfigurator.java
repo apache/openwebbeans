@@ -61,17 +61,19 @@ public final class SimpleWebBeansConfigurator
         int modifier = clazz.getModifiers();
 
         if (AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class) && AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class))
-            throw new WebBeansConfigurationException("WebBeans component implementation class : " + clazz.getName() + " can not annotated with both @Interceptor and @Decorator annotations");
+        {
+            throw new WebBeansConfigurationException("WebBeans component implementation class : " + clazz.getName() + " can not annotated with both @Interceptor and @Decorator annotations");   
+        }
 
         if (!AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class) && !AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class))
-            InterceptorUtil.checkSimpleWebBeansInterceptorConditions(clazz);
+        {
+            InterceptorUtil.checkSimpleWebBeansInterceptorConditions(clazz);   
+        }
 
         if (ClassUtil.isInterface(modifier))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be interface");
-
-        if (ClassUtil.isFinal(modifier) && (!AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class) || !AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class)))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be final if not annotated with @Decorator or @Interceptor");
-
+        {
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be interface");   
+        }
     }
 
     /**

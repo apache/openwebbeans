@@ -53,7 +53,6 @@ import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
@@ -176,7 +175,7 @@ public class ManagerImpl implements Manager, Referenceable
     {
         if (ClassUtil.isParametrized(event.getClass()))
         {
-            throw new WebBeansConfigurationException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
+            throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
         }
 
         this.notificationManager.fireEvent(event, bindings);
@@ -464,5 +463,14 @@ public class ManagerImpl implements Manager, Referenceable
             }
         }
         return false;
+    }
+    
+    public void clear()
+    {
+        this.components.clear();
+        this.contextMap.clear();
+        this.proxyMap.clear();
+        this.webBeansDecorators.clear();
+        this.webBeansInterceptors.clear();
     }
 }

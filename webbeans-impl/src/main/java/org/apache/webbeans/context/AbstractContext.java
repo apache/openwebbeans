@@ -93,16 +93,15 @@ public abstract class AbstractContext implements WebBeansContext
     @SuppressWarnings("unchecked")
     public <T> T get(Contextual<T> component)
     {
+        checkActive();
+        
         return (T) componentInstanceMap.get(component);
     }
 
     public <T> T get(Contextual<T> component, CreationalContext<T> creationalContext)
     {
-        if (!active)
-        {
-            throw new ContextNotActiveException("WebBeans context with scope type annotation @" + getScopeType().getName() + " is not active with respect to the current thread");
-        }
-
+        checkActive();
+        
         return getInstance(component, creationalContext);
     }
 
@@ -240,5 +239,13 @@ public abstract class AbstractContext implements WebBeansContext
     }
 
     public abstract void setComponentInstanceMap();
+    
+    protected void checkActive()
+    {
+        if (!active)
+        {
+            throw new ContextNotActiveException("WebBeans context with scope type annotation @" + getScopeType().getName() + " is not active with respect to the current thread");
+        }        
+    }
 
 }

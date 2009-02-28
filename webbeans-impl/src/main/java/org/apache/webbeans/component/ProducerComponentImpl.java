@@ -35,7 +35,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class ProducerComponentImpl<T> extends AbstractComponent<T>
+public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IComponentHasParent
 {
     /** Parent component that this producer method belongs */
     protected AbstractComponent<?> parent;
@@ -226,5 +226,10 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T>
     public void setFromRealizes(boolean fromRealizes)
     {
         this.fromRealizes = fromRealizes;
+    }
+    
+    public String toString()
+    {
+        return super.toString();
     }
 }

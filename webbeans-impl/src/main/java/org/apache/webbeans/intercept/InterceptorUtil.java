@@ -219,6 +219,12 @@ public final class InterceptorUtil
                 }
             }
         }
+        
+        //Simple webbeans 
+        if(ClassUtil.isFinal(clazz.getModifiers()) && hasClassInterceptors)
+        {
+            throw new WebBeansConfigurationException("Final Simple class with name : " + clazz.getName() + " can not define any InterceptorBinding types");
+        }
 
         Method[] methods = clazz.getDeclaredMethods();
 

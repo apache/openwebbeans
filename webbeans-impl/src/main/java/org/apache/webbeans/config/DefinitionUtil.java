@@ -45,6 +45,7 @@ import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.Component;
 import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.component.IComponentHasParent;
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.component.ProducerComponentImpl;
 import org.apache.webbeans.component.ProducerFieldComponent;
@@ -96,12 +97,12 @@ public final class DefinitionUtil
             }
         }
 
-        if (!found && (component instanceof ProducerComponentImpl))
+        if (!found && (component instanceof IComponentHasParent))
         {
-            ProducerComponentImpl<?> p = (ProducerComponentImpl<?>) component;
-            component.setType(p.getParent().getType());
+            IComponentHasParent child = (IComponentHasParent) component;
+            component.setType(child.getParent().getType());
             found = true;
-        }
+        }        
 
         if (!found)
         {
