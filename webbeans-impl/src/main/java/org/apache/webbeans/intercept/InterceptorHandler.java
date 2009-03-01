@@ -169,19 +169,33 @@ public class InterceptorHandler implements MethodHandler
         while (it.hasNext())
         {
             InterceptorData data = it.next();
-            if (isMethodAnnotatedWithInterceptorClass)
+            
+            if(!data.isDefinedWithWebBeansInterceptor())
             {
-                if (isMethodAnnotatedWithExcludeInterceptorClass)
+                if (isMethodAnnotatedWithInterceptorClass)
                 {
-                    if (!data.isDefinedInMethod() && data.isDefinedInInterceptorClass())
+                    if (isMethodAnnotatedWithExcludeInterceptorClass)
                     {
-                        it.remove();
-                    }
-                    else if (data.isDefinedInMethod())
-                    {
-                        if (!data.getAnnotatedMethod().equals(method))
+                        if (!data.isDefinedInMethod() && data.isDefinedInInterceptorClass())
                         {
                             it.remove();
+                        }
+                        else if (data.isDefinedInMethod())
+                        {
+                            if (!data.getAnnotatedMethod().equals(method))
+                            {
+                                it.remove();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (data.isDefinedInMethod())
+                        {
+                            if (!data.getAnnotatedMethod().equals(method))
+                            {
+                                it.remove();
+                            }
                         }
                     }
                 }
@@ -189,21 +203,12 @@ public class InterceptorHandler implements MethodHandler
                 {
                     if (data.isDefinedInMethod())
                     {
-                        if (!data.getAnnotatedMethod().equals(method))
-                        {
-                            it.remove();
-                        }
+                        it.remove();
                     }
                 }
+                
             }
-            else
-            {
-                if (data.isDefinedInMethod())
-                {
-                    it.remove();
-                }
-            }
-
+            
         }
 
     }

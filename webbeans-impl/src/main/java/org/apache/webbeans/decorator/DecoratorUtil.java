@@ -43,10 +43,44 @@ public final class DecoratorUtil
     }
 
     public static void checkDecoratorConditions(Class<?> decoratorClazz)
-    {
-        Field[] fields = decoratorClazz.getDeclaredFields();
+    {       
         Set<Class<?>> decoratorSet = new HashSet<Class<?>>();
         ClassUtil.setInterfaceTypeHierarchy(decoratorSet, decoratorClazz);
+        
+        //No-Decorates found, check from super class
+        if(!checkInternalDecoratorConditions(decoratorClazz, decoratorSet))
+        {
+           boolean found = checkInternalDecoratorConditionsRecursivley(decoratorClazz,decoratorSet);
+           
+           if(!found)
+           {
+               throw new WebBeansConfigurationException("Decorator delegate attribute for decorator class : " + decoratorClazz.getName() + " can not be found!");
+           }
+        }
+    }
+    
+    private static boolean checkInternalDecoratorConditionsRecursivley(Class<?> decoratorClazz,Set<Class<?>> decoratorSet)
+    {
+        Class<?> superClazz = decoratorClazz.getSuperclass();
+        if(!superClazz.equals(Object.class))
+        {
+            boolean found = checkInternalDecoratorConditions(superClazz, decoratorSet);
+            if(!found)
+            {
+                return checkInternalDecoratorConditionsRecursivley(superClazz, decoratorSet);
+            }
+            else
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private static boolean checkInternalDecoratorConditions(Class<?> decoratorClazz,Set<Class<?>> decoratorSet)
+    {
+        Field[] fields = decoratorClazz.getDeclaredFields();
         boolean found = false;
         for (Field field : fields)
         {
@@ -75,8 +109,10 @@ public final class DecoratorUtil
                     found = true;
                 }
             }
-
         }
+        
+        return found;
+        
     }
 
     public static void checkSimpleWebBeanDecoratorConditions(ComponentImpl<?> component)

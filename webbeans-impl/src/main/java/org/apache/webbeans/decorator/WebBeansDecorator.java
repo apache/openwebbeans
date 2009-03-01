@@ -79,6 +79,36 @@ public class WebBeansDecorator extends Decorator
     protected void initDelegate()
     {
         Field field = ClassUtil.getFieldWithAnnotation(this.clazz, Decorates.class);
+        
+        if(field == null)
+        {
+            initDelegateRecursively(this.clazz);
+        }
+        else
+        {
+            initDelegateInternal(field);
+        }
+    }
+    
+    private void initDelegateRecursively(Class<?> delegateClazz)
+    {
+        Class<?> superClazz = delegateClazz.getSuperclass();
+        if(!superClazz.equals(Object.class))
+        {
+            Field field = ClassUtil.getFieldWithAnnotation(superClazz, Decorates.class);
+            if(field != null)
+            {
+                initDelegateInternal(field);
+            }
+            else
+            {
+                initDelegateRecursively(superClazz);
+            }
+        }
+    }
+    
+    private void initDelegateInternal(Field field)
+    {
         this.delegateType = field.getType();
 
         Annotation[] anns = field.getAnnotations();
@@ -90,7 +120,7 @@ public class WebBeansDecorator extends Decorator
                 this.delegateBindingTypes.add(ann);
             }
         }
-
+        
     }
 
     public boolean isDecoratorMatch(Set<Class<?>> apiType, Set<Annotation> annotation)

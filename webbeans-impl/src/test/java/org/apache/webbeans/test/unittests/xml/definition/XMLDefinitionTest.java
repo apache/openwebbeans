@@ -18,6 +18,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.xml.XMLComponentImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.annotation.binding.Mock;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.test.xml.definition.Definition1;
 import org.apache.webbeans.test.xml.definition.Definition2;
@@ -40,6 +41,7 @@ public class XMLDefinitionTest extends TestContext
     public void init()
     {
         initDefaultDeploymentTypes();
+        initializeDeploymentType(Mock.class, 2);
         initDependentContext();
     }
 

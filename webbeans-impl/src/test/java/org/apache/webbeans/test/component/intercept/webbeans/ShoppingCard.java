@@ -11,19 +11,26 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.component.intercept.webbeans.bindings;
+package org.apache.webbeans.test.component.intercept.webbeans;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.context.SessionScoped;
 
-import javax.interceptor.InterceptorBindingType;
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
-@InterceptorBindingType
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.TYPE, ElementType.METHOD })
-public @interface Transactional 
+@SessionScoped
+public class ShoppingCard
 {
-
+    public static boolean CALLED = false;
+    
+    @Transactional
+    public void placeOrder() 
+    { 
+        
+    }
+    
+    public void placeOrder2() 
+    { 
+        CALLED = false;
+    }
+    
 }

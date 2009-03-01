@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -681,7 +682,33 @@ public final class DefinitionUtil
     public static <T> void defineInjectedFields(ComponentImpl<T> component)
     {
         Class<T> clazz = component.getReturnType();
+        
+        //From component
+        defineInternalInjectedFields(component, clazz, false);
+        
+        //From inherited super class
+        defineInternalInjectedFieldsRecursively(component, clazz);
 
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <T> void defineInternalInjectedFieldsRecursively(ComponentImpl<T> component, Class<T> clazz)
+    {
+        //From inheritance
+        Class<?> superClazz = clazz.getSuperclass();
+        if(!superClazz.equals(Object.class))
+        {
+            //From super class
+            defineInternalInjectedFields(component, (Class<T>)superClazz, true);
+            
+            //From super class type hierarchy
+            defineInternalInjectedFieldsRecursively(component, (Class<T>)superClazz);
+        }
+   
+    }
+    
+    private static <T> void defineInternalInjectedFields(ComponentImpl<T> component,Class<T> clazz, boolean fromSuperClazz)
+    {
         if(!WebBeansUtil.checkObservableFieldsConditions(clazz))
         {
             WebBeansUtil.checkObtainsFieldConditions(clazz);   
@@ -727,14 +754,34 @@ public final class DefinitionUtil
                     int mod = field.getModifiers();
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
                     {
-                        component.addInjectedField(field);
-                        addFieldInjectionPointMetaData(component, field);
+                        if(!fromSuperClazz)
+                        {
+                            component.addInjectedField(field);                        
+                            addFieldInjectionPointMetaData(component, field);                            
+                        }
+                        else
+                        {
+                            //Check that field is already exist
+                            Set<Field> definedInjectedFields = component.getInjectedFields();
+                            for(Field defineInjectedField : definedInjectedFields)
+                            {
+                                if(defineInjectedField.getName().equals(field.getName()) && defineInjectedField.getType().equals(field.getType()))
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    component.addInjectedField(field);                        
+                                    addFieldInjectionPointMetaData(component, field);                                                                
+                                }
+                            }
+                        }                        
                     }
                 }
                 
             }
         }
-
+        
     }
 
     public static <T> void defineInjectedMethods(ComponentImpl<T> component)
@@ -742,6 +789,33 @@ public final class DefinitionUtil
         Asserts.assertNotNull(component, "component parameter can not be null");
 
         Class<T> clazz = component.getReturnType();
+        
+        //From component class definition
+        defineInternalInjectedMethods(component, clazz, false);
+        
+        //From inheritance hierarchy
+        defineInternalInjectedMethodsRecursively(component, clazz);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <T> void defineInternalInjectedMethodsRecursively(ComponentImpl<T> component, Class<T> clazz)
+    {
+        //From inheritance
+        Class<?> superClazz = clazz.getSuperclass();
+        if(!superClazz.equals(Object.class))
+        {
+            //From super class
+            defineInternalInjectedMethods(component, (Class<T>)superClazz, true);
+            
+            //From super class type hierarchy
+            defineInternalInjectedMethodsRecursively(component, (Class<T>)superClazz);
+        }
+
+    }
+    
+    private static <T> void defineInternalInjectedMethods(ComponentImpl<T> component, Class<T> clazz, boolean fromInherited)
+    {
+        
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods)
         {
@@ -769,11 +843,33 @@ public final class DefinitionUtil
          
             if (!Modifier.isStatic(method.getModifiers()))
             {
-                component.addInjectedMethod(method);
-                addMethodInjectionPointMetaData(component, method);
+                if(!fromInherited)
+                {
+                    component.addInjectedMethod(method);
+                    addMethodInjectionPointMetaData(component, method);    
+                }
+                else
+                {
+                    Set<Method> injectedMethods = component.getInjectedMethods();
+                    for(Method definedInjectedMethod : injectedMethods)
+                    {
+                        if(definedInjectedMethod.getName().equals(method.getName()) &&
+                                Arrays.equals(definedInjectedMethod.getParameterTypes(), method.getParameterTypes()))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            component.addInjectedMethod(method);
+                            addMethodInjectionPointMetaData(component, method);                            
+                        }
+                    }
+                }
+                                
             }
 
         }
+        
     }
 
     /**
@@ -797,7 +893,7 @@ public final class DefinitionUtil
         else
         {
             throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName() 
-                                                     + " can not be annotated with @Produces or @Destructor");
+                                                     + " can not be annotated with @Produces");
         }
     }
 
