@@ -54,6 +54,8 @@ public class WebBeansDecorator extends Decorator
 
     /** Delegated component */
     private AbstractComponent<Object> delegateComponent;
+    
+    private CreationalContext<Object> creationalContext;
 
     public WebBeansDecorator(AbstractComponent<Object> delegateComponent)
     {
@@ -228,7 +230,7 @@ public class WebBeansDecorator extends Decorator
 
             if (!isDecorates)
             {
-                InjectableField ife = new InjectableField(injectedField, proxy, this.delegateComponent);
+                InjectableField ife = new InjectableField(injectedField, proxy, this.delegateComponent,this.creationalContext);
                 ife.doInjection();
             }
         }
@@ -237,7 +239,7 @@ public class WebBeansDecorator extends Decorator
         for (Method injectedMethod : injectedMethods)
         {
             @SuppressWarnings("unchecked")
-            InjectableMethods<?> ife = new InjectableMethods(injectedMethod, proxy, this.delegateComponent);
+            InjectableMethods<?> ife = new InjectableMethods(injectedMethod, proxy, this.delegateComponent,this.creationalContext);
             ife.doInjection();
         }
     }

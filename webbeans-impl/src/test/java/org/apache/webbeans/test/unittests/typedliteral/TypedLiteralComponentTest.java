@@ -16,7 +16,6 @@ package org.apache.webbeans.test.unittests.typedliteral;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import javax.context.RequestScoped;
 import javax.inject.AnnotationLiteral;
 import javax.inject.Current;
 import javax.inject.TypeLiteral;
@@ -28,7 +27,6 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.ITypeLiteralComponent;
 import org.apache.webbeans.test.component.InjectedTypeLiteralComponent;
 import org.apache.webbeans.test.component.TypeLiteralComponent;
@@ -60,7 +58,6 @@ public class TypedLiteralComponentTest extends TestContext
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testTypedComponent() throws Throwable
     {
         clear();
@@ -73,8 +70,8 @@ public class TypedLiteralComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        TypeLiteralComponent userComponent = (TypeLiteralComponent) ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(0), new CreationalContextImpl());
-        InjectedTypeLiteralComponent tc = (InjectedTypeLiteralComponent) ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), new CreationalContextImpl());
+        TypeLiteralComponent userComponent = (TypeLiteralComponent) getManager().getInstance(comps.get(0));
+        InjectedTypeLiteralComponent tc = (InjectedTypeLiteralComponent) getManager().getInstance(comps.get(1));
 
         Assert.assertNotNull(tc.getComponent());
         Assert.assertNotNull(userComponent);

@@ -48,6 +48,7 @@ import javax.naming.StringRefAddr;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -87,6 +88,7 @@ public class ManagerImpl implements Manager, Referenceable
     private Map<Bean<?>, Object> proxyMap = Collections.synchronizedMap(new IdentityHashMap<Bean<?>, Object>());
     
     private WebBeansXMLConfigurator xmlConfigurator = null;
+    
 
     public ManagerImpl()
     {
@@ -208,14 +210,36 @@ public class ManagerImpl implements Manager, Referenceable
     {
         T instance = null;
         
+        if(injectionPoint == null)
+        {
+            return null;
+        }
+                
+        Annotation[] bindings = new Annotation[injectionPoint.getBindings().size()];
+        bindings = injectionPoint.getBindings().toArray(bindings);
+        
+        //Find the injection point Bean
+        Bean<?> bean = injectionResolver.getInjectionPointBean(injectionPoint);
+        
+        if(context != null && (context instanceof CreationalContextImpl))
+        {
+            CreationalContextImpl<T> creationalContext = (CreationalContextImpl<T>)context;
+            
+            instance = (T)creationalContext.get(bean);
+            
+        }
+        
+        if(instance == null)
+        {
+            instance = (T) getInstance(bean);
+        }
+        
         return instance;
     }
     
     public Object getInstanceToInject(InjectionPoint injectionPoint)
-    {
-        Object instance = null;
-        
-        return instance;
+    {        
+        return getInstanceToInject(injectionPoint, null);
     }
 
     public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes)
@@ -299,10 +323,14 @@ public class ManagerImpl implements Manager, Referenceable
     {
         Context context = null;
         T instance = null;
-
+        boolean dependentContext = false;
         try
         {
-            ContextFactory.getDependentContext().setActive(true);
+            if(!ContextFactory.checkDependentContextActive())
+            {
+                ContextFactory.activateDependentContext();
+                dependentContext = true;
+            }            
 
             /* @ScopeType is normal */
             if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
@@ -322,13 +350,16 @@ public class ManagerImpl implements Manager, Referenceable
             else
             {
                 context = getContext(bean.getScopeType());
-                instance = context.get(bean, new CreationalContextImpl<T>());
+                instance = (T)context.get(bean, CreationalContextFactory.getInstance().getCreationalContext(bean));
             }
 
         }
         finally
         {
-            ContextFactory.getDependentContext().setActive(false);
+            if(dependentContext)
+            {
+                ContextFactory.passivateDependentContext();
+            }
         }
 
         return instance;

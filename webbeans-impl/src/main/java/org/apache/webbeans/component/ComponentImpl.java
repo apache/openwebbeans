@@ -71,11 +71,16 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
         beforeConstructor();
 
         Constructor<T> con = getConstructor();
-        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, this);
+        InjectableConstructor<T> ic = new InjectableConstructor<T>(con, this,creationalContext);
 
         T instance = ic.doInjection();
         
-        afterConstructor(instance);
+        if(WebBeansUtil.isScopeTypeNormal(getScopeType()))
+        {
+            creationalContext.push(instance);   
+        }
+        
+        afterConstructor(instance,creationalContext);
 
         return instance;
     }
@@ -91,10 +96,10 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
     /*
      * Call after object construction
      */
-    protected void afterConstructor(T instance)
+    protected void afterConstructor(T instance,CreationalContext<T> creationalContext)
     {
-        injectFields(instance);
-        injectMethods(instance);
+        injectFields(instance,creationalContext);
+        injectMethods(instance,creationalContext);
 
         if (getWebBeansType().equals(WebBeansType.SIMPLE))
         {
@@ -121,14 +126,14 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
     /*
      * Injectable fields
      */
-    protected void injectFields(T instance)
+    protected void injectFields(T instance, CreationalContext<T> creationalContext)
     {
         Set<Field> fields = getInjectedFields();
         for (Field field : fields)
         {
             if (field.getAnnotation(Decorates.class) == null)
             {
-                InjectableField f = new InjectableField(field, instance, this);
+                InjectableField f = new InjectableField(field, instance, this, creationalContext);
                 f.doInjection();
             }
         }
@@ -138,13 +143,13 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
      * Injectable methods
      */
     @SuppressWarnings("unchecked")
-    protected void injectMethods(T instance)
+    protected void injectMethods(T instance, CreationalContext<T> creationalContext)
     {
         Set<Method> methods = getInjectedMethods();
 
         for (Method method : methods)
         {
-            InjectableMethods m = new InjectableMethods(method, instance, this);
+            InjectableMethods m = new InjectableMethods(method, instance, this,creationalContext);
             m.doInjection();
         }
     }

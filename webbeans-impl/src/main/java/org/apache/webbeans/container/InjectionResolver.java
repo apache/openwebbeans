@@ -81,6 +81,42 @@ public class InjectionResolver
         
     }
     
+
+    public Bean<Object> getInjectionPointBean(InjectionPoint injectionPoint)
+    {
+        Type type = injectionPoint.getType();
+        Class<?> clazz = null;
+        Type[] args = new Type[0];
+        
+        if (type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType) type;
+
+            if (!ClassUtil.checkParametrizedType(pt))
+            {
+                throw new WebBeansConfigurationException("Injection point : " + injectionPoint + " can not defined type variable or wildcard");
+            }
+            
+            args = pt.getActualTypeArguments();
+
+            clazz = (Class<?>) pt.getRawType();
+        }
+        else
+        {
+            clazz = (Class<?>) type;
+        }
+        
+        Annotation[] bindingTypes = new Annotation[injectionPoint.getBindings().size()];
+        bindingTypes = injectionPoint.getBindings().toArray(bindingTypes);
+        
+        Set<Bean<Object>> beanSet = implResolveByType(clazz, args ,bindingTypes);
+        
+        ResolutionUtil.checkResolvedBeans(beanSet, clazz);
+        
+        return beanSet.iterator().next();
+        
+    }    
+        
     public Set<Bean<?>> implResolveByName(String name)
     {
         Asserts.assertNotNull(name, "name parameter can not be null");

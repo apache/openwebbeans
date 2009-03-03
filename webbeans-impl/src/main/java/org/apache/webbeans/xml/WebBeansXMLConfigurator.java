@@ -870,7 +870,7 @@ public final class WebBeansXMLConfigurator
             throw new NonexistentConstructorException(createConfigurationFailedMessage() + "Constructor decleration not found in the class.");
         }
 
-        XMLInjectableConstructor<T> injectableConstructor = new XMLInjectableConstructor<T>(componentConstructor, component);
+        XMLInjectableConstructor<T> injectableConstructor = new XMLInjectableConstructor<T>(componentConstructor, component,null);
         int i = 0;
         Constructor<?> constructor = injectableConstructor.getConstructor();
         for (Element element : constructorParameterListElement)

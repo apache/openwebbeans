@@ -13,13 +13,32 @@
  */
 package org.apache.webbeans.test.component.dependent.circular;
 
+import javax.inject.Current;
+
 public class DependentB
 {
-    // private @Current DependentA dependentA;
+    private @Current DependentA dependentA;
 
     public DependentB()
     {
 
     }
 
+    /**
+     * @return the dependentA
+     */
+    protected DependentA getDependentA()
+    {
+        return dependentA;
+    }
+
+    /**
+     * @param dependentA the dependentA to set
+     */
+    protected void setDependentA(DependentA dependentA)
+    {
+        this.dependentA = dependentA;
+    }
+
+    
 }

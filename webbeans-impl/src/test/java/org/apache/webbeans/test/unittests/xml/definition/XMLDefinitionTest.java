@@ -18,6 +18,7 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.xml.XMLComponentImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.test.annotation.binding.Mock;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.test.xml.definition.Definition1;
@@ -30,6 +31,7 @@ import org.apache.webbeans.test.xml.definition.TstBeanUnnamed;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class XMLDefinitionTest extends TestContext
 {
     public XMLDefinitionTest()
@@ -54,7 +56,7 @@ public class XMLDefinitionTest extends TestContext
 
         Assert.assertEquals("definition1", compDef.getName());
 
-        Object instance = compDef.create(null);
+        Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
 
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof Definition1);
@@ -87,7 +89,7 @@ public class XMLDefinitionTest extends TestContext
 
         Assert.assertEquals("asyncCreditCardPaymentProcessor", compDef.getName());
 
-        Object instance = compDef.create(null);
+        Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
 
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof MockAsynchronousCreditCardPaymentProcessor);
@@ -111,7 +113,7 @@ public class XMLDefinitionTest extends TestContext
         // an unnamed bean must not have a name
         Assert.assertNull(compDef.getName());
 
-        Object instance = compDef.create(null);
+        Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanUnnamed);
     }
@@ -123,7 +125,7 @@ public class XMLDefinitionTest extends TestContext
 
         AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor1.xml", TstBeanConstructor.class);
 
-        Object instance = compDef.create(null);
+        Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanConstructor);
 
@@ -141,7 +143,7 @@ public class XMLDefinitionTest extends TestContext
 
         AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml", TstBeanConstructor.class);
 
-        Object instance = compDef.create(null);
+        Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanConstructor);
 

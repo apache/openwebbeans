@@ -20,6 +20,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.context.CreationalContext;
+
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
@@ -45,9 +47,9 @@ public class InjectableConstructor<T> extends AbstractInjectable
      * 
      * @param cons injectable constructor
      */
-    public InjectableConstructor(Constructor<T> cons, AbstractComponent<?> owner)
+    public InjectableConstructor(Constructor<T> cons, AbstractComponent<?> owner,CreationalContext<?> creationalContext)
     {
-        super(owner);
+        super(owner,creationalContext);
         this.con = cons;
     }
 

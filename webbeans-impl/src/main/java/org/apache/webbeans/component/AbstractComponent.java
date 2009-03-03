@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import javax.context.Contextual;
 import javax.context.CreationalContext;
 import javax.context.Dependent;
 import javax.inject.CreationException;
@@ -31,7 +32,7 @@ import javax.inject.manager.InjectionPoint;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.DependentContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -118,7 +119,14 @@ public abstract class AbstractComponent<T> extends Component<T>
      */
     public T create(CreationalContext<T> creationalContext)
     {
-        ContextFactory.getDependentContext().setActive(true);
+        boolean dependentContext = false;
+        
+        if(!ContextFactory.checkDependentContextActive())
+        {
+            ContextFactory.activateDependentContext();
+            dependentContext = true;
+        }
+        
         T instance = null;
         try
         {
@@ -136,7 +144,10 @@ public abstract class AbstractComponent<T> extends Component<T>
         }
         finally
         {
-            ContextFactory.getDependentContext().setActive(false);
+            if(dependentContext)
+            {
+                ContextFactory.passivateDependentContext();   
+            }
         }
 
         return instance;
@@ -156,9 +167,15 @@ public abstract class AbstractComponent<T> extends Component<T>
      */
     public void destroy(T instance)
     {
+        boolean dependentContext = false;
         try
         {
-            ContextFactory.getDependentContext().setActive(true);
+            if(!ContextFactory.checkDependentContextActive())
+            {
+                ContextFactory.activateDependentContext();
+                dependentContext = true;
+            }
+            
 
             destroyInstance(instance);
             destroyDependents();
@@ -166,7 +183,10 @@ public abstract class AbstractComponent<T> extends Component<T>
         }
         finally
         {
-            ContextFactory.getDependentContext().setActive(false);
+            if(dependentContext)
+            {
+                ContextFactory.passivateDependentContext();
+            }
         }
 
     }
@@ -369,13 +389,13 @@ public abstract class AbstractComponent<T> extends Component<T>
      * @return the dependent component instance
      */
     @SuppressWarnings("unchecked")
-    public Object getDependent(Component<?> dependentComponent)
+    public Object getDependent(Bean<?> dependentComponent)
     {
         Object object = null;
+        
         DependentContext context = (DependentContext) getManager().getContext(Dependent.class);
-
-        object = context.get(dependentComponent,new CreationalContextImpl());
-
+        object = context.get((Contextual<T>)dependentComponent,(CreationalContext<T>)CreationalContextFactory.getInstance().getCreationalContext(dependentComponent));    
+        
         this.dependentObjects.put(object, dependentComponent);
 
         return object;

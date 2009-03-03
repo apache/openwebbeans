@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
+import javax.context.CreationalContext;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 import javax.inject.manager.Manager;
@@ -69,7 +70,7 @@ public abstract class Component<T> extends Bean<T>
 
     abstract public Class<T> getReturnType();
 
-    abstract public Object getDependent(Component<?> dependentComponent);
+    abstract public Object getDependent(Bean<?> dependentComponent);
 
     abstract public List<InterceptorData> getInterceptorStack();
 

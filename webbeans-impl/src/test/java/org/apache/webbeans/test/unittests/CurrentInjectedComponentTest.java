@@ -15,17 +15,13 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.context.RequestScoped;
-import javax.context.SessionScoped;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.ContaintsCurrentComponent;
 import org.apache.webbeans.test.component.CurrentBindingComponent;
 import org.apache.webbeans.test.component.service.ITyped2;
@@ -74,10 +70,10 @@ public class CurrentInjectedComponentTest extends TestContext
 
         Assert.assertEquals(3, comps.size());
 
-        ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(0), new CreationalContextImpl());
-        ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1), new CreationalContextImpl());
+        getManager().getInstance(comps.get(0));
+        getManager().getInstance(comps.get(1));
 
-        Object object = ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(2), new CreationalContextImpl());
+        Object object = getManager().getInstance(comps.get(2));
 
         Assert.assertTrue(object instanceof ContaintsCurrentComponent);
 
@@ -85,9 +81,9 @@ public class CurrentInjectedComponentTest extends TestContext
 
         Assert.assertTrue(i.getInstance() instanceof CurrentBindingComponent);
 
-        Object obj2 = ManagerImpl.getManager().getContext(RequestScoped.class).get(comps.get(1));
+        Object obj2 = getManager().getInstance(comps.get(1));
 
-        Assert.assertEquals(i.getInstance(), obj2);
+        Assert.assertSame(i.getInstance(), obj2);
 
         CurrentBindingComponent bc = (CurrentBindingComponent) obj2;
         ITyped2 typed2 = bc.getTyped2();

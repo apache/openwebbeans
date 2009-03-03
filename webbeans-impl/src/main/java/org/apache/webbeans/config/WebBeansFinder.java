@@ -42,6 +42,8 @@ public class WebBeansFinder
 
     public static final String SINGLETON_INJECTION_RESOLVER = "org.apache.webbeans.container.InjectionResolver";
     
+    public static final String SINGLETON_CREATIONAL_CONTEXT_FACTORY = "org.apache.webbeans.context.creational.CreationalContextFactory";
+    
     public static final String SINGLETON_SESSION_CONTEXT_MANAGER = "org.apache.webbeans.context.SessionContextManager";
     
     public static final String SINGLETON_WEBBEANS_NAMESPACE_CONTAINER = "org.apache.webbeans.xml.WebBeansNameSpaceContainer";

@@ -18,6 +18,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import javax.context.CreationalContext;
+
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.exception.WebBeansException;
@@ -35,9 +37,9 @@ public class InjectableField extends AbstractInjectable
     protected Field field;
     protected Object instance;
 
-    public InjectableField(Field field, Object instance, AbstractComponent<?> owner)
+    public InjectableField(Field field, Object instance, AbstractComponent<?> owner,CreationalContext<?> creationalContext)
     {
-        super(owner);
+        super(owner,creationalContext);
         this.field = field;
         this.instance = instance;
     }

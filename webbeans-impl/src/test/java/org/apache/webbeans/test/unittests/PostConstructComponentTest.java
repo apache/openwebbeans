@@ -85,7 +85,7 @@ public class PostConstructComponentTest extends TestContext
         Assert.assertEquals(1, stack.size());
 
         Assert.assertNotNull(pcc.getP());
-        Assert.assertEquals(object, pcc.getP());
+        Assert.assertSame(object, pcc.getP());
 
         ContextFactory.destroyRequestContext(null);
     }

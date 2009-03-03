@@ -16,14 +16,15 @@ package org.apache.webbeans.inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Set;
 
+import javax.context.CreationalContext;
 import javax.context.Dependent;
 import javax.event.Fires;
 import javax.inject.Instance;
 import javax.inject.New;
 import javax.inject.Obtains;
 import javax.inject.manager.Bean;
+import javax.inject.manager.InjectionPoint;
 
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
@@ -31,12 +32,10 @@ import javax.persistence.PersistenceUnit;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
-import org.apache.webbeans.container.ResolutionUtil;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.spi.JPAService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -53,10 +52,13 @@ public abstract class AbstractInjectable implements Injectable
 {
     /** Owner component */
     private AbstractComponent<?> injectionOwnerComponent;
+    
+    private CreationalContext<?> creationalContext;
 
-    protected AbstractInjectable(AbstractComponent<?> component)
+    protected AbstractInjectable(AbstractComponent<?> component, CreationalContext<?> creaitonalContext)
     {
         this.injectionOwnerComponent = component;
+        this.creationalContext = creaitonalContext;
     }
 
     /**
@@ -68,8 +70,14 @@ public abstract class AbstractInjectable implements Injectable
      */
     public <T> Object inject(Class<T> type, Type[] args, Annotation... annotations)
     {
-        ContextFactory.getDependentContext().setActive(true);
-
+        boolean dependentContext = false;
+        
+        if(!ContextFactory.checkDependentContextActive())
+        {
+            ContextFactory.activateDependentContext();
+            dependentContext = true;
+        }       
+        
         try
         {
             if (isResource(annotations))
@@ -92,29 +100,36 @@ public abstract class AbstractInjectable implements Injectable
             {
                 return injectForObtains(type, args, annotations);
             }
-
-            Set<Bean<T>> componentSet = InjectionResolver.getInstance().implResolveByType(type, args, annotations);
-            ResolutionUtil.checkResolvedBeans(componentSet, type);
-
-            AbstractComponent<?> component = (AbstractComponent<?>) componentSet.iterator().next();
-
-            /* Nullable check */
-            WebBeansUtil.checkNullable(type, component);
+            
+            InjectionPoint injectionPoint = InjectionPointFactory.getPartialInjectionPoint(this.injectionOwnerComponent, type, annotations);
+            
+            Bean<?> component = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
+            
 
             if (component.getScopeType().equals(Dependent.class))
             {
-                return injectForDependent(component);
-
+                if(WebBeansUtil.isSimpleWebBeans(this.injectionOwnerComponent))
+                {
+                    return injectForDependent(component);   
+                }                
+                
+                else
+                {
+                    return injectForComponent(injectionPoint);
+                }
             }
             else
             {
-                return injectForComponent(component);
+                return injectForComponent(injectionPoint);
             }
 
         }
         finally
         {
-            ContextFactory.getDependentContext().setActive(false);
+            if(dependentContext)
+            {
+                ContextFactory.passivateDependentContext();
+            }
         }
 
     }
@@ -234,7 +249,7 @@ public abstract class AbstractInjectable implements Injectable
         
     }
 
-    private Object injectForDependent(AbstractComponent<?> component)
+    private Object injectForDependent(Bean<?> component)
     {
         Object object = null;
         object = this.injectionOwnerComponent.getDependent(component);
@@ -242,16 +257,11 @@ public abstract class AbstractInjectable implements Injectable
         return object;
     }
 
-    private <T> Object injectForComponent(AbstractComponent<T> component)
+    private <T> Object injectForComponent(InjectionPoint injectionPoint)
     {
-        WebBeansContext context = null;
-        Object object = null;
-
-        context = (WebBeansContext) ManagerImpl.getManager().getContext(component.getScopeType());
-        object = context.get(component, new CreationalContextImpl<T>());
-
+        Object object = ManagerImpl.getManager().getInstanceToInject(injectionPoint,this.creationalContext);
+                
         return object;
-
     }
 
     protected void checkParametrizedTypeForInjectionPoint(ParameterizedType pType)

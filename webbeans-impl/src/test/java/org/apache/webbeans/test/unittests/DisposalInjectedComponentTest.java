@@ -15,8 +15,6 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.context.ApplicationScoped;
-import javax.context.RequestScoped;
 import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
 
@@ -25,7 +23,6 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.DisposalMethodComponent;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
@@ -60,7 +57,6 @@ public class DisposalInjectedComponentTest extends TestContext
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testTypedComponent() throws Throwable
     {
         clear();
@@ -75,12 +71,14 @@ public class DisposalInjectedComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        Object producerResult = getContext(ApplicationScoped.class).get(getManager().resolveByName("service").iterator().next(), new CreationalContextImpl());
+        Object producerResult = getManager().getInstanceByName("service");
         
         IService producverService = (IService)producerResult;
         
-        Object disposalComp = getContext(RequestScoped.class).get(comps.get(1));
-        Object object = getContext(ApplicationScoped.class).get(comps.get(0), new CreationalContextImpl());
+        Assert.assertNotNull(producverService);
+        
+        Object disposalComp = getManager().getInstance(comps.get(1));
+        Object object = getManager().getInstance(comps.get(0));
 
         Assert.assertTrue(object instanceof ServiceImpl1);
         Assert.assertTrue(disposalComp instanceof DisposalMethodComponent);
@@ -94,9 +92,6 @@ public class DisposalInjectedComponentTest extends TestContext
         ContextFactory.destroyApplicationContext(null);
         ContextFactory.destroyRequestContext(null);
 
-        s = mc.service();
-
-        Assert.assertNull(s);
     }
 
 }

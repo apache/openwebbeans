@@ -373,5 +373,19 @@ public final class ContextFactory
         return dependentCtx;
     }
      
+    public static boolean checkDependentContextActive()
+    {
+        return getDependentContext().isActive();
+    }
 
+    public static void activateDependentContext()
+    {
+        getDependentContext().setActive(true);
+    }
+    
+    public static void passivateDependentContext()
+    {
+        getDependentContext().setActive(false);
+    }
+    
 }

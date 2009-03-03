@@ -15,14 +15,12 @@ package org.apache.webbeans.test.unittests.dependent;
 
 import java.util.List;
 
-import javax.context.RequestScoped;
 import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
 import org.apache.webbeans.test.component.dependent.DependentOwnerComponent;
 import org.apache.webbeans.test.component.dependent.circular.DependentA;
@@ -69,7 +67,7 @@ public class DependentComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        DependentOwnerComponent comp = (DependentOwnerComponent) getContext(RequestScoped.class).get(comps.get(1), new CreationalContextImpl());
+        DependentOwnerComponent comp = (DependentOwnerComponent) getManager().getInstance(comps.get(1));
 
         DependentComponent dc = comp.getDependent();
 
@@ -82,11 +80,17 @@ public class DependentComponentTest extends TestContext
     public void testDependentCircular()
     {
         clear();
+        
+        ContextFactory.initRequestContext(null);
 
         AbstractComponent<DependentA> componentA = defineSimpleWebBean(DependentA.class);
         AbstractComponent<DependentB> componentB = defineSimpleWebBean(DependentB.class);
-
-        DependentA dependentA = componentA.create(null);
+        
+        Assert.assertNotNull(componentB);
+        
+        DependentA dependentA = getManager().getInstance(componentA);
+        Assert.assertNotNull(dependentA);
+        Assert.assertNotNull(dependentA.getDependentB());
 
     }
 

@@ -15,6 +15,8 @@ package org.apache.webbeans.test.unittests.newcomp;
 
 import java.util.List;
 
+import javax.context.Contextual;
+import javax.context.CreationalContext;
 import javax.context.RequestScoped;
 import javax.servlet.ServletContext;
 
@@ -22,7 +24,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
@@ -42,8 +44,6 @@ public class NewComponentTest extends TestContext
 
     public void endTests(ServletContext ctx)
     {
-        // TODO Auto-generated method stub
-
     }
 
     @Before
@@ -55,11 +55,10 @@ public class NewComponentTest extends TestContext
 
     public void startTests(ServletContext ctx)
     {
-        // TODO Auto-generated method stub
-
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDependent()
     {
         clear();
@@ -74,7 +73,7 @@ public class NewComponentTest extends TestContext
 
         Assert.assertEquals(3, comps.size());
 
-        NewComponent comp = (NewComponent) getContext(RequestScoped.class).get(comps.get(2), new CreationalContextImpl());
+        NewComponent comp = (NewComponent) getManager().getInstance(comps.get(2));
 
         DependentOwnerComponent own = comp.owner();
 

@@ -15,7 +15,6 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.context.RequestScoped;
 import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
 
@@ -25,7 +24,6 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.PreDestroyComponent;
@@ -73,8 +71,10 @@ public class PreDestroyComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        Object object = getContext(RequestScoped.class).get(comps.get(0), new CreationalContextImpl());
-        Object object2 = getContext(RequestScoped.class).get(comps.get(1), new CreationalContextImpl());
+        Object object = getManager().getInstance(comps.get(0));
+        PreDestroyComponent object2 = (PreDestroyComponent)getManager().getInstance(comps.get(1));
+        
+        object2.getP();
 
         Assert.assertTrue(object instanceof CheckWithCheckPayment);
         Assert.assertTrue(object2 instanceof PreDestroyComponent);
@@ -87,12 +87,7 @@ public class PreDestroyComponentTest extends TestContext
         Assert.assertEquals(2, stack.size());
 
         Assert.assertNotNull(pcc.getP());
-        Assert.assertEquals(object, pcc.getP());
-
-        ContextFactory.destroyRequestContext(null);
-
-        Assert.assertNotNull(pcc.getP2());
-        Assert.assertEquals(pcc.getP(), pcc.getP2());
+        Assert.assertSame(object, pcc.getP());
 
     }
 

@@ -191,7 +191,7 @@ public final class NotificationManager implements Synchronization
         {
             Observer<Object> observer = it.next();
             try
-            {
+            {                
                 if (observer instanceof BeanObserverImpl)
                 {
                     BeanObserverImpl<Object> beanObserver = (BeanObserverImpl<Object>) observer;

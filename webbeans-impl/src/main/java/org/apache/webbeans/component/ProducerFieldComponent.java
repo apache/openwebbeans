@@ -18,13 +18,12 @@ package org.apache.webbeans.component;
 
 import java.lang.reflect.Field;
 
-import javax.context.Context;
 import javax.context.CreationalContext;
 import javax.context.Dependent;
 import javax.inject.CreationException;
 import javax.inject.manager.Bean;
 
-import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -58,9 +57,19 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
     {
         T instance = null;
         Object parentInstance = getParentInstance();
-
+        boolean dependentContext = false;
         try
         {
+            if (this.ownerComponent.getScopeType().equals(Dependent.class))
+            {
+                if(!ContextFactory.checkDependentContextActive())
+                {
+                    ContextFactory.activateDependentContext();
+                    dependentContext = true;
+                }
+
+            }
+            
             if(!producerField.isAccessible())
             {
                 producerField.setAccessible(true);
@@ -77,6 +86,12 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
             if (this.ownerComponent.getScopeType().equals(Dependent.class))
             {
                 destroyBean(this.ownerComponent, parentInstance);
+                
+                if(dependentContext)
+                {
+                    ContextFactory.passivateDependentContext();
+                }
+
             }
         }
 
@@ -96,12 +111,9 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
         destroy.destroy(inst);
     }
     
-    @SuppressWarnings("unchecked")
     protected Object getParentInstance()
     {
-        Context context = getManager().getContext(this.ownerComponent.getScopeType());
-
-        return context.get(this.ownerComponent, new CreationalContextImpl());
+        return getManager().getInstance(this.ownerComponent);
     }
     
     @Override

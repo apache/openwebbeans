@@ -73,10 +73,10 @@ public class PaymentProcessorComponentTest extends TestContext
 
         Assert.assertEquals(3, comps.size());
 
-        getContext(RequestScoped.class).get(comps.get(0), new CreationalContextImpl());
-        getContext(RequestScoped.class).get(comps.get(1), new CreationalContextImpl());
+        getManager().getInstance(comps.get(0));
+        getManager().getInstance(comps.get(1));
 
-        Object object = getContext(RequestScoped.class).get(comps.get(2), new CreationalContextImpl());
+        Object object = getManager().getInstance(comps.get(2));
         Assert.assertNotNull(object);
         Assert.assertTrue(object instanceof PaymentProcessorComponent);
 

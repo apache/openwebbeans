@@ -16,48 +16,33 @@
  */
 package org.apache.webbeans.context.creational;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.context.CreationalContext;
 import javax.inject.manager.Bean;
 
-/** {@inheritDoc} */
-public class CreationalContextImpl<T> implements CreationalContext<T>
-{
-    private Map<Bean<?>,Object> incompleteInstancesMap = new ConcurrentHashMap<Bean<?>, Object>();
+import org.apache.webbeans.config.WebBeansFinder;
 
-    private Bean<T> incompleteBean = null;
+public class CreationalContextFactory<T>
+{
+    private CreationalContextImpl<T> impl;
     
-    CreationalContextImpl()
+    public CreationalContextFactory()
     {
-        
+        impl = new CreationalContextImpl<T>();
     }
     
-    protected CreationalContextImpl<T> getCreationalContextImpl(Bean<T> incompleteBean)
+    @SuppressWarnings("unchecked")
+    public static CreationalContextFactory getInstance()
     {
-        CreationalContextImpl<T> impl = new CreationalContextImpl<T>();        
-        impl.incompleteBean = incompleteBean;
-        impl.incompleteInstancesMap = this.incompleteInstancesMap;
-        
-        return impl;
-        
+        return (CreationalContextFactory)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_CREATIONAL_CONTEXT_FACTORY);
     }
     
-    public void push(T incompleteInstance)
-    {
-        this.incompleteInstancesMap.put(this.incompleteBean, incompleteInstance);
-        
-    }
-    
-    public Object get(Bean<?> incompleteBean)
-    {
-        return incompleteInstancesMap.get(incompleteBean);
+    public CreationalContext<T> getCreationalContext(Bean<T> bean)
+    {        
+        return impl.getCreationalContextImpl(bean);   
     }
     
     public void clear()
     {
-        this.incompleteInstancesMap.clear();
+        impl.clear();
     }
-
 }

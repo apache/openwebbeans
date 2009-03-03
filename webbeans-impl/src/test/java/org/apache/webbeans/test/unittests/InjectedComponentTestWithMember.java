@@ -15,7 +15,6 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.context.SessionScoped;
 import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -25,7 +24,6 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.BindingComponent;
 import org.apache.webbeans.test.component.NonBindingComponent;
 import org.apache.webbeans.test.servlet.TestContext;
@@ -71,8 +69,8 @@ public class InjectedComponentTestWithMember extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        getContext(SessionScoped.class).get(comps.get(0), new CreationalContextImpl());
-        Object object = getContext(SessionScoped.class).get(comps.get(1), new CreationalContextImpl());
+        getManager().getInstance(comps.get(0));
+        Object object = getManager().getInstance(comps.get(1));
 
         Assert.assertTrue(object instanceof NonBindingComponent);
 

@@ -76,7 +76,7 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
         else
         {
             instance = this.injectableConstructor.doInjection();
-            super.afterConstructor(instance);
+            super.afterConstructor(instance,creationalContext);
         }
 
         /* Inject initial field values */
@@ -95,7 +95,7 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
      * )
      */
     @Override
-    protected void injectFields(T instance)
+    protected void injectFields(T instance,CreationalContext<T> creationalContext)
     {
         Set<Field> fieldSet = this.injectableFields.keySet();
         Iterator<Field> itField = fieldSet.iterator();
@@ -104,7 +104,7 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
         {
             Field field = itField.next();
             XMLInjectionPointModel model = this.injectableFields.get(field);
-            XMLInjectableField injectableField = new XMLInjectableField(field, instance, this, model);
+            XMLInjectableField injectableField = new XMLInjectableField(field, instance, this, model,creationalContext);
 
             injectableField.doInjection();
         }
@@ -149,7 +149,7 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
      * )
      */
     @Override
-    protected void injectMethods(T instance)
+    protected void injectMethods(T instance,CreationalContext<T> creationalContext)
     {
         Set<Method> methodSet = this.injectableMethods.keySet();
         Iterator<Method> itMethods = methodSet.iterator();
@@ -157,7 +157,7 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
         {
             Method method = itMethods.next();
             List<XMLInjectionPointModel> listInjectionPointModel = this.injectableMethods.get(method);
-            XMLInjectableMethods<T> injectableMethod = new XMLInjectableMethods<T>(method, instance, this, listInjectionPointModel);
+            XMLInjectableMethods<T> injectableMethod = new XMLInjectableMethods<T>(method, instance, this, listInjectionPointModel,creationalContext);
 
             injectableMethod.doInjection();
         }

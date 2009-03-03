@@ -58,13 +58,18 @@ public class WebBeansELResolver extends ELResolver
         Bean<?> bean = null;
 
         boolean isResolution = false;
+        boolean dependentContext = false;
         try
         {
             if (obj == null)
             {
                 isResolution = true;
 
-                ContextFactory.getDependentContext().setActive(true);
+                if(!ContextFactory.checkDependentContextActive())
+                {
+                    ContextFactory.activateDependentContext();
+                    dependentContext = true;
+                }
 
                 String name = (String) property;
                 object = manager.getInstanceByName(name);
@@ -83,8 +88,12 @@ public class WebBeansELResolver extends ELResolver
                 {
                     destroyBean(bean, object);
                 }
-
-                ContextFactory.getDependentContext().setActive(false);
+                
+                if(dependentContext)
+                {
+                    ContextFactory.passivateDependentContext();
+                }
+                
             }
         }
 

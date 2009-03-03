@@ -66,6 +66,8 @@ public class WebBeansInterceptor extends Interceptor
 
     /** Simple Web Beans component */
     private AbstractComponent<Object> delegateComponent;
+    
+    private CreationalContext<Object> creationalContext;
 
     public WebBeansInterceptor(AbstractComponent<Object> delegateComponent)
     {
@@ -246,6 +248,8 @@ public class WebBeansInterceptor extends Interceptor
     public Object create(CreationalContext<Object> creationalContext)
     {
         Object proxy = JavassistProxyFactory.createNewProxyInstance(this);
+        
+        this.creationalContext = creationalContext;
 
         return proxy;
 
@@ -260,7 +264,7 @@ public class WebBeansInterceptor extends Interceptor
         Set<Field> injectedFields = delegate.getInjectedFields();
         for (Field injectedField : injectedFields)
         {
-            InjectableField ife = new InjectableField(injectedField, proxy, this.delegateComponent);
+            InjectableField ife = new InjectableField(injectedField, proxy, this.delegateComponent,creationalContext);
             ife.doInjection();
         }
 
@@ -268,7 +272,7 @@ public class WebBeansInterceptor extends Interceptor
         for (Method injectedMethod : injectedMethods)
         {
             @SuppressWarnings("unchecked")
-            InjectableMethods<?> ife = new InjectableMethods(injectedMethod, proxy, this.delegateComponent);
+            InjectableMethods<?> ife = new InjectableMethods(injectedMethod, proxy, this.delegateComponent,creationalContext);
             ife.doInjection();
         }
 

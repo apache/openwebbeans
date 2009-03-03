@@ -33,6 +33,8 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
     private List<XMLInjectionPointModel> disposalMethodParameters = new ArrayList<XMLInjectionPointModel>();
 
     private Type[] actualTypeArguments = new Type[0];
+    
+    private CreationalContext<?> creationalContext;
 
     public XMLProducerComponentImpl(AbstractComponent<?> parent, Class<T> returnType)
     {
@@ -76,7 +78,7 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
 
             Object object = getParentInstance();
 
-            XMLInjectableMethods<T> methods = new XMLInjectableMethods<T>(creatorMethod, object, this, this.disposalMethodParameters);
+            XMLInjectableMethods<T> methods = new XMLInjectableMethods<T>(creatorMethod, object, this, this.disposalMethodParameters,this.creationalContext);
             methods.doInjection();
 
         }
@@ -84,12 +86,14 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
 
     protected T createInstance(CreationalContext<T> creationalContext)
     {
+        this.creationalContext = creationalContext;
+        
         T instance = null;
         Object parentInstance = getParentInstance();
 
         try
         {
-            XMLInjectableMethods<T> methods = new XMLInjectableMethods<T>(creatorMethod, parentInstance, this, this.producerMethodParameters);
+            XMLInjectableMethods<T> methods = new XMLInjectableMethods<T>(creatorMethod, parentInstance, this, this.producerMethodParameters,creationalContext);
             instance = methods.doInjection();
         }
         finally

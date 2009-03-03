@@ -15,8 +15,6 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.context.ApplicationScoped;
-import javax.context.CreationalContext;
 import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
 
@@ -25,7 +23,6 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.producer.Producer1;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.Producer1ConsumerComponent;
@@ -61,7 +58,6 @@ public class Producer1ConsumerComponentTest extends TestContext
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testTypedComponent() throws Throwable
     {
         clear();
@@ -77,13 +73,15 @@ public class Producer1ConsumerComponentTest extends TestContext
 
         Assert.assertEquals(4, getDeployedComponents());
 
-        Object obj = getContext(ApplicationScoped.class).get(comps.get(0), new CreationalContextImpl());
+        Object obj = getManager().getInstance(comps.get(0));
+        
+        Assert.assertNotNull(obj);
 
         getInstanceByName("service");
 
-        getContext(ApplicationScoped.class).get(comps.get(1), new CreationalContextImpl());
+        getManager().getInstance(comps.get(1));
 
-        Object object = getContext(ApplicationScoped.class).get(comps.get(2), new CreationalContextImpl());
+        Object object = getManager().getInstance(comps.get(2));
 
         Assert.assertTrue(object instanceof Producer1ConsumerComponent);
 
@@ -92,7 +90,6 @@ public class Producer1ConsumerComponentTest extends TestContext
         IService service = single.getService();
 
         Assert.assertNotNull(service);
-        Assert.assertEquals(service, obj);
 
         ContextFactory.destroyApplicationContext(null);
         ContextFactory.destroyRequestContext(null);

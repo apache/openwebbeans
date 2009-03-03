@@ -31,7 +31,7 @@ import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.AnnotationUtil;
 
@@ -59,30 +59,30 @@ public class BeanObserverImpl<T> implements Observer<T>
     @SuppressWarnings("unchecked")
     public void notify(T event)
     {
-        AbstractComponent<?> baseComponent = (AbstractComponent<?>) bean;
+        AbstractComponent<Object> baseComponent = (AbstractComponent<Object>) bean;
         Object object = null;
         Context context = null;
-        boolean isDependentContext = false;
-
+        boolean dependentContext = false;
         try
         {
-            if (baseComponent.getScopeType().equals(Dependent.class))
+            if(!ContextFactory.checkDependentContextActive())
             {
-                isDependentContext = true;
-                ContextFactory.getDependentContext().setActive(true);                
+                ContextFactory.activateDependentContext();
+                dependentContext = true;
             }
-
-            context = manager.getContext(baseComponent.getScopeType());
             
+            context = manager.getContext(baseComponent.getScopeType());
+
             if (ifExist)
             {
                 object = context.get(baseComponent);
             }
             else
             {
-                object = context.get((AbstractComponent<T>)baseComponent, new CreationalContextImpl<T>());
+                object = context.get((AbstractComponent<Object>) baseComponent, CreationalContextFactory.getInstance().getCreationalContext(baseComponent));
             }
-
+            
+            
             if (object != null)
             {
                 Object[] args = null;
@@ -90,24 +90,30 @@ public class BeanObserverImpl<T> implements Observer<T>
 
                 args = new Object[argsObjects.size()];
                 args = argsObjects.toArray(args);
-                
-                if(!observerMethod.isAccessible())
+
+                if (!observerMethod.isAccessible())
                 {
                     observerMethod.setAccessible(true);
                 }
-                
+
                 observerMethod.invoke(object, args);
             }
 
-        }catch(Exception e)
+        }
+        catch (Exception e)
         {
             throw new WebBeansException(e);
-        }        
+        }
         finally
         {
-            if(isDependentContext)
+            if (baseComponent.getScopeType().equals(Dependent.class))
             {
-                ContextFactory.getDependentContext().setActive(false);   
+                baseComponent.destroy(object);
+            }
+            
+            if(dependentContext)
+            {
+                ContextFactory.passivateDependentContext();
             }
         }
 

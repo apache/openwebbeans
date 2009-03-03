@@ -48,6 +48,7 @@ public class TypedComponentTest extends TestContext
     @Before
     public void init()
     {
+        super.init();
         this.container = ManagerImpl.getManager();
     }
 

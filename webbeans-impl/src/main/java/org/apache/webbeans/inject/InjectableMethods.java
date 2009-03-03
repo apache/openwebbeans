@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.context.CreationalContext;
 import javax.event.Observes;
 import javax.inject.Disposes;
 
@@ -30,7 +31,6 @@ import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.component.ProducerComponentImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.ClassUtil;
 
 @SuppressWarnings("unchecked")
 public class InjectableMethods<T> extends AbstractInjectable
@@ -47,9 +47,9 @@ public class InjectableMethods<T> extends AbstractInjectable
      * @param m injectable method
      * @param instance component instance
      */
-    public InjectableMethods(Method m, Object instance, AbstractComponent<?> owner)
+    public InjectableMethods(Method m, Object instance, AbstractComponent<?> owner,CreationalContext<?> creationalContext)
     {
-        super(owner);
+        super(owner,creationalContext);
         this.m = m;
         this.instance = instance;
     }
@@ -124,7 +124,7 @@ public class InjectableMethods<T> extends AbstractInjectable
         
         try
         {
-            if (!ClassUtil.isPublic(m.getModifiers()))
+            if (!m.isAccessible())
             {
                 m.setAccessible(true);
             }

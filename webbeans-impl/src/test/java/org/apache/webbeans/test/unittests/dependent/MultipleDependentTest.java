@@ -45,12 +45,13 @@ public class MultipleDependentTest extends TestContext
     @Test
     public void testMultipleDependent()
     {
+        clear();
         ContextFactory.initRequestContext(null);
         
         defineSimpleWebBean(DependentComponent.class);
         defineSimpleWebBean(MultipleDependentComponent.class);
         
-        MultipleDependentComponent bean = getManager().getInstanceByType(MultipleDependentComponent.class, new Annotation[]{});
+        MultipleDependentComponent bean = (MultipleDependentComponent)getManager().getInstance(getComponents().get(1));
         
         Assert.assertNotNull(bean.get1());
         Assert.assertNotNull(bean.get2());

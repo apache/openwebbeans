@@ -21,7 +21,7 @@ import javax.context.CreationalContext;
 import javax.context.Dependent;
 import javax.inject.manager.Bean;
 
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -45,7 +45,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
 
     /** Disposal method */
     protected Method disposalMethod;
-    
+
     protected boolean fromRealizes;
 
     /*
@@ -57,8 +57,6 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
         this.parent = parent;
     }
 
-    
-    
     /**
      * Gets the creator method.
      * 
@@ -138,10 +136,20 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
     {
         T instance = null;
         Object parentInstance = getParentInstance();
-
+        boolean dependentContext = false;
+        
         try
         {
-            InjectableMethods<T> m = new InjectableMethods<T>(creatorMethod, parentInstance, this);
+            if (getParent().getScopeType().equals(Dependent.class))
+            {
+                if(!ContextFactory.checkDependentContextActive())
+                {
+                    ContextFactory.activateDependentContext();
+                    dependentContext = true;
+                }
+            }
+
+            InjectableMethods<T> m = new InjectableMethods<T>(creatorMethod, parentInstance, this,null);
             instance = m.doInjection();
 
         }
@@ -150,6 +158,11 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
             if (getParent().getScopeType().equals(Dependent.class))
             {
                 destroyBean(getParent(), parentInstance);
+                
+                if(dependentContext)
+                {
+                    ContextFactory.passivateDependentContext();
+                }
             }
         }
 
@@ -179,18 +192,43 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
     {
         if (disposalMethod != null)
         {
+            Object parentInstance = getParentInstance();
+            boolean dependentContext = false;
+            try
+            {
+                if (getParent().getScopeType().equals(Dependent.class))
+                {
+                    if(!ContextFactory.checkDependentContextActive())
+                    {
+                        ContextFactory.activateDependentContext();
+                        dependentContext = true;
+                    }
+                }
 
-            Object object = getParentInstance();
+                InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, this,null);
+                m.doInjection();
 
-            InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, object, this);
-            m.doInjection();
+            }
+            finally
+            {
+                if (getParent().getScopeType().equals(Dependent.class))
+                {
+                    destroyBean(getParent(), parentInstance);
 
+                }
+                
+                if(dependentContext)
+                {
+                    ContextFactory.passivateDependentContext();
+                }                
+
+            }
         }
     }
 
     protected Object getParentInstance()
     {
-        Object parentInstance = ManagerImpl.getManager().getInstance(this.parent);
+        Object parentInstance = getManager().getInstance(this.parent);
 
         return parentInstance;
     }
@@ -198,7 +236,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
     protected void checkNullInstance(Object instance)
     {
         String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.parent.getReturnType().getName() + " scope type must be @Dependent to create null instance";
-        WebBeansUtil.checkNullInstance(instance, this.getScopeType(), errorMessage);        
+        WebBeansUtil.checkNullInstance(instance, this.getScopeType(), errorMessage);
     }
 
     protected void checkScopeType()
@@ -208,8 +246,6 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
 
     }
 
-
-
     /**
      * @return the fromRealizes
      */
@@ -218,8 +254,6 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
         return fromRealizes;
     }
 
-
-
     /**
      * @param fromRealizes the fromRealizes to set
      */
@@ -227,7 +261,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
     {
         this.fromRealizes = fromRealizes;
     }
-    
+
     public String toString()
     {
         return super.toString();

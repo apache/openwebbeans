@@ -15,7 +15,6 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.context.SessionScoped;
 import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -25,7 +24,6 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.ContainUserComponent;
 import org.apache.webbeans.test.component.UserComponent;
 import org.apache.webbeans.test.servlet.TestContext;
@@ -59,7 +57,6 @@ public class UserComponentTest extends TestContext
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testTypedComponent() throws Throwable
     {
         clear();
@@ -74,13 +71,13 @@ public class UserComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        UserComponent userComponent = (UserComponent) ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(0), new CreationalContextImpl());
+        UserComponent userComponent = (UserComponent) getManager().getInstance(comps.get(0));
         userComponent.setName("Gurkan");
         userComponent.setSurname("Erdogdu");
 
         Assert.assertNotNull(userComponent);
 
-        Object object = ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(1), new CreationalContextImpl());
+        Object object = getManager().getInstance(comps.get(1));
         Assert.assertNotNull(object);
         Assert.assertTrue(object instanceof ContainUserComponent);
 

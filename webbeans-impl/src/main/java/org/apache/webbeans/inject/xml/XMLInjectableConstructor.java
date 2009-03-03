@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.context.CreationalContext;
+
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.exception.WebBeansException;
@@ -39,9 +41,9 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
      * @param constructor bean constructor
      * @param owner constructor owner beans
      */
-    public XMLInjectableConstructor(Constructor<T> constructor, AbstractComponent<?> owner)
+    public XMLInjectableConstructor(Constructor<T> constructor, AbstractComponent<?> owner,CreationalContext<?> creationalContext)
     {
-        super(constructor, owner);
+        super(constructor, owner,creationalContext);
     }
 
     /*

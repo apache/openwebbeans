@@ -19,17 +19,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.context.CreationalContext;
+
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.inject.InjectableMethods;
-import org.apache.webbeans.util.ClassUtil;
 
 public class XMLInjectableMethods<T> extends InjectableMethods<T>
 {
     private List<XMLInjectionPointModel> injectionPointModelList = new ArrayList<XMLInjectionPointModel>();
 
-    public XMLInjectableMethods(Method m, Object instance, AbstractComponent<?> owner, List<XMLInjectionPointModel> injectionPointModelList)
+    public XMLInjectableMethods(Method m, Object instance, AbstractComponent<?> owner, List<XMLInjectionPointModel> injectionPointModelList,CreationalContext<?> creationalContext)
     {
-        super(m, instance, owner);
+        super(m, instance, owner,creationalContext);
         this.injectionPointModelList = injectionPointModelList;
     }
 
@@ -55,7 +56,7 @@ public class XMLInjectableMethods<T> extends InjectableMethods<T>
 
         try
         {
-            if (!ClassUtil.isPublic(m.getModifiers()))
+            if (!m.isAccessible())
             {
                 m.setAccessible(true);
             }

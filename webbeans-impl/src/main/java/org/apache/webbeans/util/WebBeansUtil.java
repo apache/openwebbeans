@@ -1645,5 +1645,15 @@ public final class WebBeansUtil
         }
     }
     
-    
+    public static boolean isSimpleWebBeans(AbstractComponent<?> component)
+    {
+        if(component.getWebBeansType().equals(WebBeansType.SIMPLE) ||
+                component.getWebBeansType().equals(WebBeansType.INTERCEPTOR) ||
+                component.getWebBeansType().equals(WebBeansType.DECORATOR))
+        {
+            return true;
+        }
+        
+        return false;
+    }
  }

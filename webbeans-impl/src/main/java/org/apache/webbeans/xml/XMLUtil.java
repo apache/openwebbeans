@@ -87,7 +87,7 @@ public final class XMLUtil
     public static Element getRootElement(InputStream stream) throws WebBeansException
     {
         try
-        {
+        {  
             SAXReader saxReader = getSaxReader();
             saxReader.setMergeAdjacentText(true);
             saxReader.setStripWhitespaceText(true);

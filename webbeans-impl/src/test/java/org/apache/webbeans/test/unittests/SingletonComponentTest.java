@@ -15,7 +15,6 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.context.SessionScoped;
 import javax.inject.manager.Manager;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -25,7 +24,6 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.Singleton;
 import org.apache.webbeans.test.component.service.ITyped2;
 import org.apache.webbeans.test.component.service.Typed2;
@@ -75,8 +73,8 @@ public class SingletonComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(0), new CreationalContextImpl());
-        Object object = ManagerImpl.getManager().getContext(SessionScoped.class).get(comps.get(1), new CreationalContextImpl());
+        getManager().getInstance(comps.get(0));
+        Object object = getManager().getInstance(comps.get(1));
 
         Assert.assertTrue(object instanceof Singleton);
 

@@ -20,12 +20,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.context.Context;
+import javax.context.Contextual;
+import javax.context.CreationalContext;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -53,7 +55,7 @@ public class InterceptorHandler implements MethodHandler
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         Context webbeansContext = ManagerImpl.getManager().getContext(component.getScopeType());
-        Object webbeansInstance = webbeansContext.get(this.component, new CreationalContextImpl());
+        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)CreationalContextFactory.getInstance().getCreationalContext(this.component));
 
         if (!ClassUtil.isObjectMethod(method.getName()) && InterceptorUtil.isWebBeansBusinessMethod(method))
         {

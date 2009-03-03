@@ -167,6 +167,19 @@ public class InjectionPointFactory
         
     }
 
+    public static InjectionPoint getPartialInjectionPoint(Bean<?> owner,Type type, Annotation...bindings)
+    {
+        InjectionPointImpl impl = new InjectionPointImpl(owner,type,null);
+        
+        for(Annotation annot : bindings)
+        {
+            impl.addBindingAnnotation(annot);
+        }
+        
+        return impl;
+        
+    }
+    
     public static List<InjectionPoint> getConstructorInjectionPointData(Bean<?> owner, Constructor<?> member)
     {
         Asserts.assertNotNull(owner, "owner parameter can not be null");
