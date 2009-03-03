@@ -13,20 +13,99 @@
  */
 package org.apache.webbeans.test.tck;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import javax.el.ELContext;
+import javax.el.ELResolver;
+import javax.el.FunctionMapper;
+import javax.el.ValueExpression;
+import javax.el.VariableMapper;
+
+import org.apache.webbeans.el.WebBeansELResolver;
 import org.jboss.jsr299.tck.spi.EL;
 
 public class ELImpl implements EL
 {
+    private WebBeansELResolver resolver = new WebBeansELResolver();
+    
+    public static class ELContextImpl extends ELContext
+    {
 
+        @Override
+        public ELResolver getELResolver()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public FunctionMapper getFunctionMapper()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public VariableMapper getVariableMapper()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        
+    }
+    
+    @SuppressWarnings("unchecked")
     public <T> T evaluateMethodExpression(String expression, Class<T> expectedType, Class<?>[] expectedParamTypes, Object[] expectedParams)
     {
+        int firstDot = expression.indexOf('.');
+        String property = expression.substring(expression.indexOf("#"),firstDot) + "}"; //object name
+        String methodName = expression.substring(firstDot+1,expression.length()-1);
+        
+        Object object = evaluateValueExpression(property, expectedType);
+        
+        try
+        {
+            Method method = object.getClass().getMethod(methodName, expectedParamTypes);
+            return (T)method.invoke(object, expectedParams);
+        }
+        catch (SecurityException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (NoSuchMethodException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IllegalArgumentException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IllegalAccessException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (InvocationTargetException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T evaluateValueExpression(String expression, Class<T> expectedType)
     {
-        return null;
+        String property = expression.substring(expression.indexOf("#")+2,expression.length()-1);
+        
+        T object = (T) resolver.getValue(new ELContextImpl() , null, property);
+        
+        return object;
     }
 
 }

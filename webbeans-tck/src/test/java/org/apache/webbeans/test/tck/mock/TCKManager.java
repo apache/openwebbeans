@@ -33,6 +33,7 @@ import javax.inject.manager.Interceptor;
 import javax.inject.manager.Manager;
 
 import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 public class TCKManager implements Manager
 {
@@ -189,5 +190,10 @@ public class TCKManager implements Manager
     public void clear()
     {
         this.manager.clear();
+    }
+    
+    public void setXMLConfigurator(WebBeansXMLConfigurator xmlConfigurator)
+    {
+        this.manager.setXMLConfigurator(xmlConfigurator);
     }
 }

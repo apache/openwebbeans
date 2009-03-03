@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.inject.manager.Manager;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.test.mock.MockHttpSession;
@@ -32,13 +33,14 @@ public class ManagersImpl implements Managers
         return DeploymentTypeManager.getInstance().getEnabledDeploymentTypes();
     }
 
-    public Manager getManager() {
-        
+    public Manager getManager()
+    {
+
         ContextFactory.initApplicationContext(null);
         ContextFactory.initRequestContext(null);
         ContextFactory.initSessionContext(new MockHttpSession());
         ContextFactory.initConversationContext(null);
-        
+
         return TCKManager.getInstance();
     }
 

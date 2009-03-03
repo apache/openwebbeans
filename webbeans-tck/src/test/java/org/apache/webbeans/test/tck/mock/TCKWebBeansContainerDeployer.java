@@ -17,6 +17,8 @@
 package org.apache.webbeans.test.tck.mock;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,8 +28,13 @@ import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.config.WebBeansContainerDeployer;
 import org.apache.webbeans.config.WebBeansScanner;
+import org.apache.webbeans.deployment.StereoTypeManager;
+import org.apache.webbeans.deployment.StereoTypeModel;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
+import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 public class TCKWebBeansContainerDeployer extends WebBeansContainerDeployer
 {
@@ -68,7 +75,12 @@ public class TCKWebBeansContainerDeployer extends WebBeansContainerDeployer
                 URL url = urlIt.next();
                 try
                 {
-                    this.xmlConfigurator.configure(url.openStream(), url.getFile());
+                    InputStream stream = url.openStream();
+                    if(stream.available() > 0)
+                    {
+                        this.xmlConfigurator.configure(url.openStream(), url.getFile());    
+                    }
+                    
                 }
                 catch (IOException e)
                 {
@@ -109,9 +121,33 @@ public class TCKWebBeansContainerDeployer extends WebBeansContainerDeployer
         }
     }    
 
-    
+    @SuppressWarnings("unchecked")
     protected void checkStereoTypes(WebBeansScanner scanner)
     {
+        if(scanner == null)
+        {
+            Iterator<Class<?>> it = classes.iterator();
+            while(it.hasNext())
+            {
+                Class<? extends Annotation> stereoClass = (Class<Annotation>)it.next();
+                
+                if (AnnotationUtil.isStereoTypeAnnotation(stereoClass))
+                {
+                    if (!XMLAnnotationTypeManager.getInstance().isStereoTypeExist(stereoClass))
+                    {
+                        WebBeansUtil.checkStereoTypeClass(stereoClass);
+                        StereoTypeModel model = new StereoTypeModel(stereoClass);
+                        StereoTypeManager.getInstance().addStereoTypeModel(model);
+                    }
+                }
+                
+                
+            }
+        }
+        else
+        {
+            super.checkSpecializations(scanner);
+        }
         
     }
 

@@ -18,6 +18,7 @@ import java.util.Iterator;
 
 import javax.inject.Production;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.test.tck.mock.TCKManager;
 import org.apache.webbeans.test.tck.mock.TCKWebBeansContainerDeployer;
@@ -28,12 +29,11 @@ import org.jboss.jsr299.tck.spi.StandaloneContainers;
 public class StandaloneContainersImpl implements StandaloneContainers
 {
     private TCKWebBeansContainerDeployer tckContainerDeployer = null;
-    private TCKManager tckManager = null;
+    private WebBeansXMLConfigurator xmlConfigurator = null;
 
     public void cleanup()
     {
         this.tckContainerDeployer = null;
-        tckManager = null;
     }
 
     public void deploy(Iterable<Class<?>> classes) throws DeploymentException
@@ -67,17 +67,15 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
     public void setup()
     {
-        this.tckContainerDeployer = new TCKWebBeansContainerDeployer(new WebBeansXMLConfigurator());
-        this.tckManager = TCKManager.getInstance();
-        
+        this.xmlConfigurator = new WebBeansXMLConfigurator();
+        this.tckContainerDeployer = new TCKWebBeansContainerDeployer(this.xmlConfigurator);    
+        TCKManager.getInstance().setXMLConfigurator(this.xmlConfigurator);
         DeploymentTypeManager.getInstance().addNewDeploymentType(Production.class, 1);
     }
 
     public void undeploy()
     {
-        this.tckManager.clear();
-        this.tckContainerDeployer.clear();
-        
+        TCKManager.getInstance().clear();
     }
 
 }
