@@ -22,7 +22,8 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.config.WebBeansScanner;
+import org.apache.webbeans.spi.ServiceLoader;
+import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.test.mock.MockServletContext;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.util.ArrayUtil;
@@ -49,13 +50,13 @@ public class WebBeansScannerTest extends TestContext
     @Test
     public void testWebBeansScanner() throws Exception
     {
-        WebBeansScanner scanner = new WebBeansScanner();
+        MetaDataDiscoveryService scanner = ServiceLoader.getService(MetaDataDiscoveryService.class);
 
         ServletContext servletContext = new MockServletContext();
-        scanner.scan(servletContext);
+        scanner.init(servletContext);
 
         // try to re-run the scan
-        scanner.scan(servletContext);
+        scanner.scan();
 
         Map<String, Set<String>> classMap = scanner.getANNOTATION_DB().getClassIndex();
         Assert.assertNotNull(classMap);
