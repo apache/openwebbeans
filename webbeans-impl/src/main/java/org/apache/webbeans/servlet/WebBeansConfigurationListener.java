@@ -39,6 +39,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     public void contextDestroyed(ServletContextEvent event)
     {
         this.lifeCycle.applicationEnded(event);
+        this.lifeCycle = null;
     }
 
     /**

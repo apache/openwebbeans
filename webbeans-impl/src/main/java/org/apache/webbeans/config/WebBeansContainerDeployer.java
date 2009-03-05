@@ -39,6 +39,7 @@ import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -73,7 +74,7 @@ public class WebBeansContainerDeployer
      * 
      * @throws WebBeansDeploymentException if any deployment exception occurs
      */
-    public void deploy(WebBeansScanner scanner) throws WebBeansDeploymentException
+    public void deploy(MetaDataDiscoveryService scanner) throws WebBeansDeploymentException
     {
         try
         {
@@ -151,7 +152,7 @@ public class WebBeansContainerDeployer
         logger.info("Injection points are validated succesfully");
     }
 
-    protected void deployFromClassPath(WebBeansScanner scanner) throws ClassNotFoundException
+    protected void deployFromClassPath(MetaDataDiscoveryService scanner) throws ClassNotFoundException
     {
         logger.info("Deploying configurations from class files is started");
 
@@ -185,7 +186,7 @@ public class WebBeansContainerDeployer
 
     }
 
-    protected void deployFromXML(WebBeansScanner scanner)
+    protected void deployFromXML(MetaDataDiscoveryService scanner)
     {
         logger.info("Deploying configurations from XML files is started");
 
@@ -202,7 +203,7 @@ public class WebBeansContainerDeployer
         logger.info("Deploying configurations from XML is ended succesfully");
     }
 
-    protected void configureInterceptors(WebBeansScanner scanner) throws ClassNotFoundException
+    protected void configureInterceptors(MetaDataDiscoveryService scanner) throws ClassNotFoundException
     {
         logger.info("Configuring the Interceptors is started");
 
@@ -226,7 +227,7 @@ public class WebBeansContainerDeployer
 
     }
 
-    protected void configureDecorators(WebBeansScanner scanner) throws ClassNotFoundException
+    protected void configureDecorators(MetaDataDiscoveryService scanner) throws ClassNotFoundException
     {
         logger.info("Configuring the Decorators is started");
 
@@ -248,7 +249,7 @@ public class WebBeansContainerDeployer
 
     }
 
-    protected void checkSpecializations(WebBeansScanner scanner)
+    protected void checkSpecializations(MetaDataDiscoveryService scanner)
     {
         logger.info("Checking Specialization constraints is started");
 
@@ -346,7 +347,7 @@ public class WebBeansContainerDeployer
         }
     }
 
-    protected void checkStereoTypes(WebBeansScanner scanner)
+    protected void checkStereoTypes(MetaDataDiscoveryService scanner)
     {
         logger.info("Checking StereoTypes constraints is started");
 

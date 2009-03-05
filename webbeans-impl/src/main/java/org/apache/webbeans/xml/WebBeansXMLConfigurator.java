@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.xml;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -109,7 +110,18 @@ public final class WebBeansXMLConfigurator
     
     public void configure(InputStream xmlStream)
     {
-        configure(xmlStream, "No-name XML Stream");
+        try
+        {
+            if(xmlStream.available() > 0)
+            {
+                configure(xmlStream, "No-name XML Stream");    
+            }
+        }
+        catch (IOException e)
+        {
+            throw new WebBeansConfigurationException(e);
+        }
+        
     }
 
     /**

@@ -30,7 +30,6 @@ import javax.servlet.jsp.JspFactory;
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.config.WebBeansContainerDeployer;
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.config.WebBeansScanner;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.el.WebBeansELResolver;
@@ -39,6 +38,7 @@ import org.apache.webbeans.jsf.ConversationManager;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ServiceLoader;
+import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 public final class WebBeansLifeCycle
@@ -47,7 +47,7 @@ public final class WebBeansLifeCycle
 
     private ScheduledExecutorService service = null;
 
-    private WebBeansScanner scanner = null;
+    private MetaDataDiscoveryService discovery = null;
 
     private WebBeansContainerDeployer deployer = null;
 
@@ -57,7 +57,6 @@ public final class WebBeansLifeCycle
 
     public WebBeansLifeCycle()
     {
-        this.scanner = new WebBeansScanner();
         this.xmlDeployer = new WebBeansXMLConfigurator();
         this.deployer = new WebBeansContainerDeployer(xmlDeployer);
         this.jndiService = ServiceLoader.getService(JNDIService.class);
@@ -94,6 +93,9 @@ public final class WebBeansLifeCycle
 
     public void applicationStarted(ServletContextEvent event)
     {
+        this.discovery = ServiceLoader.getService(MetaDataDiscoveryService.class);
+        this.discovery.init(event.getServletContext());
+        
         // I do not know this is the correct way, spec is not so explicit.
         service = Executors.newScheduledThreadPool(1);
         service.scheduleWithFixedDelay(new Runnable()
@@ -112,13 +114,13 @@ public final class WebBeansLifeCycle
 
         logger.info("Scanning classpaths for WebBeans artifacts is started");
 
-        scanner.scan(event.getServletContext());
+        this.discovery.scan();
 
         logger.info("Scanning is ended.");
 
         logger.info("Deploying the scanned WebBeans artifacts.");
 
-        deployer.deploy(this.scanner);
+        deployer.deploy(this.discovery);
 
         logger.info("Deploying is ended.");
 
@@ -135,7 +137,8 @@ public final class WebBeansLifeCycle
         {
             // check this application is JSF application
             URL url = context.getResource("/WEB-INF/faces-config.xml");
-            if (url == null)
+            URL urlWeb = context.getResource("/WEB-INF/web.xml");
+            if (url == null && urlWeb != null)
             {
                 JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext(context);
                 applicationCtx.addELResolver(new WebBeansELResolver());
@@ -160,7 +163,7 @@ public final class WebBeansLifeCycle
         jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
 
         this.deployer = null;
-        this.scanner = null;
+        this.discovery = null;
         this.service = null;
         this.xmlDeployer = null;
         
