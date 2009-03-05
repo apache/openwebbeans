@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @ScopeType(normal = false)
-@Target( { ElementType.TYPE, ElementType.METHOD })
+@Target( { ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Dependent
