@@ -132,16 +132,26 @@ public final class WebBeansXMLConfigurator
      */
     public void configure(InputStream xmlStream, String fileName)
     {
-        Asserts.assertNotNull(xmlStream,"xmlStream parameter can not be null!");
-        Asserts.assertNotNull(fileName,"fileName parameter can not be null!");
-        
-        CURRENT_SCAN_FILE_NAME = fileName;
-        
-        //Get root element of the XML document
-        Element webBeansRoot = XMLUtil.getRootElement(xmlStream);
-        
-        //Start configuration
-        configure(webBeansRoot);
+        try
+        {
+            if(xmlStream.available() > 0)
+            {
+                Asserts.assertNotNull(xmlStream,"xmlStream parameter can not be null!");
+                Asserts.assertNotNull(fileName,"fileName parameter can not be null!");
+                
+                CURRENT_SCAN_FILE_NAME = fileName;
+                
+                //Get root element of the XML document
+                Element webBeansRoot = XMLUtil.getRootElement(xmlStream);
+                
+                //Start configuration
+                configure(webBeansRoot);            
+            }
+        }
+        catch (IOException e)
+        {
+            throw new WebBeansConfigurationException(e);
+        }
     }
 
     /**
