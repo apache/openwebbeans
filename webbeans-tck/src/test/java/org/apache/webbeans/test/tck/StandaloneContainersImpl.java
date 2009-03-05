@@ -18,22 +18,26 @@ import java.util.Iterator;
 
 import javax.inject.Production;
 
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
+import org.apache.webbeans.lifecycle.WebBeansLifeCycle;
+import org.apache.webbeans.spi.ServiceLoader;
+import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
+import org.apache.webbeans.test.mock.MockServletContextEvent;
 import org.apache.webbeans.test.tck.mock.TCKManager;
-import org.apache.webbeans.test.tck.mock.TCKWebBeansContainerDeployer;
-import org.apache.webbeans.xml.WebBeansXMLConfigurator;
+import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
 import org.jboss.jsr299.tck.api.DeploymentException;
 import org.jboss.jsr299.tck.spi.StandaloneContainers;
 
 public class StandaloneContainersImpl implements StandaloneContainers
 {
-    private TCKWebBeansContainerDeployer tckContainerDeployer = null;
-    private WebBeansXMLConfigurator xmlConfigurator = null;
-
+    private WebBeansLifeCycle lifeCycle = null;
+    private MockServletContextEvent servletContextEvent;
+    
+    private TCKMetaDataDiscoveryImpl discovery = null;
+    
     public void cleanup()
     {
-        this.tckContainerDeployer = null;
+        this.lifeCycle.applicationEnded(this.servletContextEvent);
     }
 
     public void deploy(Iterable<Class<?>> classes) throws DeploymentException
@@ -41,10 +45,10 @@ public class StandaloneContainersImpl implements StandaloneContainers
         Iterator<Class<?>> it = classes.iterator();
         while(it.hasNext())
         {
-            tckContainerDeployer.addBeanClass(it.next());
+            discovery.addBeanClass(it.next());
         }
         
-        tckContainerDeployer.deploy(null);
+        this.lifeCycle.applicationStarted(servletContextEvent);
     }
 
 
@@ -53,23 +57,24 @@ public class StandaloneContainersImpl implements StandaloneContainers
         Iterator<Class<?>> it = classes.iterator();
         while(it.hasNext())
         {
-            tckContainerDeployer.addBeanClass(it.next());
+            discovery.addBeanClass(it.next());
         }
         
         Iterator<URL> itUrl = beansXmls.iterator();
         while(itUrl.hasNext())
         {
-            tckContainerDeployer.addBeanXml(itUrl.next());
+            discovery.addBeanXml(itUrl.next());
         }
         
-        tckContainerDeployer.deploy(null);
+        this.lifeCycle.applicationStarted(servletContextEvent);
+        
     }
 
     public void setup()
     {
-        this.xmlConfigurator = new WebBeansXMLConfigurator();
-        this.tckContainerDeployer = new TCKWebBeansContainerDeployer(this.xmlConfigurator);    
-        TCKManager.getInstance().setXMLConfigurator(this.xmlConfigurator);
+        this.discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(MetaDataDiscoveryService.class);
+        this.lifeCycle = new WebBeansLifeCycle();
+        this.servletContextEvent = new MockServletContextEvent();
         DeploymentTypeManager.getInstance().addNewDeploymentType(Production.class, 1);
     }
 
