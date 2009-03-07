@@ -14,6 +14,7 @@
 package org.apache.webbeans.test.unittests.decorator;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -147,7 +148,7 @@ public class DecoratorExceptionTest extends TestContext
         try
         {
 
-            Set<Class<?>> api = new HashSet<Class<?>>();
+            Set<Type> api = new HashSet<Type>();
             api.add(IPayment.class);
 
             Annotation[] anns = new Annotation[2];
@@ -173,7 +174,7 @@ public class DecoratorExceptionTest extends TestContext
         try
         {
 
-            Set<Class<?>> api = new HashSet<Class<?>>();
+            Set<Type> api = new HashSet<Type>();
             api.add(IPayment.class);
 
             Annotation[] anns = new Annotation[2];
@@ -198,7 +199,7 @@ public class DecoratorExceptionTest extends TestContext
         try
         {
 
-            Set<Class<?>> api = new HashSet<Class<?>>();
+            Set<Type> api = new HashSet<Type>();
 
             Annotation[] anns = new Annotation[2];
             anns[0] = new DummyAnnotationLiteral();

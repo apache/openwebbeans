@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.test.unittests.clazz;
 
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class ClazzTest
     @Test
     public void testStudent()
     {
-        Set<Class<?>> set = new HashSet<Class<?>>();
+        Set<Type> set = new HashSet<Type>();
         ClassUtil.setTypeHierarchy(set, Student.class);
 
         Assert.assertEquals(5, set.size());
@@ -36,7 +37,7 @@ public class ClazzTest
     @Test
     public void testSutdent2()
     {
-        Set<Class<?>> set = new HashSet<Class<?>>();
+        Set<Type> set = new HashSet<Type>();
 
         ClassUtil.setTypeHierarchy(set, Student2.class);
 

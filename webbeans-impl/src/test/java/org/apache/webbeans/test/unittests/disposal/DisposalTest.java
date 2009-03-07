@@ -17,7 +17,6 @@ import javax.persistence.EntityManager;
 
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.disposal.Disposal1;
-import org.apache.webbeans.test.mock.MockEntityManager;
 import org.apache.webbeans.test.mock.MockHttpSession;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Assert;

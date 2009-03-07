@@ -15,6 +15,7 @@ package org.apache.webbeans.test.mock;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -117,14 +118,14 @@ public class MockManager implements Manager
         return manager.getContext(scopeType);
     }
 
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
     {
         return manager.getInstanceToInject(injectionPoint, context);
     }
     
-    public Object getInstanceToInject(InjectionPoint injectionPoint)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint)
     {
-        Object instance = manager.getInstanceToInject(injectionPoint);
+        T instance = manager.getInstanceToInject(injectionPoint);
         
         return instance;
     }    
@@ -174,7 +175,7 @@ public class MockManager implements Manager
         return manager.resolveByType(apiType, bindingTypes);
     }
 
-    public List<Decorator> resolveDecorators(Set<Class<?>> types, Annotation... bindingTypes)
+    public List<Decorator> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         return manager.resolveDecorators(types, bindingTypes);
     }
@@ -193,5 +194,15 @@ public class MockManager implements Manager
     {
         manager.parse(xmlStream);
         return manager;
+    }
+
+    public Manager createActivity()
+    {
+        return manager.createActivity();
+    }
+
+    public Manager setCurrent(Class<? extends Annotation> scopeType)
+    {
+        return manager.setCurrent(scopeType);
     }
 }

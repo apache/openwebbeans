@@ -16,8 +16,6 @@
  */
 package org.apache.webbeans.test.unittests.dependent;
 
-import java.lang.annotation.Annotation;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.context.ContextFactory;

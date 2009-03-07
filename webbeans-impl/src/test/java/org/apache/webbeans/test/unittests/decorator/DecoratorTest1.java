@@ -14,6 +14,7 @@
 package org.apache.webbeans.test.unittests.decorator;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
@@ -78,7 +79,7 @@ public class DecoratorTest1 extends TestContext
 
         Assert.assertEquals("ServiceImpl1", s);
 
-        Set<Class<?>> apiTyeps = new HashSet<Class<?>>();
+        Set<Type> apiTyeps = new HashSet<Type>();
         apiTyeps.add(IService.class);
 
         List<Decorator> decs = getManager().resolveDecorators(apiTyeps, new Annotation[] { new Binding1Literal() });
@@ -101,7 +102,7 @@ public class DecoratorTest1 extends TestContext
         account.deposit(new BigDecimal(1500));
         account.withdraw(new BigDecimal(3000));
 
-        Set<Class<?>> apiTyeps = new HashSet<Class<?>>();
+        Set<Type> apiTyeps = new HashSet<Type>();
         apiTyeps.add(Account.class);
 
         List<Decorator> decs = getManager().resolveDecorators(apiTyeps, new Annotation[] { new CurrentLiteral() });
