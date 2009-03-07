@@ -19,7 +19,6 @@ import java.lang.reflect.Method;
 import javax.el.ELContext;
 import javax.el.ELResolver;
 import javax.el.FunctionMapper;
-import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 
 import org.apache.webbeans.el.WebBeansELResolver;

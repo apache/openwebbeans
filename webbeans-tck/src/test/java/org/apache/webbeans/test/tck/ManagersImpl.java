@@ -18,11 +18,10 @@ import java.util.List;
 
 import javax.inject.manager.Manager;
 
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.test.mock.MockHttpSession;
-import org.apache.webbeans.test.tck.mock.TCKManager;
 import org.jboss.jsr299.tck.spi.Managers;
 
 public class ManagersImpl implements Managers
@@ -42,7 +41,7 @@ public class ManagersImpl implements Managers
         ContextFactory.initSessionContext(new MockHttpSession());
         ContextFactory.initConversationContext(null);
 
-        return TCKManager.getInstance();
+        return ActivityManager.getInstance().getRootActivity();
     }
 
 }

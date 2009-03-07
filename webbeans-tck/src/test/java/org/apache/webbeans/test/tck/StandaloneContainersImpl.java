@@ -16,15 +16,10 @@ package org.apache.webbeans.test.tck;
 import java.net.URL;
 import java.util.Iterator;
 
-import javax.inject.Production;
-
-import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.lifecycle.WebBeansLifeCycle;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.test.mock.MockServletContextEvent;
-import org.apache.webbeans.test.tck.mock.TCKManager;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
 import org.jboss.jsr299.tck.api.DeploymentException;
 import org.jboss.jsr299.tck.spi.StandaloneContainers;
@@ -33,16 +28,17 @@ public class StandaloneContainersImpl implements StandaloneContainers
 {
     private WebBeansLifeCycle lifeCycle = null;
     private MockServletContextEvent servletContextEvent;
-    
-    private TCKMetaDataDiscoveryImpl discovery = null;
-    
+        
     public void cleanup()
     {
-        this.lifeCycle.applicationEnded(this.servletContextEvent);
+        
     }
 
     public void deploy(Iterable<Class<?>> classes) throws DeploymentException
     {
+        TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(MetaDataDiscoveryService.class);
+        this.lifeCycle = new WebBeansLifeCycle();
+        
         try
         {
             Iterator<Class<?>> it = classes.iterator();
@@ -65,6 +61,10 @@ public class StandaloneContainersImpl implements StandaloneContainers
     {
         try
         {
+            TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(MetaDataDiscoveryService.class);
+            
+            this.lifeCycle = new WebBeansLifeCycle();
+            
             Iterator<Class<?>> it = classes.iterator();
             while(it.hasNext())
             {
@@ -89,18 +89,12 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
     public void setup()
     {
-        this.discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(MetaDataDiscoveryService.class);
-        this.lifeCycle = new WebBeansLifeCycle();
         this.servletContextEvent = new MockServletContextEvent();
-        //Could we put this!!!!!
-        //DeploymentTypeManager.getInstance().addNewDeploymentType(Production.class, 1);
-        
     }
 
     public void undeploy()
     {
-        TCKManager.getInstance().clear();
-        WebBeansFinder.clearInstances();
+        this.lifeCycle.applicationEnded(this.servletContextEvent);
     }
 
 }
