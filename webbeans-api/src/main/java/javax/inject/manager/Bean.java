@@ -14,6 +14,7 @@
 package javax.inject.manager;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.context.Contextual;
@@ -32,7 +33,7 @@ public abstract class Bean<T> implements Contextual<T>
         return manager;
     }
 
-    public abstract Set<Class<?>> getTypes();
+    public abstract Set<Type> getTypes();
 
     public abstract Set<Annotation> getBindings();
 

@@ -112,6 +112,11 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
     {
         try
         {
+            if(!method.isAccessible())
+            {
+                method.setAccessible(true);
+            }
+            
             return method.invoke(instance, new Object[] {});
 
         }

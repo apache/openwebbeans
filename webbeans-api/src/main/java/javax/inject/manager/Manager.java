@@ -15,6 +15,7 @@ package javax.inject.manager;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 
@@ -36,9 +37,9 @@ public interface Manager
 
     public Set<Bean<?>> resolveByName(String name);
 
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context);
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context);
 
-    public Object getInstanceToInject(InjectionPoint injectionPoint);
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint);
 
     public Object getInstanceByName(String name);
 
@@ -68,8 +69,13 @@ public interface Manager
 
     public List<Interceptor> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings);
 
-    public List<Decorator> resolveDecorators(Set<Class<?>> types, Annotation... bindingTypes);
+    public List<Decorator> resolveDecorators(Set<Type> types, Annotation... bindingTypes);
     
     public Manager parse(InputStream xmlStream);
+    
+    public Manager createActivity();
+
+    public Manager setCurrent(Class<? extends Annotation> scopeType);
+    
 
 }
