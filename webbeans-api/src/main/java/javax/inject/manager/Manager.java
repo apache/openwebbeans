@@ -37,7 +37,7 @@ public interface Manager
 
     public Set<Bean<?>> resolveByName(String name);
 
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context);
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context);
 
     public <T> T getInstanceToInject(InjectionPoint injectionPoint);
 
