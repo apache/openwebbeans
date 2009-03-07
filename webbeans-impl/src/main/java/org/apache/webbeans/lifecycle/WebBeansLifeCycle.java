@@ -31,6 +31,7 @@ import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.config.WebBeansContainerDeployer;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.exception.WebBeansException;
@@ -54,14 +55,19 @@ public final class WebBeansLifeCycle
     private WebBeansXMLConfigurator xmlDeployer = null;
     
     private JNDIService jndiService = null;
+    
+    private ManagerImpl rootManager = null;
 
     public WebBeansLifeCycle()
     {
+        this.rootManager = new ManagerImpl();
         this.xmlDeployer = new WebBeansXMLConfigurator();
         this.deployer = new WebBeansContainerDeployer(xmlDeployer);
         this.jndiService = ServiceLoader.getService(JNDIService.class);
         
-        ManagerImpl.getManager().setXMLConfigurator(this.xmlDeployer);
+        rootManager.setXMLConfigurator(this.xmlDeployer);
+        
+        ActivityManager.getInstance().setRootActivity(this.rootManager);
     }
 
     public void requestStarted(ServletRequestEvent event)
@@ -166,6 +172,7 @@ public final class WebBeansLifeCycle
         this.discovery = null;
         this.service = null;
         this.xmlDeployer = null;
+        this.rootManager = null;
         
         WebBeansFinder.clearInstances();
 

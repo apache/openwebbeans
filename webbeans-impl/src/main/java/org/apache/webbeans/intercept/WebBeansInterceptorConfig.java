@@ -28,6 +28,8 @@ import javax.inject.manager.Interceptor;
 import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.Component;
+import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -81,8 +83,10 @@ public final class WebBeansInterceptorConfig
      * 
      * @param clazz configuration interceptors for this
      */
-    public static void configure(Class<?> clazz, List<InterceptorData> stack)
+    public static void configure(Component<?> component, List<InterceptorData> stack)
     {
+        Class<?> clazz = component.getReturnType();
+        
         if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
         {
 
@@ -106,6 +110,17 @@ public final class WebBeansInterceptorConfig
                     {
                         bindingTypeSet.add(ann);
                     }
+                }
+            }
+            
+            //Look for inherited binding types
+            IBeanInheritedMetaData metadata = component.getInheritedMetaData();
+            if(metadata != null)
+            {
+                Set<Annotation> inheritedBindingTypes = metadata.getInheritedInterceptorBindingTypes();
+                if(!inheritedBindingTypes.isEmpty())
+                {
+                    bindingTypeSet.addAll(inheritedBindingTypes);   
                 }
             }
 

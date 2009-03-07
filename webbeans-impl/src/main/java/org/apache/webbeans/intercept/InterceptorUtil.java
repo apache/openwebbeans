@@ -209,7 +209,7 @@ public final class InterceptorUtil
         }
         else
         {
-            Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getAnnotations());
+            Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
             for (Annotation stero : stereoTypes)
             {
                 if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))

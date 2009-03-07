@@ -46,7 +46,7 @@ import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 
 import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -98,9 +98,8 @@ public class ManagerImpl implements Manager, Referenceable
 
     public static ManagerImpl getManager()
     {
-        ManagerImpl instance = (ManagerImpl) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_MANAGER);
-
-        return instance;
+        ActivityManager activityManager = ActivityManager.getInstance();
+        return activityManager.getRootActivity();
     }
 
     public void setXMLConfigurator(WebBeansXMLConfigurator xmlConfigurator)
@@ -452,10 +451,11 @@ public class ManagerImpl implements Manager, Referenceable
         }
         else
         {
-            if (context.isActive() && containsActiveContext(contextList))
-            {
-                throw new IllegalStateException("There is already an active Context registered for this scope! Context=" + context);
-            }
+            //Mark , this brokes the TCK tests!!!!
+//            if (context.isActive() && containsActiveContext(contextList))
+//            {
+//                throw new IllegalStateException("There is already an active Context registered for this scope! Context=" + context.getScopeType());
+//            }
             contextList.add(context);
         }
 
@@ -479,22 +479,22 @@ public class ManagerImpl implements Manager, Referenceable
         return this;
     }
 
-    /**
-     * Check if the given contextList contains an active Context
-     * @param contextList
-     * @return <code>true</code> if the given contextList contains an active Context, <code>false</code> otherwise
-     */
-    private boolean containsActiveContext(List<Context> contextList)
-    {
-        for (Context c : contextList)
-        {
-            if (c.isActive())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+//    /**
+//     * Check if the given contextList contains an active Context
+//     * @param contextList
+//     * @return <code>true</code> if the given contextList contains an active Context, <code>false</code> otherwise
+//     */
+//    private boolean containsActiveContext(List<Context> contextList)
+//    {
+//        for (Context c : contextList)
+//        {
+//            if (c.isActive())
+//            {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
     
     public Manager createActivity()
     {
@@ -506,15 +506,5 @@ public class ManagerImpl implements Manager, Referenceable
     {
         // TODO Auto-generated method stub
         return null;
-    }
-    
-    
-    public void clear()
-    {
-        this.components.clear();
-        this.contextMap.clear();
-        this.proxyMap.clear();
-        this.webBeansDecorators.clear();
-        this.webBeansInterceptors.clear();
-    }
+    }    
 }

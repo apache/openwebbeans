@@ -347,7 +347,7 @@ public final class AnnotationUtil
         {
             for (Annotation param : parameters)
             {
-                Annotation[] btype = param.annotationType().getAnnotations();
+                Annotation[] btype = param.annotationType().getDeclaredAnnotations();
 
                 for (Annotation b : btype)
                 {
@@ -950,14 +950,14 @@ public final class AnnotationUtil
             setAnnots.add(definedAnn);
         }
         
-        Annotation[] genericReliazesAnns = AnnotationUtil.getBindingAnnotations(clazz.getSuperclass().getAnnotations());
+        Annotation[] genericReliazesAnns = AnnotationUtil.getBindingAnnotations(clazz.getSuperclass().getDeclaredAnnotations());
         
         for(Annotation generic : genericReliazesAnns)
         {
             setAnnots.remove(generic);
         }
         
-        genericReliazesAnns = AnnotationUtil.getBindingAnnotations(clazz.getAnnotations());
+        genericReliazesAnns = AnnotationUtil.getBindingAnnotations(clazz.getDeclaredAnnotations());
 
         for(Annotation generic : genericReliazesAnns)
         {

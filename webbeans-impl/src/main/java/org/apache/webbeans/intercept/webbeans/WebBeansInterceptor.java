@@ -179,9 +179,9 @@ public class WebBeansInterceptor extends Interceptor
                 anns = declared.toArray(anns);
             }
 
-            else if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazzAnnot.getAnnotations()))
+            else if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazzAnnot.getDeclaredAnnotations()))
             {
-                anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazzAnnot.getAnnotations());
+                anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazzAnnot.getDeclaredAnnotations());
             }
 
             /*

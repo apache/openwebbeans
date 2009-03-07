@@ -1447,7 +1447,7 @@ public final class WebBeansXMLConfigurator
         }
         else
         {
-            DefinitionUtil.defineName(component, component.getReturnType().getAnnotations(), WebBeansUtil.getSimpleWebBeanDefaultName(component.getReturnType().getSimpleName()));
+            DefinitionUtil.defineName(component, component.getReturnType().getDeclaredAnnotations(), WebBeansUtil.getSimpleWebBeanDefaultName(component.getReturnType().getSimpleName()));
         }
     }
 

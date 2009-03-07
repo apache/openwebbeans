@@ -115,7 +115,7 @@ public final class SimpleWebBeansConfigurator
         checkSimpleWebBeanCondition(clazz);
 
         ComponentImpl<T> component = new ComponentImpl<T>(clazz, type);
-
+        
         DefinitionUtil.defineSerializable(component);
         DefinitionUtil.defineStereoTypes(component, clazz);
         
@@ -127,19 +127,19 @@ public final class SimpleWebBeansConfigurator
             return null;
         }
 
-        Annotation[] clazzAnns = clazz.getAnnotations();
+        Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
 
         DefinitionUtil.defineApiTypes(component, clazz);
         DefinitionUtil.defineScopeType(component, clazzAnns, "WebBeans component implementation class : " + clazz.getName() + " must declare default @ScopeType annotation");
         WebBeansUtil.checkPassivationScope(component, component.getScopeType().getAnnotation(ScopeType.class));
         DefinitionUtil.defineBindingTypes(component, clazzAnns);
-        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
-
+        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));        
+        
         Constructor<T> constructor = WebBeansUtil.defineConstructor(clazz);
         component.setConstructor(constructor);
         DefinitionUtil.addConstructorInjectionPointMetaData(component, constructor);
 
-        WebBeansUtil.checkSteroTypeRequirements(component, clazz.getAnnotations(), "WebBeans component  class : " + clazz.getName());
+        WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "WebBeans component  class : " + clazz.getName());
 
         Set<ProducerComponentImpl<?>> producerComponents = DefinitionUtil.defineProducerMethods(component);
         manager.getBeans().addAll(producerComponents);

@@ -1030,9 +1030,9 @@ public final class WebBeansUtil
         {
             for (Annotation dt : deploymentTypes)
             {
-                if (AnnotationUtil.isMetaAnnotationExist(dt.annotationType().getAnnotations(), DeploymentType.class))
+                if (AnnotationUtil.isMetaAnnotationExist(dt.annotationType().getDeclaredAnnotations(), DeploymentType.class))
                 {
-                    Annotation result2[] = AnnotationUtil.getMetaAnnotations(dt.annotationType().getAnnotations(), DeploymentType.class);
+                    Annotation result2[] = AnnotationUtil.getMetaAnnotations(dt.annotationType().getDeclaredAnnotations(), DeploymentType.class);
 
                     Class<? extends Annotation> dtAnnot = result2[0].annotationType();
                     if (maxPrecedDeploymentType == null)
@@ -1053,12 +1053,7 @@ public final class WebBeansUtil
             }
         }
 
-        if (result == null)
-        {
-            return new ProductionLiteral();
-
-        }
-
+ 
         return result;
     }
 
@@ -1091,7 +1086,7 @@ public final class WebBeansUtil
     {
         Asserts.nullCheckForClass(clazz);
 
-        Annotation[] annotations = clazz.getAnnotations();
+        Annotation[] annotations = clazz.getDeclaredAnnotations();
 
         boolean deploymentTypeFound = false;
         boolean scopeTypeFound = false;
@@ -1470,7 +1465,7 @@ public final class WebBeansUtil
             {
                 if (old.annotationType().equals(bindingType.annotationType()))
                 {
-                    throw new DuplicateBindingTypeException("Manager.resolveDecorators() method parameter binding types array argument can not define duplicate binding annotation with name : @" + old.getClass().getName());
+                    throw new DuplicateBindingTypeException("Manager.resolveDecorators() method parameter binding types array argument can not define duplicate binding annotation with name : @" + old.annotationType().getName());
                 }
 
                 if (!AnnotationUtil.isBindingAnnotation(bindingType.annotationType()))

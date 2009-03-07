@@ -14,41 +14,36 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.context;
+package org.apache.webbeans.container.activity;
 
-import java.lang.annotation.Annotation;
 
-import javax.context.Context;
-import javax.context.Contextual;
-import javax.context.CreationalContext;
+import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.container.ManagerImpl;
 
-class CustomContextImpl implements Context
+public class ActivityManager
 {
-    private Context context;
+    private ManagerImpl rootActivity = null; 
     
-    CustomContextImpl(Context context)
+    public ActivityManager()
     {
-        this.context = context;
-    }
-    
-    public Class<? extends Annotation> getScopeType()
-    {
-        return this.context.getScopeType();
-    }
-
-    public <T> T get(Contextual<T> component, CreationalContext<T> crreationalContext)
-    {
-        return this.context.get(component, crreationalContext);
-    }
-
-    public <T> T get(Contextual<T> component)
-    {
-        return this.context.get(component);
-    }
-
-    public boolean isActive()
-    {
-        return this.context.isActive();
+        
     }
     
+    public static ActivityManager getInstance()
+    {
+        ActivityManager currentActivityManager = (ActivityManager)WebBeansFinder.getSingletonInstance(ActivityManager.class.getName());
+        
+        return currentActivityManager;
+    }
+    
+    public void setRootActivity(ManagerImpl rootActivity)
+    {
+        this.rootActivity = rootActivity;
+    }
+    
+    public ManagerImpl getRootActivity()
+    {
+        return this.rootActivity;
+    }
+
 }

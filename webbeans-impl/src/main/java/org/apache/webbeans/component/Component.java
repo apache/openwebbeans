@@ -21,6 +21,7 @@ import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 import javax.inject.manager.Manager;
 
+import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.intercept.InterceptorData;
 
 /**
@@ -40,6 +41,8 @@ public abstract class Component<T> extends Bean<T>
     {
         super(manager);
     }
+    
+    abstract public IBeanInheritedMetaData getInheritedMetaData();
     
     abstract public Annotation getType();
 

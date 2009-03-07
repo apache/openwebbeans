@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import javax.context.Context;
 import javax.context.Contextual;
 import javax.context.CreationalContext;
 import javax.context.Dependent;
@@ -31,6 +32,7 @@ import javax.inject.CreationException;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
+import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
@@ -119,6 +121,17 @@ public abstract class AbstractComponent<T> extends Component<T>
         this.webBeansType = webBeansType;
         this.returnType = returnType;
     }
+    
+    
+    public IBeanInheritedMetaData getInheritedMetaData()
+    {
+        return this.inheritedMetaData;
+    }
+    
+    protected void setInheritedMetaData()
+    {
+        this.inheritedMetaData = new BeanInheritedMetaData<T>(this);
+    }
 
     /*
      * (non-Javadoc)
@@ -196,9 +209,14 @@ public abstract class AbstractComponent<T> extends Component<T>
             }
             
             if(WebBeansUtil.isScopeTypeNormal(getScopeType()))
-            {
-                WebBeansContext context = (WebBeansContext)getManager().getContext(getScopeType());
-                context.remove(this);   
+            {                
+                Context context = getManager().getContext(getScopeType());
+                
+                if(context instanceof WebBeansContext)
+                {
+                    WebBeansContext webBeansContext = (WebBeansContext) context;
+                    webBeansContext.remove(this);
+                }                   
             }                        
         }
 

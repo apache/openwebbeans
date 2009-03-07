@@ -59,6 +59,9 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
     public ComponentImpl(Class<T> returnType, WebBeansType type)
     {
         super(type, returnType);
+        
+        //Setting inherited meta data instance
+        setInheritedMetaData();
     }
 
     /*

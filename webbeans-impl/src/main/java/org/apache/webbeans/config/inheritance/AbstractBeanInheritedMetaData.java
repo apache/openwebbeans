@@ -56,6 +56,7 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
         setInheritedScopeType();
         setInheritedStereoTypes();
     }     
+     
     
     public Set<Annotation> getInheritedBindingTypes()
     {
@@ -91,6 +92,7 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
     {
         return this.inheritedClazz;
     }
+     
     
     /**
      * @param inheritedBindingTypes the inheritedBindingTypes to set

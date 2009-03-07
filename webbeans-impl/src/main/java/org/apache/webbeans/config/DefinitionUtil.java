@@ -43,6 +43,7 @@ import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
+import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.Component;
 import org.apache.webbeans.component.ComponentImpl;
@@ -50,6 +51,7 @@ import org.apache.webbeans.component.IComponentHasParent;
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.component.ProducerComponentImpl;
 import org.apache.webbeans.component.ProducerFieldComponent;
+import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
@@ -103,12 +105,34 @@ public final class DefinitionUtil
             IComponentHasParent child = (IComponentHasParent) component;
             component.setType(child.getParent().getType());
             found = true;
-        }        
+        }
 
         if (!found)
         {
+            // Look inherited meta-data deplyment type
+            IBeanInheritedMetaData metadata = component.getInheritedMetaData();
+            if (metadata != null)
+            {
+                if (metadata.getInheritedDeploymentType() != null)
+                {
+                    component.setType(metadata.getInheritedDeploymentType());
+                    found = true;
+                }
+            }
+        }
 
-            component.setType(WebBeansUtil.getMaxPrecedenceSteroTypeDeploymentType(component));
+        // Still not set
+        if (!found)
+        {
+            // Look stereotype
+            Annotation result = WebBeansUtil.getMaxPrecedenceSteroTypeDeploymentType(component);
+
+            // Default @Production
+            if (result == null)
+            {
+                component.setType(new ProductionLiteral());
+
+            }
         }
 
         return component.getDeploymentType();
@@ -136,25 +160,25 @@ public final class DefinitionUtil
     public static <T> void defineProducerMethodApiTypes(AbstractComponent<T> component, Class<T> clazz)
     {
         Set<Type> types = component.getTypes();
-        
+
         if (clazz.isPrimitive() || clazz.isArray())
         {
             types.add(clazz);
             types.add(Object.class);
-            
-            if(clazz.isPrimitive())
+
+            if (clazz.isPrimitive())
             {
-                types.add(ClassUtil.getPrimitiveWrapper(clazz));              
+                types.add(ClassUtil.getPrimitiveWrapper(clazz));
             }
-            
+
         }
         else
         {
-            if(ClassUtil.isPrimitiveWrapper(clazz))
+            if (ClassUtil.isPrimitiveWrapper(clazz))
             {
                 types.add(ClassUtil.getWrapperPrimitive(clazz));
             }
-            
+
             ClassUtil.setTypeHierarchy(component.getTypes(), clazz);
         }
     }
@@ -181,7 +205,7 @@ public final class DefinitionUtil
                     Class<?> clazz = method.getReturnType();
                     if (clazz.isArray() || clazz.isAnnotation())
                     {
-                        if (!AnnotationUtil.isAnnotationExist(method.getAnnotations(), NonBinding.class))
+                        if (!AnnotationUtil.isAnnotationExist(method.getDeclaredAnnotations(), NonBinding.class))
                         {
                             throw new WebBeansConfigurationException("WebBeans definition class : " + component.getReturnType().getName() + " @BindingType : " + annotation.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                         }
@@ -196,12 +220,38 @@ public final class DefinitionUtil
                 component.addBindingType(annotation);
             }
         }
+        
+        // Adding inherited binding types
+        IBeanInheritedMetaData inheritedMetaData = component.getInheritedMetaData();
+        if (inheritedMetaData != null)
+        {
+            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedBindingTypes();
+            for (Annotation inherited : inheritedTypes)
+            {
+                Set<Annotation> bindings = component.getBindings();
+                boolean found = false;
+                for (Annotation existBinding : bindings)
+                {
+                    if (existBinding.annotationType().equals(inherited.annotationType()))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    component.addBindingType(inherited);
+                }
+            }
+        }
+        
 
         // No-binding annotation
-        if (!find)
+        if (component.getBindings().size() == 0)
         {
             component.addBindingType(new CurrentLiteral());
         }
+
     }
 
     /**
@@ -241,7 +291,7 @@ public final class DefinitionUtil
 
     public static <T> void defineStereoTypes(Component<?> component, Class<T> clazz)
     {
-        Annotation[] anns = clazz.getAnnotations();
+        Annotation[] anns = clazz.getDeclaredAnnotations();
 
         if (AnnotationUtil.isStereoTypeMetaAnnotationExist(anns))
         {
@@ -252,46 +302,87 @@ public final class DefinitionUtil
                 component.addStereoType(stereo);
             }
         }
+        
+        // Adding inherited binding types
+        IBeanInheritedMetaData inheritedMetaData = component.getInheritedMetaData();
+        if (inheritedMetaData != null)
+        {
+            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedStereoTypes();        
+            for (Annotation inherited : inheritedTypes)
+            {
+                Set<Annotation> bindings = component.getStereotypes();
+                boolean found = false;
+                for (Annotation existBinding : bindings)
+                {
+                    if (existBinding.annotationType().equals(inherited.annotationType()))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    component.addStereoType(inherited);
+                }
+            }
+        }
+        
     }
 
     public static void defineDefaultScopeType(Component<?> component, String exceptionMessage)
     {
-        Set<Annotation> stereos = component.getStereotypes();
-        if (stereos.size() == 0)
+        // Frist look for inherited scope
+        IBeanInheritedMetaData metaData = component.getInheritedMetaData();
+        boolean found = false;
+        if (metaData != null)
         {
-            component.setImplScopeType(new DependentScopeLiteral());
-        }
-        else
-        {
-            Annotation defined = null;
-            Set<Annotation> anns = component.getStereotypes();
-            for (Annotation stero : anns)
+            Annotation inheritedScope = metaData.getInheritedScopeType();
+            if (inheritedScope != null)
             {
-                if (AnnotationUtil.isMetaAnnotationExist(stero.annotationType().getAnnotations(), ScopeType.class))
-                {
-                    Annotation next = AnnotationUtil.getMetaAnnotations(stero.annotationType().getAnnotations(), ScopeType.class)[0];
-
-                    if (defined == null)
-                    {
-                        defined = next;
-                    }
-                    else
-                    {
-                        if (!defined.equals(next))
-                        {
-                            throw new WebBeansConfigurationException(exceptionMessage);
-                        }
-                    }
-                }
+                found = true;
+                component.setImplScopeType(inheritedScope);
             }
+        }
 
-            if (defined != null)
+        if (!found)
+        {
+            Set<Annotation> stereos = component.getStereotypes();
+            if (stereos.size() == 0)
             {
-                component.setImplScopeType(defined);
+                component.setImplScopeType(new DependentScopeLiteral());
             }
             else
             {
-                component.setImplScopeType(new DependentScopeLiteral());
+                Annotation defined = null;
+                Set<Annotation> anns = component.getStereotypes();
+                for (Annotation stero : anns)
+                {
+                    if (AnnotationUtil.isMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations(), ScopeType.class))
+                    {
+                        Annotation next = AnnotationUtil.getMetaAnnotations(stero.annotationType().getDeclaredAnnotations(), ScopeType.class)[0];
+
+                        if (defined == null)
+                        {
+                            defined = next;
+                        }
+                        else
+                        {
+                            if (!defined.equals(next))
+                            {
+                                throw new WebBeansConfigurationException(exceptionMessage);
+                            }
+                        }
+                    }
+                }
+
+                if (defined != null)
+                {
+                    component.setImplScopeType(defined);
+                }
+                else
+                {
+                    component.setImplScopeType(new DependentScopeLiteral());
+                }
             }
         }
 
@@ -345,7 +436,7 @@ public final class DefinitionUtil
         }
 
     }
-    
+
     /**
      * Defines the set of {@link ProducerFieldComponent} components.
      * 
@@ -356,82 +447,81 @@ public final class DefinitionUtil
     {
         Set<ProducerFieldComponent<?>> producerFields = new HashSet<ProducerFieldComponent<?>>();
         Field[] fields = component.getReturnType().getDeclaredFields();
-        
-        //From normal class
+
+        // From normal class
         createProducerFieldWithRealizations(component, producerFields, fields, false);
-        
-        //From @Realizations
-       fields = new Field[0];
-        
-        if(component.getReturnType().getAnnotation(Realizes.class) != null)
+
+        // From @Realizations
+        fields = new Field[0];
+
+        if (component.getReturnType().getAnnotation(Realizes.class) != null)
         {
             fields = AnnotationUtil.getClazzFieldsWithGivenAnnotation(component.getReturnType().getSuperclass(), Produces.class);
-            
-            //from @Realizations
+
+            // from @Realizations
             createProducerFieldWithRealizations(component, producerFields, fields, true);
         }
-        
-        
+
         return producerFields;
     }
-    
-    private static void createProducerFieldWithRealizations(AbstractComponent<?> component,Set<ProducerFieldComponent<?>> producerFields, Field[] fields, boolean isRealizes)
+
+    private static void createProducerFieldWithRealizations(AbstractComponent<?> component, Set<ProducerFieldComponent<?>> producerFields, Field[] fields, boolean isRealizes)
     {
-        for(Field field : fields)
+        for (Field field : fields)
         {
-            if(isRealizes)
+            if (isRealizes)
             {
                 int modifiers = field.getModifiers();
-                if(Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                if (Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
                 {
                     continue;
                 }
             }
-            
-            //Producer field
-            if(AnnotationUtil.isAnnotationExist(field.getAnnotations(), Produces.class))
+
+            // Producer field
+            if (AnnotationUtil.isAnnotationExist(field.getDeclaredAnnotations(), Produces.class))
             {
                 ProducerFieldComponent<?> newComponent = createProducerFieldComponent(field.getType(), field, component);
-                
+
                 if (newComponent != null)
                 {
-                    if(isRealizes)
+                    if (isRealizes)
                     {
-                        //Add Binding types from the parent and removes from the generic super class via @Realizes
+                        // Add Binding types from the parent and removes from
+                        // the generic super class via @Realizes
                         Set<Annotation> fromParents = component.getBindings();
-                        for(Annotation fromParent : fromParents)
+                        for (Annotation fromParent : fromParents)
                         {
                             newComponent.addBindingType(fromParent);
                         }
-                        
-                        //Removes the @BindingTypes from @Realizes
+
+                        // Removes the @BindingTypes from @Realizes
                         Annotation[] fromGenerics = AnnotationUtil.getBindingAnnotations(component.getReturnType().getSuperclass().getDeclaredAnnotations());
-                        for(Annotation fromGeneric : fromGenerics)
+                        for (Annotation fromGeneric : fromGenerics)
                         {
                             newComponent.getBindings().remove(fromGeneric);
                         }
-                        
-                        //Deployment type is the same as parent
+
+                        // Deployment type is the same as parent
                         newComponent.setType(component.getType());
-                        
+
                     }
                 }
-                
-                
+
                 if (newComponent != null)
                 {
-                    producerFields.add(newComponent);                    
+                    producerFields.add(newComponent);
                 }
-                
+
             }
-            
+
         }
-                
+
     }
-    
+
     /**
-     * Defines the {@link Bean} producer methods. Moreover,
-     * it configures the producer methods with using the {@link Realizes} annotations.
+     * Defines the {@link Bean} producer methods. Moreover, it configures the
+     * producer methods with using the {@link Realizes} annotations.
      * 
      * @param component
      * @return the set of producer components
@@ -440,45 +530,44 @@ public final class DefinitionUtil
     public static Set<ProducerComponentImpl<?>> defineProducerMethods(AbstractComponent<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
-        
+
         Set<ProducerComponentImpl<?>> producerComponents = new HashSet<ProducerComponentImpl<?>>();
 
         Class<?> clazz = component.getReturnType();
         Method[] declaredMethods = clazz.getDeclaredMethods();
-        
-        //From @Realizations
+
+        // From @Realizations
         Method[] realizedProducers = new Method[0];
-        
-        if(clazz.getAnnotation(Realizes.class) != null)
+
+        if (clazz.getAnnotation(Realizes.class) != null)
         {
             realizedProducers = AnnotationUtil.getMethodsWithAnnotation(clazz.getSuperclass(), Produces.class);
-            
-        }
-        
-        boolean isSpecializes = false;
-        
-        //This methods defined in the class
-        for (Method declaredMethod : declaredMethods)
-        {
-            createProducerComponentsWithReliazes(component, producerComponents, declaredMethod, clazz, isSpecializes,false);
+
         }
 
-        //This methods defined in the @Realizations generic class
+        boolean isSpecializes = false;
+
+        // This methods defined in the class
+        for (Method declaredMethod : declaredMethods)
+        {
+            createProducerComponentsWithReliazes(component, producerComponents, declaredMethod, clazz, isSpecializes, false);
+        }
+
+        // This methods defined in the @Realizations generic class
         for (Method declaredMethod : realizedProducers)
         {
             int modifiers = declaredMethod.getModifiers();
-            if(!Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers))
+            if (!Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers))
             {
-                createProducerComponentsWithReliazes(component, producerComponents, declaredMethod, clazz.getSuperclass(), isSpecializes,true);   
+                createProducerComponentsWithReliazes(component, producerComponents, declaredMethod, clazz.getSuperclass(), isSpecializes, true);
             }
         }
 
         return producerComponents;
 
     }
-    
-    
-    private static  <T>  void createProducerComponentsWithReliazes(AbstractComponent<T> component, Set<ProducerComponentImpl<?>> producerComponents, Method declaredMethod, Class<?> clazz,boolean isSpecializes,boolean isRealizes)
+
+    private static <T> void createProducerComponentsWithReliazes(AbstractComponent<T> component, Set<ProducerComponentImpl<?>> producerComponents, Method declaredMethod, Class<?> clazz, boolean isSpecializes, boolean isRealizes)
     {
         // Producer Method
         if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Produces.class))
@@ -501,34 +590,35 @@ public final class DefinitionUtil
             ProducerComponentImpl<?> newComponent = createProducerComponent(declaredMethod.getReturnType(), declaredMethod, component, isSpecializes);
             if (newComponent != null)
             {
-                if(isRealizes)
+                if (isRealizes)
                 {
                     newComponent.setFromRealizes(true);
-                    
-                    //Add Binding types from the parent and removes from the generic super class via @Realizes
+
+                    // Add Binding types from the parent and removes from the
+                    // generic super class via @Realizes
                     Set<Annotation> fromParents = component.getBindings();
-                    for(Annotation fromParent : fromParents)
+                    for (Annotation fromParent : fromParents)
                     {
                         newComponent.addBindingType(fromParent);
                     }
-                    
-                    //Removes the @BindingTypes from @Realizes
+
+                    // Removes the @BindingTypes from @Realizes
                     Annotation[] fromGenerics = AnnotationUtil.getBindingAnnotations(component.getReturnType().getSuperclass().getDeclaredAnnotations());
-                    for(Annotation fromGeneric : fromGenerics)
+                    for (Annotation fromGeneric : fromGenerics)
                     {
                         newComponent.getBindings().remove(fromGeneric);
                     }
-                    
-                    //Deployment type is the same as parent
+
+                    // Deployment type is the same as parent
                     newComponent.setType(component.getType());
-                    
+
                 }
-                
+
                 producerComponents.add(newComponent);
-                addMethodInjectionPointMetaData(newComponent, declaredMethod);                    
+                addMethodInjectionPointMetaData(newComponent, declaredMethod);
             }
         }
-        
+
     }
 
     private static <T> ProducerComponentImpl<T> createProducerComponent(Class<T> returnType, Method method, AbstractComponent<?> parent, boolean isSpecializes)
@@ -556,7 +646,7 @@ public final class DefinitionUtil
             return null;
         }
 
-        Annotation[] methodAnns = method.getAnnotations();
+        Annotation[] methodAnns = method.getDeclaredAnnotations();
 
         DefinitionUtil.defineProducerMethodApiTypes(component, returnType);
         DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() + " must declare default @ScopeType annotation");
@@ -567,12 +657,11 @@ public final class DefinitionUtil
 
         return component;
     }
-    
+
     private static <T> ProducerFieldComponent<T> createProducerFieldComponent(Class<T> returnType, Field field, AbstractComponent<?> parent)
     {
         ProducerFieldComponent<T> component = new ProducerFieldComponent<T>(parent, returnType);
         component.setProducerField(field);
-
 
         if (returnType.isPrimitive())
         {
@@ -581,7 +670,7 @@ public final class DefinitionUtil
 
         defineSerializable(component);
 
-        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, field.getAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
+        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, field.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
 
         // Check if the deployment type is enabled.
         if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
@@ -589,74 +678,75 @@ public final class DefinitionUtil
             return null;
         }
 
-        Annotation[] fieldAnns = field.getAnnotations();
+        Annotation[] fieldAnns = field.getDeclaredAnnotations();
 
         DefinitionUtil.defineProducerMethodApiTypes(component, returnType);
         DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName() + " must declare default @ScopeType annotation");
         DefinitionUtil.defineBindingTypes(component, fieldAnns);
-        DefinitionUtil.defineName(component, fieldAnns,field.getName());
+        DefinitionUtil.defineName(component, fieldAnns, field.getName());
 
-        //WebBeansUtil.checkSteroTypeRequirements(component, fieldAnns, "WebBeans producer method : " + method.getName() + " in class : " + parent.getReturnType().getName());
+        // WebBeansUtil.checkSteroTypeRequirements(component, fieldAnns,
+        // "WebBeans producer method : " + method.getName() + " in class : " +
+        // parent.getReturnType().getName());
 
         return component;
-    }    
+    }
 
     public static <T> void defineDisposalMethods(AbstractComponent<T> component)
     {
         Class<?> clazz = component.getReturnType();
 
-        Method[] methods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Disposes.class);        
+        Method[] methods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Disposes.class);
 
         Method[] genericMethods = new Method[0];
-        if(clazz.getAnnotation(Realizes.class) != null)
+        if (clazz.getAnnotation(Realizes.class) != null)
         {
             genericMethods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz.getSuperclass(), Disposes.class);
-        }       
-        
-        //From Normal
-        createDisposalMethodsWithRealizations(component, methods, clazz,false);
-        
-        //From @Realizations
-        createDisposalMethodsWithRealizations(component, genericMethods, clazz.getSuperclass(),true);
-     }
-    
-    
-    private static <T> void createDisposalMethodsWithRealizations(AbstractComponent<T> component,Method[] methods, Class<?> clazz, boolean isRealizes)
+        }
+
+        // From Normal
+        createDisposalMethodsWithRealizations(component, methods, clazz, false);
+
+        // From @Realizations
+        createDisposalMethodsWithRealizations(component, genericMethods, clazz.getSuperclass(), true);
+    }
+
+    private static <T> void createDisposalMethodsWithRealizations(AbstractComponent<T> component, Method[] methods, Class<?> clazz, boolean isRealizes)
     {
         ProducerComponentImpl<?> previous = null;
         for (Method declaredMethod : methods)
         {
-            if(isRealizes)
+            if (isRealizes)
             {
                 int modifiers = declaredMethod.getModifiers();
-                if(Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                if (Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
                 {
                     continue;
                 }
             }
-            
+
             WebBeansUtil.checkProducerMethodDisposal(declaredMethod, clazz.getName());
 
             Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(declaredMethod, Disposes.class);
             Annotation[] annot = AnnotationUtil.getMethodFirstParameterBindingTypesWithGivenAnnotation(declaredMethod, Disposes.class);
-            
-            if(isRealizes)
+
+            if (isRealizes)
             {
                 annot = AnnotationUtil.getRealizesGenericAnnotations(component.getReturnType(), annot);
             }
-                        
+
             Set<Bean<T>> set = InjectionResolver.getInstance().implResolveByType(ClassUtil.getFirstRawType(type), ClassUtil.getActualTypeArguements(type), annot);
-            Bean<T> bean =  set.iterator().next();
+            Bean<T> bean = set.iterator().next();
             ProducerComponentImpl<?> pr = null;
-            
+
             if (bean == null || !(bean instanceof ProducerComponentImpl))
             {
                 throw new UnsatisfiedDependencyException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + clazz.getName() + "is not found");
             }
-            
+
             else
             {
-                pr = (ProducerComponentImpl<?>)bean;
+                pr = (ProducerComponentImpl<?>) bean;
             }
 
             if (previous == null)
@@ -673,45 +763,45 @@ public final class DefinitionUtil
             }
 
             pr.setDisposalMethod(declaredMethod);
-            
+
             addMethodInjectionPointMetaData(component, declaredMethod);
-            
+
         }
     }
 
     public static <T> void defineInjectedFields(ComponentImpl<T> component)
     {
         Class<T> clazz = component.getReturnType();
-        
-        //From component
+
+        // From component
         defineInternalInjectedFields(component, clazz, false);
-        
-        //From inherited super class
+
+        // From inherited super class
         defineInternalInjectedFieldsRecursively(component, clazz);
 
     }
-    
+
     @SuppressWarnings("unchecked")
     private static <T> void defineInternalInjectedFieldsRecursively(ComponentImpl<T> component, Class<T> clazz)
     {
-        //From inheritance
+        // From inheritance
         Class<?> superClazz = clazz.getSuperclass();
-        if(!superClazz.equals(Object.class))
+        if (!superClazz.equals(Object.class))
         {
-            //From super class
-            defineInternalInjectedFields(component, (Class<T>)superClazz, true);
-            
-            //From super class type hierarchy
-            defineInternalInjectedFieldsRecursively(component, (Class<T>)superClazz);
+            // From super class
+            defineInternalInjectedFields(component, (Class<T>) superClazz, true);
+
+            // From super class type hierarchy
+            defineInternalInjectedFieldsRecursively(component, (Class<T>) superClazz);
         }
-   
+
     }
-    
-    private static <T> void defineInternalInjectedFields(ComponentImpl<T> component,Class<T> clazz, boolean fromSuperClazz)
+
+    private static <T> void defineInternalInjectedFields(ComponentImpl<T> component, Class<T> clazz, boolean fromSuperClazz)
     {
-        if(!WebBeansUtil.checkObservableFieldsConditions(clazz))
+        if (!WebBeansUtil.checkObservableFieldsConditions(clazz))
         {
-            WebBeansUtil.checkObtainsFieldConditions(clazz);   
+            WebBeansUtil.checkObtainsFieldConditions(clazz);
         }
 
         Field[] fields = clazz.getDeclaredFields();
@@ -719,26 +809,26 @@ public final class DefinitionUtil
         {
             for (Field field : fields)
             {
-                Annotation[] anns = field.getAnnotations();
+                Annotation[] anns = field.getDeclaredAnnotations();
 
-                //Injected fields can not be @Decorates or @Produces
-                if(AnnotationUtil.isAnnotationExist(anns, Produces.class) || 
-                        AnnotationUtil.isAnnotationExist(anns, Decorates.class))
+                // Injected fields can not be @Decorates or @Produces
+                if (AnnotationUtil.isAnnotationExist(anns, Produces.class) || AnnotationUtil.isAnnotationExist(anns, Decorates.class))
                 {
                     return;
                 }
-                
+
                 Annotation[] bindingAnns = AnnotationUtil.getBindingAnnotations(anns);
                 Annotation[] resourceAnns = AnnotationUtil.getResourceAnnotations(anns);
-                
-                // bindingAnns and resourceAnns are not allowed at the same time!
+
+                // bindingAnns and resourceAnns are not allowed at the same
+                // time!
                 if (bindingAnns.length > 0 && resourceAnns.length > 0)
                 {
-                    throw new WebBeansConfigurationException("Found binding and resource injection at the same time for the field : " 
-                                                             + field.getName() + " in class : " + clazz.getName());
+                    throw new WebBeansConfigurationException("Found binding and resource injection at the same time for the field : " + field.getName() + " in class : " + clazz.getName());
                 }
-                
-                // injected fields must either be resources or define binding types, 
+
+                // injected fields must either be resources or define binding
+                // types,
                 // otherwise it's binding &#x0040;Current.
                 if (bindingAnns.length > 0 || resourceAnns.length > 0)
                 {
@@ -750,38 +840,38 @@ public final class DefinitionUtil
                     {
                         WebBeansUtil.checkForValidResources(field.getGenericType(), clazz, field.getName(), anns);
                     }
-                    
+
                     int mod = field.getModifiers();
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
                     {
-                        if(!fromSuperClazz)
+                        if (!fromSuperClazz)
                         {
-                            component.addInjectedField(field);                        
-                            addFieldInjectionPointMetaData(component, field);                            
+                            component.addInjectedField(field);
+                            addFieldInjectionPointMetaData(component, field);
                         }
                         else
                         {
-                            //Check that field is already exist
+                            // Check that field is already exist
                             Set<Field> definedInjectedFields = component.getInjectedFields();
-                            for(Field defineInjectedField : definedInjectedFields)
+                            for (Field defineInjectedField : definedInjectedFields)
                             {
-                                if(defineInjectedField.getName().equals(field.getName()) && defineInjectedField.getType().equals(field.getType()))
+                                if (defineInjectedField.getName().equals(field.getName()) && defineInjectedField.getType().equals(field.getType()))
                                 {
                                     break;
                                 }
                                 else
                                 {
-                                    component.addInjectedField(field);                        
-                                    addFieldInjectionPointMetaData(component, field);                                                                
+                                    component.addInjectedField(field);
+                                    addFieldInjectionPointMetaData(component, field);
                                 }
                             }
-                        }                        
+                        }
                     }
                 }
-                
+
             }
         }
-        
+
     }
 
     public static <T> void defineInjectedMethods(ComponentImpl<T> component)
@@ -789,45 +879,44 @@ public final class DefinitionUtil
         Asserts.assertNotNull(component, "component parameter can not be null");
 
         Class<T> clazz = component.getReturnType();
-        
-        //From component class definition
+
+        // From component class definition
         defineInternalInjectedMethods(component, clazz, false);
-        
-        //From inheritance hierarchy
+
+        // From inheritance hierarchy
         defineInternalInjectedMethodsRecursively(component, clazz);
     }
-    
+
     @SuppressWarnings("unchecked")
     private static <T> void defineInternalInjectedMethodsRecursively(ComponentImpl<T> component, Class<T> clazz)
     {
-        //From inheritance
+        // From inheritance
         Class<?> superClazz = clazz.getSuperclass();
-        if(!superClazz.equals(Object.class))
+        if (!superClazz.equals(Object.class))
         {
-            //From super class
-            defineInternalInjectedMethods(component, (Class<T>)superClazz, true);
-            
-            //From super class type hierarchy
-            defineInternalInjectedMethodsRecursively(component, (Class<T>)superClazz);
+            // From super class
+            defineInternalInjectedMethods(component, (Class<T>) superClazz, true);
+
+            // From super class type hierarchy
+            defineInternalInjectedMethodsRecursively(component, (Class<T>) superClazz);
         }
 
     }
-    
+
     private static <T> void defineInternalInjectedMethods(ComponentImpl<T> component, Class<T> clazz, boolean fromInherited)
     {
-        
+
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods)
         {
             boolean isInitializer = AnnotationUtil.isMethodHasAnnotation(method, Initializer.class);
-            boolean isResource    = AnnotationUtil.isMethodHasResourceAnnotation(method);
-            
+            boolean isResource = AnnotationUtil.isMethodHasResourceAnnotation(method);
+
             if (isInitializer && isResource)
             {
-                throw new WebBeansConfigurationException("Found Initializer and resource injection at the same time for the method : " 
-                                                         + method.getName() + " in class : " + clazz.getName());
+                throw new WebBeansConfigurationException("Found Initializer and resource injection at the same time for the method : " + method.getName() + " in class : " + clazz.getName());
             }
-            
+
             if (isInitializer)
             {
                 checkForInjectedInitializerMethod(component, clazz, method);
@@ -840,36 +929,35 @@ public final class DefinitionUtil
             {
                 continue;
             }
-         
+
             if (!Modifier.isStatic(method.getModifiers()))
             {
-                if(!fromInherited)
+                if (!fromInherited)
                 {
                     component.addInjectedMethod(method);
-                    addMethodInjectionPointMetaData(component, method);    
+                    addMethodInjectionPointMetaData(component, method);
                 }
                 else
                 {
                     Set<Method> injectedMethods = component.getInjectedMethods();
-                    for(Method definedInjectedMethod : injectedMethods)
+                    for (Method definedInjectedMethod : injectedMethods)
                     {
-                        if(definedInjectedMethod.getName().equals(method.getName()) &&
-                                Arrays.equals(definedInjectedMethod.getParameterTypes(), method.getParameterTypes()))
+                        if (definedInjectedMethod.getName().equals(method.getName()) && Arrays.equals(definedInjectedMethod.getParameterTypes(), method.getParameterTypes()))
                         {
                             break;
                         }
                         else
                         {
                             component.addInjectedMethod(method);
-                            addMethodInjectionPointMetaData(component, method);                            
+                            addMethodInjectionPointMetaData(component, method);
                         }
                     }
                 }
-                                
+
             }
 
         }
-        
+
     }
 
     /**
@@ -892,8 +980,7 @@ public final class DefinitionUtil
         }
         else
         {
-            throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName() 
-                                                     + " can not be annotated with @Produces");
+            throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName() + " can not be annotated with @Produces");
         }
     }
 
@@ -905,15 +992,13 @@ public final class DefinitionUtil
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (parameterTypes == null || parameterTypes.length != 1)
         {
-            throw new WebBeansConfigurationException("Resource method : " + method.getName() + " in class : " + clazz.getName() 
-                                                     + " must only have exactly 1 parameter with a valid resource type");
+            throw new WebBeansConfigurationException("Resource method : " + method.getName() + " in class : " + clazz.getName() + " must only have exactly 1 parameter with a valid resource type");
         }
-        
-        Annotation[] anns = method.getAnnotations();
+
+        Annotation[] anns = method.getDeclaredAnnotations();
         WebBeansUtil.checkForValidResources(parameterTypes[0], clazz, method.getName(), anns);
     }
 
-    
     public static void defineSimpleWebBeanInterceptorStack(AbstractComponent<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can no be null");
@@ -922,7 +1007,7 @@ public final class DefinitionUtil
         EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
 
         // @javax.webbeans.Interceptor
-        WebBeansInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+        WebBeansInterceptorConfig.configure(component, component.getInterceptorStack());
     }
 
     public static void defineWebBeanDecoratorStack(AbstractComponent<?> component, Object object)
@@ -936,48 +1021,48 @@ public final class DefinitionUtil
         Asserts.nullCheckForClass(clazz);
 
         NotificationManager manager = NotificationManager.getInstance();
-                
+
         Method[] candidateMethods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Observes.class);
 
-        //From @Relizations
+        // From @Relizations
         Method[] genericMethods = new Method[0];
-        if(clazz.getAnnotation(Realizes.class) != null)
+        if (clazz.getAnnotation(Realizes.class) != null)
         {
             genericMethods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz.getSuperclass(), Observes.class);
-        }       
-        
-        //From normal
+        }
+
+        // From normal
         createObserverMethodsWithRealizes(component, clazz, candidateMethods, false);
-        
-        //From @Realizations
+
+        // From @Realizations
         createObserverMethodsWithRealizes(component, clazz.getSuperclass(), genericMethods, true);
-        
+
         manager.addObservableComponentMethods(component);
 
     }
-    
+
     @SuppressWarnings("unchecked")
-    private static <T> void createObserverMethodsWithRealizes(ObservesMethodsOwner<T> component,Class<?> clazz, Method[] candidateMethods, boolean isRealizes)
+    private static <T> void createObserverMethodsWithRealizes(ObservesMethodsOwner<T> component, Class<?> clazz, Method[] candidateMethods, boolean isRealizes)
     {
-        
+
         for (Method candidateMethod : candidateMethods)
         {
-            if(isRealizes)
+            if (isRealizes)
             {
                 int modifiers = candidateMethod.getModifiers();
-                if(Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                if (Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
                 {
                     continue;
                 }
             }
-                        
+
             EventUtil.checkObserverMethodConditions(candidateMethod, clazz);
             component.addObservableMethod(candidateMethod);
             component.setFromRealizes(isRealizes);
-            
-            addMethodInjectionPointMetaData((AbstractComponent<T>)component, candidateMethod);
+
+            addMethodInjectionPointMetaData((AbstractComponent<T>) component, candidateMethod);
         }
-        
+
     }
 
     public static <T> void defineSerializable(AbstractComponent<T> component)
@@ -988,29 +1073,29 @@ public final class DefinitionUtil
             component.setSerializable(true);
         }
     }
-    
+
     public static <T> void addFieldInjectionPointMetaData(AbstractComponent<T> owner, Field field)
     {
         InjectionPoint injectionPoint = InjectionPointFactory.getFieldInjectionPointData(owner, field);
-        if(injectionPoint != null)
-        {
-            owner.addInjectionPoint(injectionPoint);   
-        }
-    }
-    
-    public static <T> void addMethodInjectionPointMetaData(AbstractComponent<T> owner, Method method)
-    {
-        List<InjectionPoint> injectionPoints = InjectionPointFactory.getMethodInjectionPointData(owner, method);
-        for(InjectionPoint injectionPoint : injectionPoints)
+        if (injectionPoint != null)
         {
             owner.addInjectionPoint(injectionPoint);
         }
     }
-    
+
+    public static <T> void addMethodInjectionPointMetaData(AbstractComponent<T> owner, Method method)
+    {
+        List<InjectionPoint> injectionPoints = InjectionPointFactory.getMethodInjectionPointData(owner, method);
+        for (InjectionPoint injectionPoint : injectionPoints)
+        {
+            owner.addInjectionPoint(injectionPoint);
+        }
+    }
+
     public static <T> void addConstructorInjectionPointMetaData(AbstractComponent<T> owner, Constructor<T> constructor)
     {
         List<InjectionPoint> injectionPoints = InjectionPointFactory.getConstructorInjectionPointData(owner, constructor);
-        for(InjectionPoint injectionPoint : injectionPoints)
+        for (InjectionPoint injectionPoint : injectionPoints)
         {
             owner.addInjectionPoint(injectionPoint);
         }

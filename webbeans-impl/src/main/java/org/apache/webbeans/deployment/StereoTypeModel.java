@@ -52,28 +52,28 @@ public class StereoTypeModel implements IStereoTypeModel
     {
         this.name = clazz.getName();
 
-        if (AnnotationUtil.isMetaAnnotationExist(clazz.getAnnotations(), DeploymentType.class))
+        if (AnnotationUtil.isMetaAnnotationExist(clazz.getDeclaredAnnotations(), DeploymentType.class))
         {
-            this.defaultDeploymentType = AnnotationUtil.getMetaAnnotations(clazz.getAnnotations(), DeploymentType.class)[0];
+            this.defaultDeploymentType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), DeploymentType.class)[0];
         }
 
-        if (AnnotationUtil.isMetaAnnotationExist(clazz.getAnnotations(), ScopeType.class))
+        if (AnnotationUtil.isMetaAnnotationExist(clazz.getDeclaredAnnotations(), ScopeType.class))
         {
-            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(clazz.getAnnotations(), ScopeType.class)[0];
+            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), ScopeType.class)[0];
         }
 
-        if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getAnnotations()))
+        if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
         {
-            Annotation[] ibs = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getAnnotations());
+            Annotation[] ibs = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
             for (Annotation ann : ibs)
             {
                 this.interceptorBindingTypes.add(ann);
             }
         }
 
-        if (AnnotationUtil.isStereoTypeMetaAnnotationExist(clazz.getAnnotations()))
+        if (AnnotationUtil.isStereoTypeMetaAnnotationExist(clazz.getDeclaredAnnotations()))
         {
-            Annotation[] isy = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getAnnotations());
+            Annotation[] isy = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
 
             Target outerStereo = clazz.getAnnotation(Target.class);
             for (Annotation is : isy)
