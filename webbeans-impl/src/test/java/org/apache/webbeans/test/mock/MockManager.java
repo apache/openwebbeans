@@ -33,18 +33,20 @@ import javax.inject.manager.Manager;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.activity.ActivityManager;
 
 public class MockManager implements Manager
 {
     private static MockManager instance = new MockManager();
 
-    private static ManagerImpl manager = ManagerImpl.getManager();
+    private ManagerImpl manager = null;
 
     private List<AbstractComponent<?>> componentList = new ArrayList<AbstractComponent<?>>();
 
     private MockManager()
     {
-
+        this.manager = new ManagerImpl();
+        ActivityManager.getInstance().setRootActivity(this.manager);
     }
 
     public static MockManager getInstance()
@@ -55,7 +57,10 @@ public class MockManager implements Manager
     public void clear()
     {
         componentList.clear();
-        manager.getBeans().clear();
+        if(manager != null)
+        {
+            manager.getBeans().clear();   
+        }
     }
 
     public List<AbstractComponent<?>> getComponents()

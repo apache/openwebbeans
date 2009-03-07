@@ -53,6 +53,7 @@ import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.xml.XMLComponentImpl;
 import org.apache.webbeans.component.xml.XMLProducerComponentImpl;
@@ -1350,9 +1351,17 @@ public final class WebBeansXMLConfigurator
         {
             // Check from stereotype
             Annotation stereoTypeDeploymentType = WebBeansUtil.getMaxPrecedenceSteroTypeDeploymentType(component);
-
-            // Default deployment type
-            component.setType(stereoTypeDeploymentType);
+            
+            if(stereoTypeDeploymentType == null)
+            {
+                // Default deployment type
+                component.setType(new ProductionLiteral());                
+            }
+            else
+            {
+                component.setType(stereoTypeDeploymentType);
+            }
+            
         }
         else
         {
