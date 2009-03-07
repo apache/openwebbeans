@@ -123,11 +123,10 @@ public class MockManager implements Manager
         return manager.getInstanceToInject(injectionPoint, context);
     }
     
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint)
+    public Object getInstanceToInject(InjectionPoint injectionPoint)
     {
-        T instance = manager.getInstanceToInject(injectionPoint);
+       return manager.getInstanceToInject(injectionPoint);
         
-        return instance;
     }    
     
     public <T> T getInstance(Bean<T> bean)
