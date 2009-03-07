@@ -205,7 +205,7 @@ public class ManagerImpl implements Manager, Referenceable
         return object;
     }
     
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context)
     {
         T instance = null;
         
