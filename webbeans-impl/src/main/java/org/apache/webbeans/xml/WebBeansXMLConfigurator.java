@@ -189,7 +189,9 @@ public final class WebBeansXMLConfigurator
                     {
                         throw new DeploymentException("<Deploy> element must have <Standard/> deployment type in the web-beans.xml");
                     }
-
+                    
+                    DeploymentTypeManager.getInstance().removeProduction();
+                    
                     configureDeploymentTypes(child);
                     DEPLOY_IS_DEFINED = true;
 

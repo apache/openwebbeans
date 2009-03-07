@@ -1127,7 +1127,7 @@ public final class ClassUtil
         return (Class<?>) type;
     }
 
-    public static Set<Class<?>> setTypeHierarchy(Set<Class<?>> set, Class<?> clazz)
+    public static Set<Type> setTypeHierarchy(Set<Type> set, Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
 
@@ -1149,7 +1149,7 @@ public final class ClassUtil
         return set;
     }
 
-    public static Set<Class<?>> setInterfaceTypeHierarchy(Set<Class<?>> set, Class<?> clazz)
+    public static Set<Type> setInterfaceTypeHierarchy(Set<Type> set, Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
 

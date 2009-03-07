@@ -17,7 +17,6 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
-import javax.context.CreationalContext;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 import javax.inject.manager.Manager;
@@ -41,7 +40,7 @@ public abstract class Component<T> extends Bean<T>
     {
         super(manager);
     }
-
+    
     abstract public Annotation getType();
 
     abstract public void setType(Annotation type);

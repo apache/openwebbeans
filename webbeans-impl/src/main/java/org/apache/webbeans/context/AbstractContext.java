@@ -31,7 +31,6 @@ import javax.inject.manager.Bean;
 import javax.inject.manager.Manager;
 
 import org.apache.webbeans.context.type.ContextTypes;
-import org.apache.webbeans.exception.ContextRemoveException;
 
 /**
  * Abstract implementation of the {@link WebBeansContext} interfaces.
@@ -185,11 +184,6 @@ public abstract class AbstractContext implements WebBeansContext
             componentInstanceMap.remove(component);
             removeInstance(component);
         }
-        else
-        {
-            throw new ContextRemoveException("Given component with " + component + " is not found in the current context with type : " + getType().getTypeName());
-        }
-
     }
 
     /**
@@ -235,7 +229,7 @@ public abstract class AbstractContext implements WebBeansContext
 
     public <T> void remove(Manager container, Bean<T> component)
     {
-        remove((Bean<T>) component);
+        remove(component);
     }
 
     public abstract void setComponentInstanceMap();

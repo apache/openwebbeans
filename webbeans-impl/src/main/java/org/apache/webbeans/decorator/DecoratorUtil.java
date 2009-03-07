@@ -16,6 +16,7 @@ package org.apache.webbeans.decorator;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -44,7 +45,7 @@ public final class DecoratorUtil
 
     public static void checkDecoratorConditions(Class<?> decoratorClazz)
     {       
-        Set<Class<?>> decoratorSet = new HashSet<Class<?>>();
+        Set<Type> decoratorSet = new HashSet<Type>();
         ClassUtil.setInterfaceTypeHierarchy(decoratorSet, decoratorClazz);
         
         //No-Decorates found, check from super class
@@ -59,7 +60,7 @@ public final class DecoratorUtil
         }
     }
     
-    private static boolean checkInternalDecoratorConditionsRecursivley(Class<?> decoratorClazz,Set<Class<?>> decoratorSet)
+    private static boolean checkInternalDecoratorConditionsRecursivley(Class<?> decoratorClazz,Set<Type> decoratorSet)
     {
         Class<?> superClazz = decoratorClazz.getSuperclass();
         if(!superClazz.equals(Object.class))
@@ -78,7 +79,7 @@ public final class DecoratorUtil
         return false;
     }
     
-    private static boolean checkInternalDecoratorConditions(Class<?> decoratorClazz,Set<Class<?>> decoratorSet)
+    private static boolean checkInternalDecoratorConditions(Class<?> decoratorClazz,Set<Type> decoratorSet)
     {
         Field[] fields = decoratorClazz.getDeclaredFields();
         boolean found = false;
@@ -98,9 +99,9 @@ public final class DecoratorUtil
                         throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz.getName() + " delegate attribute type must be interface");
                     }
 
-                    for (Class<?> decType : decoratorSet)
+                    for (Type decType : decoratorSet)
                     {
-                        if (!fieldType.isAssignableFrom(decType))
+                        if (!fieldType.isAssignableFrom((Class<?>)decType))
                         {
                             throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz.getName() + " delegate attribute must implement all of the decorator decorated types.");
                         }

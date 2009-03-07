@@ -135,7 +135,7 @@ public final class DefinitionUtil
      */
     public static <T> void defineProducerMethodApiTypes(AbstractComponent<T> component, Class<T> clazz)
     {
-        Set<Class<?>> types = component.getTypes();
+        Set<Type> types = component.getTypes();
         
         if (clazz.isPrimitive() || clazz.isArray())
         {
@@ -548,7 +548,7 @@ public final class DefinitionUtil
 
         defineSerializable(component);
 
-        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, method.getAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
+        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, method.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
 
         // Check if the deployment type is enabled.
         if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))

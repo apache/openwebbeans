@@ -14,6 +14,7 @@
 package org.apache.webbeans.decorator;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -88,7 +89,7 @@ public final class WebBeansDecoratorConfig
         return Collections.unmodifiableSet(ManagerImpl.getManager().getDecorators());
     }
 
-    public static Set<Decorator> findDeployedWebBeansDecorator(Set<Class<?>> apiType, Annotation... anns)
+    public static Set<Decorator> findDeployedWebBeansDecorator(Set<Type> apiType, Annotation... anns)
     {
         Set<Decorator> set = new HashSet<Decorator>();
 

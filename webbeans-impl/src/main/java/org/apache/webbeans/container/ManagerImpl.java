@@ -167,7 +167,7 @@ public class ManagerImpl implements Manager, Referenceable
 
     public Manager addContext(Context context)
     {
-        addContext(context.getScopeType(), context);
+        addContext(context.getScopeType(), ContextFactory.getCustomContext(context));
 
         return this;
 
@@ -206,7 +206,7 @@ public class ManagerImpl implements Manager, Referenceable
         return object;
     }
     
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
     {
         T instance = null;
         
@@ -237,7 +237,7 @@ public class ManagerImpl implements Manager, Referenceable
         return instance;
     }
     
-    public Object getInstanceToInject(InjectionPoint injectionPoint)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint)
     {        
         return getInstanceToInject(injectionPoint, null);
     }
@@ -377,7 +377,7 @@ public class ManagerImpl implements Manager, Referenceable
         return this;
     }
 
-    public List<Decorator> resolveDecorators(Set<Class<?>> types, Annotation... bindingTypes)
+    public List<Decorator> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         WebBeansUtil.checkDecoratorResolverParams(types, bindingTypes);
         Set<Decorator> intsSet = WebBeansDecoratorConfig.findDeployedWebBeansDecorator(types, bindingTypes);
@@ -495,6 +495,19 @@ public class ManagerImpl implements Manager, Referenceable
         }
         return false;
     }
+    
+    public Manager createActivity()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Manager setCurrent(Class<? extends Annotation> scopeType)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
     
     public void clear()
     {

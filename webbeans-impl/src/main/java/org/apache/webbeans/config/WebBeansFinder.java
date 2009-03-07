@@ -95,7 +95,9 @@ public class WebBeansFinder
      */
     public static void clearInstances()
     {
-        singletonMap.clear();
-        singletonMap = null;
+        if(singletonMap != null)
+        {
+            singletonMap.clear();   
+        }
     }
 }

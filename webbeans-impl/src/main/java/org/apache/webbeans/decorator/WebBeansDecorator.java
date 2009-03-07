@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ public class WebBeansDecorator extends Decorator
     private Class<?> clazz;
 
     /** Decorates api types */
-    private Set<Class<?>> decoratedTypes = new HashSet<Class<?>>();
+    private Set<Type> decoratedTypes = new HashSet<Type>();
 
     /** Delegate field class type */
     protected Class<?> delegateType;
@@ -125,11 +126,12 @@ public class WebBeansDecorator extends Decorator
         
     }
 
-    public boolean isDecoratorMatch(Set<Class<?>> apiType, Set<Annotation> annotation)
+    public boolean isDecoratorMatch(Set<Type> apiType, Set<Annotation> annotation)
     {
         boolean foundApi = false;
-        for (Class<?> clazz : apiType)
+        for (Type t : apiType)
         {
+            Class<?> clazz = (Class<?>)t;
             if (this.delegateType.equals(clazz))
             {
                 foundApi = true;
@@ -273,8 +275,8 @@ public class WebBeansDecorator extends Decorator
         return delegateComponent.getScopeType();
     }
 
-    @Override
-    public Set<Class<?>> getTypes()
+    
+    public Set<Type> getTypes()
     {
         return delegateComponent.getTypes();
     }

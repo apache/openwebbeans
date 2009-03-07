@@ -15,6 +15,7 @@ package org.apache.webbeans.proxy;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -42,11 +43,12 @@ public final class JavassistProxyFactory
         Object result = null;
         try
         {
-            Set<Class<?>> types = bean.getTypes();
+            Set<Type> types = bean.getTypes();
             List<Class<?>> interfaceList = new ArrayList<Class<?>>();
             Class<?> superClass = null;
-            for (Class<?> type : types)
+            for (Type t : types)
             {
+                Class<?> type = (Class<?>)t;
                 if (type.isInterface())
                 {
                     interfaceList.add(type);

@@ -16,6 +16,7 @@ package org.apache.webbeans.intercept.webbeans;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -307,12 +308,10 @@ public class WebBeansInterceptor extends Interceptor
         return delegateComponent.getScopeType();
     }
 
-    @Override
-    public Set<Class<?>> getTypes()
+    public Set<Type> getTypes()
     {
         return delegateComponent.getTypes();
     }
-    
     
     public Set<InjectionPoint> getInjectionPoints()
     {

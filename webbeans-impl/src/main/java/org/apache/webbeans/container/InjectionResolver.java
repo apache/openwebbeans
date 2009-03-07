@@ -200,11 +200,11 @@ public class InjectionResolver
 
             else
             {
-                Set<Class<?>> componentApiTypes = component.getTypes();
-                Iterator<Class<?>> itComponentApiTypes = componentApiTypes.iterator();
+                Set<Type> componentApiTypes = component.getTypes();
+                Iterator<Type> itComponentApiTypes = componentApiTypes.iterator();
                 while (itComponentApiTypes.hasNext())
                 {
-                    Class<?> componentApiType = itComponentApiTypes.next();
+                    Class<?> componentApiType = (Class<?>)itComponentApiTypes.next();
 
                     if (actualTypeArguments.length > 0)
                     {

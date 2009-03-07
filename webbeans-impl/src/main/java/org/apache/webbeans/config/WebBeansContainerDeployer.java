@@ -37,6 +37,7 @@ import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
@@ -74,7 +75,7 @@ public class WebBeansContainerDeployer
      * 
      * @throws WebBeansDeploymentException if any deployment exception occurs
      */
-    public void deploy(MetaDataDiscoveryService scanner) throws WebBeansDeploymentException
+    public void deploy(MetaDataDiscoveryService scanner)
     {
         try
         {
@@ -94,6 +95,7 @@ public class WebBeansContainerDeployer
                 configureInterceptors(scanner);
                 configureDecorators(scanner);
                 deployFromClassPath(scanner);
+                
                 checkSpecializations(scanner);
                 
                 //Fire @Initialized Event
@@ -109,9 +111,20 @@ public class WebBeansContainerDeployer
             }
 
         }
-        catch (Exception e)
+        catch (WebBeansConfigurationException e)
         {
-            throw new WebBeansDeploymentException(e);
+            throw e;
+        }
+        catch(Exception e)
+        {
+            if(e instanceof WebBeansDeploymentException)
+            {
+                throw  (WebBeansDeploymentException)e;
+            }
+            else
+            {
+                throw new WebBeansDeploymentException(e);
+            }
         }
     }
     
@@ -252,40 +265,48 @@ public class WebBeansContainerDeployer
     protected void checkSpecializations(MetaDataDiscoveryService scanner)
     {
         logger.info("Checking Specialization constraints is started");
-
-        Map<String, Set<String>> specialMap = scanner.getANNOTATION_DB().getAnnotationIndex();
-        if (specialMap != null && specialMap.size() > 0)
+        
+        try
         {
-            if (specialMap.containsKey(Specializes.class.getName()))
+            Map<String, Set<String>> specialMap = scanner.getANNOTATION_DB().getAnnotationIndex();
+            if (specialMap != null && specialMap.size() > 0)
             {
-                Set<String> specialClassSet = specialMap.get(Specializes.class.getName());
-                Iterator<String> specialIterator = specialClassSet.iterator();
-
-                Class<?> superClass = null;
-                while (specialIterator.hasNext())
+                if (specialMap.containsKey(Specializes.class.getName()))
                 {
-                    String specialClassName = specialIterator.next();
-                    Class<?> specialClass = ClassUtil.getClassFromName(specialClassName);
+                    Set<String> specialClassSet = specialMap.get(Specializes.class.getName());
+                    Iterator<String> specialIterator = specialClassSet.iterator();
 
-                    if (superClass == null)
+                    Class<?> superClass = null;
+                    while (specialIterator.hasNext())
                     {
-                        superClass = specialClass.getSuperclass();
-                    }
-                    else
-                    {
-                        if (superClass.equals(specialClass.getSuperclass()))
+                        String specialClassName = specialIterator.next();
+                        Class<?> specialClass = ClassUtil.getClassFromName(specialClassName);
+
+                        if (superClass == null)
                         {
-                            throw new InconsistentSpecializationException("More than one class that specialized the same super class : " + superClass.getName());
+                            superClass = specialClass.getSuperclass();
                         }
+                        else
+                        {
+                            if (superClass.equals(specialClass.getSuperclass()))
+                            {
+                                throw new InconsistentSpecializationException("More than one class that specialized the same super class : " + superClass.getName());
+                            }
+                        }
+                        
+                        WebBeansUtil.configureSpecializations(specialClass);
                     }
-                    
-                    WebBeansUtil.configureSpecializations(specialClass);
                 }
             }
-        }
 
-        // XML Defined Specializations
-        checkXMLSpecializations();
+            // XML Defined Specializations
+            checkXMLSpecializations();            
+        }
+        catch(Exception e)
+        {
+            throw new WebBeansDeploymentException(e);
+        }
+        
 
         logger.info("Checking Specialization constraints is ended");
     }

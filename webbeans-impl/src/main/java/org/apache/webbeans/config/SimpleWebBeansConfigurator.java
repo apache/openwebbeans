@@ -59,7 +59,8 @@ public final class SimpleWebBeansConfigurator
     public static void checkSimpleWebBeanCondition(Class<?> clazz) throws WebBeansConfigurationException
     {
         int modifier = clazz.getModifiers();
-
+                
+        
         if (AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class) && AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class))
         {
             throw new WebBeansConfigurationException("WebBeans component implementation class : " + clazz.getName() + " can not annotated with both @Interceptor and @Decorator annotations");   
@@ -116,8 +117,9 @@ public final class SimpleWebBeansConfigurator
         ComponentImpl<T> component = new ComponentImpl<T>(clazz, type);
 
         DefinitionUtil.defineSerializable(component);
-
-        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, clazz.getAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
+        DefinitionUtil.defineStereoTypes(component, clazz);
+        
+        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, clazz.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
 
         // Check if the deployment type is enabled.
         if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
@@ -127,7 +129,6 @@ public final class SimpleWebBeansConfigurator
 
         Annotation[] clazzAnns = clazz.getAnnotations();
 
-        DefinitionUtil.defineStereoTypes(component, clazz);
         DefinitionUtil.defineApiTypes(component, clazz);
         DefinitionUtil.defineScopeType(component, clazzAnns, "WebBeans component implementation class : " + clazz.getName() + " must declare default @ScopeType annotation");
         WebBeansUtil.checkPassivationScope(component, component.getScopeType().getAnnotation(ScopeType.class));

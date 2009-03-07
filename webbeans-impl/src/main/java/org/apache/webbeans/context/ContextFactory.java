@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.context.ApplicationScoped;
+import javax.context.Context;
 import javax.context.ContextNotActiveException;
 import javax.context.ConversationScoped;
 import javax.context.Dependent;
@@ -101,6 +102,11 @@ public final class ContextFactory
         }
     }
 
+    public static Context getCustomContext(Context context)
+    {
+        return new CustomContextImpl(context);
+    }
+    
     /**
      * Destroys the request context and all of its components.
      * 

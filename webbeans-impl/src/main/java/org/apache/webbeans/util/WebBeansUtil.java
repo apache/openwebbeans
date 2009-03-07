@@ -1034,7 +1034,7 @@ public final class WebBeansUtil
                 {
                     Annotation result2[] = AnnotationUtil.getMetaAnnotations(dt.annotationType().getAnnotations(), DeploymentType.class);
 
-                    Class<? extends Annotation> dtAnnot = result2[0].getClass();
+                    Class<? extends Annotation> dtAnnot = result2[0].annotationType();
                     if (maxPrecedDeploymentType == null)
                     {
                         maxPrecedDeploymentType = dtAnnot;
@@ -1272,10 +1272,12 @@ public final class WebBeansUtil
         Asserts.assertNotNull("bean", "bean parameter can not be null");
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
 
-        Set<Class<?>> types = bean.getTypes();
+        Set<Type> types = bean.getTypes();
         Class<?> superClass = null;
-        for (Class<?> type : types)
+        for (Type t : types)
         {
+            Class<?> type = (Class<?>)t;
+            
             if (!type.isInterface())
             {
                 if ((superClass == null) || (superClass.isAssignableFrom(type) && type != Object.class))
@@ -1450,7 +1452,7 @@ public final class WebBeansUtil
         }
     }
 
-    public static void checkDecoratorResolverParams(Set<Class<?>> apiTypes, Annotation... bindingTypes)
+    public static void checkDecoratorResolverParams(Set<Type> apiTypes, Annotation... bindingTypes)
     {
         if (apiTypes == null || apiTypes.size() == 0)
         {

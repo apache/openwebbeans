@@ -14,6 +14,8 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,13 +31,16 @@ import javax.inject.CreationException;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
+import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.DependentContext;
+import org.apache.webbeans.context.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorData;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation of the {@link Component} contract. There are several
@@ -67,7 +72,7 @@ public abstract class AbstractComponent<T> extends Component<T>
     protected Set<Annotation> implBindingTypes = new HashSet<Annotation>();
 
     /** Api types of the component */
-    protected Set<Class<?>> apiTypes = new HashSet<Class<?>>();
+    protected Set<Type> apiTypes = new HashSet<Type>();
 
     /** Web Beans type */
     protected WebBeansType webBeansType;
@@ -98,6 +103,8 @@ public abstract class AbstractComponent<T> extends Component<T>
     
     /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
+    
+    protected IBeanInheritedMetaData inheritedMetaData;
 
     /**
      * Constructor definiton. Each subclass redefines its own constructor with
@@ -187,6 +194,12 @@ public abstract class AbstractComponent<T> extends Component<T>
             {
                 ContextFactory.passivateDependentContext();
             }
+            
+            if(WebBeansUtil.isScopeTypeNormal(getScopeType()))
+            {
+                WebBeansContext context = (WebBeansContext)getManager().getContext(getScopeType());
+                context.remove(this);   
+            }                        
         }
 
     }
@@ -362,13 +375,9 @@ public abstract class AbstractComponent<T> extends Component<T>
         return this.implScopeType.annotationType();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.webbeans.manager.Bean#getTypes()
-     */
-    @Override
-    public Set<Class<?>> getTypes()
-    {
+    
+    public Set<Type> getTypes()
+    {        
         return this.apiTypes;
     }
 
@@ -491,9 +500,18 @@ public abstract class AbstractComponent<T> extends Component<T>
         builder.append("\tAPI Types:\n");
         builder.append("\t[\n");
         
-        for(Class<?> clazz : this.apiTypes)
+        for(Type clazz : this.apiTypes)
         {
-            builder.append("\t\t\t"+clazz.getName()+ "\n");            
+            if(clazz instanceof Class)
+            {
+                builder.append("\t\t\t"+((Class<?>)clazz).getName()+ "\n");    
+            }
+            else
+            {
+                Class<?> rawType = (Class<?>)((ParameterizedType)clazz).getRawType();
+                builder.append("\t\t\t"+rawType.getName()+ "\n");
+            }
+                        
         }
         
         builder.append("\t]\n");
