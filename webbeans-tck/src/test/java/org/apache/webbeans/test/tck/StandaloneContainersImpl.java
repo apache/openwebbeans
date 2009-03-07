@@ -18,6 +18,7 @@ import java.util.Iterator;
 
 import javax.inject.Production;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.lifecycle.WebBeansLifeCycle;
 import org.apache.webbeans.spi.ServiceLoader;
@@ -42,31 +43,47 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
     public void deploy(Iterable<Class<?>> classes) throws DeploymentException
     {
-        Iterator<Class<?>> it = classes.iterator();
-        while(it.hasNext())
+        try
         {
-            discovery.addBeanClass(it.next());
+            Iterator<Class<?>> it = classes.iterator();
+            while(it.hasNext())
+            {
+                discovery.addBeanClass(it.next());
+            }
+            
+            this.lifeCycle.applicationStarted(servletContextEvent);
+            
+        }catch(Exception e)
+        {
+            throw new DeploymentException(e);
         }
         
-        this.lifeCycle.applicationStarted(servletContextEvent);
     }
 
 
     public void deploy(Iterable<Class<?>> classes, Iterable<URL> beansXmls) throws DeploymentException
     {
-        Iterator<Class<?>> it = classes.iterator();
-        while(it.hasNext())
+        try
         {
-            discovery.addBeanClass(it.next());
+            Iterator<Class<?>> it = classes.iterator();
+            while(it.hasNext())
+            {
+                discovery.addBeanClass(it.next());
+            }
+            
+            Iterator<URL> itUrl = beansXmls.iterator();
+            while(itUrl.hasNext())
+            {
+                discovery.addBeanXml(itUrl.next());
+            }
+            
+            this.lifeCycle.applicationStarted(servletContextEvent);            
+        }
+        catch(Exception e)
+        {
+            throw new DeploymentException(e);
         }
         
-        Iterator<URL> itUrl = beansXmls.iterator();
-        while(itUrl.hasNext())
-        {
-            discovery.addBeanXml(itUrl.next());
-        }
-        
-        this.lifeCycle.applicationStarted(servletContextEvent);
         
     }
 
@@ -75,12 +92,15 @@ public class StandaloneContainersImpl implements StandaloneContainers
         this.discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(MetaDataDiscoveryService.class);
         this.lifeCycle = new WebBeansLifeCycle();
         this.servletContextEvent = new MockServletContextEvent();
-        DeploymentTypeManager.getInstance().addNewDeploymentType(Production.class, 1);
+        //Could we put this!!!!!
+        //DeploymentTypeManager.getInstance().addNewDeploymentType(Production.class, 1);
+        
     }
 
     public void undeploy()
     {
         TCKManager.getInstance().clear();
+        WebBeansFinder.clearInstances();
     }
 
 }

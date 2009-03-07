@@ -30,6 +30,7 @@ public class ManagersImpl implements Managers
 
     public List<Class<? extends Annotation>> getEnabledDeploymentTypes()
     {
+        
         return DeploymentTypeManager.getInstance().getEnabledDeploymentTypes();
     }
 

@@ -18,6 +18,7 @@ package org.apache.webbeans.test.tck.mock;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 
@@ -121,13 +122,13 @@ public class TCKManager implements Manager
         return this.manager.getInstanceByType(type, bindingTypes);
     }
 
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
     {
         
         return this.manager.getInstanceToInject(injectionPoint, context);
     }
 
-    public Object getInstanceToInject(InjectionPoint injectionPoint)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint)
     {
         
         return this.manager.getInstanceToInject(injectionPoint);
@@ -169,7 +170,7 @@ public class TCKManager implements Manager
         return this.manager.resolveByType(apiType, bindingTypes);
     }
 
-    public List<Decorator> resolveDecorators(Set<Class<?>> types, Annotation... bindingTypes)
+    public List<Decorator> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         
         return this.manager.resolveDecorators(types, bindingTypes);
@@ -195,5 +196,17 @@ public class TCKManager implements Manager
     public void setXMLConfigurator(WebBeansXMLConfigurator xmlConfigurator)
     {
         this.manager.setXMLConfigurator(xmlConfigurator);
+    }
+
+    public Manager createActivity()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Manager setCurrent(Class<? extends Annotation> scopeType)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
