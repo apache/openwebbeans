@@ -16,6 +16,7 @@
  */
 package org.apache.webbeans.component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import javax.context.CreationalContext;
@@ -113,7 +114,16 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
     
     protected Object getParentInstance()
     {
-        return getManager().getInstance(this.ownerComponent);
+        //return getManager().getInstance(this.ownerComponent);
+        
+        //Added for most specialized bean
+        Annotation[] anns = new Annotation[this.ownerComponent.getBindings().size()];
+        anns = this.ownerComponent.getBindings().toArray(anns);
+        
+        Object parentInstance = getManager().getInstanceByType(this.ownerComponent.getReturnType(),anns);
+        
+        return parentInstance;
+        
     }
     
     @Override

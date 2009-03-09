@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -36,15 +37,17 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 import javassist.util.proxy.MethodHandler;
 
-public class InterceptorHandler implements MethodHandler
+public class InterceptorHandler implements MethodHandler, Serializable
 {
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
+    private static final long serialVersionUID = 1657109769733323541L;
+
+    private transient static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
 
     private AbstractComponent<?> component = null;
 
-    private Method calledMethod = null;
+    private transient Method calledMethod = null;
 
-    private boolean isSameDecMethod = false;
+    private transient boolean isSameDecMethod = false;
 
     public InterceptorHandler(AbstractComponent<?> component)
     {

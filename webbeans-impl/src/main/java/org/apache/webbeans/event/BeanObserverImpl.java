@@ -24,6 +24,7 @@ import javax.context.Context;
 import javax.context.Dependent;
 import javax.event.Observer;
 import javax.event.Observes;
+import javax.inject.manager.Bean;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
@@ -71,15 +72,21 @@ public class BeanObserverImpl<T> implements Observer<T>
                 dependentContext = true;
             }
             
+            //Added for most specialized beans
+            Annotation[] anns = new Annotation[baseComponent.getBindings().size()];
+            anns = baseComponent.getBindings().toArray(anns);
+
+            Bean<Object> specializedComponent = manager.resolveByType(baseComponent.getReturnType(), anns).iterator().next();
+            
             context = manager.getContext(baseComponent.getScopeType());
 
             if (ifExist)
             {
-                object = context.get(baseComponent);
+                object = context.get(specializedComponent);
             }
             else
             {
-                object = context.get((AbstractComponent<Object>) baseComponent, CreationalContextFactory.getInstance().getCreationalContext(baseComponent));
+                object = context.get((AbstractComponent<Object>) specializedComponent, CreationalContextFactory.getInstance().getCreationalContext(specializedComponent));
             }
             
             

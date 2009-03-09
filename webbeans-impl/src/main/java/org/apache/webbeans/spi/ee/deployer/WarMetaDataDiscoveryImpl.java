@@ -58,6 +58,7 @@ public class WarMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
                 arcs.toArray(urls);
 
                 ANNOTATION_DB.scanArchives(urls);
+                
                 configure = true;
             }
 

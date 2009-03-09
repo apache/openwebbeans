@@ -1068,13 +1068,27 @@ public final class WebBeansUtil
     public static String getProducerDefaultName(String methodName)
     {
         StringBuffer buffer = new StringBuffer(methodName);
-
-        if (buffer.substring(0, 3).equals("get"))
+            
+        if (buffer.length() > 3 &&  (buffer.substring(0, 3).equals("get") || buffer.substring(0, 3).equals("set")))                
         {
-            buffer.setCharAt(3, Character.toLowerCase(buffer.charAt(3)));
+            
+            if(Character.isUpperCase(buffer.charAt(3)))
+            {
+                buffer.setCharAt(3, Character.toLowerCase(buffer.charAt(3)));   
+            }
 
             return buffer.substring(3);
         }
+        else if ((buffer.length() > 2 &&  buffer.substring(0, 2).equals("is")))                
+        {            
+            if(Character.isUpperCase(buffer.charAt(2)))
+            {
+                buffer.setCharAt(2, Character.toLowerCase(buffer.charAt(2)));   
+            }
+
+            return buffer.substring(2);
+        }
+        
         else
         {
             buffer.setCharAt(0, Character.toLowerCase(buffer.charAt(0)));
@@ -1365,10 +1379,14 @@ public final class WebBeansUtil
         if(AnnotationUtil.isMethodHasAnnotation(superMethod, Named.class))
         {
           Named named =  superMethod.getAnnotation(Named.class);
+          hasName = true;
           if(!named.value().equals(""))
           {
-              hasName = true;
               name = named.value();
+          }
+          else
+          {
+              name = getProducerDefaultName(superMethod.getName());
           }
         }
         else 
@@ -1390,13 +1408,15 @@ public final class WebBeansUtil
             if(AnnotationUtil.isMethodHasAnnotation(method, Named.class))
             {
                 throw new DefinitionException("Specialized method : " + method.getName() + " in class : " + component.getReturnType().getName() + " may not define @Named annotation");
-            }                        
-        }
-        
-        else
-        {
+            }
+            
             component.setName(name);
         }
+        
+//        else
+//        {
+//            component.setName(name);
+//        }
         
     }
     

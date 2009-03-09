@@ -44,6 +44,10 @@ public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryServ
                 ANNOTATION_DB = new AnnotationDB();
                 ANNOTATION_DB.setScanClassAnnotations(true);
                 ANNOTATION_DB.crossReferenceMetaAnnotations();    
+                ANNOTATION_DB.setScanFieldAnnotations(false);
+                ANNOTATION_DB.setScanMethodAnnotations(false);
+                ANNOTATION_DB.setScanParameterAnnotations(false);
+
             }            
             
         }

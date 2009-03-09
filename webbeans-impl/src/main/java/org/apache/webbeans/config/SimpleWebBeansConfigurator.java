@@ -117,7 +117,7 @@ public final class SimpleWebBeansConfigurator
         ComponentImpl<T> component = new ComponentImpl<T>(clazz, type);
         
         DefinitionUtil.defineSerializable(component);
-        DefinitionUtil.defineStereoTypes(component, clazz);
+        DefinitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
         
         Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, clazz.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
 

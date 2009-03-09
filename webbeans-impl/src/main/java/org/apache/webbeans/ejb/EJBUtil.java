@@ -16,6 +16,7 @@ package org.apache.webbeans.ejb;
 import javax.ejb.MessageDriven;
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
+import javax.persistence.Entity;
 
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -51,6 +52,22 @@ public final class EJBUtil
     {
         return (AnnotationUtil.isAnnotationExistOnClass(clazz, Stateless.class) || AnnotationUtil.isAnnotationExistOnClass(clazz, Stateful.class));
     }
+    
+    public static boolean isEJBSessionStatefulClass(Class<?> clazz)
+    {
+        return (AnnotationUtil.isAnnotationExistOnClass(clazz, Stateful.class));
+    }
+    
+    public static boolean isEJBSessionStateless(Class<?> clazz)
+    {
+        return (AnnotationUtil.isAnnotationExistOnClass(clazz, Stateless.class));
+    }    
+    
+    public static boolean isEJBEntityBean(Class<?> clazz)
+    {
+        return (AnnotationUtil.isAnnotationExistOnClass(clazz, Entity.class));
+    }        
+    
 
     /**
      * Check the given class is an EJB is MDB class or not.

@@ -31,6 +31,7 @@ import javax.context.ScopeType;
 import javax.decorator.Decorates;
 import javax.event.Fires;
 import javax.event.Observes;
+import javax.inject.Current;
 import javax.inject.DeploymentType;
 import javax.inject.Disposes;
 import javax.inject.Initializer;
@@ -289,10 +290,8 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void defineStereoTypes(Component<?> component, Class<T> clazz)
+    public static <T> void defineStereoTypes(Component<?> component, Annotation[] anns)
     {
-        Annotation[] anns = clazz.getDeclaredAnnotations();
-
         if (AnnotationUtil.isStereoTypeMetaAnnotationExist(anns))
         {
             Annotation[] steroAnns = AnnotationUtil.getStereotypeMetaAnnotations(anns);
@@ -472,7 +471,9 @@ public final class DefinitionUtil
             if (isRealizes)
             {
                 int modifiers = field.getModifiers();
-                if (Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                //if (Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                //TODO : TCK Test Suite is broken if we exlude the private fields
+                if (Modifier.isStatic(modifiers))
                 {
                     continue;
                 }
@@ -487,19 +488,24 @@ public final class DefinitionUtil
                 {
                     if (isRealizes)
                     {
-                        // Add Binding types from the parent and removes from
-                        // the generic super class via @Realizes
+                        //Add component that extends the super class binding types other than current
                         Set<Annotation> fromParents = component.getBindings();
                         for (Annotation fromParent : fromParents)
                         {
-                            newComponent.addBindingType(fromParent);
+                            if(!fromParent.annotationType().equals(Current.class))
+                            {
+                                newComponent.addBindingType(fromParent);   
+                            }                            
                         }
 
                         // Removes the @BindingTypes from @Realizes
                         Annotation[] fromGenerics = AnnotationUtil.getBindingAnnotations(component.getReturnType().getSuperclass().getDeclaredAnnotations());
                         for (Annotation fromGeneric : fromGenerics)
                         {
-                            newComponent.getBindings().remove(fromGeneric);
+                            if(!fromGeneric.annotationType().equals(Current.class))
+                            {
+                                newComponent.getBindings().remove(fromGeneric);   
+                            }
                         }
 
                         // Deployment type is the same as parent
@@ -557,7 +563,9 @@ public final class DefinitionUtil
         for (Method declaredMethod : realizedProducers)
         {
             int modifiers = declaredMethod.getModifiers();
-            if (!Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers))
+            //if (!Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers))
+            //TODO TCK broken if check private
+            if (!Modifier.isStatic(modifiers))
             {
                 createProducerComponentsWithReliazes(component, producerComponents, declaredMethod, clazz.getSuperclass(), isSpecializes, true);
             }
@@ -599,14 +607,20 @@ public final class DefinitionUtil
                     Set<Annotation> fromParents = component.getBindings();
                     for (Annotation fromParent : fromParents)
                     {
-                        newComponent.addBindingType(fromParent);
+                        if(!fromParent.annotationType().equals(Current.class))
+                        {
+                            newComponent.addBindingType(fromParent);   
+                        }
                     }
 
                     // Removes the @BindingTypes from @Realizes
                     Annotation[] fromGenerics = AnnotationUtil.getBindingAnnotations(component.getReturnType().getSuperclass().getDeclaredAnnotations());
                     for (Annotation fromGeneric : fromGenerics)
                     {
-                        newComponent.getBindings().remove(fromGeneric);
+                        if(!fromGeneric.annotationType().equals(Current.class))
+                        {
+                            newComponent.getBindings().remove(fromGeneric);   
+                        }
                     }
 
                     // Deployment type is the same as parent
@@ -637,6 +651,7 @@ public final class DefinitionUtil
         }
 
         defineSerializable(component);
+        defineStereoTypes(component, method.getDeclaredAnnotations());
 
         Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, method.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
 
@@ -669,6 +684,7 @@ public final class DefinitionUtil
         }
 
         defineSerializable(component);
+        defineStereoTypes(component, field.getDeclaredAnnotations());
 
         Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, field.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
 
@@ -719,7 +735,9 @@ public final class DefinitionUtil
             if (isRealizes)
             {
                 int modifiers = declaredMethod.getModifiers();
-                if (Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                //if (Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                //TODO //TCK broken if we check private
+                if (Modifier.isStatic(modifiers))
                 {
                     continue;
                 }
@@ -853,17 +871,20 @@ public final class DefinitionUtil
                         {
                             // Check that field is already exist
                             Set<Field> definedInjectedFields = component.getInjectedFields();
+                            boolean defined = false;
                             for (Field defineInjectedField : definedInjectedFields)
                             {
                                 if (defineInjectedField.getName().equals(field.getName()) && defineInjectedField.getType().equals(field.getType()))
                                 {
+                                    defined = true;
                                     break;
                                 }
-                                else
-                                {
-                                    component.addInjectedField(field);
-                                    addFieldInjectionPointMetaData(component, field);
-                                }
+                            }
+                            
+                            if(!defined)
+                            {
+                                component.addInjectedField(field);
+                                addFieldInjectionPointMetaData(component, field);                                
                             }
                         }
                     }
@@ -940,17 +961,20 @@ public final class DefinitionUtil
                 else
                 {
                     Set<Method> injectedMethods = component.getInjectedMethods();
+                    boolean defined = false;
                     for (Method definedInjectedMethod : injectedMethods)
                     {
                         if (definedInjectedMethod.getName().equals(method.getName()) && Arrays.equals(definedInjectedMethod.getParameterTypes(), method.getParameterTypes()))
                         {
+                            defined = true;
                             break;
                         }
-                        else
-                        {
-                            component.addInjectedMethod(method);
-                            addMethodInjectionPointMetaData(component, method);
-                        }
+                    }
+                    
+                    if(!defined)
+                    {
+                        component.addInjectedMethod(method);
+                        addMethodInjectionPointMetaData(component, method);                        
                     }
                 }
 
@@ -1050,7 +1074,9 @@ public final class DefinitionUtil
             if (isRealizes)
             {
                 int modifiers = candidateMethod.getModifiers();
-                if (Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                //if (Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers))
+                //TODO TCK broken if we check private
+                if (Modifier.isStatic(modifiers))                    
                 {
                     continue;
                 }

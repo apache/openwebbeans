@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -228,7 +229,10 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
 
     protected Object getParentInstance()
     {
-        Object parentInstance = getManager().getInstance(this.parent);
+        Annotation[] anns = new Annotation[this.parent.getBindings().size()];
+        anns = this.parent.getBindings().toArray(anns);
+        
+        Object parentInstance = getManager().getInstanceByType(this.parent.getReturnType(),anns);
 
         return parentInstance;
     }
