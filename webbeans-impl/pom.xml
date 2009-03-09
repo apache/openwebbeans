@@ -124,33 +124,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            
-            <!-- invoke the integration tests under src/it -->
-            <plugin>
-                <artifactId>maven-invoker-plugin</artifactId>
-                <configuration>
-                    <debug>true</debug>
-                    <projectsDirectory>src/it</projectsDirectory>
-                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                    <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-                    <settingsFile>src/it/settings.xml</settingsFile>
-                    <pomIncludes>
-                        <pomInclude>*/pom.xml</pomInclude>
-                    </pomIncludes>
-                    <goals>
-                        <goal>install</goal>
-                    </goals>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <goals>
-                            <goal>install</goal>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>            
         </plugins>
     </build>
@@ -292,6 +265,40 @@
                     
 				</plugins>
 			</reporting>
+		</profile>
+
+		<profile>
+			<id>integrationTest</id>
+			<build>
+			<plugins>
+			    <!-- invoke the integration tests under src/it -->
+			    <plugin>
+				<artifactId>maven-invoker-plugin</artifactId>
+				<configuration>
+				    <debug>true</debug>
+				    <projectsDirectory>src/it</projectsDirectory>
+				    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+				    <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+				    <settingsFile>src/it/settings.xml</settingsFile>
+				    <pomIncludes>
+				        <pomInclude>*/pom.xml</pomInclude>
+				    </pomIncludes>
+				    <goals>
+				        <goal>install</goal>
+				    </goals>
+				</configuration>
+				<executions>
+				    <execution>
+				        <id>integration-test</id>
+				        <goals>
+				            <goal>install</goal>
+				            <goal>run</goal>
+				        </goals>
+				    </execution>
+				</executions>
+			    </plugin>            
+			</plugins>
+			</build>
 		</profile>
 	</profiles>
 
