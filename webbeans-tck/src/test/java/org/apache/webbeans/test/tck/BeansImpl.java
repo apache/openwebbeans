@@ -24,6 +24,7 @@ import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.decorator.DecoratorUtil;
+import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.test.mock.MockManager;
 import org.jboss.jsr299.tck.spi.Beans;
 
@@ -72,28 +73,23 @@ public class BeansImpl implements Beans
     }
 
     public boolean isEnterpriseBean( Class<?> clazz ) {
-        // TODO Auto-generated method stub
-        return false;
+        return EJBUtil.isEJBMessageDrivenClass(clazz) || EJBUtil.isEJBSessionClass(clazz);
     }
 
     public boolean isEntityBean( Class<?> clazz ) {
-        // TODO Auto-generated method stub
-        return false;
+        return EJBUtil.isEJBEntityBean(clazz);
     }
 
     public boolean isProxy( Object instance ) {
-        // TODO Auto-generated method stub
-        return false;
+        return instance.getClass().getName().contains("$$");
     }
 
     public boolean isStatefulBean( Class<?> clazz ) {
-        // TODO Auto-generated method stub
-        return false;
+        return EJBUtil.isEJBSessionStatefulClass(clazz);
     }
 
     public boolean isStatelessBean( Class<?> clazz ) {
-        // TODO Auto-generated method stub
-        return false;
+        return EJBUtil.isEJBSessionStateless(clazz);
     }
 
 }
