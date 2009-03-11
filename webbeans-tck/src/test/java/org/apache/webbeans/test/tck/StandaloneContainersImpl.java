@@ -21,8 +21,8 @@ import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.test.mock.MockServletContextEvent;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
-import org.jboss.jsr299.tck.api.DeploymentException;
-import org.jboss.jsr299.tck.spi.StandaloneContainers;
+import org.jboss.testharness.api.DeploymentException;
+import org.jboss.testharness.spi.StandaloneContainers;
 
 public class StandaloneContainersImpl implements StandaloneContainers
 {

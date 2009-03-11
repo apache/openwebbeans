@@ -16,8 +16,9 @@ package org.apache.webbeans.test.tck;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.jboss.jsr299.tck.api.DeploymentException;
-import org.jboss.jsr299.tck.spi.Containers;
+import org.jboss.testharness.api.DeploymentException;
+import org.jboss.testharness.spi.Containers;
+
 
 public class ContainersImpl implements Containers
 {
