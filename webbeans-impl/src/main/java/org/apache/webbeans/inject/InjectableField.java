@@ -42,6 +42,7 @@ public class InjectableField extends AbstractInjectable
         super(owner,creationalContext);
         this.field = field;
         this.instance = instance;
+        this.injectionMember = field;
     }
 
     /*
@@ -53,6 +54,8 @@ public class InjectableField extends AbstractInjectable
         Type type = field.getGenericType();
 
         Annotation[] annots = field.getAnnotations();
+        
+        this.injectionAnnotations = annots;
 
         Annotation[] bindingAnnos = AnnotationUtil.getBindingAnnotations(annots);
         
@@ -93,7 +96,7 @@ public class InjectableField extends AbstractInjectable
                 field.setAccessible(true);
             }
 
-            field.set(instance, inject(clazz, args, annots));
+            field.set(instance, inject(clazz, args, bindingAnnos));
 
         }
         catch (IllegalAccessException e)

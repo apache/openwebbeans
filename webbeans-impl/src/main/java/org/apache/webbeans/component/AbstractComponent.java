@@ -14,6 +14,8 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorData;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -120,6 +123,13 @@ public abstract class AbstractComponent<T> extends Component<T>
         super(ManagerImpl.getManager());
         this.webBeansType = webBeansType;
         this.returnType = returnType;
+    }
+    
+    protected AbstractComponent(WebBeansType webBeanType)
+    {
+        super(ManagerImpl.getManager());
+        this.webBeansType = webBeanType;
+        
     }
     
     
@@ -416,12 +426,28 @@ public abstract class AbstractComponent<T> extends Component<T>
      * @return the dependent component instance
      */
     @SuppressWarnings("unchecked")
-    public Object getDependent(Bean<?> dependentComponent)
+    public Object getDependent(Bean<?> dependentComponent, InjectionPoint injectionPoint)
     {
         Object object = null;
         
         DependentContext context = (DependentContext) getManager().getContext(Dependent.class);
-        object = context.get((Contextual<T>)dependentComponent,(CreationalContext<T>)CreationalContextFactory.getInstance().getCreationalContext(dependentComponent));    
+        object = context.get((Contextual<T>)dependentComponent,(CreationalContext<T>)CreationalContextFactory.getInstance().getCreationalContext(dependentComponent));
+        
+        //Inject the InjectionPoints
+        Set<InjectionPoint> injectionPoints = dependentComponent.getInjectionPoints();
+        for(InjectionPoint points : injectionPoints)
+        {
+            if(points.getType().equals(InjectionPoint.class))
+            {
+                Member member = points.getMember();
+                if(member instanceof Field)
+                {
+                    Field field = (Field) member;
+                    ClassUtil.setField(object, field, getManager().getInstance(new InjectionPointComponentImpl(injectionPoint)));
+                }
+            }
+            
+        }
         
         this.dependentObjects.put(object, dependentComponent);
 

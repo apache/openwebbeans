@@ -14,6 +14,7 @@
 package org.apache.webbeans.inject;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -54,6 +55,10 @@ public abstract class AbstractInjectable implements Injectable
     private AbstractComponent<?> injectionOwnerComponent;
     
     private CreationalContext<?> creationalContext;
+    
+    protected Member injectionMember;
+    
+    protected Annotation[] injectionAnnotations = new Annotation[0];
 
     protected AbstractInjectable(AbstractComponent<?> component, CreationalContext<?> creaitonalContext)
     {
@@ -71,6 +76,11 @@ public abstract class AbstractInjectable implements Injectable
     public <T> Object inject(Class<T> type, Type[] args, Annotation... annotations)
     {
         boolean dependentContext = false;
+        
+        if(type.equals(InjectionPoint.class))
+        {
+            return null;
+        }
         
         if(!ContextFactory.checkDependentContextActive())
         {
@@ -101,8 +111,7 @@ public abstract class AbstractInjectable implements Injectable
                 return injectForObtains(type, args, annotations);
             }
             
-            InjectionPoint injectionPoint = InjectionPointFactory.getPartialInjectionPoint(this.injectionOwnerComponent, type, annotations);
-            
+            InjectionPoint injectionPoint = InjectionPointFactory.getPartialInjectionPoint(this.injectionOwnerComponent, type, this.injectionMember, this.injectionAnnotations, annotations);                        
             Bean<?> component = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
             
 
@@ -110,7 +119,7 @@ public abstract class AbstractInjectable implements Injectable
             {
                 if(WebBeansUtil.isSimpleWebBeans(this.injectionOwnerComponent))
                 {
-                    return injectForDependent(component);   
+                    return injectForDependent(component,injectionPoint);   
                 }                
                 
                 else
@@ -231,28 +240,28 @@ public abstract class AbstractInjectable implements Injectable
             clazz = (Class<?>) type;
         }
 
-        return injectForDependent(WebBeansUtil.createNewComponent(clazz));
+        return injectForDependent(WebBeansUtil.createNewComponent(clazz),null);
     }
 
     private Object injectForObservable(Type[] args, Annotation... annotations)
     {
         Class<?> eventType = (Class<?>) args[0];
 
-        return injectForDependent(WebBeansUtil.createObservableImplicitComponent(EventImpl.class, eventType, annotations));
+        return injectForDependent(WebBeansUtil.createObservableImplicitComponent(EventImpl.class, eventType, annotations),null);
     }
     
     private <T> Object injectForObtains(Class<T> instanceType, Type[] args, Annotation...annotations)
     {   
         @SuppressWarnings("unchecked")
         Class<Instance<T>> clazz = (Class<Instance<T>>)instanceType;
-        return injectForDependent(WebBeansUtil.createInstanceComponent(clazz, args[0] , annotations));
+        return injectForDependent(WebBeansUtil.createInstanceComponent(clazz, args[0] , annotations),null);
         
     }
 
-    private Object injectForDependent(Bean<?> component)
+    private Object injectForDependent(Bean<?> component, InjectionPoint injectionPoint)
     {
         Object object = null;
-        object = this.injectionOwnerComponent.getDependent(component);
+        object = this.injectionOwnerComponent.getDependent(component,injectionPoint);
 
         return object;
     }

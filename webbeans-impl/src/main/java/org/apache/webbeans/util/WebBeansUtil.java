@@ -87,6 +87,7 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.Component;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.ConversationComponent;
+import org.apache.webbeans.component.InjectionPointComponentImpl;
 import org.apache.webbeans.component.InstanceComponentImpl;
 import org.apache.webbeans.component.ManagerComponentImpl;
 import org.apache.webbeans.component.NewComponentImpl;
@@ -630,6 +631,11 @@ public final class WebBeansUtil
         conversationComp.addBindingType(new CurrentLiteral());
 
         return conversationComp;
+    }
+    
+    public static InjectionPointComponentImpl getInjectionPointComponent()
+    {
+        return new InjectionPointComponentImpl(null);
     }
 
     /**

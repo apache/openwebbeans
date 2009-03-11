@@ -38,6 +38,7 @@ import javax.inject.DuplicateBindingTypeException;
 import javax.inject.Realizes;
 import javax.interceptor.InterceptorBindingType;
 
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 /**
@@ -422,7 +423,7 @@ public final class AnnotationUtil
      */
     private static boolean checkEquality(String src, String member, List<String> arguments)
     {
-        if ((checkEquBuffer(src, arguments).toString().equals(checkEquBuffer(member, arguments).toString())))
+        if ((checkEquBuffer(src, arguments).toString().trim().equals(checkEquBuffer(member, arguments).toString().trim())))
             return true;
         return false;
     }
@@ -689,6 +690,21 @@ public final class AnnotationUtil
 
         for (Annotation ann : bindignTypeAnnots)
         {
+            Method[] methods = ann.annotationType().getDeclaredMethods();
+
+            for (Method method : methods)
+            {
+                Class<?> clazz = method.getReturnType();
+                if (clazz.isArray() || clazz.isAnnotation())
+                {
+                    if (!AnnotationUtil.isAnnotationExist(method.getDeclaredAnnotations(), NonBinding.class))
+                    {
+                        throw new WebBeansConfigurationException("@BindingType : " + ann.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                    }
+                }
+            }
+            
+            
             if (!AnnotationUtil.isBindingAnnotation(ann.annotationType()))
             {
                 throw new IllegalArgumentException("Binding annotations must be annotated with @BindingType");

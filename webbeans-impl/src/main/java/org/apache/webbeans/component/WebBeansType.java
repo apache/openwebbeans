@@ -55,5 +55,7 @@ public enum WebBeansType
     OBSERVABLE, 
     MANAGER, 
     CONVERSATION,
-    INSTANCE
+    INSTANCE,
+    INJECTIONPOINT,
+    THIRDPARTY
 }

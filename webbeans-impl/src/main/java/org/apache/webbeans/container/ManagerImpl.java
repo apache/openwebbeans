@@ -46,6 +46,7 @@ import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -159,7 +160,16 @@ public class ManagerImpl implements Manager, Referenceable
 
     public Manager addBean(Bean<?> component)
     {
-        getManager().components.add(component);
+        if(component instanceof AbstractComponent)
+        {
+            getManager().components.add(component);    
+        }
+        else
+        {
+            ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(component);
+            getManager().components.add(bean);
+        }
+        
 
         return this;
     }

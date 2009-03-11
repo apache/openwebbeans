@@ -167,13 +167,19 @@ public class InjectionPointFactory
         
     }
 
-    public static InjectionPoint getPartialInjectionPoint(Bean<?> owner,Type type, Annotation...bindings)
+    public static InjectionPoint getPartialInjectionPoint(Bean<?> owner,Type type, Member member, Annotation[] anns, Annotation...bindings)
     {
-        InjectionPointImpl impl = new InjectionPointImpl(owner,type,null);
+        InjectionPointImpl impl = new InjectionPointImpl(owner,type,member);
+        
         
         for(Annotation annot : bindings)
         {
             impl.addBindingAnnotation(annot);
+        }
+        
+        for(Annotation annot : anns)
+        {
+            impl.addAnnotation(annot);
         }
         
         return impl;
@@ -227,5 +233,6 @@ public class InjectionPointFactory
             }
         }
     }
+    
 
 }

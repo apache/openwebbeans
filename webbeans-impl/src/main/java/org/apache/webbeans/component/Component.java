@@ -72,7 +72,7 @@ public abstract class Component<T> extends Bean<T>
 
     abstract public Class<T> getReturnType();
 
-    abstract public Object getDependent(Bean<?> dependentComponent);
+    abstract public Object getDependent(Bean<?> dependentComponent,InjectionPoint injectionPoint);
 
     abstract public List<InterceptorData> getInterceptorStack();
 

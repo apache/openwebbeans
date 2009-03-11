@@ -19,8 +19,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.context.Dependent;
 import javax.context.ScopeType;
 import javax.decorator.Decorator;
+import javax.inject.Current;
 import javax.inject.InconsistentSpecializationException;
 import javax.inject.Specializes;
 import javax.inject.manager.Bean;
@@ -86,6 +88,9 @@ public class WebBeansContainerDeployer
 
                 // Register Conversation built-in component
                 ManagerImpl.getManager().addBean(WebBeansUtil.getConversationComponent());
+                
+                // Register InjectionPoint bean
+                ManagerImpl.getManager().addBean(WebBeansUtil.getInjectionPointComponent());
 
                 // JNDI bind
                 //X TODO JNDIUtil.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, ManagerImpl.getManager());
@@ -157,7 +162,21 @@ public class WebBeansContainerDeployer
                 Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
                 for(InjectionPoint injectionPoint : injectionPoints)
                 {
-                    resolver.checkInjectionPoints(injectionPoint);
+                    //check for InjectionPoint injection
+                    if(injectionPoint.getType().equals(InjectionPoint.class))
+                    {
+                        if(injectionPoint.getAnnotations().length == 1 && injectionPoint.getAnnotations()[0].annotationType().equals(Current.class))
+                        {
+                            if(!bean.getScopeType().equals(Dependent.class))
+                            {
+                                throw new WebBeansConfigurationException("Bean " + bean + "scope can not define other scope except @Dependent to inject InjectionPoint");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        resolver.checkInjectionPoints(injectionPoint);   
+                    }                    
                 }
             }
         }

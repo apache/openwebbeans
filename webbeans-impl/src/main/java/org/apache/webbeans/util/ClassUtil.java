@@ -1327,4 +1327,29 @@ public final class ClassUtil
         return found;
     }
     
+    public static void setField(Object instance, Field field, Object value)
+    {
+        Asserts.assertNotNull(instance);
+        Asserts.assertNotNull(field);
+        
+        if(!field.isAccessible())
+        {
+            field.setAccessible(true);
+        }
+        
+        try
+        {
+            field.set(instance, value);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new WebBeansException(e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new WebBeansException(e);
+        }
+        
+    }
+    
 }

@@ -51,6 +51,7 @@ public class InjectableConstructor<T> extends AbstractInjectable
     {
         super(owner,creationalContext);
         this.con = cons;
+        this.injectionMember = con;
     }
 
     /**
