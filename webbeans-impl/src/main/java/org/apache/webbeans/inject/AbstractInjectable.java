@@ -90,10 +90,10 @@ public abstract class AbstractInjectable implements Injectable
         
         try
         {
-            if (isResource(annotations))
+            if (isResource(this.injectionAnnotations))
             {
                 //X TODO do we need the args too?
-                return injectResource(type, annotations);
+                return injectResource(type, this.injectionAnnotations);
             }
             
             if (isNewBinding(annotations))

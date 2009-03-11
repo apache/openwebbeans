@@ -65,6 +65,9 @@ public class InjectableMethods<T> extends AbstractInjectable
         List<Object> list = new ArrayList<Object>();
         
         Annotation[] methodAnnots = m.getAnnotations();
+        
+        this.injectionAnnotations = methodAnnots;
+        
         if (isResource(methodAnnots))
         {
             // if the method itself is resource annotated, e.g. @PersistenceUnit
