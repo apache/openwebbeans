@@ -59,8 +59,10 @@ public final class JavassistProxyFactory
                 }
 
             }
-
-            interfaceList.add(Serializable.class);
+            if (!interfaceList.contains(Serializable.class))
+            {
+                interfaceList.add(Serializable.class);
+            }
 
             Class<?>[] interfaceArray = new Class<?>[interfaceList.size()];
             interfaceArray = interfaceList.toArray(interfaceArray);
