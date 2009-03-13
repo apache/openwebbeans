@@ -16,6 +16,8 @@
  */
 package org.apache.webbeans.test.component.realization;
 
+import java.io.Serializable;
+
 import javax.context.SessionScoped;
 import javax.inject.Realizes;
 
@@ -23,7 +25,7 @@ import org.apache.webbeans.test.component.UserComponent;
 
 @SessionScoped
 @Realizes
-public class RealizationComponent1 extends GenericComponent
+public class RealizationComponent1 extends GenericComponent implements Serializable
 {
     public RealizationComponent1()
     {

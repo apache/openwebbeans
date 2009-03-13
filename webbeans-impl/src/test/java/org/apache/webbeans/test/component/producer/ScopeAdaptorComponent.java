@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.test.component.producer;
 
+import java.io.Serializable;
+
 import javax.annotation.Named;
 import javax.context.SessionScoped;
 import javax.inject.Produces;
@@ -25,7 +27,7 @@ import org.apache.webbeans.test.component.IPayment;
 @Production
 @SessionScoped
 @Named
-public class ScopeAdaptorComponent
+public class ScopeAdaptorComponent implements Serializable
 {
     @Produces
     @SessionScoped

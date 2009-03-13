@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.test.component.disposal;
 
+import java.io.Serializable;
+
 import javax.annotation.Named;
 import javax.context.RequestScoped;
 import javax.context.SessionScoped;
@@ -24,7 +26,7 @@ import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.mock.MockEntityManager;
 
 @SessionScoped
-public class Disposal1
+public class Disposal1 implements Serializable
 {
     public static boolean disposeCall = false;
 

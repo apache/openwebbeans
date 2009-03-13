@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.test.component.service;
 
+import java.io.Serializable;
+
 import javax.context.SessionScoped;
 import javax.inject.Production;
 
@@ -23,7 +25,7 @@ import org.apache.webbeans.test.annotation.binding.Binding2;
 @SessionScoped
 @Binding1
 @Binding2
-public class Typed2 implements ITyped2<String, Object>
+public class Typed2 implements ITyped2<String, Object>, Serializable
 {
 
 }

@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.test.component;
 
+import java.io.Serializable;
+
 import javax.annotation.Named;
 import javax.context.SessionScoped;
 import javax.inject.Production;
@@ -20,7 +22,7 @@ import javax.inject.Production;
 @Production
 @SessionScoped
 @Named("userComponent")
-public class UserComponent
+public class UserComponent implements Serializable
 {
     private String name;
     private String surname;

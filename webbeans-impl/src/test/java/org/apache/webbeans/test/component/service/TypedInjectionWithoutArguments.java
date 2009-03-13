@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.test.component.service;
 
+import java.io.Serializable;
+
 import javax.context.SessionScoped;
 import javax.inject.Production;
 
@@ -22,7 +24,7 @@ import org.apache.webbeans.test.annotation.binding.Binding2;
 @Production
 @SessionScoped
 @SuppressWarnings("unchecked")
-public class TypedInjectionWithoutArguments
+public class TypedInjectionWithoutArguments implements Serializable
 {
     public @Binding1
     @Binding2

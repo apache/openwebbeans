@@ -13,12 +13,14 @@
  */
 package org.apache.webbeans.test.component.intercept.webbeans;
 
+import java.io.Serializable;
+
 import javax.context.SessionScoped;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
 @SessionScoped
-public class ShoppingCard
+public class ShoppingCard implements Serializable
 {
     public static boolean CALLED = false;
     

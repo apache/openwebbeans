@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.test.component;
 
+import java.io.Serializable;
+
 import javax.annotation.Named;
 import javax.context.SessionScoped;
 import javax.inject.Initializer;
@@ -26,7 +28,7 @@ import org.apache.webbeans.test.component.service.ITyped2;
 @SingletonBinding
 @Named("singletonInstance")
 @Production
-public class Singleton
+public class Singleton implements Serializable
 {
     @SuppressWarnings("unchecked")
     private ITyped2 typed2 = null;

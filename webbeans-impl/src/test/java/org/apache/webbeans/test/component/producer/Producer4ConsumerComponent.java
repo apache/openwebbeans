@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.test.component.producer;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.context.SessionScoped;
@@ -20,7 +21,7 @@ import javax.context.SessionScoped;
 import org.apache.webbeans.test.annotation.binding.Users;
 
 @SessionScoped
-public class Producer4ConsumerComponent
+public class Producer4ConsumerComponent implements Serializable
 {
     @Users
     private List<User> users;
