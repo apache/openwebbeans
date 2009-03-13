@@ -81,4 +81,14 @@ public class ObservableComponentImpl<T, K> extends ComponentImpl<T>
         return definedType;
     }
 
+    /**
+     * @return the eventType
+     */
+    public Class<K> getEventType()
+    {
+        return eventType;
+    }
+    
+    
+
 }

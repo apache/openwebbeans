@@ -523,8 +523,10 @@ public abstract class AbstractComponent<T> extends Component<T>
         {
             instance = (K) it.next();
             Bean<K> bean = (Bean<K>) this.dependentObjects.get(instance);
-            bean.destroy(instance);
+            bean.destroy(instance);            
         }
+        
+        this.dependentObjects.clear();
     }
     
     public void addInjectionPoint(InjectionPoint injectionPoint)

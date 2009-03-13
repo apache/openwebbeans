@@ -26,6 +26,7 @@ import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.component.ObservableComponentImpl;
 import org.apache.webbeans.component.ProducerComponentImpl;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
@@ -211,10 +212,6 @@ public class InjectionResolver
                         Type[] actualArgs = null;
                         if (ClassUtil.isAssignable(apiType, componentApiType))
                         {
-                            /*
-                             * Annotated Producer method or XML Defined Producer
-                             * Method
-                             */
                             if (ProducerComponentImpl.class.isAssignableFrom(component.getClass()))
                             {
                                 actualArgs = ((ProducerComponentImpl<?>) component).getActualTypeArguments();
@@ -224,6 +221,17 @@ public class InjectionResolver
                                     break;
                                 }
 
+                            }
+                            
+                            else if(component instanceof ObservableComponentImpl)
+                            {
+                                ObservableComponentImpl<?, ?> observableComponent = (ObservableComponentImpl<?, ?>)component;
+                                Class<?> eventType = (Class<?>)actualTypeArguments[0];
+                                if(eventType.equals(observableComponent.getEventType()))
+                                {
+                                    results.add((Bean<T>) component);
+                                    break;
+                                }
                             }
 
                             else

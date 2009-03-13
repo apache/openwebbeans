@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.test.component;
 
+import java.io.Serializable;
+
 import javax.context.SessionScoped;
 import javax.inject.Production;
 
@@ -22,7 +24,7 @@ import org.apache.webbeans.test.annotation.binding.AnnotationWithNonBindingMembe
 @Production
 @AnnotationWithNonBindingMember(value = "B", arg1 = "arg1", arg2 = "arg2")
 @SessionScoped
-public class NonBindingComponent
+public class NonBindingComponent implements Serializable
 {
     private @AnnotationWithBindingMember(number = 3, value = "B")
     BindingComponent comp;

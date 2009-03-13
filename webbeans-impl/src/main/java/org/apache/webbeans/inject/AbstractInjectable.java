@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 
 import javax.context.CreationalContext;
 import javax.context.Dependent;
+import javax.event.Event;
 import javax.event.Fires;
 import javax.inject.Instance;
 import javax.inject.New;
@@ -34,7 +35,6 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.spi.JPAService;
@@ -245,9 +245,9 @@ public abstract class AbstractInjectable implements Injectable
 
     private Object injectForObservable(Type[] args, Annotation... annotations)
     {
-        Class<?> eventType = (Class<?>) args[0];
-
-        return injectForDependent(WebBeansUtil.createObservableImplicitComponent(EventImpl.class, eventType, annotations),null);
+        Bean<?> bean = InjectionResolver.getInstance().implResolveByType(Event.class, args, annotations).iterator().next();
+        
+        return injectForDependent(bean,null);
     }
     
     private <T> Object injectForObtains(Class<T> instanceType, Type[] args, Annotation...annotations)

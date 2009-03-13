@@ -182,7 +182,6 @@ public abstract class AbstractContext implements WebBeansContext
         if (componentInstanceMap.get(component) != null)
         {
             componentInstanceMap.remove(component);
-            removeInstance(component);
         }
     }
 

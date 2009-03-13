@@ -97,6 +97,7 @@ import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -105,6 +106,7 @@ import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.ejb.orm.ORMUtil;
+import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -587,7 +589,7 @@ public final class WebBeansUtil
 
         component.setConstructor(constructor);
         component.setType(new StandardLiteral());
-        component.setImplScopeType(new DependentScopeLiteral());
+        component.setImplScopeType(new DependentScopeLiteral());                      
 
         return component;
     }
@@ -629,6 +631,7 @@ public final class WebBeansUtil
         conversationComp.setImplScopeType(new RequestedScopeLiteral());
         conversationComp.setType(new StandardLiteral());
         conversationComp.addBindingType(new CurrentLiteral());
+        conversationComp.setName(WebBeansUtil.getSimpleWebBeanDefaultName(Conversation.class.getSimpleName()));
 
         return conversationComp;
     }
@@ -1678,5 +1681,29 @@ public final class WebBeansUtil
         }
         
         return false;
+    }
+    
+    public static void addInjectedImplicitEventComponent(Field field)
+    {
+        Annotation[] anns = field.getAnnotations();
+        
+        if(AnnotationUtil.isAnnotationExist(anns, Fires.class))
+        {
+            Type type = field.getGenericType();
+            
+            Type[] args = new Type[0];
+            
+            Class<?> clazz = null;
+            if (type instanceof ParameterizedType)
+            {
+                ParameterizedType pt = (ParameterizedType) type;
+                args = pt.getActualTypeArguments();
+            }
+            
+            clazz = (Class<?>)args[0];
+            
+            Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, AnnotationUtil.getBindingAnnotations(field.getDeclaredAnnotations()));
+            ActivityManager.getInstance().getRootActivity().addBean(bean);                  
+        }      
     }
  }

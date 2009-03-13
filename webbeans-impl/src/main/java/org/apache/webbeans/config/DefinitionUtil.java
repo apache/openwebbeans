@@ -864,6 +864,7 @@ public final class DefinitionUtil
                     {
                         if (!fromSuperClazz)
                         {
+                            WebBeansUtil.addInjectedImplicitEventComponent(field);
                             component.addInjectedField(field);
                             addFieldInjectionPointMetaData(component, field);
                         }
@@ -883,6 +884,7 @@ public final class DefinitionUtil
                             
                             if(!defined)
                             {
+                                WebBeansUtil.addInjectedImplicitEventComponent(field);
                                 component.addInjectedField(field);
                                 addFieldInjectionPointMetaData(component, field);                                
                             }

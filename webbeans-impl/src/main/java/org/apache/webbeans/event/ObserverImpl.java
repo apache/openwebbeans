@@ -71,31 +71,63 @@ public class ObserverImpl<T>
     public boolean isObserverOfBindings(Annotation... annotations)
     {
         boolean ok = true;
-        for (Annotation annot : annotations)
+                
+        if(this.eventBindingTypes.size() >= annotations.length)
         {
-            if (!this.eventBindingTypes.contains(annot))
+            for (Annotation annot : annotations)
             {
-                ok = false;
-                break;
-            }
-            else
-            {
-                if (!AnnotationUtil.isAnnotationMemberExist(annot.annotationType(), annot, getAnnotation(annot.annotationType())))
+                if (!this.eventBindingTypes.contains(annot))
                 {
                     ok = false;
                     break;
                 }
-            }
+                else
+                {
+                    if (!AnnotationUtil.isAnnotationMemberExist(annot.annotationType(), annot, getAnnotation(this.eventBindingTypes,annot.annotationType())))
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
 
+            }            
         }
+        else
+        {
+            Set<Annotation> eventAnnots = new HashSet<Annotation>();
+            
+            for(Annotation eventAnnot : annotations)
+            {
+                eventAnnots.add(eventAnnot);
+            }
+            
+            for (Annotation annot : this.eventBindingTypes)
+            {
+                if (!eventAnnots.contains(annot))
+                {
+                    ok = false;
+                    break;
+                }
+                else
+                {
+                    if (!AnnotationUtil.isAnnotationMemberExist(annot.annotationType(), annot, getAnnotation(eventAnnots,annot.annotationType())))
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
 
+            }            
+            
+        }
+        
         return ok;
 
     }
 
-    private Annotation getAnnotation(Class<? extends Annotation> type)
+    private Annotation getAnnotation(Set<Annotation> annots,Class<? extends Annotation> type)
     {
-        Iterator<Annotation> it = this.eventBindingTypes.iterator();
+        Iterator<Annotation> it = annots.iterator();
         while (it.hasNext())
         {
             Annotation annot = it.next();
