@@ -13,6 +13,7 @@
  */
 package javax.inject;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,7 +21,8 @@ import java.lang.annotation.Target;
 
 @BindingType
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.FIELD, ElementType.PARAMETER })
+@Target( { ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
+@Documented
 public @interface Obtains
 {
 
