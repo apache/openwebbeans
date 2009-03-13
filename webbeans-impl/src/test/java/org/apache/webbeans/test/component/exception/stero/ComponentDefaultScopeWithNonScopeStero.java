@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.test.component.exception.stero;
 
+import java.io.Serializable;
+
 import javax.context.SessionScoped;
 import javax.inject.Production;
 
@@ -21,7 +23,7 @@ import org.apache.webbeans.test.sterotype.StereoWithNonScope;
 @Production
 @StereoWithNonScope
 @SessionScoped
-public class ComponentDefaultScopeWithNonScopeStero
+public class ComponentDefaultScopeWithNonScopeStero implements Serializable
 {
 
 }
