@@ -92,4 +92,9 @@ public class BeansImpl implements Beans
         return EJBUtil.isEJBSessionStateless(clazz);
     }
 
+    public <T> T getEnterpriseBean(Class<? extends T> beanType, Class<T> localInterface)
+    {
+        return null;
+    }
+
 }

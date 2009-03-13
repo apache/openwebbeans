@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.test.tck;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -27,25 +29,34 @@ public class ContainersImpl implements Containers
 
     public void cleanup() throws IOException
     {
-        // TODO Auto-generated method stub
 
     }
 
     public void deploy(InputStream archive, String name) throws DeploymentException, IOException
     {
-        // TODO Auto-generated method stub
-
+        if(archive.available() > 0)
+        {
+            File file = new File("/home/gurkanerdogdu/jboss-4.2.3.GA/server/default/deploy/" + name);
+            FileOutputStream os = new FileOutputStream(file);            
+            byte temp[] = new byte[512];
+            
+            while(archive.read(temp) != -1)
+            {
+                os.write(temp);
+            }            
+    
+        }
+                
+        
     }
 
     public void setup() throws IOException
     {
-        // TODO Auto-generated method stub
 
     }
 
     public void undeploy(String name) throws IOException
     {
-        // TODO Auto-generated method stub
 
     }
 
