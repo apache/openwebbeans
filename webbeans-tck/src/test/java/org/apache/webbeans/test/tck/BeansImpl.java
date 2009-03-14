@@ -14,7 +14,6 @@
 package org.apache.webbeans.test.tck;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 import javax.inject.manager.Bean;
 
@@ -22,52 +21,28 @@ import javax.inject.manager.Bean;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
-import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.ejb.EJBUtil;
-import org.apache.webbeans.test.mock.MockManager;
 import org.jboss.jsr299.tck.spi.Beans;
 
 public class BeansImpl implements Beans
 {
 
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public <T> Bean<T> createProducerMethodBean(Method method, Bean<?> declaringBean)
     {
-        //X TODO plz review! If the declaringBean has been already parsed, then the producer must be also.
-        MockManager manager = MockManager.getInstance();
-        List<AbstractComponent<?>> components = manager.getComponents();
+        return DefinitionUtil.createProducerComponent((Class<T>)method.getReturnType(), method, (AbstractComponent<?>)declaringBean, false);
         
-        for (AbstractComponent<?> component : components)
-        {
-            if (component.getClass().equals(method.getReturnType())) 
-            {
-                //X TODO plz review the cast!
-                return (Bean<T>) component;
-            }
-        }
-        
-        return null;
     }
 
-    /** {@inheritDoc} */
     public <T> Bean<T> createSimpleBean(Class<T> clazz)
     {
         ComponentImpl<T> bean = null;
 
         SimpleWebBeansConfigurator.checkSimpleWebBeanCondition(clazz);
+        
         bean = SimpleWebBeansConfigurator.define(clazz, WebBeansType.SIMPLE);
-
-        if (bean != null)
-        {
-            DecoratorUtil.checkSimpleWebBeanDecoratorConditions(bean);
-            // DefinitionUtil.defineSimpleWebBeanInterceptorStack(bean);
-
-            MockManager manager = MockManager.getInstance();
-            manager.getComponents().add((AbstractComponent<?>) bean);
-            manager.addBean(bean);
-        }
 
         return bean;
     }
@@ -96,5 +71,4 @@ public class BeansImpl implements Beans
     {
         return null;
     }
-
 }

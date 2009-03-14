@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<display-name>JBoss Test Harness</display-name>
+
+	<listener>
+		<listener-class>
+			org.jboss.testharness.impl.runner.servlet.HarnessServletListener</listener-class>
+	</listener>
+
+	<servlet>
+		<servlet-name>JBoss Test Harness Test Runner</servlet-name>
+		<servlet-class>
+			org.jboss.testharness.impl.runner.servlet.ServletTestRunner</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>JBoss Test Harness Test Runner</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+
+	<listener>
+		<listener-class>
+			org.apache.webbeans.servlet.WebBeansConfigurationListener</listener-class>
+	</listener>
+
+	<filter>
+		<filter-name>webbeans</filter-name>
+		<filter-class>org.apache.webbeans.jsf.WebBeansJSFFilter</filter-class>
+	</filter>
+	
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.jsf</url-pattern>
+	</servlet-mapping>
+	
+	<filter-mapping>
+		<filter-name>webbeans</filter-name>
+		<servlet-name>Faces Servlet</servlet-name>
+	</filter-mapping>
+
+	<context-param>
+		<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+		<param-value>.xhtml</param-value>
+	</context-param>
+
+</web-app>
