@@ -23,7 +23,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-@Target( { METHOD, FIELD, PARAMETER, TYPE })
+@Target( { METHOD, FIELD, PARAMETER })
 @Retention(RUNTIME)
 @Documented
 @BindingType
