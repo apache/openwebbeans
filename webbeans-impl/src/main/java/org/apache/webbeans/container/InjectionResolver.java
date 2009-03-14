@@ -29,6 +29,7 @@ import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.InstanceComponentImpl;
 import org.apache.webbeans.component.ObservableComponentImpl;
 import org.apache.webbeans.component.ProducerComponentImpl;
+import org.apache.webbeans.component.ProducerFieldComponent;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -253,8 +254,18 @@ public class InjectionResolver
                                 {
                                     results.add((Bean<T>) component);
                                     break;
-                                }
+                                }                                                                
+                            }
+                            else if(component instanceof ProducerFieldComponent)
+                            {
+                                ProducerFieldComponent<?> pf = (ProducerFieldComponent<?>)component;
+                                actualArgs = pf.getActualTypeArguments();
                                 
+                                if (Arrays.equals(actualArgs, actualTypeArguments))
+                                {
+                                    results.add((Bean<T>) component);
+                                    break;
+                                }
                                 
                             }
 

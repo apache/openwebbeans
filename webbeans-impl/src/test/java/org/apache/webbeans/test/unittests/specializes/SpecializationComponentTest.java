@@ -46,6 +46,8 @@ public class SpecializationComponentTest extends TestContext
     @Test
     public void testMockService()
     {
+        clear();
+        
         ContextFactory.initRequestContext(null);
         
         Bean<MockSpecializesService> bean1 = defineSimpleWebBean(MockSpecializesService.class);

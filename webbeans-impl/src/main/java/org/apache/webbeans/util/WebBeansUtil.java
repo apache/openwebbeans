@@ -1249,11 +1249,14 @@ public final class WebBeansUtil
             {
                 AbstractComponent<?> candidate = (AbstractComponent<?>)candidates;
                 
-                if(candidate.getReturnType().equals(superClass))
+                if(!(candidate instanceof NewComponentImpl))
                 {
-                    superBean = candidates;
-                    break;
-                }
+                    if(candidate.getReturnType().equals(superClass))
+                    {
+                        superBean = candidates;
+                        break;
+                    }                    
+                }                
             }
                         
             if (superBean != null)

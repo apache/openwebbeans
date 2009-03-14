@@ -102,16 +102,9 @@ public final class DefinitionUtil
             }
         }
 
-        if (!found && (component instanceof IComponentHasParent))
-        {
-            IComponentHasParent child = (IComponentHasParent) component;
-            component.setType(child.getParent().getType());
-            found = true;
-        }
-
         if (!found)
         {
-            // Look inherited meta-data deplyment type
+            // Look inherited meta-data deployment type
             IBeanInheritedMetaData metadata = component.getInheritedMetaData();
             if (metadata != null)
             {
@@ -129,17 +122,29 @@ public final class DefinitionUtil
             // Look stereotype
             Annotation result = WebBeansUtil.getMaxPrecedenceSteroTypeDeploymentType(component);
 
-            // Default @Production
             if (result == null)
             {
-                component.setType(new ProductionLiteral());
-
+                //From parent
+                if (!found && (component instanceof IComponentHasParent))
+                {
+                    IComponentHasParent child = (IComponentHasParent) component;
+                    component.setType(child.getParent().getType());
+                }
+                
+                else
+                {
+                    component.setType(new ProductionLiteral());
+                    found = true;    
+                }
+                
             }
             else
             {
                 component.setType(result);
+                found = true;
             }
         }
+                
 
         return component.getDeploymentType();
     }

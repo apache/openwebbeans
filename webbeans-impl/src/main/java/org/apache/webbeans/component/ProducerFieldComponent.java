@@ -19,6 +19,8 @@ package org.apache.webbeans.component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 import javax.context.CreationalContext;
 import javax.context.Dependent;
@@ -111,6 +113,23 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
         return instance;
 
     }
+    
+    public Type[] getActualTypeArguments()
+    {
+        Type type = producerField.getGenericType();
+        if (type instanceof ParameterizedType)
+        {
+            ParameterizedType pType = (ParameterizedType) type;
+            return pType.getActualTypeArguments();
+        }
+
+        else
+        {
+            return new Type[0];
+        }
+
+    }
+    
     
     @SuppressWarnings("unchecked")
     protected <K> void destroyBean(Bean<?> bean, Object instance)
