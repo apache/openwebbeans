@@ -100,4 +100,9 @@ public class WebBeansFinder
             singletonMap.clear();   
         }
     }
+    
+    public static void removeInstance(String name)
+    {
+        singletonMap.remove(name);
+    }
 }

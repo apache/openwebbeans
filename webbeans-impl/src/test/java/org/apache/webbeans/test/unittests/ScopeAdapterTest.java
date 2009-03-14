@@ -70,7 +70,7 @@ public class ScopeAdapterTest extends TestContext
 
         List<AbstractComponent<?>> comps = getComponents();
 
-        Assert.assertEquals(4, getDeployedComponents());
+        Assert.assertEquals(7, getDeployedComponents());
 
         getManager().getInstance(comps.get(0));
         getManager().getInstance(comps.get(1));

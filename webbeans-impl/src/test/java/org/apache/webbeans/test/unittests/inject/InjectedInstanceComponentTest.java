@@ -16,6 +16,7 @@
  */
 package org.apache.webbeans.test.unittests.inject;
 
+
 import javax.inject.Instance;
 import javax.inject.manager.Bean;
 
@@ -49,6 +50,7 @@ public class InjectedInstanceComponentTest extends TestContext
         getManager().getInstance(bean);
         
         Bean<InstanceInjectedComponent> injectedBean = defineSimpleWebBean(InstanceInjectedComponent.class);
+                
         InstanceInjectedComponent instance = getManager().getInstance(injectedBean);
         
         Assert.assertNotNull(instance);

@@ -32,35 +32,32 @@ import javax.inject.manager.Interceptor;
 import javax.inject.manager.Manager;
 
 import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 
 public class MockManager implements Manager
 {
-    private static MockManager instance = new MockManager();
-
     private ManagerImpl manager = null;
 
     private List<AbstractComponent<?>> componentList = new ArrayList<AbstractComponent<?>>();
 
-    private MockManager()
+    public MockManager()
     {
         this.manager = new ManagerImpl();
         ActivityManager.getInstance().setRootActivity(this.manager);
     }
 
-    public static MockManager getInstance()
-    {
-        return instance;
-    }
 
     public void clear()
     {
-        componentList.clear();
-        if(manager != null)
-        {
-            manager.getBeans().clear();   
-        }
+        componentList.clear();        
+        
+        WebBeansFinder.removeInstance(WebBeansFinder.SINGLETON_NOTIFICATION_MANAGER);
+        
+        this.manager = new ManagerImpl();        
+     
+        ActivityManager.getInstance().setRootActivity(this.manager);        
     }
 
     public List<AbstractComponent<?>> getComponents()
@@ -128,6 +125,7 @@ public class MockManager implements Manager
         return manager.getInstanceToInject(injectionPoint, context);
     }
     
+    @SuppressWarnings("unchecked")
     public Object getInstanceToInject(InjectionPoint injectionPoint)
     {
        return manager.getInstanceToInject(injectionPoint);

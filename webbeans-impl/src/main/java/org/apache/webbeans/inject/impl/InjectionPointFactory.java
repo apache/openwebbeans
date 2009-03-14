@@ -23,9 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.event.Fires;
 import javax.event.Observes;
-import javax.inject.Obtains;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
@@ -94,10 +92,10 @@ public class InjectionPointFactory
     
     private static boolean checkFieldApplicable(Annotation[] anns)
     {
-        if(AnnotationUtil.isAnnotationExist(anns, Fires.class) || AnnotationUtil.isAnnotationExist(anns, Obtains.class))
-        {
-            return true;
-        }
+//        if(AnnotationUtil.isAnnotationExist(anns, Fires.class) || AnnotationUtil.isAnnotationExist(anns, Obtains.class))
+//        {
+//            return true;
+//        }
      
         return false;
     }

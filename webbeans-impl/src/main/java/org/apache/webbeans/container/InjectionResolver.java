@@ -26,6 +26,7 @@ import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.component.InstanceComponentImpl;
 import org.apache.webbeans.component.ObservableComponentImpl;
 import org.apache.webbeans.component.ProducerComponentImpl;
 import org.apache.webbeans.config.WebBeansFinder;
@@ -166,6 +167,11 @@ public class InjectionResolver
     {
         Asserts.assertNotNull(apiType, "apiType parameter can not be null");
         Asserts.assertNotNull(binding, "binding parameter can not be null");
+        
+        if(apiType.isPrimitive())
+        {
+            apiType = ClassUtil.getPrimitiveWrapper(apiType);
+        }
 
         ManagerImpl manager = ManagerImpl.getManager();
 
@@ -206,6 +212,11 @@ public class InjectionResolver
                 while (itComponentApiTypes.hasNext())
                 {
                     Class<?> componentApiType = (Class<?>)itComponentApiTypes.next();
+                    
+                    if(componentApiType.isPrimitive())
+                    {
+                        componentApiType = ClassUtil.getPrimitiveWrapper(componentApiType);
+                    }
 
                     if (actualTypeArguments.length > 0)
                     {
@@ -232,6 +243,19 @@ public class InjectionResolver
                                     results.add((Bean<T>) component);
                                     break;
                                 }
+                            }
+                            else if(component instanceof InstanceComponentImpl)
+                            {
+                                InstanceComponentImpl<?> instanceComponent = (InstanceComponentImpl<?>)component;
+                                actualArgs = instanceComponent.getActualTypeArguments();
+                                
+                                if (Arrays.equals(actualArgs, actualTypeArguments))
+                                {
+                                    results.add((Bean<T>) component);
+                                    break;
+                                }
+                                
+                                
                             }
 
                             else

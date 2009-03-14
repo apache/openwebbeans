@@ -31,10 +31,13 @@ public class InstanceComponentImpl<T> extends AbstractComponent<Instance<T>>
     
     private Type[] actualTypeArguments = new Type[0];
     
-    public InstanceComponentImpl(Class<Instance<T>> returnType, Type injectedType)
+    private Type[] injectedTypeArguments = new Type[0];
+    
+    public InstanceComponentImpl(Class<Instance<T>> returnType, Type injectedType, Type[] injectedTypeArguments)
     {
         super(WebBeansType.INSTANCE, returnType);
         configureInjectionClazz(injectedType);
+        this.injectedTypeArguments = injectedTypeArguments;
     }
     
     @SuppressWarnings("unchecked")
@@ -68,4 +71,13 @@ public class InstanceComponentImpl<T> extends AbstractComponent<Instance<T>>
         
     }
 
+    /**
+     * @return the actualTypeArguments
+     */
+    public Type[] getActualTypeArguments()
+    {
+        return this.injectedTypeArguments;
+    }
+
+    
 }

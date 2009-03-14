@@ -22,9 +22,6 @@ import javax.context.CreationalContext;
 import javax.context.Dependent;
 import javax.event.Event;
 import javax.event.Fires;
-import javax.inject.Instance;
-import javax.inject.New;
-import javax.inject.Obtains;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
@@ -95,22 +92,12 @@ public abstract class AbstractInjectable implements Injectable
                 //X TODO do we need the args too?
                 return injectResource(type, this.injectionAnnotations);
             }
-            
-            if (isNewBinding(annotations))
-            {
-                return injectForNew(type, annotations);
-            }
-
+                        
             if (isObservableBinding(annotations))
             {
                 return injectForObservable(args, annotations);
             }
-            
-            if(isObtainsBinding(annotations))
-            {
-                return injectForObtains(type, args, annotations);
-            }
-            
+                        
             InjectionPoint injectionPoint = InjectionPointFactory.getPartialInjectionPoint(this.injectionOwnerComponent, type, this.injectionMember, this.injectionAnnotations, annotations);                        
             Bean<?> component = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
             
@@ -152,19 +139,6 @@ public abstract class AbstractInjectable implements Injectable
         return AnnotationUtil.hasResourceAnnotation(annotations);
     }
 
-    private boolean isNewBinding(Annotation... annotations)
-    {
-        if (annotations.length == 1)
-        {
-            if (annotations[0].annotationType().equals(New.class))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private boolean isObservableBinding(Annotation... annotations)
     {
         for (Annotation ann : annotations)
@@ -178,20 +152,6 @@ public abstract class AbstractInjectable implements Injectable
         return false;
     }
     
-    private boolean isObtainsBinding(Annotation... annotations)
-    {
-        for (Annotation ann : annotations)
-        {
-            if (ann.annotationType().equals(Obtains.class))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
-
     /**
      * create the instance for injecting web beans resources.
      * @see AnnotationUtil#isResourceAnnotation(Class)
@@ -227,22 +187,6 @@ public abstract class AbstractInjectable implements Injectable
         return ret;
     }
     
-    private Object injectForNew(Type type, Annotation... annotations)
-    {
-        Class<?> clazz = null;
-
-        if (type instanceof ParameterizedType)
-        {
-            clazz = (Class<?>) ((ParameterizedType) type).getRawType();
-        }
-        else if (type instanceof Class)
-        {
-            clazz = (Class<?>) type;
-        }
-
-        return injectForDependent(WebBeansUtil.createNewComponent(clazz),null);
-    }
-
     private Object injectForObservable(Type[] args, Annotation... annotations)
     {
         Bean<?> bean = InjectionResolver.getInstance().implResolveByType(Event.class, args, annotations).iterator().next();
@@ -250,14 +194,6 @@ public abstract class AbstractInjectable implements Injectable
         return injectForDependent(bean,null);
     }
     
-    private <T> Object injectForObtains(Class<T> instanceType, Type[] args, Annotation...annotations)
-    {   
-        @SuppressWarnings("unchecked")
-        Class<Instance<T>> clazz = (Class<Instance<T>>)instanceType;
-        return injectForDependent(WebBeansUtil.createInstanceComponent(clazz, args[0] , annotations),null);
-        
-    }
-
     private Object injectForDependent(Bean<?> component, InjectionPoint injectionPoint)
     {
         Object object = null;

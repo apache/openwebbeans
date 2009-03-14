@@ -17,7 +17,10 @@
 package org.apache.webbeans.inject.impl;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
@@ -115,4 +118,26 @@ class InjectionPointImpl implements InjectionPoint
         return false;
     }
 
+    public String toString()
+    {
+        StringBuffer buffer = new StringBuffer();
+        if(injectionMember instanceof Constructor)
+        {
+            Constructor<?> constructor = (Constructor<?>) this.injectionMember;
+            buffer.append("Constructor Injection with name :  " + constructor.getName() + ownerBean.toString());
+        }
+        else if(injectionMember instanceof Method)
+        {
+            Method method = (Method)this.injectionMember;
+            buffer.append("Method Injection with name :  " + method.getName() + ownerBean.toString());
+            
+        }
+        else if(injectionMember instanceof Field)
+        {
+            Field field = (Field) this.injectionMember;
+            buffer.append("Field Injection with name :  " + field.getName() + ownerBean.toString());            
+        }
+        
+        return buffer.toString();
+    }
 }

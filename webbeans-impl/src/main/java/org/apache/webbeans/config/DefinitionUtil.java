@@ -35,6 +35,7 @@ import javax.inject.Current;
 import javax.inject.DeploymentType;
 import javax.inject.Disposes;
 import javax.inject.Initializer;
+import javax.inject.Obtains;
 import javax.inject.Produces;
 import javax.inject.Realizes;
 import javax.inject.Specializes;
@@ -76,7 +77,7 @@ public final class DefinitionUtil
     {
 
     }
-
+    
     public static <T> Class<? extends Annotation> defineDeploymentType(AbstractComponent<T> component, Annotation[] beanAnnotations, String errorMessage)
     {
         boolean found = false;
@@ -134,6 +135,10 @@ public final class DefinitionUtil
                 component.setType(new ProductionLiteral());
 
             }
+            else
+            {
+                component.setType(result);
+            }
         }
 
         return component.getDeploymentType();
@@ -161,24 +166,24 @@ public final class DefinitionUtil
     public static <T> void defineProducerMethodApiTypes(AbstractComponent<T> component, Class<T> clazz)
     {
         Set<Type> types = component.getTypes();
-
+        types.add(Object.class);
+        
         if (clazz.isPrimitive() || clazz.isArray())
         {
             types.add(clazz);
-            types.add(Object.class);
 
-            if (clazz.isPrimitive())
-            {
-                types.add(ClassUtil.getPrimitiveWrapper(clazz));
-            }
+//            if (clazz.isPrimitive())
+//            {
+//                types.add(ClassUtil.getPrimitiveWrapper(clazz));
+//            }
 
         }
         else
         {
-            if (ClassUtil.isPrimitiveWrapper(clazz))
-            {
-                types.add(ClassUtil.getWrapperPrimitive(clazz));
-            }
+//            if (ClassUtil.isPrimitiveWrapper(clazz))
+//            {
+//                types.add(ClassUtil.getWrapperPrimitive(clazz));
+//            }
 
             ClassUtil.setTypeHierarchy(component.getTypes(), clazz);
         }
@@ -592,10 +597,8 @@ public final class DefinitionUtil
                 isSpecializes = true;
             }
 
-            Type[] observableTypes = AnnotationUtil.getMethodParameterGenericTypesWithGivenAnnotation(declaredMethod, Fires.class);
-            EventUtil.checkObservableMethodParameterConditions(observableTypes, "method parameter", "method : " + declaredMethod.getName() + "in class : " + clazz.getName());
-
             ProducerComponentImpl<?> newComponent = createProducerComponent(declaredMethod.getReturnType(), declaredMethod, component, isSpecializes);
+
             if (newComponent != null)
             {
                 if (isRealizes)
@@ -635,7 +638,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> ProducerComponentImpl<T> createProducerComponent(Class<T> returnType, Method method, AbstractComponent<?> parent, boolean isSpecializes)
+    public static <T> ProducerComponentImpl<T> createProducerComponent(Class<T> returnType, Method method, AbstractComponent<?> parent, boolean isSpecializes)
     {
         ProducerComponentImpl<T> component = new ProducerComponentImpl<T>(parent, returnType);
         component.setCreatorMethod(method);
@@ -817,10 +820,6 @@ public final class DefinitionUtil
 
     private static <T> void defineInternalInjectedFields(ComponentImpl<T> component, Class<T> clazz, boolean fromSuperClazz)
     {
-        if (!WebBeansUtil.checkObservableFieldsConditions(clazz))
-        {
-            WebBeansUtil.checkObtainsFieldConditions(clazz);
-        }
 
         Field[] fields = clazz.getDeclaredFields();
         if (fields.length != 0)
@@ -864,7 +863,6 @@ public final class DefinitionUtil
                     {
                         if (!fromSuperClazz)
                         {
-                            WebBeansUtil.addInjectedImplicitEventComponent(field);
                             component.addInjectedField(field);
                             addFieldInjectionPointMetaData(component, field);
                         }
@@ -884,7 +882,6 @@ public final class DefinitionUtil
                             
                             if(!defined)
                             {
-                                WebBeansUtil.addInjectedImplicitEventComponent(field);
                                 component.addInjectedField(field);
                                 addFieldInjectionPointMetaData(component, field);                                
                             }
@@ -1107,6 +1104,7 @@ public final class DefinitionUtil
         InjectionPoint injectionPoint = InjectionPointFactory.getFieldInjectionPointData(owner, field);
         if (injectionPoint != null)
         {
+            addImplicitComponentForInjectionPoint(injectionPoint);
             owner.addInjectionPoint(injectionPoint);
         }
     }
@@ -1116,6 +1114,7 @@ public final class DefinitionUtil
         List<InjectionPoint> injectionPoints = InjectionPointFactory.getMethodInjectionPointData(owner, method);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
+            addImplicitComponentForInjectionPoint(injectionPoint);
             owner.addInjectionPoint(injectionPoint);
         }
     }
@@ -1125,7 +1124,27 @@ public final class DefinitionUtil
         List<InjectionPoint> injectionPoints = InjectionPointFactory.getConstructorInjectionPointData(owner, constructor);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
+            addImplicitComponentForInjectionPoint(injectionPoint);
             owner.addInjectionPoint(injectionPoint);
         }
+    }
+    
+    public static void addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
+    {
+        Annotation obtains = injectionPoint.getAnnotation(Obtains.class);
+        Annotation fires = injectionPoint.getAnnotation(Fires.class);
+                
+        //If contains the @Obtains, defines implicit component
+        if(obtains != null)
+        {
+            WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint);
+            WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
+        }                                  
+        //If contains the @Fires, defines implicit component
+        else if(fires != null)
+        {
+            EventUtil.checkObservableInjectionPointConditions(injectionPoint);
+            WebBeansUtil.addInjectedImplicitEventComponent(injectionPoint);
+        }                                                                  
     }
 }

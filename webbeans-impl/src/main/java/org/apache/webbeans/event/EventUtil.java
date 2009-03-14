@@ -27,6 +27,7 @@ import javax.event.Observes;
 import javax.inject.Disposes;
 import javax.inject.Initializer;
 import javax.inject.Produces;
+import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -119,44 +120,27 @@ public final class EventUtil
         }
     }
 
-    public static void checkObservableMethodParameterConditions(Type[] parametersType, String fieldName, String errorMessage)
+
+    public static void checkObservableInjectionPointConditions(InjectionPoint injectionPoint)
     {
-        Asserts.assertNotNull(parametersType, "parametersType parameter can not be null");
 
-        for (Type observableType : parametersType)
+        if (!ClassUtil.isParametrizedType(injectionPoint.getType()))
         {
-            EventUtil.checkObservableFieldConditions(observableType, fieldName, errorMessage);
-        }
-
-    }
-
-    public static void checkObservableFieldConditions(Type fieldType, String fieldName, String errorMessage)
-    {
-        Asserts.assertNotNull(fieldType, "fieldType parameter can not be null");
-        Asserts.assertNotNull(fieldName, "fieldName parameter can not be null");
-
-        if (errorMessage == null)
-        {
-            errorMessage = "Failed on check @Observable field/method-parameter with name : " + fieldName;
-        }
-
-        if (!ClassUtil.isParametrizedType(fieldType))
-        {
-            throw new WebBeansConfigurationException("@Observable field/method-parameter in " + errorMessage + " with field : " + fieldName + " must be ParametrizedType with actual type argument");
+            throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint + " must be ParametrizedType with actual type argument");
         }
         else
         {
-            ParameterizedType pType = (ParameterizedType) fieldType;
+            ParameterizedType pType = (ParameterizedType) injectionPoint.getType();
             Class<?> clazz = (Class<?>) pType.getRawType();
 
             if (!clazz.equals(Event.class))
             {
-                throw new WebBeansConfigurationException("@Observable field/method-parameter in " + errorMessage + " with field : " + fieldName + " must be ParametrizedType with raw type argument javax.webbeans.Event");
+                throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint +  " must be ParametrizedType with raw type argument javax.webbeans.Event");
             }
 
             if (!ClassUtil.checkParametrizedType(pType))
             {
-                throw new WebBeansConfigurationException("@Observable field/method-parameter in " + errorMessage + " with field : " + fieldName + " can not be ParametrizedType with type variable or wildcard type arguments");
+                throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint + " can not be ParametrizedType with type variable or wildcard type arguments");
             }
         }
 

@@ -622,7 +622,7 @@ public final class ClassUtil
 
         Integer modifier = clazz.getModifiers();
 
-        if (!isAbstract(modifier) && !isInterface(modifier) && clazz.getEnclosingClass() == null)
+        if (!isAbstract(modifier) && !isInterface(modifier))
         {
             return true;
         }
@@ -1351,5 +1351,16 @@ public final class ClassUtil
         }
         
     }
-    
+ 
+    public static Throwable getRootException(Throwable throwable)
+    {
+        if(throwable.getCause() == null)
+        {
+            return throwable;
+        }
+        else
+        {
+            return getRootException(throwable.getCause());
+        }
+    }
 }

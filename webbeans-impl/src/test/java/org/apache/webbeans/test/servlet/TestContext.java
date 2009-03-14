@@ -23,7 +23,10 @@ import java.util.Set;
 import javax.context.Context;
 import javax.context.Dependent;
 import javax.decorator.Decorator;
+import javax.inject.Obtains;
 import javax.inject.Production;
+import javax.inject.manager.Bean;
+import javax.inject.manager.InjectionPoint;
 import javax.inject.manager.Manager;
 import javax.interceptor.Interceptor;
 import javax.servlet.ServletContext;
@@ -108,7 +111,7 @@ public abstract class TestContext implements ITestContext
     {
         this.clazzName = clazzName;
         TestContext.testContexts.add(this);
-        this.manager = MockManager.getInstance();
+        this.manager = new MockManager();
         this.xmlConfigurator = new WebBeansXMLConfigurator();
     }
 
@@ -182,6 +185,20 @@ public abstract class TestContext implements ITestContext
         initializeStereoType(StereoWithRequestScope.class);
         initializeStereoType(StereoWithSessionScope.class);
         initializeStereoType(StereoWithSessionScope2.class);
+
+    }
+    
+    protected void addInstanceImplicitBean(Bean<?> bean)
+    {
+        Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
+        for(InjectionPoint injectionPoint : injectionPoints)
+        {
+            //If contains the @Obtains, defines implicit component
+            if(injectionPoint.getAnnotation(Obtains.class) != null)
+            {
+                WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
+            }                                    
+        }
 
     }
 
@@ -298,6 +315,7 @@ public abstract class TestContext implements ITestContext
 
         if (bean != null)
         {
+            manager.addBean(WebBeansUtil.createNewSimpleBeanComponent(bean));
             DecoratorUtil.checkSimpleWebBeanDecoratorConditions(bean);
             // DefinitionUtil.defineSimpleWebBeanInterceptorStack(bean);
 
@@ -443,7 +461,8 @@ public abstract class TestContext implements ITestContext
      */
     protected void clear()
     {
-        manager.clear();
+        this.manager.clear();
+        
     }
 
     /**

@@ -34,10 +34,13 @@ import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 
 public class BeanObserverImpl<T> implements Observer<T>
 {
+    private WebBeansLogger logger = WebBeansLogger.getLogger(BeanObserverImpl.class);
+    
     private ObservesMethodsOwner<?> bean;
 
     private Method observerMethod;
@@ -109,7 +112,16 @@ public class BeanObserverImpl<T> implements Observer<T>
         }
         catch (Exception e)
         {
-            throw new WebBeansException(e);
+            if(!getType().equals(TransactionalObserverType.NONE))
+            {
+                logger.error("Error is occured while notifying observer in class : " 
+                        + observerMethod.getDeclaringClass().getName() + " in method : " + observerMethod.getName() , e);
+                
+            }
+            else
+            {
+                throw new WebBeansException(e.getCause());   
+            }
         }
         finally
         {

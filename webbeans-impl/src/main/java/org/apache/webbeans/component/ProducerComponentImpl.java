@@ -15,6 +15,7 @@ package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -136,7 +137,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
     protected T createInstance(CreationalContext<T> creationalContext)
     {
         T instance = null;
-        Object parentInstance = getParentInstance();
+        Object parentInstance = null;
         boolean dependentContext = false;
         
         try
@@ -149,7 +150,12 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
                     dependentContext = true;
                 }
             }
-
+            
+            if(!Modifier.isStatic(creatorMethod.getModifiers()))
+            {
+                parentInstance = getParentInstance();
+            }
+            
             InjectableMethods<T> m = new InjectableMethods<T>(creatorMethod, parentInstance, this,null);
             instance = m.doInjection();
 

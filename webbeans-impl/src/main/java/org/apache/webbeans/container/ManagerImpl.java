@@ -162,12 +162,12 @@ public class ManagerImpl implements Manager, Referenceable
     {
         if(component instanceof AbstractComponent)
         {
-            getManager().components.add(component);    
+            this.components.add(component);    
         }
         else
         {
             ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(component);
-            getManager().components.add(bean);
+            this.components.add(bean);
         }
         
 
@@ -432,17 +432,17 @@ public class ManagerImpl implements Manager, Referenceable
 
     public Set<Bean<?>> getBeans()
     {
-        return getManager().components;
+        return this.components;
     }
 
     public Set<Interceptor> getInterceptors()
     {
-        return getManager().webBeansInterceptors;
+        return this.webBeansInterceptors;
     }
 
     public Set<Decorator> getDecorators()
     {
-        return getManager().webBeansDecorators;
+        return this.webBeansDecorators;
     }
 
     private void addContext(Class<? extends Annotation> scopeType, javax.context.Context context)

@@ -18,6 +18,7 @@ package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import javax.context.CreationalContext;
 import javax.context.Dependent;
@@ -57,7 +58,7 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
     protected T createInstance(CreationalContext<T> creationalContext)
     {
         T instance = null;
-        Object parentInstance = getParentInstance();
+        Object parentInstance = null;
         boolean dependentContext = false;
         try
         {
@@ -75,8 +76,16 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
             {
                 producerField.setAccessible(true);
             }
-
-            instance =  (T)producerField.get(parentInstance);
+            
+            if(Modifier.isStatic(producerField.getModifiers()))
+            {
+                instance =  (T)producerField.get(null);
+            }
+            else
+            {
+                parentInstance = getParentInstance();
+                instance =  (T)producerField.get(parentInstance);
+            }
         }
         catch(Exception e)
         {

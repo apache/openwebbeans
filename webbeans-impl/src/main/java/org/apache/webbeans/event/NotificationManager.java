@@ -15,6 +15,7 @@ package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -33,6 +34,7 @@ import javax.transaction.Transaction;
 
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.TransactionService;
@@ -90,7 +92,7 @@ public final class NotificationManager implements Synchronization
 
         ObserverImpl<T> observerImpl = new ObserverImpl<T>(observer, eventType.getRawType(), annotations);
 
-        Set<ObserverImpl<?>> set = observers.get(eventType);
+        Set<ObserverImpl<?>> set = observers.get(eventType.getRawType());
         if (set == null)
         {
             set = new HashSet<ObserverImpl<?>>();
@@ -114,7 +116,11 @@ public final class NotificationManager implements Synchronization
                 ObserverImpl<?> s = it.next();
                 Observer<T> ob = (Observer<T>) s.getObserver();
 
-                if (ob.equals(observer))
+                Set<Annotation> evenBindings = s.getEventBindingTypes();
+                Annotation[] anns = new Annotation[evenBindings.size()];
+                anns = evenBindings.toArray(anns);
+                
+                if (ob.equals(observer) && Arrays.equals(anns, annotations))
                 {
                     set.remove(s);
                 }
@@ -127,7 +133,7 @@ public final class NotificationManager implements Synchronization
         EventUtil.checkEventType(eventType.getRawType());
         EventUtil.checkEventBindings(annotations);
 
-        if (observers.containsKey(eventType))
+        if (observers.containsKey(eventType.getRawType()))
         {
             Set<ObserverImpl<?>> set = observers.get(eventType.getRawType());
             Iterator<ObserverImpl<?>> it = set.iterator();
@@ -136,7 +142,11 @@ public final class NotificationManager implements Synchronization
                 ObserverImpl<?> s = it.next();
                 Observer<T> ob = (Observer<T>) s.getObserver();
 
-                if (ob.equals(observer))
+                Set<Annotation> evenBindings = s.getEventBindingTypes();
+                Annotation[] anns = new Annotation[evenBindings.size()];
+                anns = evenBindings.toArray(anns);
+                
+                if (ob.equals(observer) && Arrays.equals(anns, annotations))
                 {
                     set.remove(s);
                 }
@@ -242,12 +252,26 @@ public final class NotificationManager implements Synchronization
                 }
 
             }
-            catch (Exception e)
+            catch (WebBeansException e)
             {
-                if (!RuntimeException.class.isAssignableFrom(e.getClass()))
+                if (!RuntimeException.class.isAssignableFrom(e.getCause().getClass()))
                 {
                     throw new ObserverException("Exception is thrown while handling event object with type : " + event.getClass().getName(), e);
                 }
+                else
+                {
+                    RuntimeException rte = (RuntimeException)e.getCause();
+                    throw rte;
+                }
+            }
+            catch(RuntimeException e)
+            {
+                throw e;
+            }
+            
+            catch(Exception e)
+            {
+                throw new WebBeansException(e);
             }
         }
     }

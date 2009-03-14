@@ -41,17 +41,14 @@ public class DeploymentTypeManager
     public static DeploymentTypeManager getInstance()
     {
         DeploymentTypeManager instance = (DeploymentTypeManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_DEPLOYMENT_TYPE_MANAGER);
-        
-        if (!instance.deploymentTypeMap.containsKey(Standard.class)) 
+
+        if (!instance.deploymentTypeMap.containsKey(Standard.class))
         {
             instance.deploymentTypeMap.put(Standard.class, Integer.valueOf(0));
-        }
-        
-        if (!instance.deploymentTypeMap.containsKey(Production.class)) 
-        {
             instance.deploymentTypeMap.put(Production.class, Integer.valueOf(1));
+
         }
-        
+
         return instance;
     }
 
@@ -68,7 +65,7 @@ public class DeploymentTypeManager
             }
         }
     }
-    
+
     public void removeProduction()
     {
         this.deploymentTypeMap.remove(Production.class);
@@ -110,32 +107,31 @@ public class DeploymentTypeManager
         Asserts.assertNotNull(deploymentType, "deploymentType parameter can not be null");
         return deploymentTypeMap.containsKey(deploymentType);
     }
-    
+
     private static class DeploymentComparator implements Comparator<DeploymentTypeObject>
     {
 
         public int compare(DeploymentTypeObject o1, DeploymentTypeObject o2)
         {
-            if(o1.getPrecedence() < o2.getPrecedence())
+            if (o1.getPrecedence() < o2.getPrecedence())
             {
                 return -1;
             }
-            else if(o1.getPrecedence() > o2.getPrecedence())
+            else if (o1.getPrecedence() > o2.getPrecedence())
             {
                 return 1;
             }
-            
+
             return 0;
         }
 
-        
     }
-    
+
     private static class DeploymentTypeObject
     {
         private int precedence;
         private Class<? extends Annotation> type;
-        
+
         public DeploymentTypeObject(Class<? extends Annotation> clazz, int precedence)
         {
             this.precedence = precedence;
@@ -173,34 +169,32 @@ public class DeploymentTypeManager
         {
             this.type = type;
         }
-        
-        
+
     }
-    
+
     public List<Class<? extends Annotation>> getEnabledDeploymentTypes()
     {
         List<Class<? extends Annotation>> enabledDeploymentTypes = new ArrayList<Class<? extends Annotation>>();
-        
+
         List<DeploymentTypeObject> objects = new ArrayList<DeploymentTypeObject>();
-        
+
         Set<Class<? extends Annotation>> keys = this.deploymentTypeMap.keySet();
-        Iterator<Class<? extends Annotation>> it = keys.iterator();       
-        while(it.hasNext())
+        Iterator<Class<? extends Annotation>> it = keys.iterator();
+        while (it.hasNext())
         {
             Class<? extends Annotation> key = it.next();
             Integer value = this.deploymentTypeMap.get(key);
-            
-            objects.add(new DeploymentTypeObject(key,value));
-       }
-        
-        
+
+            objects.add(new DeploymentTypeObject(key, value));
+        }
+
         Collections.sort(objects, new DeploymentComparator());
-        
-        for(DeploymentTypeObject obj : objects)
+
+        for (DeploymentTypeObject obj : objects)
         {
             enabledDeploymentTypes.add(obj.getType());
         }
-        
+
         return enabledDeploymentTypes;
     }
 }

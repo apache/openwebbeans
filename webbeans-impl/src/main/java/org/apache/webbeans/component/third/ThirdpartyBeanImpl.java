@@ -35,9 +35,10 @@ public class ThirdpartyBeanImpl<T> extends AbstractComponent<T>
     public ThirdpartyBeanImpl(Bean<T> bean)
     {
         super(WebBeansType.THIRDPARTY);
+        
+        this.bean = bean;
+        
     }
-
-    
     
     @Override
     public Set<Annotation> getBindings()

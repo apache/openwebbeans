@@ -88,17 +88,20 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     {
         Annotation[] inheritedAnnotations = AnnotationUtil.getMetaAnnotations(inheritedClass.getDeclaredAnnotations(), annotationType);
         
-        if(inheritedAnnotations.length >0 && inheritedAnnotations[0].annotationType().isAnnotationPresent(Inherited.class))
+        if(inheritedAnnotations.length > 0)
         {
-            Annotation annotation = inheritedAnnotations[0];
-            
-            if(annotationType.equals(ScopeType.class))
+            if(inheritedAnnotations[0].annotationType().isAnnotationPresent(Inherited.class))
             {
-                this.inheritedScopeType = annotation;
-            }
-            else if(annotationType.equals(DeploymentType.class))
-            {
-                this.inheritedDeploymentType = annotation;
+                Annotation annotation = inheritedAnnotations[0];
+                
+                if(annotationType.equals(ScopeType.class))
+                {
+                    this.inheritedScopeType = annotation;
+                }
+                else if(annotationType.equals(DeploymentType.class))
+                {
+                    this.inheritedDeploymentType = annotation;
+                }                
             }
         }
         else

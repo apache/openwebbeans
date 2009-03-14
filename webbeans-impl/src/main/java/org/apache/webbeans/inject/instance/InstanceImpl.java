@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.inject.DuplicateBindingTypeException;
 import javax.inject.Instance;
 import javax.inject.Obtains;
 import javax.inject.manager.Bean;
@@ -79,6 +80,11 @@ class InstanceImpl<T> implements Instance<T>
         {
             for(Annotation annot : annotations)
             {
+                if(this.bindingAnnotations.contains(annot))
+                {
+                    throw new DuplicateBindingTypeException("Duplicate Binding Exception, " + this.toString());
+                }
+                
                 this.bindingAnnotations.add(annot);
             }
         }

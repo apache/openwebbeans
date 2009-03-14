@@ -17,6 +17,8 @@
 package org.apache.webbeans.container.activity;
 
 
+import javax.inject.manager.Bean;
+
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.ManagerImpl;
 
@@ -46,4 +48,8 @@ public class ActivityManager
         return this.rootActivity;
     }
 
+    public static void addBean(Bean<?> bean)
+    {
+        getInstance().getRootActivity().addBean(bean);
+    }
 }

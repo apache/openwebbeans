@@ -90,7 +90,7 @@ public class NewComponentTest extends TestContext
         defineSimpleWebBean(ProducerNewComponent.class);
 
         ContextFactory.initRequestContext(null);
-        Assert.assertEquals(3, getDeployedComponents());
+        Assert.assertEquals(5, getDeployedComponents());
 
         IPayment payment = (IPayment) getManager().getInstanceByName("paymentProducer");
         Assert.assertNotNull(payment);

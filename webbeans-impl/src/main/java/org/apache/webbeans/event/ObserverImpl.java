@@ -15,12 +15,10 @@ package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.event.Observer;
 
-import org.apache.webbeans.util.AnnotationUtil;
 
 /**
  * Implementation of the {@link Observer} interface contract.
@@ -81,15 +79,6 @@ public class ObserverImpl<T>
                     ok = false;
                     break;
                 }
-                else
-                {
-                    if (!AnnotationUtil.isAnnotationMemberExist(annot.annotationType(), annot, getAnnotation(this.eventBindingTypes,annot.annotationType())))
-                    {
-                        ok = false;
-                        break;
-                    }
-                }
-
             }            
         }
         else
@@ -108,15 +97,6 @@ public class ObserverImpl<T>
                     ok = false;
                     break;
                 }
-                else
-                {
-                    if (!AnnotationUtil.isAnnotationMemberExist(annot.annotationType(), annot, getAnnotation(eventAnnots,annot.annotationType())))
-                    {
-                        ok = false;
-                        break;
-                    }
-                }
-
             }            
             
         }
@@ -125,22 +105,7 @@ public class ObserverImpl<T>
 
     }
 
-    private Annotation getAnnotation(Set<Annotation> annots,Class<? extends Annotation> type)
-    {
-        Iterator<Annotation> it = annots.iterator();
-        while (it.hasNext())
-        {
-            Annotation annot = it.next();
-
-            if (annot.annotationType().equals(type))
-            {
-                return annot;
-            }
-        }
-
-        return null;
-    }
-
+    
     /**
      * Gets event binding types.
      */

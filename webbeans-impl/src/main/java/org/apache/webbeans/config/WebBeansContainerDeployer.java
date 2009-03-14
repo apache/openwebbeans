@@ -36,6 +36,7 @@ import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
@@ -150,24 +151,24 @@ public class WebBeansContainerDeployer
     private void validateInjectionPoints()
     {
         logger.info("Validation injection points is started");
-        
+
         ManagerImpl manager = ManagerImpl.getManager();
         InjectionResolver resolver = InjectionResolver.getInstance();
         Set<Bean<?>> beans = manager.getBeans();
-        
-        if(beans != null && beans.size() > 0)
+
+        if (beans != null && beans.size() > 0)
         {
-            for(Bean<?> bean : beans)
+            for (Bean<?> bean : beans)
             {
                 Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
-                for(InjectionPoint injectionPoint : injectionPoints)
+                for (InjectionPoint injectionPoint : injectionPoints)
                 {
-                    //check for InjectionPoint injection
-                    if(injectionPoint.getType().equals(InjectionPoint.class))
+                    // check for InjectionPoint injection
+                    if (injectionPoint.getType().equals(InjectionPoint.class))
                     {
-                        if(injectionPoint.getAnnotations().length == 1 && injectionPoint.getAnnotations()[0].annotationType().equals(Current.class))
+                        if (injectionPoint.getAnnotations().length == 1 && injectionPoint.getAnnotations()[0].annotationType().equals(Current.class))
                         {
-                            if(!bean.getScopeType().equals(Dependent.class))
+                            if (!bean.getScopeType().equals(Dependent.class))
                             {
                                 throw new WebBeansConfigurationException("Bean " + bean + "scope can not define other scope except @Dependent to inject InjectionPoint");
                             }
@@ -175,12 +176,12 @@ public class WebBeansContainerDeployer
                     }
                     else
                     {
-                        resolver.checkInjectionPoints(injectionPoint);   
-                    }                    
+                        resolver.checkInjectionPoints(injectionPoint);
+                    }
                 }
             }
         }
-        
+
         logger.info("Injection points are validated succesfully");
     }
 
@@ -300,10 +301,15 @@ public class WebBeansContainerDeployer
                     {
                         String specialClassName = specialIterator.next();
                         Class<?> specialClass = ClassUtil.getClassFromName(specialClassName);
-
+                        
                         if (superClass == null)
                         {
                             superClass = specialClass.getSuperclass();
+                            
+                            if(superClass.equals(Object.class))
+                            {
+                                throw new WebBeansConfigurationException("Specalized class : " + specialClassName + " must extend another class");
+                            }
                         }
                         else
                         {
@@ -391,7 +397,7 @@ public class WebBeansContainerDeployer
     {
         logger.info("Checking StereoTypes constraints is started");
 
-        Map<String, Set<String>> stereotypeMap = scanner.getANNOTATION_DB().getAnnotationIndex();
+        Map<String, Set<String>> stereotypeMap = scanner.getANNOTATION_DB().getClassIndex();
         if (stereotypeMap != null && stereotypeMap.size() > 0)
         {
             Set<String> stereoClassSet = stereotypeMap.keySet();
@@ -399,9 +405,9 @@ public class WebBeansContainerDeployer
             while (steIterator.hasNext())
             {
                 String steroClassName = steIterator.next();
-
+                
                 Class<? extends Annotation> stereoClass = (Class<? extends Annotation>) ClassUtil.getClassFromName(steroClassName);
-
+                
                 if (AnnotationUtil.isStereoTypeAnnotation(stereoClass))
                 {
                     if (!XMLAnnotationTypeManager.getInstance().isStereoTypeExist(stereoClass))
@@ -426,6 +432,8 @@ public class WebBeansContainerDeployer
             component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.SIMPLE);
             if (component != null)
             {
+                ActivityManager.addBean(WebBeansUtil.createNewSimpleBeanComponent(component));
+                
                 DecoratorUtil.checkSimpleWebBeanDecoratorConditions(component);
 
                 /* I have added this into the ComponentImpl.afterCreate(); */

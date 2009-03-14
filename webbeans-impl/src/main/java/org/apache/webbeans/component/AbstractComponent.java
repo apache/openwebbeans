@@ -42,7 +42,6 @@ import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.context.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -164,13 +163,21 @@ public abstract class AbstractComponent<T> extends Component<T>
             instance = createInstance(creationalContext);
 
         }
-        catch (RuntimeException re)
+        catch (Exception re)
         {
-            throw new CreationException(re);
-        }
-        catch (Exception e)
-        {
-            throw new WebBeansException(e);
+            Throwable throwable = ClassUtil.getRootException(re);
+            
+            if(throwable instanceof RuntimeException)
+            {
+                RuntimeException rt = (RuntimeException)throwable;
+                
+                throw rt;
+            }
+            else
+            {
+                throw new CreationException(throwable);
+            }
+            
         }
         finally
         {
@@ -546,7 +553,7 @@ public abstract class AbstractComponent<T> extends Component<T>
         builder.append("\tAPI Types:\n");
         builder.append("\t[\n");
         
-        for(Type clazz : this.apiTypes)
+        for(Type clazz : getTypes())
         {
             if(clazz instanceof Class)
             {
@@ -565,7 +572,7 @@ public abstract class AbstractComponent<T> extends Component<T>
         builder.append("\tBinding Types:\n");
         builder.append("\t[\n");
         
-        for(Annotation ann : this.implBindingTypes)
+        for(Annotation ann : getBindings())
         {
             builder.append("\t\t\t"+ann.annotationType().getName()+"\n");
         }
