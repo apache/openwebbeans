@@ -121,7 +121,7 @@ import org.apache.webbeans.jsf.ConversationImpl;
 
 /**
  * Contains some utility methods used in the all project.
- *  $Id$ 
+ * @version $Rev:$ $Date:$ 
  */
 public final class WebBeansUtil
 {
