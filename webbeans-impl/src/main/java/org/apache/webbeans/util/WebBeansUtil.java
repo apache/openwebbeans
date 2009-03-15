@@ -121,7 +121,7 @@ import org.apache.webbeans.jsf.ConversationImpl;
 
 /**
  * Contains some utility methods used in the all project.
- * @version $Rev:$ $Date:$ 
+ * @version $Rev$ $Date$ 
  */
 public final class WebBeansUtil
 {
@@ -1599,26 +1599,44 @@ public final class WebBeansUtil
     public static <T> void checkObtainsInjectionPointConditions(InjectionPoint injectionPoint)
     {        
             Class<?> rawType = null;
+            
             if(ClassUtil.isParametrizedType(injectionPoint.getType()))
             {
                 ParameterizedType pt = (ParameterizedType)injectionPoint.getType();
                 
                 rawType = (Class<?>) pt.getRawType();
+                
+                Type[] typeArgs = pt.getActualTypeArguments();
+                
                 if(!(rawType.equals(Instance.class)))
                 {
-                    throw new DefinitionException("@Obtains field injection " + injectionPoint.toString() + " must have type javax.inject.Instance");
+                    throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " must have type javax.inject.Instance");
                 }                
                 else
-                {                    
-                    if(!ClassUtil.checkParametrizedType(pt))
+                {                                        
+                    if(typeArgs.length == 1)
                     {
-                        throw new DefinitionException("@Obtains field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");
-                    }                    
+                        Type actualArgument = typeArgs[0];
+                        
+                        if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument))
+                        {                            
+                            throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized or Wildcard type");                            
+                        }
+                                                
+                        if(ClassUtil.isParametrized((Class<?>)actualArgument))
+                        {
+                            throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
+                        }
+                    }
+                    else
+                    {
+                        throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " must not have more than one actual type argument");
+                    }
                 }                                
             }
             else
             {
-                throw new DefinitionException("@Obtains field injection " + injectionPoint.toString() + " must be defined as ParameterizedType with actual type argument");
+                throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " must be defined as ParameterizedType with one actual type argument");
             }        
     }
 
@@ -1775,4 +1793,25 @@ public final class WebBeansUtil
         ActivityManager.addBean(bean);
         
     }
+    
+    public static <T> AbstractComponent<T> getMostSpecializedBean(Manager manager, AbstractComponent<T> component)
+    {
+        Set<Bean<T>> beans = manager.resolveByType(component.getReturnType(), AnnotationUtil.getAnnotationsFromSet(component.getBindings()));
+                
+        for(Bean<T> bean : beans)
+        {
+            AbstractComponent<T> find = (AbstractComponent<T>)bean;
+            
+            if(!find.equals(component))
+            {
+                if(AnnotationUtil.isAnnotationExistOnClass(find.getReturnType(), Specializes.class))
+                {
+                    return getMostSpecializedBean(manager, find);
+                }                
+            }            
+        }
+        
+        return component;
+    }
+    
  }

@@ -15,6 +15,7 @@ package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -24,23 +25,23 @@ import javax.context.Context;
 import javax.context.Dependent;
 import javax.event.Observer;
 import javax.event.Observes;
-import javax.inject.manager.Bean;
+import javax.inject.manager.Manager;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 public class BeanObserverImpl<T> implements Observer<T>
 {
     private WebBeansLogger logger = WebBeansLogger.getLogger(BeanObserverImpl.class);
-    
+
     private ObservesMethodsOwner<?> bean;
 
     private Method observerMethod;
@@ -49,78 +50,88 @@ public class BeanObserverImpl<T> implements Observer<T>
 
     private TransactionalObserverType type;
 
-    private ManagerImpl manager;
-
     public BeanObserverImpl(ObservesMethodsOwner<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
     {
         this.bean = bean;
         this.observerMethod = observerMethod;
         this.ifExist = ifExist;
         this.type = type;
-        this.manager = ManagerImpl.getManager();
     }
 
     @SuppressWarnings("unchecked")
     public void notify(T event)
     {
         AbstractComponent<Object> baseComponent = (AbstractComponent<Object>) bean;
+
+        AbstractComponent<Object> specializedComponent = null;
+
         Object object = null;
-        Context context = null;
+
         boolean dependentContext = false;
+
         try
         {
-            if(!ContextFactory.checkDependentContextActive())
+            if (!ContextFactory.checkDependentContextActive())
             {
                 ContextFactory.activateDependentContext();
                 dependentContext = true;
             }
-            
-            //Added for most specialized beans
-            Annotation[] anns = new Annotation[baseComponent.getBindings().size()];
-            anns = baseComponent.getBindings().toArray(anns);
 
-            Bean<Object> specializedComponent = manager.resolveByType(baseComponent.getReturnType(), anns).iterator().next();
-            
-            context = manager.getContext(baseComponent.getScopeType());
+            Manager manager = ActivityManager.getInstance().getCurrentActivity();
 
-            if (ifExist)
+            specializedComponent = WebBeansUtil.getMostSpecializedBean(manager, baseComponent);
+            
+            Context context = manager.getContext(specializedComponent.getScopeType());
+            
+            if(this.ifExist)
             {
                 object = context.get(specializedComponent);
             }
             else
             {
-                object = context.get((AbstractComponent<Object>) specializedComponent, CreationalContextFactory.getInstance().getCreationalContext(specializedComponent));
+                object = manager.getInstance(specializedComponent);    
             }
             
-            
+
+            if (this.ifExist && object == null)
+            {
+                return;
+            }
+
             if (object != null)
             {
                 Object[] args = null;
+
                 List<Object> argsObjects = getMethodArguments(event);
 
                 args = new Object[argsObjects.size()];
+
                 args = argsObjects.toArray(args);
 
-                if (!observerMethod.isAccessible())
+                if (!this.observerMethod.isAccessible())
                 {
-                    observerMethod.setAccessible(true);
+                    this.observerMethod.setAccessible(true);
                 }
 
-                observerMethod.invoke(object, args);
+                if (Modifier.isStatic(this.observerMethod.getModifiers()))
+                {
+                    object = null;
+                }
+
+                this.observerMethod.invoke(object, args);
             }
 
         }
         catch (Exception e)
         {
-            if(!getType().equals(TransactionalObserverType.NONE))
+            if (!getType().equals(TransactionalObserverType.NONE))
             {
-                logger.error("Error is occured while notifying observer in class : " 
-                        + observerMethod.getDeclaringClass().getName() + " in method : " + observerMethod.getName() , e);
-                
+                logger.error("Error is occured while notifying observer in class : " + observerMethod.getDeclaringClass().getName() + " in method : " + observerMethod.getName(), e);
+
             }
             else
             {
-                throw new WebBeansException(e.getCause());   
+                throw new WebBeansException(e.getCause());
             }
         }
         finally
@@ -129,8 +140,8 @@ public class BeanObserverImpl<T> implements Observer<T>
             {
                 baseComponent.destroy(object);
             }
-            
-            if(dependentContext)
+
+            if (dependentContext)
             {
                 ContextFactory.passivateDependentContext();
             }
@@ -141,8 +152,12 @@ public class BeanObserverImpl<T> implements Observer<T>
     protected List<Object> getMethodArguments(Object event)
     {
         Type[] types = this.observerMethod.getGenericParameterTypes();
+
         Annotation[][] annots = this.observerMethod.getParameterAnnotations();
+
         List<Object> list = new ArrayList<Object>();
+
+        Manager manager = ActivityManager.getInstance().getCurrentActivity();
 
         if (types.length > 0)
         {

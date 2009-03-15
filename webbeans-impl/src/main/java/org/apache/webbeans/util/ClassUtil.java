@@ -615,6 +615,19 @@ public final class ClassUtil
 
         return false;
     }
+    
+    public static boolean isWildCardType(Type type)
+    {
+        Asserts.assertNotNull(type, "type parameter can not be null");
+        
+        if (type instanceof WildcardType)
+        {
+            return true;
+        }
+
+        return false;
+    }
+    
 
     public static boolean isConcrete(Class<?> clazz)
     {
@@ -1190,6 +1203,7 @@ public final class ClassUtil
     public static boolean checkParametrizedType(ParameterizedType pType)
     {
         Asserts.assertNotNull(pType, "pType argument can not be null");
+        
         Type[] types = pType.getActualTypeArguments();
 
         for (Type type : types)

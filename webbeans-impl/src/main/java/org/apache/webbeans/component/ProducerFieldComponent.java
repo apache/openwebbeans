@@ -140,15 +140,27 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
         destroy.destroy(inst);
     }
     
+    @SuppressWarnings("unchecked")
     protected Object getParentInstance()
     {
         //return getManager().getInstance(this.ownerComponent);
+        
+        Object parentInstance = null;
         
         //Added for most specialized bean
         Annotation[] anns = new Annotation[this.ownerComponent.getBindings().size()];
         anns = this.ownerComponent.getBindings().toArray(anns);
         
-        Object parentInstance = getManager().getInstanceByType(this.ownerComponent.getReturnType(),anns);
+        AbstractComponent<T> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractComponent<T>)this.ownerComponent);
+        
+        if(specialize != null)
+        {
+            parentInstance = getManager().getInstance(specialize);
+        }
+        else
+        {
+            parentInstance = getManager().getInstance(this.ownerComponent);   
+        }
         
         return parentInstance;
         

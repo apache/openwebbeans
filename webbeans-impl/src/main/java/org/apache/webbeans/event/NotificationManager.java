@@ -206,12 +206,14 @@ public final class NotificationManager implements Synchronization
                 {
                     BeanObserverImpl<Object> beanObserver = (BeanObserverImpl<Object>) observer;
                     TransactionalObserverType type = beanObserver.getType();
-                    if (!type.equals(TransactionalObserverType.NONE))
+                    if (!(type.equals(TransactionalObserverType.NONE) || type.equals(TransactionalObserverType.ASYNCHRONOUSLY_NONE)))
                     {
                         Transaction transaction = transactionService.getTransaction();
+                        
                         if (transaction != null)
                         {
                             transaction.registerSynchronization(this);
+                        
                             if (transNotifier == null)
                             {
                                 transNotifier = new TransactionalNotifier(event);
@@ -238,12 +240,18 @@ public final class NotificationManager implements Synchronization
                         }
                         else
                         {
-                            observer.notify(event);
+                            if(!type.equals(TransactionalObserverType.ASYNCHRONOUSLY_NONE))
+                            {
+                                observer.notify(event);   
+                            }
                         }
                     }
                     else
                     {
-                        observer.notify(event);
+                        if(!type.equals(TransactionalObserverType.ASYNCHRONOUSLY_NONE))
+                        {
+                            observer.notify(event);   
+                        }
                     }
                 }
                 else

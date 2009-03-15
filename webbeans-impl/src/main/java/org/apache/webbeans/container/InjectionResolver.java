@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.NullableDependencyException;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
@@ -54,7 +55,9 @@ public class InjectionResolver
     public void checkInjectionPoints(InjectionPoint injectionPoint)
     {
         Type type = injectionPoint.getType();
+        
         Class<?> clazz = null;
+        
         Type[] args = new Type[0];
         
         if (type instanceof ParameterizedType)
@@ -63,7 +66,7 @@ public class InjectionResolver
 
             if (!ClassUtil.checkParametrizedType(pt))
             {
-                throw new WebBeansConfigurationException("Injection point : " + injectionPoint + " can not defined type variable or wildcard");
+                throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " type can not be defined as Typevariable or Wildcard type!");
             }
             
             args = pt.getActualTypeArguments();
@@ -82,13 +85,25 @@ public class InjectionResolver
         
         ResolutionUtil.checkResolvedBeans(beanSet, clazz);
         
+        Bean<Object> bean = beanSet.iterator().next();
+        
+        if(clazz.isPrimitive())
+        {
+            if(bean.isNullable())
+            {
+                throw new NullableDependencyException("Injection point type : " + injectionPoint + " type is primitive but resolved bean can have nullable objects!");
+            }
+        }
+        
     }
     
 
     public Bean<Object> getInjectionPointBean(InjectionPoint injectionPoint)
     {
         Type type = injectionPoint.getType();
+        
         Class<?> clazz = null;
+        
         Type[] args = new Type[0];
         
         if (type instanceof ParameterizedType)

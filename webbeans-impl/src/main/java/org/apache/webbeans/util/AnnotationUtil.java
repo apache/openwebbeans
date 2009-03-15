@@ -986,4 +986,16 @@ public final class AnnotationUtil
         return annots;
     }
 
+    public static Annotation[] getAnnotationsFromSet(Set<Annotation> set)
+    {
+        if(set != null)
+        {
+            Annotation[] anns = new Annotation[set.size()];
+            anns = set.toArray(anns);
+            
+            return anns;
+        }
+        
+        return new Annotation[0];
+    }
 }

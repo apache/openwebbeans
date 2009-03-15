@@ -24,7 +24,9 @@ import org.apache.webbeans.container.ManagerImpl;
 
 public class ActivityManager
 {
-    private ManagerImpl rootActivity = null; 
+    private ManagerImpl rootActivity = null;
+    
+    private ManagerImpl currentActivity = null;
     
     public ActivityManager()
     {
@@ -51,5 +53,20 @@ public class ActivityManager
     public static void addBean(Bean<?> bean)
     {
         getInstance().getRootActivity().addBean(bean);
+    }
+    
+    public void setCurrentActivity(ManagerImpl currentManager)
+    {
+        currentActivity = currentManager; 
+    }
+    
+    public ManagerImpl getCurrentActivity()
+    {
+        if(currentActivity == null)
+        {
+            return getRootActivity();
+        }
+        
+        return currentActivity;
     }
 }

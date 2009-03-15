@@ -15,6 +15,7 @@ package org.apache.webbeans.config;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,6 +24,7 @@ import java.util.Set;
 import javax.context.Dependent;
 import javax.context.ScopeType;
 import javax.decorator.Decorator;
+import javax.event.Event;
 import javax.inject.Current;
 import javax.inject.InconsistentSpecializationException;
 import javax.inject.Specializes;
@@ -164,8 +166,28 @@ public class WebBeansContainerDeployer
                 Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
                 for (InjectionPoint injectionPoint : injectionPoints)
                 {
+                    Type type = injectionPoint.getType();
+                    Class<?> rawType = null;
+                    
+                    if(type instanceof Class)
+                    {
+                        rawType = (Class<?>) type;
+                    }
+                    else
+                    {
+                        ParameterizedType pt = (ParameterizedType)type;
+                        rawType = (Class<?>)pt.getRawType();
+                    }
+                    
+                    //Comment out while testing TCK Events Test --- WBTCK27 jira./////                    
+                    if(rawType.equals(Event.class))
+                    {
+                        return;
+                    }
+                    /////////////////////////////////////////////////////////////////
+                    
                     // check for InjectionPoint injection
-                    if (injectionPoint.getType().equals(InjectionPoint.class))
+                    if (rawType.equals(InjectionPoint.class))
                     {
                         if (injectionPoint.getAnnotations().length == 1 && injectionPoint.getAnnotations()[0].annotationType().equals(Current.class))
                         {

@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -477,7 +478,7 @@ public final class DefinitionUtil
     private static void createProducerFieldWithRealizations(AbstractComponent<?> component, Set<ProducerFieldComponent<?>> producerFields, Field[] fields, boolean isRealizes)
     {
         for (Field field : fields)
-        {
+        {            
             if (isRealizes)
             {
                 int modifiers = field.getModifiers();
@@ -492,6 +493,17 @@ public final class DefinitionUtil
             // Producer field
             if (AnnotationUtil.isAnnotationExist(field.getDeclaredAnnotations(), Produces.class))
             {
+                Type genericType = field.getGenericType();
+                
+                if(ClassUtil.isParametrizedType(genericType))
+                {
+                    if(!ClassUtil.checkParametrizedType((ParameterizedType)genericType))
+                    {
+                        throw new WebBeansConfigurationException("Producer field : " + field.getName() + " return type in class : " + 
+                                field.getDeclaringClass().getName() + " can not be Wildcard type or Type variable");
+                    }
+                }
+                
                 ProducerFieldComponent<?> newComponent = createProducerFieldComponent(field.getType(), field, component);
 
                 if (newComponent != null)
@@ -932,9 +944,11 @@ public final class DefinitionUtil
     {
 
         Method[] methods = clazz.getDeclaredMethods();
+        
         for (Method method : methods)
         {
             boolean isInitializer = AnnotationUtil.isMethodHasAnnotation(method, Initializer.class);
+            
             boolean isResource = AnnotationUtil.isMethodHasResourceAnnotation(method);
 
             if (isInitializer && isResource)
@@ -944,6 +958,11 @@ public final class DefinitionUtil
 
             if (isInitializer)
             {
+                if(ClassUtil.isStatic(method.getModifiers()))
+                {
+                    throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName() + " can not be static!");
+                }
+                
                 checkForInjectedInitializerMethod(component, clazz, method);
             }
             else if (isResource)

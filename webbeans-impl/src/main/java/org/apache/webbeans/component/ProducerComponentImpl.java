@@ -199,8 +199,10 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
     {
         if (disposalMethod != null)
         {
-            Object parentInstance = getParentInstance();
+            Object parentInstance = null;
+            
             boolean dependentContext = false;
+            
             try
             {
                 if (getParent().getScopeType().equals(Dependent.class))
@@ -211,6 +213,12 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
                         dependentContext = true;
                     }
                 }
+                
+                if(!Modifier.isStatic(disposalMethod.getModifiers()))
+                {
+                    parentInstance = getParentInstance();
+                }
+
 
                 InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, this,null);
                 m.doInjection();
@@ -233,14 +241,30 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected Object getParentInstance()
     {
+        //return getManager().getInstance(this.ownerComponent);
+        
+        Object parentInstance = null;
+        
+        //Added for most specialized bean
         Annotation[] anns = new Annotation[this.parent.getBindings().size()];
         anns = this.parent.getBindings().toArray(anns);
         
-        Object parentInstance = getManager().getInstanceByType(this.parent.getReturnType(),anns);
-
+        AbstractComponent<T> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractComponent<T>)this.parent);
+        
+        if(specialize != null)
+        {
+            parentInstance = getManager().getInstance(specialize);
+        }
+        else
+        {
+            parentInstance = getManager().getInstance(this.parent);   
+        }
+        
         return parentInstance;
+        
     }
 
     protected void checkNullInstance(Object instance)

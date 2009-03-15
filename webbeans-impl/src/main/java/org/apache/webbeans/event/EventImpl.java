@@ -40,14 +40,14 @@ public class EventImpl<T> implements Event<T>
 
     public void fire(T event, Annotation... bindings)
     {
-        EventUtil.checkEventBindings(bindings);
+        EventUtil.checkEventBindings(getEventBindings(bindings));
         this.manager.fireEvent(event, getEventBindings(bindings));
 
     }
 
     public void observe(Observer<T> observer, Annotation... bindings)
     {
-        EventUtil.checkEventBindings(bindings);
+        EventUtil.checkEventBindings(getEventBindings(bindings));
         this.manager.addObserver(observer, eventType, bindings);
     }
 
