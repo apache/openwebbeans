@@ -121,9 +121,7 @@ import org.apache.webbeans.jsf.ConversationImpl;
 
 /**
  * Contains some utility methods used in the all project.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ *  $Id$ 
  */
 public final class WebBeansUtil
 {
