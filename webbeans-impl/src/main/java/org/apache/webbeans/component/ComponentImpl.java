@@ -14,19 +14,11 @@
 package org.apache.webbeans.component;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.context.CreationalContext;
-import javax.decorator.Decorates;
 
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
-import org.apache.webbeans.inject.InjectableField;
-import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -44,12 +36,6 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
 {
     /** Constructor of the web bean component */
     private Constructor<T> constructor;
-
-    /** Injected fields of the component */
-    private Set<Field> injectedFields = new HashSet<Field>();
-
-    /** Injected methods of the component */
-    private Set<Method> injectedMethods = new HashSet<Method>();
 
     public ComponentImpl(Class<T> returnType)
     {
@@ -69,10 +55,8 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
      * @see org.apache.webbeans.component.AbstractComponent#createInstance()
      */
     @Override
-    protected T createInstance(CreationalContext<T> creationalContext)
+    protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
-        beforeConstructor();
-
         Constructor<T> con = getConstructor();
         InjectableConstructor<T> ic = new InjectableConstructor<T>(con, this,creationalContext);
 
@@ -83,88 +67,12 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
             creationalContext.push(instance);   
         }
         
-        afterConstructor(instance,creationalContext);
-
         return instance;
     }
 
-    /*
-     * Call before object constructor
-     */
-    protected void beforeConstructor()
-    {
-
-    }
-
-    /*
-     * Call after object construction
-     */
-    protected void afterConstructor(T instance,CreationalContext<T> creationalContext)
-    {
-        injectFields(instance,creationalContext);
-        injectMethods(instance,creationalContext);
-
-        if (getWebBeansType().equals(WebBeansType.SIMPLE))
-        {
-            DefinitionUtil.defineSimpleWebBeanInterceptorStack(this);
-            DefinitionUtil.defineWebBeanDecoratorStack(this, instance);
-        }
-
-        if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
-        {
-            InvocationContextImpl impl = new InvocationContextImpl(instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
-            try
-            {
-                impl.proceed();
-
-            }
-            catch (Exception e)
-            {
-                throw new WebBeansException(e);
-            }
-        }
-
-    }
-
-    /*
-     * Injectable fields
-     */
-    protected void injectFields(T instance, CreationalContext<T> creationalContext)
-    {
-        Set<Field> fields = getInjectedFields();
-        for (Field field : fields)
-        {
-            if (field.getAnnotation(Decorates.class) == null)
-            {
-                InjectableField f = new InjectableField(field, instance, this, creationalContext);
-                f.doInjection();
-            }
-        }
-    }
-
-    /*
-     * Injectable methods
-     */
-    @SuppressWarnings("unchecked")
-    protected void injectMethods(T instance, CreationalContext<T> creationalContext)
-    {
-        Set<Method> methods = getInjectedMethods();
-
-        for (Method method : methods)
-        {
-            InjectableMethods m = new InjectableMethods(method, instance, this,creationalContext);
-            m.doInjection();
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.webbeans.component.AbstractComponent#destroyInstance(java.
-     * lang.Object)
-     */
+ 
     @Override
-    protected void destroyInstance(T instance)
+    protected void destroyComponentInstance(T instance)
     {
         if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
         {
@@ -202,45 +110,6 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
         this.constructor = constructor;
     }
 
-    /**
-     * Gets injected fields.
-     * 
-     * @return injected fields
-     */
-    public Set<Field> getInjectedFields()
-    {
-        return this.injectedFields;
-    }
-
-    /**
-     * Add new injected field.
-     * 
-     * @param field new injected field
-     */
-    public void addInjectedField(Field field)
-    {
-        this.injectedFields.add(field);
-    }
-
-    /**
-     * Gets injected methods.
-     * 
-     * @return injected methods
-     */
-    public Set<Method> getInjectedMethods()
-    {
-        return this.injectedMethods;
-    }
-
-    /**
-     * Add new injected method.
-     * 
-     * @param field new injected method
-     */
-    public void addInjectedMethod(Method method)
-    {
-        this.injectedMethods.add(method);
-    }
     
     public String toString()
     {

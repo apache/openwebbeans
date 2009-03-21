@@ -628,6 +628,19 @@ public final class ClassUtil
         return false;
     }
     
+    public static boolean isTypeVariable(Type type)
+    {
+        Asserts.assertNotNull(type, "type parameter can not be null");
+
+        if (type instanceof TypeVariable)
+        {
+            return true;
+        }
+
+        return false;
+
+    }
+    
 
     public static boolean isConcrete(Class<?> clazz)
     {
@@ -1161,6 +1174,24 @@ public final class ClassUtil
 
         return set;
     }
+    
+    //For Ejb API Type
+    public static Set<Type> setClassTypeHierarchy(Set<Type> set, Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+
+        set.add(clazz);
+
+        Class<?> sc = clazz.getSuperclass();
+
+        if (sc != null)
+        {
+            setTypeHierarchy(set, sc);
+        }
+
+        return set;
+    }
+    
 
     public static Set<Type> setInterfaceTypeHierarchy(Set<Type> set, Class<?> clazz)
     {

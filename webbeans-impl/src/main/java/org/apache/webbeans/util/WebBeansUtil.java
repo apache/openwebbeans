@@ -662,7 +662,7 @@ public final class WebBeansUtil
         conversationComp.setImplScopeType(new RequestedScopeLiteral());
         conversationComp.setType(new StandardLiteral());
         conversationComp.addBindingType(new CurrentLiteral());
-        conversationComp.setName(WebBeansUtil.getSimpleWebBeanDefaultName(Conversation.class.getSimpleName()));
+        conversationComp.setName("javax.context.conversation");
 
         return conversationComp;
     }
@@ -1618,9 +1618,9 @@ public final class WebBeansUtil
                     {
                         Type actualArgument = typeArgs[0];
                         
-                        if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument))
+                        if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument) || ClassUtil.isTypeVariable(actualArgument))
                         {                            
-                            throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized or Wildcard type");                            
+                            throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
                         }
                                                 
                         if(ClassUtil.isParametrized((Class<?>)actualArgument))
@@ -1812,6 +1812,5 @@ public final class WebBeansUtil
         }
         
         return component;
-    }
-    
+    }      
  }

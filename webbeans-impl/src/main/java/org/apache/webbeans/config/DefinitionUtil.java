@@ -40,6 +40,7 @@ import javax.inject.Obtains;
 import javax.inject.Produces;
 import javax.inject.Realizes;
 import javax.inject.Specializes;
+import javax.inject.Standard;
 import javax.inject.UnsatisfiedDependencyException;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
@@ -146,7 +147,11 @@ public final class DefinitionUtil
             }
         }
                 
-
+        if(component.getDeploymentType().equals(Standard.class))
+        {
+            throw new WebBeansConfigurationException("WebBeans " + component + " may not declare deployment type @Standard");
+        }
+        
         return component.getDeploymentType();
     }
 

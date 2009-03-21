@@ -226,9 +226,9 @@ public final class EventUtil
                     {
                         Type actualArgument = typeArgs[0];
                         
-                        if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument))
+                        if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument) || ClassUtil.isTypeVariable(actualArgument))
                         {                            
-                            throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized or Wildcard type");                            
+                            throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
                         }
                                                 
                         if(ClassUtil.isParametrized((Class<?>)actualArgument))

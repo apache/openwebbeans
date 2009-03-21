@@ -13,13 +13,31 @@
  */
 package org.apache.webbeans.component;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.context.CreationalContext;
+import javax.decorator.Decorates;
+
+import org.apache.webbeans.config.DefinitionUtil;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.inject.InjectableField;
+import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.intercept.InterceptorType;
+import org.apache.webbeans.intercept.InvocationContextImpl;
+import org.apache.webbeans.util.WebBeansUtil;
+
 public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> implements ObservesMethodsOwner<T>
 {
     private Set<Method> observableMethods = new HashSet<Method>();
+    
+    /** Injected fields of the component */
+    private Set<Field> injectedFields = new HashSet<Field>();
+
+    /** Injected methods of the component */
+    private Set<Method> injectedMethods = new HashSet<Method>();    
     
     protected boolean fromRealizes;
 
@@ -28,6 +46,87 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
         super(webBeansType, returnType);
     }
 
+    protected T createInstance(CreationalContext<T> creationalContext)
+    {
+        beforeConstructor();
+        
+        T instance = createComponentInstance(creationalContext);
+        
+        afterConstructor(instance, creationalContext);
+        
+        return instance;
+    }
+    
+    protected void destroyInstance(T instance)
+    {
+        destroyComponentInstance(instance);
+    }
+    
+    abstract protected T createComponentInstance(CreationalContext<T> creationalContext);
+    
+    abstract protected void destroyComponentInstance(T instance);
+    
+    protected void beforeConstructor()
+    {
+        
+    }
+    
+    protected void afterConstructor(T instance,CreationalContext<T> creationalContext)
+    {
+        injectFields(instance,creationalContext);
+        injectMethods(instance,creationalContext);
+
+        if (getWebBeansType().equals(WebBeansType.SIMPLE))
+        {
+            DefinitionUtil.defineSimpleWebBeanInterceptorStack(this);
+            DefinitionUtil.defineWebBeanDecoratorStack(this, instance);
+        }
+
+        if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
+        {
+            InvocationContextImpl impl = new InvocationContextImpl(instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
+            try
+            {
+                impl.proceed();
+
+            }
+            catch (Exception e)
+            {
+                throw new WebBeansException(e);
+            }
+        }
+    }
+    
+    /*
+     * Injectable fields
+     */
+    protected void injectFields(T instance, CreationalContext<T> creationalContext)
+    {
+        Set<Field> fields = getInjectedFields();
+        for (Field field : fields)
+        {
+            if (field.getAnnotation(Decorates.class) == null)
+            {
+                InjectableField f = new InjectableField(field, instance, this, creationalContext);
+                f.doInjection();
+            }
+        }
+    }
+
+    /*
+     * Injectable methods
+     */
+    @SuppressWarnings("unchecked")
+    protected void injectMethods(T instance, CreationalContext<T> creationalContext)
+    {
+        Set<Method> methods = getInjectedMethods();
+
+        for (Method method : methods)
+        {
+            InjectableMethods m = new InjectableMethods(method, instance, this,creationalContext);
+            m.doInjection();
+        }
+    }
     
     
     /*
@@ -70,5 +169,46 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
     {
         this.fromRealizes = fromRealizes;
     }
+    
+    /**
+     * Gets injected fields.
+     * 
+     * @return injected fields
+     */
+    public Set<Field> getInjectedFields()
+    {
+        return this.injectedFields;
+    }
+
+    /**
+     * Add new injected field.
+     * 
+     * @param field new injected field
+     */
+    public void addInjectedField(Field field)
+    {
+        this.injectedFields.add(field);
+    }
+
+    /**
+     * Gets injected methods.
+     * 
+     * @return injected methods
+     */
+    public Set<Method> getInjectedMethods()
+    {
+        return this.injectedMethods;
+    }
+
+    /**
+     * Add new injected method.
+     * 
+     * @param field new injected method
+     */
+    public void addInjectedMethod(Method method)
+    {
+        this.injectedMethods.add(method);
+    }
+    
 
 }
