@@ -14,16 +14,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.ejb;
+package org.apache.webbeans.ejb.definition;
 
-/**
- * @version $Rev$ $Date$
- */
-public final class EJBConstants
+import javax.ejb.Stateless;
+
+@Stateless
+public class Balki_DefaultLocal implements BalkiLocal_WithoutAnnotation
 {
-    private EJBConstants()
-    {
-        
-    }
 
 }
