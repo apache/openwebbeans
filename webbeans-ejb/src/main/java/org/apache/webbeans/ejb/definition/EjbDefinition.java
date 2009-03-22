@@ -16,8 +16,14 @@
  */
 package org.apache.webbeans.ejb.definition;
 
-import org.apache.webbeans.ejb.EjbType;
+import java.lang.annotation.Annotation;
+
+import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.ejb.component.EjbComponentImpl;
+import org.apache.webbeans.ejb.util.EjbDefinitionUtility;
+import org.apache.webbeans.ejb.util.EjbUtility;
+import org.apache.webbeans.ejb.util.EjbValidator;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * @version $Rev$ $Date$
@@ -29,11 +35,30 @@ public final class EjbDefinition
         
     }
 
-    public static <T> EjbComponentImpl<T> defineEjbBean(Class<T> ejbClass, EjbType ejbType)
+    public static <T> EjbComponentImpl<T> defineEjbBean(Class<T> ejbClass)
     {
-        EjbComponentImpl<T> ejbComponent = new EjbComponentImpl<T>(ejbClass);
-        ejbComponent.setEjbType(ejbType);
+        EjbValidator.validateDecoratorOrInterceptor(ejbClass);
         
+        EjbComponentImpl<T> ejbComponent = new EjbComponentImpl<T>(ejbClass);
+        ejbComponent.setEjbType(EjbUtility.getEjbTypeForAnnotatedClass(ejbClass));
+        
+        Annotation[] ejbDeclaredAnnotations = ejbClass.getDeclaredAnnotations();
+        
+        DefinitionUtil.defineStereoTypes(ejbComponent, ejbDeclaredAnnotations);
+        
+        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(ejbComponent, ejbDeclaredAnnotations, "There are more than one @DeploymentType annotation in the ejb webbean class : " + ejbClass.getName());
+
+        // Check if the deployment type is enabled.
+        if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
+        {
+            return null;
+        }
+        
+        
+        EjbDefinitionUtility.defineApiType(ejbComponent);
+        DefinitionUtil.defineScopeType(ejbComponent, ejbDeclaredAnnotations, "Ejb webbean implementation class : " + ejbClass.getName() + " stereotypes must declare same @ScopeType annotation");
+        
+        EjbValidator.validateEjbScopeType(ejbComponent);
         
         
         return ejbComponent;

@@ -14,12 +14,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.ejb.definition;
+package org.apache.webbeans.ejb.definition.apitype;
 
-import javax.ejb.Stateless;
-
-@Stateless
-public class Balki_DefaultLocal implements BalkiLocal_WithoutAnnotation
+public interface BalkiLocal_WithoutAnnotation
 {
 
 }

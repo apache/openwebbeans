@@ -14,19 +14,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.ejb;
+package org.apache.webbeans.ejb.definition.apitype;
 
-/**
- * @version $Rev$ $Date$
- */
-public final class EjbConstants
+import javax.ejb.Stateless;
+
+@Stateless
+public class Balki implements BalkiLocal
 {
-    private EjbConstants()
-    {
-        
-    }
 
-    public static final String EJB_WEBBEANS_ERROR_PREFIX ="Ejb WebBeans Component ";
-    
-    public static final String EJB_WEBBEANS_ERROR_CLASS_PREFIX = EJB_WEBBEANS_ERROR_PREFIX + "with implementation class : ";
 }

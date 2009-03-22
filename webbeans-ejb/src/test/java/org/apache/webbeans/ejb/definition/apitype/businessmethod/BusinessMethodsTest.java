@@ -14,21 +14,41 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.ejb;
+package org.apache.webbeans.ejb.definition.apitype.businessmethod;
 
+import org.apache.webbeans.ejb.EjbTestContext;
 import org.apache.webbeans.ejb.component.EjbComponentImpl;
-import org.apache.webbeans.ejb.definition.EjbDefinition;
-import org.apache.webbeans.test.servlet.TestContext;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public abstract class EjbTestContext extends TestContext
+public class BusinessMethodsTest extends EjbTestContext
 {
-    protected EjbTestContext(String name)
+    public BusinessMethodsTest()
     {
-        super(name);
+        super(BusinessMethodsTest.class.getName());
     }
 
-    protected <T> EjbComponentImpl<T> defineEjbBean(Class<T> ejbClass)
+    @Before
+    public void init()
     {
-        return EjbDefinition.defineEjbBean(ejbClass);
+        super.init();
     }
+    
+    @Test
+    public void testBusinessMethod()
+    {
+        EjbComponentImpl<Hairy> hairy = defineEjbBean(Hairy.class);
+        
+        Assert.assertEquals(3, hairy.getBusinessMethods().size());
+    }
+    
+    @Test
+    public void testBusinessMethodLocalView()
+    {
+        EjbComponentImpl<Hairy_LocalView> hairy = defineEjbBean(Hairy_LocalView.class);
+        
+        Assert.assertEquals(4, hairy.getBusinessMethods().size());
+    }
+    
 }

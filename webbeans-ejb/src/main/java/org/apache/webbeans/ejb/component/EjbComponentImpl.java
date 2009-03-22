@@ -16,6 +16,11 @@
  */
 package org.apache.webbeans.ejb.component;
 
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.context.CreationalContext;
 
 import org.apache.webbeans.component.AbstractObservesComponent;
@@ -28,6 +33,8 @@ import org.apache.webbeans.ejb.EjbType;
 public class EjbComponentImpl<T> extends AbstractObservesComponent<T>
 {
     private EjbType ejbType;
+    
+    private Set<Method> businessMethods = new HashSet<Method>();
     
     public EjbComponentImpl(Class<T> ejbClassType)
     {
@@ -57,4 +64,13 @@ public class EjbComponentImpl<T> extends AbstractObservesComponent<T>
         return this.ejbType;
     }
 
+    public void addBusinessMethod(Method method)
+    {
+        this.businessMethods.add(method);
+    }
+    
+    public Set<Method> getBusinessMethods()
+    {
+        return Collections.unmodifiableSet(this.businessMethods);
+    }
 }

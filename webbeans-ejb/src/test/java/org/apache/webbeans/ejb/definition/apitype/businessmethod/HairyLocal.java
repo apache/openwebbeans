@@ -14,19 +14,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.ejb;
+package org.apache.webbeans.ejb.definition.apitype.businessmethod;
 
-/**
- * @version $Rev$ $Date$
- */
-public final class EjbConstants
+import javax.ejb.Local;
+
+@Local
+public interface HairyLocal
 {
-    private EjbConstants()
-    {
-        
-    }
-
-    public static final String EJB_WEBBEANS_ERROR_PREFIX ="Ejb WebBeans Component ";
+    public String say();
     
-    public static final String EJB_WEBBEANS_ERROR_CLASS_PREFIX = EJB_WEBBEANS_ERROR_PREFIX + "with implementation class : ";
+    public void hello();
+    
+    public Object pay();
+    
 }

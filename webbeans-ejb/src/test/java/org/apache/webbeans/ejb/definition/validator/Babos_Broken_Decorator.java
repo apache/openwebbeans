@@ -14,12 +14,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.ejb.definition;
+package org.apache.webbeans.ejb.definition.validator;
 
-import javax.ejb.Local;
+import javax.decorator.Decorator;
+import javax.ejb.Stateless;
 
-@Local
-public interface BalkiLocal
+@Stateless
+@Decorator
+public class Babos_Broken_Decorator
 {
 
 }

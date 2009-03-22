@@ -16,8 +16,12 @@
  */
 package org.apache.webbeans.ejb.util;
 
+import java.io.Externalizable;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -29,9 +33,9 @@ import org.apache.webbeans.util.ClassUtil;
 /**
  * @version $Rev$ $Date$
  */
-public final class Utility
+public final class EjbDefinitionUtility
 {
-    private Utility()
+    private EjbDefinitionUtility()
     {
         
     }
@@ -39,9 +43,23 @@ public final class Utility
     public static void defineApiType(EjbComponentImpl<?> ejbComponent)
     {
         Class<?> ejbClass = ejbComponent.getReturnType();        
-        Type[] businessInterfaces = ejbClass.getGenericInterfaces();
         
-        if(businessInterfaces.length == 0)
+        Type[] businessInterfacesDefined = ejbClass.getGenericInterfaces();
+        
+        List<Type> businessInterfacesList = new ArrayList<Type>();
+        
+        for(Type businessInterfacesDefinedInArray : businessInterfacesDefined)
+        {
+            if(!(businessInterfacesDefinedInArray.equals(Serializable.class) || businessInterfacesDefinedInArray.equals(Externalizable.class)))
+            {
+                businessInterfacesList.add(businessInterfacesDefinedInArray);   
+            }
+        }
+        
+        businessInterfacesDefined = new Type[businessInterfacesList.size()];
+        businessInterfacesDefined = businessInterfacesList.toArray(businessInterfacesDefined);
+        
+        if(businessInterfacesDefined.length == 0)
         {            
             Annotation localAnnotation = AnnotationUtil.getAnnotation(ejbClass.getDeclaredAnnotations(), Local.class);
                          
@@ -55,6 +73,8 @@ public final class Utility
                     if(!ClassUtil.isParametrized(localInterface))
                     {
                         ClassUtil.setTypeHierarchy(ejbComponent.getTypes(), localInterface);
+                        
+                        EjbUtility.configureEjbBusinessMethods(ejbComponent, localInterface);
                     }
                 }
             }
@@ -64,14 +84,14 @@ public final class Utility
             }
             
         }
-        else if(businessInterfaces.length == 1)
+        else if(businessInterfacesDefined.length == 1)
         {
-            Type businessInterface = businessInterfaces[0];
+            Type businessInterface = businessInterfacesDefined[0];
             defineLocalBusinessInterfaceType(ejbComponent, businessInterface);
         }
         else
         {
-            for(Type busType : businessInterfaces)
+            for(Type busType : businessInterfacesDefined)
             {
                 defineLocalBusinessInterfaceType(ejbComponent, busType);
             }            
@@ -89,6 +109,8 @@ public final class Utility
             if(!AnnotationUtil.isAnnotationExistOnClass(businessInterfaceClass, Remote.class))
             {                    
                 ClassUtil.setTypeHierarchy(ejbComponent.getTypes(), businessInterfaceClass);
+                
+                EjbUtility.configureEjbBusinessMethods(ejbComponent, businessInterfaceClass);
             }
         }                                
     }
@@ -100,6 +122,8 @@ public final class Utility
         if(!ClassUtil.isParametrized(clazz))
         {
             ClassUtil.setClassTypeHierarchy(ejbComponent.getTypes(), clazz);
+            
+            EjbUtility.configureEjbBusinessMethods(ejbComponent, clazz);
         }
         
     }

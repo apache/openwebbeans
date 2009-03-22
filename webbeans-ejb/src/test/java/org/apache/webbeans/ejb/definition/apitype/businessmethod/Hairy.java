@@ -14,19 +14,47 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.ejb;
+package org.apache.webbeans.ejb.definition.apitype.businessmethod;
 
-/**
- * @version $Rev$ $Date$
- */
-public final class EjbConstants
+
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Serializable;
+
+import javax.ejb.Stateless;
+
+@Stateless
+public class Hairy implements HairyLocal,Serializable,Externalizable
 {
-    private EjbConstants()
+
+    public void hello()
+    {
+        
+        
+    }
+
+    public Object pay()
+    {
+        
+        return null;
+    }
+
+    public String say()
+    {
+        
+        return null;
+    }
+
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
     {
         
     }
 
-    public static final String EJB_WEBBEANS_ERROR_PREFIX ="Ejb WebBeans Component ";
-    
-    public static final String EJB_WEBBEANS_ERROR_CLASS_PREFIX = EJB_WEBBEANS_ERROR_PREFIX + "with implementation class : ";
+    public void writeExternal(ObjectOutput out) throws IOException
+    {
+        
+    }
+
 }

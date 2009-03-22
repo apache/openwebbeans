@@ -14,12 +14,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.ejb.definition;
+package org.apache.webbeans.ejb.definition.apitype.businessmethod;
+
+
 
 import javax.ejb.Stateless;
 
 @Stateless
-public class Balki_ClassView
+public class Hairy_LocalView extends Hairy_LocalView_Super
 {
+
+    public void hello()
+    {
+        
+        
+    }
+
+    public Object pay()
+    {
+        
+        return null;
+    }
+
+    public String say()
+    {
+        
+        return null;
+    }
+
 
 }

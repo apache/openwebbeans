@@ -14,15 +14,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.ejb.definition;
+package org.apache.webbeans.ejb.definition.apitype;
 
 import java.lang.reflect.Type;
 import java.util.Set;
 
 import org.apache.webbeans.ejb.EjbTestContext;
-import org.apache.webbeans.ejb.EjbType;
 import org.apache.webbeans.ejb.component.EjbComponentImpl;
-import org.apache.webbeans.ejb.util.Utility;
+import org.apache.webbeans.ejb.util.EjbDefinitionUtility;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,8 +42,8 @@ public class EjbApiTypeTest extends EjbTestContext
     @Test
     public void testBalkiApiType()
     {
-        EjbComponentImpl<Balki> bean = defineEjbBean(Balki.class, EjbType.STATELESS);
-        Utility.defineApiType(bean);
+        EjbComponentImpl<Balki> bean = defineEjbBean(Balki.class);
+        EjbDefinitionUtility.defineApiType(bean);
         
         Set<Type> types = bean.getTypes();
         
@@ -54,8 +53,8 @@ public class EjbApiTypeTest extends EjbTestContext
     @Test
     public void testDefaultLocalBalkiApiType()
     {
-        EjbComponentImpl<Balki_DefaultLocal> bean = defineEjbBean(Balki_DefaultLocal.class, EjbType.STATELESS);
-        Utility.defineApiType(bean);
+        EjbComponentImpl<Balki_DefaultLocal> bean = defineEjbBean(Balki_DefaultLocal.class);
+        EjbDefinitionUtility.defineApiType(bean);
         
         Set<Type> types = bean.getTypes();
         
@@ -65,8 +64,8 @@ public class EjbApiTypeTest extends EjbTestContext
     @Test
     public void testClassLocalBalkiApiType()
     {
-        EjbComponentImpl<Balki_ClassLocal> bean = defineEjbBean(Balki_ClassLocal.class, EjbType.STATELESS);
-        Utility.defineApiType(bean);
+        EjbComponentImpl<Balki_ClassLocal> bean = defineEjbBean(Balki_ClassLocal.class);
+        EjbDefinitionUtility.defineApiType(bean);
         
         Set<Type> types = bean.getTypes();
         
@@ -76,8 +75,8 @@ public class EjbApiTypeTest extends EjbTestContext
     @Test
     public void testClassLocalViewBalkiApiType()
     {
-        EjbComponentImpl<Balki_ClassView> bean = defineEjbBean(Balki_ClassView.class, EjbType.STATELESS);
-        Utility.defineApiType(bean);
+        EjbComponentImpl<Balki_ClassView> bean = defineEjbBean(Balki_ClassView.class);
+        EjbDefinitionUtility.defineApiType(bean);
         
         Set<Type> types = bean.getTypes();
         

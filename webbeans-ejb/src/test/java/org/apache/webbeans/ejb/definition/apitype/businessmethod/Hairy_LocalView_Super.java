@@ -14,14 +14,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.ejb.definition;
+package org.apache.webbeans.ejb.definition.apitype.businessmethod;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-
-@Stateless
-@Local(BalkiLocal_WithoutAnnotation.class)
-public class Balki_ClassLocal
+public class Hairy_LocalView_Super
 {
+    
+    public void fromSuper()
+    {
+        
+    }
+
 
 }
