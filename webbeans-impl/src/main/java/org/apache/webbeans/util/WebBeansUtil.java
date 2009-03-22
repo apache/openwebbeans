@@ -23,6 +23,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -138,7 +140,30 @@ public final class WebBeansUtil
      */
     public static ClassLoader getCurrentClassLoader()
     {
-        return Thread.currentThread().getContextClassLoader();
+        ClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
+        {
+
+            public ClassLoader run()
+            {
+                try
+                {
+                    return Thread.currentThread().getContextClassLoader();
+
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+
+        });
+
+        if (loader == null)
+        {
+            loader = WebBeansUtil.class.getClassLoader();
+        }
+
+        return loader;
     }
 
     /**
@@ -1813,4 +1838,17 @@ public final class WebBeansUtil
         
         return component;
     }      
+    
+    public static boolean isDeploymentTypeEnabled(Class<? extends Annotation> deploymentType)
+    {
+        Asserts.assertNotNull(deploymentType, "deplymentType parameter can not be null");
+        
+        if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
+        {
+            return false;
+        }
+        
+        return true;
+        
+    }
  }

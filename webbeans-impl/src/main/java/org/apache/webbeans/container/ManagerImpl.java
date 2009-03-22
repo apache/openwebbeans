@@ -100,7 +100,10 @@ public class ManagerImpl implements Manager, Referenceable
     public static ManagerImpl getManager()
     {
         ActivityManager activityManager = ActivityManager.getInstance();
-        return activityManager.getRootActivity();
+        
+        ManagerImpl currentManager = activityManager.getCurrentActivity();
+        
+        return currentManager;
     }
 
     public void setXMLConfigurator(WebBeansXMLConfigurator xmlConfigurator)

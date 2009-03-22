@@ -32,6 +32,7 @@ import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 import javax.inject.manager.Manager;
 import javax.interceptor.Interceptor;
+import javax.webbeans.Model;
 
 import org.apache.webbeans.annotation.DeployedManagerLiteral;
 import org.apache.webbeans.annotation.InitializedManagerLiteral;
@@ -420,6 +421,8 @@ public class WebBeansContainerDeployer
     {
         logger.info("Checking StereoTypes constraints is started");
 
+        addDefaultStereoTypes();
+        
         Map<String, Set<String>> stereotypeMap = scanner.getANNOTATION_DB().getClassIndex();
         if (stereotypeMap != null && stereotypeMap.size() > 0)
         {
@@ -446,6 +449,18 @@ public class WebBeansContainerDeployer
         logger.info("Checking StereoTypes constraints is ended");
     }
 
+    protected void addDefaultStereoTypes()
+    {
+        StereoTypeModel model = new StereoTypeModel(Model.class);
+        StereoTypeManager.getInstance().addStereoTypeModel(model);
+        
+        model = new StereoTypeModel(Decorator.class);
+        StereoTypeManager.getInstance().addStereoTypeModel(model);
+        
+        model = new StereoTypeModel(Interceptor.class);
+        StereoTypeManager.getInstance().addStereoTypeModel(model);        
+    }
+    
     protected <T> void defineSimpleWebBeans(Class<T> clazz)
     {
         ComponentImpl<T> component = null;

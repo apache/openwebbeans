@@ -47,7 +47,6 @@ public final class EJBUtil
      * @param clazz class instance
      * @return true or false
      */
-    // TODO Look EJB Specification for more concrete definition
     public static boolean isEJBSessionClass(Class<?> clazz)
     {
         return (AnnotationUtil.isAnnotationExistOnClass(clazz, Stateless.class) || AnnotationUtil.isAnnotationExistOnClass(clazz, Stateful.class));
@@ -57,6 +56,13 @@ public final class EJBUtil
     {
         return (AnnotationUtil.isAnnotationExistOnClass(clazz, Stateful.class));
     }
+    
+    //TODO EJB 3.1
+    public static boolean isEJBSingletonClass(Class<?> clazz)
+    {
+        return false;
+    }
+    
     
     public static boolean isEJBSessionStateless(Class<?> clazz)
     {

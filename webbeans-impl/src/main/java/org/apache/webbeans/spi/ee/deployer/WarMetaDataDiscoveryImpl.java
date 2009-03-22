@@ -121,6 +121,12 @@ public class WarMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
         return listURL;
     }
 
+    /**
+     * Returns <code>URL</code> of the web application class path.
+     * 
+     * @return <code>URL</code> of the web application class path
+     * @throws Exception if any exception occurs
+     */
     private URL createURLFromWARFile() throws Exception
     {
         URL url = this.servletContext.getResource("/WEB-INF/beans.xml");

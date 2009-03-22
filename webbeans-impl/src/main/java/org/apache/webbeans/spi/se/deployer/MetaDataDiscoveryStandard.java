@@ -16,11 +16,10 @@ package org.apache.webbeans.spi.se.deployer;
 import java.io.IOException;
 
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Enumeration;
 
 import org.apache.webbeans.spi.deployer.AbstractMetaDataDiscovery;
+import org.apache.webbeans.util.WebBeansUtil;
 
 import org.scannotation.ClasspathUrlFinder;
 
@@ -38,32 +37,10 @@ public class MetaDataDiscoveryStandard extends AbstractMetaDataDiscovery
 
     private void configureAnnotationDB() throws Exception
     {
-        ClassLoader loader = null;
-
-        loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
-        {
-
-            public ClassLoader run()
-            {
-                try
-                {
-                    return Thread.currentThread().getContextClassLoader();
-
-                }
-                catch (Exception e)
-                {
-                    return null;
-                }
-            }
-
-        });
-
-        if (loader == null)
-        {
-            loader = this.getClass().getClassLoader();
-        }
+        ClassLoader loader = WebBeansUtil.getCurrentClassLoader();
 
         URL[] urls = ClasspathUrlFinder.findResourceBases("META-INF/beans.xml", loader);
+        
         this.ANNOTATION_DB.scanArchives(urls);
 
         configureXML();

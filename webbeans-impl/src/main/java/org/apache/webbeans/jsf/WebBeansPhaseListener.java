@@ -34,8 +34,6 @@ public class WebBeansPhaseListener implements PhaseListener
 
     private static ConversationManager conversationManager = ConversationManager.getInstance();
 
-    private static ManagerImpl manager = ManagerImpl.getManager();
-
     private ConversationImpl conversation = null;
 
     public void afterPhase(PhaseEvent phaseEvent)
@@ -126,7 +124,7 @@ public class WebBeansPhaseListener implements PhaseListener
     {
         if (phaseEvent.getPhaseId().equals(PhaseId.APPLY_REQUEST_VALUES))
         {
-            ConversationContext context = (ConversationContext) manager.getContext(ConversationScoped.class);
+            ConversationContext context = (ConversationContext) ManagerImpl.getManager().getContext(ConversationScoped.class);
 
             if (JSFUtil.isPostBack())
             {
@@ -139,7 +137,7 @@ public class WebBeansPhaseListener implements PhaseListener
 
         else if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE))
         {
-            ConversationContext context = (ConversationContext) manager.getContext(ConversationScoped.class);
+            ConversationContext context = (ConversationContext) ManagerImpl.getManager().getContext(ConversationScoped.class);
 
             if (!JSFUtil.isPostBack())
             {

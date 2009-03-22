@@ -47,7 +47,6 @@ public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryServ
                 ANNOTATION_DB.setScanFieldAnnotations(false);
                 ANNOTATION_DB.setScanMethodAnnotations(false);
                 ANNOTATION_DB.setScanParameterAnnotations(false);
-
             }            
             
         }
