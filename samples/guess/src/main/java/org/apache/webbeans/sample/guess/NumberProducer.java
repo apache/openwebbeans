@@ -17,15 +17,17 @@
 package org.apache.webbeans.sample.guess;
 
 
+import java.io.Serializable;
+
 import javax.annotation.Named;
 import javax.context.SessionScoped;
 import javax.inject.Produces;
 
 @SessionScoped
 @Named
-public class NumberProducer 
+public class NumberProducer implements Serializable
 {
-   
+    private static final long serialVersionUID = 2504578502938734869L;
     private int number = 100;
     
     public NumberProducer()

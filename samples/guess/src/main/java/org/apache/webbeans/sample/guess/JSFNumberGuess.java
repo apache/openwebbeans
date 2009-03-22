@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.sample.guess;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
 import javax.annotation.Named;
@@ -26,8 +27,10 @@ import javax.inject.manager.Manager;
 
 @Named(value = "game")
 @SessionScoped
-public class JSFNumberGuess
+public class JSFNumberGuess implements Serializable
 {
+    private static final long serialVersionUID = 2264057893898002872L;
+
     private int no;
     private boolean correct = false;
     private int guess = 1;

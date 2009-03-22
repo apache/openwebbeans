@@ -16,15 +16,19 @@
  */
 package org.apache.webbeans.sample.model;
 
+import java.io.Serializable;
+
 import javax.webbeans.Model;
 
 /**
  * Simple model object for loginned users.
  */
 @Model
-public class User
+public class User implements Serializable
 {
-	/**User name*/
+    private static final long serialVersionUID = 4953743986412127075L;
+
+    /**User name*/
 	private String userName;
 	
 	/**Password*/
