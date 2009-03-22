@@ -26,7 +26,6 @@ import org.apache.webbeans.component.ProducerComponentImpl;
 import org.apache.webbeans.component.ProducerFieldComponent;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.ManagerImpl;
-import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -34,10 +33,12 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Configures the simple web beans.
+ * Configures Simple WebBeans Component.
  * <p>
- * Contains useful static methods for creating simple web beans.
+ * Contains useful static methods for creating Simple WebBeans Components.
  * </p>
+ * 
+ * @version $Rev$ $Date$
  */
 public final class SimpleWebBeansConfigurator
 {
@@ -59,21 +60,20 @@ public final class SimpleWebBeansConfigurator
     public static void checkSimpleWebBeanCondition(Class<?> clazz) throws WebBeansConfigurationException
     {
         int modifier = clazz.getModifiers();
-                
-        
+
         if (AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class) && AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class))
         {
-            throw new WebBeansConfigurationException("WebBeans component implementation class : " + clazz.getName() + " can not annotated with both @Interceptor and @Decorator annotations");   
+            throw new WebBeansConfigurationException("Simple WebBean Component implementation class : " + clazz.getName() + " may not annotated with both @Interceptor and @Decorator annotation");
         }
 
         if (!AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class) && !AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class))
         {
-            InterceptorUtil.checkSimpleWebBeansInterceptorConditions(clazz);   
+            InterceptorUtil.checkSimpleWebBeansInterceptorConditions(clazz);
         }
 
         if (ClassUtil.isInterface(modifier))
         {
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be interface");   
+            throw new WebBeansConfigurationException("Simple WebBean Component implementation class : " + clazz.getName() + " may not defined as interface");
         }
     }
 
@@ -102,27 +102,28 @@ public final class SimpleWebBeansConfigurator
     }
 
     /**
-     * Returns the newly created simlple web bean component.
+     * Returns the newly created Simple WebBean Component.
      * 
-     * @param clazz simple web bean implementation class
-     * @return the newly simple web bean component
-     * @throws WebBeansConfigurationException if any configuration exception occurs
+     * @param clazz Simple WebBean Component implementation class
+     * @return the newly created Simple WebBean Component
+     * @throws WebBeansConfigurationException if any configuration exception
+     *             occurs
      */
     public static <T> ComponentImpl<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
     {
-        ManagerImpl manager = ManagerImpl.getManager();        
-        
+        ManagerImpl manager = ManagerImpl.getManager();
+
         checkSimpleWebBeanCondition(clazz);
 
         ComponentImpl<T> component = new ComponentImpl<T>(clazz, type);
-        
+
         DefinitionUtil.defineSerializable(component);
         DefinitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
-        
-        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, clazz.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
+
+        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, clazz.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in Simple WebBean Component implementation class : " + component.getReturnType().getName());
 
         // Check if the deployment type is enabled.
-        if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
+        if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
         {
             return null;
         }
@@ -130,20 +131,20 @@ public final class SimpleWebBeansConfigurator
         Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
 
         DefinitionUtil.defineApiTypes(component, clazz);
-        DefinitionUtil.defineScopeType(component, clazzAnns, "WebBeans component implementation class : " + clazz.getName() + " must declare default @ScopeType annotation");
+        DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
         WebBeansUtil.checkPassivationScope(component, component.getScopeType().getAnnotation(ScopeType.class));
         DefinitionUtil.defineBindingTypes(component, clazzAnns);
-        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));        
-        
+        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
+
         Constructor<T> constructor = WebBeansUtil.defineConstructor(clazz);
         component.setConstructor(constructor);
         DefinitionUtil.addConstructorInjectionPointMetaData(component, constructor);
 
-        WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "WebBeans component  class : " + clazz.getName());
+        WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
 
         Set<ProducerComponentImpl<?>> producerComponents = DefinitionUtil.defineProducerMethods(component);
         manager.getBeans().addAll(producerComponents);
-        
+
         Set<ProducerFieldComponent<?>> producerFields = DefinitionUtil.defineProduerFields(component);
         manager.getBeans().addAll(producerFields);
 
