@@ -63,8 +63,6 @@ public class WebBeansELResolver extends ELResolver
         {
             if (obj == null)
             {
-                isResolution = true;
-
                 if(!ContextFactory.checkDependentContextActive())
                 {
                     ContextFactory.activateDependentContext();
@@ -73,9 +71,12 @@ public class WebBeansELResolver extends ELResolver
 
                 String name = (String) property;
                 object = manager.getInstanceByName(name);
-
-                context.setPropertyResolved(true);
-                bean = manager.resolveByName(name).iterator().next();
+                if (object != null)
+                {
+                    isResolution = true;
+                    context.setPropertyResolved(true);
+                    bean = manager.resolveByName(name).iterator().next();
+                }
 
             }
 
