@@ -48,7 +48,7 @@ public class WebBeansPhaseListener implements PhaseListener
                 if (cid == null)
                 {
                     logger.info("Create new transitional conversation for non-faces request with view id : " + JSFUtil.getViewId());
-                    conversation = (ConversationImpl) conversationManager.createNewConversation(JSFUtil.getViewId());
+                    conversation = (ConversationImpl) conversationManager.createNewConversation();
 
                     ContextFactory.initConversationContext(null);
 
@@ -62,7 +62,7 @@ public class WebBeansPhaseListener implements PhaseListener
                     if (conversation == null)
                     {
                         logger.info("Propogated conversation can not be restored for view id : " + JSFUtil.getViewId() + ". Creates new transitional conversation");
-                        conversation = (ConversationImpl) conversationManager.createNewConversation(JSFUtil.getViewId());
+                        conversation = (ConversationImpl) conversationManager.createNewConversation();
 
                         ContextFactory.initConversationContext(null);
                     }
@@ -91,7 +91,7 @@ public class WebBeansPhaseListener implements PhaseListener
                 else
                 {
                     logger.info("Create new transient conversation for JSF postback view id : " + JSFUtil.getViewId());
-                    conversation = (ConversationImpl) conversationManager.createNewConversation(JSFUtil.getViewId());
+                    conversation = (ConversationImpl) conversationManager.createNewConversation();
 
                     ContextFactory.initConversationContext(null);
                 }

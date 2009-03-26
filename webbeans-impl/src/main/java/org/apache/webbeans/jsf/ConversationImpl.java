@@ -25,8 +25,6 @@ public class ConversationImpl implements Conversation
 {
     private String id;
 
-    private String viewId;
-
     private boolean longRunning = false;
 
     private long timeout;
@@ -101,25 +99,10 @@ public class ConversationImpl implements Conversation
         return activeTime;
     }
 
-    /**
-     * @return the viewId
-     */
-    public String getViewId()
-    {
-        return viewId;
-    }
 
     public void updateTimeOut()
     {
         this.activeTime = System.currentTimeMillis();
-    }
-
-    /**
-     * @param viewId the viewId to set
-     */
-    public void setViewId(String viewId)
-    {
-        this.viewId = viewId;
     }
 
     /*

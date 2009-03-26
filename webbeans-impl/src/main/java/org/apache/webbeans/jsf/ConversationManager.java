@@ -106,18 +106,9 @@ public class ConversationManager
         }
     }
 
-    public Conversation createNewConversation(String viewId)
+    public Conversation createNewConversation()
     {
-        Asserts.assertNotNull(viewId, "viewId parameter can not be null");
-
         Conversation conversation = getCurrentConversation();
-        ((ConversationImpl) conversation).setViewId(viewId);
-
-        // Create conversation context
-        // ContextFactory.initConversationContext();
-
-        // addConversationContext(conversation,(ConversationContext)
-        // ManagerImpl.getManager().getContext(ConversationScoped.class));
 
         return conversation;
 
