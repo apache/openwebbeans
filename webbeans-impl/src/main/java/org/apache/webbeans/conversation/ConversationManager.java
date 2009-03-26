@@ -33,18 +33,16 @@ public class ConversationManager
 
     public ConversationManager()
     {
-
+        if(conversations == null)
+        {
+            conversations = new ConcurrentHashMap<Conversation, ConversationContext>();   
+        }
     }
 
     public static ConversationManager getInstance()
     {
         ConversationManager manager = (ConversationManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_CONVERSATION_MANAGER);
         
-        if(manager.conversations == null)
-        {
-            manager.conversations = new ConcurrentHashMap<Conversation, ConversationContext>();   
-        }
-
         return manager;
     }
 
