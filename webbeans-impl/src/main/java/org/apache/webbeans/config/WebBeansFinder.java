@@ -16,37 +16,50 @@ package org.apache.webbeans.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.context.SessionContextManager;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
+import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.decorator.DecoratorsManager;
+import org.apache.webbeans.deployment.DeploymentTypeManager;
+import org.apache.webbeans.deployment.StereoTypeManager;
+import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.xml.WebBeansNameSpaceContainer;
+import org.apache.webbeans.xml.XMLAnnotationTypeManager;
+import org.apache.webbeans.xml.XMLSpecializesManager;
 
 public class WebBeansFinder
 {
-    public static final String SINGLETON_MANAGER = "org.apache.webbeans.container.ManagerImpl";
+    public static final String SINGLETON_MANAGER = ManagerImpl.class.getName();
 
-    public static final String SINGLETON_DECORATORS_MANAGER = "org.apache.webbeans.decorator.DecoratorsManager";
+    public static final String SINGLETON_DECORATORS_MANAGER = DecoratorsManager.class.getName();
 
-    public static final String SINGLETON_DEPLOYMENT_TYPE_MANAGER = "org.apache.webbeans.deployment.DeploymentTypeManager";
+    public static final String SINGLETON_DEPLOYMENT_TYPE_MANAGER = DeploymentTypeManager.class.getName();
 
-    public static final String SINGLETON_STEREOTYPE_MANAGER = "org.apache.webbeans.deployment.StereoTypeManager";
+    public static final String SINGLETON_STEREOTYPE_MANAGER = StereoTypeManager.class.getName();
 
-    public static final String SINGLETON_NOTIFICATION_MANAGER = "org.apache.webbeans.event.NotificationManager";
+    public static final String SINGLETON_NOTIFICATION_MANAGER = NotificationManager.class.getName();
 
-    public static final String SINGLETON_INTERCEPTORS_MANAGER = "org.apache.webbeans.intercept.InterceptorsManager";
+    public static final String SINGLETON_INTERCEPTORS_MANAGER = InterceptorsManager.class.getName();
 
-    public static final String SINGLETON_CONVERSATION_MANAGER = "org.apache.webbeans.jsf.ConversationManager";
+    public static final String SINGLETON_CONVERSATION_MANAGER = ConversationManager.class.getName();
 
-    public static final String SINGLETON_XML_ANNOTATION_TYPE_MANAGER = "org.apache.webbeans.xml.XMLAnnotationTypeManager";
+    public static final String SINGLETON_XML_ANNOTATION_TYPE_MANAGER = XMLAnnotationTypeManager.class.getName();
 
-    public static final String SINGLETON_XML_SPECIALIZES_MANAGER = "org.apache.webbeans.xml.XMLSpecializesManager";
+    public static final String SINGLETON_XML_SPECIALIZES_MANAGER = XMLSpecializesManager.class.getName();
 
-    public static final String SINGLETON_INJECTION_RESOLVER = "org.apache.webbeans.container.InjectionResolver";
+    public static final String SINGLETON_INJECTION_RESOLVER = InjectionResolver.class.getName();
     
-    public static final String SINGLETON_CREATIONAL_CONTEXT_FACTORY = "org.apache.webbeans.context.creational.CreationalContextFactory";
+    public static final String SINGLETON_CREATIONAL_CONTEXT_FACTORY = CreationalContextFactory.class.getName();
     
-    public static final String SINGLETON_SESSION_CONTEXT_MANAGER = "org.apache.webbeans.context.SessionContextManager";
+    public static final String SINGLETON_SESSION_CONTEXT_MANAGER = SessionContextManager.class.getName();
     
-    public static final String SINGLETON_WEBBEANS_NAMESPACE_CONTAINER = "org.apache.webbeans.xml.WebBeansNameSpaceContainer";
+    public static final String SINGLETON_WEBBEANS_NAMESPACE_CONTAINER = WebBeansNameSpaceContainer.class.getName();
 
     private static Map<String, Map<ClassLoader, Object>> singletonMap = new HashMap<String, Map<ClassLoader, Object>>();
 
