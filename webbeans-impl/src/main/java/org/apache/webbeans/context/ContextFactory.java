@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.webbeans.context.type.ContextTypes;
-import org.apache.webbeans.jsf.ConversationManager;
+import org.apache.webbeans.conversation.ConversationManager;
 
 /**
  * Gets current {@link WebBeansContext} instances on the current thread context.

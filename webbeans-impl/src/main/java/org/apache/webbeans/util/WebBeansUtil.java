@@ -101,6 +101,7 @@ import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
+import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -119,7 +120,6 @@ import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
-import org.apache.webbeans.jsf.ConversationImpl;
 
 /**
  * Contains some utility methods used in the all project.

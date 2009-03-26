@@ -16,9 +16,10 @@ package org.apache.webbeans.component;
 import javax.context.Conversation;
 import javax.context.CreationalContext;
 
-import org.apache.webbeans.jsf.ConversationImpl;
-import org.apache.webbeans.jsf.ConversationManager;
-import org.apache.webbeans.util.JSFUtil;
+import org.apache.webbeans.conversation.ConversationImpl;
+import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.spi.ServiceLoader;
+import org.apache.webbeans.spi.conversation.ConversationService;
 
 public class ConversationComponent extends AbstractComponent<Conversation>
 {
@@ -31,7 +32,10 @@ public class ConversationComponent extends AbstractComponent<Conversation>
     @Override
     protected Conversation createInstance(CreationalContext<Conversation> creationalContext)
     {
-        String conversationId = JSFUtil.getConversationId();
+        ConversationService conversationService = ServiceLoader.getService(ConversationService.class);
+        
+        String conversationId = conversationService.getConversationId();
+        
         Conversation conversation = null;
 
         if (conversationId != null)
@@ -40,7 +44,7 @@ public class ConversationComponent extends AbstractComponent<Conversation>
         }
         else
         {
-            conversation = new ConversationImpl(JSFUtil.getSession().getId());
+            conversation = new ConversationImpl(conversationService.getConversationSessionId());
         }
 
         return conversation;
