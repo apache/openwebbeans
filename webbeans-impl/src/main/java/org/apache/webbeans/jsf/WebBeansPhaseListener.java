@@ -23,6 +23,8 @@ import javax.faces.event.PhaseListener;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.ConversationContext;
+import org.apache.webbeans.conversation.ConversationImpl;
+import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.JSFUtil;
 
