@@ -16,10 +16,33 @@
  */
 package org.apache.webbeans.spi.conversation;
 
+import org.apache.webbeans.util.JSFUtil;
+
+/**
+ * Defines the SPI for the conversation management.
+ * @version $Rev$ $Date$
+ */
 public interface ConversationService
 {
+    /**
+     * Gets the current conversation id or null
+     * if there is no conversation.
+     * <p>
+     * For jsf related conversation management, see {@link JSFUtil#getConversationId()}
+     * </p>
+     * 
+     * @return the current conversation id
+     */
     public String getConversationId();
     
+    /**
+     * Gets the session id
+     * <p>
+     * For jsf related conversation management, see {@link JSFUtil#getSession()}
+     * </p>
+     * 
+     * @return the session id
+     */
     public String getConversationSessionId();
 
 }
