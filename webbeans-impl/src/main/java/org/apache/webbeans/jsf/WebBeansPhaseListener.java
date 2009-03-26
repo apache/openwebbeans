@@ -111,11 +111,11 @@ public class WebBeansPhaseListener implements PhaseListener
                 context.setActive(false);
             }
 
-            // else destroy cınversation context
+            // else destroy conversation context
             else
             {
                 logger.info("Destroying the conversation context for view id : " + JSFUtil.getViewId());
-                context.destroy();
+                context.destroy();                                    
             }
 
         }
@@ -165,6 +165,19 @@ public class WebBeansPhaseListener implements PhaseListener
                 hidden.setId("javax_webbeans_ConversationId");
 
                 viewRoot.getChildren().add(hidden);
+            }
+            else
+            {
+                //Remove the hidden component
+                UIViewRoot viewRoot = JSFUtil.getViewRoot();
+
+                HtmlInputHidden hidden = (HtmlInputHidden) viewRoot.findComponent("javax_webbeans_ConversationId");
+
+                if (hidden != null)
+                {
+                    viewRoot.getChildren().remove(hidden);
+                }
+                
             }
         }
 

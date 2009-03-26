@@ -55,6 +55,14 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
         return incompleteInstancesMap.get(incompleteBean);
     }
     
+    public void remove(Bean<?> bean)
+    {
+        if(this.incompleteInstancesMap.containsKey(bean))
+        {
+            this.incompleteInstancesMap.remove(bean);   
+        }
+    }
+    
     public void clear()
     {
         this.incompleteInstancesMap.clear();

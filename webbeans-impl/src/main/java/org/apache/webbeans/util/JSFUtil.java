@@ -14,6 +14,7 @@
 package org.apache.webbeans.util;
 
 import javax.faces.application.Application;
+import javax.faces.application.FacesMessage;
 import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.html.HtmlInputHidden;
@@ -61,6 +62,12 @@ public final class JSFUtil
     public static Application getApplication()
     {
         return getCurrentFacesContext().getApplication();
+    }
+    
+    public static void addInfoMessage(String message)
+    {
+        FacesMessage fm = new FacesMessage(FacesMessage.SEVERITY_INFO,message,"");
+        getCurrentFacesContext().addMessage(null, fm);
     }
 
     public static String getRedirectViewId(String redirectId)

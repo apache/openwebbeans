@@ -64,6 +64,8 @@ public class ConversationImpl implements Conversation
     public void end()
     {
         this.longRunning = false;
+        
+        ConversationManager.getInstance().removeConversation(this);
     }
 
     public String getId()

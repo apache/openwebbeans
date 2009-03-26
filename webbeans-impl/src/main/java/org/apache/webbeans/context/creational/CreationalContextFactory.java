@@ -41,6 +41,11 @@ public class CreationalContextFactory<T>
         return impl.getCreationalContextImpl(bean);   
     }
     
+    public void removeCreationalContext(Bean<?> bean)
+    {
+        impl.remove(bean);
+    }
+    
     public void clear()
     {
         impl.clear();

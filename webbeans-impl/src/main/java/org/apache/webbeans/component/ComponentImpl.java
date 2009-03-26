@@ -17,6 +17,7 @@ import java.lang.reflect.Constructor;
 
 import javax.context.CreationalContext;
 
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.intercept.InterceptorType;
@@ -88,6 +89,8 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
             }
 
         }
+        
+        CreationalContextFactory.getInstance().removeCreationalContext(this);
     }
 
     /**
