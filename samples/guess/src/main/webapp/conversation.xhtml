@@ -31,24 +31,19 @@
 		<h:messages globalOnly="false" showSummary="true" infoStyle="font-weight:bold;"></h:messages>
 		
 		<h:form id="form">
-			
-			<div align="center">
-				<h3>OpenWebBeans Conversation Example</h3>
-				<span style="color:red;">User name : admin, Password : admin</span>
-			</div>
-			
-			<div align="center" style="border:1px solid black;">
+						
+			<div style="border:1px solid black;margin: 25px 75px;">
 			
 				<h:panelGrid columns="2">
 					
 					<h:outputLabel for="book">
 						<h:outputText value="Book Name : "></h:outputText>
 					</h:outputLabel>
-					<h:inputText id="book" value="#{shoppingCardBean.book}"></h:inputText>
+					<h:inputText id="book" value="#{shoppingCardBean.book}" required="true" requiredMessage="Please give a book name!"></h:inputText>
 					
 					<h:panelGroup>					
-						<h:commandButton action="#{shoppingCardBean.startConversation}" value="Start Conversation"></h:commandButton>
-						<h:commandButton action="#{shoppingCardBean.endConversation}" value="End Conversation"></h:commandButton>
+						<h:commandButton action="#{shoppingCardBean.startConversation}" immediate="true" value="Start Conversation"></h:commandButton>
+						<h:commandButton action="#{shoppingCardBean.endConversation}" immediate="true" value="End Conversation"></h:commandButton>
 					</h:panelGroup>
 					
 					<h:commandButton action="#{shoppingCardBean.addNewBook}" value="Add New Book"></h:commandButton>

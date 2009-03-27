@@ -30,6 +30,8 @@ import org.apache.webbeans.util.JSFUtil;
 @Named
 public class ShoppingCardBean implements Serializable
 {
+    private static final long serialVersionUID = 7914095399647910625L;
+
     private @Current Conversation conversation;
     
     private @Current ConversationModel model;
@@ -56,7 +58,7 @@ public class ShoppingCardBean implements Serializable
             buffer.append("," + b);
         }
         
-        JSFUtil.addInfoMessage("Your shopping card contents : " + buffer.toString() + "]");
+        JSFUtil.addInfoMessage(buffer.toString() + "]");
         
         return null;
     }
