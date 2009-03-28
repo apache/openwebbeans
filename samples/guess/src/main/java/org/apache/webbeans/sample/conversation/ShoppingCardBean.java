@@ -21,10 +21,11 @@ import java.io.Serializable;
 import javax.annotation.Named;
 import javax.context.Conversation;
 import javax.context.RequestScoped;
+import javax.faces.application.FacesMessage;
 import javax.inject.Current;
 
 import org.apache.webbeans.sample.model.conversation.ConversationModel;
-import org.apache.webbeans.util.JSFUtil;
+import org.apache.webbeans.sample.util.FacesMessageUtil;
 
 @RequestScoped
 @Named
@@ -36,13 +37,15 @@ public class ShoppingCardBean implements Serializable
     
     private @Current ConversationModel model;
     
+    private @Current FacesMessageUtil messageUtil;
+    
     private String book;
     
     public String startConversation()
     {
         conversation.begin();
         
-        JSFUtil.addInfoMessage("Conversation with id : " + conversation.getId() + " is started");
+        messageUtil.addMessage(FacesMessage.SEVERITY_INFO, "Conversation with id : " + conversation.getId() + " is started", null);
         
         return null;
     }
@@ -58,14 +61,15 @@ public class ShoppingCardBean implements Serializable
             buffer.append("," + b);
         }
         
-        JSFUtil.addInfoMessage(buffer.toString() + "]");
+        messageUtil.addMessage(FacesMessage.SEVERITY_INFO, buffer.toString() + "]", null);
+        
         
         return null;
     }
     
     public String endConversation()
     {
-        JSFUtil.addInfoMessage("Conversation with id : " + conversation.getId() + " is ended");
+        messageUtil.addMessage(FacesMessage.SEVERITY_INFO, "Conversation with id : " + conversation.getId() + " is ended", null);
         
         conversation.end();        
         
