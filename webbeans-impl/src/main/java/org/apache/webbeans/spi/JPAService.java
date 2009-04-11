@@ -17,8 +17,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 /**
- * 
- * TODO there is currently no Implementation for OpenEJB integration
+ * SPI for getting EntityManager and EntityManagerFactory depending on the  
+ * System we are running on. This could be plain JPA Persistence or might
+ * be retrieved from the EJB container. 
  */
 public interface JPAService
 {
