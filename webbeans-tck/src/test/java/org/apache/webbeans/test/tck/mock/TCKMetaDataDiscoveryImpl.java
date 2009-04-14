@@ -46,7 +46,7 @@ public class TCKMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
         URL url = ClassPool.getDefault().find(clazz.getName());
         try
         {
-            this.ANNOTATION_DB.scanClass(url.openStream());
+            this.getAnnotationDB().scanClass(url.openStream());
         }
         catch (IOException e)
         {
@@ -60,7 +60,7 @@ public class TCKMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
         
         try
         {
-            getWEBBEANS_XML_LOCATIONS().put(url.getFile(), url.openStream());
+            getWebBeansXmlLocations().put(url.getFile(), url.openStream());
         }
         catch (IOException e)
         {
