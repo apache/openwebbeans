@@ -18,8 +18,10 @@ package org.apache.webbeans.spi.deployer;
 
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
@@ -28,25 +30,25 @@ import org.scannotation.AnnotationDB;
 public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryService
 {
     /** Location of the beans.xml files. */
-    protected Map<String, InputStream> WEBBEANS_XML_LOCATIONS = new HashMap<String, InputStream>();
+    private Map<String, InputStream> webBeansXmlLocations = new HashMap<String, InputStream>();
 
     //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 
     /** Annotation Database */
-    protected AnnotationDB ANNOTATION_DB = null;
+    private AnnotationDB annotationDB = null;
 
     protected AbstractMetaDataDiscovery()
     {
         try
         {
-            if (ANNOTATION_DB == null)
+            if (annotationDB == null)
             {
-                ANNOTATION_DB = new AnnotationDB();
-                ANNOTATION_DB.setScanClassAnnotations(true);
-                ANNOTATION_DB.crossReferenceMetaAnnotations();    
-                ANNOTATION_DB.setScanFieldAnnotations(false);
-                ANNOTATION_DB.setScanMethodAnnotations(false);
-                ANNOTATION_DB.setScanParameterAnnotations(false);
+                annotationDB = new AnnotationDB();
+                annotationDB.setScanClassAnnotations(true);
+                annotationDB.crossReferenceMetaAnnotations();    
+                annotationDB.setScanFieldAnnotations(false);
+                annotationDB.setScanMethodAnnotations(false);
+                annotationDB.setScanParameterAnnotations(false);
             }            
             
         }
@@ -85,19 +87,33 @@ public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryServ
     /**
      * @return the wEBBEANS_XML_LOCATIONS
      */
-    public Map<String, InputStream> getWEBBEANS_XML_LOCATIONS()
+    public Map<String, InputStream> getWebBeansXmlLocations()
     {
-        return WEBBEANS_XML_LOCATIONS;
+        return Collections.unmodifiableMap(webBeansXmlLocations);
     }
 
     /**
      * @return the aNNOTATION_DB
      */
-    public AnnotationDB getANNOTATION_DB()
+    protected AnnotationDB getAnnotationDB()
     {
-        return ANNOTATION_DB;
+        return annotationDB;
     }
     
+    public Map<String, Set<String>> getAnnotationIndex()
+    {
+        return annotationDB.getAnnotationIndex();
+    }
+
+    public Map<String, Set<String>> getClassIndex()
+    {
+        return annotationDB.getClassIndex();
+    }
     
-    
+    protected void addWebBeansXmlLocation(String file, InputStream openStream)
+    {
+        webBeansXmlLocations.put(file, openStream);
+        
+    }
+
 }

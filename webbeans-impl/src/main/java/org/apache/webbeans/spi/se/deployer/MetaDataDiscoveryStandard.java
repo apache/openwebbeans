@@ -17,6 +17,8 @@ import java.io.IOException;
 
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.webbeans.spi.deployer.AbstractMetaDataDiscovery;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -41,7 +43,7 @@ public class MetaDataDiscoveryStandard extends AbstractMetaDataDiscovery
 
         URL[] urls = ClasspathUrlFinder.findResourceBases("META-INF/beans.xml", loader);
         
-        this.ANNOTATION_DB.scanArchives(urls);
+        this.getAnnotationDB().scanArchives(urls);
 
         configureXML();
 
@@ -56,7 +58,7 @@ public class MetaDataDiscoveryStandard extends AbstractMetaDataDiscovery
             while (resources.hasMoreElements())
             {
                 URL resource = resources.nextElement();
-                this.WEBBEANS_XML_LOCATIONS.put(resource.getFile(), resource.openStream());
+                addWebBeansXmlLocation(resource.getFile(), resource.openStream());
             }
 
         }
@@ -65,5 +67,6 @@ public class MetaDataDiscoveryStandard extends AbstractMetaDataDiscovery
             throw e;
         }
     }
+
 
 }

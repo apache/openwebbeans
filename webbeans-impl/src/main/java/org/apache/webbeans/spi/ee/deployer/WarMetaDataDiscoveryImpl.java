@@ -57,7 +57,7 @@ public class WarMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
                 URL[] urls = new URL[arcs.size()];
                 arcs.toArray(urls);
 
-                ANNOTATION_DB.scanArchives(urls);
+                getAnnotationDB().scanArchives(urls);
                 
                 configure = true;
             }
@@ -114,7 +114,7 @@ public class WarMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
 
                 listURL.add(url);
 
-                WEBBEANS_XML_LOCATIONS.put(addPath.getFile(), addPath.openStream());
+                addWebBeansXmlLocation(addPath.getFile(), addPath.openStream());
             }
         }
 
@@ -133,7 +133,7 @@ public class WarMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
 
         if (url != null)
         {
-            WEBBEANS_XML_LOCATIONS.put(url.getFile(), url.openStream());
+            addWebBeansXmlLocation(url.getFile(), url.openStream());
 
             return WarUrlFinder.findWebInfClassesPath(this.servletContext);
         }

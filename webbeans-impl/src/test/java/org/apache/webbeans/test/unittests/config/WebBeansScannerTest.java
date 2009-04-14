@@ -58,7 +58,7 @@ public class WebBeansScannerTest extends TestContext
         // try to re-run the scan
         scanner.scan();
 
-        Map<String, Set<String>> classMap = scanner.getANNOTATION_DB().getClassIndex();
+        Map<String, Set<String>> classMap = scanner.getClassIndex();
         Assert.assertNotNull(classMap);
         Assert.assertFalse(classMap.isEmpty());
         Set<String> testBeanAnnotations = classMap.get(ScannerTestBean.class.getName());

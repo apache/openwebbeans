@@ -214,7 +214,7 @@ public class WebBeansContainerDeployer
         logger.info("Deploying configurations from class files is started");
 
         // Start from the class
-        Map<String, Set<String>> classIndex = scanner.getANNOTATION_DB().getClassIndex();
+        Map<String, Set<String>> classIndex = scanner.getClassIndex();
         
         if (classIndex != null)
         {
@@ -247,7 +247,7 @@ public class WebBeansContainerDeployer
     {
         logger.info("Deploying configurations from XML files is started");
 
-        Map<String, InputStream> xmls = scanner.getWEBBEANS_XML_LOCATIONS();
+        Map<String, InputStream> xmls = scanner.getWebBeansXmlLocations();
         Set<String> keySet = xmls.keySet();
         Iterator<String> it = keySet.iterator();
 
@@ -265,7 +265,7 @@ public class WebBeansContainerDeployer
         logger.info("Configuring the Interceptors is started");
 
         // Interceptors Set
-        Map<String, Set<String>> annotIndex = scanner.getANNOTATION_DB().getAnnotationIndex();
+        Map<String, Set<String>> annotIndex = scanner.getAnnotationIndex();
         Set<String> classes = annotIndex.get(Interceptor.class.getName());
 
         if (classes != null)
@@ -288,7 +288,7 @@ public class WebBeansContainerDeployer
     {
         logger.info("Configuring the Decorators is started");
 
-        Map<String, Set<String>> annotIndex = scanner.getANNOTATION_DB().getAnnotationIndex();
+        Map<String, Set<String>> annotIndex = scanner.getAnnotationIndex();
         Set<String> classes = annotIndex.get(Decorator.class.getName());
 
         if (classes != null)
@@ -312,7 +312,7 @@ public class WebBeansContainerDeployer
         
         try
         {
-            Map<String, Set<String>> specialMap = scanner.getANNOTATION_DB().getAnnotationIndex();
+            Map<String, Set<String>> specialMap = scanner.getAnnotationIndex();
             if (specialMap != null && specialMap.size() > 0)
             {
                 if (specialMap.containsKey(Specializes.class.getName()))
@@ -423,7 +423,7 @@ public class WebBeansContainerDeployer
 
         addDefaultStereoTypes();
         
-        Map<String, Set<String>> stereotypeMap = scanner.getANNOTATION_DB().getClassIndex();
+        Map<String, Set<String>> stereotypeMap = scanner.getClassIndex();
         if (stereotypeMap != null && stereotypeMap.size() > 0)
         {
             Set<String> stereoClassSet = stereotypeMap.keySet();

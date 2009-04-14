@@ -18,17 +18,49 @@ package org.apache.webbeans.spi.deployer;
 
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.webbeans.exception.WebBeansDeploymentException;
-import org.scannotation.AnnotationDB;
 
+/**
+ * This SPI is for abstracting the class scanning.  
+ *
+ * In a production environment Many different modules need to perform 
+ * class scanning (EJB, JSF, JPA, ...). This SPI allows us to only have one 
+ * central class scanner for the whole application server
+ * which only performs the scanning once at startup of each WebApp.
+ */
 public interface MetaDataDiscoveryService
 {
+    /**
+     * initialise the class scanner
+     * @param object
+     */
+    public void init(Object object);
+
+    /**
+     * Perform the actual class scanning.
+     * @throws WebBeansDeploymentException
+     */
     public void scan() throws WebBeansDeploymentException;
     
-    public Map<String, InputStream> getWEBBEANS_XML_LOCATIONS();
+    /**
+     * get the locations of the beans.xml files.
+     * @return key is the 
+     */
+    public Map<String, InputStream> getWebBeansXmlLocations();
     
-    public AnnotationDB getANNOTATION_DB();
+    /**
+     * Get all scanned classes and all annotations used by each very class.
+     * @return key is the list of scanned classes, Set is a list of annotations used by that class.
+     */
+    Map<String, Set<String>> getClassIndex();
+
+    /**
+     * Get all used annotations with all classes which usess this annotation somehow.   
+     * @return key is the fully qualified string name of a annotation class, Set is a 
+     * list of classes that use that annotation somehow.
+     */
+    Map<String, Set<String>> getAnnotationIndex();
     
-    public void init(Object object);
 }
