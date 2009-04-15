@@ -16,7 +16,6 @@
  */
 package org.apache.webbeans.spi.deployer;
 
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,10 +44,9 @@ public interface MetaDataDiscoveryService
     public void scan() throws WebBeansDeploymentException;
     
     /**
-     * get the locations of the beans.xml files.
-     * @return key is the 
+     * @return the locations of the beans.xml files. 
      */
-    public Map<String, InputStream> getWebBeansXmlLocations();
+    public Set<String> getWebBeansXmlLocations();
     
     /**
      * Get all scanned classes and all annotations used by each very class.

@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.config;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -243,18 +245,24 @@ public class WebBeansContainerDeployer
 
     }
 
-    protected void deployFromXML(MetaDataDiscoveryService scanner)
+    protected void deployFromXML(MetaDataDiscoveryService scanner) throws WebBeansDeploymentException
     {
         logger.info("Deploying configurations from XML files is started");
 
-        Map<String, InputStream> xmls = scanner.getWebBeansXmlLocations();
-        Set<String> keySet = xmls.keySet();
-        Iterator<String> it = keySet.iterator();
+        Set<String> xmlLocations = scanner.getWebBeansXmlLocations();
+        Iterator<String> it = xmlLocations.iterator();
 
         while (it.hasNext())
         {
             String fileName = it.next();
-            this.xmlConfigurator.configure(xmls.get(fileName), fileName);
+            try
+            {
+                this.xmlConfigurator.configure(new FileInputStream(fileName), fileName);
+            } 
+            catch (FileNotFoundException e)
+            {
+                throw new WebBeansDeploymentException(e);
+            }
         }
 
         logger.info("Deploying configurations from XML is ended succesfully");

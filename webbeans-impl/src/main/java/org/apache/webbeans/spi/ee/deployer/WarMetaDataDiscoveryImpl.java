@@ -114,7 +114,7 @@ public class WarMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
 
                 listURL.add(url);
 
-                addWebBeansXmlLocation(addPath.getFile(), addPath.openStream());
+                addWebBeansXmlLocation(addPath.getFile());
             }
         }
 
@@ -133,7 +133,7 @@ public class WarMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
 
         if (url != null)
         {
-            addWebBeansXmlLocation(url.getFile(), url.openStream());
+            addWebBeansXmlLocation(url.getFile());
 
             return WarUrlFinder.findWebInfClassesPath(this.servletContext);
         }
