@@ -15,6 +15,7 @@ package org.apache.webbeans.config;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -255,13 +256,28 @@ public class WebBeansContainerDeployer
         while (it.hasNext())
         {
             String fileName = it.next();
+            FileInputStream fis = null;
             try
             {
-                this.xmlConfigurator.configure(new FileInputStream(fileName), fileName);
+                fis = new FileInputStream(fileName);
+                this.xmlConfigurator.configure(fis, fileName);
             } 
             catch (FileNotFoundException e)
             {
                 throw new WebBeansDeploymentException(e);
+            }
+            finally
+            {
+                if (fis != null)
+                {
+                    try
+                    {
+                        fis.close();
+                    } catch (IOException e)
+                    {
+                        // all ok, ignore this!
+                    }
+                }
             }
         }
 
