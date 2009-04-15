@@ -66,6 +66,6 @@ public class RealizationComponentTest extends TestContext
         Bean<RealizationProducerFieldInjecterComponent> inejtecer = defineSimpleWebBean(RealizationProducerFieldInjecterComponent.class);
         RealizationProducerFieldInjecterComponent instance = getManager().getInstance(inejtecer);
         
-        //Assert.assertSame(component, instance.getComponent());
+        // TODO Assert.assertSame(component, instance.getComponent());
     }
 }

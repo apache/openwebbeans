@@ -29,7 +29,7 @@ import org.junit.Test;
 
 public class XMLTest extends TestContext
 {
-    Manager container = null;
+    private Manager container = null;
 
     public XMLTest()
     {

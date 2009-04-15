@@ -20,7 +20,6 @@ import javax.inject.AnnotationLiteral;
 import javax.inject.Current;
 import javax.inject.TypeLiteral;
 import javax.inject.manager.Bean;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
@@ -41,20 +40,10 @@ public class TypedLiteralComponentTest extends TestContext
         super(TypedLiteralComponentTest.class.getSimpleName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {
         super.init();
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @Test

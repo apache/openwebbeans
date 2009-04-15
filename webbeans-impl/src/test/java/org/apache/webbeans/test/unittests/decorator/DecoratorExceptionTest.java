@@ -61,84 +61,68 @@ public class DecoratorExceptionTest extends TestContext
     @Test
     public void testDelegateAttributeIsnotInterface()
     {
-        Exception exc = null;
         try
         {
             defineSimpleWebBeansDecorators(DelegateAttributeIsnotInterface.class);
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Asserts.assertNotNull(exc);
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testMoreThanOneDelegateAttribute()
     {
-        Exception exc = null;
         try
         {
             defineSimpleWebBeansDecorators(MoreThanOneDelegateAttribute.class);
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Asserts.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testApplyToSimpleWebBeanFinal()
     {
-        Exception excp = null;
-
-        Assert.assertNull(excp);
-
+        // TODO test is incomplete!
     }
 
     @Test
     public void testApplyToSimpleWebBeanFinalMethodsDecoratorImplements()
     {
-        Exception exc = null;
-
         try
         {
             defineSimpleWebBeansDecorators(PaymentDecorator.class);
             defineSimpleWebBean(CheckWithCheckPaymentDecoratorField.class);
-
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testDelegateAttributeMustImplementAllDecoratedTypes()
     {
-        Exception exc = null;
         try
         {
             defineSimpleWebBeansDecorators(DelegateAttributeMustImplementAllDecoratedTypes.class);
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Asserts.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -159,18 +143,15 @@ public class DecoratorExceptionTest extends TestContext
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Asserts.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testResolveNonBindingTypeAnnotation()
     {
-        Exception exc = null;
         try
         {
 
@@ -184,18 +165,15 @@ public class DecoratorExceptionTest extends TestContext
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Asserts.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testResolveApiTypesEmpty()
     {
-        Exception exc = null;
         try
         {
 
@@ -208,12 +186,10 @@ public class DecoratorExceptionTest extends TestContext
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Asserts.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
 }

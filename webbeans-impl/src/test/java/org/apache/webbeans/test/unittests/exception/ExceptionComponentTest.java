@@ -73,30 +73,20 @@ public class ExceptionComponentTest extends TestContext
 
     }
 
-    public void startTests(ServletContext ctx)
-    {
-
-    }
-
     @Test
     public void testComponentTypeException()
     {
-        WebBeansConfigurationException exc = null;
-
         try
         {
             clear();
             defineSimpleWebBean(ComponentTypeExceptionComponent.class);
-
         }
         catch (WebBeansConfigurationException e)
         {
             System.out.println(e.getMessage());
-            exc = e;
-
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
+        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -111,219 +101,150 @@ public class ExceptionComponentTest extends TestContext
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testFinal()
     {
-        WebBeansConfigurationException exc = null;
-        try
-        {
-            clear();
-            defineSimpleWebBean(FinalComponent.class);
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println(e.getMessage());
-            exc = e;
-        }
-
-        Assert.assertNull(exc);
-
+        clear();
+        defineSimpleWebBean(FinalComponent.class);
     }
 
     @Test
     public void testAbstract()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             defineSimpleWebBean(AbstractComponent.class);
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testInner()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             defineSimpleWebBean(InnerInnerComponent.class);
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testHasFinalMethod()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             defineSimpleWebBean(HasFinalMethodComponent.class);
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void constructorTest()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             defineSimpleWebBean(MoreThanOneConstructureComponent.class);
-
+            Assert.fail("expecting an exception!");
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            // all ok
+            System.out.println("got expected exception: " + e.getMessage());
         }
-
-        Assert.assertNotNull(exc);
-        exc = null;
 
         try
         {
             clear();
             defineSimpleWebBean(MoreThanOneConstructureComponent2.class);
-
+            // all ok
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
         }
-        Assert.assertNotNull(exc);
-        exc = null;
 
-        try
-        {
-            clear();
-            defineSimpleWebBean(NoConstructureComponent.class);
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println(e.getMessage());
-            exc = e;
-        }
-        Assert.assertNull(exc);
+        clear();
+        defineSimpleWebBean(NoConstructureComponent.class);
     }
 
     @Test
     public void testStaticProducerMethod()
     {
-        WebBeansConfigurationException exc = null;
-        try
-        {
-            clear();
-            defineSimpleWebBean(ProducerTypeStaticComponent.class);
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println(e.getMessage());
-            exc = e;
-        }
-
-        Assert.assertNull(exc);
-
+        clear();
+        defineSimpleWebBean(ProducerTypeStaticComponent.class);
     }
 
     @Test
     public void testDisposeMethod()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             defineSimpleWebBean(MultipleDisposalMethodComponent.class);
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testNewInterface()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             defineSimpleWebBean(NewComponentInterfaceComponent.class);
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testNewBinding()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             defineSimpleWebBean(NewComponentBindingComponent.class);
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -349,297 +270,232 @@ public class ExceptionComponentTest extends TestContext
     @Test
     public void testMoreThanOnePostConstruct()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<MoreThanOnePostConstructComponent> component = defineSimpleWebBean(MoreThanOnePostConstructComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testPostConstructHasParameter()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<PostContructMethodHasParameterComponent> component = defineSimpleWebBean(PostContructMethodHasParameterComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testPostConstructHasReturnType()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(PostContructMethodHasReturnTypeComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testPostConstructHasCheckedException()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(PostContructMethodHasCheckedExceptionComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testPostConstructHasStatic()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(PostContructMethodHasStaticComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testMoreThanOneAroundInvoke()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(MoreThanOneAroundInvokeComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testAroundInvokeWithSameMethodName()
     {
-        WebBeansConfigurationException exc = null;
-        try
-        {
-            clear();
-            defineSimpleWebBean(AroundInvokeWithSameMethodNameComponent.class);
-            Bean<?> comp = getComponents().get(0);
+        clear();
+        defineSimpleWebBean(AroundInvokeWithSameMethodNameComponent.class);
+        Bean<?> comp = getComponents().get(0);
 
-            Assert.assertEquals(0, ((AbstractComponent<?>) comp).getInterceptorStack().size());
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println(e.getMessage());
-            exc = e;
-        }
-
-        Assert.assertNull(exc);
-
+        Assert.assertEquals(0, ((AbstractComponent<?>) comp).getInterceptorStack().size());
     }
 
     @Test
     public void testAroundInvokeWithoutParameter()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(AroundInvokeWithoutParameterComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testAroundInvokeWithoutReturnType()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(AroundInvokeWithoutReturnTypeComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testAroundInvokeWithWrongReturnType()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(AroundInvokeWithWrongReturnTypeComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testAroundInvokeWithoutException()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(AroundInvokeWithoutExceptionComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testAroundInvokeWithStatic()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(AroundInvokeWithStaticMethodComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testAroundInvokeWithFinal()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(AroundInvokeWithFinalMethodComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testNoArgConstructorInterceptor()
     {
-        WebBeansConfigurationException exc = null;
         try
         {
             clear();
             AbstractComponent<?> component = defineSimpleWebBean(NoArgConstructorInterceptorComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
 }

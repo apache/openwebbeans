@@ -16,7 +16,6 @@ package org.apache.webbeans.test.unittests;
 import java.util.List;
 
 import javax.inject.manager.Manager;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
@@ -40,21 +39,11 @@ public class SingletonComponentTest extends TestContext
         super(SingletonComponentTest.class.getSimpleName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {
         super.init();
         this.container = ManagerImpl.getManager();
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @SuppressWarnings("unchecked")

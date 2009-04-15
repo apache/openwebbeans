@@ -15,8 +15,6 @@ package org.apache.webbeans.test.unittests.intercept;
 
 import java.util.List;
 
-import javax.servlet.ServletContext;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
@@ -36,20 +34,10 @@ public class PostConstructInterceptorComponentTest extends TestContext
         super(PostConstructInterceptorComponentTest.class.getSimpleName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {
         super.init();
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @SuppressWarnings("unchecked")

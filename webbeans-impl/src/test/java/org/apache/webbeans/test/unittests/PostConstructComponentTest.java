@@ -16,7 +16,6 @@ package org.apache.webbeans.test.unittests;
 import java.util.List;
 
 import javax.inject.manager.Manager;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
@@ -39,20 +38,10 @@ public class PostConstructComponentTest extends TestContext
         super(PostConstructComponentTest.class.getSimpleName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {
         super.init();
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @SuppressWarnings("unchecked")

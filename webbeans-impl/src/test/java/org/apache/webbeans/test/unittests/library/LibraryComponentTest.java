@@ -15,8 +15,6 @@ package org.apache.webbeans.test.unittests.library;
 
 import java.util.List;
 
-import javax.servlet.ServletContext;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
@@ -35,20 +33,10 @@ public class LibraryComponentTest extends TestContext
         super(LibraryComponentTest.class.getSimpleName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {
         super.init();
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @Test

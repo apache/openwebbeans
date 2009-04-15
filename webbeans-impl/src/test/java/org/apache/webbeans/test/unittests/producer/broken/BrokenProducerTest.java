@@ -41,120 +41,97 @@ public class BrokenProducerTest extends TestContext
     @Test
     public void testBroken1()
     {
-        Exception e = null;
-
         try
         {
             clear();
             defineSimpleWebBean(BrokenProducerComponent1.class);
-
         }
-        catch (Exception e1)
+        catch (Exception e)
         {
-            e = e1;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(e);
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testBroken2()
     {
-        Exception e = null;
-
         try
         {
             clear();
             defineSimpleWebBean(BrokenProducerComponent2.class);
-
         }
-        catch (Exception e1)
+        catch (Exception e)
         {
-            e = e1;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(e);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testBroken3()
     {
-        Exception e = null;
-
         try
         {
             clear();
             defineSimpleWebBean(BrokenProducerComponent3.class);
-
         }
-        catch (Exception e1)
+        catch (Exception e)
         {
-            e = e1;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(e);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testBroken4()
     {
-        Exception e = null;
-
         try
         {
             clear();
             defineSimpleWebBean(BrokenProducerComponent4.class);
-
         }
-        catch (Exception e1)
+        catch (Exception e)
         {
-            e = e1;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(e);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testBroken5()
     {
-        Exception e = null;
-
         try
         {
             clear();
             defineSimpleWebBean(BrokenProducerComponent5.class);
-
         }
-        catch (Exception e1)
+        catch (Exception e)
         {
-            e = e1;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(e);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testBroken6()
     {
-        Exception e = null;
-
         try
         {
             clear();
             defineSimpleWebBean(BrokenProducerComponent6.class);
-
         }
-        catch (Exception e1)
+        catch (Exception e)
         {
-            e = e1;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(e);
-
+        Assert.fail("expecting an exception!");
     }
 
 }

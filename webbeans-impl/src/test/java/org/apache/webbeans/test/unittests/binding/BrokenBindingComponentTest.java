@@ -13,10 +13,11 @@
  */
 package org.apache.webbeans.test.unittests.binding;
 
+import junit.framework.Assert;
+
 import org.apache.webbeans.test.component.binding.BindingWithNonBindingAnnotationTypeComponent;
 import org.apache.webbeans.test.component.binding.BindingWithNonBindingArrayTypeComponent;
 import org.apache.webbeans.test.servlet.TestContext;
-import org.apache.webbeans.util.Asserts;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,41 +38,31 @@ public class BrokenBindingComponentTest extends TestContext
     @Test
     public void testNonBindingArrayType()
     {
-        Exception exc = null;
-
         try
         {
             defineSimpleWebBean(BindingWithNonBindingArrayTypeComponent.class);
-
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Asserts.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
     @Test
     public void testNonBindingAnnotationType()
     {
-        Exception exc = null;
-
         try
         {
             defineSimpleWebBean(BindingWithNonBindingAnnotationTypeComponent.class);
-
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Asserts.assertNotNull(exc);
-
+        Assert.fail("expecting an exception!");
     }
 
 }

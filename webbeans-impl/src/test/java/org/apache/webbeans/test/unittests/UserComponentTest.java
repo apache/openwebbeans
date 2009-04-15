@@ -16,7 +16,6 @@ package org.apache.webbeans.test.unittests;
 import java.util.List;
 
 import javax.inject.manager.Manager;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
@@ -39,21 +38,11 @@ public class UserComponentTest extends TestContext
         super(UserComponentTest.class.getSimpleName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {
         this.container = ManagerImpl.getManager();
         super.init();
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @Test

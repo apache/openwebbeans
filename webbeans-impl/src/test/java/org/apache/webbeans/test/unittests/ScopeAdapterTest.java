@@ -15,7 +15,6 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
@@ -36,21 +35,10 @@ public class ScopeAdapterTest extends TestContext
         super(ScopeAdapterTest.class.getName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
     @Before
     public void init()
     {
         super.init();
-
-    }
-
-    public void startTests(ServletContext ctx)
-    {
 
     }
 

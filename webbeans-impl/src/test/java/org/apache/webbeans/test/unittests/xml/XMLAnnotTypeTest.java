@@ -32,7 +32,7 @@ public class XMLAnnotTypeTest extends TestContext
 
     public void init()
     {
-
+        // TODO is this intentionally that we do not call super.init() ?
     }
 
     @Test
@@ -50,12 +50,12 @@ public class XMLAnnotTypeTest extends TestContext
     @Test
     public void testInterceptorBindingAnnotation()
     {
-
+        //X TODO
     }
 
     @Test
     public void testStereotypeAnnotation()
     {
-
+        //X TODO
     }
 }

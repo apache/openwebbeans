@@ -44,11 +44,6 @@ public class ProducerComponentTest extends TestContext
         super(ProducerComponentTest.class.getSimpleName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {

@@ -53,11 +53,6 @@ public class ScopeTypeExceptionComponentTest extends TestContext
         super.init();
     }
 
-    public void startTests(ServletContext ctx)
-    {
-
-    }
-
     @Test
     public void testComponentWithNonScopeStero()
     {
@@ -71,7 +66,6 @@ public class ScopeTypeExceptionComponentTest extends TestContext
     @Test
     public void testComponentDefaultScopeWithNonScopeStero()
     {
-        WebBeansConfigurationException exc = null;
         clear();
         defineSimpleWebBean(ComponentDefaultScopeWithNonScopeStero.class);
         Bean<?> bean = getComponents().get(0);
@@ -92,21 +86,17 @@ public class ScopeTypeExceptionComponentTest extends TestContext
     @Test
     public void testComponentWithDifferentScopeSteros()
     {
-        WebBeansConfigurationException exc = null;
         clear();
         try
         {
             defineSimpleWebBean(ComponentWithDifferentScopeSteros.class);
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
-
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
+        Assert.fail("expecting an exception!");
     }
 
     @Test
@@ -142,19 +132,17 @@ public class ScopeTypeExceptionComponentTest extends TestContext
     @Test
     public void testComponentNonDefaultScopeWithDifferentScopeSteros()
     {
-        WebBeansConfigurationException exc = null;
         clear();
         try
         {
             defineSimpleWebBean(ComponentNonDefaultScopeWithDifferentScopeSteros.class);
-
         }
         catch (WebBeansConfigurationException e)
         {
-            exc = e;
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
+        Assert.fail("expecting an exception!");
     }
 
 }

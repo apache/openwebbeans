@@ -16,7 +16,6 @@ package org.apache.webbeans.test.unittests;
 import java.util.List;
 
 import javax.inject.manager.Manager;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
@@ -40,21 +39,11 @@ public class PreDestroyComponentTest extends TestContext
         super(PreDestroyComponentTest.class.getSimpleName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {
         this.container = ManagerImpl.getManager();
         super.init();
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @SuppressWarnings("unchecked")

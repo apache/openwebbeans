@@ -13,8 +13,6 @@
  */
 package org.apache.webbeans.test.unittests.intercept;
 
-import javax.servlet.ServletContext;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
@@ -33,42 +31,27 @@ public class EJBInterceptorExceptionComponentTest extends TestContext
         super(EJBInterceptorExceptionComponentTest.class.getName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {
         super.init();
     }
 
-    public void startTests(ServletContext ctx)
-    {
-
-    }
-
     @Test
     public void testComponentTypeException()
     {
-        WebBeansConfigurationException exc = null;
-
         try
         {
             AbstractComponent<MultpleInterceptor> component = defineSimpleWebBean(MultpleInterceptor.class);
 
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
-
         }
         catch (WebBeansConfigurationException e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
-
+            System.out.println("got expected exception: " + e.getMessage());
+            return; // all ok!
         }
-
-        Assert.assertNotNull(exc);
+        Assert.fail("expecting an exception!");
     }
 
 }

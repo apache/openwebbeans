@@ -18,7 +18,6 @@ import java.util.List;
 
 import javax.inject.Current;
 import javax.inject.manager.Manager;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
@@ -40,21 +39,11 @@ public class TypedComponentTest extends TestContext
         super(TypedComponentTest.class.getSimpleName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {
         super.init();
         this.container = ManagerImpl.getManager();
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @Test

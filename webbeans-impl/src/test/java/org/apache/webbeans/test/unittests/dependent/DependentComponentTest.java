@@ -36,22 +36,10 @@ public class DependentComponentTest extends TestContext
         super(DependentComponentTest.class.getName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
     @Before
     public void init()
     {
         super.init();
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-        // TODO Auto-generated method stub
-
     }
 
     @Test

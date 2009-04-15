@@ -50,29 +50,10 @@ public class EJBInterceptComponentTest extends TestContext
         super.init();
     }
 
-    public void startTests(ServletContext ctx)
-    {
-
-    }
-
     @Test
     public void testInterceptedComponent()
     {
-        WebBeansConfigurationException exc = null;
-
-        try
-        {
-            defineSimpleWebBean(InterceptedComponent.class);
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println(e.getMessage());
-            exc = e;
-
-        }
-
-        Assert.assertNull(exc);
+        defineSimpleWebBean(InterceptedComponent.class);
     }
 
     @Test

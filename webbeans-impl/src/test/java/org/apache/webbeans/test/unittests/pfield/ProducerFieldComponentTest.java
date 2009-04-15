@@ -69,8 +69,6 @@ public class ProducerFieldComponentTest extends TestContext
         Assert.assertNotNull(injectedComponentInstance);
         
         Assert.assertNotNull(injectedComponentInstance.getPaymentProcessorName());
-        
-        
     }
 
 }

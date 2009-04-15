@@ -15,15 +15,12 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.context.RequestScoped;
 import javax.inject.manager.Manager;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.IPayment;
@@ -32,7 +29,6 @@ import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 
-@SuppressWarnings("unchecked")
 public class PaymentProcessorComponentTest extends TestContext
 {
     Manager container = null;
@@ -42,20 +38,10 @@ public class PaymentProcessorComponentTest extends TestContext
         super(PaymentProcessorComponentTest.class.getSimpleName());
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
     @Before
     public void init()
     {
         super.init();
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @Test
