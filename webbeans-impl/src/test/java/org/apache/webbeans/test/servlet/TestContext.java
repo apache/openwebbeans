@@ -596,7 +596,7 @@ public abstract class TestContext implements ITestContext
     }
 
     /**
-     * End tests for sub-class. NOT : This method is used for ending the all
+     * End tests for sub-class. NOTE : This method is used for ending the all
      * test methods in sub-class from the {@link ServletContextListener}. It is
      * not used for normal unit tests.
      * 
@@ -609,7 +609,7 @@ public abstract class TestContext implements ITestContext
     }
 
     /**
-     * Start tests for sub-class. NOT : This method is used for starting the all
+     * Start tests for sub-class. NOTE : This method is used for starting the all
      * test methods in sub-class from the {@link ServletContextListener}. It is
      * not used for normal unit tests.
      * 
