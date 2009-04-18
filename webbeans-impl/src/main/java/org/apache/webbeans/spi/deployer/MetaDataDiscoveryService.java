@@ -16,6 +16,7 @@
  */
 package org.apache.webbeans.spi.deployer;
 
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,7 +47,7 @@ public interface MetaDataDiscoveryService
     /**
      * @return the locations of the beans.xml files. 
      */
-    public Set<String> getWebBeansXmlLocations();
+    public Set<URL> getWebBeansXmlLocations();
     
     /**
      * Get all scanned classes and all annotations used by each very class.

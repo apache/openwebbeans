@@ -56,7 +56,7 @@ public class MetaDataDiscoveryStandard extends AbstractMetaDataDiscovery
             while (resources.hasMoreElements())
             {
                 URL resource = resources.nextElement();
-                addWebBeansXmlLocation(resource.getFile());
+                addWebBeansXmlLocation(resource);
             }
 
         }

@@ -13,13 +13,12 @@
  */
 package org.apache.webbeans.config;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -250,19 +249,21 @@ public class WebBeansContainerDeployer
     {
         logger.info("Deploying configurations from XML files is started");
 
-        Set<String> xmlLocations = scanner.getWebBeansXmlLocations();
-        Iterator<String> it = xmlLocations.iterator();
+        Set<URL> xmlLocations = scanner.getWebBeansXmlLocations();
+        Iterator<URL> it = xmlLocations.iterator();
 
         while (it.hasNext())
         {
-            String fileName = it.next();
-            FileInputStream fis = null;
+            URL fileURL = it.next();
+            String fileName = fileURL.getFile();
+            InputStream fis = null;
             try
             {
-                fis = new FileInputStream(fileName);
+                fis = fileURL.openStream();
+                
                 this.xmlConfigurator.configure(fis, fileName);
             } 
-            catch (FileNotFoundException e)
+            catch (IOException e)
             {
                 throw new WebBeansDeploymentException(e);
             }

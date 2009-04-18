@@ -17,9 +17,8 @@
 package org.apache.webbeans.spi.deployer;
 
 
-import java.io.InputStream;
+import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +30,7 @@ import org.scannotation.AnnotationDB;
 public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryService
 {
     /** Location of the beans.xml files. */
-    private Set<String> webBeansXmlLocations = new HashSet<String>();
+    private Set<URL> webBeansXmlLocations = new HashSet<URL>();
 
     //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 
@@ -88,7 +87,7 @@ public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryServ
     /**
      * @return the wEBBEANS_XML_LOCATIONS
      */
-    public Set<String> getWebBeansXmlLocations()
+    public Set<URL> getWebBeansXmlLocations()
     {
         return Collections.unmodifiableSet(webBeansXmlLocations);
     }
@@ -115,7 +114,7 @@ public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryServ
      * add the given beans.xml path to the locations list 
      * @param file location path
      */
-    protected void addWebBeansXmlLocation(String file)
+    protected void addWebBeansXmlLocation(URL file)
     {
         webBeansXmlLocations.add(file);
     }
