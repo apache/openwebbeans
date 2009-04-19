@@ -309,12 +309,14 @@
     </reporting>
 	
     <modules>
-		<module>webbeans-api</module>
-		<module>webbeans-impl</module>
-		<module>samples</module>
-<!--		<module>webbeans-tck</module>-->
-                <module>webbeans-ejb</module>
-  </modules>
+        <module>webbeans-api</module>
+        <module>webbeans-impl</module>
+        <module>webbeans-jsf</module>
+        <module>webbeans-jpa</module>
+        <module>samples</module>
+<!--	<module>webbeans-tck</module>-->
+        <module>webbeans-ejb</module>
+    </modules>
     
 	<repositories>
 		<repository>
@@ -417,6 +419,16 @@
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>openwebbeans-impl</artifactId>
+				<version>${openwebbeans.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.openwebbeans</groupId>
+				<artifactId>openwebbeans-jsf</artifactId>
+				<version>${openwebbeans.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.openwebbeans</groupId>
+				<artifactId>openwebbeans-jpa</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
 		</dependencies>
