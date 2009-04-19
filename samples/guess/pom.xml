@@ -32,33 +32,47 @@
 		<finalName>guess</finalName>
 	</build>
 
-	<dependencies>
-	  <dependency>
-	     <groupId>junit</groupId>
-             <artifactId>junit</artifactId>
-	     <scope>test</scope>
-	  </dependency>
-	  
-          <dependency>
-	     <groupId>com.sun.facelets</groupId>
-	     <artifactId>jsf-facelets</artifactId>
-	     <version>1.1.11</version>
-	  </dependency>
-	  
-          <dependency>
-	     <groupId>org.apache.openwebbeans</groupId>
-	     <artifactId>openwebbeans-api</artifactId>
-	     <version>1.0.0-incubating-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.facelets</groupId>
+            <artifactId>jsf-facelets</artifactId>
+            <version>1.1.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-api</artifactId>
+            <version>1.0.0-incubating-SNAPSHOT</version>
             <scope>provided</scope>
-	 </dependency>
-         
-         <dependency>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-jsf</artifactId>
+            <version>1.0.0-incubating-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-jpa</artifactId>
+            <version>1.0.0-incubating-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        
-	<dependency>
+
+        <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
             <scope>provided</scope>
@@ -73,18 +87,30 @@
 	<profiles>
 		<profile>
 			<id>jetty</id>
-            <dependencies>
-                
-		<dependency>
+                        <dependencies>
+            
+                <dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-api</artifactId>
                     <version>1.0.0-incubating-SNAPSHOT</version>
                     <scope>compile</scope> <!-- we need this if we run in jetty! -->
                 </dependency>
-                
-		<dependency>
+            
+                <dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-impl</artifactId>
+                    <version>1.0.0-incubating-SNAPSHOT</version>
+                </dependency>
+            
+                <dependency>
+                    <groupId>org.apache.openwebbeans</groupId>
+                    <artifactId>openwebbeans-jsf</artifactId>
+                    <version>1.0.0-incubating-SNAPSHOT</version>
+                </dependency>
+            
+                <dependency>
+                    <groupId>org.apache.openwebbeans</groupId>
+                    <artifactId>openwebbeans-jpa</artifactId>
                     <version>1.0.0-incubating-SNAPSHOT</version>
                 </dependency>
 
@@ -93,13 +119,13 @@
                     <artifactId>openjpa</artifactId>
                     <version>1.2.0</version>
                 </dependency>
-
+            
                 <dependency>
                     <groupId>hsqldb</groupId>
                     <artifactId>hsqldb</artifactId>
                     <version>1.8.0.7</version>
                 </dependency>
-
+            
                 <dependency>
                     <groupId>org.apache.myfaces.core</groupId>
                     <artifactId>myfaces-api</artifactId>
