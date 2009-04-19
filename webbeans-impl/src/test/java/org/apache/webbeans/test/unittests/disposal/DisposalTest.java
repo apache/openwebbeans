@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.unittests.disposal;
 
-import javax.persistence.EntityManager;
+import java.util.List;
 
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.disposal.Disposal1;
@@ -47,10 +47,10 @@ public class DisposalTest extends TestContext
 
         defineSimpleWebBean(Disposal1.class);
 
-        EntityManager em = (EntityManager) getManager().getInstanceByName("createEntityManager");
-        em.clear();
-        Assert.assertNotNull(em);
-
+        @SuppressWarnings("unchecked")
+        List<Integer> list = (List<Integer>) getManager().getInstanceByName("createBinding1");
+        Assert.assertNotNull(list);
+        Assert.assertTrue(list.size() == 1);
         ContextFactory.destroyRequestContext(null);
 
         Assert.assertTrue(Disposal1.disposeCall);

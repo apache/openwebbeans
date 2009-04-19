@@ -82,6 +82,10 @@ public class WebBeansFinder
             if (object == null)
             {
                 Class<?> clazz = ClassUtil.getClassFromName(singletonName);
+                if (clazz == null)
+                {
+                    throw new WebBeansException("Cannot find class : " + singletonName);
+                }
                 try
                 {
                     object = clazz.newInstance();
@@ -91,7 +95,6 @@ public class WebBeansFinder
                 catch (InstantiationException e)
                 {
                     throw new WebBeansException("Unable to instantiate class : " + singletonName, e);
-
                 }
                 catch (IllegalAccessException e)
                 {

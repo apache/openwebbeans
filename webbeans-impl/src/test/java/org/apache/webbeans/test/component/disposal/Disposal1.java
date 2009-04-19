@@ -13,17 +13,18 @@
  */
 package org.apache.webbeans.test.component.disposal;
 
+import java.util.List;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import javax.annotation.Named;
 import javax.context.RequestScoped;
 import javax.context.SessionScoped;
 import javax.inject.Disposes;
 import javax.inject.Produces;
-import javax.persistence.EntityManager;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
-import org.apache.webbeans.test.mock.MockEntityManager;
+
 
 @SessionScoped
 public class Disposal1 implements Serializable
@@ -39,14 +40,16 @@ public class Disposal1 implements Serializable
     @Binding1
     @Named
     @RequestScoped
-    public EntityManager createEntityManager()
+    public List<Integer> createBinding1()
     {
-        return new MockEntityManager();
+        List<Integer> lst = new ArrayList<Integer>();
+        lst.add(new Integer(42));
+        return lst;
     }
 
-    public void dispose(@Disposes @Binding1 EntityManager em)
+    public void dispose(@Disposes @Binding1 List<Integer> list)
     {
         disposeCall = true;
-        em.close();
+        list.clear();
     }
 }

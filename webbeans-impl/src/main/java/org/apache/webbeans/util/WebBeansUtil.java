@@ -48,7 +48,6 @@ import javax.decorator.Decorator;
 import javax.ejb.EnterpriseBean;
 import javax.event.Fires;
 import javax.event.Observes;
-import javax.faces.component.UIComponent;
 import javax.inject.DefinitionException;
 import javax.inject.DeploymentType;
 import javax.inject.Disposes;
@@ -68,12 +67,6 @@ import javax.inject.manager.Interceptor;
 import javax.inject.manager.Manager;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
-import javax.persistence.PersistenceUnit;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextListener;
@@ -120,6 +113,8 @@ import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.plugins.OpenWebBeansPlugin;
+import org.apache.webbeans.plugins.PluginLoader;
 
 /**
  * Contains some utility methods used in the all project.
@@ -167,70 +162,63 @@ public final class WebBeansUtil
     }
 
     /**
-     * Return true if the given class is ok for simple web bean conditions,
-     * falase otherwise.
+     * Return <code>true</code> if the given class is ok for simple web bean conditions,
+     * <code>false</code> otherwise.
      * 
      * @param clazz class in hand
-     * @return true if the given class is ok for simple web bean conditions.
+     * @return <code>true</code> if the given class is ok for simple web bean conditions.
      */
     public static void isSimpleWebBeanClass(Class<?> clazz)
     {
-        try
+        Asserts.nullCheckForClass(clazz);
+        int modifier = clazz.getModifiers();
+
+        if (ClassUtil.isParametrized(clazz))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be parametrized type");
+
+        if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be non-static inner class");
+
+        if (!ClassUtil.isConcrete(clazz) && !AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " have to be concrete if not defines as @Decorator");
+
+        if (EJBUtil.isEJBClass(clazz))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be EJB class");
+
+        if (ClassUtil.isAssignable(Servlet.class, clazz))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement Servlet interface");
+
+        if (ClassUtil.isAssignable(Filter.class, clazz))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement Filter interface");
+
+        if (ClassUtil.isAssignable(ServletContextListener.class, clazz))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement ServletContextListener");
+
+        if (ClassUtil.isAssignable(HttpSessionListener.class, clazz))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement HttpSessionListener");
+
+        if (ClassUtil.isAssignable(ServletRequestListener.class, clazz))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can notimplement ServletRequestListener");
+
+        if (ClassUtil.isAssignable(EnterpriseBean.class, clazz))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement EnterpriseBean");
+
+        // TODO ejb-jar.xml check
+        if (EJBUtil.isDefinedInXML(clazz.getName()))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not defined in the ejb-jar.xml");
+
+        // TODO orm.xml check
+        if (ORMUtil.isDefinedInXML(clazz.getName()))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not defined in orm.xml");
+
+        if (!isConstructureOk(clazz))
+            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " must define at least one Constructor");
+
+        // and finally call all checks which are defined in plugins like JSF, JPA, etc
+        List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+        for (OpenWebBeansPlugin plugin : plugins)
         {
-            Asserts.nullCheckForClass(clazz);
-            int modifier = clazz.getModifiers();
-
-            if (ClassUtil.isParametrized(clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be parametrized type");
-
-            if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be non-static inner class");
-
-            if (!ClassUtil.isConcrete(clazz) && !AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " have to be concrete if not defines as @Decorator");
-
-            if (AnnotationUtil.isAnnotationExistOnClass(clazz, Entity.class))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be JPA Entity class");
-
-            if (EJBUtil.isEJBClass(clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be EJB class");
-
-            if (ClassUtil.isAssignable(Servlet.class, clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement Servlet interface");
-
-            if (ClassUtil.isAssignable(Filter.class, clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement Filter interface");
-
-            if (ClassUtil.isAssignable(ServletContextListener.class, clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement ServletContextListener");
-
-            if (ClassUtil.isAssignable(HttpSessionListener.class, clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement HttpSessionListener");
-
-            if (ClassUtil.isAssignable(ServletRequestListener.class, clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can notimplement ServletRequestListener");
-
-            if (ClassUtil.isAssignable(EnterpriseBean.class, clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement EnterpriseBean");
-
-            if (ClassUtil.isAssignable(UIComponent.class, clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement JSF UIComponent");
-
-            // TODO ejb-jar.xml check
-            if (EJBUtil.isDefinedInXML(clazz.getName()))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not defined in the ejb-jar.xml");
-
-            // TODO orm.xml check
-            if (ORMUtil.isDefinedInXML(clazz.getName()))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not defined in orm.xml");
-
-            if (!isConstructureOk(clazz))
-                throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " must define at least one Constructor");
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            throw e;
+            plugin.isSimpleBeanClass(clazz);
         }
     }
 
@@ -444,49 +432,20 @@ public final class WebBeansUtil
      * Check conditions for the resources.
      * 
      * @param annotations annotations
-     * @return Annotation[] with all binding annotations
      * @throws WebBeansConfigurationException if resource annotations exists and do not fit to the fields type, etc.
      * @see AnnotationUtil#isResourceAnnotation(Class)
      */
-    public static Annotation[] checkForValidResources(Type type, Class<?> clazz, String name, Annotation[] annotations)
+    public static void checkForValidResources(Type type, Class<?> clazz, String name, Annotation[] annotations)
     {
         Asserts.assertNotNull(type, "Type argument can not be null");
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
         Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
-        Annotation[] as = AnnotationUtil.getResourceAnnotations(annotations);
-        for (Annotation a : annotations)
+        List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+        for (OpenWebBeansPlugin plugin : plugins)
         {
-            if (a.annotationType().equals(PersistenceUnit.class))
-            {
-                if (!type.equals(EntityManagerFactory.class))
-                {
-                    throw new WebBeansConfigurationException("@PersistenceUnit must only be injected into field/method with type EntityManagerFactory! class : "  
-                                                             + clazz.getName() + " in field/method : " + name);
-                }
-            }
-            
-            if (a.annotationType().equals(PersistenceContext.class))
-            {
-                PersistenceContext pc = (PersistenceContext) a;
-                
-                if (!type.equals(EntityManager.class))
-                {
-                    throw new WebBeansConfigurationException("@PersistenceContext must only be injected into field/method with type EntityManager! class : "  
-                                                             + clazz.getName() + " in field/method : " + name);
-                }
-             
-                if (pc.type().equals(PersistenceContextType.EXTENDED))
-                {
-                    throw new WebBeansConfigurationException("type of @PersistenceContext must not be 'EXTENDED'! class : "  
-                            + clazz.getName() + " in field/method : " + name);
-                    
-                }
-            }
+            plugin.checkForValidResources(type, clazz, name, annotations);
         }
-                
-        //X TODO add checks for other resources
-        return as;
     }
     
     /**

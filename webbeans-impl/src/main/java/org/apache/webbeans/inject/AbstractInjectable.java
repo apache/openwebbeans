@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 
 import javax.context.CreationalContext;
 import javax.context.Dependent;
@@ -25,17 +26,14 @@ import javax.event.Fires;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
 
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
-
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
-import org.apache.webbeans.spi.JPAService;
-import org.apache.webbeans.spi.ServiceLoader;
+import org.apache.webbeans.plugins.OpenWebBeansPlugin;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -89,7 +87,6 @@ public abstract class AbstractInjectable implements Injectable
         {
             if (isResource(this.injectionAnnotations))
             {
-                //X TODO do we need the args too?
                 return injectResource(type, this.injectionAnnotations);
             }
                         
@@ -136,7 +133,7 @@ public abstract class AbstractInjectable implements Injectable
      */
     protected boolean isResource(Annotation... annotations)
     {
-        return AnnotationUtil.hasResourceAnnotation(annotations);
+        return AnnotationUtil.hasResourceAnnotation(annotations); 
     }
 
     private boolean isObservableBinding(Annotation... annotations)
@@ -153,8 +150,8 @@ public abstract class AbstractInjectable implements Injectable
     }
     
     /**
-     * create the instance for injecting web beans resources.
-     * @see AnnotationUtil#isResourceAnnotation(Class)
+     * If the annotation is a resource annotation, we create 
+     * the instance for injecting web beans resources.
      * @param type the class type which should be created
      * @param annotations which has been defined in the web bean
      * @return the instance linked with the annotation
@@ -162,29 +159,17 @@ public abstract class AbstractInjectable implements Injectable
      */
     private Object injectResource(Type type, Annotation... annotations)
     {
-        Object ret = null;
-        Annotation annot = AnnotationUtil.getAnnotation(annotations, PersistenceUnit.class);
-        if (annot != null)
+        List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+        for (OpenWebBeansPlugin plugin : plugins)
         {
-            PersistenceUnit pu = (PersistenceUnit) annot;
-            String unitName = pu.unitName();
-            
-            //X TODO what if the EntityManagerFactory is null?
-            return getJPAService().getPersistenceUnit(unitName);
+            Object toInject = plugin.injectResource(type, annotations);
+            if (toInject != null)
+            {
+                return toInject;
+            }
         }
         
-        annot = AnnotationUtil.getAnnotation(annotations, PersistenceContext.class);
-        if (annot != null)
-        {
-            PersistenceContext pc = (PersistenceContext) annot;
-            String unitName = pc.unitName();
-            String name = pc.name();
-            
-            //X TODO what if the EntityManager is null?
-            return getJPAService().getPersistenceContext(unitName, name);
-        }
-
-        return ret;
+        return null;
     }
     
     private Object injectForObservable(Type[] args, Annotation... annotations)
@@ -227,8 +212,4 @@ public abstract class AbstractInjectable implements Injectable
         return injectionOwnerComponent;
     }
 
-    protected JPAService getJPAService()
-    {
-        return ServiceLoader.getService(JPAService.class);
-    }
 }

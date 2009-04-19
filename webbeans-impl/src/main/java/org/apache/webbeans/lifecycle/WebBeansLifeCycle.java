@@ -37,6 +37,7 @@ import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
@@ -101,7 +102,10 @@ public final class WebBeansLifeCycle
     {
         this.discovery = ServiceLoader.getService(MetaDataDiscoveryService.class);
         this.discovery.init(event.getServletContext());
-        
+
+        // load all optional plugins
+        PluginLoader.getInstance().startUp();
+
         // I do not know this is the correct way, spec is not so explicit.
         service = Executors.newScheduledThreadPool(1);
         service.scheduleWithFixedDelay(new Runnable()
@@ -175,6 +179,9 @@ public final class WebBeansLifeCycle
         this.rootManager = null;
         
         WebBeansFinder.clearInstances();
+
+        // finally free all plugin resources
+        PluginLoader.getInstance().shutDown();
 
     }
 

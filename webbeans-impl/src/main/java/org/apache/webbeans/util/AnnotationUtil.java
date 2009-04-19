@@ -27,8 +27,6 @@ import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import javax.xml.ws.WebServiceRef;
 
 import javax.annotation.NonBinding;
@@ -39,6 +37,8 @@ import javax.inject.Realizes;
 import javax.interceptor.InterceptorBindingType;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.plugins.OpenWebBeansPlugin;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 /**
@@ -764,7 +764,7 @@ public final class AnnotationUtil
             {
                 return true;
             }
-        }
+        }        
         
         return false;
     }
@@ -800,12 +800,19 @@ public final class AnnotationUtil
             return true;
         }
         else if (clazz.equals(Resource.class) ||
-                 clazz.equals(PersistenceContext.class) ||
-                 clazz.equals(PersistenceUnit.class) ||
                  clazz.equals(EJB.class) ||
                  clazz.equals(WebServiceRef.class) )
         {
             return true;
+        }
+
+        List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+        for (OpenWebBeansPlugin plugin : plugins)
+        {
+            if (plugin.isResourceAnnotation(clazz))
+            {
+                return true;
+            }
         }
 
         return false;

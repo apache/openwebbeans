@@ -16,8 +16,6 @@
  */
 package org.apache.webbeans.spi.conversation;
 
-import org.apache.webbeans.util.JSFUtil;
-
 /**
  * Defines the SPI for the conversation management.
  * @version $Rev$ $Date$

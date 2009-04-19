@@ -52,6 +52,7 @@ import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMustImplementAllDecoratedTypes;
 import org.apache.webbeans.test.component.decorator.broken.MoreThanOneDelegateAttribute;
@@ -132,6 +133,8 @@ public abstract class TestContext implements ITestContext
             initStereoTypes();
             initDependentContext();
 
+            PluginLoader.getInstance().startUp();
+            
             init = true;
         }
     }
