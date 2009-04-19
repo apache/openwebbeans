@@ -16,6 +16,7 @@ package org.apache.webbeans.test.tck;
 import java.lang.reflect.Method;
 
 import javax.inject.manager.Bean;
+import javax.persistence.Entity;
 
 
 import org.apache.webbeans.component.AbstractComponent;
@@ -24,6 +25,7 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.ejb.EJBUtil;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.jboss.jsr299.tck.spi.Beans;
 
 public class BeansImpl implements Beans
@@ -51,9 +53,10 @@ public class BeansImpl implements Beans
         return EJBUtil.isEJBMessageDrivenClass(clazz) || EJBUtil.isEJBSessionClass(clazz);
     }
 
-    public boolean isEntityBean( Class<?> clazz ) {
-        return EJBUtil.isEJBEntityBean(clazz);
-    }
+    public boolean isEntityBean( Class<?> clazz ) 
+    {
+        return (AnnotationUtil.isAnnotationExistOnClass(clazz, Entity.class));
+    }        
 
     public boolean isProxy( Object instance ) {
         return instance.getClass().getName().contains("$$");
