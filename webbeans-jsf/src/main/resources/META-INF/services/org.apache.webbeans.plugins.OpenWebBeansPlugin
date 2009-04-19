@@ -1,0 +1,4 @@
+# this file contains the service implementation for the 
+# JSF integration into OpenWebBeans
+# this file contains information for java.util.ServiceLoader
+org.apache.webbeans.jsf.plugin.OpenWebBeansJsfPlugin
