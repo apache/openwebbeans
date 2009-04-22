@@ -120,9 +120,9 @@ public class MockManager implements Manager
         return manager.getContext(scopeType);
     }
 
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
     {
-        return manager.getInstanceToInject(injectionPoint, context);
+        return manager.<T>getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
     }
     
     @SuppressWarnings("unchecked")

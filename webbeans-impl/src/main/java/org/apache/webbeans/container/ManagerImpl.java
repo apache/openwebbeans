@@ -218,7 +218,7 @@ public class ManagerImpl implements Manager, Referenceable
         return object;
     }
     
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<T> context)
+    public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
     {
         T instance = null;
         
@@ -464,7 +464,7 @@ public class ManagerImpl implements Manager, Referenceable
         }
         else
         {
-            //Mark , this brokes the TCK tests!!!!
+//X TODO Mark , this brokes the TCK tests!!!!
 //            if (context.isActive() && containsActiveContext(contextList))
 //            {
 //                throw new IllegalStateException("There is already an active Context registered for this scope! Context=" + context.getScopeType());
@@ -492,27 +492,12 @@ public class ManagerImpl implements Manager, Referenceable
         return this;
     }
 
-//    /**
-//     * Check if the given contextList contains an active Context
-//     * @param contextList
-//     * @return <code>true</code> if the given contextList contains an active Context, <code>false</code> otherwise
-//     */
-//    private boolean containsActiveContext(List<Context> contextList)
-//    {
-//        for (Context c : contextList)
-//        {
-//            if (c.isActive())
-//            {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-    
+    /**
+     * Create a new ChildActivityManager.
+     */
     public Manager createActivity()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new ChildActivityManager(this);
     }
 
     public Manager setCurrent(Class<? extends Annotation> scopeType)
