@@ -75,8 +75,15 @@ public class PluginLoader
     public void shutDown() throws WebBeansConfigurationException
     {
         logger.debug("PluginLoader shutDown called");
-        ArrayList<String> failedShutdown = new ArrayList<String>();
         
+        if (plugins == null)
+        {
+            logger.warn("No plugins to shutDown!");
+            return;
+        }
+
+        ArrayList<String> failedShutdown = new ArrayList<String>();
+
         for (OpenWebBeansPlugin plugin : plugins)
         {
             try 
