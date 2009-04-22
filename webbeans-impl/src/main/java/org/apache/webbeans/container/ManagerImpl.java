@@ -74,29 +74,46 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 @SuppressWarnings("unchecked")
 public class ManagerImpl implements Manager, Referenceable
 {
+    /**Holds the context with key scope*/
     private Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
 
+    /**Activity webbeans components*/
     private Set<Bean<?>> components = new CopyOnWriteArraySet<Bean<?>>();
 
+    /**Activity interceptors*/
     private Set<Interceptor> webBeansInterceptors = new CopyOnWriteArraySet<Interceptor>();
 
+    /**Activity decorators*/
     private Set<Decorator> webBeansDecorators = new CopyOnWriteArraySet<Decorator>();
 
+    /**Event notification manager instance*/
     private NotificationManager notificationManager = null;
 
+    /**Injection resolver instance*/
     private InjectionResolver injectionResolver = null;
 
+    /**Proxy map for the webbeans components*/
     private Map<Bean<?>, Object> proxyMap = Collections.synchronizedMap(new IdentityHashMap<Bean<?>, Object>());
     
+    /**XML configurator instance*/
     private WebBeansXMLConfigurator xmlConfigurator = null;
     
-
+    /**
+     * Creates a new {@link Manager} instance.
+     * Called by the system. Do not use outside of the
+     * system.
+     */
     public ManagerImpl()
     {
         injectionResolver = InjectionResolver.getInstance();
         notificationManager = NotificationManager.getInstance();
     }
 
+    /**
+     * Gets current activity.
+     * 
+     * @return the current activity
+     */
     public static ManagerImpl getManager()
     {
         ActivityManager activityManager = ActivityManager.getInstance();
@@ -106,25 +123,39 @@ public class ManagerImpl implements Manager, Referenceable
         return currentManager;
     }
 
-    public void setXMLConfigurator(WebBeansXMLConfigurator xmlConfigurator)
+    
+    /**
+     * Sets the xml configurator instance.
+     * 
+     * @param xmlConfigurator set xml configurator instance.
+     * @see WebBeansXMLConfigurator
+     */
+    public synchronized void setXMLConfigurator(WebBeansXMLConfigurator xmlConfigurator)
     {
         if(this.xmlConfigurator != null)
         {
-            throw new IllegalStateException("There is a WebBeansXMLConfigurator defined already");
+            throw new IllegalStateException("WebBeansXMLConfigurator is already defined!");
         }
         
         this.xmlConfigurator = xmlConfigurator;
     }
     
-    public Context getContext(Class<? extends Annotation> scopType)
+    /**
+     * Gets the active context for the given scope type.
+     * 
+     * @param scopeType scope type of the context
+     * @throws ContextNotActiveException if no active context
+     * @throws IllegalStateException if more than one active context
+     */
+    public Context getContext(Class<? extends Annotation> scopeType)
     {
-        Asserts.assertNotNull(scopType, "scopeType paramter can not be null");
+        Asserts.assertNotNull(scopeType, "scopeType paramter can not be null");
 
         List<Context> contexts = new ArrayList<Context>();
         
         Context standardContext = null;
 
-        standardContext = ContextFactory.getStandardContext(scopType);
+        standardContext = ContextFactory.getStandardContext(scopeType);
 
         if(standardContext != null)
         {
@@ -134,7 +165,7 @@ public class ManagerImpl implements Manager, Referenceable
             }
         }
         
-        List<Context> others = this.contextMap.get(scopType);
+        List<Context> others = this.contextMap.get(scopeType);
         if(others != null)
         {
             for(Context otherContext : others)
@@ -150,17 +181,23 @@ public class ManagerImpl implements Manager, Referenceable
         // Still null
         if (contexts.isEmpty())
         {
-            throw new ContextNotActiveException("WebBeans context with scope type annotation @" + scopType.getSimpleName() + " does not exist within current thread");
+            throw new ContextNotActiveException("WebBeans context with scope type annotation @" + scopeType.getSimpleName() + " does not exist within current thread");
         }
         
         else if(contexts.size() > 1)
         {
-            throw new IllegalStateException("More than one active context exists with scope type annotation @" + scopType.getSimpleName());
+            throw new IllegalStateException("More than one active context exists with scope type annotation @" + scopeType.getSimpleName());
         }
 
         return contexts.get(0);
     }
 
+    /**
+     * Add new webbeans component to the activity.
+     * 
+     * @param component new webbeans component
+     * @return the this activity
+     */
     public Manager addBean(Bean<?> component)
     {
         if(component instanceof AbstractComponent)
@@ -184,7 +221,8 @@ public class ManagerImpl implements Manager, Referenceable
         return this;
 
     }
-
+    
+    
     public void fireEvent(Object event, Annotation... bindings)
     {
         if (ClassUtil.isParametrized(event.getClass()))
@@ -500,9 +538,23 @@ public class ManagerImpl implements Manager, Referenceable
         return new ChildActivityManager(this);
     }
 
+    /**
+     * Set the activity for the given scope type.
+     * 
+     * @param scopeType scope type for the context
+     */
     public Manager setCurrent(Class<? extends Annotation> scopeType)
     {
-        // TODO Auto-generated method stub
-        return null;
+        if(!WebBeansUtil.isScopeTypeNormal(scopeType))
+        {
+            throw new IllegalArgumentException("Scope type : " + scopeType.getSimpleName() + " must be normal scope type");
+            
+        }        
+        
+        Context context = getContext(scopeType);
+        
+        ActivityManager.getInstance().addCurrentActivity(context, this);
+        
+        return this;
     }    
 }

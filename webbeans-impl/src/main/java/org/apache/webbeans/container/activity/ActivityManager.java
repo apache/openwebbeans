@@ -17,22 +17,49 @@
 package org.apache.webbeans.container.activity;
 
 
-import javax.inject.manager.Bean;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.context.Context;
 
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.exception.WebBeansException;
 
+/**
+ * Class is responsible for managing the activities.
+ * 
+ * <p>
+ * There is always one root activity.
+ * </p>
+ * 
+ * @version $Rev$ $Date$
+ */
 public class ActivityManager
 {
+    /**Root activity*/
     private ManagerImpl rootActivity = null;
     
-    private ManagerImpl currentActivity = null;
+    /**Setted current activities*/
+    private Map<Context, ManagerImpl> currentActivityMap = new ConcurrentHashMap<Context, ManagerImpl>();
     
+    /**
+     * Used by the system. Do not
+     * instantiate this from outside.
+     */
     public ActivityManager()
     {
         
     }
     
+    /**
+     * Gets the activity manager.
+     * 
+     * @return the singleton acitivity manager
+     */
     public static ActivityManager getInstance()
     {
         ActivityManager currentActivityManager = (ActivityManager)WebBeansFinder.getSingletonInstance(ActivityManager.class.getName());
@@ -40,28 +67,77 @@ public class ActivityManager
         return currentActivityManager;
     }
     
-    public void setRootActivity(ManagerImpl rootActivity)
+    
+    /**
+     * Sets the root activity
+     * 
+     * @param rootActivity root activity
+     */
+    public synchronized void  setRootActivity(ManagerImpl rootActivity)
     {
         this.rootActivity = rootActivity;
     }
     
+    /**
+     * Gets root activity
+     * 
+     * @return the root activity
+     */
     public ManagerImpl getRootActivity()
     {
         return this.rootActivity;
     }
 
-    public static void addBean(Bean<?> bean)
+    
+    /**
+     * Add new current activity for the context.
+     * 
+     * @param context
+     * @param currentManager
+     */
+    public void addCurrentActivity(Context context, ManagerImpl currentManager)
     {
-        getInstance().getRootActivity().addBean(bean);
+        this.currentActivityMap.put(context, currentManager); 
     }
     
-    public void setCurrentActivity(ManagerImpl currentManager)
-    {
-        currentActivity = currentManager; 
-    }
-    
+    /**
+     * Looks for the registered current activities.
+     * <ul>
+     *  <li>If there are more than one activity, throws exception.</li>
+     *  <li>If no registered current activity, return the root activity.
+     * </ul>
+     * 
+     * 
+     * @return the current activity
+     * @throws WebBeansException if more than one current activity exist
+     */
     public ManagerImpl getCurrentActivity()
     {
+        ManagerImpl currentActivity = null;
+        
+        Set<Context> contexts = this.currentActivityMap.keySet();
+        List<ManagerImpl> managers = new ArrayList<ManagerImpl>(); 
+        for(Context context : contexts)
+        {
+            if(context.isActive())
+            {
+                managers.add(this.currentActivityMap.get(context));
+            }
+        }
+        
+        if(managers.size() > 1)
+        {
+            throw new WebBeansException("There are more than one current activity");
+        }
+        else
+        {
+            if(!managers.isEmpty())
+            {
+                currentActivity = managers.get(0);   
+            }            
+        }
+
+        
         if(currentActivity == null)
         {
             return getRootActivity();

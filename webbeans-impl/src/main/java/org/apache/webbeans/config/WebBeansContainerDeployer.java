@@ -42,7 +42,6 @@ import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
-import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
@@ -495,7 +494,7 @@ public class WebBeansContainerDeployer
             component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.SIMPLE);
             if (component != null)
             {
-                ActivityManager.addBean(WebBeansUtil.createNewSimpleBeanComponent(component));
+                ManagerImpl.getManager().addBean(WebBeansUtil.createNewSimpleBeanComponent(component));
                 
                 DecoratorUtil.checkSimpleWebBeanDecoratorConditions(component);
 

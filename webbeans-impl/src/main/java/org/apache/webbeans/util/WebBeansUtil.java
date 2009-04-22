@@ -93,7 +93,6 @@ import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.container.ManagerImpl;
-import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
@@ -1759,7 +1758,7 @@ public final class WebBeansUtil
             bindings = injectionPoint.getBindings().toArray(bindings);
             
             Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, bindings);
-            ActivityManager.addBean(bean);                  
+            ManagerImpl.getManager().addBean(bean);                  
         }      
     }
     
@@ -1774,7 +1773,7 @@ public final class WebBeansUtil
         bindings = injectionPoint.getBindings().toArray(bindings);
         
         Bean<Instance<T>> bean = createInstanceComponent(genericType,clazz, genericType.getActualTypeArguments()[0], bindings);
-        ActivityManager.addBean(bean);
+        ManagerImpl.getManager().addBean(bean);
         
     }
     

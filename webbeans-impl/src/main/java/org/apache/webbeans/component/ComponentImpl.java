@@ -73,6 +73,7 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
 
  
     @Override
+    @SuppressWarnings("unchecked")
     protected void destroyComponentInstance(T instance)
     {
         if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
