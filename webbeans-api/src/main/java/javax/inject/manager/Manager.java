@@ -25,18 +25,86 @@ import javax.event.Observer;
 import javax.inject.TypeLiteral;
 
 
+/**
+ * The interface <code>Manager</code> provides operations for
+ * obtaining the contextual instance of the webbeans. There are operations
+ * related with;
+ * 
+ * <ul>
+ *  <li>Adding new webbeans</li>
+ *  <li>Adding new contexts</li>
+ *  <li>Adding new decorators</li>
+ *  <li>Adding new interceptors</li>
+ *  <li>Firing the observer events</li>
+ *  <li>Creating the instance of the contextual beans</li>
+ *  <li>Resolution of beans, interceptors, decorators and observers</li>
+ *  <li>Other utility methods etc..</li>
+ * </ul>
+ * 
+ * <p>
+ * There is always one root manager in the system. You can set the
+ * current activity via call to the {@link Manager#setCurrent(Class)} method.
+ * </p>
+ * 
+ * @version $Rev$ $Date$ 
+ */
 public interface Manager
 {
-    public <T> Set<Bean<T>> resolveByType(Class<T> type, Annotation... bindings);
+    /**
+     * Resolve beans with given api type and bindings.
+     * 
+     * @param apiType api type of the bean
+     * @param bindings beans bindings
+     * @return the set of webbeans
+     */
+    public <T> Set<Bean<T>> resolveByType(Class<T> apiType, Annotation... bindings);
 
+    /**
+     * Resolves beans with given {@link TypeLiteral} generic type
+     * and binding types.
+     * 
+     * @param apiType bean api type
+     * @param bindingTypes bean binding types
+     * @return the set of resolved beans
+     */
     public <T> Set<Bean<T>> resolveByType(TypeLiteral<T> apiType, Annotation... bindingTypes);
 
+    /**
+     * Gets bean instance using its context. 
+     * 
+     * @param type type of the bean
+     * @param bindingTypes binding types of the bean
+     * @return the bean instance
+     */
     public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes);
 
+    /**
+     * Gets instance of the bean from its context.
+     * 
+     * @param type generic type of bean using {@link TypeLiteral}
+     * @param bindingTypes binding types
+     * @return instance of the bean
+     */
     public <T> T getInstanceByType(TypeLiteral<T> type, Annotation... bindingTypes);
 
+    /**
+     * Resolves the set of beans with given name.
+     * 
+     * @param name name of the bean
+     * @return the set of resolved beans with given name
+     */
     public Set<Bean<?>> resolveByName(String name);
 
+    /**
+     * Gets instance of the injection point.
+     * <p>
+     * See the specification section 5.7.1 Resolving dependencies.
+     * </p>
+     * 
+     * @param injectionPoint injection point definition
+     * @param context creational context instance
+     * @return instance of the injection point or null
+     */
     public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context);
 
     public <T> T getInstanceToInject(InjectionPoint injectionPoint);
@@ -49,10 +117,22 @@ public interface Manager
 
     public Context getContext(Class<? extends Annotation> scopeType);
 
+    /**
+     * Add new context to this activity.
+     * 
+     * @param context new context
+     * @return the this activity
+     */
     public Manager addContext(Context context);
 
     public Manager addBean(Bean<?> bean);
 
+    /**
+     * Adds new interceptor to this activity.
+     * 
+     * @param interceptor new interceptor
+     * @return the manager instance that this interceptor is added
+     */
     public Manager addInterceptor(Interceptor interceptor);
 
     public Manager addDecorator(Decorator decorator);
