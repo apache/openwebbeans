@@ -33,9 +33,29 @@
 	<description>All TCK tests for the  OpenWebBeans Implementation</description>
 
     <properties>
-        <webbeans.tck.version>1.0.0-SNAPSHOT</webbeans.tck.version>
+        <webbeans.tck.version>1.0.0.BETA2</webbeans.tck.version>
     </properties>
-	
+    
+    <repositories>
+        <repository>
+            <id>repository.jboss.org</id>
+            <name>JBoss Repository</name>
+            <url>http://repository.jboss.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>snapshots.jboss.org</id>
+            <name>JBoss Repository</name>
+            <url>http://snapshots.jboss.org/maven2</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+    
     <dependencies>
         <!-- we need some test classes like e.g. MockMangager from webbeans-impl -->
         <dependency>
