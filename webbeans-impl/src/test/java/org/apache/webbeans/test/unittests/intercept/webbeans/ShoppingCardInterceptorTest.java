@@ -41,6 +41,9 @@ public class ShoppingCardInterceptorTest extends TestContext
         initDefaultDeploymentTypes();
         initDefaultStereoTypes();
         initializeInterceptorType(TransactionalInterceptor.class);
+        
+        super.init();
+        
     }
 
     @Test
