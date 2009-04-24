@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.context.Context;
+import javax.context.ContextNotActiveException;
 import javax.context.CreationalContext;
 import javax.event.Observer;
 import javax.inject.TypeLiteral;
@@ -116,8 +117,21 @@ public class ChildActivityManager implements Manager
     /** {@inheritDoc} */
     public Context getContext(Class<? extends Annotation> scopeType)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Context ctx = null;
+        //X TODO not 100% sure if this is ok. 'double-definition' case isn't defined by the spec yet!
+        try 
+        {
+            ctx = self.getContext(scopeType);
+        }
+        catch (ContextNotActiveException cna)
+        {
+            //dumdidum nothing found, so let's try it in the parent context
+        }
+        if (ctx == null)
+        {
+            ctx = parent.getContext(scopeType);
+        }
+        return ctx;
     }
 
     /** {@inheritDoc} */
