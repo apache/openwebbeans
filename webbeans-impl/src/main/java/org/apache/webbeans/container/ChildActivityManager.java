@@ -110,8 +110,8 @@ public class ChildActivityManager implements Manager
     /** {@inheritDoc} */
     public void fireEvent(Object event, Annotation... bindings)
     {
-        // TODO Auto-generated method stub
-
+        self.fireEvent(event, bindings);
+        parent.fireEvent(event, bindings);
     }
 
     /** {@inheritDoc} */
