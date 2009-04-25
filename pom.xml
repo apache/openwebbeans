@@ -311,12 +311,12 @@
     <modules>
         <module>webbeans-api</module>
         <module>webbeans-impl</module>
+        <module>webbeans-ejb</module>
+        <module>webbeans-jms</module>
         <module>webbeans-jsf</module>
         <module>webbeans-jpa</module>
         <module>samples</module>
 <!--	<module>webbeans-tck</module>-->
-        <module>webbeans-ejb</module>
-    <module>webbeans-jms</module>
   </modules>
     
 	<repositories>
