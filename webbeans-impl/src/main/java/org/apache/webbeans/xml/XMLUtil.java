@@ -204,7 +204,12 @@ public final class XMLUtil
     {
         nullCheckForElement(element);
 
-        if (!isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DEPLOY_ELEMENT) && !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTORS_ELEMENT) && !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT) && !isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE) && !isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE) && !isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
+        if (!isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DEPLOY_ELEMENT) && 
+                !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTORS_ELEMENT) && 
+                !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT) && 
+                !isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE) && 
+                !isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE) && 
+                !isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
         {
             return true;
         }
@@ -324,7 +329,8 @@ public final class XMLUtil
 
         if (isElementWebBeanDeclaration(element))
         {
-            if (isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_QUEUE_ELEMENT) || isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_TOPIC_ELEMENT))
+            if (isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_QUEUE_ELEMENT) 
+                    || isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_TOPIC_ELEMENT))
             {
                 return true;
             }

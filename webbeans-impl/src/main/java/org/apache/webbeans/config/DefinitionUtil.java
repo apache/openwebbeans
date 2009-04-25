@@ -1174,6 +1174,10 @@ public final class DefinitionUtil
         {
             EventUtil.checkObservableInjectionPointConditions(injectionPoint);
             WebBeansUtil.addInjectedImplicitEventComponent(injectionPoint);
-        }                                                                  
+        }
+        else
+        {
+            
+        }
     }
 }

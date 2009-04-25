@@ -57,6 +57,12 @@ public final class WebBeansConstants
 
     /** <Topic> XML Element */
     public static final String WEB_BEANS_XML_QUEUE_ELEMENT = "Topic";
+    
+    public static final String WEB_BEANS_XML_JMS_RESOURCE = "Resource";
+    
+    public static final String WEB_BEANS_XML_JMS_RESOURCE_NAME = "name";
+    
+    public static final String WEB_BEANS_XML_JMS_RESOURCE_MAPPED_NAME = "mappedName";
 
     public static final String WEB_BEANS_XML_INITIALIZER_ELEMENT = "Initializer";
 

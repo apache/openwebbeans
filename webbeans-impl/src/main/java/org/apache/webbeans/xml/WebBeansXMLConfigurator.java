@@ -73,6 +73,9 @@ import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
 import org.apache.webbeans.inject.xml.XMLInjectionModelType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.intercept.InterceptorsManager;
+import org.apache.webbeans.jms.JMSManager;
+import org.apache.webbeans.jms.JMSModel;
+import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -1511,7 +1514,38 @@ public final class WebBeansXMLConfigurator
      */
     private void configureJMSEndpointComponent(Element webBeanElement)
     {
-        // TODO JMS Endpoint
+        Element resource = webBeanElement.element(WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE);
+        if(resource == null)
+        {
+            throw new WebBeansConfigurationException("Topic or Queue resource mut be defined in the XML");
+        }
+        
+        Element name = resource.element(WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE_NAME);
+        Element mappedName = resource.element(WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE_MAPPED_NAME);
+        
+        if(name== null && mappedName == null)
+        {
+            throw new WebBeansConfigurationException("Topic or Queue must define name or mapped name for the JNDI");
+        }
+        
+        JMSType type = null;
+        
+        if(webBeanElement.getName().equals(WebBeansConstants.WEB_BEANS_XML_TOPIC_ELEMENT))
+        {
+            type = JMSType.TOPIC;
+        }
+        else
+        {
+            type = JMSType.QUEUE;
+        }
+        
+        String jndiName = name == null ? null : name.getTextTrim();
+        String mapName = mappedName== null ? null : mappedName.getTextTrim();
+        
+        
+        JMSModel model = new JMSModel(type,jndiName,mapName);
+        
+        JMSManager.getInstance().addJmsModel(model);
     }
 
     /**
