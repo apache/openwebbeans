@@ -316,7 +316,8 @@
         <module>samples</module>
 <!--	<module>webbeans-tck</module>-->
         <module>webbeans-ejb</module>
-    </modules>
+    <module>webbeans-jms</module>
+  </modules>
     
 	<repositories>
 		<repository>
