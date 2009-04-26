@@ -14,13 +14,14 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.PersistenceUnit;
-import org.apache.webbeans.plugins.OpenWebBeansPlugin;
+
+import org.apache.webbeans.plugins.AbstractOpenWebBeansPlugin;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
-public class OpenWebBeansJpaPlugin implements OpenWebBeansPlugin 
+public class OpenWebBeansJpaPlugin extends AbstractOpenWebBeansPlugin 
 {
 
     /** {@inheritDoc} */
