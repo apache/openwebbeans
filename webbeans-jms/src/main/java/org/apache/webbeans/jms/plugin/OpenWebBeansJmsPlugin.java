@@ -16,6 +16,20 @@
  */
 package org.apache.webbeans.jms.plugin;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
+import javax.inject.manager.InjectionPoint;
+
+import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.jms.JMSManager;
+import org.apache.webbeans.jms.JMSModel;
+import org.apache.webbeans.jms.JMSModel.JMSType;
+import org.apache.webbeans.jms.component.JmsComponentFactory;
+import org.apache.webbeans.jms.component.JmsComponentImpl;
+import org.apache.webbeans.jms.util.JmsProxyHandler;
+import org.apache.webbeans.jms.util.JmsUtil;
 import org.apache.webbeans.plugins.AbstractOpenWebBeansPlugin;
 
 /**
@@ -28,6 +42,55 @@ public class OpenWebBeansJmsPlugin extends AbstractOpenWebBeansPlugin
     public OpenWebBeansJmsPlugin()
     {
         super();
+    }
+
+    
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> boolean addJMSBean(InjectionPoint injectionPoint)
+    {        
+        Type injectionPointType = injectionPoint.getType();
+        if(injectionPointType instanceof Class)
+        {
+            Class<T> injectionPointClazz = (Class<T>)injectionPointType;
+            
+            if(JmsUtil.isJmsResourceClass(injectionPointClazz))
+            {
+                JMSType type = null;
+                
+                if(JmsUtil.isJmsQueueTypeResource(injectionPointClazz))
+                {
+                    type = JMSType.QUEUE;
+                }
+                else
+                {
+                    type = JMSType.TOPIC;
+                }
+                
+                Annotation[] bindings = injectionPoint.getBindings().toArray(new Annotation[0]);
+                JMSModel jmsModel = JMSManager.getInstance().getModel(type, bindings);
+                
+                JmsComponentImpl<T> bean = JmsComponentFactory.getJmsComponentFactory().getJmsComponent(jmsModel,injectionPointClazz);
+                
+                ManagerImpl.getManager().addBean(bean);
+                
+                return true;
+            }            
+        }
+             
+        return false;
+    }
+
+
+
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.plugins.AbstractOpenWebBeansPlugin#shutDown()
+     */
+    @Override
+    public void shutDown() throws WebBeansConfigurationException
+    {
+        JmsProxyHandler.clearConnections();
     }
     
     
