@@ -1,0 +1,4 @@
+# this file contains the service implementation for the 
+# JMS integration into OpenWebBeans
+# this file contains information for java.util.ServiceLoader
+org.apache.webbeans.jms.plugin.OpenWebBeansJmsPlugin
