@@ -3,8 +3,9 @@ package org.apache.webbeans.plugins;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.inject.manager.InjectionPoint;
+
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.util.AnnotationUtil;
 
 /**
  * <p>Interface which all OpenWebBeans plugins has to implement to 
@@ -55,6 +56,14 @@ public interface OpenWebBeansPlugin
      * @throws WebBeansConfigurationException if the given clazz cannot be used as simple web bean.
      */
     public void isSimpleBeanClass(Class<?> clazz) throws WebBeansConfigurationException;
+    
+    /**
+     * If plugins applicable, it adds new jms related bean into the manager.
+     *
+     * @param injectionPoint injection point for the jms bean
+     * @return true if plugin is capable for adding jms bean, false otherwise
+     */
+    public <T> boolean addJMSBean(InjectionPoint injectionPoint);
 
     /**
      * Check whether the given annotation class represents a resource which
