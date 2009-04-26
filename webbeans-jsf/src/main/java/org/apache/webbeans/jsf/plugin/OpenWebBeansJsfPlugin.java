@@ -6,10 +6,10 @@ import java.lang.reflect.Type;
 import javax.faces.component.UIComponent;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.plugins.OpenWebBeansPlugin;
+import org.apache.webbeans.plugins.AbstractOpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
 
-public class OpenWebBeansJsfPlugin implements OpenWebBeansPlugin 
+public class OpenWebBeansJsfPlugin extends AbstractOpenWebBeansPlugin 
 {
 
     /** {@inheritDoc} */
