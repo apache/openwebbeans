@@ -13,7 +13,9 @@
  */
 package org.apache.webbeans.util;
 
+import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 
 import org.apache.webbeans.exception.WebBeansException;
@@ -60,8 +62,24 @@ public final class JNDIUtil
 
         try
         {
-            initialContext.bind(name, object);
-
+            Context context = initialContext;
+            
+            String[] parts = name.split("/");
+            
+            for(int i=0;i< parts.length -1;i++)
+            {
+                try
+                {
+                    context = (Context)initialContext.lookup(parts[i]);
+                    
+                }catch(NameNotFoundException e)
+                {
+                    context = initialContext.createSubcontext(parts[i]);   
+                }
+                
+            }
+            
+            context.bind(parts[parts.length -1], object);
         }
         catch (NamingException e)
         {

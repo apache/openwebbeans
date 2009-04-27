@@ -26,8 +26,9 @@ import org.apache.webbeans.util.JNDIUtil;
  */
 public final class JNDIServiceEnterpriseImpl implements JNDIService
 {
-    private JNDIServiceEnterpriseImpl()
+    public JNDIServiceEnterpriseImpl()
     {
+        
     }
 
     /** 

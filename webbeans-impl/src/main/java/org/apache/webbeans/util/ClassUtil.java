@@ -527,7 +527,7 @@ public final class ClassUtil
         List<String> list = new ArrayList<String>();
         Class<?> clazz = Object.class;
 
-        Method[] methods = clazz.getMethods();
+        Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods)
         {
             list.add(method.getName());

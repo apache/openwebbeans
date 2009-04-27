@@ -96,7 +96,9 @@ public class InjectableField extends AbstractInjectable
                 field.setAccessible(true);
             }
 
-            field.set(instance, inject(clazz, args, bindingAnnos));
+            Object object = inject(clazz, args, bindingAnnos);
+            
+            field.set(instance, object);
 
         }
         catch (IllegalAccessException e)

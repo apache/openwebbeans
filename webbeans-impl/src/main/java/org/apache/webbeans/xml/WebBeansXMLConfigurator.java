@@ -1514,12 +1514,14 @@ public final class WebBeansXMLConfigurator
      */
     private void configureJMSEndpointComponent(Element webBeanElement)
     {
+        List<Element> childs = webBeanElement.elements();               
         Element resource = webBeanElement.element(WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE);
+        
         if(resource == null)
         {
             throw new WebBeansConfigurationException("Topic or Queue resource mut be defined in the XML");
         }
-        
+
         Element name = resource.element(WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE_NAME);
         Element mappedName = resource.element(WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE_MAPPED_NAME);
         
@@ -1528,6 +1530,18 @@ public final class WebBeansXMLConfigurator
             throw new WebBeansConfigurationException("Topic or Queue must define name or mapped name for the JNDI");
         }
         
+        List<Annotation> bindingTypes = new ArrayList<Annotation>();
+        for(Element child : childs)
+        {
+            Class<? extends Annotation> binding = (Class<Annotation>)XMLUtil.getElementJavaType(child);
+            
+            if(AnnotationUtil.isBindingAnnotation(binding))
+            {
+                bindingTypes.add(JavassistProxyFactory.createNewAnnotationProxy(binding));                
+            }
+            
+        }
+                        
         JMSType type = null;
         
         if(webBeanElement.getName().equals(WebBeansConstants.WEB_BEANS_XML_TOPIC_ELEMENT))
@@ -1539,13 +1553,18 @@ public final class WebBeansXMLConfigurator
             type = JMSType.QUEUE;
         }
         
+        
         String jndiName = name == null ? null : name.getTextTrim();
         String mapName = mappedName== null ? null : mappedName.getTextTrim();
         
         
-        JMSModel model = new JMSModel(type,jndiName,mapName);
-        
+        JMSModel model = new JMSModel(type,jndiName,mapName);        
         JMSManager.getInstance().addJmsModel(model);
+        
+        for(Annotation ann : bindingTypes)
+        {
+            model.addBinding(ann);
+        }
     }
 
     /**

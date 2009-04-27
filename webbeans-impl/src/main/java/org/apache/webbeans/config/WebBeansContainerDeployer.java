@@ -36,6 +36,7 @@ import javax.inject.manager.Manager;
 import javax.interceptor.Interceptor;
 import javax.webbeans.Model;
 
+import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.DeployedManagerLiteral;
 import org.apache.webbeans.annotation.InitializedManagerLiteral;
 import org.apache.webbeans.component.ComponentImpl;
@@ -48,6 +49,8 @@ import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.JNDIService;
+import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
@@ -98,8 +101,9 @@ public class WebBeansContainerDeployer
                 // Register InjectionPoint bean
                 ManagerImpl.getManager().addBean(WebBeansUtil.getInjectionPointComponent());
 
-                // JNDI bind
-                //X TODO JNDIUtil.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, ManagerImpl.getManager());
+                // Bind manager
+                JNDIService service = ServiceLoader.getService(JNDIService.class);
+                service.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, ManagerImpl.getManager());
 
                 deployFromXML(scanner);
                 checkStereoTypes(scanner);

@@ -177,11 +177,11 @@ public final class WebBeansLifeCycle
         this.service = null;
         this.xmlDeployer = null;
         this.rootManager = null;
-        
-        WebBeansFinder.clearInstances();
 
         // finally free all plugin resources
         PluginLoader.getInstance().shutDown();
+        
+        WebBeansFinder.clearInstances();
 
     }
 

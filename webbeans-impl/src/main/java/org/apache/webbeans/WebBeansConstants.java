@@ -53,10 +53,10 @@ public final class WebBeansConstants
     public static final String WEB_BEANS_XML_DECORATOR_ELEMENT = "Decorator";
 
     /** <Queue> XML Element */
-    public static final String WEB_BEANS_XML_TOPIC_ELEMENT = "Queue";
+    public static final String WEB_BEANS_XML_TOPIC_ELEMENT = "Topic";
 
     /** <Topic> XML Element */
-    public static final String WEB_BEANS_XML_QUEUE_ELEMENT = "Topic";
+    public static final String WEB_BEANS_XML_QUEUE_ELEMENT = "Queue";
     
     public static final String WEB_BEANS_XML_JMS_RESOURCE = "Resource";
     
