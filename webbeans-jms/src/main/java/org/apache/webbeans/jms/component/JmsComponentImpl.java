@@ -27,6 +27,7 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
+import org.apache.webbeans.jms.util.Closable;
 import org.apache.webbeans.jms.util.JmsUtil;
 
 public class JmsComponentImpl<T> extends AbstractComponent<T> 
@@ -34,9 +35,7 @@ public class JmsComponentImpl<T> extends AbstractComponent<T>
     private JMSModel jmsModel = null;
     
     private Class<T> jmsClass = null;
-    
-    private Object jmsObject;
-    
+        
     JmsComponentImpl(JMSModel jmsModel, Class<T> jmsClass)
     {
         super(WebBeansType.JMS);
@@ -62,9 +61,12 @@ public class JmsComponentImpl<T> extends AbstractComponent<T>
         {
             try
             {
-                Method method = jmsClass.getClass().getMethod("close", new Class[]{});
-                
-                method.invoke(this.jmsObject, new Object[]{});
+                if(instance != null)
+                {
+                    Method method = Closable.class.getMethod("closeJMSObject", new Class[]{});
+                    
+                    method.invoke(instance, new Object[]{});                    
+                }
             }
             
             catch (Exception e)
@@ -75,10 +77,6 @@ public class JmsComponentImpl<T> extends AbstractComponent<T>
         }
     }
     
-    public void setJmsObject(Object jmsObject)
-    {
-        this.jmsObject = jmsObject;
-    }
 
     public Class<T> getJmsClass()
     {

@@ -157,8 +157,16 @@ public final class JmsUtil
         try
         {
             ProxyFactory pf = new ProxyFactory();
-            pf.setInterfaces(new Class<?>[] {Serializable.class,ConnectionFactory.class,
-                    Connection.class,MessageConsumer.class,MessageProducer.class,Session.class,Topic.class,Queue.class});
+            pf.setInterfaces(new Class<?>[] {Closable.class,
+                    Serializable.class,
+                    QueueConnection.class,
+                    Queue.class,
+                    QueueSender.class,
+                    QueueSession.class,
+                    Topic.class,
+                    TopicConnection.class,
+                    TopicSession.class,
+                    TopicPublisher.class});
             
             pf.setHandler(new JmsProxyHandler(jmsComponent));
 

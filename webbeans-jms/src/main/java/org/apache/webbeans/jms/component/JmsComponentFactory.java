@@ -16,6 +16,9 @@
  */
 package org.apache.webbeans.jms.component;
 
+import java.lang.annotation.Annotation;
+
+import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.util.Asserts;
 
@@ -38,6 +41,18 @@ public final class JmsComponentFactory
         Asserts.assertNotNull(model,"model parameter can not be null");
         Asserts.assertNotNull(clazz, "clazz parameter can not be null");
         
-        return new JmsComponentImpl<T>(model,clazz);
+        JmsComponentImpl<T> component = new JmsComponentImpl<T>(model,clazz);
+        
+        component.addApiType(clazz);
+        component.setImplScopeType(new DependentScopeLiteral());
+        
+        Annotation[] anns = model.getBindings();
+        
+        for(Annotation a : anns)
+        {
+            component.addBindingType(a);   
+        }
+        
+        return component;
     }
 }

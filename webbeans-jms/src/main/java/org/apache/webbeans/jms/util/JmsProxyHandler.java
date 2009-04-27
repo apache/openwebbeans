@@ -1,18 +1,15 @@
 /*
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- * 
- *       http://www.apache.org/licenses/LICENSE-2.0
- * 
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.apache.webbeans.jms.util;
 
@@ -27,36 +24,34 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
-import javax.jms.Queue;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.Session;
-import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
-
 
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.jms.component.JmsComponentImpl;
+import org.apache.webbeans.util.ClassUtil;
 
 import javassist.util.proxy.MethodHandler;
 
 public class JmsProxyHandler implements MethodHandler
 {
     private JmsComponentImpl<?> jmsComponent = null;
-    
+
     private static ConnectionFactory connectionFactory = null;
-    
+
     private AtomicBoolean cfSet = new AtomicBoolean(false);
+
+    private static Map<JMSType, Connection> connections = new ConcurrentHashMap<JMSType, Connection>();
+
+    private static Map<String, Destination> dests = new ConcurrentHashMap<String, Destination>();
     
-    private static Map<JMSType,Connection> connections = new ConcurrentHashMap<JMSType, Connection>();
-    
-    private static Map<String,Topic> topics = new ConcurrentHashMap<String,Topic>();
-    
-    private static Map<String,Queue> queues = new ConcurrentHashMap<String,Queue>();
-    
+    private Object jmsObject = null;
+
     public JmsProxyHandler(JmsComponentImpl<?> jmsComponent)
     {
         this.jmsComponent = jmsComponent;
@@ -64,235 +59,248 @@ public class JmsProxyHandler implements MethodHandler
 
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
-        Object cf = createOrReturnConnectionFactory();
-        
-        if(cf == null)
+        if(method.getName().equals("closeJMSObject"))
         {
-            cf = createOrReturnQueueOrTopicConnection();
-        }
-        
-        
-        if(cf == null)
-        {
-            cf = createOrReturnQueueOrTopic();
+            close();
             
-        }        
-                
-        if(cf == null)
-        {
-            cf = createSession();
+            return null;
         }
         
-        if(cf == null)
+        if (!ClassUtil.isObjectMethod(method.getName()))
         {
-            cf = createMessageProducers();
+            Object cf = null;
+
+            if (this.jmsObject == null)
+            {
+                Class<?> jmsClazz = this.jmsComponent.getJmsClass();
+
+                if (cf == null && Connection.class.isAssignableFrom(jmsClazz))
+                {
+                    cf = createOrReturnQueueOrTopicConnection();
+                }
+
+                if (cf == null && Destination.class.isAssignableFrom(jmsClazz))
+                {
+                    cf = createOrReturnQueueOrTopic();
+
+                }
+
+                if (cf == null && Session.class.isAssignableFrom(jmsClazz))
+                {
+                    cf = createSession();
+                }
+
+                if (cf == null && MessageProducer.class.isAssignableFrom(jmsClazz))
+                {
+                    cf = createMessageProducers();
+                }
+
+                if (cf == null && MessageConsumer.class.isAssignableFrom(jmsClazz))
+                {
+                    cf = createMessageConsumers();
+                }
+
+                if (method.getName().equals("close"))
+                {
+                    throw new UnsupportedOperationException("close method is not supported for JMS resources");
+                }
+
+                if (cf == null)
+                {
+                    throw new WebBeansException("JMS Resource type is not correct!. Does not create JMS resource object to handle request");
+                }
+
+                this.jmsObject = cf;
+            }
+            else
+            {
+                cf = this.jmsObject;
+            }
+
+            return method.invoke(cf, arguments);
         }
-        
-        if(cf == null)
+        else
         {
-            cf = createMessageConsumers();
+            return proceed.invoke(instance, arguments);
         }
-                
-        if(method.getName().equals("close"))
-        {
-            throw new UnsupportedOperationException("close method is not supported for JMS resources");
-        }
-        
-        this.jmsComponent.setJmsObject(cf);
-        
-        return method.invoke(cf, arguments);
     }
 
     private Object createOrReturnConnectionFactory()
     {
-        if(ConnectionFactory.class.isAssignableFrom(jmsComponent.getJmsClass()))
+        if (connectionFactory != null)
         {
-            if(connectionFactory != null)
+            return connectionFactory;
+        }
+        else
+        {
+            if (cfSet.compareAndSet(false, true))
             {
+                connectionFactory = JmsUtil.getConnectionFactory();
+
                 return connectionFactory;
             }
-            else
-            {
-                if(cfSet.compareAndSet(false, true))
-                {
-                    connectionFactory = JmsUtil.getConnectionFactory();
-                    
-                    return connectionFactory;
-                }
-            }
         }
-        
+
         return null;
     }
-    
+
     private Session createSession()
     {
         try
         {
-            if(Session.class.isAssignableFrom(jmsComponent.getJmsClass()))
-            {
-                Connection connection = createOrReturnQueueOrTopicConnection();
-                
-                return connection.createSession(false , Session.AUTO_ACKNOWLEDGE);
-            }
-            
-            
-        }catch(JMSException e)
-        {
-            throw new WebBeansException("Unable to create jms session",e);
+
+            Connection connection = createOrReturnQueueOrTopicConnection();
+
+            return connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
         }
-                
-        return null;
+        catch (JMSException e)
+        {
+            throw new WebBeansException("Unable to create jms session", e);
+        }
+
     }
-   
+
     private MessageProducer createMessageProducers()
     {
         try
         {
-            if(MessageProducer.class.isAssignableFrom(jmsComponent.getJmsClass()))
-            {
-                return createSession().createProducer(createOrReturnQueueOrTopic());   
-            }
+            Connection connection = createOrReturnQueueOrTopicConnection();
+
+            return connection.createSession(false, Session.AUTO_ACKNOWLEDGE).createProducer(createOrReturnQueueOrTopic());
         }
         catch (JMSException e)
         {
-            throw new WebBeansException("Unable to create jms message producer",e);
+            throw new WebBeansException("Unable to create jms message producer", e);
         }
-        
-        return null;
+
     }
-    
+
     private MessageConsumer createMessageConsumers()
     {
         try
         {
-            if(MessageConsumer.class.isAssignableFrom(jmsComponent.getJmsClass()))
-            {
-                return createSession().createConsumer(createOrReturnQueueOrTopic());   
-            }
+            Connection connection = createOrReturnQueueOrTopicConnection();
+
+            return connection.createSession(false, Session.AUTO_ACKNOWLEDGE).createConsumer(createOrReturnQueueOrTopic());
         }
         catch (JMSException e)
         {
-            throw new WebBeansException("Unable to create jms message producer",e);
+            throw new WebBeansException("Unable to create jms message producer", e);
         }
-        
-        return null;
+
     }
-    
-    
+
     private Connection createOrReturnQueueOrTopicConnection()
     {
         JMSModel jmsModel = this.jmsComponent.getJmsModel();
-        
+
         try
         {
-            if(Connection.class.isAssignableFrom(jmsComponent.getJmsClass()))
+            if (jmsModel.getJmsType().equals(JMSType.QUEUE))
             {
-                if(jmsModel.getJmsType().equals(JMSType.QUEUE))
+                if (connections.containsKey(JMSType.QUEUE))
                 {
-                    if(connections.containsKey(JMSType.QUEUE))
-                    {
-                        return connections.get(JMSType.QUEUE);
-                    }
-                    else
-                    {
-                        QueueConnectionFactory ccf = (QueueConnectionFactory)connectionFactory;
-                        QueueConnection qc = ccf.createQueueConnection();
-                        connections.put(JMSType.QUEUE, qc);
-                        
-                        return qc;
-                    }
+                    return connections.get(JMSType.QUEUE);
                 }
-                else if(jmsModel.getJmsType().equals(JMSType.TOPIC))
+                else
                 {
-                    if(connections.containsKey(JMSType.TOPIC))
-                    {
-                        return connections.get(JMSType.TOPIC);
-                    }
-                    else
-                    {
-                        TopicConnectionFactory ccf = (TopicConnectionFactory)connectionFactory;
-                        TopicConnection qc = ccf.createTopicConnection();
-                        connections.put(JMSType.TOPIC, qc);
-                        
-                        return qc;
-                    }
-                    
+                    QueueConnectionFactory ccf = (QueueConnectionFactory) createOrReturnConnectionFactory();
+                    QueueConnection qc = ccf.createQueueConnection();
+                    connections.put(JMSType.QUEUE, qc);
+
+                    return qc;
                 }
             }
-            
-            
-        }catch(JMSException e)
-        {
-            throw new WebBeansException("Unable to create jms connection",e);
+            else if (jmsModel.getJmsType().equals(JMSType.TOPIC))
+            {
+                if (connections.containsKey(JMSType.TOPIC))
+                {
+                    return connections.get(JMSType.TOPIC);
+                }
+                else
+                {
+                    TopicConnectionFactory ccf = (TopicConnectionFactory) createOrReturnConnectionFactory();
+                    TopicConnection qc = ccf.createTopicConnection();
+                    connections.put(JMSType.TOPIC, qc);
+
+                    return qc;
+                }
+
+            }
+
         }
-        
-         
+        catch (JMSException e)
+        {
+            throw new WebBeansException("Unable to create jms connection", e);
+        }
+
         return null;
     }
     
+    private void close()
+    {
+        try
+        {
+            if(this.jmsObject != null)
+            {
+                Method method = this.jmsObject.getClass().getMethod("close", new Class[]{});
+                
+                if(!method.isAccessible())
+                {
+                    method.setAccessible(true);   
+                }
+                
+                method.invoke(this.jmsObject, new Object[]{});                
+            }
+            
+        }
+        catch (Exception e)
+        {
+            throw new WebBeansException("Unable to close JMS resources");
+        }
+        
+    }
+
     private Destination createOrReturnQueueOrTopic()
     {
         JMSModel jmsModel = this.jmsComponent.getJmsModel();
         String jndiName = jmsModel.isJndiNameDefined() ? jmsModel.getJndiName() : jmsModel.getMappedName();
-        
-        if(Topic.class.isAssignableFrom(jmsComponent.getJmsClass()))
+
+        if (dests.get(jndiName) != null)
         {
-                        
-            if(topics.get(jndiName) != null)
-            {
-                return topics.get(jndiName);
-            }
-                        
-            Topic res = (Topic)JmsUtil.getInstanceFromJndi(this.jmsComponent.getJmsModel(), this.jmsComponent.getJmsClass());
-            
-            topics.put(jndiName , res);
-            
-            return res;
+            return dests.get(jndiName);
         }
-        
-        else if(Queue.class.isAssignableFrom(jmsComponent.getJmsClass()))
-        {
-                        
-            if(queues.get(jndiName) != null)
-            {
-                return queues.get(jndiName);
-            }
-                        
-            Queue res = (Queue)JmsUtil.getInstanceFromJndi(this.jmsComponent.getJmsModel(), this.jmsComponent.getJmsClass());
-            
-            queues.put(jndiName , res);
-            
-            return res;
-        }
-        
-        
-        return null;
+
+        Destination res = (Destination) JmsUtil.getInstanceFromJndi(this.jmsComponent.getJmsModel(), this.jmsComponent.getJmsClass());
+
+        dests.put(jndiName, res);
+
+        return res;
+
     }
-    
+
     public static void clearConnections()
     {
         try
         {
             connectionFactory = null;
-            
-            for(Connection connection : connections.values())
+
+            for (Connection connection : connections.values())
             {
                 connection.close();
-            }        
-            
+            }
+
             connections = null;
-            
-            topics.clear();
-            queues.clear();
-            
-            topics = null;
-            queues = null;
-            
-        }catch(Exception e)
+
+            dests.clear();
+            dests = null;
+
+        }
+        catch (Exception e)
         {
             throw new WebBeansException(e);
         }
     }
-    
+
 }
