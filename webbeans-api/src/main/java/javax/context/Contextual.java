@@ -13,10 +13,34 @@
  */
 package javax.context;
 
+import javax.inject.CreationException;
 
+/**
+ * Each webbeans instance that is contained in the <code>Context</code>
+ * must be defined as <code>Contextual</code>.
+ * 
+ * This interface defines the creating and destroying of the webbeans instances
+ * that are contained in the its {@link Context} instance.
+ * 
+ * @param <T> type of the webbeans component
+ * @see Context
+ */
 public interface Contextual<T>
 {
+    /**
+     * Creates and returns a new instance of the webbeans component.
+     * 
+     * @param context new creational context instance
+     * @return the new instance of the webbeans component
+     * @throws CreationException if any exception occurs
+     */
     public T create(CreationalContext<T> context);
 
+    /**
+     * Destroys the instance. Any destroy logic is encapsulated
+     * in this method.
+     * 
+     * @param instance already created webbeans instance
+     */
     public void destroy(T instance);
 }

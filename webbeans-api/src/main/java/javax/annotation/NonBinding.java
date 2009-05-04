@@ -16,11 +16,32 @@ package javax.annotation;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Indicates that <code>BindingType</code> annotation member
+ * is not contained in the type safe resolution algorithm.
+ * 
+ * <p>
+ * Example:
+ * 
+ * <pre>
+ * @BindingType
+ * public @interface Mock {
+ *   @NonBinding String name;
+ * }
+ * </pre>
+ * 
+ * <b>Mock</b> binding type <i>name</i> member variable is excepted from the
+ * type safe resolution algorithm while comparing the binding types.
+ * 
+ * </p>
+ */
 @Retention(RUNTIME)
 @Target(METHOD)
+@Documented
 public @interface NonBinding
 {
 }

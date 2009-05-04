@@ -26,9 +26,19 @@ package javax.context;
  *   &#x0040;Current Foo _bar; 
  * } 
  * </code>
+ * 
+ * <p>
+ * Generally it is used for prohibiting the circular references of the webbeans.
+ * </p>
+ * 
  */
 public interface CreationalContext<T>
 {
+    /**
+     * Puts new incomplete instance into the creational context.
+     * 
+     * @param incompleteInstance incomplete webbeans instance
+     */
     public void push(T incompleteInstance);
 
 }

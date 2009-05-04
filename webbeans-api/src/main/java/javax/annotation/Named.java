@@ -21,6 +21,13 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Indicates the name of the webbeans component.
+ * <p>
+ * If there is no <code>Named</code> annotation for the
+ * given webbeans component, its name is null.
+ * </p>
+ */
 @Target( { TYPE, METHOD })
 @Retention(RUNTIME)
 @Documented

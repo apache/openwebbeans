@@ -23,6 +23,14 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Defines the request scope.
+ * 
+ * <p>
+ * Please see <b>8.5.1 Request context lifecycle</b> of the specification
+ * for getting furher information
+ * </p>
+ */
 @Target( { TYPE, METHOD, FIELD })
 @Retention(RUNTIME)
 @Documented

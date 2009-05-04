@@ -19,6 +19,24 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Dependent scope type.
+ * <p>
+ * If webbeans or its stereotypes do not define its scope type,
+ * default scope type is <code>Dependent</code> scope.
+ * </p>
+ * 
+ * <p>
+ * Every webbeans instance has an associated dependent context. Each dependent context
+ * is destroyed with its parent webbeans component instance.
+ * </p>
+ * 
+ * <p>
+ * Please see <b>8.3 Dependent pseudo-scope</b> of the specification
+ * for getting furhter information.
+ * </p>
+ * 
+ */
 @ScopeType(normal = false)
 @Target( { ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)

@@ -21,14 +21,37 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.webbeans.Model;
+
+/**
+ * Steretypes are used for inheriting the meta annotations
+ * that are defined on the stereotyped annotation from another webbeans
+ * component.
+ * 
+ * <p>
+ * It defines two member variables, namely
+ * <ul>
+ * <li>supportedScopes for restricting the webbeans scope</li>
+ * <li>requiredTypes for restricting the webbeans API type</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>
+ * If a bean annotated with multiple stereotypes, it obeys the all of the
+ * stereotypes restrictions.
+ * </p>
+ * 
+ * @see Model
+ */
 @Retention(RUNTIME)
 @Target(ANNOTATION_TYPE)
 @Documented
 public @interface Stereotype
 {
-
+    /**Supported scopes of the stereotype*/
     public Class<? extends Annotation>[] supportedScopes() default {};
 
+    /**Required API type for the webbeans*/
     public Class<?>[] requiredTypes() default {};
 
 }

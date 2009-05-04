@@ -19,6 +19,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Defines the application scoped type.
+ * 
+ * <p>
+ * Please see the <b>8.5.3 Application context lifecycle</b>
+ * of the specification.
+ * </p>
+ */
 @ScopeType
 @Target( { ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

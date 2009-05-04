@@ -15,23 +15,46 @@ package javax.context;
 
 import javax.inject.ExecutionException;
 
+/**
+ * It is used by the <code>Context</code> interface.
+ *  
+ * 
+ * @see Context#get(Contextual, CreationalContext)
+ * @see Context#get(Contextual)
+ */
 public class ContextNotActiveException extends ExecutionException
 {
 
     private static final long serialVersionUID = 4783816486073845333L;
-
+    
+    /**
+     * Creates a new exception with message.
+     * 
+     * @param message message
+     */
     public ContextNotActiveException(String message)
     {
         super(message);
     }
 
-    public ContextNotActiveException(Throwable e)
+    /**
+     * Create a new exception with the root cause.
+     * 
+     * @param cause cause of the exception
+     */
+    public ContextNotActiveException(Throwable cause)
     {
-        super(e);
+        super(cause);
     }
 
-    public ContextNotActiveException(String message, Throwable e)
+    /**
+     * Creates a new exception with the given message and throwable cause.
+     * 
+     * @param message exception message
+     * @param cause root cause of the exception
+     */
+    public ContextNotActiveException(String message, Throwable cause)
     {
-        super(message, e);
+        super(message, cause);
     }
 }
