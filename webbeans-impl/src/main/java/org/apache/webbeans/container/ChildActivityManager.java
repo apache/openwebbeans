@@ -242,7 +242,7 @@ public class ChildActivityManager extends ManagerImpl
         try
         {
             
-            obj =  super.getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
+            obj = (T) super.getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
             
         }catch(UnsatisfiedDependencyException e1)
         {            
@@ -252,7 +252,7 @@ public class ChildActivityManager extends ManagerImpl
         
         if (obj == null) 
         {
-            obj = getParent().getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
+            obj = (T)getParent().getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
         }
         return obj;
     }
