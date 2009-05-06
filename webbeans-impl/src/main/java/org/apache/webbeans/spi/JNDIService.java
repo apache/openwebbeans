@@ -25,6 +25,11 @@ import org.apache.webbeans.exception.WebBeansException;
  */
 public interface JNDIService
 {
+    /**JMS Connection Factory JNDI Name*/
+    public static final String JMS_CONNECTION_FACTORY_JNDI_KEY = "org.apache.webbeans.spi.JNDIService.jmsConnectionFactoryJndi";
+    
+    /**Default value*/
+    public static final String JMS_CONNECTION_FACTORY_JNDI_DEFAULT_VALUE = "ConnectionFactory";
 
     /**
      * Bind the object with the given name to the JNDI environment

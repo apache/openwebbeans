@@ -124,6 +124,7 @@ public final class ContextFactory
             }
 
             requestContext.remove();
+            
         }
     }
 

@@ -185,8 +185,9 @@ public class WebBeansContainerDeployer
                         rawType = (Class<?>)pt.getRawType();
                     }
                     
-                    //Comment out while testing TCK Events Test --- WBTCK27 jira./////                    
-                    if(rawType.equals(Event.class))
+                    //Comment out while testing TCK Events Test --- WBTCK27 jira./////
+                    //Hack for EntityManager --> Solve in M3!!!!
+                    if(rawType.equals(Event.class) || rawType.getSimpleName().equals("EntityManager"))
                     {
                         return;
                     }
