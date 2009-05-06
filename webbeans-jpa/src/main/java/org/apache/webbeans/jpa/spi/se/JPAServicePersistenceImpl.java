@@ -13,11 +13,13 @@
  */
 package org.apache.webbeans.jpa.spi.se;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.jpa.spi.JPAService;
 import org.apache.webbeans.jpa.spi.se.EntityManagersManager;
 
@@ -28,6 +30,8 @@ public class JPAServicePersistenceImpl implements JPAService
 {
     
     public static final String SINGLETON_WEBBEANS_ENTITYMANAGERS_MAP = EntityManagersManager.class.getName();
+    
+    private Map<String, EntityManagerFactory> factoryCache = new ConcurrentHashMap<String, EntityManagerFactory>();
 
     /**
      * {@inheritDoc}
@@ -35,8 +39,15 @@ public class JPAServicePersistenceImpl implements JPAService
      */
     public EntityManagerFactory getPersistenceUnit(String unitName)
     {
+        if(factoryCache.get(unitName) != null)
+        {
+            return factoryCache.get(unitName);
+        }
+        
         //X TODO this currently ignores JNDI
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(unitName);
+        
+        factoryCache.put(unitName, emf);
             
         return emf;
     }
@@ -44,19 +55,13 @@ public class JPAServicePersistenceImpl implements JPAService
     /** 
      * {@inheritDoc}
      * TODO: currently this returns an extended EntityManager, so we have to wrap it
+     * We have to create a Proxy for injecting entity managers. So, whenever method is called
+     * on the entity managers, look at current Transaction, if exist call joinTransaction();
      */
     public EntityManager getPersistenceContext(String unitName, String name)
     {
-        EntityManagerFactory emf = getPersistenceUnit(unitName);
-        
-        EntityManagersManager entityManagersMgr = (EntityManagersManager) WebBeansFinder.getSingletonInstance(SINGLETON_WEBBEANS_ENTITYMANAGERS_MAP);
-        
-        EntityManager em = entityManagersMgr.get(unitName, name);
-        if (em == null)
-        {
-            em = emf.createEntityManager();
-            entityManagersMgr.set(unitName, name, em);
-        }
+        EntityManagerFactory emf = getPersistenceUnit(unitName);        
+        EntityManager em = emf.createEntityManager();
         
         return em;
     }

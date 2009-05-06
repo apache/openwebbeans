@@ -65,7 +65,7 @@ public class ResourceInjectionTest extends TestContext
         EntityManager em2 = persBean.getFieldInjectedEntityManager2();
         Assert.assertNotNull(em2);
 
-        Assert.assertTrue(em != em2);
+        Assert.assertTrue(em == em2);
         
         // test method injection
         EntityManagerFactory emf2 = persBean.getMethodInjectedEntityManagerFactory();
