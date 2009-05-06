@@ -38,6 +38,7 @@ import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.exception.WebBeansCreationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
@@ -135,7 +136,14 @@ public final class JmsUtil
     
     public static ConnectionFactory getConnectionFactory()
     {
-        return getJNDIService().getObject("ConnectionFactory", ConnectionFactory.class);
+        String connectionFactoryJndiName = OpenWebBeansConfiguration.getInstance().getProperty(JNDIService.JMS_CONNECTION_FACTORY_JNDI_KEY);
+        
+        if(connectionFactoryJndiName == null || connectionFactoryJndiName.equals(""))
+        {
+            connectionFactoryJndiName = JNDIService.JMS_CONNECTION_FACTORY_JNDI_DEFAULT_VALUE;
+        }
+        
+        return getJNDIService().getObject(connectionFactoryJndiName, ConnectionFactory.class);
     }
     
     public static <T> T getInstanceFromJndi(JMSModel jmsModel, Class<T> jmsClass)
