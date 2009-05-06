@@ -33,7 +33,8 @@ import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 
 import org.apache.webbeans.component.ObservesMethodsOwner;
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ServiceLoader;
@@ -59,8 +60,9 @@ public final class NotificationManager implements Synchronization
 
     public static NotificationManager getInstance()
     {
-        NotificationManager instance = (NotificationManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_NOTIFICATION_MANAGER);
-        return instance;
+        ManagerImpl manager =  ActivityManager.getInstance().getCurrentActivity();
+        
+        return manager.getNotificationManager();
     }
 
     public <T> void addObserver(Observer<T> observer, Class<T> eventType, Annotation... annotations)

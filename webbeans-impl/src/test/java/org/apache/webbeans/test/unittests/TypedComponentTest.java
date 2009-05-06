@@ -22,7 +22,6 @@ import javax.inject.manager.Manager;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.test.component.service.ITyped;
 import org.apache.webbeans.test.component.service.TypedComponent;
 import org.apache.webbeans.test.servlet.TestContext;
@@ -43,7 +42,6 @@ public class TypedComponentTest extends TestContext
     public void init()
     {
         super.init();
-        this.container = ManagerImpl.getManager();
     }
 
     @Test
@@ -54,7 +52,7 @@ public class TypedComponentTest extends TestContext
         List<AbstractComponent<?>> list = getComponents();
 
         @SuppressWarnings("unused")
-        AbstractComponent<?> itype = (AbstractComponent<?>) container.resolveByType(TypedComponentTest.class.getDeclaredField("s").getType(), new Current()
+        AbstractComponent<?> itype = (AbstractComponent<?>) getManager().resolveByType(TypedComponentTest.class.getDeclaredField("s").getType(), new Current()
         {
 
             public Class<? extends Annotation> annotationType()

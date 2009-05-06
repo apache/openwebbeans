@@ -75,7 +75,7 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 public class ManagerImpl implements Manager, Referenceable
 {
     /**Holds the context with key scope*/
-    private Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
+    private static Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
 
     /**Activity webbeans components*/
     private Set<Bean<?>> components = new CopyOnWriteArraySet<Bean<?>>();
@@ -99,14 +99,50 @@ public class ManagerImpl implements Manager, Referenceable
     private WebBeansXMLConfigurator xmlConfigurator = null;
     
     /**
+     * The parent Manager this child is depending from.
+     */
+    private ManagerImpl parent;
+    
+    /**
      * Creates a new {@link Manager} instance.
      * Called by the system. Do not use outside of the
      * system.
      */
     public ManagerImpl()
     {
-        injectionResolver = InjectionResolver.getInstance();
-        notificationManager = NotificationManager.getInstance();
+        injectionResolver = new InjectionResolver(this);
+        notificationManager = new NotificationManager();
+    }    
+    
+    public ManagerImpl getParent()
+    {
+        return this.parent;
+    }
+    
+    public synchronized void setParent(ManagerImpl parent)
+    {
+       this.parent = parent;
+    }
+    
+    
+    /**
+     * Return manager notification manager.
+     * 
+     * @return notification manager
+     */
+    public NotificationManager getNotificationManager()
+    {
+        return this.notificationManager;
+    }
+    
+    /**
+     * Gets injection resolver.
+     * 
+     * @return injection resolver
+     */
+    public InjectionResolver getInjectionResolver()
+    {
+        return this.injectionResolver;
     }
 
     /**
@@ -165,7 +201,7 @@ public class ManagerImpl implements Manager, Referenceable
             }
         }
         
-        List<Context> others = this.contextMap.get(scopeType);
+        List<Context> others = ManagerImpl.contextMap.get(scopeType);
         if(others != null)
         {
             for(Context otherContext : others)
@@ -491,14 +527,14 @@ public class ManagerImpl implements Manager, Referenceable
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
         Asserts.assertNotNull(context, "context parameter can not be null");
 
-        List<Context> contextList = this.contextMap.get(scopeType);
+        List<Context> contextList = ManagerImpl.contextMap.get(scopeType);
         
         if(contextList == null)
         {
             contextList = new CopyOnWriteArrayList<Context>();
             contextList.add(context);
             
-            this.contextMap.put(scopeType, contextList);
+            ManagerImpl.contextMap.put(scopeType, contextList);
         }
         else
         {

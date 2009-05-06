@@ -13,17 +13,18 @@
  */
 package org.apache.webbeans.container;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.context.Context;
-import javax.context.ContextNotActiveException;
 import javax.context.CreationalContext;
 import javax.event.Observer;
+import javax.inject.AmbiguousDependencyException;
+import javax.inject.DeploymentException;
 import javax.inject.TypeLiteral;
+import javax.inject.UnsatisfiedDependencyException;
 import javax.inject.manager.Bean;
 import javax.inject.manager.Decorator;
 import javax.inject.manager.InjectionPoint;
@@ -38,41 +39,82 @@ import javax.inject.manager.Manager;
  * and delegates all other requests to it's parent Manager. 
  *
  */
-public class ChildActivityManager implements Manager
-{
-
-    /**
-     * The parent Manager this child is depending from.
-     */
-    private Manager parent;
-    
-    /**
-     * All beans added to this instance will be tracked by this very Manager
-     */
-    private Manager self;
+public class ChildActivityManager extends ManagerImpl
+{    
     
     /**
      * the ct will be called by {@code Manager#createActivity()}
      * @param parent is the Manager calling this ct
      */
-    public ChildActivityManager(Manager parent)
+    public ChildActivityManager(ManagerImpl parent)
     {
-        this.parent = parent;
-        this.self = new ManagerImpl();
+        super();
+        
+        setParent(parent);
     }
     
     /** {@inheritDoc} */
     public Manager addBean(Bean<?> bean)
     {
-        //X TODO possibly add checks
-        return self.addBean(bean);
+        if(checkBean(bean, getParent()))
+        {
+            throw new DeploymentException(bean.toString() + " already registered with parent manager!");
+        }
+        
+        return this;
     }
-
-    /** {@inheritDoc} */
-    public Manager addContext(Context context)
+    
+    /**
+     * Returns true if bean exist in parent false owise.
+     * 
+     * @param bean check bean
+     * @param parent parent or the child or null if root
+     * @return true if bean exist in parent false owise.
+     */
+    private boolean checkBean(Bean<?> bean, ManagerImpl parent)
     {
-        //X TODO possibly add checks
-        return self.addContext(context);
+        if(parent == null)
+        {
+            return false;
+        }
+        else
+        {
+            Set<Annotation> bindings = bean.getBindings();
+            Set<Type> apiTypes = bean.getTypes();
+            
+            Set<Bean<?>> beans = parent.getBeans();
+            boolean found = false;
+            for(Bean<?> b : beans)
+            {
+                Set<Annotation> parentBindings = b.getBindings();
+                Set<Type> parentApiTypes = b.getTypes();
+                
+                if(parentBindings.containsAll(bindings))
+                {
+                    for(Type t : apiTypes)
+                    {
+                        
+                        if(parentApiTypes.contains(t) && (!t.equals(Object.class)))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }                
+                }
+                
+                if(found)
+                {
+                    break;
+                }
+            }
+            
+            if(found)
+            {
+                return true;
+            }        
+            
+            return checkBean(bean, parent.getParent());
+        }        
     }
 
     /** {@inheritDoc} */
@@ -87,73 +129,59 @@ public class ChildActivityManager implements Manager
         throw new UnsupportedOperationException("Interceptors may not be registered with a child activity.");
     }
 
-    /** {@inheritDoc} */
-    public <T> Manager addObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
-    {
-        //X TODO possibly add checks
-        return self.addObserver(observer, eventType, bindings);
-    }
-
-    /** {@inheritDoc} */
-    public <T> Manager addObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
-    {
-        //X TODO possibly add checks
-        return self.addObserver(observer, eventType, bindings);
-    }
-
-    /** {@inheritDoc} */
-    public Manager createActivity()
-    {
-        return new ChildActivityManager(this);
-    }
 
     /** {@inheritDoc} */
     public void fireEvent(Object event, Annotation... bindings)
     {
-        self.fireEvent(event, bindings);
-        parent.fireEvent(event, bindings);
+        super.fireEvent(event, bindings);
+        
+        getParent().fireEvent(event, bindings);
     }
 
-    /** {@inheritDoc} */
-    public Context getContext(Class<? extends Annotation> scopeType)
-    {
-        Context ctx = null;
-        //X TODO not 100% sure if this is ok. 'double-definition' case isn't defined by the spec yet!
-        try 
-        {
-            ctx = self.getContext(scopeType);
-        }
-        catch (ContextNotActiveException cna)
-        {
-            //dumdidum nothing found, so let's try it in the parent context
-        }
-        if (ctx == null)
-        {
-            ctx = parent.getContext(scopeType);
-        }
-        return ctx;
-    }
 
     /** {@inheritDoc} */
     public <T> T getInstance(Bean<T> bean)
     {
-        //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        T obj = self.getInstance(bean);
+        T obj = null;
+        
+        try
+        {
+            
+            obj = super.getInstance(bean);
+            
+        }catch(UnsatisfiedDependencyException e1)
+        {            
+        }catch (AmbiguousDependencyException e2) {
+        }
+        
+        
         if (obj == null) 
         {
-            obj = parent.getInstance(bean);
+            obj = getParent().getInstance(bean);
         }
+        
         return obj;
     }
 
     /** {@inheritDoc} */
     public Object getInstanceByName(String name)
     {
-        //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        Object obj = self.getInstanceByName(name);
+        Object obj = null;
+        
+        try
+        {
+            
+            obj = super.getInstanceByName(name);
+            
+        }catch(UnsatisfiedDependencyException e1)
+        {            
+        }catch (AmbiguousDependencyException e2) {
+        }
+        
+        
         if (obj == null) 
         {
-            obj = parent.getInstanceByName(name);
+            obj = getParent().getInstanceByName(name);
         }
         return obj;
     }
@@ -162,10 +190,22 @@ public class ChildActivityManager implements Manager
     public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes)
     {
         //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        T obj = self.getInstanceByType(type, bindingTypes);
+        T obj = null;
+        
+        try
+        {
+            
+            obj =  super.getInstanceByType(type, bindingTypes);
+            
+        }catch(UnsatisfiedDependencyException e1)
+        {            
+        }catch (AmbiguousDependencyException e2) {
+        }
+        
+        
         if (obj == null) 
         {
-            obj = parent.getInstanceByType(type, bindingTypes);
+            obj = getParent().getInstanceByType(type, bindingTypes);
         }
         return obj;
     }
@@ -174,10 +214,22 @@ public class ChildActivityManager implements Manager
     public <T> T getInstanceByType(TypeLiteral<T> type, Annotation... bindingTypes)
     {
         //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        T obj = self.getInstanceByType(type, bindingTypes);
+        T obj = null;
+       
+        try
+        {
+            
+            obj =  super.getInstanceByType(type, bindingTypes);
+            
+        }catch(UnsatisfiedDependencyException e1)
+        {            
+        }catch (AmbiguousDependencyException e2) {
+        }
+        
+        
         if (obj == null) 
         {
-            obj = parent.getInstanceByType(type, bindingTypes);
+            obj = getParent().getInstanceByType(type, bindingTypes);
         }
         return obj;
     }
@@ -185,58 +237,60 @@ public class ChildActivityManager implements Manager
     /** {@inheritDoc} */
     public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
     {
-        //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        T obj = self.<T>getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
+        T obj = null;
+        
+        try
+        {
+            
+            obj =  super.getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
+            
+        }catch(UnsatisfiedDependencyException e1)
+        {            
+        }catch (AmbiguousDependencyException e2) {
+        }
+        
+        
         if (obj == null) 
         {
-            obj = parent.<T>getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
+            obj = getParent().getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
         }
         return obj;
     }
 
     /** {@inheritDoc} */
-    public <T> T getInstanceToInject(InjectionPoint injectionPoint)
+    public Object getInstanceToInject(InjectionPoint injectionPoint)
     {
-        //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        T obj = self.<T>getInstanceToInject(injectionPoint); //X ugly <T> due to javac bug 6302954
+        Object obj = null;
+        
+        try
+        {
+            
+            obj = super.getInstanceToInject(injectionPoint); //X ugly <T> due to javac bug 6302954
+            
+        }catch(UnsatisfiedDependencyException e1)
+        {            
+        }catch (AmbiguousDependencyException e2) {
+        }
+        
+        
         if (obj == null) 
         {
-            obj = parent.<T>getInstanceToInject(injectionPoint); //X ugly <T> due to javac bug 6302954
+            obj = getParent().getInstanceToInject(injectionPoint); //X ugly <T> due to javac bug 6302954
         }
         return obj;
     }
 
-    /** {@inheritDoc} */
-    public Manager parse(InputStream xmlStream)
-    {
-        self.parse(xmlStream);
-        return this;
-    }
 
-    /** {@inheritDoc} */
-    public <T> Manager removeObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
-    {
-        //X TODO check if the user tries to remove an Observer from the parent -> Exception
-        self.removeObserver(observer, eventType, bindings);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    public <T> Manager removeObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
-    {
-        //X TODO check if the user tries to remove an Observer from the parent -> Exception
-        self.removeObserver(observer, eventType, bindings);
-        return this;
-    }
 
     /** {@inheritDoc} */
     public Set<Bean<?>> resolveByName(String name)
     {
         //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        Set<Bean<?>> set = self.resolveByName(name);
+        Set<Bean<?>> set = super.resolveByName(name);
+        
         if (set == null || set.isEmpty()) 
         {
-            set = parent.resolveByName(name);
+            set = getParent().resolveByName(name);
         }
         return set;
     }
@@ -245,10 +299,11 @@ public class ChildActivityManager implements Manager
     public <T> Set<Bean<T>> resolveByType(Class<T> type, Annotation... bindings)
     {
         //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        Set<Bean<T>> set = self.resolveByType(type, bindings);
+        Set<Bean<T>> set = super.resolveByType(type, bindings);
+       
         if (set == null || set.isEmpty()) 
         {
-            set = parent.resolveByType(type, bindings);
+            set = getParent().resolveByType(type, bindings);
         }
         return set;
     }
@@ -257,43 +312,40 @@ public class ChildActivityManager implements Manager
     public <T> Set<Bean<T>> resolveByType(TypeLiteral<T> apiType, Annotation... bindingTypes)
     {
         //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        Set<Bean<T>> set = self.resolveByType(apiType, bindingTypes);
+        Set<Bean<T>> set = super.resolveByType(apiType, bindingTypes);
+       
         if (set == null || set.isEmpty()) 
         {
-            set = parent.resolveByType(apiType, bindingTypes);
+            set = getParent().resolveByType(apiType, bindingTypes);
         }
         return set;
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     public List<Decorator> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
-        throw new UnsupportedOperationException("Decorators may not be registered with a child activity.");    
+        return Collections.EMPTY_LIST;    
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     public List<Interceptor> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
-        throw new UnsupportedOperationException("Interceptors may not be registered with a child activity.");    
+        return Collections.EMPTY_LIST;    
     }
 
     /** {@inheritDoc} */
     public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings)
     {
         //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        Set<Observer<T>> set = self.resolveObservers(event, bindings);
+        Set<Observer<T>> set = super.resolveObservers(event, bindings);
+       
         if (set == null || set.isEmpty()) 
         {
-            set = parent.resolveObservers(event, bindings);
+            set = getParent().resolveObservers(event, bindings);
         }
         return set;
     }
 
-    /** {@inheritDoc} */
-    public Manager setCurrent(Class<? extends Annotation> scopeType)
-    {
-        //X TODO what about parent? we must not set the current scope type for parents, but what are the implications?
-        self.setCurrent(scopeType);
-        return this;
-    }
-}
+ }

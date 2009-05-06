@@ -32,7 +32,6 @@ import javax.inject.manager.Interceptor;
 import javax.inject.manager.Manager;
 
 import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 
@@ -52,8 +51,6 @@ public class MockManager implements Manager
     public void clear()
     {
         componentList.clear();        
-        
-        WebBeansFinder.removeInstance(WebBeansFinder.SINGLETON_NOTIFICATION_MANAGER);
         
         this.manager = new ManagerImpl();        
      

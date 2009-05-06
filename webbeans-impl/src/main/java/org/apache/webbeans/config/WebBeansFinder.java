@@ -43,8 +43,6 @@ public class WebBeansFinder
 
     public static final String SINGLETON_STEREOTYPE_MANAGER = StereoTypeManager.class.getName();
 
-    public static final String SINGLETON_NOTIFICATION_MANAGER = NotificationManager.class.getName();
-
     public static final String SINGLETON_INTERCEPTORS_MANAGER = InterceptorsManager.class.getName();
 
     public static final String SINGLETON_CONVERSATION_MANAGER = ConversationManager.class.getName();
@@ -53,8 +51,6 @@ public class WebBeansFinder
 
     public static final String SINGLETON_XML_SPECIALIZES_MANAGER = XMLSpecializesManager.class.getName();
 
-    public static final String SINGLETON_INJECTION_RESOLVER = InjectionResolver.class.getName();
-    
     public static final String SINGLETON_CREATIONAL_CONTEXT_FACTORY = CreationalContextFactory.class.getName();
     
     public static final String SINGLETON_SESSION_CONTEXT_MANAGER = SessionContextManager.class.getName();

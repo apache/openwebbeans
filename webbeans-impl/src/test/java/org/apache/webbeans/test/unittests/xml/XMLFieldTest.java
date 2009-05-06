@@ -16,11 +16,9 @@ package org.apache.webbeans.test.unittests.xml;
 import java.io.InputStream;
 
 import javax.inject.manager.Manager;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.test.xml.ComponentForField;
 import org.junit.Before;
@@ -39,7 +37,6 @@ public class XMLFieldTest extends TestContext
     public void init()
     {
         super.init();
-        this.container = ManagerImpl.getManager();
     }
 
     @Test
@@ -53,7 +50,7 @@ public class XMLFieldTest extends TestContext
 
         this.xmlConfigurator.configure(stream, "fieldTest.xml");
 
-        ComponentForField cff = (ComponentForField) container.getInstanceByName("componentForField");
+        ComponentForField cff = (ComponentForField) getManager().getInstanceByName("componentForField");
 
         Assert.assertNotNull(cff);
         Assert.assertEquals(35, cff.getIntField());

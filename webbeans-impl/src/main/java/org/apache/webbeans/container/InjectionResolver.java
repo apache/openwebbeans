@@ -31,7 +31,7 @@ import org.apache.webbeans.component.InstanceComponentImpl;
 import org.apache.webbeans.component.ObservableComponentImpl;
 import org.apache.webbeans.component.ProducerComponentImpl;
 import org.apache.webbeans.component.ProducerFieldComponent;
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -41,14 +41,18 @@ import org.apache.webbeans.util.ClassUtil;
 @SuppressWarnings("unchecked")
 public class InjectionResolver
 {
-    public InjectionResolver()
+    private ManagerImpl manager;
+    
+    public InjectionResolver(ManagerImpl manager)
     {
+        this.manager = manager;
 
     }
 
     public static InjectionResolver getInstance()
     {
-        InjectionResolver instance = (InjectionResolver) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_INJECTION_RESOLVER);
+        InjectionResolver instance = ActivityManager.getInstance().getCurrentActivity().getInjectionResolver();
+        
         return instance;
     }
 
@@ -139,11 +143,11 @@ public class InjectionResolver
     {
         Asserts.assertNotNull(name, "name parameter can not be null");
 
-        ManagerImpl manager = ManagerImpl.getManager();
-
         Set<Bean<?>> resolvedComponents = new HashSet<Bean<?>>();
+        
         Bean<?> resolvedComponent = null;
-        Set<Bean<?>> deployedComponents = manager.getBeans();
+        
+        Set<Bean<?>> deployedComponents = this.manager.getBeans();
 
         Iterator<Bean<?>> it = deployedComponents.iterator();
         while (it.hasNext())
@@ -189,8 +193,6 @@ public class InjectionResolver
             apiType = ClassUtil.getPrimitiveWrapper(apiType);
         }
 
-        ManagerImpl manager = ManagerImpl.getManager();
-
         boolean currentBinding = false;
         boolean returnAll = false;
 
@@ -202,7 +204,7 @@ public class InjectionResolver
         }
 
         Set<Bean<T>> results = new HashSet<Bean<T>>();
-        Set<Bean<?>> deployedComponents = manager.getBeans();
+        Set<Bean<?>> deployedComponents = this.manager.getBeans();
 
         if (apiType.equals(Object.class) && currentBinding)
         {
@@ -327,10 +329,12 @@ public class InjectionResolver
 
         results = findByBindingType(results, binding);
 
+        
         if (results != null && !results.isEmpty())
         {
             results = findByPrecedence(results);
         }
+        
 
         return results;
     }
