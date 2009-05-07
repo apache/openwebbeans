@@ -169,11 +169,13 @@ public abstract class AbstractContext implements WebBeansContext
         while (it.hasNext())
         {
             component = it.next().getKey();
+            
             T instance = (T) componentInstanceMap.get(component);
 
+            destroyInstance((Bean<T>) component, instance);
+            
             it.remove();
 
-            destroyInstance((Bean<T>) component, instance);
         }
     }
 

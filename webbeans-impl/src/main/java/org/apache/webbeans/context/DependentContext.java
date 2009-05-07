@@ -28,8 +28,6 @@ import org.apache.webbeans.context.type.ContextTypes;
  * time that the dependent object is no longer alive.
  * </p>
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public class DependentContext extends AbstractContext
 {

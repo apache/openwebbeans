@@ -21,9 +21,6 @@ import org.apache.webbeans.context.type.ContextTypes;
 
 /**
  * Session context implementation.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public class SessionContext extends AbstractContext
 {

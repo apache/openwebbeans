@@ -27,13 +27,12 @@ public class SessionContextManager
 
     public SessionContextManager()
     {
-
+        sessionContexts = new ConcurrentHashMap<String, SessionContext>();        
     }
 
     public static SessionContextManager getInstance()
     {
-        SessionContextManager sessionContextManager = (SessionContextManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_SESSION_CONTEXT_MANAGER);
-        sessionContextManager.sessionContexts = new ConcurrentHashMap<String, SessionContext>();
+        SessionContextManager sessionContextManager = (SessionContextManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_SESSION_CONTEXT_MANAGER);        
         
         return sessionContextManager;
     }

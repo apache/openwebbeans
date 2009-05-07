@@ -22,8 +22,6 @@ import org.apache.webbeans.context.type.ContextTypes;
 /**
  * Application context implementation.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public class ApplicationContext extends AbstractContext
 {

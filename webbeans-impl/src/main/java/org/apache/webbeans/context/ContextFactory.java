@@ -35,8 +35,6 @@ import org.apache.webbeans.conversation.ConversationManager;
 /**
  * Gets current {@link WebBeansContext} instances on the current thread context.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  * @see WebBeansContext
  * @see AbstractContext
  */

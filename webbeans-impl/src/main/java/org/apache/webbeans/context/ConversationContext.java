@@ -20,10 +20,7 @@ import javax.context.Contextual;
 import org.apache.webbeans.context.type.ContextTypes;
 
 /**
- * Conversation context implementation.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ * Conversation context implementation. 
  */
 public class ConversationContext extends AbstractContext
 {
