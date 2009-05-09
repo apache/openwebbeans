@@ -232,6 +232,13 @@ public class WebBeansContainerDeployer
                 String componentClassName = itPathClasses.next();
                 Class<?> implClass = ClassUtil.getClassFromName(componentClassName);
 
+                //It must not be @Interceptor or @Decorator
+                if(AnnotationUtil.isAnnotationExistOnClass(implClass, Decorator.class) ||
+                        AnnotationUtil.isAnnotationExistOnClass(implClass, Interceptor.class))
+                {
+                    continue;
+                }
+                
                 if (SimpleWebBeansConfigurator.isSimpleWebBean(implClass))
                 {
                     logger.info("Simple WebBeans Component with class name : " + componentClassName + " is found");
