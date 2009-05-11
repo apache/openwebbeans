@@ -70,7 +70,7 @@ public final class EjbDefinitionUtility
                 
                 for(Class<?> localInterface : localInterfaces)
                 {
-                    if(!ClassUtil.isParametrized(localInterface))
+                    if(!ClassUtil.isDefinitionConstainsTypeVariables(localInterface))
                     {
                         ClassUtil.setTypeHierarchy(ejbComponent.getTypes(), localInterface);
                         
@@ -119,7 +119,7 @@ public final class EjbDefinitionUtility
     {
         Class<?> clazz = ejbComponent.getReturnType();
         
-        if(!ClassUtil.isParametrized(clazz))
+        if(!ClassUtil.isDefinitionConstainsTypeVariables(clazz))
         {
             ClassUtil.setClassTypeHierarchy(ejbComponent.getTypes(), clazz);
             
