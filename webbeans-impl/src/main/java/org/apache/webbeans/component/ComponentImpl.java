@@ -63,10 +63,10 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
 
         T instance = ic.doInjection();
         
-        if(WebBeansUtil.isScopeTypeNormal(getScopeType()))
-        {
-            creationalContext.push(instance);   
-        }
+//        if(WebBeansUtil.isScopeTypeNormal(getScopeType()))
+//        {
+//            creationalContext.push(instance);   
+//        }
         
         return instance;
     }
@@ -78,7 +78,7 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
     {
         if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
         {
-            InvocationContextImpl impl = new InvocationContextImpl(instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
+            InvocationContextImpl impl = new InvocationContextImpl(null,instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
             try
             {
                 impl.proceed();

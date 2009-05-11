@@ -605,6 +605,13 @@ public final class ClassUtil
         return Package.getPackage(packageName);
     }
 
+    /**
+     * Returns true if type is an instance of <code>ParameterizedType</code>
+     * else otherwise.
+     * 
+     * @param type type of the artifact
+     * @return true if type is an instance of <code>ParameterizedType</code>
+     */
     public static boolean isParametrizedType(Type type)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
@@ -616,6 +623,13 @@ public final class ClassUtil
         return false;
     }
     
+    /**
+     * Returns true if type is an instance of <code>WildcardType</code>
+     * else otherwise.
+     * 
+     * @param type type of the artifact
+     * @return true if type is an instance of <code>WildcardType</code>
+     */    
     public static boolean isWildCardType(Type type)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
@@ -628,6 +642,14 @@ public final class ClassUtil
         return false;
     }
     
+    
+    /**
+     * Returns true if type is an instance of <code>TypeVariable</code>
+     * else otherwise.
+     * 
+     * @param type type of the artifact
+     * @return true if type is an instance of <code>TypeVariable</code>
+     */    
     public static boolean isTypeVariable(Type type)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
@@ -642,6 +664,12 @@ public final class ClassUtil
     }
     
 
+    /**
+     * Returna true if the class is not abstract and interface.
+     *     
+     * @param clazz class type
+     * @return true if the class is not abstract and interface
+     */
     public static boolean isConcrete(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
@@ -656,15 +684,31 @@ public final class ClassUtil
         return false;
     }
 
+    /**
+     * Returns class constructor array.
+     * 
+     * @param <T> class type arfument
+     * @param clazz class that is searched for constructor.
+     * @return class constructor array
+     */
     public static <T> Constructor<T>[] getConstructors(Class<T> clazz)
     {
         Asserts.nullCheckForClass(clazz);
+        
         return (Constructor<T>[]) clazz.getDeclaredConstructors();
     }
 
+    /**
+     * Returns true if class has a default constructor.
+     * 
+     * @param <T> type argument of class
+     * @param clazz class type
+     * @return true if class has a default constructor.
+     */
     public static <T> boolean isDefaultConstructorExist(Class<T> clazz)
     {
         Asserts.nullCheckForClass(clazz);
+        
         try
         {
             clazz.getDeclaredConstructor(new Class<?>[] {});
@@ -672,7 +716,7 @@ public final class ClassUtil
         }
         catch (SecurityException e)
         {
-            throw e;
+            throw new WebBeansException(e);
         }
         catch (NoSuchMethodException e)
         {
@@ -1104,9 +1148,10 @@ public final class ClassUtil
         }
     }
 
-    public static boolean isParametrized(Class<?> clazz)
+    public static boolean isDefinitionConstainsTypeVariables(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
+        
         return (clazz.getTypeParameters().length > 0) ? true : false;
     }
 
@@ -1231,6 +1276,13 @@ public final class ClassUtil
 
     }
 
+    /**
+     * Return true if it does not contain type variable for wildcard type
+     * false otherwise.
+     * 
+     * @param pType parameterized type
+     * @return true if it does not contain type variable for wildcard type
+     */
     public static boolean checkParametrizedType(ParameterizedType pType)
     {
         Asserts.assertNotNull(pType, "pType argument can not be null");

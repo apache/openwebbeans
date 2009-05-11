@@ -855,7 +855,7 @@ public final class DefinitionUtil
                 // Injected fields can not be @Decorates or @Produces
                 if (AnnotationUtil.isAnnotationExist(anns, Produces.class) || AnnotationUtil.isAnnotationExist(anns, Decorates.class))
                 {
-                    return;
+                    continue;
                 }
 
                 Annotation[] bindingAnns = AnnotationUtil.getBindingAnnotations(anns);

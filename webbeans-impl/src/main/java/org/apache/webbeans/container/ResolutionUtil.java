@@ -50,11 +50,28 @@ public final class ResolutionUtil
         AnnotationUtil.checkBindingTypeConditions(bindingTypes);
     }
 
-    public static <T> void checkResolvedBeans(Set<Bean<T>> resolvedSet, Class<?> type)
+    public static <T> void checkResolvedBeans(Set<Bean<T>> resolvedSet, Class<?> type, Annotation...bindingTypes)
     {
         if (resolvedSet.isEmpty())
         {
-            throw new UnsatisfiedDependencyException("Api type : " + type.getName() + " is not found");
+            StringBuffer message = new StringBuffer("Api type [" + type.getName() + "] is not found with the binding types [");
+            
+            int i = 0;
+            for(Annotation annot : bindingTypes)
+            {
+                i++;
+                
+                message.append(annot);
+                
+                if(i != bindingTypes.length)
+                {
+                    message.append(",");   
+                }
+            }
+            
+            message.append("]");
+            
+            throw new UnsatisfiedDependencyException(message.toString());
         }
 
         if (resolvedSet.size() > 1)

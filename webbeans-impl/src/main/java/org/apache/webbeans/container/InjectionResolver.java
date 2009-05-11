@@ -55,7 +55,47 @@ public class InjectionResolver
         
         return instance;
     }
+    
+    /**
+     * Check the type of the injection point.
+     * <p>
+     * Injection point type can not be wildcard or type variable type.
+     * </p>
+     * 
+     * @param injectionPoint injection point
+     * @throws WebBeansConfigurationException if not obey the rule
+     */
+    public void checkInjectionPointType(InjectionPoint injectionPoint)
+    {
+        Type type = injectionPoint.getType();
+        
+        if(type instanceof Class)
+        {
+            return;
+        }
+        else if(type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType)type;
+            
+            if(!ClassUtil.checkParametrizedType(pt))
+            {
+                throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " can not contain generic definitions!");
+            }                                                                                    
+        }
+        else
+        {
+            throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " can not contain generic definitions!");
+        }
+        
+    }
 
+    /**
+     * Check that bean exist in the deployment for given
+     * injection point definition.
+     * 
+     * @param injectionPoint injection point
+     * @throws If bean is not avialable in the current deployment for given injection
+     */
     public void checkInjectionPoints(InjectionPoint injectionPoint)
     {
         Type type = injectionPoint.getType();
@@ -87,7 +127,7 @@ public class InjectionResolver
         
         Set<Bean<Object>> beanSet = implResolveByType(clazz, args ,bindingTypes);
         
-        ResolutionUtil.checkResolvedBeans(beanSet, clazz);
+        ResolutionUtil.checkResolvedBeans(beanSet, clazz, bindingTypes);
         
         Bean<Object> bean = beanSet.iterator().next();
         

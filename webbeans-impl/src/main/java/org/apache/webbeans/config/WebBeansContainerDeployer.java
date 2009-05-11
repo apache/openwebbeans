@@ -19,18 +19,19 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import javax.context.Dependent;
 import javax.context.ScopeType;
-import javax.decorator.Decorator;
 import javax.event.Event;
 import javax.inject.Current;
 import javax.inject.InconsistentSpecializationException;
 import javax.inject.Specializes;
 import javax.inject.manager.Bean;
+import javax.inject.manager.Decorator;
 import javax.inject.manager.InjectionPoint;
 import javax.inject.manager.Manager;
 import javax.interceptor.Interceptor;
@@ -44,10 +45,12 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
+import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ServiceLoader;
@@ -159,37 +162,73 @@ public class WebBeansContainerDeployer
     
     private void validateInjectionPoints()
     {
-        logger.info("Validation injection points is started");
+        logger.info("Validation of injection points are started");
 
-        ManagerImpl manager = ManagerImpl.getManager();
-        InjectionResolver resolver = InjectionResolver.getInstance();
-        Set<Bean<?>> beans = manager.getBeans();
+        ManagerImpl manager = ManagerImpl.getManager();        
+        Set<Bean<?>> beans = new HashSet<Bean<?>>();
+        
+        //Adding decorators to validate
+        Set<Decorator> decorators = manager.getDecorators();
+        for(Decorator decorator : decorators)
+        {
+            WebBeansDecorator wbDec = (WebBeansDecorator)decorator;
+            beans.add(wbDec.getDelegateComponent());
+        }
+        
+        
+        logger.info("Validation of the decorator's injection points are started");
+        
+        //Validate Decorators
+        validate(beans);
+        
+        beans.clear();
+        
+        //Adding interceptors to validate
+        Set<javax.inject.manager.Interceptor> interceptors = manager.getInterceptors();
+        for(javax.inject.manager.Interceptor interceptor : interceptors)
+        {
+            WebBeansInterceptor wbInt = (WebBeansInterceptor)interceptor;
+            beans.add(wbInt.getDelegate());
+        }
+        
+        logger.info("Validation of the interceptor's injection points are started");
+        
+        //Validate Interceptors
+        validate(beans);
+        
+        beans.clear();
+        
+        //Validate Others
+        validate(beans);
+                
 
+        logger.info("All injection points are validated succesfully");
+    }
+    
+
+    private void validate(Set<Bean<?>> beans)
+    {
+        InjectionResolver resolver = ManagerImpl.getManager().getInjectionResolver();
+        
         if (beans != null && beans.size() > 0)
         {
             for (Bean<?> bean : beans)
             {
+                //Bean injection points
                 Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
+                                
                 for (InjectionPoint injectionPoint : injectionPoints)
                 {
-                    Type type = injectionPoint.getType();
-                    Class<?> rawType = null;
+                    //Check for correct injection type
+                    resolver.checkInjectionPointType(injectionPoint);
                     
-                    if(type instanceof Class)
-                    {
-                        rawType = (Class<?>) type;
-                    }
-                    else
-                    {
-                        ParameterizedType pt = (ParameterizedType)type;
-                        rawType = (Class<?>)pt.getRawType();
-                    }
+                    Class<?> rawType = getRawTypeForInjectionPoint(injectionPoint);
                     
                     //Comment out while testing TCK Events Test --- WBTCK27 jira./////
                     //Hack for EntityManager --> Solve in M3!!!!
                     if(rawType.equals(Event.class) || rawType.getSimpleName().equals("EntityManager"))
                     {
-                        return;
+                        continue;
                     }
                     /////////////////////////////////////////////////////////////////
                     
@@ -211,8 +250,31 @@ public class WebBeansContainerDeployer
                 }
             }
         }
-
-        logger.info("Injection points are validated succesfully");
+        
+    }
+    
+    /**
+     * Returns injection point raw type.
+     * 
+     * @param injectionPoint injection point definition
+     * @return injection point raw type
+     */
+    private Class<?> getRawTypeForInjectionPoint(InjectionPoint injectionPoint)
+    {
+        Class<?> rawType = null;
+        Type type = injectionPoint.getType();
+        
+        if(type instanceof Class)
+        {
+            rawType = (Class<?>) type;
+        }
+        else if(type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType)type;            
+            rawType = (Class<?>)pt.getRawType();                                                
+        }
+        
+        return rawType;
     }
 
     protected void deployFromClassPath(MetaDataDiscoveryService scanner) throws ClassNotFoundException
@@ -233,7 +295,7 @@ public class WebBeansContainerDeployer
                 Class<?> implClass = ClassUtil.getClassFromName(componentClassName);
 
                 //It must not be @Interceptor or @Decorator
-                if(AnnotationUtil.isAnnotationExistOnClass(implClass, Decorator.class) ||
+                if(AnnotationUtil.isAnnotationExistOnClass(implClass, javax.decorator.Decorator.class) ||
                         AnnotationUtil.isAnnotationExistOnClass(implClass, Interceptor.class))
                 {
                     continue;
@@ -325,7 +387,7 @@ public class WebBeansContainerDeployer
         logger.info("Configuring the Decorators is started");
 
         Map<String, Set<String>> annotIndex = scanner.getAnnotationIndex();
-        Set<String> classes = annotIndex.get(Decorator.class.getName());
+        Set<String> classes = annotIndex.get(javax.decorator.Decorator.class.getName());
 
         if (classes != null)
         {
@@ -490,7 +552,7 @@ public class WebBeansContainerDeployer
         StereoTypeModel model = new StereoTypeModel(Model.class);
         StereoTypeManager.getInstance().addStereoTypeModel(model);
         
-        model = new StereoTypeModel(Decorator.class);
+        model = new StereoTypeModel(javax.decorator.Decorator.class);
         StereoTypeManager.getInstance().addStereoTypeModel(model);
         
         model = new StereoTypeModel(Interceptor.class);
@@ -501,7 +563,7 @@ public class WebBeansContainerDeployer
     {
         ComponentImpl<T> component = null;
 
-        if (!AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class) && !AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class))
+        if (!AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class) && !AnnotationUtil.isAnnotationExistOnClass(clazz, javax.decorator.Decorator.class))
         {
             component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.SIMPLE);
             if (component != null)

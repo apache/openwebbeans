@@ -19,7 +19,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.context.Context;
+import javax.context.Contextual;
+import javax.context.CreationalContext;
+import javax.inject.manager.Bean;
 import javax.interceptor.InvocationContext;
+
+import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 
 /**
  * Implementation of the {@link InvocationContext} interface.
@@ -49,7 +56,8 @@ public class InvocationContextImpl implements InvocationContext
 
     /** Used for numbering interceptors */
     private int currentMethod = 1;
-
+    
+    
     /**
      * Initializes the context.
      * 
@@ -59,16 +67,33 @@ public class InvocationContextImpl implements InvocationContext
      * @param datas interceptor stack
      * @param type interceptor type
      */
-    public InvocationContextImpl(Object target, Method method, Object[] parameters, List<InterceptorData> datas, InterceptorType type)
+    public InvocationContextImpl(Bean<?> bean, Object instance, Method method, Object[] parameters, List<InterceptorData> datas, InterceptorType type)
     {
-        this.target = target;
         this.method = method;
         this.parameters = parameters;
         this.interceptorDatas = datas;
         this.type = type;
-
+        
+        if(instance == null)
+        {
+            configureTarget(bean);    
+        }
+        else
+        {
+            this.target = instance;
+        }
     }
 
+    
+    @SuppressWarnings("unchecked")
+    private void configureTarget(Bean<?> bean)
+    {
+        Context webbeansContext = ManagerImpl.getManager().getContext(bean.getScopeType());
+        
+        this.target = webbeansContext.get((Contextual<Object>)bean, (CreationalContext<Object>)CreationalContextFactory.getInstance().getCreationalContext(bean));        
+        
+    }
+    
     /*
      * (non-Javadoc)
      * @see javax.interceptor.InvocationContext#getContextData()
@@ -150,12 +175,14 @@ public class InvocationContextImpl implements InvocationContext
             }
 
             Object t = intc.getInterceptorInstance();
+            
             if (t == null)
             {
                 t = target;
             }
 
             currentMethod++;
+            
             result = method.invoke(t, new Object[] { this });
         }
         else
@@ -198,6 +225,7 @@ public class InvocationContextImpl implements InvocationContext
             if (t == null)
             {
                 t = target;
+                
                 result = method.invoke(t, new Object[] {});
             }
             else

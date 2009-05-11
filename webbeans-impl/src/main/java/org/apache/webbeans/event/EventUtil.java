@@ -47,7 +47,7 @@ public final class EventUtil
     {
         Asserts.assertNotNull(eventType, "eventType parameter can not be null");
 
-        if (ClassUtil.isParametrized(eventType))
+        if (ClassUtil.isDefinitionConstainsTypeVariables(eventType))
         {
             throw new IllegalArgumentException("Event type : " + eventType.getName() + " can not be generic");
         }
@@ -192,7 +192,7 @@ public final class EventUtil
             eventType = (Class<?>) type;
         }
 
-        if (ClassUtil.isParametrized(eventType))
+        if (ClassUtil.isDefinitionConstainsTypeVariables(eventType))
         {
             throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not defined as generic");
         }
@@ -231,7 +231,7 @@ public final class EventUtil
                             throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
                         }
                                                 
-                        if(ClassUtil.isParametrized((Class<?>)actualArgument))
+                        if(ClassUtil.isDefinitionConstainsTypeVariables((Class<?>)actualArgument))
                         {
                             throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
                         }

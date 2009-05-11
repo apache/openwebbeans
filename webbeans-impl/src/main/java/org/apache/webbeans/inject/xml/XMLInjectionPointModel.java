@@ -85,7 +85,7 @@ public class XMLInjectionPointModel
             this.actualTypeArguments = actualTypeArguments;
         }
 
-        if (ClassUtil.isParametrized(this.injectionClassType))
+        if (ClassUtil.isDefinitionConstainsTypeVariables(this.injectionClassType))
         {
             this.parametrized = true;
         }

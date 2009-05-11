@@ -261,7 +261,7 @@ public class ManagerImpl implements Manager, Referenceable
     
     public void fireEvent(Object event, Annotation... bindings)
     {
-        if (ClassUtil.isParametrized(event.getClass()))
+        if (ClassUtil.isDefinitionConstainsTypeVariables(event.getClass()))
         {
             throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
         }
@@ -418,6 +418,8 @@ public class ManagerImpl implements Manager, Referenceable
                 dependentContext = true;
             }            
 
+            CreationalContext<T> creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
+            
             /* @ScopeType is normal */
             if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
             {
@@ -428,15 +430,18 @@ public class ManagerImpl implements Manager, Referenceable
                 else
                 {
                     instance = (T) JavassistProxyFactory.createNewProxyInstance(bean);
-
                     this.proxyMap.put(bean, instance);
                 }
+                
+                //Push proxy instance into the creational context
+                creationalContext.push(instance);
+                
             }
             /* @ScopeType is not normal */
             else
             {
                 context = getContext(bean.getScopeType());
-                instance = (T)context.get(bean, CreationalContextFactory.getInstance().getCreationalContext(bean));
+                instance = (T)context.get(bean, creationalContext);                                
             }
 
         }

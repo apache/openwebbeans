@@ -16,7 +16,6 @@ package org.apache.webbeans.intercept;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,6 +47,8 @@ public class InterceptorHandler implements MethodHandler, Serializable
     private transient Method calledMethod = null;
 
     private transient boolean isSameDecMethod = false;
+    
+    private transient boolean isInDecoratorCall = false;
 
     public InterceptorHandler(AbstractComponent<?> component)
     {
@@ -58,38 +59,32 @@ public class InterceptorHandler implements MethodHandler, Serializable
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         Context webbeansContext = ManagerImpl.getManager().getContext(component.getScopeType());
+        
         Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)CreationalContextFactory.getInstance().getCreationalContext(this.component));
 
         if (!ClassUtil.isObjectMethod(method.getName()) && InterceptorUtil.isWebBeansBusinessMethod(method))
         {
-            if (this.calledMethod == null)
-            {
-                this.calledMethod = method;
-            }
-            else if (this.calledMethod.equals(method))
-            {
-                this.isSameDecMethod = true;
-            }
-            else
-            {
-                this.calledMethod = method;
-                this.isSameDecMethod = false;
-            }
+            checkDecoratorStackForSameDecorator(method);
 
             // Run around invoke chain
             List<InterceptorData> stack = component.getInterceptorStack();
 
-            Collections.sort(stack, new InterceptorDataComparator());
-
+            //EJB specific interceptor stack
             filterEJBInterceptorStackList(stack, method);
+            
+            //WebBeans specific interceptor stack
             filterWebBeansInterceptorStackList(stack, method);
 
+            //Call Around Invokes
             if (WebBeansUtil.isContainsInterceptorMethod(stack, InterceptorType.AROUND_INVOKE))
             {
-                callAroundInvokes(instance, proceed, arguments, WebBeansUtil.getInterceptorMethods(stack, InterceptorType.AROUND_INVOKE));
+                callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(stack, InterceptorType.AROUND_INVOKE));
             }
 
+            //Gets component decorator stack
             List<Object> decorators = component.getDecoratorStack();
+            
+            //Call decarators
             callDecorators(decorators, method, arguments);
 
         }
@@ -101,14 +96,47 @@ public class InterceptorHandler implements MethodHandler, Serializable
 
         return method.invoke(webbeansInstance, arguments);
     }
+    
+    private void checkDecoratorStackForSameDecorator(Method method)
+    {
+        if(this.isInDecoratorCall)
+        {
+            if (this.calledMethod == null)
+            {
+                this.calledMethod = method;
+            }
+            
+            else if (this.calledMethod.equals(method))
+            {
+                this.isSameDecMethod = true;
+            }
+            
+            else
+            {
+                this.calledMethod = method;
+                this.isSameDecMethod = false;
+            }            
+        }
+        else
+        {
+            this.calledMethod = null;
+        }
+    }
 
     private void callDecorators(List<Object> decorators, Method method, Object[] arguments)
     {
 
         Iterator<Object> itDec = decorators.iterator();
+        
         while (itDec.hasNext())
         {
+            if(!this.isInDecoratorCall)
+            {
+                this.isInDecoratorCall = true;
+            }
+            
             Object decorator = itDec.next();
+            
             try
             {
                 Method decMethod = decorator.getClass().getMethod(method.getName(), method.getParameterTypes());
@@ -147,13 +175,17 @@ public class InterceptorHandler implements MethodHandler, Serializable
                 logger.error("Method illegal access for method " + method.getName() + " for  decorator class : " + decorator.getClass().getName());
                 throw new WebBeansException(e);
             }
+            finally
+            {
+                this.isInDecoratorCall = false;
+            }
 
         }
     }
 
-    private <T> void callAroundInvokes(Object instance, Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
+    private <T> void callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
-        InvocationContextImpl impl = new InvocationContextImpl(instance, proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+        InvocationContextImpl impl = new InvocationContextImpl(this.component, null,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
 
         impl.proceed();
 

@@ -37,14 +37,24 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
     /**Inherited binding types*/
     protected Set<Annotation> inheritedBindingTypes = new HashSet<Annotation>();
     
+    /**Inherited stereotypes*/
     protected Set<Annotation> inheritedStereoTypes = new HashSet<Annotation>();
     
+    /**Inherited interceptor binding types*/
     protected Set<Annotation> inheritedInterceptorBindingTypes = new HashSet<Annotation>();
     
+    /**Inherited scope type*/
     protected Annotation inheritedScopeType = null;
     
+    /**Inherited deployment type*/
     protected Annotation inheritedDeploymentType = null;
     
+    /**
+     * Create a new bean inherited data.
+     * 
+     * @param component webbeans component
+     * @param inheritedClazz inherited class
+     */
     protected AbstractBeanInheritedMetaData(AbstractComponent<T> component, Class<?> inheritedClazz)
     {
         this.component = component;

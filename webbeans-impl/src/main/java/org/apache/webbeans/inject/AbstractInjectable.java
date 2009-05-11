@@ -74,7 +74,10 @@ public abstract class AbstractInjectable implements Injectable
         
         if(type.equals(InjectionPoint.class))
         {
-            return null;
+            //Try to inject dependent owner injection point
+            //If this injection owner is dependent object then its
+            //dependentOwnerInjectionPoint can not be null.
+            return injectDependentOwnerInjectionPoint();
         }
         
         if(!ContextFactory.checkDependentContextActive())
@@ -94,8 +97,11 @@ public abstract class AbstractInjectable implements Injectable
             {
                 return injectForObservable(args, annotations);
             }
-                        
+            
+            //Find injection point for injecting instance
             InjectionPoint injectionPoint = InjectionPointFactory.getPartialInjectionPoint(this.injectionOwnerComponent, type, this.injectionMember, this.injectionAnnotations, annotations);                        
+            
+            //Get injection point Bean component
             Bean<?> component = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
             
 
@@ -125,6 +131,25 @@ public abstract class AbstractInjectable implements Injectable
             }
         }
 
+    }
+    
+    /**
+     * TODO Not Sure to correct!
+     * Specification 5.6.1 is not explicit! 
+     *
+     * @return the injection point of the dependent owner
+     */
+    protected Object injectDependentOwnerInjectionPoint()
+    {
+        AbstractComponent<?> dependentComponent = this.injectionOwnerComponent;
+        InjectionPoint injectionPointOfOwner = dependentComponent.getDependentOwnerInjectionPoint();
+        
+        if(injectionPointOfOwner != null)
+        {
+            return injectionPointOfOwner;
+        }
+                
+        return null;        
     }
 
     /**

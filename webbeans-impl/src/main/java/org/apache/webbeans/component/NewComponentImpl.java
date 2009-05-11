@@ -18,12 +18,11 @@ import javax.inject.New;
 
 /**
  * Component definition with {@link New} binding annotation.
+ * 
  * <p>
  * It is defined as concrete java class component.
  * </p>
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public class NewComponentImpl<T> extends ComponentImpl<T>
 {

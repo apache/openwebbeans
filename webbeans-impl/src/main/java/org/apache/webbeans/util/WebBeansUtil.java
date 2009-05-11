@@ -172,7 +172,7 @@ public final class WebBeansUtil
         Asserts.nullCheckForClass(clazz);
         int modifier = clazz.getModifiers();
 
-        if (ClassUtil.isParametrized(clazz))
+        if (ClassUtil.isDefinitionConstainsTypeVariables(clazz))
             throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be parametrized type");
 
         if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
@@ -238,7 +238,7 @@ public final class WebBeansUtil
             {
                 if (inAnnotation == true)// duplicate @In
                 {
-                    throw new WebBeansConfigurationException("There are more than one Constrcutor with Initializer annotation in class " + clazz.getName());
+                    throw new WebBeansConfigurationException("There are more than one Constructor with Initializer annotation in class " + clazz.getName());
                 }
                 else
                 {
@@ -538,6 +538,13 @@ public final class WebBeansUtil
         return comp;
     }
 
+    /**
+     * Returns a new managed bean from given bean.
+     * 
+     * @param <T> bean type parameter
+     * @param component managed bean
+     * @return the new bean from given managed bean
+     */
     public static <T> NewComponentImpl<T> createNewSimpleBeanComponent(ComponentImpl<T> component)
     {
         Asserts.assertNotNull(component, "component argument can not be null");
@@ -1606,7 +1613,7 @@ public final class WebBeansUtil
                             throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
                         }
                                                 
-                        if(ClassUtil.isParametrized((Class<?>)actualArgument))
+                        if(ClassUtil.isDefinitionConstainsTypeVariables((Class<?>)actualArgument))
                         {
                             throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
                         }

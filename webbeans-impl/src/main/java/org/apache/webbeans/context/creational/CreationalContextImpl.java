@@ -37,6 +37,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
     protected CreationalContextImpl<T> getCreationalContextImpl(Bean<T> incompleteBean)
     {
         CreationalContextImpl<T> impl = new CreationalContextImpl<T>();        
+        
         impl.incompleteBean = incompleteBean;
         impl.incompleteInstancesMap = this.incompleteInstancesMap;
         

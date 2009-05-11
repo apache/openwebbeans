@@ -156,7 +156,8 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
                 parentInstance = getParentInstance();
             }
             
-            InjectableMethods<T> m = new InjectableMethods<T>(creatorMethod, parentInstance, this,null);
+            InjectableMethods<T> m = new InjectableMethods<T>(creatorMethod, parentInstance, this, null);
+            
             instance = m.doInjection();
 
         }
@@ -221,6 +222,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
 
 
                 InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, this,null);
+                
                 m.doInjection();
 
             }

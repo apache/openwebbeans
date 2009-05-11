@@ -86,7 +86,7 @@ public final class XMLDefinitionUtil
 
         int modifier = clazz.getModifiers();
 
-        if (ClassUtil.isParametrized(clazz))
+        if (ClassUtil.isDefinitionConstainsTypeVariables(clazz))
         {
             throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " can not be parametrized type");
         }

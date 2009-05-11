@@ -14,8 +14,6 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -26,10 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import javax.context.Context;
-import javax.context.Contextual;
 import javax.context.CreationalContext;
-import javax.context.Dependent;
 import javax.inject.CreationException;
 import javax.inject.manager.Bean;
 import javax.inject.manager.InjectionPoint;
@@ -38,13 +33,9 @@ import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.DependentContext;
-import org.apache.webbeans.context.WebBeansContext;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation of the {@link Component} contract. There are several
@@ -108,7 +99,11 @@ public abstract class AbstractComponent<T> extends Component<T>
     /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
     
+    /**Bean inherited meta data*/
     protected IBeanInheritedMetaData inheritedMetaData;
+    
+    /**Tracks dependent injection point owner, can be null*/
+    protected InjectionPoint dependentOwnerInjectionPoint;
 
     /**
      * Constructor definiton. Each subclass redefines its own constructor with
@@ -207,15 +202,25 @@ public abstract class AbstractComponent<T> extends Component<T>
         boolean dependentContext = false;
         try
         {
+            //Check dependent context
             if(!ContextFactory.checkDependentContextActive())
             {
                 ContextFactory.activateDependentContext();
                 dependentContext = true;
             }
             
-
+            //Destroy instance
             destroyInstance(instance);
+            
+            //Destory dependent instances
             destroyDependents();
+            
+            //Clear Decorator and Interceptor Stack
+            this.decoratorStack.clear();
+            this.interceptorStack.clear();
+            
+            //Reset it
+            this.dependentOwnerInjectionPoint = null;
 
         }
         finally
@@ -223,18 +228,7 @@ public abstract class AbstractComponent<T> extends Component<T>
             if(dependentContext)
             {
                 ContextFactory.passivateDependentContext();
-            }
-            
-            if(WebBeansUtil.isScopeTypeNormal(getScopeType()))
-            {                
-                Context context = getManager().getContext(getScopeType());
-                
-                if(context instanceof WebBeansContext)
-                {
-                    WebBeansContext webBeansContext = (WebBeansContext) context;
-                    webBeansContext.remove(this);
-                }                   
-            }                        
+            }            
         }
 
     }
@@ -432,30 +426,18 @@ public abstract class AbstractComponent<T> extends Component<T>
      * @param dependentComponent dependent web beans component
      * @return the dependent component instance
      */
-    @SuppressWarnings("unchecked")
     public Object getDependent(Bean<?> dependentComponent, InjectionPoint injectionPoint)
     {
         Object object = null;
         
-        DependentContext context = (DependentContext) getManager().getContext(Dependent.class);
-        object = context.get((Contextual<T>)dependentComponent,(CreationalContext<T>)CreationalContextFactory.getInstance().getCreationalContext(dependentComponent));
+        //Setting injection point owner
+        AbstractComponent<?> dependent = (AbstractComponent<?>)dependentComponent;
+        dependent.setDependentOwnerInjectionPoint(injectionPoint);        
         
-        //Inject the InjectionPoints
-        Set<InjectionPoint> injectionPoints = dependentComponent.getInjectionPoints();
-        for(InjectionPoint points : injectionPoints)
-        {
-            if(points.getType().equals(InjectionPoint.class))
-            {
-                Member member = points.getMember();
-                if(member instanceof Field)
-                {
-                    Field field = (Field) member;
-                    ClassUtil.setField(object, field, getManager().getInstance(new InjectionPointComponentImpl(injectionPoint)));
-                }
-            }
-            
-        }
-        
+        //Get dependent instance
+        object = ManagerImpl.getManager().getInstance(dependentComponent);
+                
+        //Put this into the dependent map
         this.dependentObjects.put(object, dependentComponent);
 
         return object;
@@ -546,6 +528,23 @@ public abstract class AbstractComponent<T> extends Component<T>
         return this.injectionPoints;
     }
     
+    /**
+     * @return the dependentOwnerInjectionPoint
+     */
+    public InjectionPoint getDependentOwnerInjectionPoint()
+    {
+        return dependentOwnerInjectionPoint;
+    }
+
+    /**
+     * @param dependentOwnerInjectionPoint the dependentOwnerInjectionPoint to set
+     */
+    public void setDependentOwnerInjectionPoint(InjectionPoint dependentOwnerInjectionPoint)
+    {
+        this.dependentOwnerInjectionPoint = dependentOwnerInjectionPoint;
+    }
+    
+    
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
@@ -582,5 +581,4 @@ public abstract class AbstractComponent<T> extends Component<T>
         
         return builder.toString();
     }
-
 }
