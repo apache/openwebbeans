@@ -16,6 +16,7 @@ package org.apache.webbeans.intercept;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -68,17 +69,24 @@ public class InterceptorHandler implements MethodHandler, Serializable
 
             // Run around invoke chain
             List<InterceptorData> stack = component.getInterceptorStack();
+            
+            List<InterceptorData> temp = new ArrayList<InterceptorData>();
+            
+            for(InterceptorData data : stack)
+            {
+                temp.add(data);
+            }
 
             //EJB specific interceptor stack
-            filterEJBInterceptorStackList(stack, method);
+            filterEJBInterceptorStackList(temp, method);
             
             //WebBeans specific interceptor stack
-            filterWebBeansInterceptorStackList(stack, method);
+            filterWebBeansInterceptorStackList(temp, method);
 
             //Call Around Invokes
-            if (WebBeansUtil.isContainsInterceptorMethod(stack, InterceptorType.AROUND_INVOKE))
+            if (WebBeansUtil.isContainsInterceptorMethod(temp, InterceptorType.AROUND_INVOKE))
             {
-                callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(stack, InterceptorType.AROUND_INVOKE));
+                return callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(stack, InterceptorType.AROUND_INVOKE));
             }
 
             //Gets component decorator stack
@@ -183,15 +191,15 @@ public class InterceptorHandler implements MethodHandler, Serializable
         }
     }
 
-    private <T> void callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
+    private <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
         InvocationContextImpl impl = new InvocationContextImpl(this.component, null,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
 
-        impl.proceed();
+        return impl.proceed();
 
     }
 
-    private void filterEJBInterceptorStackList(List<InterceptorData> stack, Method method)
+    private void filterEJBInterceptorStackList(final List<InterceptorData> stack, Method method)
     {
         boolean isMethodAnnotatedWithInterceptorClass = false;
         boolean isMethodAnnotatedWithExcludeInterceptorClass = false;
@@ -250,7 +258,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
 
     }
 
-    private void filterWebBeansInterceptorStackList(List<InterceptorData> stack, Method method)
+    private void filterWebBeansInterceptorStackList(final List<InterceptorData> stack, Method method)
     {
         boolean isMethodAnnotatedWithInterceptorClass = false;
         boolean isMethodAnnotatedWithExcludeInterceptorClass = false;

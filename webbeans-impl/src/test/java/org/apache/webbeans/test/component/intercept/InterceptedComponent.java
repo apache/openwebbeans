@@ -34,8 +34,8 @@ public class InterceptedComponent
     public Object intercept(InvocationContext context) throws Exception
     {
         context.setParameters(new Object[] { new Integer(5) });
-
-        return null;
+        
+        return context.proceed();
     }
 
 }

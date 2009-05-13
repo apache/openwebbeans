@@ -147,7 +147,6 @@ public class ConversationManager
         if (conversations != null)
         {
             conversations.clear();
-            conversations = null;
         }
     }
 }

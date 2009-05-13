@@ -209,12 +209,12 @@ public abstract class AbstractComponent<T> extends Component<T>
                 dependentContext = true;
             }
             
-            //Destroy instance
-            destroyInstance(instance);
-            
             //Destory dependent instances
             destroyDependents();
             
+            //Destroy instance, call @PreDestroy
+            destroyInstance(instance);
+                        
             //Clear Decorator and Interceptor Stack
             this.decoratorStack.clear();
             this.interceptorStack.clear();
@@ -229,6 +229,7 @@ public abstract class AbstractComponent<T> extends Component<T>
             {
                 ContextFactory.passivateDependentContext();
             }            
+            
         }
 
     }

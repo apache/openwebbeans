@@ -72,24 +72,31 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
     }
     
     protected void afterConstructor(T instance,CreationalContext<T> creationalContext)
-    {
+    {   
+        //Inject fields
         injectFields(instance,creationalContext);
+        
+        //Inject methods
         injectMethods(instance,creationalContext);
-
+        
+        //Interceptor and decorator stack
         if (getWebBeansType().equals(WebBeansType.SIMPLE))
         {
             DefinitionUtil.defineSimpleWebBeanInterceptorStack(this);
             DefinitionUtil.defineWebBeanDecoratorStack(this, instance);
-        }
+        }        
 
+        //Call Post Construct
         if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
         {
             InvocationContextImpl impl = new InvocationContextImpl(null,instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
+            
             try
             {
                 impl.proceed();
 
             }
+            
             catch (Exception e)
             {
                 throw new WebBeansException(e);

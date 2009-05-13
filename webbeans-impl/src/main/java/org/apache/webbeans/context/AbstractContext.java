@@ -173,10 +173,11 @@ public abstract class AbstractContext implements WebBeansContext
             T instance = (T) componentInstanceMap.get(component);
 
             destroyInstance((Bean<T>) component, instance);
-            
-            it.remove();
 
         }
+        
+        //Clear cache
+        componentInstanceMap.clear();
     }
 
     protected <T> void removeInstance(Contextual<T> component)

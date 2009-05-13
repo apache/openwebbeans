@@ -235,10 +235,18 @@ public final class ContextFactory
     {
         if (context == null)
         {
-            ConversationContext newContext = new ConversationContext();
-            newContext.setActive(true);
+            if(conversationContext.get() == null)
+            {
+                ConversationContext newContext = new ConversationContext();
+                newContext.setActive(true);
+                
+                conversationContext.set(newContext);                
+            }
+            else
+            {
+                conversationContext.get().setActive(true);
+            }
             
-            conversationContext.set(newContext);
         }
         else
         {

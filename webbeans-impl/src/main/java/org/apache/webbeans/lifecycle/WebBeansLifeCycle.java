@@ -117,7 +117,7 @@ public final class WebBeansLifeCycle
 
             }
 
-        }, 15000, 15000, TimeUnit.MILLISECONDS);
+        }, 150000, 150000, TimeUnit.MILLISECONDS);
 
         logger.info("Starting the WebBeans Container Configuration");
         long begin = System.currentTimeMillis();
