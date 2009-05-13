@@ -48,7 +48,7 @@ public class WebBeansPhaseListener implements PhaseListener
                 String cid = JSFUtil.getExternalContext().getRequestParameterMap().get("cid");
 
                 // non-faces get request
-                if (cid == null)
+                if (cid == null || cid.equals(""))
                 {
                     logger.info("Create new transitional conversation for non-faces request with view id : " + JSFUtil.getViewId());
                     
@@ -122,6 +122,7 @@ public class WebBeansPhaseListener implements PhaseListener
                 logger.info("Conversation with id : " + conversation.getId() + " is marked as long running conversation");
                 
                 context.setActive(false);
+                
             }
 
             // else destroy conversation context
@@ -171,6 +172,8 @@ public class WebBeansPhaseListener implements PhaseListener
                 UIViewRoot viewRoot = JSFUtil.getViewRoot();
                 
                 viewRoot.getAttributes().put(CONVERSATION_ATTR_ID, conversation.getId());
+                
+                JSFUtil.getExternalContext().getRequestMap().put("cid",conversation.getId());
             }
             else
             {
