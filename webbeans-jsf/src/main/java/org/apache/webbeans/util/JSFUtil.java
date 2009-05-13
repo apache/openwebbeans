@@ -17,10 +17,11 @@ import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
-import javax.faces.component.html.HtmlInputHidden;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
+
+import org.apache.webbeans.jsf.WebBeansPhaseListener;
 
 public final class JSFUtil
 {
@@ -88,13 +89,17 @@ public final class JSFUtil
     public static String getConversationId()
     {
         UIViewRoot viewRoot = JSFUtil.getViewRoot();
-        HtmlInputHidden conversationId = (HtmlInputHidden) viewRoot.findComponent("javax_webbeans_ConversationId");
-
-        if (conversationId != null)
+        
+        if(viewRoot != null)
         {
-            return conversationId.getValue().toString();
-        }
+            Object conversationId = viewRoot.getAttributes().get(WebBeansPhaseListener.CONVERSATION_ATTR_ID);
 
+            if (conversationId != null)
+            {
+                return conversationId.toString();
+            }            
+        }
+        
         return null;
     }
 }
