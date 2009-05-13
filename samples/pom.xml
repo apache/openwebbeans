@@ -28,7 +28,7 @@ under the License.
 	<name>OpenWebBeans :: Samples</name>
 	<description>Contains samples project for openwebbeans.</description>
 	<modules>
-		<module>guess</module>
-   <!--  <module>reservation</module> -->
-  </modules>
+           <module>guess</module>
+           <module>reservation</module>
+        </modules>
 </project>
