@@ -154,6 +154,14 @@ Configuring and Running the Applications:
 --------------------------------------------
 Simple put the "war" file into the any compatible web container.
 
+Library Dependencies
+--------------------------------------------
+"Third party" jars are included within the WAR deployment(In WEB-INF/lib).
+But it still requires the "lib/javaee" Java EE API jars for running sucessfully.
+If your server does not include any of them, simply take the necessary jar from the "lib/javaee" and
+put it into your server classpath.
+
+
 Guess Example URL : Hit the url : http://localhost:8080/guess 
 Hotel Reservation Example URL : Hit the url http://localhost:8080/reservation
 
@@ -185,7 +193,8 @@ Compile and Run Samples via Jetty Plugin
 -------------------------------------------
 You can compile and run samples via maven Jetty plugin.
 Go to the source bundle "samples/" directory. In the "guess/" or "reservation/" directory, run
-the following maven commands. It will start up maven Jetty container.
+the following maven commands. It will start up maven Jetty container. It bundles all of the
+required jars into the WEB-INF/lib folder. You are not required to add any jar to the classpath.
 
 > mvn clean install -Pjetty
 > mvn jetty:run -Pjetty
