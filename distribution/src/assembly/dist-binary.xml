@@ -37,7 +37,7 @@ under the License.
         </file>
 
         <file>
-            <source>../README.txt</source>
+            <source>../readme/README_M2.txt</source>
         </file>
 
         <file>
@@ -51,11 +51,6 @@ under the License.
         <file>
             <outputDirectory>config</outputDirectory>
             <source>../samples/guess/src/main/webapp/WEB-INF/web.xml</source>
-        </file>
-
-        <file>
-            <outputDirectory>config</outputDirectory>
-            <source>../samples/guess/src/main/webapp/WEB-INF/beans.xml</source>
         </file>
 
     </files>
@@ -74,10 +69,20 @@ under the License.
             <includes>
                 <include>org.apache.openwebbeans:openwebbeans-api</include>
                 <include>org.apache.openwebbeans:openwebbeans-impl</include>
+                <include>org.apache.openwebbeans:openwebbeans-ejb</include>
+                <include>org.apache.openwebbeans:openwebbeans-jsf</include>
+                <include>org.apache.openwebbeans:openwebbeans-jpa</include>
+                <include>org.apache.openwebbeans:openwebbeans-jms</include>
+                <include>org.apache.openwebbeans:openwebbeans-geronimo</include>
             </includes>
 	    <excludes>
 		<exclude>org.apache.openwebbeans:openwebbeans-api:jar:sources</exclude>
 		<exclude>org.apache.openwebbeans:openwebbeans-impl:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-ejb:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-jsf:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-jpa:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-jms:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-geronimo:jar:sources</exclude>
 	    </excludes>
         </dependencySet>
 
@@ -85,7 +90,8 @@ under the License.
         <dependencySet>
             <outputDirectory>samples</outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans:guess:war</include>
+                <include>org.apache.openwebbeans.samples:guess:war</include>
+                <include>org.apache.openwebbeans.samples:reservation:war</include>
             </includes>
         </dependencySet>
 
@@ -111,6 +117,8 @@ under the License.
                 <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jsp_2.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jpa_3.0_spec</include>
+                <include>org.apache.geronimo.specs:geronimo-jaxws_2.1_spec</include>
+                <include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
             </includes>
         </dependencySet>
 

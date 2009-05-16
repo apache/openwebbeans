@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.0.0-incubating-M1</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -77,7 +77,7 @@
         </plugins>
     </build>
     <properties>
-      <siteId>/OWB/1.0.0-incubating-M1/distribution</siteId>
+      <siteId>/OWB/1.0.0-incubating-M2/distribution</siteId>
     </properties>
     <!--
         The assemblies work off of dependency sets since the stuff to be
@@ -86,8 +86,14 @@
     -->
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.apache.openwebbeans.samples</groupId>
             <artifactId>guess</artifactId>
+            <version>${project.version}</version>
+    	    <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans.samples</groupId>
+            <artifactId>reservation</artifactId>
             <version>${project.version}</version>
     	    <type>war</type>
         </dependency>
@@ -101,7 +107,30 @@
             <artifactId>openwebbeans-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>openwebbeans-jsf</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>openwebbeans-jms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>openwebbeans-jpa</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>openwebbeans-ejb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>openwebbeans-geronimo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
-
-
 </project>
