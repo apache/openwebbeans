@@ -3,13 +3,13 @@
 	<parent>
 		<groupId>org.apache.openwebbeans</groupId>
 		<artifactId>openwebbeans</artifactId>
-		<version>1.0.0-incubating-M2</version>
+		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
     
 	<artifactId>openwebbeans-geronimo</artifactId>
 	<name>OpenWebBeans :: Geronimo integration</name>
 	<packaging>jar</packaging>
-	<version>1.0.0-incubating-M2</version>
+	<version>1.0.0-incubating-SNAPSHOT</version>
 	<description>Geronimo intetration SPI implementations for the  OpenWebBeans Implementation</description>
 
     <dependencies>
