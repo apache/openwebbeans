@@ -112,7 +112,7 @@
             <name>Mohammad Nour El-Din</name>
             <email>nour dot mohammad at gmail dot com</email>
             <roles>
-              <role>committer</role>
+              <role>PMC</role>
             </roles>
         </developer>
         <developer>
@@ -128,40 +128,40 @@
             <name>Mark Struberg</name>
             <email>struberg at yahoo dot de</email>
             <roles>
-              <role>committer</role>
+              <role>PMC</role>
             </roles>
         </developer>
     </developers>
 	
     <build>
-	 <pluginManagement>
-	    <plugins>
-	       <plugin>
-		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-remote-resources-plugin</artifactId>
-		    <version>1.0</version>
-		    <executions>
-		        <execution>
-		            <goals>
-		                <goal>process</goal>
-		            </goals>
-		            <configuration>
-		                <resourceBundles>
-		                    <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
-				    <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
-		                </resourceBundles>
-		            </configuration>
-		        </execution>
-		    </executions>
-		</plugin>
-             
-	     <plugin>
+    <pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <resourceBundles>
+                                <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+                                <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>2.0-beta-7</version>
-             </plugin>
-          </plugins>
-       </pluginManagement>
+            </plugin>
+        </plugins>
+    </pluginManagement>
 
 	<plugins>
 	      <plugin>
@@ -245,22 +245,40 @@
 		<executions>
 		</executions>
 	    </plugin>
-            <!-- force generating a *-sources.jar when building a jar, e.g. for a snapshot release -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
+        <!-- force generating a *-sources.jar when building a jar, e.g. for a snapshot release -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
                 <execution>
                     <goals>
                         <goal>jar</goal>
                     </goals>
-                    </execution>
-                </executions>
-            </plugin>
-	    <plugin>
-	        <groupId>org.codehaus.mojo</groupId>
-       		 <artifactId>rat-maven-plugin</artifactId>
-             </plugin>  
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>rat-maven-plugin</artifactId>
+            <version>1.0-alpha-3</version>
+            <configuration>
+                <includes>
+                    <include>src/**/*</include>
+                    <include>pom.xml</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*/MANIFEST.MF</exclude>
+                </excludes>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
 	</plugins>
     </build>
     
