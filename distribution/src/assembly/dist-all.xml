@@ -134,6 +134,8 @@ under the License.
                 <exclude>**/.project</exclude>
                 <exclude>**/.settings/**</exclude>
                 <exclude>**/.git/**</exclude>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/.metadata/**</exclude>
                 <exclude>**/.gitignore</exclude>
             </excludes>
         </fileSet>
