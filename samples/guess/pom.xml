@@ -19,7 +19,7 @@
 	<parent>
 	     <artifactId>samples</artifactId>
 	     <groupId>org.apache.openwebbeans</groupId>
-	     <version>1.0.0-incubating-M2</version>
+	     <version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.openwebbeans.samples</groupId>
@@ -48,21 +48,21 @@
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-api</artifactId>
-            <version>1.0.0-incubating-M2</version>
+            <version>1.0.0-incubating-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-jsf</artifactId>
-            <version>1.0.0-incubating-M2</version>
+            <version>1.0.0-incubating-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-jpa</artifactId>
-            <version>1.0.0-incubating-M2</version>
+            <version>1.0.0-incubating-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -80,7 +80,7 @@
         <dependency>
         	<groupId>org.apache.openwebbeans</groupId>
         	<artifactId>openwebbeans-jms</artifactId>
-        	<version>1.0.0-incubating-M2</version>
+        	<version>1.0.0-incubating-SNAPSHOT</version>
         	<scope>provided</scope>
         </dependency>
 	
