@@ -42,7 +42,7 @@
         <dependency>
             <groupId>com.sun.facelets</groupId>
             <artifactId>jsf-facelets</artifactId>
-            <version>1.1.11</version>
+            <version>1.1.14</version>
         </dependency>
 
         <dependency>
@@ -99,8 +99,7 @@
 	<profiles>
 		<profile>
 			<id>jetty</id>
-                        <dependencies>
-            
+            <dependencies>
                 <dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-api</artifactId>
@@ -155,22 +154,13 @@
                     <plugin>
                         <groupId>org.mortbay.jetty</groupId>
                         <artifactId>maven-jetty-plugin</artifactId>
-                        <version>6.1.15.rc4</version>
+                        <version>6.1.18</version>
                         <configuration>
                             <scanIntervalSeconds>10</scanIntervalSeconds>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
-
-            <pluginRepositories>
-                <!-- Repository to get the jetty plugin -->
-                <pluginRepository>
-                     <id>mortbay-repo</id>
-                     <name>mortbay-repo</name>
-                     <url>http://www.mortbay.org/maven2/snapshot</url>
-                </pluginRepository>
-            </pluginRepositories>
 
             <properties>
                 <envlibscope>compile</envlibscope>
