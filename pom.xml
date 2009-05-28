@@ -340,7 +340,7 @@
         <module>webbeans-jpa</module>
         <module>samples</module>
         <module>webbeans-geronimo</module>
-<!--	<module>webbeans-tck</module>-->
+        <!-- <module>webbeans-tck</module>-->
   </modules>
     
 	<repositories>
@@ -480,7 +480,7 @@
     </distributionManagement>
       
 	<properties>
-          <openwebbeans.version>1.0.0-incubating-M2</openwebbeans.version>
+          <openwebbeans.version>1.0.0-incubating-SNAPSHOT</openwebbeans.version>
 	  <siteId>/OWB/1.0.0-incubating-M2/plugins</siteId>
 	</properties>
 
