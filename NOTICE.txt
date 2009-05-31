@@ -1,92 +1,27 @@
-=========================================================================
-==  NOTICE file corresponding to section 4(d) of the Apache License,   ==
-==  Version 2.0, in this case for the OpenWebBeans                     ==
-=========================================================================
 Apache OpenWebBeans
 Copyright 2008, 2009 The Apache Software Foundation
 
 This product includes software developed by 
 The Apache Software Foundation (http://www.apache.org/).
 
-=========================================================================
-==  Junit Notice                                        	       ==
-=========================================================================
-
 This product includes/uses test library junit-4.5.jar as binary, 
 home page of the project is http://sourceforge.net/projects/junit/ 
-LICENCE : Common Public License 1.0.
 
-=========================================================================
-==  Dom4j Notice                                        	       ==
-=========================================================================
 This products uses dom4j-1.6.1.jar as binary, home page of the project is
-http://www.dom4j.org/ with dom4j BSD Style licence.
-
- Redistribution and use of this software and associated documentation ("Software"), with or without modification, are permitted provided that the following conditions are met:
-
-   1. Redistributions of source code must retain copyright statements and notices. Redistributions must also contain a copy of this document.
-   2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-   3. The name "DOM4J" must not be used to endorse or promote products derived from this Software without prior written permission of MetaStuff, Ltd. For written permission, please contact dom4j-info@metastuff.com.
-   4. Products derived from this Software may not be called "DOM4J" nor may "DOM4J" appear in their names without prior written permission of MetaStuff, Ltd. DOM4J is a registered trademark of MetaStuff, Ltd.
-   5. Due credit should be given to the DOM4J Project - http://www.dom4j.org
-
-THIS SOFTWARE IS PROVIDED BY METASTUFF, LTD. AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL METASTUFF, LTD. OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+http://www.dom4j.org/.
 Copyright 2001-2005 (C) MetaStuff, Ltd. All Rights Reserved. 
-
-=========================================================================
-==  Javassist Notice                                        	       ==
-=========================================================================
 
 This product includes/uses byte code library javassist-3.8.0.GA as binary, 
 home page of the project is http://www.jboss.org/javassist/
-LICENCE : MPL licence.
 
-=========================================================================
-==  Scannotation Notice                                        	       ==
-=========================================================================
 This product includes/uses scannotation-1.0.2.jar as binary, 
 home page of the project is http://sourceforge.net/projects/scannotation.
-LICENCE : Apache License V2.0 licence.
 
-=========================================================================
-==  Sun CDDL Notice                                                    ==
-=========================================================================
-This product includes software developed for the JSR-250 Reference 
+This product includes/uses software developed for the JSR-250 Reference 
 Implementation project. (https://jsr250.dev.java.net/)
-LICENCE: COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0  (http://www.sun.com/cddl/cddl.html)
 
-=========================================================================
-==  Apache GERONIMO Notice                                             ==
-=========================================================================
-
-Apache Geronimo 
-Copyright 2003-2009 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
-=========================================================================
-==  Apache MyFaces Notice                                              ==
-=========================================================================
-This product includes software developed by:
-The Apache Software Foundation (http://www.apache.org/)
-
-=========================================================================
-==  HSQLDB Notice                                              	       ==
-=========================================================================
-ORIGINAL LICENSE (a.k.a. "hypersonic_lic.txt")
-
-For content, code, and products originally developed by Thomas Mueller and the Hypersonic SQL Group:
+This product includes/uses software developed by Thomas Mueller and the Hypersonic SQL Group.
 Copyright (c) 1995-2000 by the Hypersonic SQL Group.
-All rights reserved. 
 
-
-For work added by the HSQL Development Group (a.k.a. hsqldb_lic.txt):
+This product includes/uses software developed by HSQL Development Group. 
 Copyright (c) 2001-2005, The HSQL Development Group
-All rights reserved.
-
--------------------------------------------------------------------------------
-See the LICENSE.txt file and /licences folder for information on all licenses 
-associated with this software.
--------------------------------------------------------------------------------
