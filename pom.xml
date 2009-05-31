@@ -481,7 +481,7 @@
       
 	<properties>
           <openwebbeans.version>1.0.0-incubating-SNAPSHOT</openwebbeans.version>
-	  <siteId>/OWB/1.0.0-incubating-M2/plugins</siteId>
+	  <siteId>/OWB/1.0.0-incubating-M2-rc2/plugins</siteId>
 	</properties>
 
     <profiles>
