@@ -24,7 +24,7 @@
     </parent>
 
     <artifactId>openwebbeans-jsf</artifactId>
-    <name>OpenWebBeans :: JSF integration</name>
+    <name>Apache OpenWebBeans :: JSF integration</name>
     <packaging>jar</packaging>
     <version>1.0.0-incubating-SNAPSHOT</version>
     <description>JSF integration for the  OpenWebBeans Implementation</description>

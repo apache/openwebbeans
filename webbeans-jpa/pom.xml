@@ -24,7 +24,7 @@
     </parent>
 
     <artifactId>openwebbeans-jpa</artifactId>
-    <name>OpenWebBeans :: JPA integration</name>
+    <name>Apache OpenWebBeans :: JPA integration</name>
     <version>1.0.0-incubating-SNAPSHOT</version>
     <description>JPA plugin for  OpenWebBeans</description>
 

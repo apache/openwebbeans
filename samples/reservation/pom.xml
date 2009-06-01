@@ -25,7 +25,7 @@
 	<groupId>org.apache.openwebbeans.samples</groupId>
 	<artifactId>reservation</artifactId>
 	<packaging>war</packaging>
-	<name>OpenWebBeans :: Sample Hotel Reservation Application</name>
+	<name>Apache OpenWebBeans :: Sample Hotel Reservation Application</name>
 	<description>Simple hotel reservation application</description>
 
 	<build>

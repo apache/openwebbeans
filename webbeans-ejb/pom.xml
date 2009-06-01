@@ -24,7 +24,7 @@
 		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	<artifactId>openwebbeans-ejb</artifactId>
-	<name>OpenWebBeans :: EJB integration</name>
+	<name>Apache OpenWebBeans :: EJB integration</name>
 	<packaging>jar</packaging>
 	<description>OpenWebBeans EJB Integration</description>
 	<dependencies>

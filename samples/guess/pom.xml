@@ -25,7 +25,7 @@
 	<groupId>org.apache.openwebbeans.samples</groupId>
 	<artifactId>guess</artifactId>
 	<packaging>war</packaging>
-	<name>OpenWebBeans :: Sample Guess Application</name>
+	<name>Apache OpenWebBeans :: Sample Guess Application</name>
 	<description>Simple login application</description>
 
 	<build>

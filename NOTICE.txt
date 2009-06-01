@@ -25,3 +25,6 @@ Copyright (c) 1995-2000 by the Hypersonic SQL Group.
 
 This product includes/uses software developed by HSQL Development Group. 
 Copyright (c) 2001-2005, The HSQL Development Group
+
+This product includes/uses jsf-facelets-1.1.14.jar as binary,
+home page of the project is http://facelets.dev.java.net/

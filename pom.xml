@@ -22,7 +22,7 @@
     
 	<groupId>org.apache.openwebbeans</groupId>
 	<artifactId>openwebbeans</artifactId>
-	<name>OpenWebBeans</name>
+	<name>Apache OpenWebBeans</name>
 	<packaging>pom</packaging>
 	<version>1.0.0-incubating-SNAPSHOT</version>
     
@@ -32,8 +32,8 @@
 	</description>
 
 	<organization>
-		<name>The Apache OpenWebBeans development community</name>
-		<url>http://incubator.apache.org/openwebbeans</url>
+		<name>The Apache Software Foundation</name>
+		<url>http://apache.org</url>
 	</organization>
 
     <inceptionYear>2008</inceptionYear>
@@ -481,7 +481,7 @@
       
 	<properties>
           <openwebbeans.version>1.0.0-incubating-SNAPSHOT</openwebbeans.version>
-	  <siteId>/OWB/1.0.0-incubating-M2-rc2/plugins</siteId>
+	  <siteId>/OWB/1.0.0-incubating-M2-rc3/plugins</siteId>
 	</properties>
 
     <profiles>

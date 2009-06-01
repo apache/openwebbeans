@@ -24,7 +24,7 @@
 		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	<artifactId>openwebbeans-jms</artifactId>
-	<name>OpenWebBeans :: JMS integration</name>
+	<name>Apache OpenWebBeans :: JMS integration</name>
 	<packaging>jar</packaging>
 	<description>OpenWebBeans JMS Integration</description>
 	<dependencies>

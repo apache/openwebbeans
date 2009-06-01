@@ -24,7 +24,7 @@
 		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	<artifactId>openwebbeans-impl</artifactId>
-	<name>OpenWebBeans :: WebBeans-Impl</name>
+	<name>Apache OpenWebBeans :: WebBeans-Impl</name>
 	<description>Implementation of the Web Beans API</description>
 
 	<dependencies>

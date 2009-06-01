@@ -24,7 +24,7 @@
 	</parent>
     
 	<artifactId>openwebbeans-geronimo</artifactId>
-	<name>OpenWebBeans :: Geronimo integration</name>
+	<name>Apache OpenWebBeans :: Geronimo integration</name>
 	<packaging>jar</packaging>
 	<version>1.0.0-incubating-SNAPSHOT</version>
 	<description>Geronimo intetration SPI implementations for the  OpenWebBeans Implementation</description>
