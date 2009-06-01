@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.apache.openwebbeans</groupId>
 		<artifactId>openwebbeans</artifactId>
-		<version>1.0.0-incubating-M2</version>
+		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	<artifactId>openwebbeans-impl</artifactId>
 	<name>Apache OpenWebBeans :: WebBeans-Impl</name>
