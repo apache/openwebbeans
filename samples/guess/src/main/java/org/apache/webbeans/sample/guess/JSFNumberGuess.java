@@ -16,14 +16,14 @@ package org.apache.webbeans.sample.guess;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
-import javax.annotation.Named;
-import javax.context.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Initializer;
+import javax.enterprise.inject.Named;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.inject.AnnotationLiteral;
-import javax.inject.Current;
-import javax.inject.Initializer;
-import javax.inject.manager.Manager;
 
 @Named(value = "game")
 @SessionScoped
@@ -38,7 +38,7 @@ public class JSFNumberGuess implements Serializable
     private int maxRange;
     private int remainder;
     private @Current
-    Manager manager;
+    BeanManager manager;
 
     public JSFNumberGuess()
     {
@@ -214,7 +214,7 @@ public class JSFNumberGuess implements Serializable
     /**
      * @return the manager
      */
-    public Manager getManager()
+    public BeanManager getManager()
     {
         return manager;
     }
@@ -222,7 +222,7 @@ public class JSFNumberGuess implements Serializable
     /**
      * @param manager the manager to set
      */
-    public void setManager(Manager manager)
+    public void setManager(BeanManager manager)
     {
         this.manager = manager;
     }

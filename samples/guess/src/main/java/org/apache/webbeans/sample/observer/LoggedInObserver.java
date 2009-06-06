@@ -16,12 +16,11 @@
  */
 package org.apache.webbeans.sample.observer;
 
-import javax.event.Observer;
 
 import org.apache.webbeans.sample.event.LoggedInEvent;
 import org.apache.webbeans.sample.model.User;
 
-public class LoggedInObserver implements Observer<LoggedInEvent>
+public class LoggedInObserver implements javax.enterprise.event.Observer<LoggedInEvent>
 {
 
 	public void notify(LoggedInEvent event)

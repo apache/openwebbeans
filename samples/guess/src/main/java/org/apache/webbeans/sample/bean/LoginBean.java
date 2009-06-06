@@ -18,16 +18,15 @@ package org.apache.webbeans.sample.bean;
 
 import java.lang.annotation.Annotation;
 
-import javax.annotation.Named;
-import javax.context.RequestScoped;
-import javax.context.SessionScoped;
-import javax.event.Event;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Named;
+import javax.enterprise.inject.Produces;
 import javax.event.Fires;
-import javax.event.Observes;
 import javax.faces.application.FacesMessage;
-import javax.inject.Current;
-import javax.inject.Produces;
-
 
 import org.apache.webbeans.sample.bindings.LoggedInUser;
 import org.apache.webbeans.sample.dependent.LoginCheck;

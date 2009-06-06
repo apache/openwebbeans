@@ -18,11 +18,11 @@ package org.apache.webbeans.sample.conversation;
 
 import java.io.Serializable;
 
-import javax.annotation.Named;
-import javax.context.Conversation;
-import javax.context.RequestScoped;
+import javax.enterprise.context.Conversation;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Named;
 import javax.faces.application.FacesMessage;
-import javax.inject.Current;
 
 import org.apache.webbeans.sample.model.conversation.ConversationModel;
 import org.apache.webbeans.sample.util.FacesMessageUtil;

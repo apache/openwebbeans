@@ -19,9 +19,9 @@ package org.apache.webbeans.sample.guess;
 
 import java.io.Serializable;
 
-import javax.annotation.Named;
-import javax.context.SessionScoped;
-import javax.inject.Produces;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Named;
+import javax.enterprise.inject.Produces;
 
 @SessionScoped
 @Named

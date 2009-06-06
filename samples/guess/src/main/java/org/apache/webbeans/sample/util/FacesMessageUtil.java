@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.sample.util;
 
-import javax.annotation.Named;
-import javax.context.Dependent;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;

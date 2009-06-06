@@ -18,7 +18,7 @@ package org.apache.webbeans.sample.model;
 
 import java.io.Serializable;
 
-import javax.webbeans.Model;
+import javax.enterprise.inject.stereotype.Model;
 
 /**
  * Simple model object for loginned users.
