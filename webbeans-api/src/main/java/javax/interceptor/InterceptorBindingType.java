@@ -20,6 +20,11 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Defines binding types for interceptors.
+ *
+ * @version $Rev$ $Id$
+ */
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
 @Documented

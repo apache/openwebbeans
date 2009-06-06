@@ -13,6 +13,7 @@
  */
 package javax.interceptor;
 
+import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.FIELD;
@@ -24,10 +25,16 @@ import java.lang.annotation.Target;
 
 import javax.enterprise.inject.stereotype.Stereotype;
 
+/**
+ * Annotation for used defining the interceptors.
+ *
+ * @version $Rev$ $Id$
+ */
 @Retention(RUNTIME)
 @Target({TYPE,METHOD,FIELD})
 @Stereotype
 @Inherited
+@Documented
 public @interface Interceptor
 {
 
