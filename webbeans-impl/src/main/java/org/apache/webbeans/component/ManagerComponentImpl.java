@@ -13,22 +13,22 @@
  */
 package org.apache.webbeans.component;
 
-import javax.context.CreationalContext;
-import javax.inject.manager.Manager;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.container.ManagerImpl;
 
-public class ManagerComponentImpl extends AbstractComponent<Manager>
+public class ManagerComponentImpl extends AbstractComponent<BeanManager>
 {
-    private Manager manager = null;
+    private BeanManager manager = null;
 
     public ManagerComponentImpl()
     {
-        super(WebBeansType.MANAGER, Manager.class);
+        super(WebBeansType.MANAGER, BeanManager.class);
     }
 
     @Override
-    protected Manager createInstance(CreationalContext<Manager> creationalContext)
+    protected BeanManager createInstance(CreationalContext<BeanManager> creationalContext)
     {
         if (this.manager == null)
         {
@@ -39,7 +39,7 @@ public class ManagerComponentImpl extends AbstractComponent<Manager>
     }
 
     @Override
-    protected void destroyInstance(Manager instance)
+    protected void destroyInstance(BeanManager instance)
     {
         this.manager = null;
     }

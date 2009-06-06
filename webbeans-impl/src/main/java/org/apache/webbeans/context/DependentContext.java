@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.context;
 
-import javax.context.Contextual;
-import javax.context.CreationalContext;
-import javax.context.Dependent;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.context.type.ContextTypes;
 

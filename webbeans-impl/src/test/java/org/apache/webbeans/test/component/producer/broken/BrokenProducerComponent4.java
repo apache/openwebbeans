@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.producer.broken;
 
-import javax.inject.Disposes;
-import javax.inject.Produces;
+import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.Produces;
 
 
 public class BrokenProducerComponent4

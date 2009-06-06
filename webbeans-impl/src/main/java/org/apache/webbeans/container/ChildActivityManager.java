@@ -19,18 +19,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.context.CreationalContext;
-import javax.event.Observer;
-import javax.inject.AmbiguousDependencyException;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Observer;
+import javax.enterprise.inject.AmbiguousResolutionException;
+import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.inject.UnsatisfiedResolutionException;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.Interceptor;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.DeploymentException;
-import javax.inject.TypeLiteral;
-import javax.inject.UnsatisfiedDependencyException;
-import javax.inject.manager.Bean;
-import javax.inject.manager.Decorator;
-import javax.inject.manager.InjectionPoint;
-import javax.inject.manager.InterceptionType;
-import javax.inject.manager.Interceptor;
-import javax.inject.manager.Manager;
 
 /**
  * Each Manager can start a new child activity as defined by the JSR-299 spec chapter 11.6
@@ -54,7 +54,7 @@ public class ChildActivityManager extends ManagerImpl
     }
     
     /** {@inheritDoc} */
-    public Manager addBean(Bean<?> bean)
+    public BeanManager addBean(Bean<?> bean)
     {
         if(checkBean(bean, getParent()))
         {
@@ -118,13 +118,13 @@ public class ChildActivityManager extends ManagerImpl
     }
 
     /** {@inheritDoc} */
-    public Manager addDecorator(Decorator decorator)
+    public BeanManager addDecorator(Decorator decorator)
     {
         throw new UnsupportedOperationException("Decorators may not be registered with a child activity.");
     }
 
     /** {@inheritDoc} */
-    public Manager addInterceptor(Interceptor interceptor)
+    public BeanManager addInterceptor(Interceptor interceptor)
     {
         throw new UnsupportedOperationException("Interceptors may not be registered with a child activity.");
     }
@@ -149,9 +149,9 @@ public class ChildActivityManager extends ManagerImpl
             
             obj = super.getInstance(bean);
             
-        }catch(UnsatisfiedDependencyException e1)
+        }catch(UnsatisfiedResolutionException e1)
         {            
-        }catch (AmbiguousDependencyException e2) {
+        }catch (AmbiguousResolutionException e2) {
         }
         
         
@@ -173,9 +173,9 @@ public class ChildActivityManager extends ManagerImpl
             
             obj = super.getInstanceByName(name);
             
-        }catch(UnsatisfiedDependencyException e1)
+        }catch(UnsatisfiedResolutionException e1)
         {            
-        }catch (AmbiguousDependencyException e2) {
+        }catch (AmbiguousResolutionException e2) {
         }
         
         
@@ -197,9 +197,9 @@ public class ChildActivityManager extends ManagerImpl
             
             obj =  super.getInstanceByType(type, bindingTypes);
             
-        }catch(UnsatisfiedDependencyException e1)
+        }catch(UnsatisfiedResolutionException e1)
         {            
-        }catch (AmbiguousDependencyException e2) {
+        }catch (AmbiguousResolutionException e2) {
         }
         
         
@@ -221,9 +221,9 @@ public class ChildActivityManager extends ManagerImpl
             
             obj =  super.getInstanceByType(type, bindingTypes);
             
-        }catch(UnsatisfiedDependencyException e1)
+        }catch(UnsatisfiedResolutionException e1)
         {            
-        }catch (AmbiguousDependencyException e2) {
+        }catch (AmbiguousResolutionException e2) {
         }
         
         
@@ -244,9 +244,9 @@ public class ChildActivityManager extends ManagerImpl
             
             obj = (T) super.getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
             
-        }catch(UnsatisfiedDependencyException e1)
+        }catch(UnsatisfiedResolutionException e1)
         {            
-        }catch (AmbiguousDependencyException e2) {
+        }catch (AmbiguousResolutionException e2) {
         }
         
         
@@ -267,9 +267,9 @@ public class ChildActivityManager extends ManagerImpl
             
             obj = super.getInstanceToInject(injectionPoint); //X ugly <T> due to javac bug 6302954
             
-        }catch(UnsatisfiedDependencyException e1)
+        }catch(UnsatisfiedResolutionException e1)
         {            
-        }catch (AmbiguousDependencyException e2) {
+        }catch (AmbiguousResolutionException e2) {
         }
         
         

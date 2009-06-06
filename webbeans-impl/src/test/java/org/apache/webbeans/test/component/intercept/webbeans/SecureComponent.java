@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.intercept.webbeans;
 
-import javax.context.RequestScoped;
+import javax.enterprise.context.RequestScoped;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 

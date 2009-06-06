@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.test.component.inject.broken;
 
-import javax.inject.Instance;
+import javax.enterprise.inject.Instance;
 import javax.inject.Obtains;
 
 import org.apache.webbeans.test.component.ITypeLiteralComponent;

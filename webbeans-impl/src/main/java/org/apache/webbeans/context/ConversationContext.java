@@ -15,7 +15,7 @@ package org.apache.webbeans.context;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.context.Contextual;
+import javax.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.context.type.ContextTypes;
 

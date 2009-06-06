@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.service;
 
-import javax.inject.Production;
+import javax.enterprise.inject.deployment.Production;
 
 @Production
 public class TypedComponent implements ITyped<String>

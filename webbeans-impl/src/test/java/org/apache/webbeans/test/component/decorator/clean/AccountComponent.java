@@ -15,10 +15,10 @@ package org.apache.webbeans.test.component.decorator.clean;
 
 import java.math.BigDecimal;
 
-import javax.annotation.Named;
-import javax.context.RequestScoped;
-import javax.inject.Current;
-import javax.inject.Production;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Named;
+import javax.enterprise.inject.deployment.Production;
 
 @Production
 @Named

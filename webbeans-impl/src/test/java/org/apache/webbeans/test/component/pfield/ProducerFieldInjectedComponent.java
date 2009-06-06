@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.test.component.pfield;
 
-import javax.context.RequestScoped;
+import javax.enterprise.context.RequestScoped;
 
 import org.apache.webbeans.test.annotation.binding.Synchronous;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;

@@ -24,18 +24,18 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.context.Dependent;
-import javax.context.ScopeType;
-import javax.event.Event;
-import javax.inject.Current;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ScopeType;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.stereotype.Model;
 import javax.inject.InconsistentSpecializationException;
-import javax.inject.Specializes;
-import javax.inject.manager.Bean;
-import javax.inject.manager.Decorator;
-import javax.inject.manager.InjectionPoint;
-import javax.inject.manager.Manager;
 import javax.interceptor.Interceptor;
-import javax.webbeans.Model;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.DeployedManagerLiteral;
@@ -148,14 +148,14 @@ public class WebBeansContainerDeployer
     
     private void fireInitializeEvent()
     {
-        Manager manager = ManagerImpl.getManager();
+        BeanManager manager = ManagerImpl.getManager();
         manager.fireEvent(manager, new Annotation[] { new InitializedManagerLiteral() });
     }
     
     
     private void fireDeployedEvent()
     {
-        Manager manager = ManagerImpl.getManager();
+        BeanManager manager = ManagerImpl.getManager();
         manager.fireEvent(manager, new Annotation[] { new DeployedManagerLiteral() });        
         
     }
@@ -184,8 +184,8 @@ public class WebBeansContainerDeployer
         beans.clear();
         
         //Adding interceptors to validate
-        Set<javax.inject.manager.Interceptor> interceptors = manager.getInterceptors();
-        for(javax.inject.manager.Interceptor interceptor : interceptors)
+        Set<javax.enterprise.inject.spi.Interceptor> interceptors = manager.getInterceptors();
+        for(javax.enterprise.inject.spi.Interceptor interceptor : interceptors)
         {
             WebBeansInterceptor wbInt = (WebBeansInterceptor)interceptor;
             beans.add(wbInt.getDelegate());

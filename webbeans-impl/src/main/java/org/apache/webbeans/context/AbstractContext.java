@@ -19,16 +19,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.context.ApplicationScoped;
-import javax.context.ContextNotActiveException;
-import javax.context.Contextual;
-import javax.context.ConversationScoped;
-import javax.context.CreationalContext;
-import javax.context.Dependent;
-import javax.context.RequestScoped;
-import javax.context.SessionScoped;
-import javax.inject.manager.Bean;
-import javax.inject.manager.Manager;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ContextNotActiveException;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.context.type.ContextTypes;
 
@@ -229,7 +229,7 @@ public abstract class AbstractContext implements WebBeansContext
         return this.scopeType;
     }
 
-    public <T> void remove(Manager container, Bean<T> component)
+    public <T> void remove(BeanManager container, Bean<T> component)
     {
         remove(component);
     }

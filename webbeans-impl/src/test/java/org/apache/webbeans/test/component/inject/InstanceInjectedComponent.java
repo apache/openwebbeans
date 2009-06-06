@@ -18,9 +18,9 @@ package org.apache.webbeans.test.component.inject;
 
 import java.lang.annotation.Annotation;
 
-import javax.context.RequestScoped;
-import javax.inject.Current;
-import javax.inject.Instance;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Instance;
 import javax.inject.Obtains;
 
 import org.apache.webbeans.test.component.PaymentProcessorComponent;

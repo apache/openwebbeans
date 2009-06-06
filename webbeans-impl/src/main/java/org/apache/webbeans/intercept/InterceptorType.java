@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.intercept;
 
-import javax.inject.manager.InterceptionType;
+import javax.enterprise.inject.spi.InterceptionType;
 
 import org.apache.webbeans.exception.WebBeansException;
 

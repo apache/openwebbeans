@@ -20,10 +20,10 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
 import java.util.Set;
 
-import javax.annotation.Stereotype;
-import javax.context.ScopeType;
-import javax.inject.BindingType;
-import javax.inject.DeploymentType;
+import javax.enterprise.context.ScopeType;
+import javax.enterprise.inject.BindingType;
+import javax.enterprise.inject.deployment.DeploymentType;
+import javax.enterprise.inject.stereotype.Stereotype;
 import javax.interceptor.InterceptorBindingType;
 
 import org.apache.webbeans.component.AbstractComponent;

@@ -16,7 +16,7 @@ package org.apache.webbeans.intercept;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import javax.inject.manager.Manager;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 
@@ -24,7 +24,7 @@ import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
  * Uses {@link InterceptorComparator}.
  * 
  * @see InterceptorComparator
- * @see Manager#resolveInterceptors(javax.inject.manager.InterceptionType, java.lang.annotation.Annotation...)
+ * @see BeanManager#resolveInterceptors(javax.inject.manager.InterceptionType, java.lang.annotation.Annotation...)
  */
 @Deprecated
 public class InterceptorDataComparator implements Comparator<InterceptorData>, Serializable

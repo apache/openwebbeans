@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.event;
 
-import javax.event.Observer;
+import javax.enterprise.event.Observer;
 
 public class LoggedInObserver implements Observer<LoggedInEvent>
 {

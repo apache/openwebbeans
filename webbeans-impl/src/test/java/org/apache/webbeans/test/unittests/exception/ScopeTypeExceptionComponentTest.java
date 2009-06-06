@@ -13,10 +13,10 @@
  */
 package org.apache.webbeans.test.unittests.exception;
 
-import javax.context.Dependent;
-import javax.context.RequestScoped;
-import javax.context.SessionScoped;
-import javax.inject.manager.Bean;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.spi.Bean;
 import javax.servlet.ServletContext;
 
 import junit.framework.Assert;

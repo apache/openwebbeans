@@ -17,11 +17,11 @@ import java.util.List;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import javax.annotation.Named;
-import javax.context.RequestScoped;
-import javax.context.SessionScoped;
-import javax.inject.Disposes;
-import javax.inject.Produces;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.Named;
+import javax.enterprise.inject.Produces;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 

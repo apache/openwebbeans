@@ -22,18 +22,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Named;
-import javax.annotation.NonBinding;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.context.ScopeType;
 import javax.decorator.Decorator;
-import javax.inject.DeploymentType;
-import javax.inject.Specializes;
-import javax.inject.UnsatisfiedDependencyException;
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
-import javax.inject.manager.Interceptor;
+import javax.enterprise.context.ScopeType;
+import javax.enterprise.inject.Named;
+import javax.enterprise.inject.NonBinding;
+import javax.enterprise.inject.UnsatisfiedResolutionException;
+import javax.enterprise.inject.deployment.DeploymentType;
+import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.WebBeansConstants;
@@ -625,7 +625,7 @@ public final class XMLDefinitionUtil
      * @param errorMessage error message used in exceptions
      * @throws WebBeansConfigurationException if more than one Disposal element
      *             exist for the given disposal method element
-     * @throws UnsatisfiedDependencyException if no producer method found for
+     * @throws UnsatisfiedResolutionException if no producer method found for
      *             given disposal method
      */
     public static <T> void defineXMLDisposalMethod(XMLComponentImpl<T> component, Method disposalMethod, Element disposalMethodElement, String errorMessage)
@@ -671,7 +671,7 @@ public final class XMLDefinitionUtil
 
                 if (producerComponent == null)
                 {
-                    throw new UnsatisfiedDependencyException(errorMessage + "Producer method component of the disposal method : " + disposalMethod.getName() + "is not found");
+                    throw new UnsatisfiedResolutionException(errorMessage + "Producer method component of the disposal method : " + disposalMethod.getName() + "is not found");
                 }
 
                 producerComponent.setDisposalMethod(disposalMethod);

@@ -20,8 +20,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.context.CreationalContext;
-import javax.inject.Instance;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Instance;
 
 import org.apache.webbeans.inject.instance.InstanceFactory;
 

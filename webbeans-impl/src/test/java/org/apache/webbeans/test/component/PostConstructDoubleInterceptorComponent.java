@@ -14,8 +14,8 @@
 package org.apache.webbeans.test.component;
 
 import javax.annotation.PostConstruct;
-import javax.context.RequestScoped;
-import javax.inject.Production;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.deployment.Production;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.test.annotation.binding.Check;

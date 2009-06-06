@@ -15,8 +15,8 @@ package org.apache.webbeans.test.component.service;
 
 import java.io.Serializable;
 
-import javax.context.SessionScoped;
-import javax.inject.Production;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.deployment.Production;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;

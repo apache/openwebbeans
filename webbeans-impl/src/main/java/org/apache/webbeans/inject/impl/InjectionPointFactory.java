@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.event.Observes;
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.inject.xml.XMLInjectionModelType;

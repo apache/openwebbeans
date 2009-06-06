@@ -20,14 +20,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.context.Context;
-import javax.context.Dependent;
 import javax.decorator.Decorator;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.inject.deployment.Production;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Obtains;
-import javax.inject.Production;
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
-import javax.inject.manager.Manager;
 import javax.interceptor.Interceptor;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
@@ -94,7 +94,7 @@ public abstract class TestContext implements ITestContext
     /** Test class name */
     private String clazzName;
 
-    /** MockManager is the mock implementation of the {@link Manager} */
+    /** MockManager is the mock implementation of the {@link BeanManager} */
     private MockManager manager;
 
     /** Tests initialization is already done or not */

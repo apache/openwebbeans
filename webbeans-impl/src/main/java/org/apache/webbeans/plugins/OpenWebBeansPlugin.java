@@ -16,7 +16,7 @@ package org.apache.webbeans.plugins;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.inject.manager.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 

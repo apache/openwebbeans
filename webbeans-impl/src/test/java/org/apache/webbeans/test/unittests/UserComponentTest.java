@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.inject.manager.Manager;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
@@ -31,7 +31,7 @@ import org.junit.Test;
 
 public class UserComponentTest extends TestContext
 {
-    Manager container = null;
+    BeanManager container = null;
 
     public UserComponentTest()
     {

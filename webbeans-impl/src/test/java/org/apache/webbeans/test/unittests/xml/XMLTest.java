@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests.xml;
 
 import java.io.InputStream;
 
-import javax.inject.manager.Manager;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
@@ -29,7 +29,7 @@ import org.junit.Test;
 
 public class XMLTest extends TestContext
 {
-    private Manager container = null;
+    private BeanManager container = null;
 
     public XMLTest()
     {

@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.test.unittests.intercept.webbeans;
 
-import javax.inject.manager.Bean;
+import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 

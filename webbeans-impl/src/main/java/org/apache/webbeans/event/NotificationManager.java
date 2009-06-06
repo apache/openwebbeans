@@ -23,11 +23,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.event.IfExists;
-import javax.event.Observer;
-import javax.event.ObserverException;
-import javax.event.Observes;
-import javax.inject.TypeLiteral;
+import javax.enterprise.event.IfExists;
+import javax.enterprise.event.Observer;
+import javax.enterprise.event.ObserverException;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.TypeLiteral;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;

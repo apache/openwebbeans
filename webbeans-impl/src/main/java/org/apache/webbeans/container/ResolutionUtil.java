@@ -17,10 +17,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 
-import javax.context.ScopeType;
-import javax.inject.AmbiguousDependencyException;
-import javax.inject.UnsatisfiedDependencyException;
-import javax.inject.manager.Bean;
+import javax.enterprise.context.ScopeType;
+import javax.enterprise.inject.AmbiguousResolutionException;
+import javax.enterprise.inject.UnsatisfiedResolutionException;
+import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -71,12 +71,12 @@ public final class ResolutionUtil
             
             message.append("]");
             
-            throw new UnsatisfiedDependencyException(message.toString());
+            throw new UnsatisfiedResolutionException(message.toString());
         }
 
         if (resolvedSet.size() > 1)
         {
-            throw new AmbiguousDependencyException("There is more than one api type with : " + type.getName());
+            throw new AmbiguousResolutionException("There is more than one api type with : " + type.getName());
         }
 
         Bean<T> bean = resolvedSet.iterator().next();

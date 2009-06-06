@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.inject.AnnotationLiteral;
+import javax.enterprise.inject.AnnotationLiteral;
 import javax.inject.manager.Initialized;
 
 public class InitializedManagerLiteral extends AnnotationLiteral<Initialized> implements Initialized

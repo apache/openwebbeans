@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.inject.Initializer;
-import javax.inject.Production;
+import javax.enterprise.inject.Initializer;
+import javax.enterprise.inject.deployment.Production;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.service.ServiceImpl1;

@@ -15,10 +15,10 @@ package org.apache.webbeans.test.component.decorator.clean;
 
 import java.math.BigDecimal;
 
-import javax.context.RequestScoped;
 import javax.decorator.Decorates;
 import javax.decorator.Decorator;
-import javax.inject.Current;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
 
 @Decorator
 @RequestScoped

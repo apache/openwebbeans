@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.inject.DuplicateBindingTypeException;
 import javax.inject.DefinitionException;
-import javax.inject.DuplicateBindingTypeException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

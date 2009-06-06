@@ -22,9 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.NullableDependencyException;
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.InstanceComponentImpl;

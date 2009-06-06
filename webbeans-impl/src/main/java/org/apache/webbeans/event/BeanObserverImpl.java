@@ -21,11 +21,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.context.Context;
-import javax.context.Dependent;
-import javax.event.Observer;
-import javax.event.Observes;
-import javax.inject.manager.Manager;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.event.Observer;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
@@ -77,7 +77,7 @@ public class BeanObserverImpl<T> implements Observer<T>
                 dependentContext = true;
             }
 
-            Manager manager = ActivityManager.getInstance().getCurrentActivity();
+            BeanManager manager = ActivityManager.getInstance().getCurrentActivity();
 
             specializedComponent = WebBeansUtil.getMostSpecializedBean(manager, baseComponent);
             
@@ -157,7 +157,7 @@ public class BeanObserverImpl<T> implements Observer<T>
 
         List<Object> list = new ArrayList<Object>();
 
-        Manager manager = ActivityManager.getInstance().getCurrentActivity();
+        BeanManager manager = ActivityManager.getInstance().getCurrentActivity();
 
         if (types.length > 0)
         {

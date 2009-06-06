@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.context.CreationalContext;
+import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.inject.InjectableMethods;

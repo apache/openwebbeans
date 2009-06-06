@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.context.CreationalContext;
+import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.exception.WebBeansException;

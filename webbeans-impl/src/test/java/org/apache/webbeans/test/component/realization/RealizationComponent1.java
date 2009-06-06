@@ -18,7 +18,7 @@ package org.apache.webbeans.test.component.realization;
 
 import java.io.Serializable;
 
-import javax.context.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Realizes;
 
 import org.apache.webbeans.test.component.UserComponent;

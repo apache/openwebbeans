@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests.producer.specializes;
 
 import java.lang.annotation.Annotation;
 
-import javax.inject.AnnotationLiteral;
+import javax.enterprise.inject.AnnotationLiteral;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;

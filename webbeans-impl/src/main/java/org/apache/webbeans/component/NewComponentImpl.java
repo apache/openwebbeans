@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.component;
 
-import javax.context.CreationalContext;
-import javax.inject.New;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.New;
 
 /**
  * Component definition with {@link New} binding annotation.

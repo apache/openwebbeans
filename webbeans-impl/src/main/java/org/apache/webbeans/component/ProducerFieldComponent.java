@@ -22,10 +22,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.context.CreationalContext;
-import javax.context.Dependent;
-import javax.inject.CreationException;
-import javax.inject.manager.Bean;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.CreationException;
+import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.util.WebBeansUtil;

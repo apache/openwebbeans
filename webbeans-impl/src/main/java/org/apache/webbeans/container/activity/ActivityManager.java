@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.context.Context;
+import javax.enterprise.context.spi.Context;
 
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.ManagerImpl;

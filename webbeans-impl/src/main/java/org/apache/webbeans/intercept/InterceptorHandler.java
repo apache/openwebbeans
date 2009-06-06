@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.context.Context;
-import javax.context.Contextual;
-import javax.context.CreationalContext;
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 

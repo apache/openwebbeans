@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.test.unittests.specializes;
 
-import javax.inject.manager.Bean;
+import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.annotation.binding.Mock;

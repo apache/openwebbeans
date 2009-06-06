@@ -15,7 +15,7 @@ package org.apache.webbeans.test.component.producer.broken;
 
 import java.util.List;
 
-import javax.inject.Produces;
+import javax.enterprise.inject.Produces;
 
 public class BrokenProducerComponent6
 {

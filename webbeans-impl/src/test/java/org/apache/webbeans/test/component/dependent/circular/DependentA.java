@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.dependent.circular;
 
-import javax.context.RequestScoped;
-import javax.inject.Current;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
 
 @RequestScoped
 public class DependentA

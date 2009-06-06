@@ -18,8 +18,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.annotation.NonBinding;
-import javax.inject.BindingType;
+import javax.enterprise.inject.BindingType;
+import javax.enterprise.inject.NonBinding;
 
 @BindingType
 @Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE })

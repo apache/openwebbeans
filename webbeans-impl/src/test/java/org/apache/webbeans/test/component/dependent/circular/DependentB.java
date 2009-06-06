@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.dependent.circular;
 
-import javax.inject.Current;
+import javax.enterprise.inject.Current;
 
 public class DependentB
 {

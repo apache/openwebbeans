@@ -16,7 +16,7 @@ package org.apache.webbeans.test.component.producer;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.context.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 
 import org.apache.webbeans.test.annotation.binding.Users;
 

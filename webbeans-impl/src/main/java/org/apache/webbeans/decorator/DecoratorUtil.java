@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Decorates;
-import javax.inject.manager.Decorator;
+import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.container.ManagerImpl;

@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.inject.AnnotationLiteral;
-import javax.inject.Current;
+import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.inject.Current;
 
 /**
  * {@link Current} literal annotation.

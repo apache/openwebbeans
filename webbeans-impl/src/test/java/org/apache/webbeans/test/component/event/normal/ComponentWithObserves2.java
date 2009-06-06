@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.test.component.event.normal;
 
-import javax.context.RequestScoped;
-import javax.event.Observes;
-import javax.inject.Production;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.deployment.Production;
 
 import org.apache.webbeans.test.annotation.binding.Role;
 import org.apache.webbeans.test.component.IPayment;

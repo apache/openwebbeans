@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.test.component.service;
 
-import javax.annotation.Named;
-import javax.context.ApplicationScoped;
-import javax.inject.Production;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Named;
+import javax.enterprise.inject.deployment.Production;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 

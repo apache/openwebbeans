@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.context.RequestScoped;
-import javax.inject.Production;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.deployment.Production;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;

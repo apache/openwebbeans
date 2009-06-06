@@ -17,9 +17,9 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.event.Event;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observer;
 import javax.event.Fires;
-import javax.event.Observer;
 
 import org.apache.webbeans.container.ManagerImpl;
 

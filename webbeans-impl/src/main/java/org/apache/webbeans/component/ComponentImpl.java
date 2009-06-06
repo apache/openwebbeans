@@ -15,7 +15,7 @@ package org.apache.webbeans.component;
 
 import java.lang.reflect.Constructor;
 
-import javax.context.CreationalContext;
+import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.exception.WebBeansException;

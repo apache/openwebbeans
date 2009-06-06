@@ -19,8 +19,8 @@ package org.apache.webbeans.context.creational;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.context.CreationalContext;
-import javax.inject.manager.Bean;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 
 /** {@inheritDoc} */
 public class CreationalContextImpl<T> implements CreationalContext<T>

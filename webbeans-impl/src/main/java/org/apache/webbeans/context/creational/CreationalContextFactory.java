@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.context.creational;
 
-import javax.context.CreationalContext;
-import javax.inject.manager.Bean;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.config.WebBeansFinder;
 

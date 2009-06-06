@@ -15,8 +15,8 @@ package org.apache.webbeans.test.unittests.event;
 
 import java.lang.annotation.Annotation;
 
-import javax.inject.AnnotationLiteral;
-import javax.inject.TypeLiteral;
+import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.inject.TypeLiteral;
 import javax.servlet.ServletContext;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;

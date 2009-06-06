@@ -22,11 +22,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
-import javax.event.Observes;
-import javax.inject.Disposes;
-import javax.inject.Initializer;
-import javax.inject.Produces;
-import javax.inject.manager.InterceptionType;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.Initializer;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 

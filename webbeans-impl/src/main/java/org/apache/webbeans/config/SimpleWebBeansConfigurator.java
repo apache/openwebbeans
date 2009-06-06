@@ -14,8 +14,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.Set;
 
-import javax.context.ScopeType;
 import javax.decorator.Decorator;
+import javax.enterprise.context.ScopeType;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.ComponentImpl;

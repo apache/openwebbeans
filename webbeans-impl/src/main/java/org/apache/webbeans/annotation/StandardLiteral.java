@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.inject.AnnotationLiteral;
-import javax.inject.Standard;
+import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.inject.deployment.Standard;
 
 public class StandardLiteral extends AnnotationLiteral<Standard> implements Standard
 {

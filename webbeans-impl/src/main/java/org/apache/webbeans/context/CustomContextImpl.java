@@ -18,9 +18,9 @@ package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
 
-import javax.context.Context;
-import javax.context.Contextual;
-import javax.context.CreationalContext;
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.context.spi.CreationalContext;
 
 class CustomContextImpl implements Context
 {

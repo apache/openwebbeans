@@ -28,18 +28,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.context.Context;
-import javax.context.ContextNotActiveException;
-import javax.context.CreationalContext;
-import javax.event.Observer;
-import javax.inject.AmbiguousDependencyException;
-import javax.inject.TypeLiteral;
-import javax.inject.manager.Bean;
-import javax.inject.manager.Decorator;
-import javax.inject.manager.InjectionPoint;
-import javax.inject.manager.InterceptionType;
-import javax.inject.manager.Interceptor;
-import javax.inject.manager.Manager;
+import javax.enterprise.context.ContextNotActiveException;
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Observer;
+import javax.enterprise.inject.AmbiguousResolutionException;
+import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.Interceptor;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
@@ -72,7 +72,7 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
  * @see java.webbeans.WebBeansManager
  */
 @SuppressWarnings("unchecked")
-public class ManagerImpl implements Manager, Referenceable
+public class ManagerImpl implements BeanManager, Referenceable
 {
     /**Holds the context with key scope*/
     private static Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
@@ -104,7 +104,7 @@ public class ManagerImpl implements Manager, Referenceable
     private ManagerImpl parent;
     
     /**
-     * Creates a new {@link Manager} instance.
+     * Creates a new {@link BeanManager} instance.
      * Called by the system. Do not use outside of the
      * system.
      */
@@ -234,7 +234,7 @@ public class ManagerImpl implements Manager, Referenceable
      * @param component new webbeans component
      * @return the this activity
      */
-    public Manager addBean(Bean<?> component)
+    public BeanManager addBean(Bean<?> component)
     {
         if(component instanceof AbstractComponent)
         {
@@ -250,7 +250,7 @@ public class ManagerImpl implements Manager, Referenceable
         return this;
     }
 
-    public Manager addContext(Context context)
+    public BeanManager addContext(Context context)
     {
         addContext(context.getScopeType(), ContextFactory.getCustomContext(context));
 
@@ -282,7 +282,7 @@ public class ManagerImpl implements Manager, Referenceable
 
         if (set.size() > 1)
         {
-            throw new AmbiguousDependencyException("There are more than one WebBeans with name : " + name);
+            throw new AmbiguousResolutionException("There are more than one WebBeans with name : " + name);
         }
 
         component = (AbstractComponent<?>) set.iterator().next();
@@ -381,25 +381,25 @@ public class ManagerImpl implements Manager, Referenceable
         return getManager().components;
     }
 
-    public Manager addDecorator(Decorator decorator)
+    public BeanManager addDecorator(Decorator decorator)
     {
         getManager().webBeansDecorators.add(decorator);
         return this;
     }
 
-    public Manager addInterceptor(Interceptor interceptor)
+    public BeanManager addInterceptor(Interceptor interceptor)
     {
         getManager().webBeansInterceptors.add(interceptor);
         return this;
     }
 
-    public <T> Manager addObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
+    public <T> BeanManager addObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
     {
         this.notificationManager.addObserver(observer, eventType, bindings);
         return this;
     }
 
-    public <T> Manager addObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
+    public <T> BeanManager addObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
     {
         this.notificationManager.addObserver(observer, eventType, bindings);
         return this;
@@ -456,13 +456,13 @@ public class ManagerImpl implements Manager, Referenceable
         return instance;
     }
 
-    public <T> Manager removeObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
+    public <T> BeanManager removeObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
     {
         this.notificationManager.removeObserver(observer, eventType, bindings);
         return this;
     }
 
-    public <T> Manager removeObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
+    public <T> BeanManager removeObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
     {
         this.notificationManager.removeObserver(observer, eventType, bindings);
         return this;
@@ -527,7 +527,7 @@ public class ManagerImpl implements Manager, Referenceable
         return this.webBeansDecorators;
     }
 
-    private void addContext(Class<? extends Annotation> scopeType, javax.context.Context context)
+    private void addContext(Class<? extends Annotation> scopeType, javax.enterprise.context.spi.Context context)
     {
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
         Asserts.assertNotNull(context, "context parameter can not be null");
@@ -562,9 +562,9 @@ public class ManagerImpl implements Manager, Referenceable
      * Parse the given XML input stream for adding XML defined artifacts.
      * 
      * @param xmlStream beans xml definitions
-     * @return {@link Manager} instance 
+     * @return {@link BeanManager} instance 
      */
-    public Manager parse(InputStream xmlStream)
+    public BeanManager parse(InputStream xmlStream)
     {
         this.xmlConfigurator.configure(xmlStream);
         
@@ -574,7 +574,7 @@ public class ManagerImpl implements Manager, Referenceable
     /**
      * Create a new ChildActivityManager.
      */
-    public Manager createActivity()
+    public BeanManager createActivity()
     {
         return new ChildActivityManager(this);
     }
@@ -584,7 +584,7 @@ public class ManagerImpl implements Manager, Referenceable
      * 
      * @param scopeType scope type for the context
      */
-    public Manager setCurrent(Class<? extends Annotation> scopeType)
+    public BeanManager setCurrent(Class<? extends Annotation> scopeType)
     {
         if(!WebBeansUtil.isScopeTypeNormal(scopeType))
         {

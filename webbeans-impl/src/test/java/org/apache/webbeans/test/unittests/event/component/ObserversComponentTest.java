@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests.event.component;
 
 import java.lang.annotation.Annotation;
 
-import javax.inject.AnnotationLiteral;
+import javax.enterprise.inject.AnnotationLiteral;
 
 import junit.framework.Assert;
 

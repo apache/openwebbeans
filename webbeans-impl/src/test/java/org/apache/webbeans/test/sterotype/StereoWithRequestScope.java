@@ -18,8 +18,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.annotation.Stereotype;
-import javax.context.RequestScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.stereotype.Stereotype;
 
 @Stereotype
 @RequestScoped

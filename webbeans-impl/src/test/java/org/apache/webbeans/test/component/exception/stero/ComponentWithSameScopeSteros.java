@@ -15,7 +15,7 @@ package org.apache.webbeans.test.component.exception.stero;
 
 import java.io.Serializable;
 
-import javax.inject.Production;
+import javax.enterprise.inject.deployment.Production;
 
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;

@@ -18,8 +18,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.annotation.Stereotype;
-import javax.context.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.stereotype.Stereotype;
 
 @Stereotype
 @SessionScoped

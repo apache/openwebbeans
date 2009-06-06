@@ -27,12 +27,12 @@ import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.enterprise.inject.BindingType;
+import javax.enterprise.inject.DuplicateBindingTypeException;
+import javax.enterprise.inject.NonBinding;
+import javax.enterprise.inject.stereotype.Stereotype;
 import javax.xml.ws.WebServiceRef;
 
-import javax.annotation.NonBinding;
-import javax.annotation.Stereotype;
-import javax.inject.BindingType;
-import javax.inject.DuplicateBindingTypeException;
 import javax.inject.Realizes;
 import javax.interceptor.InterceptorBindingType;
 

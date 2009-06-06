@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import javax.context.CreationalContext;
-import javax.inject.CreationException;
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.CreationException;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;

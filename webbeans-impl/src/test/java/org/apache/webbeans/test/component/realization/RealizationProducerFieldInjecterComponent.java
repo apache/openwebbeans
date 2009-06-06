@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.test.component.realization;
 
-import javax.context.RequestScoped;
+import javax.enterprise.context.RequestScoped;
 
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.UserComponent;

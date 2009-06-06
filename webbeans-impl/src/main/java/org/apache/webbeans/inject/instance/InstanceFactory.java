@@ -19,7 +19,7 @@ package org.apache.webbeans.inject.instance;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.inject.Instance;
+import javax.enterprise.inject.Instance;
 
 public final class InstanceFactory
 {

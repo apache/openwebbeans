@@ -76,7 +76,12 @@ public class WebBeansNameSpaceContainer
                 List<String> eePackages = new ArrayList<String>();
                 eePackages.add("java.lang.");
                 eePackages.add("java.util.");
-                eePackages.add("javax.annotation.");
+                eePackages.add("javax.enterprise.context.");
+                eePackages.add("javax.enterprise.context.spi.");
+                eePackages.add("javax.enterprise.event.");
+                eePackages.add("javax.enterprise.inject.");
+                eePackages.add("javax.enterprise.inject.deployment.");
+                eePackages.add("javax.enterprise.inject.spi.");
                 eePackages.add("javax.inject.");
                 eePackages.add("javax.context.");
                 eePackages.add("javax.interceptor.");

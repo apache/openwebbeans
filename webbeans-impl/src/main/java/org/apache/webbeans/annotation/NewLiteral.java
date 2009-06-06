@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.inject.AnnotationLiteral;
-import javax.inject.Current;
-import javax.inject.New;
+import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.New;
 
 /**
  * {@link New} literal annotation.

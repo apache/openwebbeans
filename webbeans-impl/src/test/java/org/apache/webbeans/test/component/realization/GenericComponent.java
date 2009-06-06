@@ -16,12 +16,12 @@
  */
 package org.apache.webbeans.test.component.realization;
 
-import javax.context.RequestScoped;
-import javax.context.SessionScoped;
-import javax.event.Observes;
-import javax.inject.Current;
-import javax.inject.Disposes;
-import javax.inject.Produces;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.Produces;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;

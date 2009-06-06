@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.NonBinding;
-import javax.context.CreationalContext;
-import javax.inject.manager.InjectionPoint;
-import javax.inject.manager.InterceptionType;
-import javax.inject.manager.Interceptor;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.NonBinding;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InterceptorBindingType;
 
 import org.apache.webbeans.component.AbstractComponent;

@@ -16,8 +16,8 @@ package org.apache.webbeans.test.unittests;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import javax.inject.Current;
-import javax.inject.manager.Manager;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
@@ -30,7 +30,7 @@ import org.junit.Test;
 
 public class TypedComponentTest extends TestContext
 {
-    Manager container = null;
+    BeanManager container = null;
     ITyped<String> s = null;
 
     public TypedComponentTest()

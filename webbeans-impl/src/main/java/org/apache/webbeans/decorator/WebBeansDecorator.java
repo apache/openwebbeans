@@ -21,10 +21,10 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.context.CreationalContext;
 import javax.decorator.Decorates;
-import javax.inject.manager.Decorator;
-import javax.inject.manager.InjectionPoint;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;

@@ -15,7 +15,7 @@ package org.apache.webbeans.test.component.intercept.webbeans;
 
 import java.io.Serializable;
 
-import javax.context.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 

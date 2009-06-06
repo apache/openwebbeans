@@ -17,9 +17,9 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
-import javax.inject.manager.Manager;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -37,7 +37,7 @@ import org.apache.webbeans.intercept.InterceptorData;
  */
 public abstract class Component<T> extends Bean<T>
 {
-    protected Component(Manager manager)
+    protected Component(BeanManager manager)
     {
         super(manager);
     }

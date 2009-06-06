@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.manager.Manager;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.container.InjectionResolver;
@@ -47,7 +47,7 @@ public class BeanObserverXMLImpl<T> extends BeanObserverImpl<T>
     protected List<Object> getMethodArguments(Object event)
     {
         List<Object> params = new ArrayList<Object>();
-        Manager manager = ManagerImpl.getManager();
+        BeanManager manager = ManagerImpl.getManager();
         for (XMLInjectionPointModel model : observersParameters)
         {
             Set<Annotation> setBindingTypes = model.getBindingTypes();

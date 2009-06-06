@@ -17,7 +17,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.event.Observer;
+import javax.enterprise.event.Observer;
 
 
 /**

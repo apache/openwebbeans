@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.unittests.exception;
 
-import javax.inject.manager.Bean;
+import javax.enterprise.inject.spi.Bean;
 import javax.servlet.ServletContext;
 
 import junit.framework.Assert;

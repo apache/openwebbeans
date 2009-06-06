@@ -18,7 +18,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.annotation.NonBinding;
+import javax.enterprise.inject.NonBinding;
 import javax.interceptor.InterceptorBindingType;
 
 @InterceptorBindingType

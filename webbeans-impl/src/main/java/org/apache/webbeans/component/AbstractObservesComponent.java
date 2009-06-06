@@ -18,8 +18,8 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.context.CreationalContext;
 import javax.decorator.Decorates;
+import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.exception.WebBeansException;

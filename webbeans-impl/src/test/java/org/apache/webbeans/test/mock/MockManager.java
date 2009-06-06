@@ -20,22 +20,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.context.Context;
-import javax.context.CreationalContext;
-import javax.event.Observer;
-import javax.inject.TypeLiteral;
-import javax.inject.manager.Bean;
-import javax.inject.manager.Decorator;
-import javax.inject.manager.InjectionPoint;
-import javax.inject.manager.InterceptionType;
-import javax.inject.manager.Interceptor;
-import javax.inject.manager.Manager;
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Observer;
+import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.Interceptor;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 
-public class MockManager implements Manager
+public class MockManager implements BeanManager
 {
     private ManagerImpl manager = null;
 
@@ -72,35 +72,35 @@ public class MockManager implements Manager
         return manager.getBeans().size();
     }
 
-    public Manager addBean(Bean<?> bean)
+    public BeanManager addBean(Bean<?> bean)
     {
         manager.addBean(bean);
         return this;
     }
 
-    public Manager addContext(Context context)
+    public BeanManager addContext(Context context)
     {
         return manager.addContext(context);
     }
 
-    public Manager addDecorator(Decorator decorator)
+    public BeanManager addDecorator(Decorator decorator)
     {
         return manager.addDecorator(decorator);
     }
 
-    public Manager addInterceptor(Interceptor interceptor)
+    public BeanManager addInterceptor(Interceptor interceptor)
     {
         manager.addInterceptor(interceptor);
         return this;
     }
 
-    public <T> Manager addObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
+    public <T> BeanManager addObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
     {
         manager.addObserver(observer, eventType, bindings);
         return this;
     }
 
-    public <T> Manager addObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
+    public <T> BeanManager addObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
     {
         manager.addObserver(observer, eventType, bindings);
         return this;
@@ -149,12 +149,12 @@ public class MockManager implements Manager
         return manager.getInstanceByType(type, bindingTypes);
     }
 
-    public <T> Manager removeObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
+    public <T> BeanManager removeObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
     {
         return manager.removeObserver(observer, eventType, bindings);
     }
 
-    public <T> Manager removeObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
+    public <T> BeanManager removeObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
     {
         return manager.removeObserver(observer, eventType, bindings);
     }
@@ -189,18 +189,18 @@ public class MockManager implements Manager
         return manager.resolveObservers(event, bindings);
     }
 
-    public Manager parse(InputStream xmlStream)
+    public BeanManager parse(InputStream xmlStream)
     {
         manager.parse(xmlStream);
         return manager;
     }
 
-    public Manager createActivity()
+    public BeanManager createActivity()
     {
         return manager.createActivity();
     }
 
-    public Manager setCurrent(Class<? extends Annotation> scopeType)
+    public BeanManager setCurrent(Class<? extends Annotation> scopeType)
     {
         return manager.setCurrent(scopeType);
     }

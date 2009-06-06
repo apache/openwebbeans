@@ -17,8 +17,8 @@
 package org.apache.webbeans.test.unittests.inject;
 
 
-import javax.inject.Instance;
-import javax.inject.manager.Bean;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;

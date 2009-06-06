@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.event.broken;
 
-import javax.event.Observes;
-import javax.inject.Production;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.deployment.Production;
 
 import org.apache.log4j.spi.LoggingEvent;
 

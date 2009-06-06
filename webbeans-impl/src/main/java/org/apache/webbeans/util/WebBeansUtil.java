@@ -33,38 +33,38 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Named;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Stereotype;
-import javax.context.ApplicationScoped;
-import javax.context.Conversation;
-import javax.context.ConversationScoped;
-import javax.context.Dependent;
-import javax.context.RequestScoped;
-import javax.context.ScopeType;
-import javax.context.SessionScoped;
 import javax.decorator.Decorator;
 import javax.ejb.EnterpriseBean;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Conversation;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.DuplicateBindingTypeException;
+import javax.enterprise.inject.IllegalProductException;
+import javax.enterprise.inject.Initializer;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.Named;
+import javax.enterprise.inject.New;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.UnproxyableResolutionException;
+import javax.enterprise.inject.deployment.DeploymentType;
+import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Interceptor;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.stereotype.Stereotype;
 import javax.event.Fires;
-import javax.event.Observes;
 import javax.inject.DefinitionException;
-import javax.inject.DeploymentType;
-import javax.inject.Disposes;
-import javax.inject.DuplicateBindingTypeException;
-import javax.inject.IllegalProductException;
 import javax.inject.InconsistentSpecializationException;
-import javax.inject.Initializer;
-import javax.inject.Instance;
-import javax.inject.New;
 import javax.inject.NullableDependencyException;
-import javax.inject.Produces;
-import javax.inject.Specializes;
-import javax.inject.UnproxyableDependencyException;
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
-import javax.inject.manager.Interceptor;
-import javax.inject.manager.Manager;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.servlet.Filter;
@@ -620,7 +620,7 @@ public final class WebBeansUtil
         managerComponent.setImplScopeType(new DependentScopeLiteral());
         managerComponent.setType(new StandardLiteral());
         managerComponent.addBindingType(new CurrentLiteral());
-        managerComponent.addApiType(Manager.class);
+        managerComponent.addApiType(BeanManager.class);
         managerComponent.addApiType(Object.class);
 
         return managerComponent;
@@ -1390,7 +1390,7 @@ public final class WebBeansUtil
             {
                 if (scopeType.normal())
                 {
-                    throw new UnproxyableDependencyException("WebBeans with api type with normal scope must be proxiable to inject, but class : " + superClass.getName() + " is not proxiable type");
+                    throw new UnproxyableResolutionException("WebBeans with api type with normal scope must be proxiable to inject, but class : " + superClass.getName() + " is not proxiable type");
                 }
             }
 
@@ -1784,7 +1784,7 @@ public final class WebBeansUtil
         
     }
     
-    public static <T> AbstractComponent<T> getMostSpecializedBean(Manager manager, AbstractComponent<T> component)
+    public static <T> AbstractComponent<T> getMostSpecializedBean(BeanManager manager, AbstractComponent<T> component)
     {
         Set<Bean<T>> beans = manager.resolveByType(component.getReturnType(), AnnotationUtil.getAnnotationsFromSet(component.getBindings()));
                 

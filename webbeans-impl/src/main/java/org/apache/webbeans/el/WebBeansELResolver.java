@@ -16,14 +16,14 @@ package org.apache.webbeans.el;
 import java.beans.FeatureDescriptor;
 import java.util.Iterator;
 
-import javax.context.Dependent;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ELResolver;
 import javax.el.PropertyNotFoundException;
 import javax.el.PropertyNotWritableException;
-import javax.inject.manager.Bean;
-import javax.inject.manager.Manager;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
@@ -52,7 +52,7 @@ public class WebBeansELResolver extends ELResolver
     @Override
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
-        Manager manager = ManagerImpl.getManager();
+        BeanManager manager = ManagerImpl.getManager();
 
         Object object = null;
         Bean<?> bean = null;

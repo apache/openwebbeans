@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.dependent;
 
-import javax.context.Dependent;
-import javax.inject.Production;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.deployment.Production;
 
 @Production
 @Dependent

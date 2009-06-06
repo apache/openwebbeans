@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.manager.Decorator;
+import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;

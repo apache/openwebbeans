@@ -16,7 +16,7 @@ package org.apache.webbeans.inject.xml;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-import javax.context.CreationalContext;
+import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.exception.WebBeansException;

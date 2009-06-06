@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests;
 
 import java.util.List;
 
-import javax.inject.manager.Manager;
+import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
@@ -32,7 +32,7 @@ import org.junit.Test;
 
 public class PreDestroyComponentTest extends TestContext
 {
-    Manager container = null;
+    BeanManager container = null;
 
     public PreDestroyComponentTest()
     {

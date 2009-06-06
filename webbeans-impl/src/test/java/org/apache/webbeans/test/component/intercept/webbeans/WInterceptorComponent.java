@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.intercept.webbeans;
 
-import javax.context.RequestScoped;
-import javax.inject.Production;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.deployment.Production;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 

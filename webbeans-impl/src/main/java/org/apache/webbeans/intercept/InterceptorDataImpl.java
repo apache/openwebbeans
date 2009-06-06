@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.manager.Interceptor;
+import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 
 /**

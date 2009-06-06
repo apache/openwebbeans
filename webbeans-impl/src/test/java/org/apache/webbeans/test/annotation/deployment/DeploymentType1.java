@@ -19,7 +19,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.inject.DeploymentType;
+import javax.enterprise.inject.deployment.DeploymentType;
 
 @DeploymentType
 @Retention(RUNTIME)

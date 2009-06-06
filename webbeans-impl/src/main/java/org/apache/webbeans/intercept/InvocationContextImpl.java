@@ -19,10 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.context.Context;
-import javax.context.Contextual;
-import javax.context.CreationalContext;
-import javax.inject.manager.Bean;
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.container.ManagerImpl;

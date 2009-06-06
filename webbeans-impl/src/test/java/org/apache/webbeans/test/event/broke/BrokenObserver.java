@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.event.broke;
 
-import javax.event.Observer;
+import javax.enterprise.event.Observer;
 
 @SuppressWarnings("unchecked")
 public class BrokenObserver implements Observer<BrokenEvent>

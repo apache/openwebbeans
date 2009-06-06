@@ -19,12 +19,12 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import javax.context.CreationalContext;
-import javax.context.Dependent;
-import javax.event.Event;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.event.Fires;
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.InjectionResolver;

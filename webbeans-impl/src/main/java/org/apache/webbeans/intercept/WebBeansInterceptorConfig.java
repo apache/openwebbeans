@@ -24,7 +24,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.manager.Interceptor;
+import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.component.AbstractComponent;

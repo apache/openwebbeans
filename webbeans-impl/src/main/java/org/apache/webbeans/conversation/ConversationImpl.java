@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.conversation;
 
-import javax.context.Conversation;
-import javax.context.ConversationScoped;
+import javax.enterprise.context.Conversation;
+import javax.enterprise.context.ConversationScoped;
 
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ConversationContext;

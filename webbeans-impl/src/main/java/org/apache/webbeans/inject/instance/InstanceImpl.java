@@ -21,10 +21,10 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.DuplicateBindingTypeException;
-import javax.inject.Instance;
+import javax.enterprise.inject.DuplicateBindingTypeException;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.Bean;
 import javax.inject.Obtains;
-import javax.inject.manager.Bean;
 
 
 import org.apache.webbeans.container.InjectionResolver;

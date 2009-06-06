@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.unittests.resolution;
 
-import javax.inject.manager.Manager;
+import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
@@ -41,7 +41,7 @@ public class ManagerResolutionTest extends TestContext
     public void testManagerResolution()
     {
         ManagerComponentImpl component = WebBeansUtil.getManagerComponent();
-        Manager manager = getManager().getInstance(component);
+        BeanManager manager = getManager().getInstance(component);
 
         Assert.assertNotNull(manager);
     }

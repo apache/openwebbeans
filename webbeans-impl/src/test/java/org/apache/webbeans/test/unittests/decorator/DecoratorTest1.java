@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.manager.Decorator;
+import javax.enterprise.inject.spi.Decorator;
 import javax.servlet.ServletContext;
 
 import junit.framework.Assert;

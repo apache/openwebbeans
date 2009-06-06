@@ -26,24 +26,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Named;
-import javax.annotation.NonBinding;
-import javax.context.ScopeType;
 import javax.decorator.Decorates;
+import javax.enterprise.context.ScopeType;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.Initializer;
+import javax.enterprise.inject.Named;
+import javax.enterprise.inject.NonBinding;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.UnsatisfiedResolutionException;
+import javax.enterprise.inject.deployment.DeploymentType;
+import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.deployment.Standard;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.event.Fires;
-import javax.event.Observes;
-import javax.inject.Current;
-import javax.inject.DeploymentType;
-import javax.inject.Disposes;
-import javax.inject.Initializer;
 import javax.inject.Obtains;
-import javax.inject.Produces;
 import javax.inject.Realizes;
-import javax.inject.Specializes;
-import javax.inject.Standard;
-import javax.inject.UnsatisfiedDependencyException;
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
@@ -786,7 +786,7 @@ public final class DefinitionUtil
 
             if (bean == null || !(bean instanceof ProducerComponentImpl))
             {
-                throw new UnsatisfiedDependencyException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + clazz.getName() + "is not found");
+                throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + clazz.getName() + "is not found");
             }
 
             else

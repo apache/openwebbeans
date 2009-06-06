@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.context;
 
-import javax.context.Contextual;
+import javax.enterprise.context.spi.Contextual;
 
-public interface WebBeansContext extends javax.context.Context
+public interface WebBeansContext extends javax.enterprise.context.spi.Context
 {
     /**
      * Removes the given web beans component from the context.

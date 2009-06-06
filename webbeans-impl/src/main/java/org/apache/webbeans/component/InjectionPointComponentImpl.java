@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.component;
 
-import javax.context.CreationalContext;
-import javax.inject.manager.InjectionPoint;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;

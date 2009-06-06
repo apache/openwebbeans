@@ -16,8 +16,8 @@ package org.apache.webbeans.test.unittests.config;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Named;
-import javax.context.RequestScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Named;
 import javax.servlet.ServletContext;
 
 import junit.framework.Assert;

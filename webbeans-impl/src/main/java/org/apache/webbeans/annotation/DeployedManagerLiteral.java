@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.inject.AnnotationLiteral;
+import javax.enterprise.inject.AnnotationLiteral;
 import javax.inject.manager.Deployed;
 
 public class DeployedManagerLiteral extends AnnotationLiteral<Deployed> implements Deployed

@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.annotation.binding;
 
-import javax.inject.AnnotationLiteral;
+import javax.enterprise.inject.AnnotationLiteral;
 
 public class DummyAnnotationLiteral extends AnnotationLiteral<ParameterBinding1> implements ParameterBinding1
 {

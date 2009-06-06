@@ -16,10 +16,10 @@ package org.apache.webbeans.test.unittests.typedliteral;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import javax.inject.AnnotationLiteral;
-import javax.inject.Current;
-import javax.inject.TypeLiteral;
-import javax.inject.manager.Bean;
+import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 

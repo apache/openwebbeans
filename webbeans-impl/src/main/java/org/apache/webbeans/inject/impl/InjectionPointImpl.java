@@ -25,8 +25,8 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 class InjectionPointImpl implements InjectionPoint
 {

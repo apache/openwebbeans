@@ -16,7 +16,7 @@ package org.apache.webbeans.decorator;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import javax.inject.manager.Decorator;
+import javax.enterprise.inject.spi.Decorator;
 
 public class DecoratorComparator implements Comparator<Decorator>, Serializable
 {

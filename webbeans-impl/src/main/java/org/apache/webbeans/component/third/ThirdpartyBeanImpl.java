@@ -20,9 +20,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.context.CreationalContext;
-import javax.inject.manager.Bean;
-import javax.inject.manager.InjectionPoint;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.WebBeansType;

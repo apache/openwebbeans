@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.inject.Production;
+import javax.enterprise.inject.deployment.Production;
 
 @Production
 public final class FinalComponent
