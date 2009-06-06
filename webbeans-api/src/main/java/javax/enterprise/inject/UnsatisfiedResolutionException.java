@@ -11,21 +11,32 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.inject;
+package javax.enterprise.inject;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.inject.DeploymentException;
 
-import javax.enterprise.inject.BindingType;
-
-@BindingType
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
-@Documented
-public @interface Obtains
+public class UnsatisfiedResolutionException extends DeploymentException
 {
+    private static final long serialVersionUID = 8476513814387375212L;
+
+    public UnsatisfiedResolutionException()
+    {
+        super();
+    }
+
+    public UnsatisfiedResolutionException(String message)
+    {
+        super(message);
+    }
+
+    public UnsatisfiedResolutionException(Throwable e)
+    {
+        super(e);
+    }
+
+    public UnsatisfiedResolutionException(String message, Throwable e)
+    {
+        super(message, e);
+    }
 
 }

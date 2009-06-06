@@ -11,21 +11,23 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.inject;
+package javax.enterprise.inject.spi;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Set;
 
-import javax.enterprise.inject.BindingType;
 
-@BindingType
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
-@Documented
-public @interface Obtains
+public abstract class Interceptor extends Bean<Object>
 {
+
+    protected Interceptor(BeanManager manager)
+    {
+        super(manager);
+    }
+
+    public abstract Set<Annotation> getInterceptorBindingTypes();
+
+    public abstract Method getMethod(InterceptionType type);
 
 }

@@ -11,21 +11,32 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.inject;
+package javax.enterprise.inject;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.inject.ExecutionException;
 
-import javax.enterprise.inject.BindingType;
-
-@BindingType
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
-@Documented
-public @interface Obtains
+public class DuplicateBindingTypeException extends ExecutionException
 {
+    private static final long serialVersionUID = 8216920810441408338L;
+
+    public DuplicateBindingTypeException()
+    {
+        super();
+    }
+
+    public DuplicateBindingTypeException(String message)
+    {
+        super(message);
+    }
+
+    public DuplicateBindingTypeException(Throwable e)
+    {
+        super(e);
+    }
+
+    public DuplicateBindingTypeException(String message, Throwable e)
+    {
+        super(message, e);
+    }
 
 }

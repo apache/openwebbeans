@@ -11,21 +11,32 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.inject;
+package javax.enterprise.context;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.enterprise.inject.BindingType;
-
-@BindingType
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
+/**
+ * Defines the request scope.
+ * 
+ * <p>
+ * Please see <b>8.5.1 Request context lifecycle</b> of the specification
+ * for getting furher information
+ * </p>
+ */
+@Target( { TYPE, METHOD, FIELD })
+@Retention(RUNTIME)
 @Documented
-public @interface Obtains
+@ScopeType
+@Inherited
+public @interface RequestScoped
 {
 
 }

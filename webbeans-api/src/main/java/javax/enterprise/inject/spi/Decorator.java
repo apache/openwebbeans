@@ -11,21 +11,23 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.inject;
+package javax.enterprise.inject.spi;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
-import javax.enterprise.inject.BindingType;
-
-@BindingType
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
-@Documented
-public @interface Obtains
+public abstract class Decorator extends Bean<Object>
 {
+
+    protected Decorator(BeanManager manager)
+    {
+        super(manager);
+    }
+
+    public abstract Class<?> getDelegateType();
+
+    public abstract Set<Annotation> getDelegateBindingTypes();
+
+    public abstract void setDelegate(Object instance, Object delegate);
 
 }

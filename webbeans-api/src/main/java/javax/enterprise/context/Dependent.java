@@ -11,21 +11,37 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.inject;
+package javax.enterprise.context;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.enterprise.inject.BindingType;
-
-@BindingType
+/**
+ * Dependent scope type.
+ * <p>
+ * If webbeans or its stereotypes do not define its scope type,
+ * default scope type is <code>Dependent</code> scope.
+ * </p>
+ * 
+ * <p>
+ * Every webbeans instance has an associated dependent context. Each dependent context
+ * is destroyed with its parent webbeans component instance.
+ * </p>
+ * 
+ * <p>
+ * Please see <b>8.3 Dependent pseudo-scope</b> of the specification
+ * for getting furhter information.
+ * </p>
+ * 
+ */
+@ScopeType(normal = false)
+@Target( { ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
-@Documented
-public @interface Obtains
+@Inherited
+public @interface Dependent
 {
 
 }

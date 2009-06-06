@@ -11,24 +11,46 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.event;
+package javax.enterprise.inject.stereotype;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.enterprise.inject.BindingType;
 
-@BindingType
+/**
+ * Steretypes are used for inheriting the meta annotations
+ * that are defined on the stereotyped annotation from another webbeans
+ * component.
+ * 
+ * <p>
+ * It defines two member variables, namely
+ * <ul>
+ * <li>supportedScopes for restricting the webbeans scope</li>
+ * <li>requiredTypes for restricting the webbeans API type</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>
+ * If a bean annotated with multiple stereotypes, it obeys the all of the
+ * stereotypes restrictions.
+ * </p>
+ * 
+ * @see Model
+ */
 @Retention(RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE, FIELD, PARAMETER })
+@Target(ANNOTATION_TYPE)
 @Documented
-public @interface Fires
+public @interface Stereotype
 {
+    /**Supported scopes of the stereotype*/
+    public Class<? extends Annotation>[] supportedScopes() default {};
+
+    /**Required API type for the webbeans*/
+    public Class<?>[] requiredTypes() default {};
 
 }

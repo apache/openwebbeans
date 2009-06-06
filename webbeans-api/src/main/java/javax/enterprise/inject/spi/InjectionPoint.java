@@ -11,21 +11,28 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.inject;
+package javax.enterprise.inject.spi;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
+import java.lang.reflect.Type;
+import java.util.Set;
 
-import javax.enterprise.inject.BindingType;
 
-@BindingType
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
-@Documented
-public @interface Obtains
+public interface InjectionPoint
 {
+    public Type getType();
+
+    public Set<Annotation> getBindings();
+
+    public Bean<?> getBean();
+
+    public Member getMember();
+
+    public <T extends Annotation> T getAnnotation(Class<T> annotationType);
+
+    public Annotation[] getAnnotations();
+
+    public boolean isAnnotationPresent(Class<? extends Annotation> annotationType);
 
 }

@@ -11,21 +11,32 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.inject;
+package javax.enterprise.inject;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.inject.ExecutionException;
 
-import javax.enterprise.inject.BindingType;
-
-@BindingType
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
-@Documented
-public @interface Obtains
+public class CreationException extends ExecutionException
 {
+    private static final long serialVersionUID = -3952691051791639005L;
+
+    public CreationException()
+    {
+        super();
+    }
+
+    public CreationException(String message)
+    {
+        super(message);
+    }
+
+    public CreationException(Throwable e)
+    {
+        super(e);
+    }
+
+    public CreationException(String message, Throwable e)
+    {
+        super(message, e);
+    }
 
 }
