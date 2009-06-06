@@ -17,9 +17,9 @@
 package org.apache.webbeans.ejb.util;
 
 
-import javax.context.ApplicationScoped;
-import javax.context.Dependent;
 import javax.decorator.Decorator;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.ejb.EjbConstants;

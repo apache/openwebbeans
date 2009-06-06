@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.context.CreationalContext;
+import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.AbstractObservesComponent;
 import org.apache.webbeans.component.WebBeansType;

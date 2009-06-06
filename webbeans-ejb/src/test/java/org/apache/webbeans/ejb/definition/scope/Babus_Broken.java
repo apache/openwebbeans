@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.ejb.definition.scope;
 
-import javax.context.ApplicationScoped;
 import javax.ejb.Stateless;
+import javax.enterprise.context.ApplicationScoped;
 
 @Stateless
 @ApplicationScoped

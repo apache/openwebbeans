@@ -15,7 +15,6 @@ package org.apache.webbeans.ejb.definition.scope;
 
 import org.apache.webbeans.ejb.EjbTestContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
