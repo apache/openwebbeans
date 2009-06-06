@@ -15,8 +15,8 @@ package org.apache.webbeans.jsf;
 
 import java.io.IOException;
 
-import javax.context.Conversation;
-import javax.inject.manager.Bean;
+import javax.enterprise.context.Conversation;
+import javax.enterprise.inject.spi.Bean;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;

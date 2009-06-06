@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.reservation.beans;
 
-import javax.annotation.Named;
-import javax.context.RequestScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Named;
 import javax.servlet.http.HttpSession;
 
 import org.apache.webbeans.reservation.util.JSFUtility;

@@ -20,9 +20,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Named;
-import javax.context.RequestScoped;
-import javax.inject.Current;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 

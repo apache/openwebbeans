@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Named;
 
-import javax.context.RequestScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Named;
 import javax.faces.component.html.HtmlDataTable;
-import javax.inject.Current;
 
 import org.apache.webbeans.reservation.controller.admin.AdminController;
 import org.apache.webbeans.reservation.entity.Hotel;

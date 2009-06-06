@@ -13,9 +13,13 @@
  */
 package javax.enterprise.inject;
 
-import javax.inject.DeploymentException;
-
-public class AmbiguousResolutionException extends DeploymentException
+/**
+ * Ambigous resolution exception. It is thrown when more than one
+ * bean exist for given injection point.
+ *
+ * @version $Rev$ $Date$
+ */
+public class AmbiguousResolutionException extends ResolutionException
 {
     private static final long serialVersionUID = -870939668365532685L;
 

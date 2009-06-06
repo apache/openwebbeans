@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.inject.BindingType;
+import javax.enterprise.inject.BindingType;
 
 @BindingType
 @Retention(RetentionPolicy.RUNTIME)

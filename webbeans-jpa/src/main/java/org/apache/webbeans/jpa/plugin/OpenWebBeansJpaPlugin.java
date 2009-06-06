@@ -16,8 +16,6 @@ package org.apache.webbeans.jpa.plugin;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.inject.BindingType;
-
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.jpa.spi.JPAService;
 

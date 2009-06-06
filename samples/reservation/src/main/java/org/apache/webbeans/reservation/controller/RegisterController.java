@@ -16,8 +16,8 @@
  */
 package org.apache.webbeans.reservation.controller;
 
-import javax.context.RequestScoped;
-import javax.inject.Current;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;

@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.jsf;
 
-import javax.context.ConversationScoped;
+import javax.enterprise.context.ConversationScoped;
 import javax.faces.component.UIViewRoot;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;

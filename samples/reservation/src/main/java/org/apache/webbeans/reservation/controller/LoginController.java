@@ -20,9 +20,9 @@ import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.Named;
-import javax.context.RequestScoped;
-import javax.inject.Current;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 

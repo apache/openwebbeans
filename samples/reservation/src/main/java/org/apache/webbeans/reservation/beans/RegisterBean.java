@@ -16,11 +16,11 @@
  */
 package org.apache.webbeans.reservation.beans;
 
-import javax.annotation.Named;
 import javax.annotation.PostConstruct;
-import javax.context.RequestScoped;
-import javax.inject.Current;
-import javax.inject.manager.Manager;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Named;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;
@@ -47,7 +47,7 @@ public class RegisterBean
     
     private @Current RegisterController personController;
     
-    private @Current Manager manager; 
+    private @Current BeanManager manager; 
     
     public RegisterBean()
     {

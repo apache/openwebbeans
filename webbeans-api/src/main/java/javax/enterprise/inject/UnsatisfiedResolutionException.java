@@ -15,6 +15,12 @@ package javax.enterprise.inject;
 
 import javax.inject.DeploymentException;
 
+/**
+ * If injection point is not resolved by the container, it throws
+ * unsatisfied exception.
+ * 
+ * @version $Rev$ $Date$
+ */
 public class UnsatisfiedResolutionException extends DeploymentException
 {
     private static final long serialVersionUID = 8476513814387375212L;

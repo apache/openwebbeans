@@ -13,9 +13,13 @@
  */
 package javax.enterprise.inject;
 
-import javax.inject.ExecutionException;
-
-public class IllegalProductException extends ExecutionException
+/**
+ * If return object of the producer method is null and its type
+ * is primitive type then throws this exception.
+ *
+ * @version $Rev$ $Date$
+ */
+public class IllegalProductException extends InjectionException
 {
     private static final long serialVersionUID = 1490337449170464997L;
 

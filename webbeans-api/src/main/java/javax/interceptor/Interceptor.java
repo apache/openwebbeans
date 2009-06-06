@@ -28,7 +28,7 @@ import javax.enterprise.inject.stereotype.Stereotype;
 /**
  * Annotation for used defining the interceptors.
  *
- * @version $Rev$ $Id$
+ * @version $Rev$ $Id: Interceptor.java 782259 2009-06-06 13:31:32Z gerdogdu $
  */
 @Retention(RUNTIME)
 @Target({TYPE,METHOD,FIELD})

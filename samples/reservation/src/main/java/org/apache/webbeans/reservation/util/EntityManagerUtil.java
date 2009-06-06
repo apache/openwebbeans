@@ -16,10 +16,10 @@
  */
 package org.apache.webbeans.reservation.util;
 
-import javax.context.RequestScoped;
-import javax.inject.Current;
-import javax.inject.Disposes;
-import javax.inject.Produces;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 

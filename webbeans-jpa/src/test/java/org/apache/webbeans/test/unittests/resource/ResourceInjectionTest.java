@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.unittests.resource;
 
-import javax.inject.manager.Manager;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
@@ -28,7 +28,7 @@ import org.junit.Test;
 
 public class ResourceInjectionTest extends TestContext
 {
-    Manager container = null;
+    BeanManager container = null;
 
     public ResourceInjectionTest()
     {

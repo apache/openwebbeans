@@ -19,10 +19,10 @@ package org.apache.webbeans.reservation.beans.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Named;
-import javax.context.RequestScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Named;
 import javax.faces.component.html.HtmlDataTable;
-import javax.inject.Current;
 
 import org.apache.webbeans.reservation.controller.user.UserController;
 import org.apache.webbeans.reservation.entity.Reservation;

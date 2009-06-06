@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  * Defines binding types for interceptors.
  *
- * @version $Rev$ $Id$
+ * @version $Rev$ $Id: InterceptorBindingType.java 782259 2009-06-06 13:31:32Z gerdogdu $
  */
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)

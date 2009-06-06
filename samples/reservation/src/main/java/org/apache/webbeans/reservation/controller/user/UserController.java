@@ -23,9 +23,9 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.context.RequestScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Current;
 import javax.faces.model.SelectItem;
-import javax.inject.Current;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;

@@ -20,10 +20,16 @@ import java.lang.reflect.Type;
 
 import javax.inject.ExecutionException;
 
-
+/**
+ * 
+ *
+ * @param <T> wrapped annotation class
+ * @version $Rev$ $Date$
+ */
 @SuppressWarnings("unchecked")
 public abstract class AnnotationLiteral<T extends Annotation> implements Annotation
 {
+
     private Class<T> annotationType;
 
     protected AnnotationLiteral()
@@ -32,6 +38,7 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
 
     }
 
+    @Override
     public Class<? extends Annotation> annotationType()
     {
         return annotationType;
@@ -112,20 +119,30 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
 
     protected Object callMethod(Object instance, Method method)
     {
+        boolean access = method.isAccessible();
+
         try
         {
-            if(!method.isAccessible())
+
+            if (!method.isAccessible())
             {
                 method.setAccessible(true);
             }
-            
-            return method.invoke(instance, new Object[] {});
+
+            return method.invoke(instance, new Object[]
+                    {
+                    });
 
         }
         catch (Exception e)
         {
             throw new ExecutionException("Exception in method call : " + method.getName());
         }
+        finally
+        {
+            method.setAccessible(access);
+        }
+
 
     }
 

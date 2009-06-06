@@ -24,12 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Named;
-import javax.context.Conversation;
-import javax.context.ConversationScoped;
+import javax.enterprise.context.Conversation;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Named;
 import javax.faces.component.html.HtmlDataTable;
 import javax.faces.model.SelectItem;
-import javax.inject.Current;
 
 import org.apache.webbeans.reservation.controller.admin.AdminController;
 import org.apache.webbeans.reservation.controller.user.UserController;

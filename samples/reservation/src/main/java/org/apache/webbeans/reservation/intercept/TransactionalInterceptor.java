@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.reservation.intercept;
 
-import javax.inject.Current;
+import javax.enterprise.inject.Current;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;

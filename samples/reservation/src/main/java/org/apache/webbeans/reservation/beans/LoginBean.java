@@ -18,9 +18,9 @@ package org.apache.webbeans.reservation.beans;
 
 import java.lang.annotation.Annotation;
 
-import javax.annotation.Named;
-import javax.context.RequestScoped;
-import javax.event.Event;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Named;
 import javax.event.Fires;
 
 import org.apache.commons.validator.GenericValidator;

@@ -13,9 +13,8 @@
  */
 package javax.enterprise.inject;
 
-import javax.inject.ExecutionException;
 
-public class CreationException extends ExecutionException
+public class CreationException extends InjectionException
 {
     private static final long serialVersionUID = -3952691051791639005L;
 
