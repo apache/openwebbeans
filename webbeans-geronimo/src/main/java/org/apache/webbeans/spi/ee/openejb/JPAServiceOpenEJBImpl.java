@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.spi.ee.openejb;
 
-import javax.inject.CreationException;
+import javax.enterprise.inject.CreationException;
 import javax.naming.Context;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
