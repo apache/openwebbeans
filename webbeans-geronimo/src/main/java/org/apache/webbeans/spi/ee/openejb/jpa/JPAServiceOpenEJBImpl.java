@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.spi.ee.openejb;
+package org.apache.webbeans.spi.ee.openejb.jpa;
 
 import javax.enterprise.inject.CreationException;
 import javax.naming.Context;

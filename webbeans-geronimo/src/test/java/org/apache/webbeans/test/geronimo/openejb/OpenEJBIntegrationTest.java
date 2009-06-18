@@ -23,7 +23,7 @@ import javax.persistence.EntityManagerFactory;
 import junit.framework.Assert;
 
 import org.apache.webbeans.jpa.spi.JPAService;
-import org.apache.webbeans.spi.ee.openejb.JPAServiceOpenEJBImpl;
+import org.apache.webbeans.spi.ee.openejb.jpa.JPAServiceOpenEJBImpl;
 import org.junit.Test;
 
 

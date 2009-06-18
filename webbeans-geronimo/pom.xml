@@ -43,13 +43,14 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.openejb</groupId>
             <artifactId>openejb-core</artifactId>
+            <scope>provided</scope>
 <!--            <version>3.1.1-SNAPSHOT</version>-->
-            <version>3.0.1</version>
         </dependency>
 
         <dependency>
