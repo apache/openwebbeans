@@ -29,6 +29,8 @@ import org.apache.webbeans.exception.WebBeansDeploymentException;
  * class scanning (EJB, JSF, JPA, ...). This SPI allows us to only have one 
  * central class scanner for the whole application server
  * which only performs the scanning once at startup of each WebApp.
+ * 
+ * @version $Rev$ $Date$
  */
 public interface MetaDataDiscoveryService
 {

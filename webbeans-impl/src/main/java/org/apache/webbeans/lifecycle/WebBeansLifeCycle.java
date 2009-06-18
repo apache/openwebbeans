@@ -28,6 +28,7 @@ import javax.servlet.jsp.JspApplicationContext;
 import javax.servlet.jsp.JspFactory;
 
 import org.apache.webbeans.WebBeansConstants;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContainerDeployer;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.ManagerImpl;
@@ -38,27 +39,52 @@ import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.servlet.WebBeansConfigurationListener;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
+/**
+ * Manages container lifecycle.
+ * 
+ * <p>
+ * Behaves according to the request, session, and application
+ * contexts of the web application. 
+ * </p>
+ * 
+ * @version $Rev$ $Date$
+ * @see WebBeansConfigurationListener
+ */
 public final class WebBeansLifeCycle
 {
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansLifeCycle.class);
+	//Logger instance
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansLifeCycle.class);
 
+    /**Manages unused conversations*/
     private ScheduledExecutorService service = null;
 
+    /**Discover bean classes*/
     private MetaDataDiscoveryService discovery = null;
 
-    private WebBeansContainerDeployer deployer = null;
+    /**Deploy discovered beans*/
+    private final WebBeansContainerDeployer deployer;
 
-    private WebBeansXMLConfigurator xmlDeployer = null;
+    /**XML discovery. */
+    //XML discovery is removed from the specification. It is here for next revisions of spec.
+    private final WebBeansXMLConfigurator xmlDeployer;
     
-    private JNDIService jndiService = null;
+    /**Using for lookup operations*/
+    private final JNDIService jndiService;
     
-    private ManagerImpl rootManager = null;
+    /**Root container.*/
+    //Activities are removed from the specification.
+    private final ManagerImpl rootManager;
 
+    /**
+     * Creates a new lifecycle instance and initializes
+     * the instance variables.
+     */
     public WebBeansLifeCycle()
     {
         this.rootManager = new ManagerImpl();
@@ -71,27 +97,28 @@ public final class WebBeansLifeCycle
         ActivityManager.getInstance().setRootActivity(this.rootManager);
     }
 
+    
     public void requestStarted(ServletRequestEvent event)
     {
-        logger.info("Initializing of the Request Context with Remote Address : " + event.getServletRequest().getRemoteAddr());
+        logger.debug("Starting a new request : " + event.getServletRequest().getRemoteAddr());
         ContextFactory.initRequestContext(event);
     }
 
     public void requestEnded(ServletRequestEvent event)
     {
-        logger.info("Destroying of the Request Context with Remote Address : " + event.getServletRequest().getRemoteAddr());
+    	logger.debug("Destroying a request : " + event.getServletRequest().getRemoteAddr());
         ContextFactory.destroyRequestContext((HttpServletRequest) event.getServletRequest());
     }
 
     public void sessionStarted(HttpSessionEvent event)
     {
-        logger.info("Initializing of the Session Context with session id : " + event.getSession().getId());
+        logger.debug("Starting a session with session id : " + event.getSession().getId());
         ContextFactory.initSessionContext(event.getSession());
     }
 
     public void sessionEnded(HttpSessionEvent event)
     {
-        logger.info("Destroying of the Session Context with session id : " + event.getSession().getId());
+    	logger.debug("Destroying a session with session id : " + event.getSession().getId());
         ContextFactory.destroySessionContext(event.getSession());
 
         ConversationManager conversationManager = ConversationManager.getInstance();
@@ -106,46 +133,40 @@ public final class WebBeansLifeCycle
         // load all optional plugins
         PluginLoader.getInstance().startUp();
 
-        // I do not know this is the correct way, spec is not so explicit.
+        String strDelay = OpenWebBeansConfiguration.getInstance().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
+        long delay = Long.parseLong(strDelay);
+        
         service = Executors.newScheduledThreadPool(1);
-        service.scheduleWithFixedDelay(new Runnable()
-        {
+        service.scheduleWithFixedDelay(new ConversationCleaner(), delay, delay, TimeUnit.MILLISECONDS);
 
-            public void run()
-            {
-                ConversationManager.getInstance().destroyWithRespectToTimout();
-
-            }
-
-        }, 150000, 150000, TimeUnit.MILLISECONDS);
-
-        logger.info("Starting the WebBeans Container Configuration");
+        logger.info("Starting the dependency injection container configuration");
         long begin = System.currentTimeMillis();
 
-        logger.info("Scanning classpaths for WebBeans artifacts is started");
+        logger.info("Scanning classpaths for beans artifacts is started");
 
         this.discovery.scan();
 
-        logger.info("Scanning is ended.");
+        logger.info("Scanning is ended");
 
-        logger.info("Deploying the scanned WebBeans artifacts.");
+        logger.info("Deploying the scanned beans artifacts");
 
         deployer.deploy(this.discovery);
 
-        logger.info("Deploying is ended.");
+        logger.info("Deploying is ended");
 
         long end = System.currentTimeMillis();
-        logger.info("WebBeans Container Configuration is ended, takes " + Long.toString(end - begin) + " ms.");
+        logger.info("Dependency injection container configuration is ended, takes " + Long.toString(end - begin) + " ms.");
 
         // Initalize Application Context
-        logger.info("Initializing of the Application Context with Context Path : " + event.getServletContext().getContextPath());
+        logger.info("Initializing of the application context");
         ContextFactory.initApplicationContext(event.getServletContext());
 
         ServletContext context = event.getServletContext();
 
         try
         {
-            // check this application is JSF application
+            // check this application is JSF application,this must be extended.
+        	//In JSF 2.0, faces-config.xml may not be necessary!
             URL url = context.getResource("/WEB-INF/faces-config.xml");
             URL urlWeb = context.getResource("/WEB-INF/web.xml");
             if (url == null && urlWeb != null)
@@ -160,29 +181,48 @@ public final class WebBeansLifeCycle
             logger.error(e);
             throw new WebBeansException(e);
         }
-
+        
+    	logger.info("Dependency injection container is started for context path : " + event.getServletContext().getContextPath());
     }
 
     public void applicationEnded(ServletContextEvent event)
     {
         service.shutdownNow();
 
-        logger.info("Destroying of the Application Context with Context Path : " + event.getServletContext().getContextPath());
         ContextFactory.destroyApplicationContext(event.getServletContext());
 
         jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
-
-        this.deployer = null;
-        this.discovery = null;
-        this.service = null;
-        this.xmlDeployer = null;
-        this.rootManager = null;
 
         // finally free all plugin resources
         PluginLoader.getInstance().shutDown();
         
         WebBeansFinder.clearInstances();
+        
+        logger.info("Dependency injection container is stopped for context path : " + event.getServletContext().getContextPath());        
+    }
+    
+    public void sessionPassivated(HttpSessionEvent event)
+    {
+    	logger.info("Session is passivated. Session id : [ " + event.getSession().getId()+" ]");
+    }
+    
+    public void sessionActivated(HttpSessionEvent event)
+    {
+    	logger.info("Session is activated. Session id : [ " + event.getSession().getId()+" ]");
+    }
+    
+    private static class ConversationCleaner implements Runnable
+    {
+    	public ConversationCleaner()
+    	{
+    		
+    	}
+    	
+        public void run()
+        {
+            ConversationManager.getInstance().destroyWithRespectToTimout();
 
+        }    	
     }
 
 }

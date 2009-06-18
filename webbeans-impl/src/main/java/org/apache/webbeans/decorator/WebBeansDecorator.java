@@ -351,5 +351,11 @@ public class WebBeansDecorator extends Decorator
         return true;
     }
 
+    @Override
+    public Class<?> getBeanClass()
+    {
+        return this.delegateComponent.getBeanClass();
+    }
+
  
 }

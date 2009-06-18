@@ -125,6 +125,8 @@ public final class SimpleWebBeansConfigurator
 
         DefinitionUtil.defineApiTypes(component, clazz);
         DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
+        
+        WebBeansUtil.checkGenericType(component);
         WebBeansUtil.checkPassivationScope(component, component.getScopeType().getAnnotation(ScopeType.class));
         DefinitionUtil.defineBindingTypes(component, clazzAnns);
         DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));

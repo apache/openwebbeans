@@ -17,70 +17,97 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
+import javax.servlet.http.HttpSessionActivationListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import org.apache.webbeans.lifecycle.WebBeansLifeCycle;
 
 /**
- * Configures the all web beans components that are defined in the EAR or WAR
- * file.
+ * Initializing the beans container for using in an web application
+ * environment.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ * @version $Rev$ $Date$
  */
-public class WebBeansConfigurationListener implements ServletContextListener, ServletRequestListener, HttpSessionListener
+public class WebBeansConfigurationListener implements ServletContextListener, ServletRequestListener, HttpSessionListener,HttpSessionActivationListener
 {
+	/**Manages the container lifecycle*/
     private WebBeansLifeCycle lifeCycle = null;
 
     /**
-     * Performed when the servlet context destroyed.
+     * Default constructor
      */
+    public WebBeansConfigurationListener()
+    {
+    	super();
+    }
+    
+	/**
+	 * {@inheritDoc}
+	 */
     public void contextDestroyed(ServletContextEvent event)
     {
         this.lifeCycle.applicationEnded(event);
         this.lifeCycle = null;
     }
 
-    /**
-     * Performed when the servlet context started.
-     */
+	/**
+	 * {@inheritDoc}
+	 */
     public void contextInitialized(ServletContextEvent event)
     {
         this.lifeCycle = new WebBeansLifeCycle();
         this.lifeCycle.applicationStarted(event);
     }
 
-    /**
-     * Destroy request context
-     */
+	/**
+	 * {@inheritDoc}
+	 */
     public void requestDestroyed(ServletRequestEvent event)
     {
         this.lifeCycle.requestEnded(event);
     }
 
-    /**
-     * Initializes the request context
-     */
+	/**
+	 * {@inheritDoc}
+	 */
     public void requestInitialized(ServletRequestEvent event)
     {
         this.lifeCycle.requestStarted(event);
     }
 
-    /**
-     * Initializes session context
-     */
+	/**
+	 * {@inheritDoc}
+	 */
     public void sessionCreated(HttpSessionEvent event)
     {
         this.lifeCycle.sessionStarted(event);
     }
 
-    /**
-     * Destroy session context
-     */
+	/**
+	 * {@inheritDoc}
+	 */
     public void sessionDestroyed(HttpSessionEvent event)
     {
         this.lifeCycle.sessionEnded(event);
     }
+
+	/**
+	 * {@inheritDoc}
+	 */    
+	@Override
+	public void sessionDidActivate(HttpSessionEvent event) 
+	{
+		this.lifeCycle.sessionActivated(event);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void sessionWillPassivate(HttpSessionEvent event) 
+	{
+		this.lifeCycle.sessionPassivated(event);
+	}
 
 }

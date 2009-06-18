@@ -18,6 +18,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -46,7 +47,6 @@ import javax.enterprise.context.ScopeType;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.DuplicateBindingTypeException;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.Instance;
@@ -62,9 +62,6 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.event.Fires;
-import javax.inject.DefinitionException;
-import javax.inject.InconsistentSpecializationException;
-import javax.inject.NullableDependencyException;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.servlet.Filter;
@@ -88,6 +85,8 @@ import org.apache.webbeans.component.InstanceComponentImpl;
 import org.apache.webbeans.component.ManagerComponentImpl;
 import org.apache.webbeans.component.NewComponentImpl;
 import org.apache.webbeans.component.ObservableComponentImpl;
+import org.apache.webbeans.component.ProducerComponentImpl;
+import org.apache.webbeans.component.ProducerFieldComponent;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
@@ -105,6 +104,9 @@ import org.apache.webbeans.ejb.orm.ORMUtil;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.exception.inject.DefinitionException;
+import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
+import org.apache.webbeans.exception.inject.NullableDependencyException;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.intercept.InterceptorType;
@@ -161,6 +163,99 @@ public final class WebBeansUtil
     }
 
     /**
+     * Checks the generic type requirements.
+     * 
+     * @param bean managed bean instance
+     */
+    public static void checkGenericType(Bean<?> bean)
+    {
+    	Asserts.assertNotNull(bean);
+    	
+    	Class<?> clazz = bean.getBeanClass();
+    	
+        if (ClassUtil.isDefinitionConstainsTypeVariables(clazz))
+        {
+            if(!bean.getScopeType().equals(Dependent.class))
+            {
+                throw new WebBeansConfigurationException("Generic type may only defined with scope type @Dependent for bean class : " + clazz.getName());
+            }
+        }
+    }
+    
+    
+    /**
+     * Check producer method return type.
+     * 
+     * @param component producer method component
+     * @param type return type 
+     */
+    public static void checkProducerGenericType(Bean<?> component,Member member)
+    {
+    	Asserts.assertNotNull(component);
+    	
+    	Type type = null;
+    	
+    	if(component instanceof ProducerComponentImpl)
+    	{
+    		type = ((ProducerComponentImpl<?>)component).getCreatorMethod().getGenericReturnType();
+    	}
+    	else if(component instanceof ProducerFieldComponent)
+    	{
+    		type = ((ProducerFieldComponent<?>)component).getCreatorField().getGenericType();
+    	}
+    	else
+    	{
+    		throw new IllegalArgumentException("Component must be producer field or method : " + component);
+    	}
+    	
+    	String message = "Producer field/method : " + member.getName() + " in class : " + member.getDeclaringClass().getName(); 
+    	
+    	if(checkGenericForProducers(type, message))
+    	{
+            if(!component.getScopeType().equals(Dependent.class))
+            {
+                throw new WebBeansConfigurationException(message + " scope type must bee @Dependent");
+            }
+    	}
+    }
+    
+    //Helper method
+    private static boolean checkGenericForProducers(Type type, String message)
+    {
+    	boolean result = false;
+    	
+    	if(type instanceof TypeVariable)
+    	{
+    		throw new WebBeansConfigurationException(message + " return type can not be type variable");
+    	}
+    	
+    	if(ClassUtil.isParametrizedType(type))
+    	{
+    		Type[] actualTypes = ClassUtil.getActualTypeArguements(type);
+    		
+    		if(actualTypes.length == 0)
+    		{
+        		throw new WebBeansConfigurationException(message + " return type must define actual type arguments or type variable");
+    		}
+    		
+    		for(Type actualType : actualTypes)
+    		{
+    			if(ClassUtil.isWildCardType(actualType))
+    			{
+    				throw new WebBeansConfigurationException(message + " return type can not define wildcard actual type argument");
+    			}
+    			
+    			if(ClassUtil.isTypeVariable(actualType))
+    			{
+    				result = true; 
+    			}
+    		}    		
+    	}
+    	
+    	return result;
+    }
+    
+    /**
      * Return <code>true</code> if the given class is ok for simple web bean conditions,
      * <code>false</code> otherwise.
      * 
@@ -171,9 +266,6 @@ public final class WebBeansUtil
     {
         Asserts.nullCheckForClass(clazz);
         int modifier = clazz.getModifiers();
-
-        if (ClassUtil.isDefinitionConstainsTypeVariables(clazz))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be parametrized type");
 
         if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
             throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be non-static inner class");
@@ -1536,7 +1628,7 @@ public final class WebBeansUtil
             {
                 if (old.equals(interceptorBindingType))
                 {
-                    throw new DuplicateBindingTypeException("Manager.resolveInterceptors() method parameter interceptor binding types array argument can not define duplicate binding annotation with name : @" + old.getClass().getName());
+                    throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor binding types array argument can not define duplicate binding annotation with name : @" + old.getClass().getName());
                 }
 
                 if (!AnnotationUtil.isInterceptorBindingAnnotation(interceptorBindingType.annotationType()))
@@ -1567,7 +1659,7 @@ public final class WebBeansUtil
             {
                 if (old.annotationType().equals(bindingType.annotationType()))
                 {
-                    throw new DuplicateBindingTypeException("Manager.resolveDecorators() method parameter binding types array argument can not define duplicate binding annotation with name : @" + old.annotationType().getName());
+                    throw new IllegalArgumentException("Manager.resolveDecorators() method parameter binding types array argument can not define duplicate binding annotation with name : @" + old.annotationType().getName());
                 }
 
                 if (!AnnotationUtil.isBindingAnnotation(bindingType.annotationType()))

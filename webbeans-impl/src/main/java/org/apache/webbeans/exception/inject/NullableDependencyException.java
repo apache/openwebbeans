@@ -11,30 +11,28 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.exception.definition;
+package org.apache.webbeans.exception.inject;
 
-import org.apache.webbeans.exception.inject.DefinitionException;
-
-public class NonexistentTypeException extends DefinitionException
+public class NullableDependencyException extends DeploymentException
 {
-    private static final long serialVersionUID = 2340492433053441783L;
+    private static final long serialVersionUID = -2226577224929251465L;
 
-    public NonexistentTypeException()
+    public NullableDependencyException()
     {
         super();
     }
 
-    public NonexistentTypeException(String message)
+    public NullableDependencyException(String message)
     {
         super(message);
     }
 
-    public NonexistentTypeException(Throwable e)
+    public NullableDependencyException(Throwable e)
     {
         super(e);
     }
 
-    public NonexistentTypeException(String message, Throwable e)
+    public NullableDependencyException(String message, Throwable e)
     {
         super(message, e);
     }

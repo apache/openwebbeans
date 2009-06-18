@@ -28,7 +28,6 @@ import java.util.StringTokenizer;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.enterprise.inject.BindingType;
-import javax.enterprise.inject.DuplicateBindingTypeException;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.xml.ws.WebServiceRef;
@@ -718,7 +717,7 @@ public final class AnnotationUtil
             {
                 if (before.equals(ann))
                 {
-                    throw new DuplicateBindingTypeException("Binding annotations can not contain duplicate binding : @" + before.annotationType().getName());
+                    throw new IllegalArgumentException("Binding annotations can not contain duplicate binding : @" + before.annotationType().getName());
                 }
                 else
                 {

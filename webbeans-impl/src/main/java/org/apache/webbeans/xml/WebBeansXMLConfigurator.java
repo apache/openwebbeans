@@ -47,8 +47,6 @@ import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.deployment.Production;
-import javax.inject.DefinitionException;
-import javax.inject.DeploymentException;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
@@ -68,6 +66,8 @@ import org.apache.webbeans.exception.definition.NonexistentConstructorException;
 import org.apache.webbeans.exception.definition.NonexistentFieldException;
 import org.apache.webbeans.exception.definition.NonexistentMethodException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
+import org.apache.webbeans.exception.inject.DefinitionException;
+import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
 import org.apache.webbeans.inject.xml.XMLInjectionModelType;

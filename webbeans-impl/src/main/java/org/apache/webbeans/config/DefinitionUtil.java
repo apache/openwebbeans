@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Decorates;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.ScopeType;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Current;
@@ -185,19 +186,9 @@ public final class DefinitionUtil
         {
             types.add(clazz);
 
-//            if (clazz.isPrimitive())
-//            {
-//                types.add(ClassUtil.getPrimitiveWrapper(clazz));
-//            }
-
         }
         else
         {
-//            if (ClassUtil.isPrimitiveWrapper(clazz))
-//            {
-//                types.add(ClassUtil.getWrapperPrimitive(clazz));
-//            }
-
             ClassUtil.setTypeHierarchy(component.getTypes(), clazz);
         }
     }
@@ -691,7 +682,8 @@ public final class DefinitionUtil
         Annotation[] methodAnns = method.getDeclaredAnnotations();
 
         DefinitionUtil.defineProducerMethodApiTypes(component, returnType);
-        DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() + " must declare default @ScopeType annotation");
+        DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() + " must declare default @ScopeType annotation");        
+        WebBeansUtil.checkProducerGenericType(component,method);        
         DefinitionUtil.defineBindingTypes(component, methodAnns);
         DefinitionUtil.defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
 
@@ -725,6 +717,7 @@ public final class DefinitionUtil
 
         DefinitionUtil.defineProducerMethodApiTypes(component, returnType);
         DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName() + " must declare default @ScopeType annotation");
+        WebBeansUtil.checkProducerGenericType(component,field);
         DefinitionUtil.defineBindingTypes(component, fieldAnns);
         DefinitionUtil.defineName(component, fieldAnns, field.getName());
 
@@ -850,6 +843,19 @@ public final class DefinitionUtil
         {
             for (Field field : fields)
             {
+                
+            	//TODO Check TEsts
+            	/*
+            	 *
+                if(ClassUtil.isPublic(field.getModifiers()))
+                {
+                    if(!component.getScopeType().equals(Dependent.class))
+                    {
+                        throw new WebBeansConfigurationException("If bean has a public modifier injection point, bean scope type must be defined as @Dependent");
+                    }
+                }            	 
+            	 */
+                
                 Annotation[] anns = field.getDeclaredAnnotations();
 
                 // Injected fields can not be @Decorates or @Produces

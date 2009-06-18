@@ -24,7 +24,6 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.NullableDependencyException;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.InstanceComponentImpl;
@@ -34,6 +33,7 @@ import org.apache.webbeans.component.ProducerFieldComponent;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.NullableDependencyException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;

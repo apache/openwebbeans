@@ -21,9 +21,8 @@ import org.apache.log4j.Logger;
  * <p>
  * Actually, it is a thin layer on the log4j {@link Logger} implementation.
  * </p>
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ *
+ * @version $Rev$ $Date$
  */
 public final class WebBeansLogger
 {

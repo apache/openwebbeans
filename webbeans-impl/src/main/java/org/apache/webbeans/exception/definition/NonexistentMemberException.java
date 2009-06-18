@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.exception.definition;
 
-import javax.inject.DefinitionException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 
 public class NonexistentMemberException extends DefinitionException
 {

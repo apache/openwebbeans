@@ -114,6 +114,11 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
 
     }
     
+    public Field getCreatorField()
+    {
+    	return this.producerField;
+    }
+    
     public Type[] getActualTypeArguments()
     {
         Type type = producerField.getGenericType();

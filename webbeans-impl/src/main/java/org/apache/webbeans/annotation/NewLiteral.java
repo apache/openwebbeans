@@ -25,5 +25,17 @@ import javax.enterprise.inject.New;
  */
 public class NewLiteral extends AnnotationLiteral<New> implements New
 {
+	private Class<?> clazz = null;
+	
+	public NewLiteral()
+	{
+		
+	}
+	
+	public NewLiteral(Class<?> clazz)
+	{
+		this.clazz = clazz;
+	}
+
 
 }

@@ -54,8 +54,7 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
  * specificatin.
  * </p>
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ * @version $Rev$ $Date$
  */
 public class WebBeansInterceptor extends Interceptor
 {
@@ -374,5 +373,11 @@ public class WebBeansInterceptor extends Interceptor
     public boolean isSerializable()
     {
         return delegateComponent.isSerializable();
+    }
+
+    @Override
+    public Class<?> getBeanClass()
+    {
+        return this.delegateComponent.getBeanClass();
     }
 }

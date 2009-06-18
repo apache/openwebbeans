@@ -42,6 +42,9 @@ public class OpenWebBeansConfiguration
     private Properties configProperties = new Properties();
     private WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansConfiguration.class);
     
+    /**Conversation periodic delay in ms.*/
+    public static final String CONVERSATION_PERIODIC_DELAY = "org.apache.webbeans.conversation.Conversation.periodicDelay";
+    
     public static OpenWebBeansConfiguration getInstance() {
         return (OpenWebBeansConfiguration) WebBeansFinder.getSingletonInstance(OpenWebBeansConfiguration.class.getName());
     }
@@ -108,4 +111,15 @@ public class OpenWebBeansConfiguration
     {
         return configProperties.getProperty(key);
     }
+    
+    /**
+     * @param key
+     * @param defaultValue
+     * @return String with the property value or <code>null</code>
+     */
+    public String getProperty(String key,String defaultValue)
+    {
+        return configProperties.getProperty(key, defaultValue);
+    }
+    
 }

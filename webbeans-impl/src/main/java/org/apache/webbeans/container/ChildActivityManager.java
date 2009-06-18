@@ -30,7 +30,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.DeploymentException;
+
+import org.apache.webbeans.exception.inject.DeploymentException;
 
 /**
  * Each Manager can start a new child activity as defined by the JSR-299 spec chapter 11.6

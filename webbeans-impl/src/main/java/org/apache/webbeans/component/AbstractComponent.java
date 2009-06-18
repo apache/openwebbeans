@@ -251,6 +251,22 @@ public abstract class AbstractComponent<T> extends Component<T>
     {
         return type;
     }
+    
+    
+    /**
+     * Get return types of the bean.
+     */
+    public Class<?> getBeanClass()
+    {
+        if(IComponentHasParent.class.isAssignableFrom(getClass()))
+        {
+            IComponentHasParent comp = (IComponentHasParent)this;
+            
+            return comp.getParent().getBeanClass();
+        }
+        
+        return getReturnType();
+    }
 
     /**
      * Set component type.

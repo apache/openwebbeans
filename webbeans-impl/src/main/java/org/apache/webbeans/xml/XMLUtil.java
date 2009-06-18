@@ -25,8 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.inject.DuplicateBindingTypeException;
-import javax.inject.DefinitionException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -37,6 +35,7 @@ import org.apache.webbeans.component.xml.XMLProducerComponentImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -608,7 +607,7 @@ public final class XMLUtil
                     {
                         if (definedBindingType.equals(annotClazz))
                         {
-                            throw new DuplicateBindingTypeException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is duplicated");
+                            throw new IllegalArgumentException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is duplicated");
                         }
                     }
 
