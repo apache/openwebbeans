@@ -135,7 +135,8 @@ public final class SimpleWebBeansConfigurator
         component.setConstructor(constructor);
         DefinitionUtil.addConstructorInjectionPointMetaData(component, constructor);
 
-        WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
+        //Dropped from the speicification
+        //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
 
         Set<ProducerComponentImpl<?>> producerComponents = DefinitionUtil.defineProducerMethods(component);
         manager.getBeans().addAll(producerComponents);
