@@ -18,14 +18,14 @@ import java.math.BigDecimal;
 import javax.decorator.Decorates;
 import javax.decorator.Decorator;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Current;
 
 @Decorator
 @RequestScoped
 public abstract class LargeTransactionDecorator implements Account
 {
-    @Decorates
-    @Current
+    @Decorates @Any @Current
     Account account;
 
     BigDecimal depositeAmount = null;

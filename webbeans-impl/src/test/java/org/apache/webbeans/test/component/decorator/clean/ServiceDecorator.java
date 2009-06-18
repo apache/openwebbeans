@@ -16,6 +16,7 @@ package org.apache.webbeans.test.component.decorator.clean;
 import javax.decorator.Decorates;
 import javax.decorator.Decorator;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Current;
 import javax.enterprise.inject.Named;
 
@@ -28,8 +29,7 @@ import org.apache.webbeans.test.component.service.IService;
 @Current
 public abstract class ServiceDecorator implements IService
 {
-    @Decorates
-    @Binding1
+    @Decorates @Any @Binding1
     IService delegate;
 
     private String delegateAttr = null;

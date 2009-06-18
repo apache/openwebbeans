@@ -1410,7 +1410,15 @@ public final class WebBeansUtil
 
         return beans;
     }
-
+    
+    /**
+     * Stereotype runtime requirements are dropped from the specification.
+     * 
+     * @param component
+     * @param anns
+     * @param errorMessage
+     * @deprecated
+     */
     public static void checkSteroTypeRequirements(Component<?> component, Annotation[] anns, String errorMessage)
     {
         Set<Class<? extends Annotation>> allSupportedScopes = new HashSet<Class<? extends Annotation>>();
