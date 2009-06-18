@@ -456,6 +456,11 @@
 				<artifactId>openwebbeans-jpa</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.openejb</groupId>
+				<artifactId>openejb-core</artifactId>
+				<version>3.1.1</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
