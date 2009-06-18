@@ -11,30 +11,29 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.inject;
+package javax.enterprise.context;
 
-public class DeploymentException extends RuntimeException
+public class ContextException extends RuntimeException 
 {
-    private static final long serialVersionUID = -6635290650256485602L;
+	public ContextException()
+	{
+		
+	}
+	
+	public ContextException(String message)
+	{
+		super(message);
+	}
 
-    public DeploymentException()
-    {
-        super();
-    }
+	public ContextException(String message, Throwable cause)
+	{
+		super(message, cause);
+	}
 
-    public DeploymentException(String message)
-    {
-        super(message);
-    }
+	public ContextException(Throwable cause)
+	{
+		super(cause);
+	}
 
-    public DeploymentException(Throwable e)
-    {
-        super(e);
-    }
-
-    public DeploymentException(String message, Throwable e)
-    {
-        super(message, e);
-    }
 
 }

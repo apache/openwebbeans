@@ -18,8 +18,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.inject.ExecutionException;
-
 /**
  * 
  *
@@ -64,13 +62,13 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
                 }
                 else
                 {
-                    throw new ExecutionException("Not class type");
+                    throw new RuntimeException("Not class type");
                 }
 
             }
             else
             {
-                throw new ExecutionException("More than one parametric type");
+                throw new RuntimeException("More than one parametric type");
             }
 
         }
@@ -136,7 +134,7 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
         }
         catch (Exception e)
         {
-            throw new ExecutionException("Exception in method call : " + method.getName());
+            throw new RuntimeException("Exception in method call : " + method.getName());
         }
         finally
         {

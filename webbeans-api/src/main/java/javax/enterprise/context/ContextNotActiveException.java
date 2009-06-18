@@ -16,7 +16,6 @@ package javax.enterprise.context;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.inject.ExecutionException;
 
 /**
  * It is used by the <code>Context</code> interface.
@@ -25,7 +24,7 @@ import javax.inject.ExecutionException;
  * @see Context#get(Contextual, CreationalContext)
  * @see Context#get(Contextual)
  */
-public class ContextNotActiveException extends ExecutionException
+public class ContextNotActiveException extends ContextException
 {
 
     private static final long serialVersionUID = 4783816486073845333L;

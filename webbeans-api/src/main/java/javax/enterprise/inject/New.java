@@ -28,5 +28,5 @@ import java.lang.annotation.Target;
 @BindingType
 public @interface New
 {
-
+	
 }

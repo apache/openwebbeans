@@ -13,9 +13,8 @@
  */
 package javax.enterprise.event;
 
-import javax.inject.ExecutionException;
 
-public class ObserverException extends ExecutionException
+public class ObserverException extends RuntimeException
 {
     private static final long serialVersionUID = -6392759733390664652L;
 

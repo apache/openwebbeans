@@ -17,8 +17,6 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.inject.ExecutionException;
-
 
 @SuppressWarnings("unchecked")
 public abstract class TypeLiteral<T>
@@ -55,7 +53,7 @@ public abstract class TypeLiteral<T>
         }
         else
         {
-            throw new ExecutionException("Illegal type for the Type Literal Class");
+            throw new RuntimeException("Illegal type for the Type Literal Class");
         }
 
         return rawType;
@@ -67,14 +65,14 @@ public abstract class TypeLiteral<T>
 
         if (clazz == null)
         {
-            throw new ExecutionException("Class parameter clazz can not be null");
+            throw new RuntimeException("Class parameter clazz can not be null");
         }
 
         Type superClazz = clazz.getGenericSuperclass();
 
         if (superClazz.equals(Object.class))
         {
-            throw new ExecutionException("Super class must be parametrized type");
+            throw new RuntimeException("Super class must be parametrized type");
         }
         else if (superClazz instanceof ParameterizedType)
         {
@@ -88,7 +86,7 @@ public abstract class TypeLiteral<T>
             }
             else
             {
-                throw new ExecutionException("More than one parametric type");
+                throw new RuntimeException("More than one parametric type");
             }
 
         }
