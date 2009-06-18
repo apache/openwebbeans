@@ -27,8 +27,10 @@ import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.BindingType;
 import javax.enterprise.inject.NonBinding;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.xml.ws.WebServiceRef;
 
@@ -749,6 +751,29 @@ public final class AnnotationUtil
         }
 
         return false;
+    }
+    
+    
+    /**
+     * Returns true if any binding exist
+     * 
+     * @param bean bean
+     * @return true if any binding exist
+     */
+    public static boolean isAnyBindingExist(Bean<?> bean)
+    {
+    	Asserts.assertNotNull(bean, "bean parameter can not be null");
+    	Set<Annotation> bindings = bean.getBindings();
+    	
+    	for(Annotation ann : bindings)
+    	{
+    		if(ann.annotationType().equals(Any.class))
+    		{
+    			return true;
+    		}
+    	}
+    	
+    	return false;
     }
 
     /**

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Decorates;
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.ScopeType;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Current;
@@ -46,6 +45,7 @@ import javax.event.Fires;
 import javax.inject.Obtains;
 import javax.inject.Realizes;
 
+import org.apache.webbeans.annotation.AnyScopeLiteral;
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
@@ -261,7 +261,13 @@ public final class DefinitionUtil
         {
             component.addBindingType(new CurrentLiteral());
         }
-
+        
+        //Add @Any support
+        if(!AnnotationUtil.isAnyBindingExist(component))
+        {
+        	component.addBindingType(new AnyScopeLiteral());
+        }
+        	 
     }
 
     /**
