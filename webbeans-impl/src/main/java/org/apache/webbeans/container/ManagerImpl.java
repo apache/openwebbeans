@@ -81,10 +81,10 @@ public class ManagerImpl implements BeanManager, Referenceable
     private Set<Bean<?>> components = new CopyOnWriteArraySet<Bean<?>>();
 
     /**Activity interceptors*/
-    private Set<Interceptor> webBeansInterceptors = new CopyOnWriteArraySet<Interceptor>();
+    private Set<Interceptor<?>> webBeansInterceptors = new CopyOnWriteArraySet<Interceptor<?>>();
 
     /**Activity decorators*/
-    private Set<Decorator> webBeansDecorators = new CopyOnWriteArraySet<Decorator>();
+    private Set<Decorator<?>> webBeansDecorators = new CopyOnWriteArraySet<Decorator<?>>();
 
     /**Event notification manager instance*/
     private NotificationManager notificationManager = null;
@@ -468,13 +468,13 @@ public class ManagerImpl implements BeanManager, Referenceable
         return this;
     }
 
-    public List<Decorator> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
+    public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         WebBeansUtil.checkDecoratorResolverParams(types, bindingTypes);
-        Set<Decorator> intsSet = WebBeansDecoratorConfig.findDeployedWebBeansDecorator(types, bindingTypes);
-        Iterator<Decorator> itSet = intsSet.iterator();
+        Set<Decorator<?>> intsSet = WebBeansDecoratorConfig.findDeployedWebBeansDecorator(types, bindingTypes);
+        Iterator<Decorator<?>> itSet = intsSet.iterator();
 
-        List<Decorator> decoratorList = new ArrayList<Decorator>();
+        List<Decorator<?>> decoratorList = new ArrayList<Decorator<?>>();
         while (itSet.hasNext())
         {
             WebBeansDecorator decorator = (WebBeansDecorator) itSet.next();
@@ -488,14 +488,14 @@ public class ManagerImpl implements BeanManager, Referenceable
 
     }
 
-    public List<Interceptor> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
+    public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
         WebBeansUtil.checkInterceptorResolverParams(interceptorBindings);
 
-        Set<Interceptor> intsSet = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(interceptorBindings);
-        Iterator<Interceptor> itSet = intsSet.iterator();
+        Set<Interceptor<?>> intsSet = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(interceptorBindings);
+        Iterator<Interceptor<?>> itSet = intsSet.iterator();
 
-        List<Interceptor> interceptorList = new ArrayList<Interceptor>();
+        List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>();
         while (itSet.hasNext())
         {
             WebBeansInterceptor interceptor = (WebBeansInterceptor) itSet.next();
@@ -517,12 +517,12 @@ public class ManagerImpl implements BeanManager, Referenceable
         return this.components;
     }
 
-    public Set<Interceptor> getInterceptors()
+    public Set<Interceptor<?>> getInterceptors()
     {
         return this.webBeansInterceptors;
     }
 
-    public Set<Decorator> getDecorators()
+    public Set<Decorator<?>> getDecorators()
     {
         return this.webBeansDecorators;
     }

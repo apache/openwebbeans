@@ -160,7 +160,7 @@ public abstract class AbstractContext implements WebBeansContext
      * @param <T>
      */
     @SuppressWarnings("unchecked")
-    public <T> void destroy()
+    public void destroy()
     {
         Set<Entry<Contextual<?>, Object>> entrySet = componentInstanceMap.entrySet();
         Iterator<Entry<Contextual<?>, Object>> it = entrySet.iterator();
@@ -170,9 +170,9 @@ public abstract class AbstractContext implements WebBeansContext
         {
             component = it.next().getKey();
             
-            T instance = (T) componentInstanceMap.get(component);
+            Object instance = componentInstanceMap.get(component);
 
-            destroyInstance((Bean<T>) component, instance);
+            destroyInstance((Bean<Object>) component, instance);
 
         }
         
@@ -234,7 +234,7 @@ public abstract class AbstractContext implements WebBeansContext
         remove(component);
     }
 
-    public abstract void setComponentInstanceMap();
+    protected abstract void setComponentInstanceMap();
     
     protected void checkActive()
     {

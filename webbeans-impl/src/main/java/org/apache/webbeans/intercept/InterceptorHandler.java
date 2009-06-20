@@ -62,8 +62,9 @@ public class InterceptorHandler implements MethodHandler, Serializable
         Context webbeansContext = ManagerImpl.getManager().getContext(component.getScopeType());
         
         Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)CreationalContextFactory.getInstance().getCreationalContext(this.component));
-
-        if (!ClassUtil.isObjectMethod(method.getName()) && InterceptorUtil.isWebBeansBusinessMethod(method))
+        
+        //toString is supported but no other object method names!!!
+        if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) && InterceptorUtil.isWebBeansBusinessMethod(method))
         {
             checkDecoratorStackForSameDecorator(method);
 

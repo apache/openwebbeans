@@ -324,14 +324,14 @@ public class ChildActivityManager extends ManagerImpl
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    public List<Decorator> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
+    public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         return Collections.EMPTY_LIST;    
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    public List<Interceptor> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
+    public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
         return Collections.EMPTY_LIST;    
     }

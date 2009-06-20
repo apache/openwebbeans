@@ -43,12 +43,12 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.event.Fires;
 import javax.inject.Obtains;
-import javax.inject.Realizes;
 
 import org.apache.webbeans.annotation.AnyScopeLiteral;
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
+import org.apache.webbeans.annotation.specific.Realizes;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.Component;
 import org.apache.webbeans.component.ComponentImpl;

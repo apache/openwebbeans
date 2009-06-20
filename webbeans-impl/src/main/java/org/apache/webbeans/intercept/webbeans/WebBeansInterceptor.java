@@ -30,15 +30,17 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InterceptorBindingType;
+import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
-import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -56,8 +58,10 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
  * 
  * @version $Rev$ $Date$
  */
-public class WebBeansInterceptor extends Interceptor
+public class WebBeansInterceptor<T> implements Interceptor<T>
 {
+	private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptor.class);
+	
     /** InterceptorBindingTypes exist on the interceptor class */
     private Map<Class<? extends Annotation>, Annotation> interceptorBindingSet = new HashMap<Class<? extends Annotation>, Annotation>();
 
@@ -65,19 +69,18 @@ public class WebBeansInterceptor extends Interceptor
     private Class<?> clazz;
 
     /** Simple Web Beans component */
-    private AbstractComponent<Object> delegateComponent;
+    private AbstractComponent<T> delegateComponent;
     
-    private CreationalContext<Object> creationalContext;
+    private CreationalContext<T> creationalContext;
 
-    public WebBeansInterceptor(AbstractComponent<Object> delegateComponent)
+    public WebBeansInterceptor(AbstractComponent<T> delegateComponent)
     {
-        super(ManagerImpl.getManager());
         this.delegateComponent = delegateComponent;
         this.clazz = getDelegate().getReturnType();
 
     }
 
-    public AbstractComponent<Object> getDelegate()
+    public AbstractComponent<T> getDelegate()
     {
         return this.delegateComponent;
     }
@@ -158,9 +161,9 @@ public class WebBeansInterceptor extends Interceptor
         return clazz;
     }
 
-    public Set<Interceptor> getMetaInceptors()
+    public Set<Interceptor<?>> getMetaInceptors()
     {
-        Set<Interceptor> set = new HashSet<Interceptor>();
+        Set<Interceptor<?>> set = new HashSet<Interceptor<?>>();
 
         Set<Class<? extends Annotation>> keys = interceptorBindingSet.keySet();
         Iterator<Class<? extends Annotation>> it = keys.iterator();
@@ -192,7 +195,7 @@ public class WebBeansInterceptor extends Interceptor
             if (anns != null && anns.length > 0)
             {
                 // For example : @Transactional @Action Interceptor
-                Set<Interceptor> metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns);
+                Set<Interceptor<?>> metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns);
                 set.addAll(metas);
 
                 // For each @Transactional and @Action Interceptor
@@ -236,7 +239,6 @@ public class WebBeansInterceptor extends Interceptor
         return set;
     }
 
-    @Override
     public Method getMethod(InterceptionType type)
     {
         Class<? extends Annotation> interceptorTypeAnnotationClazz = InterceptorUtil.getInterceptorAnnotationClazz(type);
@@ -245,9 +247,10 @@ public class WebBeansInterceptor extends Interceptor
         return method;
     }
 
-    public Object create(CreationalContext<Object> creationalContext)
+    @SuppressWarnings("unchecked")
+    public T create(CreationalContext<T> creationalContext)
     {
-        Object proxy = JavassistProxyFactory.createNewProxyInstance(this);
+        T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this);
         
         this.creationalContext = creationalContext;
 
@@ -259,7 +262,7 @@ public class WebBeansInterceptor extends Interceptor
     public void setInjections(Object proxy)
     {
         // Set injected fields
-        ComponentImpl<Object> delegate = (ComponentImpl<Object>) this.delegateComponent;
+        ComponentImpl<T> delegate = (ComponentImpl<T>) this.delegateComponent;
 
         Set<Field> injectedFields = delegate.getInjectedFields();
         for (Field injectedField : injectedFields)
@@ -278,7 +281,7 @@ public class WebBeansInterceptor extends Interceptor
 
     }
 
-    public void destroy(Object instance)
+    public void destroy(T instance)
     {
         delegateComponent.destroy(instance);
     }
@@ -327,11 +330,11 @@ public class WebBeansInterceptor extends Interceptor
         if (this == obj)
             return true;
 
-        WebBeansInterceptor o = null;
+        WebBeansInterceptor<?> o = null;
 
         if (obj instanceof WebBeansInterceptor)
         {
-            o = (WebBeansInterceptor) obj;
+            o = (WebBeansInterceptor<?>) obj;
 
             if (o.clazz != null && this.clazz != null)
             {
@@ -380,4 +383,35 @@ public class WebBeansInterceptor extends Interceptor
     {
         return this.delegateComponent.getBeanClass();
     }
+
+	@Override
+	public Set<Annotation> getStereotypes() 
+	{ 
+		return this.delegateComponent.getStereotypes();
+	}
+
+	@Override
+	public Object intercept(InterceptionType type, T instance,InvocationContext ctx) 
+	{
+		Method method = getMethod(type);
+		try 
+		{
+			method.invoke(instance,new Object[]{ctx});
+		} 
+		catch (Exception e)
+		{
+			logger.error(e);
+			throw new WebBeansException(e);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public boolean intercepts(InterceptionType type) 
+	{
+		Method method = getMethod(type);
+		
+		return method != null ? true : false;
+	}
 }

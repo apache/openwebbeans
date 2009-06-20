@@ -34,9 +34,9 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.xml.ws.WebServiceRef;
 
-import javax.inject.Realizes;
 import javax.interceptor.InterceptorBindingType;
 
+import org.apache.webbeans.annotation.specific.Realizes;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;

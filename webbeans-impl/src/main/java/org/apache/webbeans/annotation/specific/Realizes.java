@@ -14,26 +14,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.test.component.realization;
+package org.apache.webbeans.annotation.specific;
 
-import java.io.Serializable;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.enterprise.context.SessionScoped;
-
-import org.apache.webbeans.annotation.specific.Realizes;
-import org.apache.webbeans.test.component.UserComponent;
-
-@SessionScoped
-@Realizes
-public class RealizationComponent1 extends GenericComponent implements Serializable
+/**
+ * This annotation support realization of
+ * generic beans via special beans.
+ * 
+ * This functionality is removed from the specification,
+ * but we want to support it.
+ * 
+ * 
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
+@Target(value={ElementType.TYPE})
+@Retention(value=RetentionPolicy.RUNTIME)
+@Documented
+public @interface Realizes
 {
-    public RealizationComponent1()
-    {
-        
-    }
-    
-    public UserComponent getUserComponent()
-    {
-        return this.component;
-    }
+
 }

@@ -13,8 +13,19 @@
  */
 package org.apache.webbeans.context;
 
-import javax.enterprise.context.spi.Contextual;
+import java.util.Map;
 
+import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+
+import org.apache.webbeans.context.type.ContextTypes;
+
+/**
+ * Defines spi for contexts.
+ * 
+ * @version $Rev$ $Date$
+ */
 public interface WebBeansContext extends javax.enterprise.context.spi.Context
 {
     /**
@@ -24,4 +35,33 @@ public interface WebBeansContext extends javax.enterprise.context.spi.Context
      * @param component web beans component
      */
     public <T> void remove(Contextual<T> component);
+        
+    /**
+     * Destroys the context.
+     */
+    public void destroy();
+    
+    /**
+     * Return context type.
+     * 
+     * @return context type
+     */
+    public ContextTypes getType();
+    
+    /**
+     * Returns instance map.
+     * 
+     * @return instance map
+     */
+    public Map<Contextual<?>, Object> getComponentInstanceMap();
+    
+    /**
+     * Remove given bean from context.
+     * 
+     * @param <T> type of bean
+     * @param container beans container
+     * @param component bean
+     */
+    public <T> void remove(BeanManager container, Bean<T> component);
+    
 }

@@ -249,7 +249,7 @@ public final class XMLDefinitionUtil
         Annotation[] anns = new Annotation[bindingTypeSet.size()];
         anns = bindingTypeSet.toArray(anns);
 
-        Set<Interceptor> set = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns);
+        Set<Interceptor<?>> set = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns);
 
         WebBeansInterceptorConfig.addComponentInterceptors(set, component.getInterceptorStack());
 
@@ -270,8 +270,8 @@ public final class XMLDefinitionUtil
         Annotation[] result = new Annotation[bindingTypesSet.size()];
         result = bindingTypesSet.toArray(result);
 
-        Set<Interceptor> setInterceptors = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(result);
-        Iterator<Interceptor> it = setInterceptors.iterator();
+        Set<Interceptor<?>> setInterceptors = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(result);
+        Iterator<Interceptor<?>> it = setInterceptors.iterator();
 
         List<InterceptorData> stack = component.getInterceptorStack();
         while (it.hasNext())

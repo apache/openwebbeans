@@ -28,7 +28,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
-import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
@@ -37,7 +36,7 @@ import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
-public class WebBeansDecorator extends Decorator
+public class WebBeansDecorator<T> implements Decorator<T>
 {
     private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansDecorator.class);
 
@@ -48,19 +47,18 @@ public class WebBeansDecorator extends Decorator
     private Set<Type> decoratedTypes = new HashSet<Type>();
 
     /** Delegate field class type */
-    protected Class<?> delegateType;
+    protected Type delegateType;
 
     /** Delegate field binding types */
     protected Set<Annotation> delegateBindingTypes = new HashSet<Annotation>();
 
     /** Delegated component */
-    private AbstractComponent<Object> delegateComponent;
+    private AbstractComponent<T> delegateComponent;
     
     private CreationalContext<Object> creationalContext;
 
-    public WebBeansDecorator(AbstractComponent<Object> delegateComponent)
+    public WebBeansDecorator(AbstractComponent<T> delegateComponent)
     {
-        super(ManagerImpl.getManager());
         this.delegateComponent = delegateComponent;
         this.clazz = delegateComponent.getReturnType();
 
@@ -112,7 +110,7 @@ public class WebBeansDecorator extends Decorator
     
     private void initDelegateInternal(Field field)
     {
-        this.delegateType = field.getType();
+        this.delegateType = field.getGenericType();
 
         Annotation[] anns = field.getAnnotations();
 
@@ -130,9 +128,9 @@ public class WebBeansDecorator extends Decorator
     {
         boolean foundApi = false;
         for (Type t : apiType)
-        {
-            Class<?> clazz = (Class<?>)t;
-            if (this.delegateType.equals(clazz))
+        {           
+        	//TODO Check for generic
+            if (this.delegateType.equals(t))
             {
                 foundApi = true;
                 break;
@@ -181,12 +179,11 @@ public class WebBeansDecorator extends Decorator
     }
 
     @Override
-    public Class<?> getDelegateType()
+    public Type getDelegateType()
     {
         return delegateType;
     }
 
-    @Override
     public void setDelegate(Object instance, Object delegate)
     {
         Field field = ClassUtil.getFieldWithAnnotation(getClazz(), Decorates.class);
@@ -213,9 +210,10 @@ public class WebBeansDecorator extends Decorator
 
     }
 
-    public Object create(CreationalContext<Object> context)
+    @SuppressWarnings("unchecked")
+    public T create(CreationalContext<T> context)
     {
-        Object proxy = JavassistProxyFactory.createNewProxyInstance(this);
+        T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this);
 
         return proxy;
     }
@@ -223,7 +221,7 @@ public class WebBeansDecorator extends Decorator
     public void setInjections(Object proxy)
     {
         // Set injected fields
-        ComponentImpl<Object> delegate = (ComponentImpl<Object>) this.delegateComponent;
+        ComponentImpl<T> delegate = (ComponentImpl<T>) this.delegateComponent;
 
         Set<Field> injectedFields = delegate.getInjectedFields();
         for (Field injectedField : injectedFields)
@@ -246,7 +244,7 @@ public class WebBeansDecorator extends Decorator
         }
     }
 
-    public void destroy(Object instance)
+    public void destroy(T instance)
     {
         delegateComponent.destroy(instance);
     }
@@ -296,7 +294,7 @@ public class WebBeansDecorator extends Decorator
     /**
      * @return the delegateComponent
      */
-    public AbstractComponent<Object> getDelegateComponent()
+    public AbstractComponent<T> getDelegateComponent()
     {
         return delegateComponent;
     }
@@ -340,7 +338,7 @@ public class WebBeansDecorator extends Decorator
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final WebBeansDecorator other = (WebBeansDecorator) obj;
+        final WebBeansDecorator<?> other = (WebBeansDecorator<?>) obj;
         if (clazz == null)
         {
             if (other.clazz != null)
@@ -356,6 +354,17 @@ public class WebBeansDecorator extends Decorator
     {
         return this.delegateComponent.getBeanClass();
     }
+
+	@Override
+	public Set<Annotation> getStereotypes() 
+	{
+		return this.delegateComponent.getStereotypes();
+	}
+
+	@Override
+	public Set<Type> getDecoratedTypes() {
+		return this.delegateComponent.getTypes();
+	}
 
  
 }

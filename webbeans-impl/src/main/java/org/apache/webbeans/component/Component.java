@@ -35,50 +35,68 @@ import org.apache.webbeans.intercept.InterceptorData;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public abstract class Component<T> extends Bean<T>
+public abstract class Component<T> implements Bean<T>
 {
+	/**Manager for beans*/
+    private final BeanManager manager;
+
+    /**
+     * Creates a new bean instance with given manager.
+     * 
+     * @param manager bean manager
+     */
     protected Component(BeanManager manager)
     {
-        super(manager);
+        this.manager = manager;
     }
     
-    abstract public IBeanInheritedMetaData getInheritedMetaData();
+    /**
+     * Gets manager instance
+     * 
+     * @return manager instance
+     */
+    protected BeanManager getManager()
+    {
+        return manager;
+    }
     
-    abstract public Annotation getType();
-
-    abstract public void setType(Annotation type);
-
-    abstract public Annotation getImplScopeType();
-
-    abstract public void setImplScopeType(Annotation scopeType);
-
-    abstract public WebBeansType getWebBeansType();
-
-    abstract public void addBindingType(Annotation bindingType);
-
-    abstract public void addStereoType(Annotation stereoType);
-
-    abstract public void addApiType(Class<?> apiType);
+    public abstract IBeanInheritedMetaData getInheritedMetaData();
     
-    abstract public void addInjectionPoint(InjectionPoint injectionPoint);
+    public abstract Annotation getType();
 
-    abstract public Set<Annotation> getImplBindingTypes();
+    public abstract void setType(Annotation type);
 
-    abstract public Set<Annotation> getStereotypes();
+    public abstract Annotation getImplScopeType();
 
-    abstract public void setName(String name);
+    public abstract void setImplScopeType(Annotation scopeType);
 
-    abstract public int getPrecedence();
+    public abstract WebBeansType getWebBeansType();
 
-    abstract public Class<T> getReturnType();
+    public abstract void addBindingType(Annotation bindingType);
 
-    abstract public Object getDependent(Bean<?> dependentComponent,InjectionPoint injectionPoint);
+    public abstract void addStereoType(Annotation stereoType);
 
-    abstract public List<InterceptorData> getInterceptorStack();
+    public abstract void addApiType(Class<?> apiType);
+    
+    public abstract void addInjectionPoint(InjectionPoint injectionPoint);
 
-    abstract public List<Object> getDecoratorStack();
+    public abstract Set<Annotation> getImplBindingTypes();
 
-    abstract public void setSerializable(boolean serializable);
+    public abstract Set<Annotation> getStereotypes();
 
-    abstract public void setNullable(boolean nullable);
+    public abstract void setName(String name);
+
+    public abstract int getPrecedence();
+
+    public abstract Class<T> getReturnType();
+
+    public abstract Object getDependent(Bean<?> dependentComponent,InjectionPoint injectionPoint);
+
+    public abstract List<InterceptorData> getInterceptorStack();
+
+    public abstract List<Object> getDecoratorStack();
+
+    public abstract void setSerializable(boolean serializable);
+
+    public abstract void setNullable(boolean nullable);
 }

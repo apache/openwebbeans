@@ -40,11 +40,11 @@ public final class WebBeansDecoratorConfig
 
     }
 
-    public static void configureDecoratorClass(AbstractComponent<Object> delegate)
+    public static <T> void configureDecoratorClass(AbstractComponent<T> delegate)
     {
         logger.info("Configuring the Web Beans Annoatated Decorator Class : " + delegate.getReturnType().getName() + " started");
 
-        WebBeansDecorator decorator = new WebBeansDecorator(delegate);
+        WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
 
         logger.info("Configuring the Web Beans Annotated Decorator Class : " + delegate.getReturnType() + " ended");
 
@@ -68,12 +68,12 @@ public final class WebBeansDecoratorConfig
         Annotation[] anns = new Annotation[bindingTypes.size()];
         anns = bindingTypes.toArray(anns);
 
-        List<Decorator> decoratorList = ManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
-        Iterator<Decorator> itList = decoratorList.iterator();
+        List<Decorator<?>> decoratorList = ManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
+        Iterator<Decorator<?>> itList = decoratorList.iterator();
 
         while (itList.hasNext())
         {
-            WebBeansDecorator decorator = (WebBeansDecorator) itList.next();
+            WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();
 
             Object decoratorInstance = ManagerImpl.getManager().getInstance(decorator);
 
@@ -84,17 +84,17 @@ public final class WebBeansDecoratorConfig
         }
     }
 
-    private static Set<Decorator> getWebBeansDecorators()
+    private static Set<Decorator<?>> getWebBeansDecorators()
     {
         return Collections.unmodifiableSet(ManagerImpl.getManager().getDecorators());
     }
 
-    public static Set<Decorator> findDeployedWebBeansDecorator(Set<Type> apiType, Annotation... anns)
+    public static Set<Decorator<?>> findDeployedWebBeansDecorator(Set<Type> apiType, Annotation... anns)
     {
-        Set<Decorator> set = new HashSet<Decorator>();
+        Set<Decorator<?>> set = new HashSet<Decorator<?>>();
 
-        Iterator<Decorator> it = getWebBeansDecorators().iterator();
-        WebBeansDecorator decorator = null;
+        Iterator<Decorator<?>> it = getWebBeansDecorators().iterator();
+        WebBeansDecorator<?> decorator = null;
 
         List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
         Set<Annotation> listAnnot = new HashSet<Annotation>();
@@ -111,7 +111,7 @@ public final class WebBeansDecoratorConfig
 
         while (it.hasNext())
         {
-            decorator = (WebBeansDecorator) it.next();
+            decorator = (WebBeansDecorator<?>) it.next();
 
             if (decorator.isDecoratorMatch(apiType, listAnnot))
             {

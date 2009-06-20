@@ -174,12 +174,12 @@ public class MockManager implements BeanManager
         return manager.resolveByType(apiType, bindingTypes);
     }
 
-    public List<Decorator> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
+    public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         return manager.resolveDecorators(types, bindingTypes);
     }
 
-    public List<Interceptor> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
+    public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
         return manager.resolveInterceptors(type, interceptorBindings);
     }

@@ -168,7 +168,7 @@ public class WebBeansContainerDeployer
         Set<Bean<?>> beans = new HashSet<Bean<?>>();
         
         //Adding decorators to validate
-        Set<Decorator> decorators = manager.getDecorators();
+        Set<Decorator<?>> decorators = manager.getDecorators();
         for(Decorator decorator : decorators)
         {
             WebBeansDecorator wbDec = (WebBeansDecorator)decorator;
@@ -184,7 +184,7 @@ public class WebBeansContainerDeployer
         beans.clear();
         
         //Adding interceptors to validate
-        Set<javax.enterprise.inject.spi.Interceptor> interceptors = manager.getInterceptors();
+        Set<javax.enterprise.inject.spi.Interceptor<?>> interceptors = manager.getInterceptors();
         for(javax.enterprise.inject.spi.Interceptor interceptor : interceptors)
         {
             WebBeansInterceptor wbInt = (WebBeansInterceptor)interceptor;

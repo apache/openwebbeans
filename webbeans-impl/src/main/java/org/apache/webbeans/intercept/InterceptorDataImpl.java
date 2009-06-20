@@ -38,7 +38,7 @@ public class InterceptorDataImpl implements InterceptorData
     /** Predestroy Method */
     private Method preDestroy = null;
 
-    private Interceptor webBeansInterceptor;
+    private Interceptor<?> webBeansInterceptor;
 
     /** Instance of the method */
     private Object interceptorInstance;
@@ -240,7 +240,7 @@ public class InterceptorDataImpl implements InterceptorData
     /**
      * @return the webBeansInterceptor
      */
-    public Interceptor getWebBeansInterceptor()
+    public Interceptor<?> getWebBeansInterceptor()
     {
         return webBeansInterceptor;
     }
@@ -248,7 +248,7 @@ public class InterceptorDataImpl implements InterceptorData
     /**
      * @param webBeansInterceptor the webBeansInterceptor to set
      */
-    public void setWebBeansInterceptor(Interceptor webBeansInterceptor)
+    public void setWebBeansInterceptor(Interceptor<?> webBeansInterceptor)
     {
         this.webBeansInterceptor = webBeansInterceptor;
     }

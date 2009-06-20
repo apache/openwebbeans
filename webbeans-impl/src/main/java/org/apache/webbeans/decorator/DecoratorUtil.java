@@ -124,7 +124,7 @@ public final class DecoratorUtil
         Annotation[] anns = new Annotation[annSet.size()];
         anns = annSet.toArray(anns);
 
-        List<Decorator> decoratorList = ManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
+        List<Decorator<?>> decoratorList = ManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
         if (!decoratorList.isEmpty())
         {
             Class<?> clazz = component.getReturnType();
@@ -140,10 +140,10 @@ public final class DecoratorUtil
                 if (!ClassUtil.isStatic(modifiers) && !ClassUtil.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
                 {
                     // Check decorator implements this
-                    Iterator<Decorator> itDecorator = decoratorList.iterator();
+                    Iterator<Decorator<?>> itDecorator = decoratorList.iterator();
                     while (itDecorator.hasNext())
                     {
-                        WebBeansDecorator decorator = (WebBeansDecorator) itDecorator.next();
+                        WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itDecorator.next();
                         Class<?> decClazz = decorator.getClazz();
 
                         try

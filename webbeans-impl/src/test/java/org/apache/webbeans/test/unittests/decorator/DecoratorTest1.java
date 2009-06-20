@@ -82,7 +82,7 @@ public class DecoratorTest1 extends TestContext
         Set<Type> apiTyeps = new HashSet<Type>();
         apiTyeps.add(IService.class);
 
-        List<Decorator> decs = getManager().resolveDecorators(apiTyeps, new Annotation[] { new Binding1Literal() });
+        List<Decorator<?>> decs = getManager().resolveDecorators(apiTyeps, new Annotation[] { new Binding1Literal() });
 
         ServiceDecorator dec = (ServiceDecorator) getManager().getInstance(decs.get(0));
         Assert.assertEquals("ServiceImpl1", dec.getDelegateAttr());
@@ -105,7 +105,7 @@ public class DecoratorTest1 extends TestContext
         Set<Type> apiTyeps = new HashSet<Type>();
         apiTyeps.add(Account.class);
 
-        List<Decorator> decs = getManager().resolveDecorators(apiTyeps, new Annotation[] { new CurrentLiteral() });
+        List<Decorator<?>> decs = getManager().resolveDecorators(apiTyeps, new Annotation[] { new CurrentLiteral() });
 
         LargeTransactionDecorator dec = (LargeTransactionDecorator) getManager().getInstance(decs.get(0));
         Assert.assertEquals(new BigDecimal(1500), dec.getDepositeAmount());

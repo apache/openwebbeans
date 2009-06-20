@@ -140,7 +140,7 @@ public interface InterceptorData
      */
     public boolean isDefinedWithWebBeansInterceptor();
 
-    public void setWebBeansInterceptor(Interceptor webBeansInterceptor);
+    public void setWebBeansInterceptor(Interceptor<?> webBeansInterceptor);
 
-    public Interceptor getWebBeansInterceptor();
+    public Interceptor<?> getWebBeansInterceptor();
 }
