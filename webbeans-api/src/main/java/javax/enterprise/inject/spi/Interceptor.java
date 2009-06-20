@@ -14,20 +14,17 @@
 package javax.enterprise.inject.spi;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.Set;
 
+import javax.interceptor.InvocationContext;
 
-public abstract class Interceptor extends Bean<Object>
+
+public interface Interceptor<T> extends Bean<T>
 {
-
-    protected Interceptor(BeanManager manager)
-    {
-        super(manager);
-    }
-
     public abstract Set<Annotation> getInterceptorBindingTypes();
+    
+    public boolean intercepts(InterceptionType type);
 
-    public abstract Method getMethod(InterceptionType type);
+    public Object intercept(InterceptionType type, T instance, InvocationContext ctx);
 
 }

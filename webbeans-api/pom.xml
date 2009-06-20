@@ -27,4 +27,12 @@
 	<name>Apache OpenWebBeans :: WebBeans-API</name>
 	<packaging>jar</packaging>
 	<description>JSR-299 Application Programming Interface</description>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-interceptor_3.0_spec</artifactId>
+			<version>1.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 </project>

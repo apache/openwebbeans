@@ -15,6 +15,8 @@ package javax.enterprise.context;
 
 public class ContextException extends RuntimeException 
 {
+	private static final long serialVersionUID = 3338309667037125674L;
+
 	public ContextException()
 	{
 		

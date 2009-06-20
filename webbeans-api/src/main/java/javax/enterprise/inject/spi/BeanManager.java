@@ -133,9 +133,9 @@ public interface BeanManager
      * @param interceptor new interceptor
      * @return the manager instance that this interceptor is added
      */
-    public BeanManager addInterceptor(Interceptor interceptor);
+    public BeanManager addInterceptor(Interceptor<?> interceptor);
 
-    public BeanManager addDecorator(Decorator decorator);
+    public BeanManager addDecorator(Decorator<?> decorator);
 
     public <T> BeanManager addObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings);
 
@@ -147,9 +147,9 @@ public interface BeanManager
 
     public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings);
 
-    public List<Interceptor> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings);
+    public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings);
 
-    public List<Decorator> resolveDecorators(Set<Type> types, Annotation... bindingTypes);
+    public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes);
     
     public BeanManager parse(InputStream xmlStream);
     

@@ -14,20 +14,16 @@
 package javax.enterprise.inject.spi;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Set;
 
-public abstract class Decorator extends Bean<Object>
+public interface Decorator<T> extends Bean<T>
 {
 
-    protected Decorator(BeanManager manager)
-    {
-        super(manager);
-    }
-
-    public abstract Class<?> getDelegateType();
+    public abstract Set<Type> getDecoratedTypes();
+    
+    public abstract Type getDelegateType();
 
     public abstract Set<Annotation> getDelegateBindingTypes();
-
-    public abstract void setDelegate(Object instance, Object delegate);
 
 }

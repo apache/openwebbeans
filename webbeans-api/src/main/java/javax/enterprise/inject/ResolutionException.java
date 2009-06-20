@@ -24,7 +24,9 @@ package javax.enterprise.inject;
 public class ResolutionException extends InjectionException
 {
 
-    public ResolutionException()
+	private static final long serialVersionUID = 625364090562381779L;
+
+	public ResolutionException()
     {
         
     }
