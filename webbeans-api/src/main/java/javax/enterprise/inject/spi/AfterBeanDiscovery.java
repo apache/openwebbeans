@@ -11,36 +11,19 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.enterprise.context.spi;
+package javax.enterprise.inject.spi;
 
-/**
- * The CreationalContext holds incomplete Bean instances. This may be caused by
- * a situation like in the following example: <code>
- * &#x0040;ApplicationScoped class Foo 
- * { 
- *   &#x0040;Current Bar _bar; 
- * }
- * 
- * &#x0040;ApplicationScoped class Bar 
- * { 
- *   &#x0040;Current Foo _bar; 
- * } 
- * </code>
- * 
- * <p>
- * Generally it is used for prohibiting the circular references of the webbeans.
- * </p>
- * 
- */
-public interface CreationalContext<T>
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.enterprise.inject.BindingType;
+
+@BindingType
+@Retention(RetentionPolicy.RUNTIME)
+@Target( { ElementType.FIELD, ElementType.PARAMETER })
+public @interface AfterBeanDiscovery
 {
-    /**
-     * Puts new incomplete instance into the creational context.
-     * 
-     * @param incompleteInstance incomplete webbeans instance
-     */
-    public void push(T incompleteInstance);
-    
-    public void release();
 
 }

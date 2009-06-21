@@ -11,36 +11,42 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.enterprise.context.spi;
+package javax.enterprise.inject.spi;
+
+import java.util.Set;
 
 /**
- * The CreationalContext holds incomplete Bean instances. This may be caused by
- * a situation like in the following example: <code>
- * &#x0040;ApplicationScoped class Foo 
- * { 
- *   &#x0040;Current Bar _bar; 
- * }
+ * Defines alternative meta data for bean class.
  * 
- * &#x0040;ApplicationScoped class Bar 
- * { 
- *   &#x0040;Current Foo _bar; 
- * } 
- * </code>
- * 
- * <p>
- * Generally it is used for prohibiting the circular references of the webbeans.
- * </p>
- * 
+ * @version $Rev$ $Date$
  */
-public interface CreationalContext<T>
+public interface AnnotatedType<X> extends Annotated
 {
-    /**
-     * Puts new incomplete instance into the creational context.
-     * 
-     * @param incompleteInstance incomplete webbeans instance
-     */
-    public void push(T incompleteInstance);
-    
-    public void release();
-
+	/**
+	 * Returns class of bean.
+	 * 
+	 * @return class of bean
+	 */
+	public Class<X> getJavaClass();
+	
+	/**
+	 * Returns set of bean constructors.
+	 * 
+	 * @return set of constructors
+	 */
+	public Set<AnnotatedConstructor<X>> getConstructors();
+	
+	/**
+	 * Returns set of bean methods.
+	 * 
+	 * @return set of bean methods
+	 */
+	public Set<AnnotatedMethod<? super X>> getMethods();
+	
+	/**
+	 * Returns set of bean fields.
+	 * 
+	 * @return set of bean fields.
+	 */
+	public Set<AnnotatedField<? super X>> getFields();
 }

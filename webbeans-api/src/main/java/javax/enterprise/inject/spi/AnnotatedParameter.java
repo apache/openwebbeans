@@ -11,21 +11,29 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.inject.manager;
+package javax.enterprise.inject.spi;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.enterprise.inject.BindingType;
-
-@BindingType
-@Retention(RUNTIME)
-@Target( { FIELD, PARAMETER })
-public @interface Initialized
+/**
+ * Defines member parameter contract.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <X> declaring type
+ */
+public interface AnnotatedParameter<X> extends Annotated 
 {
+	/**
+	 * Returns parameter position.
+	 * 
+	 * @return parameter position
+	 */
+	public int getPosition();
+
+	/**
+	 * Returns declaring callable member.
+	 * 
+	 * @return declaring callable member
+	 */
+	public AnnotatedCallable<X> getDeclaringCallable();
 
 }

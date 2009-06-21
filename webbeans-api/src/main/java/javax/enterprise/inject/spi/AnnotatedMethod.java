@@ -11,36 +11,21 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.enterprise.context.spi;
+package javax.enterprise.inject.spi;
+
+import java.lang.reflect.Method;
 
 /**
- * The CreationalContext holds incomplete Bean instances. This may be caused by
- * a situation like in the following example: <code>
- * &#x0040;ApplicationScoped class Foo 
- * { 
- *   &#x0040;Current Bar _bar; 
- * }
+ * Define method member contract.
  * 
- * &#x0040;ApplicationScoped class Bar 
- * { 
- *   &#x0040;Current Foo _bar; 
- * } 
- * </code>
- * 
- * <p>
- * Generally it is used for prohibiting the circular references of the webbeans.
- * </p>
- * 
+ * @version $Rev$ $Date$
+ *
+ * @param <X> declaring type
  */
-public interface CreationalContext<T>
+public interface AnnotatedMethod<X> extends AnnotatedCallable<X> 
 {
-    /**
-     * Puts new incomplete instance into the creational context.
-     * 
-     * @param incompleteInstance incomplete webbeans instance
-     */
-    public void push(T incompleteInstance);
-    
-    public void release();
-
+	/**
+	 * {@inheritDoc}
+	 */
+	public Method getJavaMember();
 }
