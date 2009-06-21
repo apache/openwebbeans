@@ -17,9 +17,9 @@
 package org.apache.webbeans.annotation;
 
 import javax.enterprise.inject.AnnotationLiteral;
-import javax.inject.manager.Deployed;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
 
-public class DeployedManagerLiteral extends AnnotationLiteral<Deployed> implements Deployed
+public class AfterBeanDiscoveryLiteral extends AnnotationLiteral<AfterBeanDiscovery> implements AfterBeanDiscovery
 {
 
 }

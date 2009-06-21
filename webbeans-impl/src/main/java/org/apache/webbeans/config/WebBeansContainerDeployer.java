@@ -37,8 +37,8 @@ import javax.enterprise.inject.stereotype.Model;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
-import org.apache.webbeans.annotation.DeployedManagerLiteral;
-import org.apache.webbeans.annotation.InitializedManagerLiteral;
+import org.apache.webbeans.annotation.AfterBeanDiscoveryLiteral;
+import org.apache.webbeans.annotation.BeforeBeanDiscoveryLiteral;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.InjectionResolver;
@@ -149,14 +149,14 @@ public class WebBeansContainerDeployer
     private void fireInitializeEvent()
     {
         BeanManager manager = ManagerImpl.getManager();
-        manager.fireEvent(manager, new Annotation[] { new InitializedManagerLiteral() });
+        manager.fireEvent(manager, new Annotation[] { new BeforeBeanDiscoveryLiteral() });
     }
     
     
     private void fireDeployedEvent()
     {
         BeanManager manager = ManagerImpl.getManager();
-        manager.fireEvent(manager, new Annotation[] { new DeployedManagerLiteral() });        
+        manager.fireEvent(manager, new Annotation[] { new AfterBeanDiscoveryLiteral() });        
         
     }
     

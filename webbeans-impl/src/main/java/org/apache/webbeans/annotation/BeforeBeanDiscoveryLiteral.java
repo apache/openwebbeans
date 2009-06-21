@@ -14,9 +14,9 @@
 package org.apache.webbeans.annotation;
 
 import javax.enterprise.inject.AnnotationLiteral;
-import javax.inject.manager.Initialized;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 
-public class InitializedManagerLiteral extends AnnotationLiteral<Initialized> implements Initialized
+public class BeforeBeanDiscoveryLiteral extends AnnotationLiteral<BeforeBeanDiscovery> implements BeforeBeanDiscovery
 {
 
 }

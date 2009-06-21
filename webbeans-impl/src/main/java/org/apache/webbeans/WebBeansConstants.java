@@ -13,11 +13,12 @@
  */
 package org.apache.webbeans;
 
+import javax.enterprise.inject.spi.BeanManager;
+
 /**
  * Web beans related constants.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ * @version $Rev$ $Date$
  */
 public final class WebBeansConstants
 {
@@ -90,6 +91,7 @@ public final class WebBeansConstants
 
     public static final String WEB_BEANS_XML_ARRAY_ELEMENT = "Array";
 
-    public static final String WEB_BEANS_MANAGER_JNDI_NAME = "java:app/Manager";
+    /**JNDI name of the {@link BeanManager} instance*/
+    public static final String WEB_BEANS_MANAGER_JNDI_NAME = "java:comp/Manager";
 
 }

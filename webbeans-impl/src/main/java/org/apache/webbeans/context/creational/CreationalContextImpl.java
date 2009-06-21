@@ -25,15 +25,26 @@ import javax.enterprise.inject.spi.Bean;
 /** {@inheritDoc} */
 public class CreationalContextImpl<T> implements CreationalContext<T>
 {
+    /**Map of bean with its incomplete instance*/
     private Map<Bean<?>,Object> incompleteInstancesMap = new ConcurrentHashMap<Bean<?>, Object>();
 
+    /**Bean*/
     private Bean<T> incompleteBean = null;
     
+    /**
+     * Package private
+     */
     CreationalContextImpl()
     {
-        
+        //Empty
     }
     
+    /**
+     * Returns new creational context.
+     * 
+     * @param incompleteBean incomplete instance owner
+     * @return new creational context
+     */
     protected CreationalContextImpl<T> getCreationalContextImpl(Bean<T> incompleteBean)
     {
         CreationalContextImpl<T> impl = new CreationalContextImpl<T>();        
@@ -45,17 +56,34 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
         
     }
     
+    /**
+     * Save this incomplete instance.
+     * 
+     * @param incompleteInstance incomplete bean instance
+     */
     public void push(T incompleteInstance)
     {
         this.incompleteInstancesMap.put(this.incompleteBean, incompleteInstance);
         
     }
     
+    /**
+     * Returns incomplete instance.
+     * 
+     * @param incompleteBean instance owner
+     * @return incomplete instance
+     */
     public Object get(Bean<?> incompleteBean)
     {
         return incompleteInstancesMap.get(incompleteBean);
     }
     
+    
+    /**
+     * Removes from creational context.
+     * 
+     * @param bean owner bean
+     */
     public void remove(Bean<?> bean)
     {
         if(this.incompleteInstancesMap.containsKey(bean))
@@ -64,9 +92,22 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
         }
     }
     
+    /**
+     * Clear registry.
+     */
     public void clear()
     {
         this.incompleteInstancesMap.clear();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void release()
+    {
+        remove(this.incompleteBean);
+        
     }
 
 }
