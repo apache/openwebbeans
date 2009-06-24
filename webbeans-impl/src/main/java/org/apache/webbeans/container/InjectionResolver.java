@@ -223,6 +223,15 @@ public class InjectionResolver
         return resolvedComponents;
     }
 
+    /**
+     * Resolution by type.
+     * 
+     * @param <T> bean type info
+     * @param apiType injection point api type
+     * @param actualTypeArguments actual type arguments if parameterized type
+     * @param binding binding type of the injection point
+     * @return set of resolved beans
+     */
     public <T> Set<Bean<T>> implResolveByType(Class<?> apiType, Type[] actualTypeArguments, Annotation... binding)
     {
         Asserts.assertNotNull(apiType, "apiType parameter can not be null");
@@ -279,6 +288,7 @@ public class InjectionResolver
                     if (actualTypeArguments.length > 0)
                     {
                         Type[] actualArgs = null;
+                        
                         if (ClassUtil.isAssignable(apiType, componentApiType))
                         {
                             if (ProducerComponentImpl.class.isAssignableFrom(component.getClass()))

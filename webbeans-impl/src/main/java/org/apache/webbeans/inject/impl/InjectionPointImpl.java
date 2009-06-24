@@ -28,6 +28,9 @@ import java.util.Set;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.ClassUtil;
+
 class InjectionPointImpl implements InjectionPoint
 {
     private Set<Annotation> bindingAnnotations = new HashSet<Annotation>();
@@ -42,6 +45,12 @@ class InjectionPointImpl implements InjectionPoint
     
     InjectionPointImpl(Bean<?> ownerBean, Type type, Member member)
     {
+        //Check for injection point type variable
+        if(ClassUtil.isTypeVariable(type))
+        {
+            throw new WebBeansConfigurationException("Injection point in bean : " + ownerBean + " can not define Type Variable generic type");
+        }
+        
         this.ownerBean = ownerBean;
         this.injectionMember = member;
         this.injectionType = type;
