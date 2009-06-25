@@ -71,12 +71,13 @@ public interface OpenWebBeansPlugin
     public void isSimpleBeanClass(Class<?> clazz) throws WebBeansConfigurationException;
     
     /**
-     * If plugins applicable, it adds new jms related bean into the manager.
+     * If plugins applicable, it adds the component for the given {@code InjectionPoint}
+     * jms related bean into the manager.
      *
      * @param injectionPoint injection point for the jms bean
-     * @return true if plugin is capable for adding jms bean, false otherwise
+     * @return <code>true</code> if plugin is capable for handling the injection point, <code>false</code> otherwise
      */
-    public <T> boolean addJMSBean(InjectionPoint injectionPoint);
+    public <T> boolean addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint);
 
     /**
      * Check whether the given annotation class represents a resource which

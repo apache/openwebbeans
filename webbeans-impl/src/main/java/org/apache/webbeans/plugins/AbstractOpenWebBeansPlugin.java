@@ -94,7 +94,7 @@ public abstract class AbstractOpenWebBeansPlugin implements OpenWebBeansPlugin
         
     }
 
-    public <T> boolean addJMSBean(InjectionPoint injectionPoint)
+    public <T> boolean addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
     {
         return false;
     }

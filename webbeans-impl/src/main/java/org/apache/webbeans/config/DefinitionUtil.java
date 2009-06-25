@@ -1200,7 +1200,7 @@ public final class DefinitionUtil
                 
                 for(OpenWebBeansPlugin plugin : plugins)
                 {
-                    if(plugin.addJMSBean(injectionPoint))
+                    if(plugin.addImplicitComponentForInjectionPoint(injectionPoint))
                     {
                         break;
                     }
