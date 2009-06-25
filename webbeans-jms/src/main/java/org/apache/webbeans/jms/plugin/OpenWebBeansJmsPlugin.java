@@ -48,7 +48,10 @@ public class OpenWebBeansJmsPlugin extends AbstractOpenWebBeansPlugin
     
     @Override
     @SuppressWarnings("unchecked")
-    public <T> boolean addJMSBean(InjectionPoint injectionPoint)
+    /**
+     * handle a JMS injection point
+     */
+    public <T> boolean addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
     {        
         Type injectionPointType = injectionPoint.getType();
         if(injectionPointType instanceof Class)
