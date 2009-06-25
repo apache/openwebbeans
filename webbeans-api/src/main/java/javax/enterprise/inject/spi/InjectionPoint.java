@@ -18,7 +18,18 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-
+/**
+ * An InjectionPoint object provides metadata information about an injection point.
+ * An instance of InjectionPoint may represent one of the following types:
+ * <ul>
+ *  <li>an injected field</li>
+ *  <li>a parameter of a bean constructor</li>
+ *  <li>an initializer method</li>
+ *  <li>a producer method</li>
+ *  <li>a disposer method</li>
+ *  <li>an observer method</li>
+ * </ul>
+ */
 public interface InjectionPoint
 {
     public Type getType();
@@ -29,10 +40,13 @@ public interface InjectionPoint
 
     public Member getMember();
 
+    /** @deprecated old signatures have to be dropped */
     public <T extends Annotation> T getAnnotation(Class<T> annotationType);
 
+    /** @deprecated old signatures have to be dropped */
     public Annotation[] getAnnotations();
 
+    /** @deprecated old signatures have to be dropped */
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationType);
 
 }
