@@ -51,7 +51,9 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
     AnnotatedTypeImpl(Class<X> annotatedClass)
     {
         super(annotatedClass);        
-        this.annotatedClass = annotatedClass;        
+        this.annotatedClass = annotatedClass;     
+        
+        setAnnotations(annotatedClass.getDeclaredAnnotations());
     }
     
     /**
