@@ -14,7 +14,10 @@
 package javax.enterprise.inject.spi;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Set;
 
@@ -29,24 +32,70 @@ import java.util.Set;
  *  <li>a disposer method</li>
  *  <li>an observer method</li>
  * </ul>
+ * 
+ * @version $Rev$ $Date$
  */
 public interface InjectionPoint
 {
+    /**
+     * Returns required type of the injection point.
+     * 
+     * @return type of the injection point
+     */
     public Type getType();
 
+    /**
+     * Returns required binding types of the injection point.
+     * 
+     * @return bindings at the injection point
+     */
     public Set<Annotation> getBindings();
 
+    /**
+     * Returns the injection point owner bean.
+     * <p>
+     * If there is no bean for the injection point,
+     * it returns null.
+     * </p>
+     * 
+     * @return injection point owner bean
+     */
     public Bean<?> getBean();
 
+    /**
+     * Returns appered point for injection point. One of
+     * <ul>
+     *  <li>{@link Field} object</li>
+     *  <li>{@link Constructor} parameter</li>
+     *  <li>{@link Method} producer method parameter</li>
+     *  <li>{@link Method} disposal method parameter</li>
+     *  <li>{@link Method} observer method parameter</li>
+     * </ul>
+     * 
+     * @return where the injection point is appeared 
+     */
     public Member getMember();
-
-    /** @deprecated old signatures have to be dropped */
-    public <T extends Annotation> T getAnnotation(Class<T> annotationType);
-
-    /** @deprecated old signatures have to be dropped */
-    public Annotation[] getAnnotations();
-
-    /** @deprecated old signatures have to be dropped */
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotationType);
-
+    
+    /**
+     * Returns annotated object representation of member.
+     * 
+     * @return annotated
+     */
+    public Annotated getAnnotated();
+    
+    /**
+     * Returns true if injection point is decorator delegate,
+     * false otherwise.
+     * 
+     * @return true if injection point is decorator delegate
+     */
+    public boolean isDelegate();
+    
+    /**
+     * Returns true if injection point is transient,
+     * false otherwise.
+     * 
+     * @return true if injection point is transient
+     */
+    public boolean isTransient();
 }
