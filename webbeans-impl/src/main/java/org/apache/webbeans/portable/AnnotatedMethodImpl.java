@@ -16,6 +16,7 @@ package org.apache.webbeans.portable;
 import java.lang.reflect.Method;
 
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
 
 /**
  * Implementation of {@link AnnotatedMethod} interface.
@@ -34,11 +35,24 @@ class AnnotatedMethodImpl<X> extends AbstractAnnotatedCallable<X> implements Ann
      * @param javaMember method
      */
     AnnotatedMethodImpl(Method javaMember)
+    {
+        this(javaMember, null);
+    }
+    
+    /**
+     * Create a ew instance.
+     * 
+     * @param baseType base type info
+     * @param declaringType declaring type
+     * @param javaMember method
+     */
+    AnnotatedMethodImpl(Method javaMember,AnnotatedType<X> declaringType)
     {        
-        super(javaMember.getGenericReturnType(), javaMember);
+        super(javaMember.getGenericReturnType(), javaMember,declaringType);
         setAnnotations(javaMember.getDeclaredAnnotations());
         setAnnotatedParameters(javaMember.getGenericParameterTypes(), javaMember.getParameterAnnotations());
     }
+    
     
     /**
      * {@inheritDoc}

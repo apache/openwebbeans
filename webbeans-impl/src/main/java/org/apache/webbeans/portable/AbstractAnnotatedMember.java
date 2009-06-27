@@ -48,32 +48,44 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
      * @param baseType base type
      * @param javaMember member
      */
-    @SuppressWarnings("unchecked")
     AbstractAnnotatedMember(Type baseType, Member javaMember)
     {
-        super(baseType);
-        this.javaMember = javaMember;
-        this.declaringType = (AnnotatedType<X>)AnnotatedElementFactory.newAnnotatedType(this.javaMember.getDeclaringClass());
-        
-        AnnotatedTypeImpl<X> impl = (AnnotatedTypeImpl<X>)declaringType;
-        
-        if(this.javaMember instanceof Constructor)
-        {
-            impl.addAnnotatedConstructor((AnnotatedConstructor<X>)this);
-        }
-        
-        else if(this.javaMember instanceof Method)
-        {
-            impl.addAnnotatedMethod((AnnotatedMethod<X>)this);
-        }
-        
-        else if(this.javaMember instanceof Field)
-        {
-            impl.addAnnotatedField((AnnotatedField<X>)this);
-        }
+        this(baseType, javaMember, null);
     }
     
-    
+    @SuppressWarnings("unchecked")    
+    AbstractAnnotatedMember(Type baseType, Member javaMember, AnnotatedType<X> declaringType)
+    {
+        super(baseType);
+        
+        this.javaMember = javaMember;
+        
+        if(declaringType == null)
+        {
+            this.declaringType = (AnnotatedType<X>)AnnotatedElementFactory.newAnnotatedType(this.javaMember.getDeclaringClass());
+            
+            AnnotatedTypeImpl<X> impl = (AnnotatedTypeImpl<X>)this.declaringType;
+            
+            if(this.javaMember instanceof Constructor)
+            {
+                impl.addAnnotatedConstructor((AnnotatedConstructor<X>)this);
+            }
+            
+            else if(this.javaMember instanceof Method)
+            {
+                impl.addAnnotatedMethod((AnnotatedMethod<X>)this);
+            }
+            
+            else if(this.javaMember instanceof Field)
+            {
+                impl.addAnnotatedField((AnnotatedField<X>)this);
+            }                
+        }
+        else
+        {
+            this.declaringType = declaringType;
+        }
+    }
    /**
      * {@inheritDoc}
      */    

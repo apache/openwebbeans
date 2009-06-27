@@ -42,9 +42,32 @@ public final class AnnotatedElementFactory
      * @param annotatedClass annotated class
      * @return new annotated type
      */
+    @SuppressWarnings("unchecked")
     public static <X> AnnotatedType<X> newAnnotatedType(Class<X> annotatedClass)
     {
         AnnotatedTypeImpl<X> annotatedType = new AnnotatedTypeImpl<X>(annotatedClass);
+        
+        Field[] fields = annotatedClass.getDeclaredFields();
+        Method[] methods = annotatedClass.getDeclaredMethods();
+        Constructor<X>[] ctxs = (Constructor<X>[])annotatedClass.getDeclaredConstructors();
+        
+        for(Field f : fields)
+        {
+            AnnotatedField<X> af = new AnnotatedFieldImpl<X>(f, annotatedType);
+            annotatedType.addAnnotatedField(af);
+        }
+        
+        for(Method m : methods)
+        {
+            AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(m,annotatedType);
+            annotatedType.addAnnotatedMethod(am);
+        }
+        
+        for(Constructor<X> ct : ctxs)
+        {
+            AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(ct,annotatedType);
+            annotatedType.addAnnotatedConstructor(ac);
+        }
                 
         return annotatedType;
     }

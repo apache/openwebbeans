@@ -16,6 +16,7 @@ package org.apache.webbeans.portable;
 import java.lang.reflect.Constructor;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedType;
 
 /**
  * Implementation of {@link AnnotatedConstructor} interface.
@@ -33,11 +34,23 @@ class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> implement
      * @param javaMember constructor
      */
     AnnotatedConstructorImpl(Constructor<X> javaMember)
+    {
+        this(javaMember, null);
+    }
+    
+    /**
+     * Create a ew instance.
+     * 
+     * @param baseType base type info
+     * @param javaMember constructor
+     */
+    AnnotatedConstructorImpl(Constructor<X> javaMember, AnnotatedType<X> declaringType)
     {        
-        super(javaMember.getDeclaringClass(), javaMember);
+        super(javaMember.getDeclaringClass(), javaMember, declaringType);
         setAnnotations(javaMember.getDeclaredAnnotations());
         setAnnotatedParameters(javaMember.getGenericParameterTypes(), javaMember.getParameterAnnotations());
     }
+    
     
     /**
      * {@inheritDoc}

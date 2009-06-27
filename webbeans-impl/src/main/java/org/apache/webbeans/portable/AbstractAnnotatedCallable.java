@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.enterprise.inject.spi.AnnotatedCallable;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
 
 /**
  * Implementation of {@link AnnotatedCallable} interface.
@@ -42,7 +43,12 @@ abstract class AbstractAnnotatedCallable<X> extends AbstractAnnotatedMember<X> i
      */
     AbstractAnnotatedCallable(Type baseType, Member javaMember)
     {
-        super(baseType,javaMember);
+        this(baseType, javaMember, null);
+    }
+    
+    AbstractAnnotatedCallable(Type baseType, Member javaMember, AnnotatedType<X> declaringType)
+    {
+        super(baseType,javaMember,declaringType);
     }
     
     protected void setAnnotatedParameters(Type[] genericParameterTypes,Annotation[][] parameterAnnotations)
