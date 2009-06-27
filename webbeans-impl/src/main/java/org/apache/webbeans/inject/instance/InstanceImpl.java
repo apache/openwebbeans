@@ -30,6 +30,7 @@ import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.container.ResolutionUtil;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Implements the {@link Instance} interface.
@@ -38,7 +39,7 @@ import org.apache.webbeans.util.AnnotationUtil;
 class InstanceImpl<T> implements Instance<T>
 {
     /**Injected class type*/
-    private Class<T> injectionClazz;
+    private Type injectionClazz;
     
     /**Injected point actual type arguments*/
     private Type[] actualTypeArguments = new Type[0];
@@ -52,7 +53,7 @@ class InstanceImpl<T> implements Instance<T>
      * @param actualTypeArguments actual type arguments
      * @param annotations binding annotations
      */
-    InstanceImpl(Class<T> injectionClazz, Type[] actualTypeArguments, Annotation...annotations)
+    InstanceImpl(Type injectionClazz, Type[] actualTypeArguments, Annotation...annotations)
     {
         this.injectionClazz = injectionClazz;
         this.actualTypeArguments = actualTypeArguments;
@@ -92,9 +93,9 @@ class InstanceImpl<T> implements Instance<T>
         anns = this.bindingAnnotations.toArray(anns);
         
         InjectionResolver resolver = InjectionResolver.getInstance();
-        Set<Bean<T>> beans = resolver.implResolveByType(this.injectionClazz, this.actualTypeArguments, anns);
+        Set<Bean<T>> beans = resolver.implResolveByType(this.injectionClazz, anns);
         
-        ResolutionUtil.checkResolvedBeans(beans, this.injectionClazz);
+        ResolutionUtil.checkResolvedBeans(beans, ClassUtil.getClazz(this.injectionClazz));
         
         Bean<T> bean = beans.iterator().next();
         
@@ -105,7 +106,7 @@ class InstanceImpl<T> implements Instance<T>
     {
         StringBuilder builder = new StringBuilder();
         builder.append("Instance<");
-        builder.append(this.injectionClazz.getName());
+        builder.append(ClassUtil.getClazz(this.injectionClazz).getName());
         builder.append(">");
         builder.append(" with actual type arguments {");
         

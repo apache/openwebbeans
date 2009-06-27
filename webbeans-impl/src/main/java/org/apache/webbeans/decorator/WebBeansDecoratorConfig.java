@@ -51,11 +51,11 @@ public final class WebBeansDecoratorConfig
         ManagerImpl.getManager().addDecorator(decorator);
     }
 
-    public static void configureXMLDecoratorClass(AbstractComponent<Object> delegate, XMLInjectionPointModel model)
+    public static <T> void configureXMLDecoratorClass(AbstractComponent<T> delegate, XMLInjectionPointModel model)
     {
         logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType().getName() + " started");
 
-        WebBeansXMLDecorator decorator = new WebBeansXMLDecorator(delegate, model);
+        WebBeansXMLDecorator<T> decorator = new WebBeansXMLDecorator<T>(delegate, model);
 
         logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType() + " ended");
 

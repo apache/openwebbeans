@@ -16,20 +16,17 @@ package org.apache.webbeans.container;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.lang.reflect.TypeVariable;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
-import org.apache.webbeans.component.InstanceComponentImpl;
-import org.apache.webbeans.component.ObservableComponentImpl;
-import org.apache.webbeans.component.ProducerComponentImpl;
-import org.apache.webbeans.component.ProducerFieldComponent;
+import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -38,17 +35,41 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
+/**
+ * Injection point resolver class. 
+ * 
+ * <p>
+ * It is a singleton class per ClassLoader per JVM. It is
+ * responsible for resolbing the bean instances at the injection points for 
+ * its bean manager.
+ * </p>
+ * 
+ * @version $Rev$ $Date$
+ * @see WebBeansFinder
+ */
 @SuppressWarnings("unchecked")
 public class InjectionResolver
 {
+    /**Bean Manager*/
     private ManagerImpl manager;
     
+    /**
+     * Creates a new injection resolve for given bean manager.
+     * 
+     * @param manager bean manager
+     */
     public InjectionResolver(ManagerImpl manager)
     {
         this.manager = manager;
 
     }
 
+    /**
+     * Returns bean manager injection resolver.
+     * 
+     * @return bean manager injection resolver
+     * @see WebBeansFinder
+     */
     public static InjectionResolver getInstance()
     {
         InjectionResolver instance = ActivityManager.getInstance().getCurrentActivity().getInjectionResolver();
@@ -59,7 +80,7 @@ public class InjectionResolver
     /**
      * Check the type of the injection point.
      * <p>
-     * Injection point type can not be wildcard or type variable type.
+     * Injection point type can not be {@link TypeVariable}.
      * </p>
      * 
      * @param injectionPoint injection point
@@ -69,22 +90,10 @@ public class InjectionResolver
     {
         Type type = injectionPoint.getType();
         
-        if(type instanceof Class)
+        //Check for injection point type variable
+        if(ClassUtil.isTypeVariable(type))
         {
-            return;
-        }
-        else if(type instanceof ParameterizedType)
-        {
-            ParameterizedType pt = (ParameterizedType)type;
-            
-            if(!ClassUtil.checkParametrizedType(pt))
-            {
-                throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " can not contain generic definitions!");
-            }                                                                                    
-        }
-        else
-        {
-            throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " can not contain generic definitions!");
+            throw new WebBeansConfigurationException("Injection point type : " + injectionPoint +  " can not define Type Variable generic type");
         }
         
     }
@@ -102,8 +111,6 @@ public class InjectionResolver
         
         Class<?> clazz = null;
         
-        Type[] args = new Type[0];
-        
         if (type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType) type;
@@ -113,8 +120,6 @@ public class InjectionResolver
                 throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " type can not be defined as Typevariable or Wildcard type!");
             }
             
-            args = pt.getActualTypeArguments();
-
             clazz = (Class<?>) pt.getRawType();
         }
         else
@@ -125,7 +130,7 @@ public class InjectionResolver
         Annotation[] bindingTypes = new Annotation[injectionPoint.getBindings().size()];
         bindingTypes = injectionPoint.getBindings().toArray(bindingTypes);
         
-        Set<Bean<Object>> beanSet = implResolveByType(clazz, args ,bindingTypes);
+        Set<Bean<Object>> beanSet = implResolveByType(type ,bindingTypes);
         
         ResolutionUtil.checkResolvedBeans(beanSet, clazz, bindingTypes);
         
@@ -142,25 +147,21 @@ public class InjectionResolver
     }
     
 
+    /**
+     * Returns bean for injection point.
+     * 
+     * @param injectionPoint injection point declaration
+     * @return bean for injection point
+     */
     public Bean<Object> getInjectionPointBean(InjectionPoint injectionPoint)
     {
         Type type = injectionPoint.getType();
         
         Class<?> clazz = null;
         
-        Type[] args = new Type[0];
-        
         if (type instanceof ParameterizedType)
         {
-            ParameterizedType pt = (ParameterizedType) type;
-
-            if (!ClassUtil.checkParametrizedType(pt))
-            {
-                throw new WebBeansConfigurationException("Injection point : " + injectionPoint + " can not defined type variable or wildcard");
-            }
-            
-            args = pt.getActualTypeArguments();
-
+            ParameterizedType pt = (ParameterizedType) type;            
             clazz = (Class<?>) pt.getRawType();
         }
         else
@@ -171,7 +172,7 @@ public class InjectionResolver
         Annotation[] bindingTypes = new Annotation[injectionPoint.getBindings().size()];
         bindingTypes = injectionPoint.getBindings().toArray(bindingTypes);
         
-        Set<Bean<Object>> beanSet = implResolveByType(clazz, args ,bindingTypes);
+        Set<Bean<Object>> beanSet = implResolveByType(type ,bindingTypes);
         
         ResolutionUtil.checkResolvedBeans(beanSet, clazz);
         
@@ -179,6 +180,12 @@ public class InjectionResolver
         
     }    
         
+    /**
+     * Returns set of beans for given bean name.
+     * 
+     * @param name bean name
+     * @return set of beans for given bean name
+     */
     public Set<Bean<?>> implResolveByName(String name)
     {
         Asserts.assertNotNull(name, "name parameter can not be null");
@@ -219,28 +226,63 @@ public class InjectionResolver
                 }
             }
         }
-
+        
+        //Still Ambigious, check for specialization
+        if(resolvedComponents.size() > 1)
+        {
+            //Check for specialization
+            Set<Bean<?>> specializedComponents = findSpecializedForNameResolution(resolvedComponents);        
+            if(specializedComponents.size() > 0)
+            {
+                return specializedComponents;
+            }            
+        }
+                
         return resolvedComponents;
+    }
+     
+    
+    /**
+     * Returns filtered set by specialization.
+     * 
+     * @param resolvedComponents result beans
+     * @return filtered set by specialization
+     */
+    private Set<Bean<?>> findSpecializedForNameResolution(Set<Bean<?>> resolvedComponents)
+    {
+        Set<Bean<?>> specializedComponents = new HashSet<Bean<?>>(); 
+        if(resolvedComponents.size() > 0)
+        {
+            for(Bean<?> bean : resolvedComponents)
+            {
+                AbstractComponent<?> component = (AbstractComponent<?>)bean;
+                
+                if(component.isSpecializedBean())
+                {
+                    specializedComponents.add(component);
+                }
+            }
+        }
+        
+        return specializedComponents;
     }
 
     /**
      * Resolution by type.
      * 
      * @param <T> bean type info
-     * @param apiType injection point api type
-     * @param actualTypeArguments actual type arguments if parameterized type
+     * @param injectionPointType injection point api type
+     * @param injectionPointTypeArguments actual type arguments if parameterized type
      * @param binding binding type of the injection point
      * @return set of resolved beans
      */
-    public <T> Set<Bean<T>> implResolveByType(Class<?> apiType, Type[] actualTypeArguments, Annotation... binding)
+    public <T> Set<Bean<T>> implResolveByType(Type injectionPointType, Annotation... binding)
     {
-        Asserts.assertNotNull(apiType, "apiType parameter can not be null");
+        Asserts.assertNotNull(injectionPointType, "injectionPointType parameter can not be null");
         Asserts.assertNotNull(binding, "binding parameter can not be null");
         
-        if(apiType.isPrimitive())
-        {
-            apiType = ClassUtil.getPrimitiveWrapper(apiType);
-        }
+        Set<Bean<T>> results = new HashSet<Bean<T>>();
+        Set<Bean<?>> deployedComponents = this.manager.getBeans();
 
         boolean currentBinding = false;
         boolean returnAll = false;
@@ -251,11 +293,8 @@ public class InjectionResolver
             binding[0] = new CurrentLiteral();
             currentBinding = true;
         }
-
-        Set<Bean<T>> results = new HashSet<Bean<T>>();
-        Set<Bean<?>> deployedComponents = this.manager.getBeans();
-
-        if (apiType.equals(Object.class) && currentBinding)
+        
+        if (injectionPointType.equals(Object.class) && currentBinding)
         {
             returnAll = true;
         }
@@ -278,117 +317,69 @@ public class InjectionResolver
                 Iterator<Type> itComponentApiTypes = componentApiTypes.iterator();
                 while (itComponentApiTypes.hasNext())
                 {
-                    Class<?> componentApiType = (Class<?>)itComponentApiTypes.next();
+                    Type componentApiType = itComponentApiTypes.next();                    
                     
-                    if(componentApiType.isPrimitive())
+                    if(ClassUtil.isAssignable(componentApiType, injectionPointType))
                     {
-                        componentApiType = ClassUtil.getPrimitiveWrapper(componentApiType);
-                    }
-
-                    if (actualTypeArguments.length > 0)
-                    {
-                        Type[] actualArgs = null;
-                        
-                        if (ClassUtil.isAssignable(apiType, componentApiType))
-                        {
-                            if (ProducerComponentImpl.class.isAssignableFrom(component.getClass()))
-                            {
-                                actualArgs = ((ProducerComponentImpl<?>) component).getActualTypeArguments();
-                                if (Arrays.equals(actualArgs, actualTypeArguments))
-                                {
-                                    results.add((Bean<T>) component);
-                                    break;
-                                }
-
-                            }
-                            
-                            else if(component instanceof ObservableComponentImpl)
-                            {
-                                ObservableComponentImpl<?, ?> observableComponent = (ObservableComponentImpl<?, ?>)component;
-                                Class<?> eventType = (Class<?>)actualTypeArguments[0];
-                                if(eventType.equals(observableComponent.getEventType()))
-                                {
-                                    results.add((Bean<T>) component);
-                                    break;
-                                }
-                            }
-                            else if(component instanceof InstanceComponentImpl)
-                            {
-                                InstanceComponentImpl<?> instanceComponent = (InstanceComponentImpl<?>)component;
-                                actualArgs = instanceComponent.getActualTypeArguments();
-                                
-                                if (Arrays.equals(actualArgs, actualTypeArguments))
-                                {
-                                    results.add((Bean<T>) component);
-                                    break;
-                                }                                                                
-                            }
-                            else if(component instanceof ProducerFieldComponent)
-                            {
-                                ProducerFieldComponent<?> pf = (ProducerFieldComponent<?>)component;
-                                actualArgs = pf.getActualTypeArguments();
-                                
-                                if (Arrays.equals(actualArgs, actualTypeArguments))
-                                {
-                                    results.add((Bean<T>) component);
-                                    break;
-                                }
-                                
-                            }
-
-                            else
-                            {
-                                actualArgs = ClassUtil.getGenericSuperClassTypeArguments(componentApiType);
-                                if (Arrays.equals(actualArgs, actualTypeArguments))
-                                {
-                                    results.add((Bean<T>) component);
-                                    break;
-                                }
-                                else
-                                {
-                                    List<Type[]> listActualArgs = ClassUtil.getGenericSuperInterfacesTypeArguments(componentApiType);
-                                    Iterator<Type[]> itListActualArgs = listActualArgs.iterator();
-                                    while (itListActualArgs.hasNext())
-                                    {
-                                        actualArgs = itListActualArgs.next();
-
-                                        if (Arrays.equals(actualArgs, actualTypeArguments))
-                                        {
-                                            results.add((Bean<T>) component);
-                                            break;
-                                        }
-
-                                    }
-                                }
-
-                            }
-
-                        }
-                    }
-                    else
-                    {
-                        if (ClassUtil.isAssignable(apiType, componentApiType))
-                        {
-                            results.add((Bean<T>) component);
-                            break;
-                        }
-                    }
+                        results.add((Bean<T>) component);
+                        break;                                            
+                    }                    
                 }
-            }
+            }            
         }
-
+ 
+        //Look for binding types
         results = findByBindingType(results, binding);
-
         
-        if (results != null && !results.isEmpty())
+        //Look for precedence
+        results = findByPrecedence(results);
+        
+        //Ambigious resulotion, check for specialization
+        if(results.size() > 1)
         {
-            results = findByPrecedence(results);
+            //Look for specialization
+            results = findBySpecialization(results);            
         }
         
-
         return results;
     }
-
+    
+    /**
+     * Returns specialized beans if exists, otherwise return input result
+     * 
+     * @param <T> bean class type
+     * @param result result beans
+     * @return specialized beans if exists, otherwise return input result
+     */
+    private <T> Set<Bean<T>> findBySpecialization(Set<Bean<T>> result)
+    {
+        Iterator<Bean<T>> it = result.iterator();
+        Set<Bean<T>> res = new HashSet<Bean<T>>();
+        
+        while(it.hasNext())
+        {
+            AbstractComponent<T> component = (AbstractComponent<T>)it.next();
+            if(component.isSpecializedBean())
+            {
+                res.add(component);
+            }
+        }
+        
+        if(res.size() > 0)
+        {
+            return res;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Return filtered beans according to the deployment type precedence.
+     * 
+     * @param <T> bean class
+     * @param result resulted beans
+     * @return filtered beans according to the deployment type precedence
+     */
     private <T> Set<Bean<T>> findByPrecedence(Set<Bean<T>> result)
     {
         Bean<T> resolvedComponent = null;
@@ -429,6 +420,14 @@ public class InjectionResolver
         return res;
     }
 
+    /**
+     * Returns filtered bean set according to the binding types.
+     * 
+     * @param <T> bean class
+     * @param remainingSet bean set for filtering by binding type
+     * @param annotations binding types on injection point
+     * @return filtered bean set according to the binding types
+     */
     private <T> Set<Bean<T>> findByBindingType(Set<Bean<T>> remainingSet, Annotation... annotations)
     {
         Iterator<Bean<T>> it = remainingSet.iterator();

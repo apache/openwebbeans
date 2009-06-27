@@ -56,6 +56,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
@@ -1358,6 +1359,7 @@ public final class WebBeansUtil
                     }                    
                     
                     comp.setName(superBean.getName());
+                    comp.setSpecializedBean(true);
                 }
                                 
                 specialized.getBindings().addAll(superBean.getBindings());
@@ -1471,7 +1473,7 @@ public final class WebBeansUtil
         Class<?> superClass = null;
         for (Type t : types)
         {
-            Class<?> type = (Class<?>)t;
+            Class<?> type = ClassUtil.getClazz(t);
             
             if (!type.isInterface())
             {
@@ -1544,6 +1546,8 @@ public final class WebBeansUtil
         }
         
         configuredProducerSpecializedName(component, method, superMethod);
+        
+        component.setSpecializedBean(true);
         
     }
     
@@ -1845,9 +1849,9 @@ public final class WebBeansUtil
     
     public static void addInjectedImplicitEventComponent(InjectionPoint injectionPoint)
     {
-        Annotation[] anns = injectionPoint.getAnnotations();
+        Annotated annotated = injectionPoint.getAnnotated();
         
-        if(AnnotationUtil.isAnnotationExist(anns, Fires.class))
+        if(annotated.isAnnotationPresent(Fires.class))
         {
             Type type = injectionPoint.getType();
             

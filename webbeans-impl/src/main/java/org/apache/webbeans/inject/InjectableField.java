@@ -15,7 +15,6 @@ package org.apache.webbeans.inject;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -24,7 +23,6 @@ import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Field type injection.
@@ -53,7 +51,7 @@ public class InjectableField extends AbstractInjectable
     {
         Type type = field.getGenericType();
 
-        Annotation[] annots = field.getAnnotations();
+        Annotation[] annots = field.getDeclaredAnnotations();
         
         this.injectionAnnotations = annots;
 
@@ -70,33 +68,12 @@ public class InjectableField extends AbstractInjectable
                 bindingAnnos[0] = new CurrentLiteral();
             }
 
-            if (!ClassUtil.isPublic(field.getModifiers()))
-            {
-                field.setAccessible(true);
-            }
-
-            Type[] args = new Type[0];
-            Class<?> clazz = null;
-            if (type instanceof ParameterizedType)
-            {
-                ParameterizedType pt = (ParameterizedType) type;
-
-                checkParametrizedTypeForInjectionPoint(pt);
-                args = pt.getActualTypeArguments();
-
-                clazz = (Class<?>) pt.getRawType();
-            }
-            else
-            {
-                clazz = (Class<?>) type;
-            }
-
             if (!field.isAccessible())
             {
                 field.setAccessible(true);
             }
 
-            Object object = inject(clazz, args, bindingAnnos);
+            Object object = inject(type, bindingAnnos);
             
             field.set(instance, object);
 

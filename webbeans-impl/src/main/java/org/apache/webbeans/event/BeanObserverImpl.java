@@ -16,7 +16,6 @@ package org.apache.webbeans.event;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -188,25 +187,12 @@ public class BeanObserverImpl<T> implements Observer<T>
 
                 if (!observesAnnotation)
                 {
-                    Type[] args = new Type[0];
-                    Class<?> clazz = null;
-                    if (type instanceof ParameterizedType)
-                    {
-                        ParameterizedType pt = (ParameterizedType) type;
-                        args = pt.getActualTypeArguments();
-
-                        clazz = (Class<?>) pt.getRawType();
-                    }
-                    else
-                    {
-                        clazz = (Class<?>) type;
-                    }
-
+                    //Get parameter annotations
                     Annotation[] bindingTypes = AnnotationUtil.getBindingAnnotations(annot);
 
                     if (bindingTypes.length > 0)
                     {
-                        list.add(manager.getInstance(InjectionResolver.getInstance().implResolveByType(clazz, args, bindingTypes).iterator().next()));
+                        list.add(manager.getInstance(InjectionResolver.getInstance().implResolveByType(type, bindingTypes).iterator().next()));
                     }
                     else
                     {

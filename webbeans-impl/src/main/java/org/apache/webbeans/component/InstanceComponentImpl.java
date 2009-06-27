@@ -17,7 +17,6 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -27,7 +26,7 @@ import org.apache.webbeans.inject.instance.InstanceFactory;
 
 public class InstanceComponentImpl<T> extends AbstractComponent<Instance<T>>
 {
-    private Class<T> injectedType;
+    private Type injectedType;
     
     private Type[] actualTypeArguments = new Type[0];
     
@@ -36,26 +35,10 @@ public class InstanceComponentImpl<T> extends AbstractComponent<Instance<T>>
     public InstanceComponentImpl(Class<Instance<T>> returnType, Type injectedType, Type[] injectedTypeArguments)
     {
         super(WebBeansType.INSTANCE, returnType);
-        configureInjectionClazz(injectedType);
+        this.injectedType = injectedType;
         this.injectedTypeArguments = injectedTypeArguments;
     }
     
-    @SuppressWarnings("unchecked")
-    private void configureInjectionClazz(Type type)
-    {
-        if(type instanceof ParameterizedType)
-        {
-            ParameterizedType pt = (ParameterizedType)type;
-            this.injectedType = (Class<T>)pt.getRawType();
-            
-            this.actualTypeArguments = pt.getActualTypeArguments();
-        }
-        else
-        {
-            this.injectedType = (Class<T>)type;
-        }
-    }
-
     @Override
     protected Instance<T> createInstance(CreationalContext<Instance<T>> creationalContext)
     {

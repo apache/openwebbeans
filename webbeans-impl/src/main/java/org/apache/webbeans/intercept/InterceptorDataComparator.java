@@ -45,8 +45,8 @@ public class InterceptorDataComparator implements Comparator<InterceptorData>, S
         }
         else
         {
-            WebBeansInterceptor interceptorFirst = (WebBeansInterceptor) o1.getWebBeansInterceptor();
-            WebBeansInterceptor interceptorSecond = (WebBeansInterceptor) o2.getWebBeansInterceptor();
+            WebBeansInterceptor<?> interceptorFirst = (WebBeansInterceptor<?>) o1.getWebBeansInterceptor();
+            WebBeansInterceptor<?> interceptorSecond = (WebBeansInterceptor<?>) o2.getWebBeansInterceptor();
 
             if (interceptorFirst == null && interceptorSecond == null)
             {

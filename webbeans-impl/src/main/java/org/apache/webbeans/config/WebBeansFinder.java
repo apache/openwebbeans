@@ -16,7 +16,6 @@ package org.apache.webbeans.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.SessionContextManager;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -24,7 +23,6 @@ import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
-import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.util.ClassUtil;

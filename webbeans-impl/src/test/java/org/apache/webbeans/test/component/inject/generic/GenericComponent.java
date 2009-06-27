@@ -11,31 +11,11 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.decorator.xml;
+package org.apache.webbeans.test.component.inject.generic;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.decorator.WebBeansDecorator;
-import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
+import org.apache.webbeans.test.component.inject.parametrized.Persistent;
 
-public class WebBeansXMLDecorator<T> extends WebBeansDecorator<T>
+public class GenericComponent<T extends Persistent> extends SuperGenericComponent<T>
 {
-    private XMLInjectionPointModel decoratesModel = null;
-
-    public WebBeansXMLDecorator(AbstractComponent<T> delegateComponent, XMLInjectionPointModel model)
-    {
-        super(delegateComponent);
-        this.decoratesModel = model;
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void initDelegate()
-    {
-        this.delegateType = decoratesModel.getInjectionClassType();
-        this.delegateBindingTypes = decoratesModel.getBindingTypes();
-    }
 
 }

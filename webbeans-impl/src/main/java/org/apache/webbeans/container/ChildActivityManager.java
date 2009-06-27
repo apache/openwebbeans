@@ -40,6 +40,7 @@ import org.apache.webbeans.exception.inject.DeploymentException;
  * and delegates all other requests to it's parent Manager. 
  *
  */
+@SuppressWarnings("unchecked")
 public class ChildActivityManager extends ManagerImpl
 {    
     
@@ -323,14 +324,12 @@ public class ChildActivityManager extends ManagerImpl
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         return Collections.EMPTY_LIST;    
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
         return Collections.EMPTY_LIST;    

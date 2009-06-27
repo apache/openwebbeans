@@ -93,6 +93,7 @@ public final class ClassUtil
         PRIMITIVE_TO_WRAPPERS_MAP.put(Byte.TYPE,Byte.class);
         PRIMITIVE_TO_WRAPPERS_MAP.put(Short.TYPE,Short.class);
         PRIMITIVE_TO_WRAPPERS_MAP.put(Boolean.TYPE,Boolean.class);
+        PRIMITIVE_TO_WRAPPERS_MAP.put(Void.TYPE,Void.class);
     }
 
     /*
@@ -642,6 +643,45 @@ public final class ClassUtil
         return false;
     }
     
+    public static boolean isUnboundedTypeVariable(Type type)
+    {
+        Asserts.assertNotNull(type, "type parameter can not be null");
+        
+        if (type instanceof TypeVariable)
+        {
+            TypeVariable wc = (TypeVariable)type;
+            Type[] upper = wc.getBounds();            
+            
+            
+            if(upper.length > 1)
+            {
+                return false;
+            }            
+            else
+            {
+                Type arg = upper[0];
+                if(!(arg instanceof Class))
+                {
+                    return false;
+                }
+                else
+                {
+                    Class<?> clazz = (Class<?>)arg;
+                    if(!clazz.equals(Object.class))
+                    {
+                        return false;
+                    }                    
+                }
+            }            
+        }
+        else
+        {
+            return false;
+        }
+
+        return true;
+    }
+    
     
     /**
      * Returns true if type is an instance of <code>TypeVariable</code>
@@ -728,8 +768,8 @@ public final class ClassUtil
 
     public static boolean isAssignable(Type beanType, Type requiredType)
     {
-        Asserts.assertNotNull(beanType, "lhs parameter can not be null");
-        Asserts.assertNotNull(requiredType, "rhs parameter can not be null");
+        Asserts.assertNotNull(beanType, "beanType parameter can not be null");
+        Asserts.assertNotNull(requiredType, "requiredType parameter can not be null");
 
         if (beanType instanceof ParameterizedType && requiredType instanceof ParameterizedType)
         {
@@ -737,7 +777,7 @@ public final class ClassUtil
         }
         else if (beanType instanceof Class && requiredType instanceof Class)
         {
-            return isAssignable((Class) beanType, (Class) requiredType);
+            return isAssignable((Class) requiredType, (Class) beanType);
         }
         else if(beanType instanceof ParameterizedType && requiredType instanceof Class)
         {
@@ -745,7 +785,7 @@ public final class ClassUtil
             Type[]  beanTypeArgs = ((ParameterizedType)beanType).getActualTypeArguments();               
             for(Type actual : beanTypeArgs)
             {
-                if(!ClassUtil.isWildCardType(actual))
+                if(!ClassUtil.isUnboundedTypeVariable(actual))
                 {
                     if(actual instanceof Class)
                     {
@@ -770,12 +810,28 @@ public final class ClassUtil
             
             return ok;
         }
+        else if(beanType instanceof Class && requiredType instanceof ParameterizedType)
+        {
+            Class<?> clazzBeanType = (Class<?>)beanType;
+            ParameterizedType ptReq = (ParameterizedType)requiredType;
+            Class<?> clazzReqType = (Class<?>)ptReq.getRawType();
+            
+            if(isAssignable(clazzReqType, clazzBeanType))
+            {
+                return true;
+            }
+            
+            return false;
+        }
         else
         {
             return false;
         }
     }
 
+    
+    
+    
     /**
      * Returns true if rhs is assignable type
      * to the lhs, false otherwise.
@@ -789,6 +845,16 @@ public final class ClassUtil
         Asserts.assertNotNull(lhs, "lhs parameter can not be null");
         Asserts.assertNotNull(rhs, "rhs parameter can not be null");
 
+        if(lhs.isPrimitive())
+        {
+            lhs = getPrimitiveWrapper(lhs);
+        }
+        
+        if(rhs.isPrimitive())
+        {
+            rhs = getPrimitiveWrapper(rhs);
+        }
+        
         if (lhs.isAssignableFrom(rhs))
         {
             return true;
@@ -859,7 +925,14 @@ public final class ClassUtil
             else if(ClassUtil.isTypeVariable(requiredTypeArg) && ClassUtil.isTypeVariable(beanTypeArg))
             {
                 return check4(beanTypeArg, requiredTypeArg);
-            }            
+            }      
+            else if((beanTypeArg instanceof Class) && (requiredTypeArg instanceof Class))
+            {
+                if(isAssignable(beanTypeArg, requiredTypeArg))
+                {
+                    return true;
+                }
+            }
         }
         
         return false;
@@ -1372,6 +1445,14 @@ public final class ClassUtil
         
         return (clazz.getTypeParameters().length > 0) ? true : false;
     }
+    
+    
+    public static TypeVariable<?>[] getTypeVariables(Class<?> clazz)
+    {
+        Asserts.assertNotNull("clazz argument can not be null");
+        
+        return clazz.getTypeParameters();
+    }
 
     public static Type[] getActualTypeArguements(Class<?> clazz)
     {
@@ -1416,26 +1497,44 @@ public final class ClassUtil
         return (Class<?>) type;
     }
 
-    public static Set<Type> setTypeHierarchy(Set<Type> set, Class<?> clazz)
+    public static Set<Type> setTypeHierarchy(Set<Type> set, Type clazz)
     {
-        Asserts.nullCheckForClass(clazz);
-
+        Class<?> raw = getClazz(clazz);
+        
         set.add(clazz);
 
-        Class<?> sc = clazz.getSuperclass();
+        Type sc = raw.getGenericSuperclass();
 
         if (sc != null)
         {
             setTypeHierarchy(set, sc);
         }
 
-        Class<?>[] interfaces = clazz.getInterfaces();
-        for (Class<?> cl : interfaces)
-        {
+        Type[] interfaces = raw.getGenericInterfaces();
+        for (Type cl : interfaces)
+        {            
             setTypeHierarchy(set, cl);
         }
 
         return set;
+    }
+    
+    
+    public static Class<?> getClazz(Type sc)
+    {
+        Class<?> raw = null;
+        
+        if(sc instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType)sc;
+            raw = (Class<?>)pt.getRawType();                
+        }
+        else
+        {
+            raw = (Class<?>)sc;
+        }
+        
+        return raw;
     }
     
     //For Ejb API Type
@@ -1483,10 +1582,10 @@ public final class ClassUtil
             {
                 ParameterizedType pt = (ParameterizedType) type;
 
-                if (checkParametrizedType(pt))
-                {
+                //if (checkParametrizedType(pt))
+                //{
                     return pt.getActualTypeArguments();
-                }
+                //}
             }
         }
 
@@ -1555,10 +1654,10 @@ public final class ClassUtil
             {
                 ParameterizedType pt = (ParameterizedType) type;
 
-                if (checkParametrizedType(pt))
-                {
+                //if (checkParametrizedType(pt))
+                //{
                     list.add(pt.getActualTypeArguments());
-                }
+                //}
             }
         }
 

@@ -357,7 +357,7 @@ public class ManagerImpl implements BeanManager, Referenceable
     {
         ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
         
-        return this.injectionResolver.implResolveByType(apiType, new Type[0], bindingTypes);
+        return this.injectionResolver.implResolveByType(apiType, bindingTypes);
     }
 
     public <T> Set<Bean<T>> resolveByType(TypeLiteral<T> apiType, Annotation... bindingTypes)
@@ -366,9 +366,8 @@ public class ManagerImpl implements BeanManager, Referenceable
         ResolutionUtil.resolveByTypeConditions(ptype);
 
         ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
-        
-        Type[] args = ptype.getActualTypeArguments();
-        return this.injectionResolver.implResolveByType(apiType.getRawType(), args, bindingTypes);
+       
+        return this.injectionResolver.implResolveByType(apiType.getType(), bindingTypes);
     }
 
     public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings)

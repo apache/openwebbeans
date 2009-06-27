@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.inject.parametrized;
 
-public class Persistent
+public class Persistent extends PersistentSuper 
 {
 
 }

@@ -39,6 +39,7 @@ import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.deployment.Specializes;
 import javax.enterprise.inject.deployment.Standard;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.event.Fires;
@@ -177,10 +178,12 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param clazz bean implementation class
      */
-    public static <T> void defineProducerMethodApiTypes(AbstractComponent<T> component, Class<T> clazz)
+    public static <T> void defineProducerMethodApiTypes(AbstractComponent<T> component, Type type)
     {
         Set<Type> types = component.getTypes();
         types.add(Object.class);
+        
+        Class<?> clazz  = ClassUtil.getClazz(type);
         
         if (clazz.isPrimitive() || clazz.isArray())
         {
@@ -189,7 +192,7 @@ public final class DefinitionUtil
         }
         else
         {
-            ClassUtil.setTypeHierarchy(component.getTypes(), clazz);
+            ClassUtil.setTypeHierarchy(component.getTypes(), type);
         }
     }
 
@@ -687,7 +690,7 @@ public final class DefinitionUtil
 
         Annotation[] methodAnns = method.getDeclaredAnnotations();
 
-        DefinitionUtil.defineProducerMethodApiTypes(component, returnType);
+        DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType());
         DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() + " must declare default @ScopeType annotation");        
         WebBeansUtil.checkProducerGenericType(component,method);        
         DefinitionUtil.defineBindingTypes(component, methodAnns);
@@ -780,7 +783,7 @@ public final class DefinitionUtil
                 annot = AnnotationUtil.getRealizesGenericAnnotations(component.getReturnType(), annot);
             }
 
-            Set<Bean<T>> set = InjectionResolver.getInstance().implResolveByType(ClassUtil.getFirstRawType(type), ClassUtil.getActualTypeArguements(type), annot);
+            Set<Bean<T>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
             Bean<T> bean = set.iterator().next();
             ProducerComponentImpl<?> pr = null;
 
@@ -1175,17 +1178,16 @@ public final class DefinitionUtil
     
     public static void addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
     {
-        Annotation obtains = injectionPoint.getAnnotation(Obtains.class);
-        Annotation fires = injectionPoint.getAnnotation(Fires.class);
-                
+        Annotated annotated = injectionPoint.getAnnotated();
+        
         //If contains the @Obtains, defines implicit component
-        if(obtains != null)
+        if(annotated.isAnnotationPresent(Obtains.class))
         {
             WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint);
             WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
         }                                  
         //If contains the @Fires, defines implicit component
-        else if(fires != null)
+        else if(annotated.isAnnotationPresent(Fires.class))
         {
             EventUtil.checkObservableInjectionPointConditions(injectionPoint);
             WebBeansUtil.addInjectedImplicitEventComponent(injectionPoint);

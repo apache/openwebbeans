@@ -15,7 +15,6 @@ package org.apache.webbeans.inject;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,16 +63,14 @@ public class InjectableMethods<T> extends AbstractInjectable
         Type[] types = m.getGenericParameterTypes();
         List<Object> list = new ArrayList<Object>();
         
-        Annotation[] methodAnnots = m.getAnnotations();
+        Annotation[] methodAnnots = m.getDeclaredAnnotations();
         
         this.injectionAnnotations = methodAnnots;
         
         if (isResource(methodAnnots))
         {
             // if the method itself is resource annotated, e.g. @PersistenceUnit
-            Type[] args = new Type[0];
-            Class<?> clazz = (Class<?>) types[0];
-            list.add(inject(clazz, args, methodAnnots));
+            list.add(inject(types[0], methodAnnots));
         }
         else 
         {
@@ -91,22 +88,6 @@ public class InjectableMethods<T> extends AbstractInjectable
                         annot[0] = new CurrentLiteral();
                     }
     
-                    Type[] args = new Type[0];
-                    Class<?> clazz = null;
-                    if (type instanceof ParameterizedType)
-                    {
-                        ParameterizedType pt = (ParameterizedType) type;
-    
-                        checkParametrizedTypeForInjectionPoint(pt);
-                        args = pt.getActualTypeArguments();
-    
-                        clazz = (Class<?>) pt.getRawType();
-                    }
-                    else
-                    {
-                        clazz = (Class<?>) type;
-                    }
-                    
                     Annotation anns[] = AnnotationUtil.getBindingAnnotations(annot);                                        
                     
                     //check producer component for @Disposes,@Observes via @Realizes
@@ -117,7 +98,7 @@ public class InjectableMethods<T> extends AbstractInjectable
                         anns = fromRealizes;
                     }
                                          
-                    list.add(inject(clazz, args, anns));
+                    list.add(inject(type, anns));
     
                     i++;
     

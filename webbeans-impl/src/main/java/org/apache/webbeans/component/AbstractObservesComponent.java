@@ -20,6 +20,7 @@ import java.util.Set;
 
 import javax.decorator.Decorates;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Initializer;
 
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.exception.WebBeansException;
@@ -27,10 +28,22 @@ import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.WebBeansUtil;
 
+/**
+ * Abstract class for owning observer methods.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> bean class
+ */
 public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> implements ObservesMethodsOwner<T>
 {
+    /**Logger instance*/
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
+    
+    /**Bean observable method*/
     private Set<Method> observableMethods = new HashSet<Method>();
     
     /** Injected fields of the component */
@@ -39,13 +52,23 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
     /** Injected methods of the component */
     private Set<Method> injectedMethods = new HashSet<Method>();    
     
+    /**From realization*/
     protected boolean fromRealizes;
 
+    /**
+     * Creates a new observer owner component.
+     * 
+     * @param webBeansType webbean type
+     * @param returnType bean class type
+     */
     protected AbstractObservesComponent(WebBeansType webBeansType, Class<T> returnType)
     {
         super(webBeansType, returnType);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected T createInstance(CreationalContext<T> creationalContext)
     {
         beforeConstructor();
@@ -57,20 +80,43 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
         return instance;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     protected void destroyInstance(T instance)
     {
         destroyComponentInstance(instance);
     }
     
+    /**
+     * Sub-classes must override this method to create bean instance.
+     * 
+     * @param creationalContext creational context
+     * @return bean instance
+     */
     abstract protected T createComponentInstance(CreationalContext<T> creationalContext);
     
+    /**
+     * Sub-classes must override this method to destroy bean instance.
+     * 
+     * @param instance object instance.
+     */
     abstract protected void destroyComponentInstance(T instance);
     
+    /**
+     * Called before constructor
+     */
     protected void beforeConstructor()
     {
         
     }
     
+    /**
+     * Called after bean instance is created.
+     * 
+     * @param instance bean instance
+     * @param creationalContext cretional context object
+     */
     protected void afterConstructor(T instance,CreationalContext<T> creationalContext)
     {   
         //Inject fields
@@ -89,23 +135,25 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
         //Call Post Construct
         if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
         {
-            InvocationContextImpl impl = new InvocationContextImpl(null,instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
-            
+            InvocationContextImpl impl = new InvocationContextImpl(null,instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);            
             try
             {
                 impl.proceed();
-
             }
             
             catch (Exception e)
             {
+                logger.error("Error is occured while executing @PostConstruct",e);
                 throw new WebBeansException(e);
             }
         }
     }
     
-    /*
-     * Injectable fields
+    /**
+     * Injects fields of the bean after constructing.
+     * 
+     * @param instance bean instance
+     * @param creationalContext creational context
      */
     protected void injectFields(T instance, CreationalContext<T> creationalContext)
     {
@@ -119,9 +167,13 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
             }
         }
     }
-
-    /*
-     * Injectable methods
+    
+    /**
+     * Injects all {@link Initializer} methods of the bean
+     * instance.
+     * 
+     * @param instance bean instance
+     * @param creationalContext creational context instance
      */
     @SuppressWarnings("unchecked")
     protected void injectMethods(T instance, CreationalContext<T> creationalContext)
@@ -217,5 +269,14 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
         this.injectedMethods.add(method);
     }
     
-
+    /**
+     * Returns bean logger instance.
+     * 
+     * @return logger
+     */
+    protected WebBeansLogger getLogger()
+    {
+        return this.logger;
+    }
+    
 }

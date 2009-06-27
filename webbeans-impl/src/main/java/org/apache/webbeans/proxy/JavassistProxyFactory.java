@@ -28,6 +28,7 @@ import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.util.ClassUtil;
 
 import javassist.util.proxy.ProxyFactory;
 
@@ -46,9 +47,9 @@ public final class JavassistProxyFactory
             Set<Type> types = bean.getTypes();
             List<Class<?>> interfaceList = new ArrayList<Class<?>>();
             Class<?> superClass = null;
-            for (Type t : types)
+            for (Type generic : types)
             {
-                Class<?> type = (Class<?>)t;
+                Class<?> type = (Class<?>)ClassUtil.getClazz(generic);
                 if (type.isInterface())
                 {
                     interfaceList.add(type);

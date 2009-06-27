@@ -11,31 +11,26 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.decorator.xml;
+package org.apache.webbeans.test.component.inject.parametrized;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.decorator.WebBeansDecorator;
-import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-public class WebBeansXMLDecorator<T> extends WebBeansDecorator<T>
+public class BoundedTypeVariableComponent<T extends Number,Y>
 {
-    private XMLInjectionPointModel decoratesModel = null;
-
-    public WebBeansXMLDecorator(AbstractComponent<T> delegateComponent, XMLInjectionPointModel model)
-    {
-        super(delegateComponent);
-        this.decoratesModel = model;
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void initDelegate()
-    {
-        this.delegateType = decoratesModel.getInjectionClassType();
-        this.delegateBindingTypes = decoratesModel.getBindingTypes();
-    }
-
+    public Collection<T> field1;
+    
+    public Collection<? extends Number> field2;
+    
+    public Collection<Y> field3;
+    
+    public Collection<List<?>> field4;
+    
+    public Collection field5;
+    
+    public Map<Y, Y> field6;
+    
+    public Collection<Object> field7;
+    
 }

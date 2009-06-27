@@ -51,7 +51,7 @@ public class XMLInjectableMethods<T> extends InjectableMethods<T>
             Annotation[] anns = new Annotation[model.getBindingTypes().size()];
             anns = model.getBindingTypes().toArray(anns);
 
-            list.add(inject(model.getInjectionClassType(), model.getActualTypeArguments(), anns));
+            list.add(inject(model.getInjectionGenericType(), anns));
         }
 
         try

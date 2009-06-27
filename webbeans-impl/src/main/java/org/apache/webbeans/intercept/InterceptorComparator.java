@@ -19,13 +19,13 @@ import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 
-public class InterceptorComparator implements Comparator<Interceptor>
+public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
 {
 
-    public int compare(Interceptor o1, Interceptor o2)
+    public int compare(Interceptor<T> o1, Interceptor<T> o2)
     {
-        WebBeansInterceptor src = (WebBeansInterceptor) o1;
-        WebBeansInterceptor target = (WebBeansInterceptor) o2;
+        WebBeansInterceptor<T> src = (WebBeansInterceptor<T>) o1;
+        WebBeansInterceptor<T> target = (WebBeansInterceptor<T>) o2;
 
         if (o1.equals(o2))
         {

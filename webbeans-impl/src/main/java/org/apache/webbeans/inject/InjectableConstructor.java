@@ -15,7 +15,6 @@ package org.apache.webbeans.inject;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,24 +76,7 @@ public class InjectableConstructor<T> extends AbstractInjectable
                     annot[0] = new CurrentLiteral();
                 }
 
-                Type[] args = new Type[0];
-                Class<?> clazz = null;
-                if (type instanceof ParameterizedType)
-                {
-                    ParameterizedType pt = (ParameterizedType) type;
-
-                    checkParametrizedTypeForInjectionPoint(pt);
-
-                    args = pt.getActualTypeArguments();
-
-                    clazz = (Class<?>) pt.getRawType();
-                }
-                else
-                {
-                    clazz = (Class<?>) type;
-                }
-
-                list.add(inject(clazz, args, AnnotationUtil.getBindingAnnotations(annot)));
+                list.add(inject(type, AnnotationUtil.getBindingAnnotations(annot)));
 
                 i++;
 

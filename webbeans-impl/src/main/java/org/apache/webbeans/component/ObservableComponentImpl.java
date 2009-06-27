@@ -17,18 +17,13 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.New;
 
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
- * Component definition with {@link New} binding annotation.
- * <p>
- * It is defined as concrete java class component.
- * </p>
+ * Implicit observable bean definition.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ * @version $Rev$ $Date$
  */
 public class ObservableComponentImpl<T, K> extends ComponentImpl<T>
 {
@@ -88,7 +83,4 @@ public class ObservableComponentImpl<T, K> extends ComponentImpl<T>
     {
         return eventType;
     }
-    
-    
-
 }

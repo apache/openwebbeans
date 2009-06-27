@@ -18,16 +18,16 @@ import java.util.Comparator;
 
 import javax.enterprise.inject.spi.Decorator;
 
-public class DecoratorComparator implements Comparator<Decorator>, Serializable
+public class DecoratorComparator<T> implements Comparator<Decorator<T>>, Serializable
 {
 
     /** default serial version UID */
     private static final long serialVersionUID = 1L;
 
-    public int compare(Decorator o1, Decorator o2)
+    public int compare(Decorator<T> o1, Decorator<T> o2)
     {
-        WebBeansDecorator src = (WebBeansDecorator) o1;
-        WebBeansDecorator target = (WebBeansDecorator) o2;
+        WebBeansDecorator<T> src = (WebBeansDecorator<T>) o1;
+        WebBeansDecorator<T> target = (WebBeansDecorator<T>) o2;
 
         if (o1.equals(o2))
         {

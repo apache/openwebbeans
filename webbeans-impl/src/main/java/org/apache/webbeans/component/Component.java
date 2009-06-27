@@ -25,19 +25,15 @@ import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.intercept.InterceptorData;
 
 /**
- * Extends the unpublished {@link Bean} interface for backward capability with
- * EDR-1 of the specification.
- * <p>
- * <b>This class is not used by the client. It is used entirely as internal. It
- * exists only for compatibility problems.</b>
- * </p>
+ * OWB specific extension of the {@link Bean} interface.
+ * It is used internally. Do not use it.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ * @version $Rev$ $Date$
+ * <T> bean class
  */
 public abstract class Component<T> implements Bean<T>
 {
-	/**Manager for beans*/
+	/**Bean Manager*/
     private final BeanManager manager;
 
     /**
@@ -60,30 +56,94 @@ public abstract class Component<T> implements Bean<T>
         return manager;
     }
     
+    /**
+     * Returns bean's inherited meta data.
+     * 
+     * @return inherited meta data.
+     */
     public abstract IBeanInheritedMetaData getInheritedMetaData();
     
+    /**
+     * Returna deployment type as annotation.
+     * 
+     * @return deployment type as annotation
+     */
     public abstract Annotation getType();
 
+    /**
+     * Sets bean deployment type annotation.
+     * 
+     * @param type bean deployment type annotation
+     */
     public abstract void setType(Annotation type);
 
+    /**
+     * Returns scope type annotation.
+     * 
+     * @return scope type annotation
+     */
     public abstract Annotation getImplScopeType();
 
+    /**
+     * Sets bean scope type annotation.
+     * 
+     * @param scopeType bean scope type annotation
+     */
     public abstract void setImplScopeType(Annotation scopeType);
 
+    /**
+     * Returns bean type.
+     * 
+     * @return webbeans type
+     * @see WebBeansType
+     */
     public abstract WebBeansType getWebBeansType();
 
+    /**
+     * Adds binding type.
+     * 
+     * @param bindingType bean binding type
+     */
     public abstract void addBindingType(Annotation bindingType);
 
+    /**
+     * Adds new stereotype annotation.
+     * 
+     * @param stereoType stereotype annotation
+     */
     public abstract void addStereoType(Annotation stereoType);
 
+    /**
+     * Adds new api type.
+     * 
+     * @param apiType api type
+     */
     public abstract void addApiType(Class<?> apiType);
     
+    /**
+     * Adds new injection point.
+     * 
+     * @param injectionPoint injection point
+     */
     public abstract void addInjectionPoint(InjectionPoint injectionPoint);
 
+    /**
+     * Returns set of binding type annotations.
+     * 
+     * @return set of binding type annotations
+     */
     public abstract Set<Annotation> getImplBindingTypes();
 
+    /**
+     * Gets stereotypes annotations.
+     */
     public abstract Set<Annotation> getStereotypes();
 
+    /**
+     * Sets name of the bean.
+     * 
+     * @param name bean name
+     */
     public abstract void setName(String name);
 
     public abstract int getPrecedence();
@@ -99,4 +159,8 @@ public abstract class Component<T> implements Bean<T>
     public abstract void setSerializable(boolean serializable);
 
     public abstract void setNullable(boolean nullable);
+    
+    public abstract void setSpecializedBean(boolean specialized);
+    
+    public abstract boolean isSpecializedBean();
 }

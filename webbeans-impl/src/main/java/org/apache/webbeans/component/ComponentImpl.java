@@ -16,6 +16,7 @@ package org.apache.webbeans.component;
 import java.lang.reflect.Constructor;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
@@ -25,13 +26,9 @@ import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Concrete implementation of the {@link AbstractComponent}.
- * <p>
- * It is defined as bean implementation class component.
- * </p>
+ * Managed bean implementation of the {@link Bean}.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ * @version $Rev$ $Date$
  */
 public class ComponentImpl<T> extends AbstractObservesComponent<T>
 {
@@ -43,6 +40,12 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
         this(returnType, WebBeansType.SIMPLE);
     }
 
+    /**
+     * Creates a new instance.
+     * 
+     * @param returnType bean class
+     * @param type webbeans type
+     */
     public ComponentImpl(Class<T> returnType, WebBeansType type)
     {
         super(type, returnType);
@@ -50,10 +53,9 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
         //Setting inherited meta data instance
         setInheritedMetaData();
     }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.webbeans.component.AbstractComponent#createInstance()
+    
+    /**
+     * {@inheritDoc}
      */
     @Override
     protected T createComponentInstance(CreationalContext<T> creationalContext)
@@ -63,15 +65,13 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
 
         T instance = ic.doInjection();
         
-//        if(WebBeansUtil.isScopeTypeNormal(getScopeType()))
-//        {
-//            creationalContext.push(instance);   
-//        }
-        
         return instance;
     }
 
  
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     protected void destroyComponentInstance(T instance)
@@ -82,15 +82,16 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
             try
             {
                 impl.proceed();
-
             }
             catch (Exception e)
             {
+                getLogger().error("Error is occıred while executing @PreDestroy method",e);
                 throw new WebBeansException(e);
             }
 
         }
         
+        //Remove it from creational context, if any
         CreationalContextFactory.getInstance().removeCreationalContext(this);
     }
 
@@ -112,12 +113,5 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
     public void setConstructor(Constructor<T> constructor)
     {
         this.constructor = constructor;
-    }
-
-    
-    public String toString()
-    {
-        return super.toString();
-    }
-
+    }    
 }

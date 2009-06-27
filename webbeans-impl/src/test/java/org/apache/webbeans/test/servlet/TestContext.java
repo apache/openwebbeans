@@ -197,7 +197,7 @@ public abstract class TestContext implements ITestContext
         for(InjectionPoint injectionPoint : injectionPoints)
         {
             //If contains the @Obtains, defines implicit component
-            if(injectionPoint.getAnnotation(Obtains.class) != null)
+            if(injectionPoint.getAnnotated().isAnnotationPresent(Obtains.class))
             {
                 WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
             }                                    

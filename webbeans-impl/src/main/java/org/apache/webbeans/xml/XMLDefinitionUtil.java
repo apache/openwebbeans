@@ -666,7 +666,7 @@ public final class XMLDefinitionUtil
                 Annotation[] bindingAnns = new Annotation[bindingTypes.size()];
                 bindingAnns = bindingTypes.toArray(bindingAnns);
 
-                Set<Bean<T>> set = InjectionResolver.getInstance().implResolveByType(model.getInjectionClassType(), model.getActualTypeArguments(), bindingAnns);
+                Set<Bean<T>> set = InjectionResolver.getInstance().implResolveByType(model.getInjectionGenericType(), bindingAnns);
                 producerComponent = (XMLProducerComponentImpl<?>) set.iterator().next();
 
                 if (producerComponent == null)

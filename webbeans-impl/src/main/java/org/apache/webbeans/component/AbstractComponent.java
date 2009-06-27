@@ -38,19 +38,12 @@ import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
- * Abstract implementation of the {@link Component} contract. There are several
- * different implementation of this abtract class, including
- * <ul>
- * <li>Bean Implementation Class Component,</li>
- * <li>Producer Method Component</li>
- * </ul>
- * <p>
- * Each subclass is responsible for overriding
- * {@link AbstractComponent#createInstance()} and
- * {@link AbstractComponent#destroyInstance(Object)} methods.
- * </p>
+ * Abstract implementation of the {@link Component} contract. 
  * 
- * @since 1.0
+ * @version $Rev$ $Date$
+ * 
+ * @see Component
+ * @see Bean
  */
 public abstract class AbstractComponent<T> extends Component<T>
 {
@@ -80,6 +73,9 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /** Stereotypes of the component */
     protected Set<Annotation> stereoTypes = new HashSet<Annotation>();
+    
+    /**This bean is specialized or not*/
+    protected boolean specializedBean;
 
     /**
      * Holds the all of the interceptor related data, contains around-invoke,
@@ -119,6 +115,11 @@ public abstract class AbstractComponent<T> extends Component<T>
         this.returnType = returnType;
     }
     
+    /**
+     * Creates a new instance.
+     * 
+     * @param webBeanType beans type
+     */
     protected AbstractComponent(WebBeansType webBeanType)
     {
         super(ManagerImpl.getManager());
@@ -126,7 +127,9 @@ public abstract class AbstractComponent<T> extends Component<T>
         
     }
     
-    
+    /**
+     * {@inheritDoc}
+     */
     public IBeanInheritedMetaData getInheritedMetaData()
     {
         return this.inheritedMetaData;
@@ -562,10 +565,22 @@ public abstract class AbstractComponent<T> extends Component<T>
     }
     
     
+    public void setSpecializedBean(boolean specialized)
+    {
+        this.specializedBean = specialized;
+    }
+    
+    public boolean isSpecializedBean()
+    {
+        return this.specializedBean;
+    }
+    
+    
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("{\n");
+        builder.append("{\n");        
+        builder.append("\tName : "+ getName() +", WebBeans Type: "+ getWebBeansType() + "\n");
         builder.append("\tAPI Types:\n");
         builder.append("\t[\n");
         

@@ -25,17 +25,13 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.util.ClassUtil;
 
 class InjectionPointImpl implements InjectionPoint
 {
     private Set<Annotation> bindingAnnotations = new HashSet<Annotation>();
-    
-    private Set<Annotation> annotations = new HashSet<Annotation>();
     
     private Bean<?> ownerBean;
     
@@ -43,17 +39,14 @@ class InjectionPointImpl implements InjectionPoint
     
     private Type injectionType;
     
-    InjectionPointImpl(Bean<?> ownerBean, Type type, Member member)
+    private Annotated annotated;
+    
+    InjectionPointImpl(Bean<?> ownerBean, Type type, Member member, Annotated annotated)
     {
-        //Check for injection point type variable
-        if(ClassUtil.isTypeVariable(type))
-        {
-            throw new WebBeansConfigurationException("Injection point in bean : " + ownerBean + " can not define Type Variable generic type");
-        }
-        
         this.ownerBean = ownerBean;
         this.injectionMember = member;
         this.injectionType = type;
+        this.annotated = annotated;
     }
     
     void addBindingAnnotation(Annotation bindingannotation)
@@ -61,35 +54,6 @@ class InjectionPointImpl implements InjectionPoint
         this.bindingAnnotations.add(bindingannotation);        
     }
     
-    void addAnnotation(Annotation annotation)
-    {
-        this.annotations.add(annotation);
-    }
-    
-    
-    @SuppressWarnings("unchecked")
-    public <T extends Annotation> T getAnnotation(Class<T> annotationType)
-    {
-        
-        for(Annotation ann : this.annotations)
-        {
-            if(ann.annotationType().equals(annotationType))
-            {
-                return (T)ann;
-            }
-        }
-        
-        return null;
-    }
-
-    public Annotation[] getAnnotations()
-    {
-        Annotation[] ann = new Annotation[this.annotations.size()];
-        ann = this.annotations.toArray(ann);
-        
-        return ann;
-    }
-
     public Bean<?> getBean()
     {
         
@@ -104,7 +68,6 @@ class InjectionPointImpl implements InjectionPoint
 
     public Member getMember()
     {
-        
         return this.injectionMember;
     }
 
@@ -114,18 +77,25 @@ class InjectionPointImpl implements InjectionPoint
         return this.injectionType;
     }
 
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotationType)
+    
+    @Override
+    public Annotated getAnnotated()
     {
-        for(Annotation ann : this.annotations)
-        {
-            if(ann.annotationType().equals(annotationType))
-            {
-                return true;
-            }
-        }
-        
+        return annotated;
+    }
+
+    @Override
+    public boolean isDelegate()
+    {
         return false;
     }
+
+    @Override
+    public boolean isTransient()
+    {
+        return false;
+    }
+    
 
     public String toString()
     {

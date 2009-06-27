@@ -21,7 +21,6 @@ import java.util.List;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.event.Fires;
@@ -30,12 +29,10 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -68,7 +65,7 @@ public abstract class AbstractInjectable implements Injectable
      * @param annotations binding annotations at the injection point
      * @return current component instance in the resolved component scope
      */
-    public <T> Object inject(Class<T> type, Type[] args, Annotation... annotations)
+    public <T> Object inject(Type type, Annotation... annotations)
     {
         boolean dependentContext = false;
         
@@ -95,16 +92,15 @@ public abstract class AbstractInjectable implements Injectable
                         
             if (isObservableBinding(annotations))
             {
-                return injectForObservable(args, annotations);
+                return injectForObservable(type, annotations);
             }
             
-            //Find injection point for injecting instance
-            InjectionPoint injectionPoint = InjectionPointFactory.getPartialInjectionPoint(this.injectionOwnerComponent, type, this.injectionMember, this.injectionAnnotations, annotations);                        
+            //Find injection point for injecting instance (null is passed, we used this internally!!!)            
+            InjectionPoint injectionPoint = InjectionPointFactory.getPartialInjectionPoint(this.injectionOwnerComponent, type, this.injectionMember, null, annotations);                        
             
             //Get injection point Bean component
             Bean<?> component = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
             
-
             if (component.getScopeType().equals(Dependent.class))
             {
                 if(WebBeansUtil.isSimpleWebBeans(this.injectionOwnerComponent))
@@ -197,9 +193,9 @@ public abstract class AbstractInjectable implements Injectable
         return null;
     }
     
-    private Object injectForObservable(Type[] args, Annotation... annotations)
+    private Object injectForObservable(Type type, Annotation... annotations)
     {
-        Bean<?> bean = InjectionResolver.getInstance().implResolveByType(Event.class, args, annotations).iterator().next();
+        Bean<?> bean = InjectionResolver.getInstance().implResolveByType(type, annotations).iterator().next();
         
         return injectForDependent(bean,null);
     }
@@ -221,10 +217,13 @@ public abstract class AbstractInjectable implements Injectable
 
     protected void checkParametrizedTypeForInjectionPoint(ParameterizedType pType)
     {
+        /*
+         * Parametrized type is OK For last draft!
         if (!ClassUtil.checkParametrizedType(pType))
         {
             throw new WebBeansConfigurationException("Injection point with parametrized type : " + pType + " can not define Type variable or Wildcard type");
         }
+        */
     }
 
     /**

@@ -29,6 +29,7 @@ import javax.enterprise.context.ScopeType;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Current;
 import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -235,7 +236,8 @@ public class WebBeansContainerDeployer
                     // check for InjectionPoint injection
                     if (rawType.equals(InjectionPoint.class))
                     {
-                        if (injectionPoint.getAnnotations().length == 1 && injectionPoint.getAnnotations()[0].annotationType().equals(Current.class))
+                        Annotated annotated = injectionPoint.getAnnotated();
+                        if (annotated.getAnnotations().size() == 1 && annotated.isAnnotationPresent(Current.class))
                         {
                             if (!bean.getScopeType().equals(Dependent.class))
                             {
