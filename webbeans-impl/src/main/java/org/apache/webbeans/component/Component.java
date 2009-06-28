@@ -14,6 +14,7 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Set;
 
@@ -145,6 +146,8 @@ public abstract class Component<T> implements Bean<T>
      * @param name bean name
      */
     public abstract void setName(String name);
+    
+    public abstract List<InjectionPoint> getInjectionPoint(Member member);
 
     public abstract int getPrecedence();
 

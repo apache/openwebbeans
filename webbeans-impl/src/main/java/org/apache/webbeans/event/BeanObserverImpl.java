@@ -31,24 +31,58 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.activity.ActivityManager;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
+/**
+ * Defines observers that are declared in observer methods.
+ * <p>
+ * Example:
+ * <pre>
+ *  public class X {
+ *      
+ *      public void afterLoggedIn(@Observes @Current LoggedInEvent event)
+ *      {
+ *          .....
+ *      }
+ *  }
+ * </pre>
+ * Above class X instance observes for the event with type <code>LoggedInEvent</code>
+ * and event binding type is <code>Current</code>. Whenever event is fired, its {@link Observer#notify()}
+ * method is called.
+ * </p>
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> event type
+ */
 public class BeanObserverImpl<T> implements Observer<T>
 {
-    private WebBeansLogger logger = WebBeansLogger.getLogger(BeanObserverImpl.class);
+    /**Logger instance*/
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(BeanObserverImpl.class);
 
-    private ObservesMethodsOwner<?> bean;
+    /**Observer owner bean that defines observer method*/
+    private final ObservesMethodsOwner<?> bean;
 
-    private Method observerMethod;
+    /**Event observer method*/
+    private final Method observerMethod;
 
-    private boolean ifExist;
+    /**Using existing bean instance or not*/
+    private final boolean ifExist;
 
-    private TransactionalObserverType type;
+    /**Observer transaction type*/
+    private final TransactionalObserverType type;
 
+    /**
+     * Creates a new bean observer instance.
+     * 
+     * @param bean owner
+     * @param observerMethod method
+     * @param ifExist if exist parameter
+     * @param type transaction type
+     */
     public BeanObserverImpl(ObservesMethodsOwner<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
     {
         this.bean = bean;
@@ -57,29 +91,20 @@ public class BeanObserverImpl<T> implements Observer<T>
         this.type = type;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     public void notify(T event)
     {
         AbstractComponent<Object> baseComponent = (AbstractComponent<Object>) bean;
-
         AbstractComponent<Object> specializedComponent = null;
-
         Object object = null;
-
-        boolean dependentContext = false;
 
         try
         {
-            if (!ContextFactory.checkDependentContextActive())
-            {
-                ContextFactory.activateDependentContext();
-                dependentContext = true;
-            }
-
             BeanManager manager = ActivityManager.getInstance().getCurrentActivity();
-
-            specializedComponent = WebBeansUtil.getMostSpecializedBean(manager, baseComponent);
-            
+            specializedComponent = WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
             Context context = manager.getContext(specializedComponent.getScopeType());
             
             if(this.ifExist)
@@ -100,11 +125,9 @@ public class BeanObserverImpl<T> implements Observer<T>
             if (object != null)
             {
                 Object[] args = null;
-
+                
                 List<Object> argsObjects = getMethodArguments(event);
-
                 args = new Object[argsObjects.size()];
-
                 args = argsObjects.toArray(args);
 
                 if (!this.observerMethod.isAccessible())
@@ -112,21 +135,21 @@ public class BeanObserverImpl<T> implements Observer<T>
                     this.observerMethod.setAccessible(true);
                 }
 
+                //Static or not
                 if (Modifier.isStatic(this.observerMethod.getModifiers()))
                 {
                     object = null;
                 }
 
+                //Invoke Method
                 this.observerMethod.invoke(object, args);
             }
-
         }
         catch (Exception e)
         {
             if (!getType().equals(TransactionalObserverType.NONE))
             {
                 logger.error("Error is occured while notifying observer in class : " + observerMethod.getDeclaringClass().getName() + " in method : " + observerMethod.getName(), e);
-
             }
             else
             {
@@ -139,15 +162,16 @@ public class BeanObserverImpl<T> implements Observer<T>
             {
                 baseComponent.destroy(object);
             }
-
-            if (dependentContext)
-            {
-                ContextFactory.passivateDependentContext();
-            }
         }
 
     }
 
+    /**
+     * Returns list of observer method parameters.
+     * 
+     * @param event event instance
+     * @return list of observer method parameters
+     */
     protected List<Object> getMethodArguments(Object event)
     {
         Type[] types = this.observerMethod.getGenericParameterTypes();
@@ -198,9 +222,8 @@ public class BeanObserverImpl<T> implements Observer<T>
                     {
                         list.add(null);
                     }
-
                 }
-
+                
                 i++;
             }
         }
@@ -209,6 +232,8 @@ public class BeanObserverImpl<T> implements Observer<T>
     }
 
     /**
+     * Returrns observer owner bean.
+     * 
      * @return the bean
      */
     public ObservesMethodsOwner<?> getBean()
@@ -217,7 +242,9 @@ public class BeanObserverImpl<T> implements Observer<T>
     }
 
     /**
-     * @return the type
+     * Returns observer's transactional type.
+     * 
+     * @return transactional type
      */
     public TransactionalObserverType getType()
     {

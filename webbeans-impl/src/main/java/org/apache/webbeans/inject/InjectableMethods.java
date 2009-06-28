@@ -13,29 +13,22 @@
  */
 package org.apache.webbeans.inject;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ComponentImpl;
-import org.apache.webbeans.component.ObservesMethodsOwner;
-import org.apache.webbeans.component.ProducerComponentImpl;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.util.AnnotationUtil;
 
 @SuppressWarnings("unchecked")
 public class InjectableMethods<T> extends AbstractInjectable
 {
     /** Injectable method */
-    protected Method m;
+    protected Method method;
 
     /** Component instance that owns the method */
     protected Object instance;
@@ -49,7 +42,7 @@ public class InjectableMethods<T> extends AbstractInjectable
     public InjectableMethods(Method m, Object instance, AbstractComponent<?> owner,CreationalContext<?> creationalContext)
     {
         super(owner,creationalContext);
-        this.m = m;
+        this.method = m;
         this.instance = instance;
         this.injectionMember = m;
     }
@@ -60,107 +53,36 @@ public class InjectableMethods<T> extends AbstractInjectable
      */
     public T doInjection()
     {
-        Type[] types = m.getGenericParameterTypes();
+        List<InjectionPoint> injectedPoints = getInjectedPoints(this.method);        
         List<Object> list = new ArrayList<Object>();
+                
         
-        Annotation[] methodAnnots = m.getDeclaredAnnotations();
-        
-        this.injectionAnnotations = methodAnnots;
-        
-        if (isResource(methodAnnots))
+        for(int i=0;i<injectedPoints.size();i++)
         {
-            // if the method itself is resource annotated, e.g. @PersistenceUnit
-            list.add(inject(types[0], methodAnnots));
-        }
-        else 
-        {
-            // otherwise we inject the method parameters as usual
-            Annotation[][] annots = m.getParameterAnnotations();
-            if (types.length > 0)
+            for(InjectionPoint point : injectedPoints)
             {
-                int i = 0;
-                for (Type type : types)
+                AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)point.getAnnotated();
+                if(parameter.getPosition() == i)
                 {
-                    Annotation[] annot = annots[i];
-                    if (annot.length == 0)
-                    {
-                        annot = new Annotation[1];
-                        annot[0] = new CurrentLiteral();
-                    }
-    
-                    Annotation anns[] = AnnotationUtil.getBindingAnnotations(annot);                                        
-                    
-                    //check producer component for @Disposes,@Observes via @Realizes
-                    Annotation[] fromRealizes = configureRealizesDisposeOrObserves(annot, anns);
-                    
-                    if(fromRealizes != null && fromRealizes.length > 0)
-                    {
-                        anns = fromRealizes;
-                    }
-                                         
-                    list.add(inject(type, anns));
-    
-                    i++;
-    
+                    list.add(inject(point));
+                    break;
                 }
-    
             }
-        }
+        }        
         
         try
         {
-            if (!m.isAccessible())
+            if (!method.isAccessible())
             {
-                m.setAccessible(true);
+                method.setAccessible(true);
             }
 
-            return (T) m.invoke(instance, list.toArray());
+            return (T) method.invoke(instance, list.toArray());
 
         }
         catch (Exception e)
         {
             throw new WebBeansException(e);
         }
-    }
-    
-    private Annotation[] configureRealizesDisposeOrObserves(Annotation[] annot, Annotation[] anns)
-    {
-        Annotation[] setAnnots = null;
-        Class<?> clazz = null;
-        boolean isDefined = false;
-        //Disposes annotations from the @Realizations
-        if(AnnotationUtil.isAnnotationExist(annot, Disposes.class))
-        {                        
-            if(getInjectionOwnerComponent() instanceof ProducerComponentImpl)
-            {
-                ProducerComponentImpl<?> producerComponent = (ProducerComponentImpl<?>)getInjectionOwnerComponent();
-                if(producerComponent.isFromRealizes())
-                {
-                     isDefined = true;
-                     clazz = producerComponent.getParent().getReturnType();
-                }
-                
-            }                        
-        }
-        else if(AnnotationUtil.isAnnotationExist(annot, Observes.class))
-        {
-            if(getInjectionOwnerComponent() instanceof ObservesMethodsOwner)
-            {
-                ComponentImpl<?> owner = (ComponentImpl<?>)getInjectionOwnerComponent();
-                if(owner.isFromRealizes())
-                {
-                    isDefined = true;
-                    clazz = owner.getReturnType();
-                }
-            }
-            
-        }
-        
-        if(isDefined)
-        {
-            setAnnots = AnnotationUtil.getRealizesGenericAnnotations(clazz, anns);
-        }
-
-        return setAnnots;        
     }
 }

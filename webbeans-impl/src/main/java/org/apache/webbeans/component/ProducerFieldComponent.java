@@ -27,7 +27,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -61,19 +60,8 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
     {
         T instance = null;
         Object parentInstance = null;
-        boolean dependentContext = false;
         try
-        {
-            if (this.ownerComponent.getScopeType().equals(Dependent.class))
-            {
-                if(!ContextFactory.checkDependentContextActive())
-                {
-                    ContextFactory.activateDependentContext();
-                    dependentContext = true;
-                }
-
-            }
-            
+        {            
             if(!producerField.isAccessible())
             {
                 producerField.setAccessible(true);
@@ -98,12 +86,6 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
             if (this.ownerComponent.getScopeType().equals(Dependent.class))
             {
                 destroyBean(this.ownerComponent, parentInstance);
-                
-                if(dependentContext)
-                {
-                    ContextFactory.passivateDependentContext();
-                }
-
             }
         }
 

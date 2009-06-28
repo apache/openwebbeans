@@ -408,48 +408,31 @@ public class ManagerImpl implements BeanManager, Referenceable
     {
         Context context = null;
         T instance = null;
-        boolean dependentContext = false;
-        try
-        {
-            if(!ContextFactory.checkDependentContextActive())
-            {
-                ContextFactory.activateDependentContext();
-                dependentContext = true;
-            }            
 
-            CreationalContext<T> creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
-            
-            /* @ScopeType is normal */
-            if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
+        CreationalContext<T> creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
+        
+        /* @ScopeType is normal */
+        if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
+        {
+            if (this.proxyMap.containsKey(bean))
             {
-                if (this.proxyMap.containsKey(bean))
-                {
-                    instance = (T) this.proxyMap.get(bean);
-                }
-                else
-                {
-                    instance = (T) JavassistProxyFactory.createNewProxyInstance(bean);
-                    this.proxyMap.put(bean, instance);
-                }
-                
-                //Push proxy instance into the creational context
-                creationalContext.push(instance);
-                
+                instance = (T) this.proxyMap.get(bean);
             }
-            /* @ScopeType is not normal */
             else
             {
-                context = getContext(bean.getScopeType());
-                instance = (T)context.get(bean, creationalContext);                                
+                instance = (T) JavassistProxyFactory.createNewProxyInstance(bean);
+                this.proxyMap.put(bean, instance);
             }
-
+            
+            //Push proxy instance into the creational context,//TODO Seems unnecessary?
+            creationalContext.push(instance);
+            
         }
-        finally
+        /* @ScopeType is not normal, like @Dependent */
+        else
         {
-            if(dependentContext)
-            {
-                ContextFactory.passivateDependentContext();
-            }
+            context = getContext(bean.getScopeType());
+            instance = (T)context.get(bean, creationalContext);                                
         }
 
         return instance;

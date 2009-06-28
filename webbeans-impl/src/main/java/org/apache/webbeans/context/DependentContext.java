@@ -22,23 +22,35 @@ import org.apache.webbeans.context.type.ContextTypes;
 /**
  * Defines the component {@link Dependent} context.
  * <p>
- * Each web beans component has a dependent context, that saves its depedent
+ * Each web beans component has a dependent context, that saves its dependent
  * objects. Dependent context is destroyed at the end of the component
  * destruction or its dependent objects are destroyed by the container at any
  * time that the dependent object is no longer alive.
  * </p>
  * 
+ * <p>
+ * Dependent context is always active.
+ * </p>
+ * 
+ * @version $Rev$ $Date$
  */
 public class DependentContext extends AbstractContext
 {
+    /**
+     * Creats a new instance of dependent context.
+     */
     public DependentContext()
     {
         super(ContextTypes.DEPENDENT);
-
+        this.active = true;
     }
     
     
 
+    /**
+     * {@inheritDoc}
+     * 
+     */
     @Override
     protected <T> T getInstance(Contextual<T> component,CreationalContext<T> creationalContext)
     {
@@ -57,7 +69,10 @@ public class DependentContext extends AbstractContext
         return object;
     }
 
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setComponentInstanceMap()
     {
@@ -65,9 +80,8 @@ public class DependentContext extends AbstractContext
     }
 
 
-
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.context.AbstractContext#get(javax.context.Contextual)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public <T> T get(Contextual<T> component)

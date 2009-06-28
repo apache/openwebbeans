@@ -23,7 +23,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -138,19 +137,9 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
     {
         T instance = null;
         Object parentInstance = null;
-        boolean dependentContext = false;
-        
+
         try
         {
-            if (getParent().getScopeType().equals(Dependent.class))
-            {
-                if(!ContextFactory.checkDependentContextActive())
-                {
-                    ContextFactory.activateDependentContext();
-                    dependentContext = true;
-                }
-            }
-            
             if(!Modifier.isStatic(creatorMethod.getModifiers()))
             {
                 parentInstance = getParentInstance();
@@ -165,12 +154,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
         {
             if (getParent().getScopeType().equals(Dependent.class))
             {
-                destroyBean(getParent(), parentInstance);
-                
-                if(dependentContext)
-                {
-                    ContextFactory.passivateDependentContext();
-                }
+                destroyBean(getParent(), parentInstance);                
             }
         }
 
@@ -202,26 +186,15 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
         {
             Object parentInstance = null;
             
-            boolean dependentContext = false;
-            
             try
             {
-                if (getParent().getScopeType().equals(Dependent.class))
-                {
-                    if(!ContextFactory.checkDependentContextActive())
-                    {
-                        ContextFactory.activateDependentContext();
-                        dependentContext = true;
-                    }
-                }
-                
                 if(!Modifier.isStatic(disposalMethod.getModifiers()))
                 {
                     parentInstance = getParentInstance();
                 }
 
 
-                InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, this,null);
+                InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, parent,null);
                 
                 m.doInjection();
 
@@ -233,12 +206,6 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
                     destroyBean(getParent(), parentInstance);
 
                 }
-                
-                if(dependentContext)
-                {
-                    ContextFactory.passivateDependentContext();
-                }                
-
             }
         }
     }

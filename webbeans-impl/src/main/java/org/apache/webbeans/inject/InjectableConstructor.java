@@ -13,20 +13,18 @@
  */
 package org.apache.webbeans.inject;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.util.AnnotationUtil;
 
 /**
  * Injects the parameters of the {@link ComponentImpl} constructor and returns
@@ -60,28 +58,22 @@ public class InjectableConstructor<T> extends AbstractInjectable
     public T doInjection()
     {
         T instance = null;
-
-        Type[] types = con.getGenericParameterTypes();
-        Annotation[][] annots = con.getParameterAnnotations();
+        
+        List<InjectionPoint> injectedPoints = getInjectedPoints(this.con);        
         List<Object> list = new ArrayList<Object>();
-        if (types.length > 0)
+                
+        
+        for(int i=0;i<injectedPoints.size();i++)
         {
-            int i = 0;
-            for (Type type : types)
+            for(InjectionPoint point : injectedPoints)
             {
-                Annotation[] annot = annots[i];
-                if (annot.length == 0)
+                AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)point.getAnnotated();
+                if(parameter.getPosition() == i)
                 {
-                    annot = new Annotation[1];
-                    annot[0] = new CurrentLiteral();
+                    list.add(inject(point));
+                    break;
                 }
-
-                list.add(inject(type, AnnotationUtil.getBindingAnnotations(annot)));
-
-                i++;
-
             }
-
         }
 
         try

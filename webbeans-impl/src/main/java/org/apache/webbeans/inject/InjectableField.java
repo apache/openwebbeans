@@ -13,16 +13,13 @@
  */
 package org.apache.webbeans.inject;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.util.AnnotationUtil;
 
 /**
  * Field type injection.
@@ -43,37 +40,18 @@ public class InjectableField extends AbstractInjectable
         this.injectionMember = field;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.webbeans.inject.Injectable#doInjection()
-     */
     public Object doInjection()
     {
-        Type type = field.getGenericType();
-
-        Annotation[] annots = field.getDeclaredAnnotations();
-        
-        this.injectionAnnotations = annots;
-
-        Annotation[] bindingAnnos = AnnotationUtil.getBindingAnnotations(annots);
-        
-        //GE : Mark this is not used! I am commenting here!
-        //Annotation[] resourceAnnos = AnnotationUtil.getResourceAnnotations(annots);
-
         try
         {
-            if (bindingAnnos.length == 0)
-            {
-                bindingAnnos = new Annotation[1];
-                bindingAnnos[0] = new CurrentLiteral();
-            }
-
+            InjectionPoint injectedField = getInjectedPoints(this.field).get(0);
+            
             if (!field.isAccessible())
             {
                 field.setAccessible(true);
             }
 
-            Object object = inject(type, bindingAnnos);
+            Object object = inject(injectedField);
             
             field.set(instance, object);
 

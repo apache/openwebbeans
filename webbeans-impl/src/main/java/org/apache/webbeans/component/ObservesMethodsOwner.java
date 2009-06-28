@@ -16,13 +16,43 @@ package org.apache.webbeans.component;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+/**
+ * Defines contract for beans that coud have observable
+ * method.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> bean type
+ */
 public interface ObservesMethodsOwner<T>
 {
+    /**
+     * Returns set of observable methods.
+     * 
+     * @return set of observable methods
+     */
     public Set<Method> getObservableMethods();
 
+    /**
+     * Adds new observer method.
+     * 
+     * @param observerMethod observer method
+     */
     public void addObservableMethod(Method observerMethod);
     
+    /**
+     * Returns true if coming from <pre>@Realization</pre>.
+     * 
+     * @return true if coming from <pre>@Realization</pre>
+     */
+    @Deprecated //Removed from specification
     public boolean isFromRealizes();
     
+    /**
+     * Set its realized.
+     * 
+     * @param realized is realized
+     */
+    @Deprecated //Removed from specification
     public void setFromRealizes(boolean realized);
 }

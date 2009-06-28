@@ -63,7 +63,7 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
             Annotation[] anns = new Annotation[model.getBindingTypes().size()];
             anns = model.getBindingTypes().toArray(anns);
 
-            list.add(inject(model.getInjectionGenericType(), anns));
+            //list.add(inject(model.getInjectionGenericType(), anns));
         }
 
         try

@@ -671,6 +671,11 @@ public final class WebBeansUtil
         comp.setType(new StandardLiteral());
         comp.setName(null);
         
+        Set<InjectionPoint> injectionPoints = component.getInjectionPoints();
+        for(InjectionPoint injectionPoint : injectionPoints)
+        {
+            comp.addInjectionPoint(injectionPoint);
+        }        
 
         return comp;
     }    

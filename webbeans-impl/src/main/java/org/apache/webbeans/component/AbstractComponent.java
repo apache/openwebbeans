@@ -14,6 +14,7 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -32,7 +33,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ManagerImpl;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.util.ClassUtil;
@@ -146,14 +146,6 @@ public abstract class AbstractComponent<T> extends Component<T>
      */
     public T create(CreationalContext<T> creationalContext)
     {
-        boolean dependentContext = false;
-        
-        if(!ContextFactory.checkDependentContextActive())
-        {
-            ContextFactory.activateDependentContext();
-            dependentContext = true;
-        }
-        
         T instance = null;
         try
         {
@@ -177,13 +169,6 @@ public abstract class AbstractComponent<T> extends Component<T>
             }
             
         }
-        finally
-        {
-            if(dependentContext)
-            {
-                ContextFactory.passivateDependentContext();   
-            }
-        }
 
         return instance;
     }
@@ -202,39 +187,18 @@ public abstract class AbstractComponent<T> extends Component<T>
      */
     public void destroy(T instance)
     {
-        boolean dependentContext = false;
-        try
-        {
-            //Check dependent context
-            if(!ContextFactory.checkDependentContextActive())
-            {
-                ContextFactory.activateDependentContext();
-                dependentContext = true;
-            }
-            
-            //Destory dependent instances
-            destroyDependents();
-            
-            //Destroy instance, call @PreDestroy
-            destroyInstance(instance);
-                        
-            //Clear Decorator and Interceptor Stack
-            this.decoratorStack.clear();
-            this.interceptorStack.clear();
-            
-            //Reset it
-            this.dependentOwnerInjectionPoint = null;
-
-        }
-        finally
-        {
-            if(dependentContext)
-            {
-                ContextFactory.passivateDependentContext();
-            }            
-            
-        }
-
+        //Destory dependent instances
+        destroyDependents();
+        
+        //Destroy instance, call @PreDestroy
+        destroyInstance(instance);
+                    
+        //Clear Decorator and Interceptor Stack
+        this.decoratorStack.clear();
+        this.interceptorStack.clear();
+        
+        //Reset it
+        this.dependentOwnerInjectionPoint = null;
     }
 
     /**
@@ -575,6 +539,20 @@ public abstract class AbstractComponent<T> extends Component<T>
         return this.specializedBean;
     }
     
+    public List<InjectionPoint> getInjectionPoint(Member member)
+    {
+        List<InjectionPoint> points = new ArrayList<InjectionPoint>();
+        
+        for(InjectionPoint ip : injectionPoints)
+        {
+            if(ip.getMember().equals(member))
+            {
+                points.add(ip);
+            }
+        }
+        
+        return points;
+    }
     
     public String toString()
     {

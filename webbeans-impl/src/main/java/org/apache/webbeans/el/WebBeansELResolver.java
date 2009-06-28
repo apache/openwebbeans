@@ -24,31 +24,60 @@ import javax.el.PropertyNotWritableException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.servlet.jsp.JspApplicationContext;
 
 import org.apache.webbeans.container.ManagerImpl;
-import org.apache.webbeans.context.ContextFactory;
 
+/**
+ * JSF or JSP expression language a.k.a EL resolver.
+ * 
+ * <p>
+ * EL is registered with the JSF in faces-config.xml if there exist a faces-config.xml
+ * in the application location <code>WEB-INF/</code>. Otherwise it is registered with
+ * {@link JspApplicationContext} at start-up. 
+ * </p>
+ * 
+ * <p>
+ * All <code>@Dependent</code> scoped contextual instances created during an EL 
+ * expression evaluation are destroyed when the evaluation completes.
+ * </p>
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
 public class WebBeansELResolver extends ELResolver
 {    
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Class<?> getCommonPropertyType(ELContext arg0, Object arg1)
     {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext arg0, Object arg1)
     {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */    
     @Override
     public Class<?> getType(ELContext arg0, Object arg1, Object arg2) throws NullPointerException, PropertyNotFoundException, ELException
     {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */    
     @Override
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
@@ -58,23 +87,18 @@ public class WebBeansELResolver extends ELResolver
         Bean<?> bean = null;
 
         boolean isResolution = false;
-        boolean dependentContext = false;
         try
         {
             if (obj == null)
             {
-                if(!ContextFactory.checkDependentContextActive())
-                {
-                    ContextFactory.activateDependentContext();
-                    dependentContext = true;
-                }
-
                 String name = (String) property;
                 object = manager.getInstanceByName(name);
+                
                 if (object != null)
                 {
                     isResolution = true;
                     context.setPropertyResolved(true);
+                    //It is used for destroying
                     bean = manager.resolveByName(name).iterator().next();
                 }
 
@@ -88,40 +112,43 @@ public class WebBeansELResolver extends ELResolver
                 if (bean != null)
                 {
                     destroyBean(bean, object);
-                }
-                
-                if(dependentContext)
-                {
-                    ContextFactory.passivateDependentContext();
-                }
-                
+                }                
             }
         }
 
         return object;
     }
 
+    /**
+     * Destroys the bean.
+     * 
+     * @param <T> bean type info
+     * @param bean dependent context scoped bean
+     * @param instance bean instance
+     */
     @SuppressWarnings("unchecked")
-    private <T> void destroyBean(Bean<?> bean, Object instance)
+    private <T> void destroyBean(Bean<T> bean, Object instance)
     {
-        Bean<T> destroy = (Bean<T>) bean;
-
-        if (destroy.getScopeType().equals(Dependent.class))
+        if (bean.getScopeType().equals(Dependent.class))
         {
             T inst = (T) instance;
 
-            destroy.destroy(inst);
-
+            bean.destroy(inst);
         }
-
     }
 
+    /**
+     * {@inheritDoc}
+     */    
     @Override
     public boolean isReadOnly(ELContext arg0, Object arg1, Object arg2) throws NullPointerException, PropertyNotFoundException, ELException
     {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */    
     @Override
     public void setValue(ELContext arg0, Object arg1, Object arg2, Object arg3) throws NullPointerException, PropertyNotFoundException, PropertyNotWritableException, ELException
     {

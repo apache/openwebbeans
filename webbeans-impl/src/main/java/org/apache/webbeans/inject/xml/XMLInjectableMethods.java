@@ -51,17 +51,17 @@ public class XMLInjectableMethods<T> extends InjectableMethods<T>
             Annotation[] anns = new Annotation[model.getBindingTypes().size()];
             anns = model.getBindingTypes().toArray(anns);
 
-            list.add(inject(model.getInjectionGenericType(), anns));
+            //list.add(inject(model.getInjectionGenericType(), anns));
         }
 
         try
         {
-            if (!m.isAccessible())
+            if (!method.isAccessible())
             {
-                m.setAccessible(true);
+                method.setAccessible(true);
             }
 
-            return (T) m.invoke(instance, list.toArray());
+            return (T) method.invoke(instance, list.toArray());
 
         }
         catch (Exception e)

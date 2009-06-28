@@ -49,7 +49,8 @@ public class XMLInjectableField extends InjectableField
                 field.setAccessible(true);
             }
 
-            field.set(instance, inject(this.injectionPointModel.getInjectionGenericType(), anns));
+            
+            //field.set(instance, inject(this.injectionPointModel.getInjectionGenericType(), anns));
 
         }
         catch (Exception e)
