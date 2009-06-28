@@ -66,12 +66,12 @@ public class ResourceInjectionTest extends TestContext
         Assert.assertNotNull(em2);
 
         Assert.assertTrue(em != em2);
-        
-        // test method injection
-        EntityManagerFactory emf2 = persBean.getMethodInjectedEntityManagerFactory();
-        Assert.assertNotNull(emf2);
-        
-        EntityManager em3 = persBean.getMethodInjectedEntityManager();
-        Assert.assertNotNull(em3);
+//Spec seems does not support this type of injection, See SECTION 3.5 and See SECTION 5 First Paragraph
+//        // test method injection
+//        EntityManagerFactory emf2 = persBean.getMethodInjectedEntityManagerFactory();
+//        Assert.assertNotNull(emf2);
+//        
+//        EntityManager em3 = persBean.getMethodInjectedEntityManager();
+//        Assert.assertNotNull(em3);
     }
 }

@@ -60,7 +60,7 @@ public class TstResourcePersistenceBean
         return emfMethodInjected;
     }
 
-    @PersistenceUnit(unitName="openwebbeanstest")
+    //@PersistenceUnit(unitName="openwebbeanstest") Spec does not support thid
     public void setMethodInjectedEntityManagerFactory(EntityManagerFactory emf2)
     {
         this.emfMethodInjected = emf2;
@@ -71,7 +71,7 @@ public class TstResourcePersistenceBean
         return emMethodInjected;
     }
 
-    @PersistenceContext(unitName="openwebbeanstest")
+    //@PersistenceContext(unitName="openwebbeanstest")
     public void setMethodInjectedEntityManager(EntityManager em3)
     {
         this.emMethodInjected = em3;
