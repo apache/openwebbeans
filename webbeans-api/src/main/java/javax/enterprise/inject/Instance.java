@@ -15,8 +15,67 @@ package javax.enterprise.inject;
 
 import java.lang.annotation.Annotation;
 
-public interface Instance<T>
+/**
+ * The <code>Instance</code> interface provides a method for obtaining 
+ * instances of beans with required types and bindings.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> bean required type
+ */
+public interface Instance<T> extends Iterable<T>
 {
-    T get(Annotation... annotations);
+    /**
+     * Returns bean instance with required type 
+     * and required binding type that are defined
+     * at the injection point.
+     * 
+     * @return bean instance with required type and required binding type
+     */
+    public T get();
+    
+    /**
+     * Creates new <code>Instance</code> with given
+     * binding annotations. 
+     * 
+     * @param bindings
+     * @return new child instance with given binding types.
+     */
+    public Instance<T> select(Annotation... bindings);
+    
+    /**
+     * Returns new child instance with given class and binding types.
+     * 
+     * @param <U> subtype info
+     * @param subtype subtype class
+     * @param bindings binding types
+     * @return new child instance with given class and binding types
+     */
+    public <U extends T> Instance<U> select(Class<U> subtype, Annotation... bindings);
+    
+    /**
+     * Return new child instance with given class info and binding types.
+     * 
+     * @param <U> subtype info
+     * @param subtype subtype class
+     * @param bindings binding types
+     * @return new child instance with given class info and binding types
+     */
+    public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... bindings);
+    
+    /**
+     * Return true if resulotion is unsatisfied, false otherwise.
+     * 
+     * @return true if resulotion is unsatisfied, false otherwise
+     */
+    public boolean isUnsatisfied();
+
+    /**
+     * Returns true if resolution is ambigious, false otherwise.
+     * 
+     * @return true if resolution is ambigious, false otherwise.
+     */
+    public boolean isAmbiguous();
+
 
 }
