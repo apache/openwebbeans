@@ -35,7 +35,8 @@ public class InjectedInstanceBrokenComponentTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();        
+        super.init();     
+        
     }
     
     @Test

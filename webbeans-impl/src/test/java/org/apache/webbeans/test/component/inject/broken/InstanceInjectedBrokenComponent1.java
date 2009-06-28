@@ -16,11 +16,11 @@
  */
 package org.apache.webbeans.test.component.inject.broken;
 
-import javax.inject.Obtains;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 
-import org.apache.webbeans.test.component.IPayment;
 
 public class InstanceInjectedBrokenComponent1
 {
-    @Obtains IPayment payment;
+    @Any Instance payment;
 }

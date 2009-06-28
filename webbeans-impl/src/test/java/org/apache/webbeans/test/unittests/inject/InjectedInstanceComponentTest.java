@@ -38,7 +38,7 @@ public class InjectedInstanceComponentTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
+        super.init();
     }
     
     @Test
@@ -60,6 +60,14 @@ public class InjectedInstanceComponentTest extends TestContext
         Instance<PaymentProcessorComponent> ins = instance.getInstance();
         
         System.out.println(ins.toString());
+        
+        boolean ambigious = ins.isAmbiguous();
+        
+        Assert.assertFalse(ambigious);
+        
+        boolean unsatisfied = ins.isUnsatisfied();
+        
+        Assert.assertFalse(unsatisfied);
         
     }
 }

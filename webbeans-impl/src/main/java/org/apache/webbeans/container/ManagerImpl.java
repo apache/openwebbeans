@@ -333,7 +333,7 @@ public class ManagerImpl implements BeanManager, Referenceable
         ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
         Set<Bean<T>> set = resolveByType(type, bindingTypes);
 
-        ResolutionUtil.checkResolvedBeans(set, type);
+        ResolutionUtil.checkResolvedBeans(set, type, bindingTypes);
 
         return getInstance(set.iterator().next());
     }
@@ -343,7 +343,7 @@ public class ManagerImpl implements BeanManager, Referenceable
         ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
         Set<Bean<T>> set = resolveByType(type, bindingTypes);
 
-        ResolutionUtil.checkResolvedBeans(set, type.getRawType());
+        ResolutionUtil.checkResolvedBeans(set, type.getRawType(),bindingTypes);
 
         return getInstance(set.iterator().next());
     }

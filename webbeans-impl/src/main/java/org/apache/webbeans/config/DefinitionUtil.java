@@ -32,6 +32,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Current;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Initializer;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Named;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.Produces;
@@ -43,7 +44,6 @@ import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.event.Fires;
-import javax.inject.Obtains;
 
 import org.apache.webbeans.annotation.AnyScopeLiteral;
 import org.apache.webbeans.annotation.CurrentLiteral;
@@ -1180,12 +1180,11 @@ public final class DefinitionUtil
     {
         Annotated annotated = injectionPoint.getAnnotated();
         
-        //If contains the @Obtains, defines implicit component
-        if(annotated.isAnnotationPresent(Obtains.class))
+        if(WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint))
         {
-            WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint);
             WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
-        }                                  
+        }
+        
         //If contains the @Fires, defines implicit component
         else if(annotated.isAnnotationPresent(Fires.class))
         {
@@ -1207,8 +1206,7 @@ public final class DefinitionUtil
                         break;
                     }
                 }
-            }
-            
+            }            
         }
     }
 }

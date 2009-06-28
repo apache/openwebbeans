@@ -50,7 +50,7 @@ public final class ResolutionUtil
         AnnotationUtil.checkBindingTypeConditions(bindingTypes);
     }
 
-    public static <T> void checkResolvedBeans(Set<Bean<T>> resolvedSet, Class<?> type, Annotation...bindingTypes)
+    public static <T> void checkResolvedBeans(Set<Bean<T>> resolvedSet, Class<?> type, Annotation[] bindingTypes)
     {
         if (resolvedSet.isEmpty())
         {

@@ -23,11 +23,11 @@ import java.util.Set;
 import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.deployment.Production;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Obtains;
 import javax.interceptor.Interceptor;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
@@ -197,7 +197,7 @@ public abstract class TestContext implements ITestContext
         for(InjectionPoint injectionPoint : injectionPoints)
         {
             //If contains the @Obtains, defines implicit component
-            if(injectionPoint.getAnnotated().isAnnotationPresent(Obtains.class))
+            if(injectionPoint.getAnnotated().getBaseType().equals(Instance.class))
             {
                 WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
             }                                    

@@ -726,7 +726,7 @@ public final class WebBeansUtil
     
     public static <T> InstanceComponentImpl<T> createInstanceComponent(ParameterizedType instance,Class<Instance<T>> clazz, Type injectedType, Annotation...obtainsBindings)
     {
-        InstanceComponentImpl<T> instanceComponent = new InstanceComponentImpl<T>(clazz,injectedType, instance.getActualTypeArguments());
+        InstanceComponentImpl<T> instanceComponent = new InstanceComponentImpl<T>(clazz,injectedType);
         
         instanceComponent.addApiType(clazz);
         instanceComponent.addApiType(Object.class);
@@ -1692,52 +1692,73 @@ public final class WebBeansUtil
     }
     
     /**
-     * Check bean <code>Obtains</code> field injection conditions.
-     * @param <T> bean class type
-     * @param clazz bean class
+     * Returns true if instance injection point false otherwise.
+     * 
+     * @param injectionPoint injection point definition
+     * @return true if instance injection point
      */
-    public static <T> void checkObtainsInjectionPointConditions(InjectionPoint injectionPoint)
+    public static boolean checkObtainsInjectionPointConditions(InjectionPoint injectionPoint)
     {        
-            Class<?> rawType = null;
+        Type type = injectionPoint.getType();
+        
+        Class<?> candidateClazz = null;
+        if(type instanceof Class)
+        {
+            candidateClazz = (Class<?>)type;
+        }
+        else if(type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType)type;
+            candidateClazz = (Class<?>)pt.getRawType();
+        }
+        
+        if(!candidateClazz.equals(Instance.class))
+        {
+            return false;
+        }        
+        
+        Class<?> rawType = null;
+        
+        if(ClassUtil.isParametrizedType(injectionPoint.getType()))
+        {
+            ParameterizedType pt = (ParameterizedType)injectionPoint.getType();
             
-            if(ClassUtil.isParametrizedType(injectionPoint.getType()))
+            rawType = (Class<?>) pt.getRawType();
+            
+            Type[] typeArgs = pt.getActualTypeArguments();
+            
+            if(!(rawType.equals(Instance.class)))
             {
-                ParameterizedType pt = (ParameterizedType)injectionPoint.getType();
-                
-                rawType = (Class<?>) pt.getRawType();
-                
-                Type[] typeArgs = pt.getActualTypeArguments();
-                
-                if(!(rawType.equals(Instance.class)))
-                {
-                    throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " must have type javax.inject.Instance");
-                }                
-                else
-                {                                        
-                    if(typeArgs.length == 1)
-                    {
-                        Type actualArgument = typeArgs[0];
-                        
-                        if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument) || ClassUtil.isTypeVariable(actualArgument))
-                        {                            
-                            throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
-                        }
-                                                
-                        if(ClassUtil.isDefinitionConstainsTypeVariables((Class<?>)actualArgument))
-                        {
-                            throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
-                        }
-                    }
-                    else
-                    {
-                        throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " must not have more than one actual type argument");
-                    }
-                }                                
-            }
+                throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must have type javax.inject.Instance");
+            }                
             else
-            {
-                throw new WebBeansConfigurationException("@Obtains field injection " + injectionPoint.toString() + " must be defined as ParameterizedType with one actual type argument");
-            }        
+            {                                        
+                if(typeArgs.length == 1)
+                {
+                    Type actualArgument = typeArgs[0];
+                    
+                    if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument) || ClassUtil.isTypeVariable(actualArgument))
+                    {                            
+                        throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
+                    }
+                                            
+                    if(ClassUtil.isDefinitionConstainsTypeVariables((Class<?>)actualArgument))
+                    {
+                        throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
+                    }
+                }
+                else
+                {
+                    throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must not have more than one actual type argument");
+                }
+            }                                
+        }
+        else
+        {
+            throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must be defined as ParameterizedType with one actual type argument");
+        }  
+        
+        return true;
     }
 
     public static <T> void checkPassivationScope(AbstractComponent<T> component, ScopeType scope)

@@ -1,30 +1,27 @@
 /*
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- * 
- *       http://www.apache.org/licenses/LICENSE-2.0
- * 
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.apache.webbeans.inject.instance;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.Bean;
-import javax.inject.Obtains;
-
 
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
@@ -34,72 +31,182 @@ import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Implements the {@link Instance} interface.
- * @param <T> injection type
+ * 
+ * @param <T> specific instance type
  */
 class InstanceImpl<T> implements Instance<T>
 {
-    /**Injected class type*/
+    /** Injected class type */
     private Type injectionClazz;
-    
-    /**Injected point actual type arguments*/
-    private Type[] actualTypeArguments = new Type[0];
-    
-    /**Binding annotations appeared on the injection point*/
+
+    /** Binding annotations appeared on the injection point */
     private Set<Annotation> bindingAnnotations = new HashSet<Annotation>();
-    
+
     /**
      * Creates new instance.
+     * 
      * @param injectionClazz injection class type
      * @param actualTypeArguments actual type arguments
      * @param annotations binding annotations
      */
-    InstanceImpl(Type injectionClazz, Type[] actualTypeArguments, Annotation...annotations)
+    InstanceImpl(Type injectionClazz, Annotation... annotations)
     {
         this.injectionClazz = injectionClazz;
-        this.actualTypeArguments = actualTypeArguments;
-        
-        for(Annotation ann : annotations)
+
+        for (Annotation ann : annotations)
         {
-            if(!ann.annotationType().equals(Obtains.class))
-            {
-                bindingAnnotations.add(ann);   
-            }
+            bindingAnnotations.add(ann);
         }
     }
 
     /**
      * Returns the bean instance with given binding annotations.
+     * 
      * @param annotations binding annotations
      * @return bean instance
      */
-    public T get(Annotation... annotations)
+    public T get()
     {
-        AnnotationUtil.checkBindingTypeConditions(annotations);
-        
-        if(annotations != null && annotations.length > 0)
-        {
-            for(Annotation annot : annotations)
-            {
-                if(this.bindingAnnotations.contains(annot))
-                {
-                    throw new IllegalArgumentException("Duplicate Binding Exception, " + this.toString());
-                }
-                
-                this.bindingAnnotations.add(annot);
-            }
-        }
-        
+        T instance = null;
+
         Annotation[] anns = new Annotation[this.bindingAnnotations.size()];
         anns = this.bindingAnnotations.toArray(anns);
         
+        Set<Bean<T>> beans = resolveBeans();
+
+        ResolutionUtil.checkResolvedBeans(beans, ClassUtil.getClazz(this.injectionClazz),anns);
+
+        Bean<T> bean = beans.iterator().next();
+        instance = ManagerImpl.getManager().getInstance(bean);
+
+        return instance;
+    }
+
+    /**
+     * Returns set of resolved beans.
+     * 
+     * @return set of resolved beans
+     */
+    private Set<Bean<T>> resolveBeans()
+    {
+        Annotation[] anns = new Annotation[this.bindingAnnotations.size()];
+        anns = this.bindingAnnotations.toArray(anns);
+
         InjectionResolver resolver = InjectionResolver.getInstance();
         Set<Bean<T>> beans = resolver.implResolveByType(this.injectionClazz, anns);
         
-        ResolutionUtil.checkResolvedBeans(beans, ClassUtil.getClazz(this.injectionClazz));
+        return beans;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isAmbiguous()
+    {
+        Set<Bean<T>> beans = resolveBeans();
         
-        Bean<T> bean = beans.iterator().next();
+        return beans.size() > 1 ? true : false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isUnsatisfied()
+    {
+        Set<Bean<T>> beans = resolveBeans();
         
-        return ManagerImpl.getManager().getInstance(bean);
+        return beans.size() == 0 ? true : false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Instance<T> select(Annotation... bindings)
+    {
+        Annotation[] newBindingsArray = getAdditionalBindings(bindings);
+        InstanceImpl<T> newInstance = new InstanceImpl<T>(this.injectionClazz, newBindingsArray);
+
+        return newInstance;
+    }
+
+    /**
+     * Returns total binding types array
+     * 
+     * @param bindings additional bindings
+     * @return total binding types array
+     */
+    private Annotation[] getAdditionalBindings(Annotation[] bindings)
+    {
+        AnnotationUtil.checkBindingTypeConditions(bindings);
+        Set<Annotation> newBindings = new HashSet<Annotation>(this.bindingAnnotations);
+
+        if (bindings != null && bindings.length > 0)
+        {
+            for (Annotation annot : bindings)
+            {
+                if (newBindings.contains(annot))
+                {
+                    throw new IllegalArgumentException("Duplicate Binding Exception, " + this.toString());
+                }
+
+                newBindings.add(annot);
+            }
+        }
+
+        Annotation[] newBindingsArray = new Annotation[newBindings.size()];
+        newBindingsArray = newBindings.toArray(newBindingsArray);
+        
+        return newBindingsArray;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <U extends T> Instance<U> select(Class<U> subtype, Annotation... bindings)
+    {
+        AnnotationUtil.checkBindingTypeConditions(bindings);
+        
+        if(subtype == null)
+        {
+            subtype = (Class<U>)this.injectionClazz;
+        }
+        
+        Annotation[] newBindings = getAdditionalBindings(bindings);
+        
+        InstanceImpl<U> newInstance = new InstanceImpl<U>(subtype, newBindings);
+                    
+        return newInstance;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... bindings)
+    {        
+        return select(subtype.getRawType(), bindings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Iterator<T> iterator()
+    {
+        Set<Bean<T>> beans = resolveBeans();
+        Set<T> instances = new HashSet<T>();
+        for(Bean<T> bean : beans)
+        {
+            T instance = ManagerImpl.getManager().getInstance(bean);
+            instances.add(instance);
+        }
+        
+        return instances.iterator();
     }
 
     public String toString()
@@ -108,35 +215,21 @@ class InstanceImpl<T> implements Instance<T>
         builder.append("Instance<");
         builder.append(ClassUtil.getClazz(this.injectionClazz).getName());
         builder.append(">");
-        builder.append(" with actual type arguments {");
-        
+
+        builder.append(",with binding annotations {");
         int i = 0;
-        for(Type type : this.actualTypeArguments)
+        for (Annotation binding : this.bindingAnnotations)
         {
-            Class<?> clazz = (Class<?>)type;
-            
-            if(i != 0)
+            if (i != 0)
             {
                 builder.append(",");
             }
-            
-            builder.append(clazz.getName());            
+
+            builder.append(binding.toString());
         }
-        
-        builder.append("} with binding annotations {");
-        i = 0;
-        for(Annotation binding : this.bindingAnnotations)
-        {
-            if(i != 0)
-            {
-                builder.append(",");
-            }
-            
-            builder.append(binding.toString());            
-        }
-        
+
         builder.append("}");
-        
+
         return builder.toString();
-    }   
+    }
 }

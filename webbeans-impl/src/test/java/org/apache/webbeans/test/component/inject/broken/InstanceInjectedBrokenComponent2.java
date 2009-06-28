@@ -16,12 +16,12 @@
  */
 package org.apache.webbeans.test.component.inject.broken;
 
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
-import javax.inject.Obtains;
 
 import org.apache.webbeans.test.component.ITypeLiteralComponent;
 
 public class InstanceInjectedBrokenComponent2
 {
-    @Obtains Instance<ITypeLiteralComponent<?>> instance;
+    @Any Instance<ITypeLiteralComponent<?>> instance;
 }

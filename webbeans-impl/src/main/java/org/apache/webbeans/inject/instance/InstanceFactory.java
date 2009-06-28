@@ -28,9 +28,9 @@ public final class InstanceFactory
         
     }
     
-    public static <T> Instance<T> getInstance(Type injectedType, Type[] actualTypeArguments, Annotation...annotations)
+    public static <T> Instance<T> getInstance(Type injectedType, Annotation...annotations)
     {
-        InstanceImpl<T> instance = new InstanceImpl<T>(injectedType,actualTypeArguments,annotations);   
+        InstanceImpl<T> instance = new InstanceImpl<T>(injectedType, annotations);   
         
         return instance;
     }

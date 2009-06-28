@@ -174,7 +174,7 @@ public class InjectionResolver
         
         Set<Bean<Object>> beanSet = implResolveByType(type ,bindingTypes);
         
-        ResolutionUtil.checkResolvedBeans(beanSet, clazz);
+        ResolutionUtil.checkResolvedBeans(beanSet, clazz, bindingTypes);
         
         return beanSet.iterator().next();
         

@@ -28,15 +28,10 @@ public class InstanceComponentImpl<T> extends AbstractComponent<Instance<T>>
 {
     private Type injectedType;
     
-    private Type[] actualTypeArguments = new Type[0];
-    
-    private Type[] injectedTypeArguments = new Type[0];
-    
-    public InstanceComponentImpl(Class<Instance<T>> returnType, Type injectedType, Type[] injectedTypeArguments)
+    public InstanceComponentImpl(Class<Instance<T>> returnType, Type injectedType)
     {
         super(WebBeansType.INSTANCE, returnType);
         this.injectedType = injectedType;
-        this.injectedTypeArguments = injectedTypeArguments;
     }
     
     @Override
@@ -45,7 +40,7 @@ public class InstanceComponentImpl<T> extends AbstractComponent<Instance<T>>
         Annotation[] anns = new Annotation[getBindings().size()];
         anns = getBindings().toArray(anns);
         
-        return InstanceFactory.getInstance(this.injectedType, this.actualTypeArguments, anns);
+        return InstanceFactory.getInstance(this.injectedType, anns);
     }
 
     @Override
@@ -54,13 +49,4 @@ public class InstanceComponentImpl<T> extends AbstractComponent<Instance<T>>
         
     }
 
-    /**
-     * @return the actualTypeArguments
-     */
-    public Type[] getActualTypeArguments()
-    {
-        return this.injectedTypeArguments;
-    }
-
-    
 }

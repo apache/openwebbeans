@@ -16,19 +16,17 @@
  */
 package org.apache.webbeans.test.component.inject;
 
-import java.lang.annotation.Annotation;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Current;
 import javax.enterprise.inject.Instance;
-import javax.inject.Obtains;
 
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 
 @RequestScoped
 public class InstanceInjectedComponent
 {
-    @Obtains @Current Instance<PaymentProcessorComponent> instance;
+    @Current Instance<PaymentProcessorComponent> instance;
     
     public InstanceInjectedComponent()
     {
@@ -42,7 +40,7 @@ public class InstanceInjectedComponent
     
     public PaymentProcessorComponent getPaymentComponent()
     {
-        return instance.get(new Annotation[]{});
+        return instance.get();
     }
 
 }
