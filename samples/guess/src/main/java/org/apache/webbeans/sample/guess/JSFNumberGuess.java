@@ -15,12 +15,14 @@ package org.apache.webbeans.sample.guess;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.util.Set;
 
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.AnnotationLiteral;
 import javax.enterprise.inject.Current;
 import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.Named;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -66,9 +68,13 @@ public class JSFNumberGuess implements Serializable
         {
         };
 
-        this.no = manager.getInstanceByType(Integer.class, anns);
+        Set<Bean<?>> beans = manager.getBeans(Integer.class, anns);
+        this.no = (Integer)manager.getReference(beans.iterator().next(), null, null);
+        //this.no = manager.getInstanceByType(Integer.class, anns);
         setSmallRange(1);
-        setMaxRange(manager.getInstanceByType(Integer.class, anns2));
+        beans = manager.getBeans(Integer.class, anns2);
+        setMaxRange((Integer)manager.getReference(beans.iterator().next(), null, null));
+        //setMaxRange(manager.getInstanceByType(Integer.class, anns2));
         setRemainder(10);
         setGuess(1);
         setCorrect(false);
