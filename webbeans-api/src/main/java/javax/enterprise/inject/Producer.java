@@ -11,40 +11,41 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.enterprise.context.spi;
+package javax.enterprise.inject;
+
+import java.util.Set;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 /**
- * The CreationalContext holds incomplete Bean instances. This may be caused by
- * a situation like in the following example: <code>
- * &#x0040;ApplicationScoped class Foo 
- * { 
- *   &#x0040;Current Bar _bar; 
- * }
+ * Provides a generic operation for producing an instance of a type.
  * 
- * &#x0040;ApplicationScoped class Bar 
- * { 
- *   &#x0040;Current Foo _bar; 
- * } 
- * </code>
- * 
- * <p>
- * Generally it is used for prohibiting the circular references of the webbeans.
- * </p>
- * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> bean instance type info
  */
-public interface CreationalContext<T>
+public interface Producer<T> 
 {
     /**
-     * Puts new incomplete instance into the creational context.
+     * Returns instance of a bean.
      * 
-     * @param incompleteInstance incomplete webbeans instance
+     * @param ctx creational context to attach and destroy dependents
+     * @return instance of a bean
      */
-    public void push(T incompleteInstance);
+    public T produce(CreationalContext<T> ctx);
+
+    /**
+     * Dispose the bean instance.
+     * 
+     * @param instance disposed instance of bean
+     */
+    public void dispose(T instance);
     
     /**
-     * Destorys all dependent objects of the instance
-     * that is being destroyed.
+     * Returns bean's set of injection points
+     * 
+     * @return bean's set of injection points
      */
-    public void release();
-
+    public Set<InjectionPoint> getInjectionPoints();
 }

@@ -108,6 +108,13 @@ public interface Bean<T> extends Contextual<T>
      * 
      * @return bean stereotypes
      */
-    public abstract Set<Annotation> getStereotypes();
+    public Set<Class<? extends Annotation>> getStereotypes();
+    
+    /**
+     * Returns true if declares as policy
+     * 
+     * @return true if declares as policy
+     */
+    public boolean isPolicy();
 
 }

@@ -11,40 +11,38 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.enterprise.context.spi;
+package javax.enterprise.inject;
+
+import javax.enterprise.context.spi.CreationalContext;
 
 /**
- * The CreationalContext holds incomplete Bean instances. This may be caused by
- * a situation like in the following example: <code>
- * &#x0040;ApplicationScoped class Foo 
- * { 
- *   &#x0040;Current Bar _bar; 
- * }
+ * Injection related operations on the bean instance.
  * 
- * &#x0040;ApplicationScoped class Bar 
- * { 
- *   &#x0040;Current Foo _bar; 
- * } 
- * </code>
- * 
- * <p>
- * Generally it is used for prohibiting the circular references of the webbeans.
- * </p>
- * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> bean instance type info
  */
-public interface CreationalContext<T>
+public interface InjectionTarget<T> extends Producer<T>
 {
     /**
-     * Puts new incomplete instance into the creational context.
+     * Does injection on the bean instance.
      * 
-     * @param incompleteInstance incomplete webbeans instance
+     * @param instance bean instance
+     * @param ctx creational context
      */
-    public void push(T incompleteInstance);
+    public void inject(T instance, CreationalContext<T> ctx);
     
     /**
-     * Destorys all dependent objects of the instance
-     * that is being destroyed.
+     * Calls <code>@PostConstruct</code> method if it has one.
+     * 
+     * @param instance bean instance
      */
-    public void release();
+    public void postConstruct(T instance);
 
+    /**
+     * Calls <code>@PreDestroy</code> method if it has one.
+     * 
+     * @param instance bean instance
+     */    
+    public void preDestroy(T instance);
 }

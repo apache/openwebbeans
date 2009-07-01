@@ -41,6 +41,7 @@ public interface Contextual<T>
      * in this method.
      * 
      * @param instance already created webbeans instance
+     * @param context creational context
      */
-    public void destroy(T instance);
+    public void destroy(T instance, CreationalContext<T> context);
 }
