@@ -170,7 +170,9 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
         Bean<K> destroy = (Bean<K>) bean;
         K inst = (K) instance;
 
-        destroy.destroy(inst);
+        CreationalContext<K> cc = (CreationalContext<K>)this.creationalContext;
+        
+        destroy.destroy(inst,cc);
     }
 
     /*
@@ -221,15 +223,15 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
         Annotation[] anns = new Annotation[this.parent.getBindings().size()];
         anns = this.parent.getBindings().toArray(anns);
         
-        AbstractComponent<T> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractComponent<T>)this.parent);
+        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractComponent<T>)this.parent);
         
         if(specialize != null)
         {
-            parentInstance = getManager().getInstance(specialize);
+            parentInstance = getManager().getReference(specialize, null, null);
         }
         else
         {
-            parentInstance = getManager().getInstance(this.parent);   
+            parentInstance = getManager().getReference(this.parent, null, null);
         }
         
         return parentInstance;

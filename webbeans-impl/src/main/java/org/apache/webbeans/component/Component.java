@@ -138,7 +138,7 @@ public abstract class Component<T> implements Bean<T>
     /**
      * Gets stereotypes annotations.
      */
-    public abstract Set<Annotation> getStereotypes();
+    public abstract Set<Annotation> getOwbStereotypes();
 
     /**
      * Sets name of the bean.

@@ -18,7 +18,7 @@ import java.lang.reflect.Constructor;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.context.creational.CreationalContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.intercept.InterceptorType;
@@ -73,7 +73,6 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     protected void destroyComponentInstance(T instance)
     {
         if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
@@ -92,7 +91,8 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
         }
         
         //Remove it from creational context, if any
-        CreationalContextFactory.getInstance().removeCreationalContext(this);
+        CreationalContextImpl<T> cc = (CreationalContextImpl<T>)this.creationalContext;
+        cc.remove();
     }
 
     /**

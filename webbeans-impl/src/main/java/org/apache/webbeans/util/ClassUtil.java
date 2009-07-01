@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.inject.spi.InjectionPoint;
+
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
@@ -1778,5 +1780,28 @@ public final class ClassUtil
         }
     }
     
+    /**
+     * Returns injection point raw type.
+     * 
+     * @param injectionPoint injection point definition
+     * @return injection point raw type
+     */
+    public static Class<?> getRawTypeForInjectionPoint(InjectionPoint injectionPoint)
+    {
+        Class<?> rawType = null;
+        Type type = injectionPoint.getType();
+        
+        if(type instanceof Class)
+        {
+            rawType = (Class<?>) type;
+        }
+        else if(type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType)type;            
+            rawType = (Class<?>)pt.getRawType();                                                
+        }
+        
+        return rawType;
+    }
     
 }

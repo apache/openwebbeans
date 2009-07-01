@@ -50,10 +50,12 @@ public final class JavassistProxyFactory
             for (Type generic : types)
             {
                 Class<?> type = (Class<?>)ClassUtil.getClazz(generic);
+                
                 if (type.isInterface())
                 {
                     interfaceList.add(type);
                 }
+                
                 else if ((superClass == null) || (superClass.isAssignableFrom(type) && type != Object.class))
                 {
                     superClass = type;

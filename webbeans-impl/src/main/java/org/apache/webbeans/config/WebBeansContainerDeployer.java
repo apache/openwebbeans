@@ -16,20 +16,14 @@ package org.apache.webbeans.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.ScopeType;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Current;
 import javax.enterprise.inject.deployment.Specializes;
-import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -42,7 +36,6 @@ import org.apache.webbeans.annotation.AfterBeanDiscoveryLiteral;
 import org.apache.webbeans.annotation.BeforeBeanDiscoveryLiteral;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -209,7 +202,7 @@ public class WebBeansContainerDeployer
 
     private void validate(Set<Bean<?>> beans)
     {
-        InjectionResolver resolver = ManagerImpl.getManager().getInjectionResolver();
+        ManagerImpl manager = ManagerImpl.getManager();
         
         if (beans != null && beans.size() > 0)
         {
@@ -220,64 +213,13 @@ public class WebBeansContainerDeployer
                                 
                 for (InjectionPoint injectionPoint : injectionPoints)
                 {
-                    //Check for correct injection type
-                    resolver.checkInjectionPointType(injectionPoint);
-                    
-                    Class<?> rawType = getRawTypeForInjectionPoint(injectionPoint);
-                    
-                    //Comment out while testing TCK Events Test --- WBTCK27 jira./////
-                    //Hack for EntityManager --> Solve in M3!!!!
-                    if(rawType.equals(Event.class) || rawType.getSimpleName().equals("EntityManager"))
-                    {
-                        continue;
-                    }
-                    /////////////////////////////////////////////////////////////////
-                    
-                    // check for InjectionPoint injection
-                    if (rawType.equals(InjectionPoint.class))
-                    {
-                        Annotated annotated = injectionPoint.getAnnotated();
-                        if (annotated.getAnnotations().size() == 1 && annotated.isAnnotationPresent(Current.class))
-                        {
-                            if (!bean.getScopeType().equals(Dependent.class))
-                            {
-                                throw new WebBeansConfigurationException("Bean " + bean + "scope can not define other scope except @Dependent to inject InjectionPoint");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        resolver.checkInjectionPoints(injectionPoint);
-                    }
+                    manager.validate(injectionPoint);
                 }
             }
         }
         
     }
     
-    /**
-     * Returns injection point raw type.
-     * 
-     * @param injectionPoint injection point definition
-     * @return injection point raw type
-     */
-    private Class<?> getRawTypeForInjectionPoint(InjectionPoint injectionPoint)
-    {
-        Class<?> rawType = null;
-        Type type = injectionPoint.getType();
-        
-        if(type instanceof Class)
-        {
-            rawType = (Class<?>) type;
-        }
-        else if(type instanceof ParameterizedType)
-        {
-            ParameterizedType pt = (ParameterizedType)type;            
-            rawType = (Class<?>)pt.getRawType();                                                
-        }
-        
-        return rawType;
-    }
 
     protected void deployFromClassPath(MetaDataDiscoveryService scanner) throws ClassNotFoundException
     {

@@ -13,7 +13,6 @@
  */
 package org.apache.webbeans.test.containertests;
 
-import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 
 import org.apache.webbeans.container.ManagerImpl;
@@ -38,7 +37,7 @@ public class ComponentResolutionByTypeTest extends TestContext
     public @AnnotationWithNonBindingMember(value = "C", arg1 = "arg11", arg2 = "arg21")
     NonBindingComponent s5 = null;
 
-    private static BeanManager cont = ManagerImpl.getManager();
+    private static ManagerImpl cont = ManagerImpl.getManager();
     private static final String CLAZZ_NAME = ComponentResolutionByTypeTest.class.getName();
 
     public ComponentResolutionByTypeTest()

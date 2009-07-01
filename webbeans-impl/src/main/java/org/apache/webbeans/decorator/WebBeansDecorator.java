@@ -244,9 +244,9 @@ public class WebBeansDecorator<T> implements Decorator<T>
         }
     }
 
-    public void destroy(T instance)
+    public void destroy(T instance,CreationalContext<T> context)
     {
-        delegateComponent.destroy(instance);
+        delegateComponent.destroy(instance,context);
     }
 
     @Override
@@ -356,7 +356,7 @@ public class WebBeansDecorator<T> implements Decorator<T>
     }
 
 	@Override
-	public Set<Annotation> getStereotypes() 
+	public Set<Class<? extends Annotation>> getStereotypes() 
 	{
 		return this.delegateComponent.getStereotypes();
 	}
@@ -365,6 +365,13 @@ public class WebBeansDecorator<T> implements Decorator<T>
 	public Set<Type> getDecoratedTypes() {
 		return this.delegateComponent.getTypes();
 	}
+
+    @Override
+    public boolean isPolicy()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
  
 }

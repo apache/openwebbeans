@@ -112,10 +112,11 @@ public class ConversationManager
 
     }
 
+    @SuppressWarnings("unchecked")
     public Conversation getCurrentConversation()
     {
 
-        Bean<Conversation> bean = ManagerImpl.getManager().resolveByType(Conversation.class, new CurrentLiteral()).iterator().next();
+        Bean<Conversation> bean = (Bean<Conversation>)ManagerImpl.getManager().resolveByType(Conversation.class, new CurrentLiteral()).iterator().next();
         Conversation conversation = ManagerImpl.getManager().getInstance(bean);
 
         return conversation;

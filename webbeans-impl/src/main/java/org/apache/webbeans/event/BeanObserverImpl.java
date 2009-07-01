@@ -24,12 +24,12 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.event.Observer;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.ObservesMethodsOwner;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.container.ManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -103,8 +103,8 @@ public class BeanObserverImpl<T> implements Observer<T>
 
         try
         {
-            BeanManager manager = ActivityManager.getInstance().getCurrentActivity();
-            specializedComponent = WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
+            ManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
+            specializedComponent = (AbstractComponent<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
             Context context = manager.getContext(specializedComponent.getScopeType());
             
             if(this.ifExist)
@@ -160,7 +160,8 @@ public class BeanObserverImpl<T> implements Observer<T>
         {
             if (baseComponent.getScopeType().equals(Dependent.class))
             {
-                baseComponent.destroy(object);
+                //TODO Creational Context
+                baseComponent.destroy(object,null);
             }
         }
 
@@ -180,7 +181,7 @@ public class BeanObserverImpl<T> implements Observer<T>
 
         List<Object> list = new ArrayList<Object>();
 
-        BeanManager manager = ActivityManager.getInstance().getCurrentActivity();
+        ManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
 
         if (types.length > 0)
         {

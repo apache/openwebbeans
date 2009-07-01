@@ -1109,7 +1109,7 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
-        Set<Annotation> set = component.getStereotypes();
+        Set<Annotation> set = component.getOwbStereotypes();
         Annotation[] anns = new Annotation[set.size()];
         anns = set.toArray(anns);
         if (AnnotationUtil.isStereoTypeMetaAnnotationExist(anns))
@@ -1125,7 +1125,7 @@ public final class WebBeansUtil
         Asserts.assertNotNull(component, "component parameter can not be null");
         if (isComponentHasStereoType(component))
         {
-            Set<Annotation> set = component.getStereotypes();
+            Set<Annotation> set = component.getOwbStereotypes();
             Annotation[] anns = new Annotation[set.size()];
             anns = set.toArray(anns);
 
@@ -1915,17 +1915,17 @@ public final class WebBeansUtil
         
     }
     
-    public static <T> AbstractComponent<T> getMostSpecializedBean(BeanManager manager, AbstractComponent<T> component)
+    public static Bean<?> getMostSpecializedBean(BeanManager manager, Bean<?> component)
     {
-        Set<Bean<T>> beans = manager.resolveByType(component.getReturnType(), AnnotationUtil.getAnnotationsFromSet(component.getBindings()));
+        Set<Bean<?>> beans = manager.getBeans(component.getBeanClass(), AnnotationUtil.getAnnotationsFromSet(component.getBindings()));
                 
-        for(Bean<T> bean : beans)
+        for(Bean<?> bean : beans)
         {
-            AbstractComponent<T> find = (AbstractComponent<T>)bean;
+            Bean<?> find = bean;
             
             if(!find.equals(component))
             {
-                if(AnnotationUtil.isAnnotationExistOnClass(find.getReturnType(), Specializes.class))
+                if(AnnotationUtil.isAnnotationExistOnClass(find.getBeanClass(), Specializes.class))
                 {
                     return getMostSpecializedBean(manager, find);
                 }                

@@ -23,7 +23,6 @@ import javax.el.PropertyNotFoundException;
 import javax.el.PropertyNotWritableException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.jsp.JspApplicationContext;
 
 import org.apache.webbeans.container.ManagerImpl;
@@ -81,7 +80,7 @@ public class WebBeansELResolver extends ELResolver
     @Override
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
-        BeanManager manager = ManagerImpl.getManager();
+        ManagerImpl manager = ManagerImpl.getManager();
 
         Object object = null;
         Bean<?> bean = null;
@@ -133,7 +132,8 @@ public class WebBeansELResolver extends ELResolver
         {
             T inst = (T) instance;
 
-            bean.destroy(inst);
+            //TODO Creational Context
+            bean.destroy(inst,null);
         }
     }
 

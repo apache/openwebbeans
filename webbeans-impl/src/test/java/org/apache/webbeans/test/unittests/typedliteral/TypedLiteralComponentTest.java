@@ -96,7 +96,7 @@ public class TypedLiteralComponentTest extends TestContext
 
         };
 
-        Bean<ITypeLiteralComponent<List<String>>> s = ManagerImpl.getManager().resolveByType(tl, anns).iterator().next();
+        Bean<?> s = ManagerImpl.getManager().resolveByType(tl, anns).iterator().next();
         Assert.assertNotNull(s);
 
         ContextFactory.destroyRequestContext(null);

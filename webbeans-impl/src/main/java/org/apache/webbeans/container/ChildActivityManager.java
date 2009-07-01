@@ -39,8 +39,10 @@ import org.apache.webbeans.exception.inject.DeploymentException;
  * A ChildActivityManager tries to handle the beans, contexts, ... itself 
  * and delegates all other requests to it's parent Manager. 
  *
+ *  
  */
 @SuppressWarnings("unchecked")
+@Deprecated/*Activities are removed from specification*/
 public class ChildActivityManager extends ManagerImpl
 {    
     
@@ -298,10 +300,10 @@ public class ChildActivityManager extends ManagerImpl
     }
 
     /** {@inheritDoc} */
-    public <T> Set<Bean<T>> resolveByType(Class<T> type, Annotation... bindings)
+    public Set<Bean<?>> resolveByType(Class<?> type, Annotation... bindings)
     {
         //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        Set<Bean<T>> set = super.resolveByType(type, bindings);
+        Set<Bean<?>> set = super.resolveByType(type, bindings);
        
         if (set == null || set.isEmpty()) 
         {
@@ -311,10 +313,10 @@ public class ChildActivityManager extends ManagerImpl
     }
 
     /** {@inheritDoc} */
-    public <T> Set<Bean<T>> resolveByType(TypeLiteral<T> apiType, Annotation... bindingTypes)
+    public Set<Bean<?>> resolveByType(TypeLiteral<?> apiType, Annotation... bindingTypes)
     {
         //X TODO not 100% sure if this is ok. There is some 'double-definition' exception case defined in the spec ...
-        Set<Bean<T>> set = super.resolveByType(apiType, bindingTypes);
+        Set<Bean<?>> set = super.resolveByType(apiType, bindingTypes);
        
         if (set == null || set.isEmpty()) 
         {

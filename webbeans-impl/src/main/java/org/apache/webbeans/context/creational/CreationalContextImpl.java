@@ -16,20 +16,28 @@
  */
 package org.apache.webbeans.context.creational;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
+
+import org.apache.webbeans.util.Asserts;
 
 /** {@inheritDoc} */
 public class CreationalContextImpl<T> implements CreationalContext<T>
 {
     /**Map of bean with its incomplete instance*/
-    private Map<Bean<?>,Object> incompleteInstancesMap = new ConcurrentHashMap<Bean<?>, Object>();
+    private Map<Contextual<?>,Object> incompleteInstancesMap = new ConcurrentHashMap<Contextual<?>, Object>();
 
-    /**Bean*/
-    private Bean<T> incompleteBean = null;
+    /**Contextual bean*/
+    private Contextual<T> incompleteBean = null;
+    
+    /**Contextual bean dependent instances*/
+    private Map<Object, Contextual<?>> dependentObjects = new WeakHashMap<Object, Contextual<?>>();
     
     /**
      * Package private
@@ -45,7 +53,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
      * @param incompleteBean incomplete instance owner
      * @return new creational context
      */
-    protected CreationalContextImpl<T> getCreationalContextImpl(Bean<T> incompleteBean)
+    protected CreationalContextImpl<T> getCreationalContextImpl(Contextual<T> incompleteBean)
     {
         CreationalContextImpl<T> impl = new CreationalContextImpl<T>();        
         
@@ -67,13 +75,33 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
         
     }
     
+    
+    /**
+     * Adds given dependent instance to the map.
+     * 
+     * @param dependent dependent contextual
+     * @param instance dependent instance
+     */
+    public <K> void addDependent(Contextual<K> dependent, Object instance)
+    {
+        Asserts.assertNotNull(dependent,"dependent parameter cannot be null");
+        
+        if(instance != null)
+        {
+            synchronized (this.dependentObjects)
+            {
+                this.dependentObjects.put(instance, dependent);   
+            }            
+        }
+    }
+    
     /**
      * Returns incomplete instance.
      * 
      * @param incompleteBean instance owner
      * @return incomplete instance
      */
-    public Object get(Bean<?> incompleteBean)
+    public Object get(Contextual<?> incompleteBean)
     {
         return incompleteInstancesMap.get(incompleteBean);
     }
@@ -84,12 +112,37 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
      * 
      * @param bean owner bean
      */
-    public void remove(Bean<?> bean)
+    public void  remove()
     {
-        if(this.incompleteInstancesMap.containsKey(bean))
+        if(this.incompleteInstancesMap.containsKey(this.incompleteBean))
         {
-            this.incompleteInstancesMap.remove(bean);   
+            this.incompleteInstancesMap.remove(this.incompleteBean);
+            this.incompleteInstancesMap = null;
+        }        
+    }
+    
+    /**
+     * Removes dependent objects.
+     */
+    @SuppressWarnings("unchecked")
+    private void  removeDependents()
+    {
+        //Clear its dependence objects
+        synchronized (this.dependentObjects)
+        {
+            Collection<?> values = this.dependentObjects.keySet();
+            Iterator<?> iterator = values.iterator();
+            
+            while(iterator.hasNext())
+            {
+                T instance = (T)iterator.next();
+                Contextual<T> dependent = (Contextual<T>)this.dependentObjects.get(instance);
+                dependent.destroy(instance, (CreationalContext<T>)this);                
+            }
+            
+            this.dependentObjects.clear();
         }
+        
     }
     
     /**
@@ -106,7 +159,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
     @Override
     public void release()
     {
-        remove(this.incompleteBean);
+        removeDependents();        
         
     }
 

@@ -16,38 +16,59 @@
  */
 package org.apache.webbeans.context.creational;
 
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.config.WebBeansFinder;
 
-public class CreationalContextFactory<T>
+/**
+ * Factory for {@link CreationalContext} instances.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> contextual type info
+ */
+public final class CreationalContextFactory<T>
 {
+    /**Ceational context that is used for generating other creational contexts*/
     private CreationalContextImpl<T> impl;
     
+    /**
+     * Creates a new <code>CreationalContextFactory</code> instance.
+     */
     public CreationalContextFactory()
     {
         impl = new CreationalContextImpl<T>();
     }
     
+    /**
+     * Gets singleton instance.
+     * 
+     * @return singleton factory per class loader per VM
+     */
     @SuppressWarnings("unchecked")
     public static CreationalContextFactory getInstance()
     {
         return (CreationalContextFactory)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_CREATIONAL_CONTEXT_FACTORY);
     }
     
-    public CreationalContext<T> getCreationalContext(Bean<T> bean)
+    /**
+     * Returns a new creational context for given contextual.
+     * 
+     * @param contextual contextual instance
+     * @return new creational context for given contextual
+     */
+    public CreationalContext<T> getCreationalContext(Contextual<T> contextual)
     {        
-        return impl.getCreationalContextImpl(bean);   
+        return impl.getCreationalContextImpl(contextual);   
     }
-    
-    public void removeCreationalContext(Bean<?> bean)
-    {
-        impl.remove(bean);
-    }
-    
+        
+    /**
+     * Clear all incomplete instance cache.
+     */
     public void clear()
     {
         impl.clear();
+        impl = null;
     }
 }

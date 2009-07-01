@@ -19,6 +19,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,18 +29,27 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.el.ELResolver;
 import javax.enterprise.context.ContextNotActiveException;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ScopeType;
 import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observer;
 import javax.enterprise.inject.AmbiguousResolutionException;
+import javax.enterprise.inject.Current;
 import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.stereotype.Stereotype;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
@@ -54,11 +64,15 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
+import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.event.NotificationManager;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -234,6 +248,7 @@ public class ManagerImpl implements BeanManager, Referenceable
      * @param component new webbeans component
      * @return the this activity
      */
+    
     public BeanManager addBean(Bean<?> component)
     {
         if(component instanceof AbstractComponent)
@@ -250,6 +265,7 @@ public class ManagerImpl implements BeanManager, Referenceable
         return this;
     }
 
+    
     public BeanManager addContext(Context context)
     {
         addContext(context.getScopeType(), ContextFactory.getCustomContext(context));
@@ -258,7 +274,9 @@ public class ManagerImpl implements BeanManager, Referenceable
 
     }
     
-    
+    /**
+     * {@inheritDoc}
+     */
     public void fireEvent(Object event, Annotation... bindings)
     {
         if (ClassUtil.isDefinitionConstainsTypeVariables(event.getClass()))
@@ -269,6 +287,7 @@ public class ManagerImpl implements BeanManager, Referenceable
         this.notificationManager.fireEvent(event, bindings);
     }
 
+    
     public Object getInstanceByName(String name)
     {
         AbstractComponent<?> component = null;
@@ -291,6 +310,7 @@ public class ManagerImpl implements BeanManager, Referenceable
 
         return object;
     }
+    
     
     public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
     {
@@ -328,39 +348,44 @@ public class ManagerImpl implements BeanManager, Referenceable
         return getInstanceToInject(injectionPoint, null);
     }
 
+    
     public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes)
     {
         ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
-        Set<Bean<T>> set = resolveByType(type, bindingTypes);
+        Set<Bean<?>> set = resolveByType(type, bindingTypes);
 
         ResolutionUtil.checkResolvedBeans(set, type, bindingTypes);
 
-        return getInstance(set.iterator().next());
+        return (T)getInstance(set.iterator().next());
     }
 
+    
     public <T> T getInstanceByType(TypeLiteral<T> type, Annotation... bindingTypes)
     {
         ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
-        Set<Bean<T>> set = resolveByType(type, bindingTypes);
+        Set<Bean<?>> set = resolveByType(type, bindingTypes);
 
         ResolutionUtil.checkResolvedBeans(set, type.getRawType(),bindingTypes);
 
-        return getInstance(set.iterator().next());
+        return (T)getInstance(set.iterator().next());
     }
 
+    
     public Set<Bean<?>> resolveByName(String name)
     {
         return this.injectionResolver.implResolveByName(name);
     }
 
-    public <T> Set<Bean<T>> resolveByType(Class<T> apiType, Annotation... bindingTypes)
+    
+    public Set<Bean<?>> resolveByType(Class<?> apiType, Annotation... bindingTypes)
     {
         ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
         
         return this.injectionResolver.implResolveByType(apiType, bindingTypes);
     }
 
-    public <T> Set<Bean<T>> resolveByType(TypeLiteral<T> apiType, Annotation... bindingTypes)
+    
+    public Set<Bean<?>> resolveByType(TypeLiteral<?> apiType, Annotation... bindingTypes)
     {
         ParameterizedType ptype = (ParameterizedType) apiType.getType();
         ResolutionUtil.resolveByTypeConditions(ptype);
@@ -370,34 +395,43 @@ public class ManagerImpl implements BeanManager, Referenceable
         return this.injectionResolver.implResolveByType(apiType.getType(), bindingTypes);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings)
     {
         return this.notificationManager.resolveObservers(event, bindings);
     }
 
+    
     public Set<Bean<?>> getComponents()
     {
         return getManager().components;
     }
-
+    
+    
     public BeanManager addDecorator(Decorator decorator)
     {
         getManager().webBeansDecorators.add(decorator);
         return this;
     }
 
+    
     public BeanManager addInterceptor(Interceptor interceptor)
     {
         getManager().webBeansInterceptors.add(interceptor);
         return this;
     }
 
+    
     public <T> BeanManager addObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
     {
         this.notificationManager.addObserver(observer, eventType, bindings);
         return this;
     }
 
+    
     public <T> BeanManager addObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
     {
         this.notificationManager.addObserver(observer, eventType, bindings);
@@ -406,50 +440,27 @@ public class ManagerImpl implements BeanManager, Referenceable
 
     public <T> T getInstance(Bean<T> bean)
     {
-        Context context = null;
-        T instance = null;
-
-        CreationalContext<T> creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
-        
-        /* @ScopeType is normal */
-        if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
-        {
-            if (this.proxyMap.containsKey(bean))
-            {
-                instance = (T) this.proxyMap.get(bean);
-            }
-            else
-            {
-                instance = (T) JavassistProxyFactory.createNewProxyInstance(bean);
-                this.proxyMap.put(bean, instance);
-            }
-            
-            //Push proxy instance into the creational context,//TODO Seems unnecessary?
-            creationalContext.push(instance);
-            
-        }
-        /* @ScopeType is not normal, like @Dependent */
-        else
-        {
-            context = getContext(bean.getScopeType());
-            instance = (T)context.get(bean, creationalContext);                                
-        }
-
-        return instance;
+        return (T)getReference(bean, null, null);
     }
 
+    
     public <T> BeanManager removeObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
     {
         this.notificationManager.removeObserver(observer, eventType, bindings);
         return this;
     }
 
+    
     public <T> BeanManager removeObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
     {
         this.notificationManager.removeObserver(observer, eventType, bindings);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override    
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         WebBeansUtil.checkDecoratorResolverParams(types, bindingTypes);
@@ -470,6 +481,10 @@ public class ManagerImpl implements BeanManager, Referenceable
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
         WebBeansUtil.checkInterceptorResolverParams(interceptorBindings);
@@ -494,11 +509,12 @@ public class ManagerImpl implements BeanManager, Referenceable
         return interceptorList;
     }
 
+    
     public Set<Bean<?>> getBeans()
     {
         return this.components;
     }
-
+    
     public Set<Interceptor<?>> getInterceptors()
     {
         return this.webBeansInterceptors;
@@ -509,6 +525,7 @@ public class ManagerImpl implements BeanManager, Referenceable
         return this.webBeansDecorators;
     }
 
+    
     private void addContext(Class<? extends Annotation> scopeType, javax.enterprise.context.spi.Context context)
     {
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
@@ -525,11 +542,6 @@ public class ManagerImpl implements BeanManager, Referenceable
         }
         else
         {
-//X TODO Mark , this brokes the TCK tests!!!!
-//            if (context.isActive() && containsActiveContext(contextList))
-//            {
-//                throw new IllegalStateException("There is already an active Context registered for this scope! Context=" + context.getScopeType());
-//            }
             contextList.add(context);
         }
 
@@ -546,6 +558,7 @@ public class ManagerImpl implements BeanManager, Referenceable
      * @param xmlStream beans xml definitions
      * @return {@link BeanManager} instance 
      */
+    
     public BeanManager parse(InputStream xmlStream)
     {
         this.xmlConfigurator.configure(xmlStream);
@@ -556,6 +569,7 @@ public class ManagerImpl implements BeanManager, Referenceable
     /**
      * Create a new ChildActivityManager.
      */
+    
     public BeanManager createActivity()
     {
         return new ChildActivityManager(this);
@@ -566,6 +580,7 @@ public class ManagerImpl implements BeanManager, Referenceable
      * 
      * @param scopeType scope type for the context
      */
+    
     public BeanManager setCurrent(Class<? extends Annotation> scopeType)
     {
         if(!WebBeansUtil.isScopeTypeNormal(scopeType))
@@ -579,5 +594,283 @@ public class ManagerImpl implements BeanManager, Referenceable
         ActivityManager.getInstance().addCurrentActivity(context, this);
         
         return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
+    {
+        AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(type);
+        
+        return annotatedType;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> CreationalContext<T> createCreationalContext(Contextual<T> contextual)
+    {        
+        return CreationalContextFactory.getInstance().getCreationalContext(contextual);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<Bean<?>> getBeans(Type beanType, Annotation... bindings)
+    {
+        if(ClassUtil.isTypeVariable(beanType))
+        {
+            throw new WebBeansConfigurationException("Exception in getBeans method. Bean type can not be TypeVariable");
+        }
+        
+        AnnotationUtil.checkBindingTypeConditions(bindings);
+        
+        return this.injectionResolver.implResolveByType(beanType, bindings);
+        
+    }
+
+    @Override
+    public Set<Bean<?>> getBeans(String name)
+    {        
+        return this.injectionResolver.implResolveByName(name);
+    }
+
+    @Override
+    public ELResolver getELResolver()
+    {
+        return new WebBeansELResolver();
+    }
+
+    @Override
+    public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> context)
+    {
+        Object instance = null;
+        
+        if(injectionPoint == null)
+        {
+            return null;
+        }
+                
+        Annotation[] bindings = new Annotation[injectionPoint.getBindings().size()];
+        bindings = injectionPoint.getBindings().toArray(bindings);
+        
+        //Find the injection point Bean
+        Bean<?> bean = injectionResolver.getInjectionPointBean(injectionPoint);
+        
+        if(context != null && (context instanceof CreationalContextImpl))
+        {
+            CreationalContextImpl<?> creationalContext = (CreationalContextImpl<?>)context;
+            
+            instance = creationalContext.get(bean);
+            
+        }
+        
+        if(instance == null)
+        {
+            instance = getInstance(bean);
+        }
+        
+        return instance;
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<Annotation> getInterceptorBindingTypeDefinition(Class<? extends Annotation> bindingType)
+    {
+        Annotation[] annotations = AnnotationUtil.getInterceptorBindingMetaAnnotations(bindingType.getDeclaredAnnotations());
+        Set<Annotation> set = new HashSet<Annotation>();
+        
+        for(Annotation ann : annotations)
+        {
+            set.add(ann);
+        }
+        
+        return set;
+    }
+
+    @Override
+    public <X> Bean<? extends X> getMostSpecializedBean(Bean<X> bean)
+    {
+        Bean<? extends X> specialized = (Bean<? extends X>) WebBeansUtil.getMostSpecializedBean(this, bean);
+        
+        return specialized;
+    }
+
+    @Override
+    public Bean<?> getPassivationCapableBean(String id)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> ctx)
+    {
+        Context context = null;
+        Object instance = null;
+
+        CreationalContext<Object> creationalContext = (CreationalContext<Object>)ctx;
+        
+        if(ctx == null)
+        {
+            creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
+        }
+        
+        /* @ScopeType is normal */
+        if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
+        {
+            if (this.proxyMap.containsKey(bean))
+            {
+                instance = this.proxyMap.get(bean);
+            }
+            else
+            {
+                instance = JavassistProxyFactory.createNewProxyInstance(bean);
+                this.proxyMap.put(bean, instance);
+            }
+            
+            //Push proxy instance into the creational context
+            creationalContext.push(instance);
+            
+        }
+        /* @ScopeType is not normal, like @Dependent */
+        else
+        {
+            context = getContext(bean.getScopeType());
+            instance = context.get((Bean<Object>)bean, creationalContext);                                
+        }
+        
+        return instance;
+    }
+
+    @Override
+    public ScopeType getScopeDefinition(Class<? extends Annotation> scopeType)
+    {
+        Annotation annotation = AnnotationUtil.getAnnotation(scopeType.getDeclaredAnnotations(), ScopeType.class);
+        
+        if(annotation != null)
+        {
+            return (ScopeType)annotation;
+        }
+        
+        return null;
+    }
+
+    
+    @Override
+    public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
+    {
+        Annotation[] annotations = AnnotationUtil.getStereotypeMetaAnnotations(stereotype.getDeclaredAnnotations());
+        Set<Annotation> set = new HashSet<Annotation>();
+        
+        for(Annotation ann : annotations)
+        {
+            set.add(ann);
+        }
+        
+        return set;
+    }
+
+    @Override
+    public boolean isBindingType(Class<? extends Annotation> annotationType)
+    {
+        return AnnotationUtil.isBindingAnnotation(annotationType);
+    }
+
+    @Override
+    public boolean isInterceptorBindingType(Class<? extends Annotation> annotationType)
+    {
+        return AnnotationUtil.isInterceptorBindingAnnotation(annotationType);
+    }
+
+    @Override
+    public boolean isScopeType(Class<? extends Annotation> annotationType)
+    {
+        if(AnnotationUtil.isAnnotationExist(annotationType.getDeclaredAnnotations(), ScopeType.class))
+        {
+            return true;
+        }
+     
+        return false;
+    }
+
+    @Override
+    public boolean isStereotype(Class<? extends Annotation> annotationType)
+    {
+        if(AnnotationUtil.isAnnotationExist(annotationType.getDeclaredAnnotations(), Stereotype.class))
+        {
+            return true;
+        }
+     
+        return false;
+    }
+
+    @Override
+    public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
+    { 
+        Set set = new HashSet<Bean<Object>>();
+        for(Bean<? extends X> obj : beans)
+        {
+            set.add(obj);
+        }
+        
+        set = this.injectionResolver.findByPrecedence(set);
+        
+        if(set.size() > 1)
+        {
+            set = this.injectionResolver.findBySpecialization(set);
+        }
+        
+        if(set.size() > 0 && set.size() > 1)
+        {
+            throw new AmbiguousResolutionException("Ambigious resolution");
+        }
+        
+        return (Bean<? extends X>)set.iterator().next();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void validate(InjectionPoint injectionPoint)
+    {
+        Bean<?> bean = injectionPoint.getBean();
+        //Check for correct injection type
+        this.injectionResolver.checkInjectionPointType(injectionPoint);
+        
+        Class<?> rawType = ClassUtil.getRawTypeForInjectionPoint(injectionPoint);
+        
+        //Comment out while testing TCK Events Test --- WBTCK27 jira./////
+        //Hack for EntityManager --> Solve in M3!!!!
+        if(rawType.equals(Event.class) || rawType.getSimpleName().equals("EntityManager"))
+        {
+            return;
+        }
+        /////////////////////////////////////////////////////////////////
+        
+        // check for InjectionPoint injection
+        if (rawType.equals(InjectionPoint.class))
+        {
+            Annotated annotated = injectionPoint.getAnnotated();
+            if (annotated.getAnnotations().size() == 1 && annotated.isAnnotationPresent(Current.class))
+            {
+                if (!bean.getScopeType().equals(Dependent.class))
+                {
+                    throw new WebBeansConfigurationException("Bean " + bean + "scope can not define other scope except @Dependent to inject InjectionPoint");
+                }
+            }
+        }
+        else
+        {
+            this.injectionResolver.checkInjectionPoints(injectionPoint);
+        }        
     }    
+        
 }

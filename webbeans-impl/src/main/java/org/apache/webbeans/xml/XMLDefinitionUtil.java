@@ -230,7 +230,7 @@ public final class XMLDefinitionUtil
             i++;
         }
 
-        Set<Annotation> stereoTypesSet = component.getStereotypes();
+        Set<Annotation> stereoTypesSet = component.getOwbStereotypes();
         Annotation[] stereoTypes = new Annotation[stereoTypesSet.size()];
         stereoTypes = stereoTypesSet.toArray(stereoTypes);
         for (Annotation stero : stereoTypes)
@@ -666,7 +666,7 @@ public final class XMLDefinitionUtil
                 Annotation[] bindingAnns = new Annotation[bindingTypes.size()];
                 bindingAnns = bindingTypes.toArray(bindingAnns);
 
-                Set<Bean<T>> set = InjectionResolver.getInstance().implResolveByType(model.getInjectionGenericType(), bindingAnns);
+                Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(model.getInjectionGenericType(), bindingAnns);
                 producerComponent = (XMLProducerComponentImpl<?>) set.iterator().next();
 
                 if (producerComponent == null)

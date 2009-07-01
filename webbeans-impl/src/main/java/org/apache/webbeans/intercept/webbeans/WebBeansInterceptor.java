@@ -281,9 +281,9 @@ public class WebBeansInterceptor<T> implements Interceptor<T>
 
     }
 
-    public void destroy(T instance)
+    public void destroy(T instance,CreationalContext<T> context)
     {
-        delegateComponent.destroy(instance);
+        delegateComponent.destroy(instance,context);
     }
 
     @Override
@@ -385,7 +385,7 @@ public class WebBeansInterceptor<T> implements Interceptor<T>
     }
 
 	@Override
-	public Set<Annotation> getStereotypes() 
+	public Set<Class<? extends Annotation>> getStereotypes() 
 	{ 
 		return this.delegateComponent.getStereotypes();
 	}
@@ -414,4 +414,11 @@ public class WebBeansInterceptor<T> implements Interceptor<T>
 		
 		return method != null ? true : false;
 	}
+
+    @Override
+    public boolean isPolicy()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

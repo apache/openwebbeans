@@ -47,7 +47,6 @@ import org.apache.webbeans.util.ClassUtil;
  * @version $Rev$ $Date$
  * @see WebBeansFinder
  */
-@SuppressWarnings("unchecked")
 public class InjectionResolver
 {
     /**Bean Manager*/
@@ -130,11 +129,11 @@ public class InjectionResolver
         Annotation[] bindingTypes = new Annotation[injectionPoint.getBindings().size()];
         bindingTypes = injectionPoint.getBindings().toArray(bindingTypes);
         
-        Set<Bean<Object>> beanSet = implResolveByType(type ,bindingTypes);
+        Set<Bean<?>> beanSet = implResolveByType(type ,bindingTypes);
         
         ResolutionUtil.checkResolvedBeans(beanSet, clazz, bindingTypes);
         
-        Bean<Object> bean = beanSet.iterator().next();
+        Bean<?> bean = beanSet.iterator().next();
         
         if(clazz.isPrimitive())
         {
@@ -153,7 +152,7 @@ public class InjectionResolver
      * @param injectionPoint injection point declaration
      * @return bean for injection point
      */
-    public Bean<Object> getInjectionPointBean(InjectionPoint injectionPoint)
+    public Bean<?> getInjectionPointBean(InjectionPoint injectionPoint)
     {
         Type type = injectionPoint.getType();
         
@@ -172,7 +171,7 @@ public class InjectionResolver
         Annotation[] bindingTypes = new Annotation[injectionPoint.getBindings().size()];
         bindingTypes = injectionPoint.getBindings().toArray(bindingTypes);
         
-        Set<Bean<Object>> beanSet = implResolveByType(type ,bindingTypes);
+        Set<Bean<?>> beanSet = implResolveByType(type ,bindingTypes);
         
         ResolutionUtil.checkResolvedBeans(beanSet, clazz, bindingTypes);
         
@@ -276,12 +275,12 @@ public class InjectionResolver
      * @param binding binding type of the injection point
      * @return set of resolved beans
      */
-    public <T> Set<Bean<T>> implResolveByType(Type injectionPointType, Annotation... binding)
+    public Set<Bean<?>> implResolveByType(Type injectionPointType, Annotation... binding)
     {
         Asserts.assertNotNull(injectionPointType, "injectionPointType parameter can not be null");
         Asserts.assertNotNull(binding, "binding parameter can not be null");
         
-        Set<Bean<T>> results = new HashSet<Bean<T>>();
+        Set<Bean<?>> results = new HashSet<Bean<?>>();
         Set<Bean<?>> deployedComponents = this.manager.getBeans();
 
         boolean currentBinding = false;
@@ -307,7 +306,7 @@ public class InjectionResolver
 
             if (returnAll)
             {
-                results.add((Bean<T>) component);
+                results.add((Bean<?>) component);
                 continue;
             }
 
@@ -321,7 +320,7 @@ public class InjectionResolver
                     
                     if(ClassUtil.isAssignable(componentApiType, injectionPointType))
                     {
-                        results.add((Bean<T>) component);
+                        results.add((Bean<?>) component);
                         break;                                            
                     }                    
                 }
@@ -351,14 +350,14 @@ public class InjectionResolver
      * @param result result beans
      * @return specialized beans if exists, otherwise return input result
      */
-    private <T> Set<Bean<T>> findBySpecialization(Set<Bean<T>> result)
+    public Set<Bean<?>> findBySpecialization(Set<Bean<?>> result)
     {
-        Iterator<Bean<T>> it = result.iterator();
-        Set<Bean<T>> res = new HashSet<Bean<T>>();
+        Iterator<Bean<?>> it = result.iterator();
+        Set<Bean<?>> res = new HashSet<Bean<?>>();
         
         while(it.hasNext())
         {
-            AbstractComponent<T> component = (AbstractComponent<T>)it.next();
+            AbstractComponent<?> component = (AbstractComponent<?>)it.next();
             if(component.isSpecializedBean())
             {
                 res.add(component);
@@ -380,15 +379,15 @@ public class InjectionResolver
      * @param result resulted beans
      * @return filtered beans according to the deployment type precedence
      */
-    private <T> Set<Bean<T>> findByPrecedence(Set<Bean<T>> result)
+    public Set<Bean<?>> findByPrecedence(Set<Bean<?>> result)
     {
-        Bean<T> resolvedComponent = null;
-        Iterator<Bean<T>> it = result.iterator();
-        Set<Bean<T>> res = new HashSet<Bean<T>>();
+        Bean<?> resolvedComponent = null;
+        Iterator<Bean<?>> it = result.iterator();
+        Set<Bean<?>> res = new HashSet<Bean<?>>();
 
         while (it.hasNext())
         {
-            Bean<T> component = it.next();
+            Bean<?> component = it.next();
 
             if (resolvedComponent == null)
             {
@@ -428,14 +427,14 @@ public class InjectionResolver
      * @param annotations binding types on injection point
      * @return filtered bean set according to the binding types
      */
-    private <T> Set<Bean<T>> findByBindingType(Set<Bean<T>> remainingSet, Annotation... annotations)
+    private Set<Bean<?>> findByBindingType(Set<Bean<?>> remainingSet, Annotation... annotations)
     {
-        Iterator<Bean<T>> it = remainingSet.iterator();
-        Set<Bean<T>> result = new HashSet<Bean<T>>();
+        Iterator<Bean<?>> it = remainingSet.iterator();
+        Set<Bean<?>> result = new HashSet<Bean<?>>();
 
         while (it.hasNext())
         {
-            Bean<T> component = it.next();
+            Bean<?> component = it.next();
             Set<Annotation> bTypes = component.getBindings();
 
             int i = 0;

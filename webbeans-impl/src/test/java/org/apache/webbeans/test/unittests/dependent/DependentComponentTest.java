@@ -15,8 +15,6 @@ package org.apache.webbeans.test.unittests.dependent;
 
 import java.util.List;
 
-import javax.servlet.ServletContext;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractComponent;

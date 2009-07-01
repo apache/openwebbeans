@@ -50,7 +50,7 @@ public final class ResolutionUtil
         AnnotationUtil.checkBindingTypeConditions(bindingTypes);
     }
 
-    public static <T> void checkResolvedBeans(Set<Bean<T>> resolvedSet, Class<?> type, Annotation[] bindingTypes)
+    public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] bindingTypes)
     {
         if (resolvedSet.isEmpty())
         {
@@ -79,7 +79,7 @@ public final class ResolutionUtil
             throw new AmbiguousResolutionException("There is more than one api type with : " + type.getName());
         }
 
-        Bean<T> bean = resolvedSet.iterator().next();
+        Bean<?> bean = resolvedSet.iterator().next();
         WebBeansUtil.checkUnproxiableApiType(bean, bean.getScopeType().getAnnotation(ScopeType.class));
 
     }

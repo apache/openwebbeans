@@ -65,6 +65,7 @@ class InstanceImpl<T> implements Instance<T>
      * @param annotations binding annotations
      * @return bean instance
      */
+    @SuppressWarnings("unchecked")
     public T get()
     {
         T instance = null;
@@ -72,12 +73,12 @@ class InstanceImpl<T> implements Instance<T>
         Annotation[] anns = new Annotation[this.bindingAnnotations.size()];
         anns = this.bindingAnnotations.toArray(anns);
         
-        Set<Bean<T>> beans = resolveBeans();
+        Set<Bean<?>> beans = resolveBeans();
 
         ResolutionUtil.checkResolvedBeans(beans, ClassUtil.getClazz(this.injectionClazz),anns);
 
-        Bean<T> bean = beans.iterator().next();
-        instance = ManagerImpl.getManager().getInstance(bean);
+        Bean<?> bean = beans.iterator().next();
+        instance = (T)ManagerImpl.getManager().getInstance(bean);
 
         return instance;
     }
@@ -87,13 +88,13 @@ class InstanceImpl<T> implements Instance<T>
      * 
      * @return set of resolved beans
      */
-    private Set<Bean<T>> resolveBeans()
+    private Set<Bean<?>> resolveBeans()
     {
         Annotation[] anns = new Annotation[this.bindingAnnotations.size()];
         anns = this.bindingAnnotations.toArray(anns);
 
         InjectionResolver resolver = InjectionResolver.getInstance();
-        Set<Bean<T>> beans = resolver.implResolveByType(this.injectionClazz, anns);
+        Set<Bean<?>> beans = resolver.implResolveByType(this.injectionClazz, anns);
         
         return beans;
     }
@@ -104,7 +105,7 @@ class InstanceImpl<T> implements Instance<T>
     @Override
     public boolean isAmbiguous()
     {
-        Set<Bean<T>> beans = resolveBeans();
+        Set<Bean<?>> beans = resolveBeans();
         
         return beans.size() > 1 ? true : false;
     }
@@ -115,7 +116,7 @@ class InstanceImpl<T> implements Instance<T>
     @Override
     public boolean isUnsatisfied()
     {
-        Set<Bean<T>> beans = resolveBeans();
+        Set<Bean<?>> beans = resolveBeans();
         
         return beans.size() == 0 ? true : false;
     }
@@ -196,13 +197,14 @@ class InstanceImpl<T> implements Instance<T>
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("unchecked")
     public Iterator<T> iterator()
     {
-        Set<Bean<T>> beans = resolveBeans();
+        Set<Bean<?>> beans = resolveBeans();
         Set<T> instances = new HashSet<T>();
-        for(Bean<T> bean : beans)
+        for(Bean<?> bean : beans)
         {
-            T instance = ManagerImpl.getManager().getInstance(bean);
+            T instance = (T)ManagerImpl.getManager().getInstance(bean);
             instances.add(instance);
         }
         

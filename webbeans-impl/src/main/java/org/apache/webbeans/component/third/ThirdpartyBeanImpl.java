@@ -102,9 +102,9 @@ public class ThirdpartyBeanImpl<T> extends AbstractComponent<T>
         return bean.create(context);
     }
 
-    public void destroy(T instance)
+    public void destroy(T instance, CreationalContext<T> context)
     {
-        bean.destroy(instance);
+        bean.destroy(instance,context);
         
     }
 

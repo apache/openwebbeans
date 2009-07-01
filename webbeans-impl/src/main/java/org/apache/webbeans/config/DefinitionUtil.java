@@ -32,7 +32,6 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Current;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Initializer;
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Named;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.Produces;
@@ -327,11 +326,11 @@ public final class DefinitionUtil
             Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedStereoTypes();        
             for (Annotation inherited : inheritedTypes)
             {
-                Set<Annotation> bindings = component.getStereotypes();
+                Set<Class<? extends Annotation>> bindings = component.getStereotypes();
                 boolean found = false;
-                for (Annotation existBinding : bindings)
+                for (Class<? extends Annotation> existBinding : bindings)
                 {
-                    if (existBinding.annotationType().equals(inherited.annotationType()))
+                    if (existBinding.equals(inherited.annotationType()))
                     {
                         found = true;
                         break;
@@ -363,7 +362,7 @@ public final class DefinitionUtil
 
         if (!found)
         {
-            Set<Annotation> stereos = component.getStereotypes();
+            Set<Class<? extends Annotation>> stereos = component.getStereotypes();
             if (stereos.size() == 0)
             {
                 component.setImplScopeType(new DependentScopeLiteral());
@@ -371,12 +370,12 @@ public final class DefinitionUtil
             else
             {
                 Annotation defined = null;
-                Set<Annotation> anns = component.getStereotypes();
-                for (Annotation stero : anns)
+                Set<Class<? extends Annotation>> anns = component.getStereotypes();
+                for (Class<? extends Annotation> stero : anns)
                 {
-                    if (AnnotationUtil.isMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations(), ScopeType.class))
+                    if (AnnotationUtil.isMetaAnnotationExist(stero.getDeclaredAnnotations(), ScopeType.class))
                     {
-                        Annotation next = AnnotationUtil.getMetaAnnotations(stero.annotationType().getDeclaredAnnotations(), ScopeType.class)[0];
+                        Annotation next = AnnotationUtil.getMetaAnnotations(stero.getDeclaredAnnotations(), ScopeType.class)[0];
 
                         if (defined == null)
                         {
@@ -783,8 +782,8 @@ public final class DefinitionUtil
                 annot = AnnotationUtil.getRealizesGenericAnnotations(component.getReturnType(), annot);
             }
 
-            Set<Bean<T>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
-            Bean<T> bean = set.iterator().next();
+            Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
+            Bean<?> bean = set.iterator().next();
             ProducerComponentImpl<?> pr = null;
 
             if (bean == null || !(bean instanceof ProducerComponentImpl))

@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextNotActiveException;
@@ -25,31 +26,53 @@ import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.context.type.ContextTypes;
 
 /**
  * Abstract implementation of the {@link WebBeansContext} interfaces.
+ * 
+ * @see Context
+ * @see RequestContext
+ * @see DependentContext
+ * @see SessionContext
+ * @see ApplicationContext
+ * @see ConversationContext
  */
 public abstract class AbstractContext implements WebBeansContext
 {
+    /**Context status, active or not*/
     protected boolean active;
 
+    /**Context type*/
     protected ContextTypes type;
 
+    /**Context contextual instances*/
     protected Map<Contextual<?>, Object> componentInstanceMap = null;
 
+    /**Contextual Scope Type*/
     protected Class<? extends Annotation> scopeType;
+    
+    /**Contextual to CreationalContext Map*/
+    protected Map<Contextual<?>, CreationalContext<?>> creationalContextMap = new ConcurrentHashMap<Contextual<?>, CreationalContext<?>>();
 
+    /**
+     * Creates a new context instance
+     */
     protected AbstractContext()
     {
 
     }
 
+    /**
+     * Creates a new context with given scope type.
+     * 
+     * @param scopeType context scope type
+     */
     protected AbstractContext(Class<? extends Annotation> scopeType)
     {
         this.scopeType = scopeType;
@@ -57,6 +80,11 @@ public abstract class AbstractContext implements WebBeansContext
 
     }
 
+    /**
+     * Creates a new context with given context type.
+     * 
+     * @param type context type
+     */
     protected AbstractContext(ContextTypes type)
     {
         this.type = type;
@@ -64,6 +92,11 @@ public abstract class AbstractContext implements WebBeansContext
         setComponentInstanceMap();
     }
 
+    /**
+     * Configures scope type from context type.
+     * 
+     * @param type context type
+     */
     private void configureScopeType(ContextTypes type)
     {
         if (type.equals(ContextTypes.APPLICATION))
@@ -86,9 +119,16 @@ public abstract class AbstractContext implements WebBeansContext
         {
             this.scopeType = ConversationScoped.class;
         }
+        else
+        {
+            throw new IllegalArgumentException("Not known scope type : " + type.toString());
+        }
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     public <T> T get(Contextual<T> component)
     {
@@ -97,6 +137,9 @@ public abstract class AbstractContext implements WebBeansContext
         return (T) componentInstanceMap.get(component);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public <T> T get(Contextual<T> component, CreationalContext<T> creationalContext)
     {
         checkActive();
@@ -104,6 +147,9 @@ public abstract class AbstractContext implements WebBeansContext
         return getInstance(component, creationalContext);
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @SuppressWarnings("unchecked")
     protected <T> T getInstance(Contextual<T> component, CreationalContext<T> creationalContext)
     {
@@ -128,18 +174,14 @@ public abstract class AbstractContext implements WebBeansContext
 
                 if (instance != null)
                 {
-                    componentInstanceMap.put(component, instance);
+                    this.componentInstanceMap.put(component, instance);
+                    this.creationalContextMap.put(component, creationalContext);
                 }
                 
             }            
         }
 
         return  instance;
-    }
-
-    public <T> void remove(Contextual<T> component)
-    {
-        removeInstance(component);
     }
 
     /**
@@ -149,15 +191,14 @@ public abstract class AbstractContext implements WebBeansContext
      * @param component web beans component
      * @param instance component instance
      */
-    private <T> void destroyInstance(Bean<T> component, T instance)
+    private <T> void destroyInstance(Contextual<T> component, T instance,CreationalContext<T> creationalContext)
     {
-        component.destroy(instance);
+        //Destroy component
+        component.destroy(instance,creationalContext);
     }
-
+    
     /**
-     * Destroys the context.
-     * 
-     * @param <T>
+     * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
     public void destroy()
@@ -171,21 +212,16 @@ public abstract class AbstractContext implements WebBeansContext
             component = it.next().getKey();
             
             Object instance = componentInstanceMap.get(component);
+            //Get creational context
+            CreationalContext<Object> cc = (CreationalContext<Object>)this.creationalContextMap.get(component);
 
-            destroyInstance((Bean<Object>) component, instance);
+            //Destroy instance
+            destroyInstance((Bean<Object>) component, instance, cc);
 
         }
         
         //Clear cache
         componentInstanceMap.clear();
-    }
-
-    protected <T> void removeInstance(Contextual<T> component)
-    {
-        if (componentInstanceMap.get(component) != null)
-        {
-            componentInstanceMap.remove(component);
-        }
     }
 
     /**
@@ -209,33 +245,41 @@ public abstract class AbstractContext implements WebBeansContext
     }
 
     /**
-     * Type of the context
+     * Type of the context.
      * 
-     * @return type
+     * @return type of the context
+     * @see ContextTypes
      */
     public ContextTypes getType()
     {
         return type;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Map<Contextual<?>, Object> getComponentInstanceMap()
     {
         return componentInstanceMap;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Class<? extends Annotation> getScopeType()
     {
 
         return this.scopeType;
     }
 
-    public <T> void remove(BeanManager container, Bean<T> component)
-    {
-        remove(component);
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     protected abstract void setComponentInstanceMap();
     
+    /**
+     * Check that context is active or throws exception.
+     */
     protected void checkActive()
     {
         if (!active)

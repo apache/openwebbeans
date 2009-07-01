@@ -124,7 +124,8 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
         Bean<K> destroy = (Bean<K>) bean;
         K inst = (K) instance;
 
-        destroy.destroy(inst);
+        CreationalContext<K> cc = (CreationalContext<K>)this.creationalContext;
+        destroy.destroy(inst,cc);
     }
     
     @SuppressWarnings("unchecked")
@@ -138,15 +139,15 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
         Annotation[] anns = new Annotation[this.ownerComponent.getBindings().size()];
         anns = this.ownerComponent.getBindings().toArray(anns);
         
-        AbstractComponent<T> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractComponent<T>)this.ownerComponent);
+        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractComponent<T>)this.ownerComponent);
         
         if(specialize != null)
         {
-            parentInstance = getManager().getInstance(specialize);
+            parentInstance = getManager().getReference(specialize, null, null);
         }
         else
         {
-            parentInstance = getManager().getInstance(this.ownerComponent);   
+            parentInstance = getManager().getReference(this.ownerComponent,null,null);   
         }
         
         return parentInstance;

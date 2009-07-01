@@ -19,11 +19,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
@@ -33,8 +30,10 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.intercept.InterceptorData;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -47,6 +46,9 @@ import org.apache.webbeans.util.ClassUtil;
  */
 public abstract class AbstractComponent<T> extends Component<T>
 {
+    /**Logger instance*/
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
+    
     /** Name of the component */
     protected String name;
 
@@ -67,9 +69,6 @@ public abstract class AbstractComponent<T> extends Component<T>
 
     /** Return type of the component */
     protected Class<T> returnType;
-
-    /** Dependent object map of the component */
-    protected Map<Object, Bean<?>> dependentObjects = new WeakHashMap<Object, Bean<?>>();
 
     /** Stereotypes of the component */
     protected Set<Annotation> stereoTypes = new HashSet<Annotation>();
@@ -100,6 +99,9 @@ public abstract class AbstractComponent<T> extends Component<T>
     
     /**Tracks dependent injection point owner, can be null*/
     protected InjectionPoint dependentOwnerInjectionPoint;
+    
+    /**Creational context*/
+    protected CreationalContext<T> creationalContext = null;
 
     /**
      * Constructor definiton. Each subclass redefines its own constructor with
@@ -149,8 +151,8 @@ public abstract class AbstractComponent<T> extends Component<T>
         T instance = null;
         try
         {
-
-            instance = createInstance(creationalContext);
+            this.creationalContext = creationalContext;
+            instance = createInstance(this.creationalContext);
 
         }
         catch (Exception re)
@@ -185,20 +187,28 @@ public abstract class AbstractComponent<T> extends Component<T>
      * (non-Javadoc)
      * @see javax.webbeans.component.Component#destroy(java.lang.Object)
      */
-    public void destroy(T instance)
+    public void destroy(T instance, CreationalContext<T> creationalContext)
     {
-        //Destory dependent instances
-        destroyDependents();
-        
-        //Destroy instance, call @PreDestroy
-        destroyInstance(instance);
-                    
-        //Clear Decorator and Interceptor Stack
-        this.decoratorStack.clear();
-        this.interceptorStack.clear();
-        
-        //Reset it
-        this.dependentOwnerInjectionPoint = null;
+        try
+        {
+            //Destory dependent instances
+            this.creationalContext.release();
+            
+            //Destroy instance, call @PreDestroy
+            destroyInstance(instance);
+                        
+            //Clear Decorator and Interceptor Stack
+            this.decoratorStack.clear();
+            this.interceptorStack.clear();
+            
+            //Reset it
+            this.dependentOwnerInjectionPoint = null;  
+            
+        }catch(Exception e)
+        {
+            logger.fatal("Exception is thrown while destroying bean instance : " + toString());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -330,7 +340,7 @@ public abstract class AbstractComponent<T> extends Component<T>
      * 
      * @return stereotypes of the component
      */
-    public Set<Annotation> getStereotypes()
+    public Set<Annotation> getOwbStereotypes()
     {
         return this.stereoTypes;
     }
@@ -420,9 +430,11 @@ public abstract class AbstractComponent<T> extends Component<T>
         
         //Get dependent instance
         object = ManagerImpl.getManager().getInstance(dependentComponent);
-                
+        
+        CreationalContextImpl<T> cc = (CreationalContextImpl<T>)this.creationalContext;
+
         //Put this into the dependent map
-        this.dependentObjects.put(object, dependentComponent);
+        cc.addDependent(dependentComponent, object);
 
         return object;
     }
@@ -483,24 +495,6 @@ public abstract class AbstractComponent<T> extends Component<T>
     {
         return this.serializable;
     }
-
-    @SuppressWarnings("unchecked")
-    protected <K> void destroyDependents()
-    {
-        Set<Object> keySet = this.dependentObjects.keySet();
-        Iterator<Object> it = keySet.iterator();
-
-        K instance = null;
-
-        while (it.hasNext())
-        {
-            instance = (K) it.next();
-            Bean<K> bean = (Bean<K>) this.dependentObjects.get(instance);
-            bean.destroy(instance);            
-        }
-        
-        this.dependentObjects.clear();
-    }
     
     public void addInjectionPoint(InjectionPoint injectionPoint)
     {
@@ -552,6 +546,24 @@ public abstract class AbstractComponent<T> extends Component<T>
         }
         
         return points;
+    }
+    
+    public Set<Class<? extends Annotation>> getStereotypes()
+    {
+        Set<Class<? extends Annotation>> set = new HashSet<Class<? extends Annotation>>();
+        
+        for(Annotation ann : this.stereoTypes)
+        {
+            set.add(ann.annotationType());
+        }
+        
+        return set;
+    }
+    
+    //TODO Replaces @Deploymeny Types, no starting work for now!
+    public boolean isPolicy()
+    {
+        return false;
     }
     
     public String toString()

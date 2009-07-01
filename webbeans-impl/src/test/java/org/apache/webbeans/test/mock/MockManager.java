@@ -20,10 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.el.ELResolver;
+import javax.enterprise.context.ScopeType;
 import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observer;
 import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -83,12 +87,12 @@ public class MockManager implements BeanManager
         return manager.addContext(context);
     }
 
-    public BeanManager addDecorator(Decorator decorator)
+    public BeanManager addDecorator(Decorator<?> decorator)
     {
         return manager.addDecorator(decorator);
     }
 
-    public BeanManager addInterceptor(Interceptor interceptor)
+    public BeanManager addInterceptor(Interceptor<?> interceptor)
     {
         manager.addInterceptor(interceptor);
         return this;
@@ -122,7 +126,6 @@ public class MockManager implements BeanManager
         return manager.<T>getInstanceToInject(injectionPoint, context); //X ugly <T> due to javac bug 6302954
     }
     
-    @SuppressWarnings("unchecked")
     public Object getInstanceToInject(InjectionPoint injectionPoint)
     {
        return manager.getInstanceToInject(injectionPoint);
@@ -164,12 +167,12 @@ public class MockManager implements BeanManager
         return manager.resolveByName(name);
     }
 
-    public <T> Set<Bean<T>> resolveByType(Class<T> type, Annotation... bindings)
+    public Set<Bean<?>> resolveByType(Class<?> apiType, Annotation... bindingTypes)
     {
-        return manager.resolveByType(type, bindings);
+        return manager.resolveByType(apiType, bindingTypes);
     }
 
-    public <T> Set<Bean<T>> resolveByType(TypeLiteral<T> apiType, Annotation... bindingTypes)
+    public Set<Bean<?>> resolveByType(TypeLiteral<?> apiType, Annotation... bindingTypes)
     {
         return manager.resolveByType(apiType, bindingTypes);
     }
@@ -203,5 +206,132 @@ public class MockManager implements BeanManager
     public BeanManager setCurrent(Class<? extends Annotation> scopeType)
     {
         return manager.setCurrent(scopeType);
+    }
+
+
+    @Override
+    public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
+    {
+        return this.manager.createAnnotatedType(type);
+    }
+
+
+    @Override
+    public <T> CreationalContext<T> createCreationalContext(Contextual<T> contextual)
+    {
+        return this.manager.createCreationalContext(contextual);
+    }
+
+
+    @Override
+    public Set<Bean<?>> getBeans(Type beanType, Annotation... bindings)
+    {
+        return this.manager.getBeans();
+    }
+
+
+    @Override
+    public Set<Bean<?>> getBeans(String name)
+    {
+        return this.manager.getBeans(name);
+    }
+
+
+    @Override
+    public ELResolver getELResolver()
+    {
+        return this.manager.getELResolver();
+    }
+
+
+    @Override
+    public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> ctx)
+    {
+        return this.manager.getInjectableReference(injectionPoint, ctx);
+    }
+
+
+    @Override
+    public Set<Annotation> getInterceptorBindingTypeDefinition(Class<? extends Annotation> bindingType)
+    {
+        return this.manager.getInterceptorBindingTypeDefinition(bindingType);
+    }
+
+
+    @Override
+    public <X> Bean<? extends X> getMostSpecializedBean(Bean<X> bean)
+    {
+        return this.manager.getMostSpecializedBean(bean);
+    }
+
+
+    @Override
+    public Bean<?> getPassivationCapableBean(String id)
+    {
+        return this.manager.getPassivationCapableBean(id);
+    }
+
+
+    @Override
+    public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> ctx)
+    {
+        return this.manager.getReference(bean, beanType, ctx);
+    }
+
+
+    @Override
+    public ScopeType getScopeDefinition(Class<? extends Annotation> scopeType)
+    {
+        return this.manager.getScopeDefinition(scopeType);
+    }
+
+
+    @Override
+    public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
+    {
+        return this.manager.getStereotypeDefinition(stereotype);
+    }
+
+
+    @Override
+    public boolean isBindingType(Class<? extends Annotation> annotationType)
+    {
+        return this.manager.isBindingType(annotationType);
+    }
+
+
+    @Override
+    public boolean isInterceptorBindingType(Class<? extends Annotation> annotationType)
+    {
+        return this.manager.isInterceptorBindingType(annotationType);
+    }
+
+
+    @Override
+    public boolean isScopeType(Class<? extends Annotation> annotationType)
+    {
+        return this.manager.isScopeType(annotationType);
+    }
+
+
+    @Override
+    public boolean isStereotype(Class<? extends Annotation> annotationType)
+    {
+        return this.manager.isStereotype(annotationType);
+    }
+
+
+    @Override
+    public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans)
+    {
+        return this.manager.resolve(beans);
+    }
+
+
+    @Override
+    public void validate(InjectionPoint injectionPoint)
+    {
+        this.manager.validate(injectionPoint);
+        
     }
 }
