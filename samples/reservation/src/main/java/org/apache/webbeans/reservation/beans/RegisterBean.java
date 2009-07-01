@@ -70,7 +70,7 @@ public class RegisterBean
     @PostConstruct
     public void init()
     {
-        logger = (Log)manager.getInstanceByName("logger");
+        logger = (Log)manager.getReference(manager.getBeans("logger").iterator().next(), null, null);
     }
     
     
