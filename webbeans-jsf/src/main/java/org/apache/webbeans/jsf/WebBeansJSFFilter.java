@@ -53,8 +53,8 @@ public class WebBeansJSFFilter implements Filter
             @Override
             public void sendRedirect(String location) throws IOException
             {
-                Bean<Conversation> bean = ManagerImpl.getManager().resolveByType(Conversation.class, new CurrentLiteral()).iterator().next();
-                Conversation conversation = ManagerImpl.getManager().getInstance(bean);
+                Bean<?> bean = ManagerImpl.getManager().resolveByType(Conversation.class, new CurrentLiteral()).iterator().next();
+                Conversation conversation = (Conversation)ManagerImpl.getManager().getInstance(bean);
 
                 String path = location;
 
