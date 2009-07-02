@@ -71,6 +71,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionListener;
 
+import org.apache.webbeans.annotation.ApplicationScopeLiteral;
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.NewLiteral;
@@ -81,6 +82,7 @@ import org.apache.webbeans.component.AbstractComponent;
 import org.apache.webbeans.component.Component;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.ConversationComponent;
+import org.apache.webbeans.component.ExtensionComponent;
 import org.apache.webbeans.component.InjectionPointComponentImpl;
 import org.apache.webbeans.component.InstanceComponentImpl;
 import org.apache.webbeans.component.ManagerComponentImpl;
@@ -630,6 +632,32 @@ public final class WebBeansUtil
 
         return comp;
     }
+    
+    /**
+     * Creates a new extension bean.
+     * 
+     * @param <T> extension service class
+     * @param clazz impl. class
+     * @return a new extension service bean
+     */
+    public static <T> ExtensionComponent<T> createExtensionComponent(Class<T> clazz)
+    {
+        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+
+        ExtensionComponent<T> comp = null;
+        comp = new ExtensionComponent<T>(clazz);
+        
+        DefinitionUtil.defineApiTypes(comp, clazz);
+        
+        comp.setImplScopeType(new ApplicationScopeLiteral());
+        comp.addBindingType(new CurrentLiteral());        
+        comp.setType(new ProductionLiteral());
+        
+        DefinitionUtil.defineObserverMethods(comp, clazz);
+
+        return comp;
+    }
+    
 
     /**
      * Returns a new managed bean from given bean.

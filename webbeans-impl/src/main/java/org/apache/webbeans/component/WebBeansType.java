@@ -40,6 +40,8 @@ import javax.enterprise.inject.Produces;
  * For further details about the components, see Web Beans Specification
  * Chapter-2.
  * </p>
+ * 
+ * @version $Rev$ $Date$
  */
 public enum WebBeansType
 {
@@ -57,5 +59,6 @@ public enum WebBeansType
     CONVERSATION,
     INSTANCE,
     INJECTIONPOINT,
-    THIRDPARTY
+    THIRDPARTY,
+    EXTENSION
 }

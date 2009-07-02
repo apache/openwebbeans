@@ -11,12 +11,15 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.annotation;
+package org.apache.webbeans.test.component.portable.events;
 
-import javax.enterprise.inject.AnnotationLiteral;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
 
-public class BeforeBeanDiscoveryLiteral extends AnnotationLiteral<BeforeBeanDiscovery> implements BeforeBeanDiscovery
+public class MyExtension implements Extension
 {
+    public MyExtension()
+    {
+        
+    }
 
 }

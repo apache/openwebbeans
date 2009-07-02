@@ -27,13 +27,10 @@ import javax.enterprise.inject.deployment.Specializes;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.stereotype.Model;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
-import org.apache.webbeans.annotation.AfterBeanDiscoveryLiteral;
-import org.apache.webbeans.annotation.BeforeBeanDiscoveryLiteral;
 import org.apache.webbeans.component.ComponentImpl;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.ManagerImpl;
@@ -142,15 +139,15 @@ public class WebBeansContainerDeployer
     
     private void fireInitializeEvent()
     {
-        BeanManager manager = ManagerImpl.getManager();
-        manager.fireEvent(manager, new Annotation[] { new BeforeBeanDiscoveryLiteral() });
+        //BeanManager manager = ManagerImpl.getManager();
+        //manager.fireEvent(manager, new Annotation[] { new BeforeBeanDiscoveryLiteral() });
     }
     
     
     private void fireDeployedEvent()
     {
-        BeanManager manager = ManagerImpl.getManager();
-        manager.fireEvent(manager, new Annotation[] { new AfterBeanDiscoveryLiteral() });        
+        //BeanManager manager = ManagerImpl.getManager();
+        //manager.fireEvent(manager, new Annotation[] { new AfterBeanDiscoveryLiteral() });        
         
     }
     

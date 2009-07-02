@@ -39,6 +39,7 @@ import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.servlet.WebBeansConfigurationListener;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ServiceLoader;
@@ -196,6 +197,10 @@ public final class WebBeansLifeCycle
         // finally free all plugin resources
         PluginLoader.getInstance().shutDown();
         
+        //Clear extensions
+        ExtensionLoader.getInstance().clear();
+        
+        //Clear singleton list
         WebBeansFinder.clearInstances();
         
         logger.info("Dependency injection container is stopped for context path : " + event.getServletContext().getContextPath());        
