@@ -13,19 +13,55 @@
  */
 package javax.enterprise.inject.spi;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Annotation;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.enterprise.inject.BindingType;
-
-@BindingType
-@Retention(RUNTIME)
-@Target( { FIELD, PARAMETER })
-public @interface BeforeBeanDiscovery
+/**
+ * Container fires this event before discovery
+ * of the beans process.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
+public interface BeforeBeanDiscovery
 {
+    /**
+     * Declares a new binding type.
+     * 
+     * @param bindingType binding type
+     */
+    public void addBindingType(Class<? extends Annotation> bindingType);
+    
+    /**
+     * Declares a new scope type.
+     * 
+     * @param scopeType scope type
+     * @param normal is normal or not
+     * @param passivating passivated or not
+     */
+    public void addScopeType(Class<? extends Annotation> scopeType, boolean normal, boolean passivating);
+    
+    /**
+     * Declares a new stereotype.
+     * 
+     * @param stereotype stereotype class
+     * @param stereotypeDef meta annotations
+     */
+    public void addStereotype(Class<? extends Annotation> stereotype, Annotation... stereotypeDef);
+    
+    /**
+     * Declares a new binding type.
+     * 
+     * @param bindingType binding type class
+     * @param bindingTypeDef meta annotations
+     */
+    public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation... bindingTypeDef);
+    
+    /**
+     * Adds new annotated type.
+     * 
+     * @param type annotated type
+     */
+    public void addAnnotatedType(AnnotatedType<?> type);
+
 
 }

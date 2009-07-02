@@ -13,42 +13,14 @@
  */
 package javax.enterprise.inject.spi;
 
-import javax.enterprise.context.spi.Context;
-
 /**
- * Events that are fired after discovery bean process.
+ * Marker interface that is implemented by the classes
+ * that listen for the container events.
  * 
  * @version $Rev$ $Date$
  *
  */
-public interface AfterBeanDiscovery 
+public interface Extension
 {
-    /**
-     * Adds definition error. Container aborts deployment after
-     * all observer methods are called.
-     * 
-     * @param t throwable
-     */
-    public void addDefinitionError(Throwable t);
 
-    /**
-     * Registering the bean with container.
-     * 
-     * @param bean new bean
-     */
-    public void addBean(Bean<?> bean);
-    
-    /**
-     * Registers the given observer method with container.
-     * 
-     * @param observerMethod observer method
-     */
-    public void addObserverMethod(ObserverMethod<?, ?> observerMethod);
-    
-    /**
-     * Adds given context to the container.
-     * 
-     * @param context new context
-     */
-    public void addContext(Context context);
 }
