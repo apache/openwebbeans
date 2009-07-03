@@ -13,25 +13,20 @@
  */
 package javax.enterprise.inject.spi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
-
-import javax.enterprise.event.Notify;
-import javax.enterprise.event.TransactionPhase;
-
-public interface ObserverMethod<X,T>
+/**
+ * Fired before registering producer field.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <X> bean class
+ * @param <T> producer field return type
+ */
+public interface ProcessProducerField<X, T> extends ProcessBean<X>
 {
-    public Bean<X> getBean();
-    
-    public Type getObservedType();
-    
-    public Set<Annotation> getObservedBindings();
-    
-    public Notify getNotify();
-    
-    public TransactionPhase getTransactionPhase();
-
-    public void notify(T event);    
-
+    /**
+     * Returns annotated field.
+     * 
+     * @return annotated field.
+     */
+    public AnnotatedField<X> getAnnotatedProducerField();    
 }

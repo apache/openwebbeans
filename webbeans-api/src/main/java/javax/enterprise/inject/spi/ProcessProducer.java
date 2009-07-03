@@ -13,25 +13,44 @@
  */
 package javax.enterprise.inject.spi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
-
-import javax.enterprise.event.Notify;
-import javax.enterprise.event.TransactionPhase;
-
-public interface ObserverMethod<X,T>
+/**
+ * Container fires this event for each
+ * producer field/method including resources.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <X> bean class info
+ * @param <T> producer return type
+ */
+public interface ProcessProducer<X, T>
 {
-    public Bean<X> getBean();
+    /**
+     * Returns annotated member.
+     * 
+     * @return annotated member
+     */
+    public AnnotatedMember<X> getAnnotatedMember();
     
-    public Type getObservedType();
+    /**
+     * Returns producer instance.
+     * 
+     * @return producer instance
+     */
+    public Producer<T> getProducer();
     
-    public Set<Annotation> getObservedBindings();
-    
-    public Notify getNotify();
-    
-    public TransactionPhase getTransactionPhase();
+    /**
+     * Replaces producer instance.
+     * 
+     * @param producer new producer
+     */
+    public void setProducer(Producer<T> producer);
 
-    public void notify(T event);    
+    /**
+     * Adding definition error. Container aborts processing.
+     * 
+     * @param t throwable
+     */
+    public void addDefinitionError(Throwable t);
+    
 
 }

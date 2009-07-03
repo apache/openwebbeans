@@ -13,25 +13,32 @@
  */
 package javax.enterprise.inject.spi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
-
-import javax.enterprise.event.Notify;
-import javax.enterprise.event.TransactionPhase;
-
-public interface ObserverMethod<X,T>
+/**
+ * Event is fired before reading any annotations on the class.
+ * 
+ * @version $Rev$ $Date$
+ *
+ *  <X> class type
+ */
+public interface ProcessAnnotatedType<X>
 {
-    public Bean<X> getBean();
+    /**
+     * Gets annotated type.
+     * 
+     * @return annotated type
+     */
+    public AnnotatedType<X> getAnnotatedType();
     
-    public Type getObservedType();
+    /**
+     * Replaces annotated type.
+     * 
+     * @param type annotated type
+     */
+    public void setAnnotatedType(AnnotatedType<X> type);
     
-    public Set<Annotation> getObservedBindings();
-    
-    public Notify getNotify();
-    
-    public TransactionPhase getTransactionPhase();
-
-    public void notify(T event);    
+    /**
+     * Veto registering process.
+     */
+    public void veto();    
 
 }

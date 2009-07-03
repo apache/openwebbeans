@@ -13,25 +13,20 @@
  */
 package javax.enterprise.inject.spi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
-
-import javax.enterprise.event.Notify;
-import javax.enterprise.event.TransactionPhase;
-
-public interface ObserverMethod<X,T>
+/**
+ * Event that is fired after container
+ * validates all injection points are valid.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
+public interface AfterDeploymentValidation
 {
-    public Bean<X> getBean();
-    
-    public Type getObservedType();
-    
-    public Set<Annotation> getObservedBindings();
-    
-    public Notify getNotify();
-    
-    public TransactionPhase getTransactionPhase();
-
-    public void notify(T event);    
-
+    /**
+     * Add deployment problem that causes
+     * container aborts processing after validation.
+     * 
+     * @param t throwable
+     */
+    public void addDeploymentProblem(Throwable t);
 }

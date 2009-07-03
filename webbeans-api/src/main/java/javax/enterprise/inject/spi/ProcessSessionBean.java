@@ -13,25 +13,34 @@
  */
 package javax.enterprise.inject.spi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
-
-import javax.enterprise.event.Notify;
-import javax.enterprise.event.TransactionPhase;
-
-public interface ObserverMethod<X,T>
+/**
+ * Fires event before registering session bean.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <X> bean class
+ */
+public interface ProcessSessionBean<X> extends ProcessBean<Object>
 {
-    public Bean<X> getBean();
+    /**
+     * Returns annotated type.
+     * 
+     * @return annotated bean class
+     */
+    public AnnotatedType<X> getAnnotatedBeanClass();
     
-    public Type getObservedType();
+    /**
+     * Returns ejb name.
+     * 
+     * @return ejb name
+     */
+    public String getEjbName();
     
-    public Set<Annotation> getObservedBindings();
-    
-    public Notify getNotify();
-    
-    public TransactionPhase getTransactionPhase();
-
-    public void notify(T event);    
+    /**
+     * Returns ejb type.
+     * 
+     * @return ejb type.
+     */
+    public SessionBeanType getSessionBeanType();    
 
 }

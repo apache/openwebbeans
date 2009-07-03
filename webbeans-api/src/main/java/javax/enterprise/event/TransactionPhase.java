@@ -11,27 +11,20 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package javax.enterprise.inject.spi;
+package javax.enterprise.event;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
-
-import javax.enterprise.event.Notify;
-import javax.enterprise.event.TransactionPhase;
-
-public interface ObserverMethod<X,T>
+/**
+ * Transactional observer phases.
+ * Observers are notified on trnasaction phases.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
+public enum TransactionPhase
 {
-    public Bean<X> getBean();
-    
-    public Type getObservedType();
-    
-    public Set<Annotation> getObservedBindings();
-    
-    public Notify getNotify();
-    
-    public TransactionPhase getTransactionPhase();
-
-    public void notify(T event);    
-
+    IN_PROGRESS,
+    BEFORE_COMPLETION,
+    AFTER_COMPLETION,
+    AFTER_FAILURE,
+    AFTER_SUCCESS
 }
