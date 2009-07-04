@@ -19,7 +19,7 @@ import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.conversation.ConversationImpl;
@@ -114,7 +114,7 @@ public class WebBeansPhaseListener implements PhaseListener
 
         else if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE))
         {
-            ConversationContext context = (ConversationContext) ManagerImpl.getManager().getContext(ConversationScoped.class);
+            ConversationContext context = (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class);
 
             // if long running, saves it
             if (conversation.isLongRunning())
@@ -157,7 +157,7 @@ public class WebBeansPhaseListener implements PhaseListener
 
         else if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE))
         {
-            ConversationContext context = (ConversationContext) ManagerImpl.getManager().getContext(ConversationScoped.class);
+            ConversationContext context = (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class);
 
             if (!JSFUtil.isPostBack())
             {
