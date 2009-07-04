@@ -161,6 +161,16 @@ public interface BeanManager
     public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings);
     
     /**
+     * Returns set of observer methods.
+     * 
+     * @param <T> event type
+     * @param event even object
+     * @param bindings event bindings
+     * @return set of observer methods
+     */
+    public <T> Set<ObserverMethod<?,T>> resolveObserverMethods(T event, Annotation... bindings);
+    
+    /**
      * Returns a list of decorator.
      * 
      * @param types bean types of the decorated bean
@@ -273,4 +283,13 @@ public interface BeanManager
      * @return a {@link AnnotatedType} instance
      */
     public <T> AnnotatedType<T> createAnnotatedType(Class<T> type);
+    
+    /**
+     * Creates a new instance of injection target.
+     * 
+     * @param <T> bean type
+     * @param type annotated type
+     * @return injection target
+     */
+    public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type);
 }
