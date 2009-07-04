@@ -21,7 +21,9 @@ package javax.enterprise.event;
  */
 public enum Notify
 {
-    SYNCHRONOUSLY,    
-    ASYNCHRONOUSLY,
-    IF_EXISTS    
+    /**Notify observer if owner bean exist*/
+    IF_EXISTS,
+    
+    /**Always notify observer*/
+    ALWAYS
 }

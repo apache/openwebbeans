@@ -13,26 +13,50 @@
  */
 package javax.enterprise.event;
 
-
+/**
+ * Exception related with observers.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
 public class ObserverException extends RuntimeException
 {
     private static final long serialVersionUID = -6392759733390664652L;
 
+    /**
+     * Creates new exception.
+     */
     public ObserverException()
     {
 
     }
 
+    /**
+     * Creates new exception with message.
+     * 
+     * @param message exception message
+     */
     public ObserverException(String message)
     {
         super(message);
     }
 
+    /**
+     * Creates new exception with cause.
+     * 
+     * @param cause exception cause
+     */
     public ObserverException(Throwable cause)
     {
         super(cause);
     }
 
+    /**
+     * Creates new exception with given message and cause.
+     * 
+     * @param message exception message
+     * @param cause exception cause
+     */
     public ObserverException(String message, Throwable cause)
     {
         super(message, cause);

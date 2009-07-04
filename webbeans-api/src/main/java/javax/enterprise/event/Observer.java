@@ -13,7 +13,20 @@
  */
 package javax.enterprise.event;
 
+/**
+ * Container call {@link Observer#notify(Object)}
+ * method when firing events with given T. 
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> event type
+ */
 public interface Observer<T>
 {
+    /**
+     * Notifies the observer.
+     * 
+     * @param event event object
+     */
     public void notify(T event);
 }

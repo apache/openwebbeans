@@ -20,6 +20,12 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Annotates delegate bean.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
 @Target(FIELD)
 @Retention(RUNTIME)
 @Documented

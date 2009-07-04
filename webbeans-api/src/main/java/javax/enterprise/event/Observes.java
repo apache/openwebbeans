@@ -20,10 +20,20 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Speicifies that method is observer method.
+ * 
+ * @version $Rev$ $Date$
+ * 
+ */
 @Target(PARAMETER)
 @Retention(RUNTIME)
 @Documented
 public @interface Observes
 {
-
+    /**Specifies whether or not call observer according to owner bean instace*/
+    public Notify notifyObserver() default Notify.ALWAYS;
+    
+    /**Transaction phase*/
+    public TransactionPhase during() default TransactionPhase.IN_PROGRESS;
 }

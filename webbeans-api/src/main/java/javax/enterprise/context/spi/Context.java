@@ -37,6 +37,7 @@ import javax.enterprise.context.ScopeType;
  * webbeans components.
  * </p>
  * 
+ * @version $Rev$ $Date$
  */
 public interface Context
 {   

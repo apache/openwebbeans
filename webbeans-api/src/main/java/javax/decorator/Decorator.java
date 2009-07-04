@@ -22,6 +22,12 @@ import java.lang.annotation.Target;
 
 import javax.enterprise.inject.stereotype.Stereotype;
 
+/**
+ * Defines decorator classes.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented

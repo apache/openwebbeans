@@ -24,6 +24,8 @@ import javax.enterprise.inject.CreationException;
  * 
  * @param <T> type of the webbeans component
  * @see Context
+ * 
+ * @version $Rev$ $Date$
  */
 public interface Contextual<T>
 {

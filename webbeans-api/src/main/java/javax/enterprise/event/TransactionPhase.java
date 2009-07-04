@@ -15,16 +15,28 @@ package javax.enterprise.event;
 
 /**
  * Transactional observer phases.
- * Observers are notified on trnasaction phases.
+ * 
+ * <p>
+ * Observers are notified on transaction phases.
+ * </p>
  * 
  * @version $Rev$ $Date$
  *
  */
 public enum TransactionPhase
 {
+    /**Means in trnasaction*/
     IN_PROGRESS,
+    
+    /**Before completion phase*/
     BEFORE_COMPLETION,
+    
+    /**After completion phase*/
     AFTER_COMPLETION,
+    
+    /**After failure phase*/
     AFTER_FAILURE,
+    
+    /**After success phase*/
     AFTER_SUCCESS
 }

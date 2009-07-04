@@ -31,6 +31,7 @@ package javax.enterprise.context.spi;
  * Generally it is used for prohibiting the circular references of the webbeans.
  * </p>
  * 
+ * @version $Rev$ $Date$
  */
 public interface CreationalContext<T>
 {
