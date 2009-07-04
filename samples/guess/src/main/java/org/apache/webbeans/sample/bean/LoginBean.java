@@ -16,16 +16,15 @@
  */
 package org.apache.webbeans.sample.bean;
 
-import java.lang.annotation.Annotation;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Current;
 import javax.enterprise.inject.Named;
 import javax.enterprise.inject.Produces;
-import javax.event.Fires;
 import javax.faces.application.FacesMessage;
 
 import org.apache.webbeans.sample.bindings.LoggedInUser;
@@ -48,7 +47,7 @@ public class LoginBean
 	
 	private @Current FacesMessageUtil messageUtil;
 	
-	private @Fires Event<LoggedInEvent> event;
+	private @Any Event<LoggedInEvent> event;
 	
 	public LoginBean()
 	{
@@ -63,7 +62,7 @@ public class LoginBean
 			user.setUserName(this.userName);
 			user.setPassword(this.password);
 			
-			event.fire(new LoggedInEvent(this.user), new Annotation[0]);
+			event.fire(new LoggedInEvent(this.user));
 			
 			return "loginSuccess";
 		}
