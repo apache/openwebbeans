@@ -18,19 +18,14 @@ import java.lang.reflect.Constructor;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
-import org.apache.webbeans.intercept.InterceptorType;
-import org.apache.webbeans.intercept.InvocationContextImpl;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Managed bean implementation of the {@link Bean}.
  * 
  * @version $Rev$ $Date$
  */
-public class ManagedBean<T> extends AbstractObservesBean<T>
+public class ManagedBean<T> extends AbstractInjectionTargetBean<T>
 {
     /** Constructor of the web bean component */
     private Constructor<T> constructor;
@@ -69,32 +64,6 @@ public class ManagedBean<T> extends AbstractObservesBean<T>
     }
 
  
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void destroyComponentInstance(T instance)
-    {
-        if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
-        {
-            InvocationContextImpl impl = new InvocationContextImpl(null,instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
-            try
-            {
-                impl.proceed();
-            }
-            catch (Exception e)
-            {
-                getLogger().error("Error is occıred while executing @PreDestroy method",e);
-                throw new WebBeansException(e);
-            }
-
-        }
-        
-        //Remove it from creational context, if any
-        CreationalContextImpl<T> cc = (CreationalContextImpl<T>)this.creationalContext;
-        cc.remove();
-    }
-
     /**
      * Get constructor.
      * 

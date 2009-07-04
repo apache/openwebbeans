@@ -167,19 +167,20 @@ class InstanceImpl<T> implements Instance<T>
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <U extends T> Instance<U> select(Class<U> subtype, Annotation... bindings)
     {
         AnnotationUtil.checkBindingTypeConditions(bindings);
         
-        if(subtype == null)
+        Type sub = subtype;
+        
+        if(sub == null)
         {
-            subtype = (Class<U>)this.injectionClazz;
+            sub = this.injectionClazz;
         }
         
         Annotation[] newBindings = getAdditionalBindings(bindings);
         
-        InstanceImpl<U> newInstance = new InstanceImpl<U>(subtype, newBindings);
+        InstanceImpl<U> newInstance = new InstanceImpl<U>(sub, newBindings);
                     
         return newInstance;
     }

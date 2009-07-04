@@ -42,11 +42,4 @@ public class InstanceBean<T> extends AbstractBean<Instance<T>>
         
         return InstanceFactory.getInstance(this.injectedType, anns);
     }
-
-    @Override
-    protected void destroyInstance(Instance<T> instance)
-    {
-        
-    }
-
 }

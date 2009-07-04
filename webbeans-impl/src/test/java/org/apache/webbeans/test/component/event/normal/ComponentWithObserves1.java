@@ -15,6 +15,7 @@ package org.apache.webbeans.test.component.event.normal;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Current;
 import javax.enterprise.inject.deployment.Production;
 
@@ -30,7 +31,7 @@ public class ComponentWithObserves1
 
     private String userNameWithMember;
 
-    public void afterLoggedIn(@Observes @Current LoggedInEvent event)
+    public void afterLoggedIn(@Observes @Any LoggedInEvent event)
     {
         this.userName = event.getUserName();
 

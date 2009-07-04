@@ -11,11 +11,38 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.annotation;
+package org.apache.webbeans.portable.creation;
 
-import javax.enterprise.inject.AnnotationLiteral;
-import javax.enterprise.inject.Any;
+import org.apache.webbeans.component.AbstractProducerBean;
 
-public class AnyScopeLiteral extends AnnotationLiteral<Any> implements Any{
-
+/**
+ * Implementation for producer beans.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> producer return type info
+ */
+public class ProducerBeansProducer<T> extends AbstractProducer<T>
+{
+    /**
+     * Creats a new producer bean producer.
+     * 
+     * @param bean producer bean
+     */
+    public ProducerBeansProducer(AbstractProducerBean<T> bean)
+    {
+        super(bean);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public void dispose(T instance)
+    {
+        AbstractProducer<T> producer = getBean(AbstractProducer.class);
+        producer.dispose(instance);
+    }
+    
 }

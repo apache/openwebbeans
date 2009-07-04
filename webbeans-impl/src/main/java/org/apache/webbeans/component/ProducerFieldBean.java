@@ -34,7 +34,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * @param <T> Type of the field decleration
  */
-public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBeanHasParent
+public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBeanHasParent<T>
 {
     /**Producer field that defines the component*/
     private Field producerField;

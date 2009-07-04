@@ -16,7 +16,9 @@
  */
 package org.apache.webbeans.component;
 
-public interface IBeanHasParent
+public interface IBeanHasParent<T>
 {
     public AbstractBean<?> getParent();
+    
+    public void dispose(T instance);
 }

@@ -39,12 +39,10 @@ import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.deployment.Specializes;
 import javax.enterprise.inject.deployment.Standard;
-import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.event.Fires;
 
-import org.apache.webbeans.annotation.AnyScopeLiteral;
+import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
@@ -53,7 +51,7 @@ import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.BaseBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.IBeanHasParent;
-import org.apache.webbeans.component.ObservesMethodsOwnerBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
@@ -132,7 +130,8 @@ public final class DefinitionUtil
                 //From parent
                 if (!found && (component instanceof IBeanHasParent))
                 {
-                    IBeanHasParent child = (IBeanHasParent) component;
+                    @SuppressWarnings("unchecked")
+                    IBeanHasParent<T> child = (IBeanHasParent<T>) component;
                     component.setType(child.getParent().getType());
                 }
                 
@@ -267,7 +266,7 @@ public final class DefinitionUtil
         //Add @Any support
         if(!AnnotationUtil.isAnyBindingExist(component))
         {
-        	component.addBindingType(new AnyScopeLiteral());
+        	component.addBindingType(new AnyLiteral());
         }
         	 
     }
@@ -1084,7 +1083,7 @@ public final class DefinitionUtil
         WebBeansDecoratorConfig.configureDecarotors(component, object);
     }
 
-    public static <T> void defineObserverMethods(ObservesMethodsOwnerBean<T> component, Class<T> clazz)
+    public static <T> void defineObserverMethods(InjectionTargetBean<T> component, Class<T> clazz)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         Asserts.nullCheckForClass(clazz);
@@ -1111,7 +1110,7 @@ public final class DefinitionUtil
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> void createObserverMethodsWithRealizes(ObservesMethodsOwnerBean<T> component, Class<?> clazz, Method[] candidateMethods, boolean isRealizes)
+    private static <T> void createObserverMethodsWithRealizes(InjectionTargetBean<T> component, Class<?> clazz, Method[] candidateMethods, boolean isRealizes)
     {
 
         for (Method candidateMethod : candidateMethods)
@@ -1177,17 +1176,13 @@ public final class DefinitionUtil
     
     public static void addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
     {
-        Annotated annotated = injectionPoint.getAnnotated();
-        
         if(WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint))
         {
             WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
         }
         
-        //If contains the @Fires, defines implicit component
-        else if(annotated.isAnnotationPresent(Fires.class))
-        {
-            EventUtil.checkObservableInjectionPointConditions(injectionPoint);
+        else if(EventUtil.checkObservableInjectionPointConditions(injectionPoint))
+        {            
             WebBeansUtil.addInjectedImplicitEventComponent(injectionPoint);
         }
         else

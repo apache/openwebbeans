@@ -27,7 +27,7 @@ import javax.enterprise.event.Observes;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractBean;
-import org.apache.webbeans.component.ObservesMethodsOwnerBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
@@ -64,7 +64,7 @@ public class BeanObserverImpl<T> implements Observer<T>
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(BeanObserverImpl.class);
 
     /**Observer owner bean that defines observer method*/
-    private final ObservesMethodsOwnerBean<?> bean;
+    private final InjectionTargetBean<?> bean;
 
     /**Event observer method*/
     private final Method observerMethod;
@@ -83,7 +83,7 @@ public class BeanObserverImpl<T> implements Observer<T>
      * @param ifExist if exist parameter
      * @param type transaction type
      */
-    public BeanObserverImpl(ObservesMethodsOwnerBean<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
+    public BeanObserverImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
     {
         this.bean = bean;
         this.observerMethod = observerMethod;
@@ -237,7 +237,7 @@ public class BeanObserverImpl<T> implements Observer<T>
      * 
      * @return the bean
      */
-    public ObservesMethodsOwnerBean<?> getBean()
+    public InjectionTargetBean<?> getBean()
     {
         return bean;
     }

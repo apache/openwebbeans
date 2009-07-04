@@ -24,7 +24,7 @@ import org.apache.webbeans.portable.events.ExtensionLoader;
  *
  * @param <T> type info
  */
-public class ExtensionBean<T> extends AbstractObservesBean<T>
+public class ExtensionBean<T> extends AbstractInjectionTargetBean<T>
 {
     /**
      * Creates a new extesion bean.

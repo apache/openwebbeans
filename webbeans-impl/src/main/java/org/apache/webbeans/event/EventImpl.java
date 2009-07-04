@@ -14,55 +14,69 @@
 package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observer;
-import javax.event.Fires;
+import javax.enterprise.inject.TypeLiteral;
 
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.ClassUtil;
 
+/**
+ * Event implementation.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> event type
+ * @see Event
+ */
 public class EventImpl<T> implements Event<T>
 {
+    /**Event binding types*/
     private Annotation[] injectedBindings;
 
-    private Class<T> eventType;
+    /**Event types*/
+    private Type eventType;
 
+    /**Bean manager*/
     private BeanManagerImpl manager = null;
 
-    public EventImpl(Annotation[] injectedBindings, Class<T> eventType)
+    /**
+     * Creates a new event.
+     * 
+     * @param injectedBindings event bindings
+     * @param eventType event type
+     */
+    public EventImpl(Annotation[] injectedBindings, Type eventType)
     {
         this.injectedBindings = injectedBindings;
         this.eventType = eventType;
         this.manager = BeanManagerImpl.getManager();
     }
 
-    public void fire(T event, Annotation... bindings)
+    /**
+     * Fires event with given event object.
+     */
+    public void fire(T event)
     {
-        EventUtil.checkEventBindings(getEventBindings(bindings));
-        this.manager.fireEvent(event, getEventBindings(bindings));
-
+        this.manager.fireEvent(event, this.injectedBindings);
     }
 
-    public void observe(Observer<T> observer, Annotation... bindings)
-    {
-        EventUtil.checkEventBindings(getEventBindings(bindings));
-        this.manager.addObserver(observer, eventType, bindings);
-    }
-
+    /**
+     * Returns total binding annotations.
+     * 
+     * @param annotations new annotations
+     * @return total binding annotations
+     */
     private Annotation[] getEventBindings(Annotation... annotations)
     {
+        AnnotationUtil.checkBindingTypeConditions(annotations);
+        
         List<Annotation> eventBindings = new ArrayList<Annotation>();
         Annotation[] anns = null;
-
-        for (Annotation binding : injectedBindings)
-        {
-            if (!binding.annotationType().equals(Fires.class))
-            {
-                eventBindings.add(binding);
-            }
-        }
 
         for (Annotation binding : annotations)
         {
@@ -74,5 +88,48 @@ public class EventImpl<T> implements Event<T>
 
         return anns;
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Event<T> select(Annotation... bindings)
+    {
+        Event<T> sub = new EventImpl<T>(getEventBindings(bindings),this.eventType);
+        
+        return sub;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <U extends T> Event<U> select(Class<U> subtype, Annotation... bindings)
+    {
+        if(ClassUtil.isDefinitionConstainsTypeVariables(subtype))
+        {
+            throw new IllegalArgumentException("Class : " + subtype + " cannot contain type variable");
+        }
+        
+        Type sub = subtype;
+        
+        if(sub == null)
+        {
+            sub = this.eventType;
+        }
+        
+        Event<U> subEvent = new EventImpl<U>(getEventBindings(bindings),sub);
+        
+        return subEvent;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... bindings)
+    {
+        return select(subtype.getRawType(), bindings);
     }
 }

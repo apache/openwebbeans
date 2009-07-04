@@ -56,13 +56,11 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.deployment.Specializes;
-import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.stereotype.Stereotype;
-import javax.event.Fires;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.servlet.Filter;
@@ -87,7 +85,7 @@ import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.component.NewBean;
-import org.apache.webbeans.component.ObservableBean;
+import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -708,31 +706,13 @@ public final class WebBeansUtil
         return comp;
     }    
     
-    public static <T, K> ObservableBean<T, K> createObservableImplicitComponent(Class<T> returnType, Class<K> eventType, Annotation... annotations)
+    public static <T> EventBean<T> createObservableImplicitComponent(Class<T> returnType, Type eventType, Annotation... annotations)
     {
-        ObservableBean<T, K> component = new ObservableBean<T, K>(returnType, eventType, WebBeansType.OBSERVABLE);
+        EventBean<T> component = new EventBean<T>(returnType, eventType, WebBeansType.OBSERVABLE);
 
         DefinitionUtil.defineApiTypes(component, returnType);
         DefinitionUtil.defineBindingTypes(component, annotations);
 
-        Constructor<T> constructor = null;
-
-        try
-        {
-            constructor = returnType.getConstructor(new Class<?>[] { Annotation[].class, Class.class });
-
-        }
-        catch (SecurityException e)
-        {
-            throw new WebBeansException("Security exception for getting EventImpl class constructor", e);
-
-        }
-        catch (NoSuchMethodException e)
-        {
-            throw new WebBeansException("No constructor found in EventImpl class", e);
-        }
-
-        component.setConstructor(constructor);
         component.setType(new StandardLiteral());
         component.setImplScopeType(new DependentScopeLiteral());                      
 
@@ -1903,29 +1883,29 @@ public final class WebBeansUtil
     
     public static void addInjectedImplicitEventComponent(InjectionPoint injectionPoint)
     {
-        Annotated annotated = injectionPoint.getAnnotated();
+        Type type = injectionPoint.getType();
         
-        if(annotated.isAnnotationPresent(Fires.class))
+        if(!(type instanceof ParameterizedType))
         {
-            Type type = injectionPoint.getType();
-            
-            Type[] args = new Type[0];
-            
-            Class<?> clazz = null;
-            if (type instanceof ParameterizedType)
-            {
-                ParameterizedType pt = (ParameterizedType) type;
-                args = pt.getActualTypeArguments();
-            }
-            
-            clazz = (Class<?>)args[0];
-            
-            Annotation[] bindings = new Annotation[injectionPoint.getBindings().size()];
-            bindings = injectionPoint.getBindings().toArray(bindings);
-            
-            Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, bindings);
-            BeanManagerImpl.getManager().addBean(bean);                  
-        }      
+            return;
+        }
+        
+        Type[] args = new Type[0];
+        
+        Class<?> clazz = null;
+        if (type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType) type;
+            args = pt.getActualTypeArguments();
+        }
+        
+        clazz = (Class<?>)args[0];
+        
+        Annotation[] bindings = new Annotation[injectionPoint.getBindings().size()];
+        bindings = injectionPoint.getBindings().toArray(bindings);
+        
+        Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, bindings);
+        BeanManagerImpl.getManager().addBean(bean);                  
     }
     
     @SuppressWarnings("unchecked")

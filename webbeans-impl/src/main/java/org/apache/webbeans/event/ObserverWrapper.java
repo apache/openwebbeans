@@ -14,6 +14,7 @@
 package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,24 +22,25 @@ import javax.enterprise.event.Observer;
 
 
 /**
- * Implementation of the {@link Observer} interface contract.
+ * Wrapper around the {@link Observer} instance.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  * @param <T> generic event type
  */
-public class ObserverImpl<T>
+public class ObserverWrapper<T>
 {
     /** Event binding types apeearing on the parameter */
     private Set<Annotation> eventBindingTypes = new HashSet<Annotation>();
 
     /** Event object type */
-    private Class<T> eventType;
+    private Type eventType;
 
+    /**Wrapped observer instance*/
     private Observer<T> observer;
 
+    /**Using <code>@IfExist</code>*/
     private boolean ifExist;
 
+    /**Transactional observer type*/
     private TransactionalObserverType transObserverType;
 
     /**
@@ -48,12 +50,12 @@ public class ObserverImpl<T>
      * @param observerMethod observer method
      * @param eventType event type
      */
-    public ObserverImpl(Observer<T> observer, Class<T> eventType, Annotation... annotations)
+    public ObserverWrapper(Observer<T> observer, Class<T> eventType, Annotation... annotations)
     {
         this(observer, false, TransactionalObserverType.NONE, eventType, annotations);
     }
 
-    public ObserverImpl(Observer<T> observer, boolean ifExist, TransactionalObserverType type, Class<T> eventType, Annotation... annotations)
+    public ObserverWrapper(Observer<T> observer, boolean ifExist, TransactionalObserverType type, Type eventType, Annotation... annotations)
     {
         for (Annotation annotation : annotations)
         {
@@ -117,7 +119,7 @@ public class ObserverImpl<T>
     /**
      * Gets event type.
      */
-    public Class<T> getEventType()
+    public Type getEventType()
     {
         return this.eventType;
     }

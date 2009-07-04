@@ -329,6 +329,37 @@ public final class AnnotationUtil
         result = new Annotation[0];
         return result;
     }
+    
+    /**
+     * Gets the method first found parameter annotation with given type.
+     * 
+     * @param method method
+     * @param annotation checking annotation
+     * @return annotation
+     */
+    public static <T extends Annotation> T getMethodFirstParameterAnnotation(Method method, Class<T> clazz)
+    {
+        Asserts.assertNotNull(method, "Method argument can not be null");
+        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+
+        Annotation[][] parameterAnns = method.getParameterAnnotations();
+
+        for (Annotation[] parameters : parameterAnns)
+        {
+            for (Annotation param : parameters)
+            {
+                Class<? extends Annotation> btype = param.annotationType();
+                if (btype.equals(clazz))
+                {
+                    return clazz.cast(param);
+                }
+
+            }
+
+        }
+
+        return null;
+    }    
 
     /**
      * Check given annotation cross ref exist in the any parameter of the given

@@ -431,38 +431,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     
-    public <T> BeanManager addObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
-    {
-        this.notificationManager.addObserver(observer, eventType, bindings);
-        return this;
-    }
-
-    
-    public <T> BeanManager addObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
-    {
-        this.notificationManager.addObserver(observer, eventType, bindings);
-        return this;
-    }
-
     public <T> T getInstance(Bean<T> bean)
     {
         return (T)getReference(bean, null, null);
     }
-
     
-    public <T> BeanManager removeObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
-    {
-        this.notificationManager.removeObserver(observer, eventType, bindings);
-        return this;
-    }
-
-    
-    public <T> BeanManager removeObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
-    {
-        this.notificationManager.removeObserver(observer, eventType, bindings);
-        return this;
-    }
-
     /**
      * {@inheritDoc}
      */

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.webbeans.component.ObservesMethodsOwnerBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.event.BeanObserverImpl;
@@ -30,7 +30,7 @@ public class BeanObserverXMLImpl<T> extends BeanObserverImpl<T>
 {
     private List<XMLInjectionPointModel> observersParameters = new ArrayList<XMLInjectionPointModel>();
 
-    public BeanObserverXMLImpl(ObservesMethodsOwnerBean<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
+    public BeanObserverXMLImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
     {
         super(bean, observerMethod, ifExist, type);
     }

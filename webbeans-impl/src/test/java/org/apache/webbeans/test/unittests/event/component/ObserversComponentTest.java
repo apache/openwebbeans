@@ -19,6 +19,7 @@ import javax.enterprise.inject.AnnotationLiteral;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
@@ -59,7 +60,7 @@ public class ObserversComponentTest extends TestContext
         LoggedInEvent event = new LoggedInEvent("Gurkan");
 
         Annotation[] anns = new Annotation[1];
-        anns[0] = new CurrentLiteral();
+        anns[0] = new AnyLiteral();        
 
         getManager().fireEvent(event, anns);
 

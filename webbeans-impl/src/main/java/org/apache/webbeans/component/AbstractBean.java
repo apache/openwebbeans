@@ -217,7 +217,10 @@ public abstract class AbstractBean<T> extends BaseBean<T>
      * 
      * @param instance instance that is being destroyed
      */
-    protected abstract void destroyInstance(T instance);
+    protected void destroyInstance(T instance)
+    {
+        
+    }
 
     /**
      * Get component type.
@@ -237,7 +240,8 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     {
         if(IBeanHasParent.class.isAssignableFrom(getClass()))
         {
-            IBeanHasParent comp = (IBeanHasParent)this;
+            @SuppressWarnings("unchecked")
+            IBeanHasParent<T> comp = (IBeanHasParent<T>)this;
             
             return comp.getParent().getBeanClass();
         }

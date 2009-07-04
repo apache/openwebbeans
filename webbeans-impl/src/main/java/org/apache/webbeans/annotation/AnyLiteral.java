@@ -11,28 +11,11 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.component.event.normal;
+package org.apache.webbeans.annotation;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Event;
+import javax.enterprise.inject.AnnotationLiteral;
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Current;
-import javax.enterprise.inject.deployment.Production;
 
-import org.apache.webbeans.test.event.LoggedInEvent;
-
-@RequestScoped
-@Production
-@Current
-public class ComponentWithObservable1
-{
-    private @Any Event<LoggedInEvent> event;
-
-    public void afterLoggedIn()
-    {
-        LoggedInEvent loggedIn = new LoggedInEvent("Gurkan");
-
-        event.fire(loggedIn);
-    }
+public class AnyLiteral extends AnnotationLiteral<Any> implements Any{
 
 }

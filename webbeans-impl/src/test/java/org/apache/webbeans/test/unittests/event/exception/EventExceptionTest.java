@@ -19,11 +19,11 @@ import javax.enterprise.context.ScopeType;
 import javax.enterprise.inject.AnnotationLiteral;
 import javax.servlet.ServletContext;
 
+import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.LoggedInEvent;
 import org.apache.webbeans.test.event.LoggedInObserver;
 import org.apache.webbeans.test.event.broke.BrokenEvent;
-import org.apache.webbeans.test.event.broke.BrokenObserver;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Assert;
 import org.junit.Test;
@@ -56,8 +56,6 @@ public class EventExceptionTest extends TestContext
             {
             };
 
-            BrokenObserver observer = new BrokenObserver();
-            getManager().addObserver(observer, BrokenEvent.class, anns);
 
             getManager().fireEvent(new BrokenEvent(), anns);
 
@@ -113,7 +111,7 @@ public class EventExceptionTest extends TestContext
             };
 
             LoggedInObserver observer = new LoggedInObserver();
-            getManager().addObserver(observer, LoggedInEvent.class, anns);
+            NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class, anns);
 
             getManager().fireEvent(new LoggedInEvent(), anns);
 
@@ -143,7 +141,7 @@ public class EventExceptionTest extends TestContext
             };
 
             LoggedInObserver observer = new LoggedInObserver();
-            getManager().addObserver(observer, LoggedInEvent.class, anns);
+            NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class, anns);
 
             getManager().fireEvent(new LoggedInEvent(), anns);
 

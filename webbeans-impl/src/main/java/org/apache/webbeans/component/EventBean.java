@@ -14,6 +14,8 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -25,19 +27,26 @@ import org.apache.webbeans.exception.WebBeansException;
  * 
  * @version $Rev$ $Date$
  */
-public class ObservableBean<T, K> extends ManagedBean<T>
+public class EventBean<T> extends AbstractBean<T>
 {
-    private WebBeansType definedType;
+    private Type eventType = null;
 
-    private Class<K> eventType = null;
-
-    public ObservableBean(Class<T> returnType, Class<K> eventType, WebBeansType definedType)
+    /**
+     * Creates a new instance of event bean.
+     * 
+     * @param returnType Event class
+     * @param eventType event type
+     * @param definedType webbeans type
+     */
+    public EventBean(Class<T> returnType, Type eventType, WebBeansType definedType)
     {
-        super(returnType);
-        this.definedType = definedType;
+        super(definedType,returnType);
         this.eventType = eventType;
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected T createInstance(CreationalContext<T> creationalContext)
     {
@@ -50,36 +59,26 @@ public class ObservableBean<T, K> extends ManagedBean<T>
 
         try
         {
-            instance = getConstructor().newInstance(new Object[] { bindingTypes, eventType });
+            Constructor<T> constructor = null;
+            constructor = returnType.getConstructor(new Class<?>[] { Annotation[].class, Type.class });
 
+            instance = constructor.newInstance(new Object[] { bindingTypes, eventType });
         }
         catch (Exception e)
         {
-            throw new WebBeansException("Exception in creating Observable implicit component for event type : " + eventType.getName());
+            throw new WebBeansException("Exception in creating Event implicit component for event type : " + eventType);
         }
 
         return instance;
 
     }
 
-    @Override
-    protected void destroyInstance(T instance)
-    {
-        super.destroyInstance(instance);
-    }
-
     /**
-     * @return the definedType
-     */
-    public WebBeansType getDefinedType()
-    {
-        return definedType;
-    }
-
-    /**
+     * Returns the event type.
+     * 
      * @return the eventType
      */
-    public Class<K> getEventType()
+    public Type getEventType()
     {
         return eventType;
     }

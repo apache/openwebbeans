@@ -36,11 +36,6 @@ import java.util.Set;
 
 import javax.decorator.Decorator;
 import javax.enterprise.context.ScopeType;
-import javax.enterprise.event.AfterTransactionCompletion;
-import javax.enterprise.event.AfterTransactionFailure;
-import javax.enterprise.event.AfterTransactionSuccess;
-import javax.enterprise.event.BeforeTransactionCompletion;
-import javax.enterprise.event.IfExists;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Initializer;
@@ -1329,13 +1324,13 @@ public final class WebBeansXMLConfigurator
         }
         else
         {
-            Element child = observesChilds.iterator().next();
-            Class<?> clazz = XMLUtil.getElementJavaType(child);
+//            Element child = observesChilds.iterator().next();
+//            Class<?> clazz = XMLUtil.getElementJavaType(child);
 
-            if ((clazz == null) || clazz.equals(IfExists.class) || clazz.equals(AfterTransactionCompletion.class) || clazz.equals(AfterTransactionSuccess.class) || clazz.equals(AfterTransactionFailure.class) || clazz.equals(BeforeTransactionCompletion.class))
-            {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Observes element : " + XMLUtil.getName(observes) + " must not have one of the {<IfExists>, <AfterTransactionCompletion>, <AfterTransactionSuccess>, <AfterTransactionFailure>, <BeforeTransactionCompletion>} as a direct child.");
-            }
+//            if ((clazz == null) || clazz.equals(IfExists.class) || clazz.equals(AfterTransactionCompletion.class) || clazz.equals(AfterTransactionSuccess.class) || clazz.equals(AfterTransactionFailure.class) || clazz.equals(BeforeTransactionCompletion.class))
+//            {
+//                throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Observes element : " + XMLUtil.getName(observes) + " must not have one of the {<IfExists>, <AfterTransactionCompletion>, <AfterTransactionSuccess>, <AfterTransactionFailure>, <BeforeTransactionCompletion>} as a direct child.");
+//            }
         }
 
     }

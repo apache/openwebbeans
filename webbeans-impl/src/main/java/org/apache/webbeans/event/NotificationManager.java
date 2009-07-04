@@ -15,6 +15,7 @@ package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,7 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.enterprise.event.IfExists;
+import javax.enterprise.event.Notify;
 import javax.enterprise.event.Observer;
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
@@ -32,7 +33,7 @@ import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 
-import org.apache.webbeans.component.ObservesMethodsOwnerBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.exception.WebBeansException;
@@ -41,13 +42,14 @@ import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
 
 @SuppressWarnings("unchecked")
 public final class NotificationManager implements Synchronization
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(NotificationManager.class);
 
-    private Map<Class<?>, Set<ObserverImpl<?>>> observers = new ConcurrentHashMap<Class<?>, Set<ObserverImpl<?>>>();
+    private Map<Type, Set<ObserverWrapper<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverWrapper<?>>>();
 
     private Set<TransactionalNotifier> transactionSet = new CopyOnWriteArraySet<TransactionalNotifier>();
     
@@ -65,22 +67,21 @@ public final class NotificationManager implements Synchronization
         return manager.getNotificationManager();
     }
 
-    public <T> void addObserver(Observer<T> observer, Class<T> eventType, Annotation... annotations)
+    public <T> void addObserver(Observer<T> observer, Type eventType, Annotation... annotations)
     {
         addObserver(observer, false, TransactionalObserverType.NONE, eventType, annotations);
     }
 
-    public <T> void addObserver(Observer<T> observer, boolean ifExist, TransactionalObserverType type, Class<T> eventType, Annotation... annotations)
+    public <T> void addObserver(Observer<T> observer, boolean ifExist, TransactionalObserverType type, Type eventType, Annotation... annotations)
     {
-        EventUtil.checkEventType(eventType);
         EventUtil.checkEventBindings(annotations);
 
-        ObserverImpl<T> observerImpl = new ObserverImpl<T>(observer, ifExist, type, eventType, annotations);
+        ObserverWrapper<T> observerImpl = new ObserverWrapper<T>(observer, ifExist, type, eventType, annotations);
 
-        Set<ObserverImpl<?>> set = observers.get(eventType);
+        Set<ObserverWrapper<?>> set = observers.get(eventType);
         if (set == null)
         {
-            set = new HashSet<ObserverImpl<?>>();
+            set = new HashSet<ObserverWrapper<?>>();
             observers.put(eventType, set);
         }
 
@@ -92,12 +93,12 @@ public final class NotificationManager implements Synchronization
         EventUtil.checkEventType(eventType.getRawType());
         EventUtil.checkEventBindings(annotations);
 
-        ObserverImpl<T> observerImpl = new ObserverImpl<T>(observer, eventType.getRawType(), annotations);
+        ObserverWrapper<T> observerImpl = new ObserverWrapper<T>(observer, eventType.getRawType(), annotations);
 
-        Set<ObserverImpl<?>> set = observers.get(eventType.getRawType());
+        Set<ObserverWrapper<?>> set = observers.get(eventType.getRawType());
         if (set == null)
         {
-            set = new HashSet<ObserverImpl<?>>();
+            set = new HashSet<ObserverWrapper<?>>();
             observers.put(eventType.getRawType(), set);
         }
 
@@ -111,11 +112,11 @@ public final class NotificationManager implements Synchronization
 
         if (observers.containsKey(eventType))
         {
-            Set<ObserverImpl<?>> set = observers.get(eventType);
-            Iterator<ObserverImpl<?>> it = set.iterator();
+            Set<ObserverWrapper<?>> set = observers.get(eventType);
+            Iterator<ObserverWrapper<?>> it = set.iterator();
             while (it.hasNext())
             {
-                ObserverImpl<?> s = it.next();
+                ObserverWrapper<?> s = it.next();
                 Observer<T> ob = (Observer<T>) s.getObserver();
 
                 Set<Annotation> evenBindings = s.getEventBindingTypes();
@@ -137,11 +138,11 @@ public final class NotificationManager implements Synchronization
 
         if (observers.containsKey(eventType.getRawType()))
         {
-            Set<ObserverImpl<?>> set = observers.get(eventType.getRawType());
-            Iterator<ObserverImpl<?>> it = set.iterator();
+            Set<ObserverWrapper<?>> set = observers.get(eventType.getRawType());
+            Iterator<ObserverWrapper<?>> it = set.iterator();
             while (it.hasNext())
             {
-                ObserverImpl<?> s = it.next();
+                ObserverWrapper<?> s = it.next();
                 Observer<T> ob = (Observer<T>) s.getObserver();
 
                 Set<Annotation> evenBindings = s.getEventBindingTypes();
@@ -159,30 +160,39 @@ public final class NotificationManager implements Synchronization
     public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings)
     {
 
-        Set<ObserverImpl<?>> resolvedSet = new HashSet<ObserverImpl<?>>();
+        Set<ObserverWrapper<?>> resolvedSet = new HashSet<ObserverWrapper<?>>();
         Set<Observer<T>> unres = new HashSet<Observer<T>>();
 
         Class<T> eventType = (Class<T>) event.getClass();
+        
+        
+        Set<Type> types = new HashSet<Type>();
+        ClassUtil.setTypeHierarchy(types, eventType);
 
         EventUtil.checkEventType(eventType);
         EventUtil.checkEventBindings(bindings);
 
-        Set<Class<?>> keySet = this.observers.keySet();
-        Iterator<Class<?>> itKeySet = keySet.iterator();
+        Set<Type> keySet = this.observers.keySet();
+        Iterator<Type> itKeySet = keySet.iterator();
 
         while (itKeySet.hasNext())
         {
-            Class<?> type = itKeySet.next();
-            if (type.isAssignableFrom(eventType))
+            Type type = itKeySet.next();
+            
+            for(Type check : types)
             {
-                resolvedSet.addAll(this.observers.get(type));
-            }
+                if (ClassUtil.isAssignable(check, type))
+                {
+                    resolvedSet.addAll(this.observers.get(type));
+                    break;
+                }                
+            }            
         }
 
-        Iterator<ObserverImpl<?>> it = resolvedSet.iterator();
+        Iterator<ObserverWrapper<?>> it = resolvedSet.iterator();
         while (it.hasNext())
         {
-            ObserverImpl<T> impl = (ObserverImpl<T>) it.next();
+            ObserverWrapper<T> impl = (ObserverWrapper<T>) it.next();
 
             if (impl.isObserverOfBindings(bindings))
             {
@@ -203,12 +213,12 @@ public final class NotificationManager implements Synchronization
         {
             Observer<Object> observer = it.next();
             try
-            {                
-                if (observer instanceof BeanObserverImpl)
+            {             
+                if(observer instanceof BeanObserverImpl)
                 {
                     BeanObserverImpl<Object> beanObserver = (BeanObserverImpl<Object>) observer;
                     TransactionalObserverType type = beanObserver.getType();
-                    if (!(type.equals(TransactionalObserverType.NONE) || type.equals(TransactionalObserverType.ASYNCHRONOUSLY_NONE)))
+                    if (!(type.equals(TransactionalObserverType.NONE)))
                     {
                         Transaction transaction = transactionService.getTransaction();
                         
@@ -242,25 +252,19 @@ public final class NotificationManager implements Synchronization
                         }
                         else
                         {
-                            if(!type.equals(TransactionalObserverType.ASYNCHRONOUSLY_NONE))
-                            {
-                                observer.notify(event);   
-                            }
+                            observer.notify(event);   
                         }
                     }
                     else
                     {
-                        if(!type.equals(TransactionalObserverType.ASYNCHRONOUSLY_NONE))
-                        {
-                            observer.notify(event);   
-                        }
+                        observer.notify(event);   
                     }
+                    
                 }
                 else
                 {
                     observer.notify(event);
                 }
-
             }
             catch (WebBeansException e)
             {
@@ -286,7 +290,7 @@ public final class NotificationManager implements Synchronization
         }
     }
 
-    public <T> void addObservableComponentMethods(ObservesMethodsOwnerBean<?> component)
+    public <T> void addObservableComponentMethods(InjectionTargetBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         Set<Method> observableMethods = component.getObservableMethods();
@@ -295,11 +299,13 @@ public final class NotificationManager implements Synchronization
         while (itMethods.hasNext())
         {
             Method observableMethod = itMethods.next();
+            Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observableMethod, Observes.class);
+            
             Annotation[] bindingTypes = AnnotationUtil.getMethodFirstParameterBindingTypesWithGivenAnnotation(observableMethod, Observes.class);
-
+            
             boolean ifExist = false;
 
-            if (AnnotationUtil.isMethodParameterAnnotationExist(observableMethod, IfExists.class))
+            if (observes.notifyObserver().equals(Notify.IF_EXISTS))
             {
                 ifExist = true;
             }

@@ -54,7 +54,7 @@ public class BrokenComponentTest extends TestContext
             exc = e;
         }
 
-        Assert.assertNotNull(exc);
+        Assert.assertNull(exc);
     }
 
     @Test

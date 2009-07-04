@@ -22,7 +22,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.event.Fires;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.InjectionResolver;
@@ -84,18 +83,12 @@ public abstract class AbstractInjectable implements Injectable
         }
         
         Annotation[] injectionAnnotations = injectionPoint.getAnnotated().getAnnotations().toArray(new Annotation[0]);
-        Annotation[] annotations = injectionPoint.getBindings().toArray(new Annotation[0]);
         
         if (isResource(injectionAnnotations))
         {
             return injectResource(injectionPoint.getType(),injectionAnnotations);
         }
                     
-        if (isObservableBinding(annotations))
-        {
-            return injectForObservable(injectionPoint.getType(), annotations);
-        }
-        
         //Get injection point Bean component
         Bean<?> component = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
         
@@ -145,19 +138,6 @@ public abstract class AbstractInjectable implements Injectable
         return AnnotationUtil.hasResourceAnnotation(annotations); 
     }
 
-    private boolean isObservableBinding(Annotation... annotations)
-    {
-        for (Annotation ann : annotations)
-        {
-            if (ann.annotationType().equals(Fires.class))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
     /**
      * If the annotation is a resource annotation, we create 
      * the instance for injecting web beans resources.
@@ -179,13 +159,6 @@ public abstract class AbstractInjectable implements Injectable
         }
         
         return null;
-    }
-    
-    private Object injectForObservable(Type type, Annotation... annotations)
-    {
-        Bean<?> bean = InjectionResolver.getInstance().implResolveByType(type, annotations).iterator().next();
-        
-        return injectForDependent(bean,null);
     }
     
     private Object injectForDependent(Bean<?> component, InjectionPoint injectionPoint)

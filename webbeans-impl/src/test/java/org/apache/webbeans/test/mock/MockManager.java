@@ -100,18 +100,6 @@ public class MockManager implements BeanManager
         return this;
     }
 
-    public <T> BeanManager addObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
-    {
-        manager.addObserver(observer, eventType, bindings);
-        return this;
-    }
-
-    public <T> BeanManager addObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
-    {
-        manager.addObserver(observer, eventType, bindings);
-        return this;
-    }
-
     public void fireEvent(Object event, Annotation... bindings)
     {
         manager.fireEvent(event, bindings);
@@ -152,16 +140,6 @@ public class MockManager implements BeanManager
     public <T> T getInstanceByType(TypeLiteral<T> type, Annotation... bindingTypes)
     {
         return manager.getInstanceByType(type, bindingTypes);
-    }
-
-    public <T> BeanManager removeObserver(Observer<T> observer, Class<T> eventType, Annotation... bindings)
-    {
-        return manager.removeObserver(observer, eventType, bindings);
-    }
-
-    public <T> BeanManager removeObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... bindings)
-    {
-        return manager.removeObserver(observer, eventType, bindings);
     }
 
     public Set<Bean<?>> resolveByName(String name)

@@ -95,7 +95,7 @@ public class XMLManagedBean<T> extends ManagedBean<T>
      * )
      */
     @Override
-    protected void injectFields(T instance,CreationalContext<T> creationalContext)
+    public void injectFields(T instance,CreationalContext<T> creationalContext)
     {
         Set<Field> fieldSet = this.injectableFields.keySet();
         Iterator<Field> itField = fieldSet.iterator();
@@ -149,7 +149,7 @@ public class XMLManagedBean<T> extends ManagedBean<T>
      * )
      */
     @Override
-    protected void injectMethods(T instance,CreationalContext<T> creationalContext)
+    public void injectMethods(T instance,CreationalContext<T> creationalContext)
     {
         Set<Method> methodSet = this.injectableMethods.keySet();
         Iterator<Method> itMethods = methodSet.iterator();

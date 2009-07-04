@@ -20,7 +20,7 @@ package org.apache.webbeans.component;
  *
  * @param <T> bean type info
  */
-public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements IBeanHasParent
+public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements IBeanHasParent<T>
 {
     /**Owner of the producer field component*/
     protected AbstractBean<?> ownerComponent;
@@ -46,5 +46,9 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
         return this.ownerComponent;
     }
     
+    public void dispose(T instance)
+    {
+        //Do nothing
+    }
     
 }

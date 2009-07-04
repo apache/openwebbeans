@@ -39,7 +39,7 @@ public class XMLProducerBean<T> extends ProducerMethodBean<T>
     public XMLProducerBean(AbstractBean<?> parent, Class<T> returnType)
     {
         super(parent, returnType);
-        this.parent = parent;
+        this.ownerComponent = parent;
     }
 
     public void addProducerMethodInjectionPointModel(XMLInjectionPointModel model)

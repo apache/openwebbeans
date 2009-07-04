@@ -23,6 +23,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Initializer;
 
 import org.apache.webbeans.config.DefinitionUtil;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
@@ -38,7 +39,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean class
  */
-public abstract class AbstractObservesBean<T> extends AbstractBean<T> implements ObservesMethodsOwnerBean<T>
+public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> implements InjectionTargetBean<T>
 {
     /**Logger instance*/
     private final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
@@ -61,7 +62,7 @@ public abstract class AbstractObservesBean<T> extends AbstractBean<T> implements
      * @param webBeansType webbean type
      * @param returnType bean class type
      */
-    protected AbstractObservesBean(WebBeansType webBeansType, Class<T> returnType)
+    protected AbstractInjectionTargetBean(WebBeansType webBeansType, Class<T> returnType)
     {
         super(webBeansType, returnType);
     }
@@ -101,7 +102,14 @@ public abstract class AbstractObservesBean<T> extends AbstractBean<T> implements
      * 
      * @param instance object instance.
      */
-    abstract protected void destroyComponentInstance(T instance);
+    protected void destroyComponentInstance(T instance)
+    {
+        preDestroy(instance);
+        
+        //Remove it from creational context, if any
+        CreationalContextImpl<T> cc = (CreationalContextImpl<T>)this.creationalContext;
+        cc.remove();        
+    }
     
     /**
      * Called before constructor
@@ -132,6 +140,14 @@ public abstract class AbstractObservesBean<T> extends AbstractBean<T> implements
             DefinitionUtil.defineWebBeanDecoratorStack(this, instance);
         }        
 
+        postConstruct(instance);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void postConstruct(T instance)
+    {
         //Call Post Construct
         if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
         {
@@ -146,8 +162,30 @@ public abstract class AbstractObservesBean<T> extends AbstractBean<T> implements
                 logger.error("Error is occured while executing @PostConstruct",e);
                 throw new WebBeansException(e);
             }
-        }
+        }        
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void preDestroy(T instance)
+    {
+        if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
+        {
+            InvocationContextImpl impl = new InvocationContextImpl(null,instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
+            try
+            {
+                impl.proceed();
+            }
+            catch (Exception e)
+            {
+                getLogger().error("Error is occıred while executing @PreDestroy method",e);
+                throw new WebBeansException(e);
+            }
+
+        }                
+    }
+    
     
     /**
      * Injects fields of the bean after constructing.
@@ -155,7 +193,7 @@ public abstract class AbstractObservesBean<T> extends AbstractBean<T> implements
      * @param instance bean instance
      * @param creationalContext creational context
      */
-    protected void injectFields(T instance, CreationalContext<T> creationalContext)
+    public void injectFields(T instance, CreationalContext<T> creationalContext)
     {
         Set<Field> fields = getInjectedFields();
         for (Field field : fields)
@@ -176,7 +214,7 @@ public abstract class AbstractObservesBean<T> extends AbstractBean<T> implements
      * @param creationalContext creational context instance
      */
     @SuppressWarnings("unchecked")
-    protected void injectMethods(T instance, CreationalContext<T> creationalContext)
+    public void injectMethods(T instance, CreationalContext<T> creationalContext)
     {
         Set<Method> methods = getInjectedMethods();
 
@@ -187,6 +225,13 @@ public abstract class AbstractObservesBean<T> extends AbstractBean<T> implements
         }
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    public void injectResources(T instance, CreationalContext<T> creationalContext)
+    {
+        //TODO Java EE injections
+    }
     
     /*
      * (non-Javadoc)

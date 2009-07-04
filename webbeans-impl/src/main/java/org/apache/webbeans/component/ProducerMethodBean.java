@@ -32,15 +32,11 @@ import org.apache.webbeans.util.WebBeansUtil;
  * <p>
  * It is defined as producer method component.
  * </p>
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ *
+ * @version $Rev$ $Date$
  */
-public class ProducerMethodBean<T> extends AbstractBean<T> implements IBeanHasParent
+public class ProducerMethodBean<T> extends AbstractProducerBean<T>
 {
-    /** Parent component that this producer method belongs */
-    protected AbstractBean<?> parent;
-
     /** Creator method of the parent component */
     protected Method creatorMethod;
 
@@ -54,8 +50,7 @@ public class ProducerMethodBean<T> extends AbstractBean<T> implements IBeanHasPa
      */
     public ProducerMethodBean(AbstractBean<?> parent, Class<T> returnType)
     {
-        super(WebBeansType.PRODUCER, returnType);
-        this.parent = parent;
+        super(WebBeansType.PRODUCER, returnType, parent);
     }
 
     /**
@@ -76,16 +71,6 @@ public class ProducerMethodBean<T> extends AbstractBean<T> implements IBeanHasPa
     public void setCreatorMethod(Method creatorMethod)
     {
         this.creatorMethod = creatorMethod;
-    }
-
-    /**
-     * Gets the producer method owner web bean.
-     * 
-     * @return web bean component defines producer method
-     */
-    public AbstractBean<?> getParent()
-    {
-        return parent;
     }
 
     /**
@@ -184,6 +169,14 @@ public class ProducerMethodBean<T> extends AbstractBean<T> implements IBeanHasPa
     @Override
     protected void destroyInstance(T instance)
     {
+        dispose(instance);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void dispose(T instance)
+    {
         if (disposalMethod != null)
         {
             Object parentInstance = null;
@@ -196,7 +189,7 @@ public class ProducerMethodBean<T> extends AbstractBean<T> implements IBeanHasPa
                 }
 
 
-                InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, parent,null);
+                InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, this.ownerComponent,null);
                 
                 m.doInjection();
 
@@ -209,7 +202,7 @@ public class ProducerMethodBean<T> extends AbstractBean<T> implements IBeanHasPa
 
                 }
             }
-        }
+        }        
     }
 
     @SuppressWarnings("unchecked")
@@ -220,10 +213,10 @@ public class ProducerMethodBean<T> extends AbstractBean<T> implements IBeanHasPa
         Object parentInstance = null;
         
         //Added for most specialized bean
-        Annotation[] anns = new Annotation[this.parent.getBindings().size()];
-        anns = this.parent.getBindings().toArray(anns);
+        Annotation[] anns = new Annotation[this.ownerComponent.getBindings().size()];
+        anns = this.ownerComponent.getBindings().toArray(anns);
         
-        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractBean<T>)this.parent);
+        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractBean<T>)this.ownerComponent);
         
         if(specialize != null)
         {
@@ -231,7 +224,7 @@ public class ProducerMethodBean<T> extends AbstractBean<T> implements IBeanHasPa
         }
         else
         {
-            parentInstance = getManager().getReference(this.parent, null, null);
+            parentInstance = getManager().getReference(this.ownerComponent, null, null);
         }
         
         return parentInstance;
@@ -240,13 +233,13 @@ public class ProducerMethodBean<T> extends AbstractBean<T> implements IBeanHasPa
 
     protected void checkNullInstance(Object instance)
     {
-        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.parent.getReturnType().getName() + " scope type must be @Dependent to create null instance";
+        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.ownerComponent.getReturnType().getName() + " scope type must be @Dependent to create null instance";
         WebBeansUtil.checkNullInstance(instance, this.getScopeType(), errorMessage);
     }
 
     protected void checkScopeType()
     {
-        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.parent.getReturnType().getName() + " with passivating scope @" + this.getScopeType().getName() + " must be Serializable";
+        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.ownerComponent.getReturnType().getName() + " with passivating scope @" + this.getScopeType().getName() + " must be Serializable";
         WebBeansUtil.checkSerializableScopeType(this.getScopeType(), this.isSerializable(), errorMessage);
 
     }

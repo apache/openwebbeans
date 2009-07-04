@@ -16,6 +16,8 @@ package org.apache.webbeans.component;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
+
 /**
  * Defines contract for beans that coud have observable
  * method.
@@ -24,7 +26,7 @@ import java.util.Set;
  *
  * @param <T> bean type
  */
-public interface ObservesMethodsOwnerBean<T>
+public interface InjectionTargetBean<T>
 {
     /**
      * Returns set of observable methods.
@@ -39,6 +41,44 @@ public interface ObservesMethodsOwnerBean<T>
      * @param observerMethod observer method
      */
     public void addObservableMethod(Method observerMethod);
+    
+    /**
+     * Inject JavaEE resources.
+     * 
+     * @param instance bean instance
+     * @param creationalContext creational context
+     */
+    public void injectResources(T instance, CreationalContext<T> creationalContext);
+    
+    /**
+     * Inject fields of the bean instance.
+     * 
+     * @param instance bean instance
+     * @param creationalContext creational context
+     */
+    public void injectFields(T instance, CreationalContext<T> creationalContext);
+    
+    /**
+     * Inject initializer methods of the bean instance.
+     * 
+     * @param instance bean instance
+     * @param creationalContext creational context
+     */
+    public void injectMethods(T instance, CreationalContext<T> creationalContext);
+    
+    /**
+     * Calls post constrcut method.
+     * 
+     * @param instance bean instance
+     */
+    public void postConstruct(T instance);
+    
+    /**
+     * Calls predestroy method.
+     * 
+     * @param instance bean instance
+     */
+    public void preDestroy(T instance);
     
     /**
      * Returns true if coming from <pre>@Realization</pre>.

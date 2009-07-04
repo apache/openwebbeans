@@ -18,14 +18,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.enterprise.event.AfterTransactionCompletion;
-import javax.enterprise.event.AfterTransactionFailure;
-import javax.enterprise.event.AfterTransactionSuccess;
-import javax.enterprise.event.Asynchronously;
-import javax.enterprise.event.BeforeTransactionCompletion;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.IfExists;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.Produces;
@@ -58,99 +53,26 @@ public final class EventUtil
         AnnotationUtil.checkBindingTypeConditions(annotations);
     }
 
-    private static void checkTransactionCondition(Method observerMethod)
-    {
-        int i = 1;
-        
-        WebBeansConfigurationException excpetion = new WebBeansConfigurationException("Observer method : " + observerMethod.getName() + " in class : " 
-                + observerMethod.getDeclaringClass().getName() + " is not defined with more than two transaction annotation parameter");
-        
-        
-        if(AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionCompletion.class))
-        {
-            if(i > 1)
-            {
-                throw excpetion;
-            }       
-            
-            i++;
-        }
-        
-        if(AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, BeforeTransactionCompletion.class))
-        {
-            if(i > 1)
-            {
-                throw excpetion;
-            }       
-            
-            i++;
-        }
-
-        if(AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionFailure.class))
-        {
-            if(i > 1)
-            {
-                throw excpetion;
-            }       
-            
-            i++;
-        }
-
-        if(AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionSuccess.class))
-        {
-            if(i > 1)
-            {
-                throw excpetion;
-            }       
-            
-            i++;
-        }
-
-    }
-    
     public static TransactionalObserverType getObserverMethodTransactionType(Method observerMethod)
     {
-        checkTransactionCondition(observerMethod);
+        Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observerMethod, Observes.class);
         
-        if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, Asynchronously.class) &&
-                (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, BeforeTransactionCompletion.class)
-                        || (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, IfExists.class))))
-        {
-            throw new WebBeansConfigurationException("Observer method : " + observerMethod.getName() + " in class : " 
-                    + observerMethod.getDeclaringClass().getName() + " can not be both @Asynchronously and @BeforeTransactionCompletion or @IfExists");
-        }
-        
-        
-        if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionCompletion.class))
+        if (observes.during().equals(TransactionPhase.AFTER_COMPLETION))
         {
             return TransactionalObserverType.AFTER_TRANSACTION_COMPLETION;
         }
-        else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionSuccess.class))
+        else if (observes.during().equals(TransactionPhase.AFTER_SUCCESS))
         {
             return TransactionalObserverType.AFTER_TRANSACTION_SUCCESS;
         }
-        else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionFailure.class))
+        else if (observes.during().equals(TransactionPhase.AFTER_FAILURE))
         {
             return TransactionalObserverType.AFTER_TRANSACTION_FAILURE;
         }
-        else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, BeforeTransactionCompletion.class))
+        else if (observes.during().equals(TransactionPhase.BEFORE_COMPLETION))
         {
             return TransactionalObserverType.BEFORE_TRANSACTION_COMPLETION;
         }
-        else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, Asynchronously.class) &&
-                (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionCompletion.class)
-                        || (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionFailure.class)
-                        || (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, AfterTransactionSuccess.class)))))
-
-        {
-            return TransactionalObserverType.ASYNCHRONOUSLY_TRANSACTIONAL;
-        }
-        
-        else if (AnnotationUtil.isMethodParameterAnnotationExist(observerMethod, Asynchronously.class))
-        {
-            return TransactionalObserverType.ASYNCHRONOUSLY_NONE;
-        }
-        
         else
         {
             return TransactionalObserverType.NONE;
@@ -179,28 +101,45 @@ public final class EventUtil
             throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not annotated with annotation @Disposes");
         }
 
-        Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(candidateObserverMethod, Observes.class);
-        
-        Class<?> eventType = null;
-       
-        if (type instanceof ParameterizedType)
-        {
-            eventType = (Class<?>) ((ParameterizedType) type).getRawType();
-        }
-        else
-        {
-            eventType = (Class<?>) type;
-        }
+//        Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(candidateObserverMethod, Observes.class);
+//        
+//        Class<?> eventType = null;
+//       
+//        if (type instanceof ParameterizedType)
+//        {
+//            eventType = (Class<?>) ((ParameterizedType) type).getRawType();
+//        }
+//        else
+//        {
+//            eventType = (Class<?>) type;
+//        }
 
-        if (ClassUtil.isDefinitionConstainsTypeVariables(eventType))
-        {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not defined as generic");
-        }
+//        if (ClassUtil.isDefinitionConstainsTypeVariables(eventType))
+//        {
+//            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not defined as generic");
+//        }
     }
 
 
-    public static void checkObservableInjectionPointConditions(InjectionPoint injectionPoint)
+    public static boolean checkObservableInjectionPointConditions(InjectionPoint injectionPoint)
     {
+        Type type = injectionPoint.getType();
+        
+        Class<?> candidateClazz = null;
+        if(type instanceof Class)
+        {
+            candidateClazz = (Class<?>)type;
+        }
+        else if(type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType)type;
+            candidateClazz = (Class<?>)pt.getRawType();
+        }
+        
+        if(!candidateClazz.equals(Event.class))
+        {
+            return false;
+        }                
 
         if (!ClassUtil.isParametrizedType(injectionPoint.getType()))
         {
@@ -218,7 +157,7 @@ public final class EventUtil
                 
                 if(!(rawType.equals(Event.class)))
                 {
-                    throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint.toString() + " must have type javax.event.Event");
+                    return false;
                 }                
                 else
                 {                                        
@@ -228,25 +167,27 @@ public final class EventUtil
                         
                         if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument) || ClassUtil.isTypeVariable(actualArgument))
                         {                            
-                            throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
+                            throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
                         }
                                                 
                         if(ClassUtil.isDefinitionConstainsTypeVariables((Class<?>)actualArgument))
                         {
-                            throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
+                            throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
                         }
                     }
                     else
                     {
-                        throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint.toString() + " must not have more than one actual type argument");
+                        throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " must not have more than one actual type argument");
                     }
                 }                                
             }
             else
             {
-                throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint.toString() + " must be defined as ParameterizedType with one actual type argument");
+                throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " must be defined as ParameterizedType with one actual type argument");
             }        
         }
+        
+        return true;
 
     }
 
