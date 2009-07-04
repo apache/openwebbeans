@@ -23,14 +23,14 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.util.Closable;
 import org.apache.webbeans.jms.util.JmsUtil;
 
-public class JmsComponentImpl<T> extends AbstractComponent<T> 
+public class JmsComponentImpl<T> extends AbstractBean<T> 
 {
     private JMSModel jmsModel = null;
     

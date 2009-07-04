@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.jms.JMSModel;
@@ -76,7 +76,7 @@ public class OpenWebBeansJmsPlugin extends AbstractOpenWebBeansPlugin
                 
                 JmsComponentImpl<T> bean = JmsComponentFactory.getJmsComponentFactory().getJmsComponent(jmsModel,injectionPointClazz);
                 
-                ManagerImpl.getManager().addBean(bean);
+                BeanManagerImpl.getManager().addBean(bean);
                 
                 return true;
             }            
