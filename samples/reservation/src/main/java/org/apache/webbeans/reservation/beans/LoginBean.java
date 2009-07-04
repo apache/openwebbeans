@@ -16,12 +16,10 @@
  */
 package org.apache.webbeans.reservation.beans;
 
-import java.lang.annotation.Annotation;
-
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Named;
-import javax.event.Fires;
 
 import org.apache.commons.validator.GenericValidator;
 import org.apache.webbeans.reservation.bindings.DatabaseLogin;
@@ -44,7 +42,7 @@ public class LoginBean
     private String password;
 
     /**Inject of the event instance*/
-    private @Fires Event<LoggedInEvent> loggedInEvent;
+    private @Any Event<LoggedInEvent> loggedInEvent;
     
     /**Database related login controller*/
     private @DatabaseLogin LoginController loginController;
@@ -76,7 +74,7 @@ public class LoginBean
         
         //Fire Event
         LoggedInEvent event = new LoggedInEvent(user);
-        loggedInEvent.fire(event, new Annotation[0]);
+        loggedInEvent.fire(event);
         
         
         if(user.isAdmin())
