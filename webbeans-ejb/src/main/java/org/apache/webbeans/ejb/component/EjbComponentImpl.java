@@ -23,14 +23,14 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.component.AbstractObservesComponent;
+import org.apache.webbeans.component.AbstractObservesBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.ejb.EjbType;
 
 /**
  * @version $Rev$ $Date$
  */
-public class EjbComponentImpl<T> extends AbstractObservesComponent<T>
+public class EjbComponentImpl<T> extends AbstractObservesBean<T>
 {
     private EjbType ejbType;
     
