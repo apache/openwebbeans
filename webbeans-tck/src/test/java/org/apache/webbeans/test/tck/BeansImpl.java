@@ -19,8 +19,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.persistence.Entity;
 
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
@@ -34,13 +34,13 @@ public class BeansImpl implements Beans
     @SuppressWarnings("unchecked")
     public <T> Bean<T> createProducerMethodBean(Method method, Bean<?> declaringBean)
     {
-        return DefinitionUtil.createProducerComponent((Class<T>)method.getReturnType(), method, (AbstractComponent<?>)declaringBean, false);
+        return DefinitionUtil.createProducerComponent((Class<T>)method.getReturnType(), method, (AbstractBean<?>)declaringBean, false);
         
     }
 
     public <T> Bean<T> createSimpleBean(Class<T> clazz)
     {
-        ComponentImpl<T> bean = null;
+        ManagedBean<T> bean = null;
 
         SimpleWebBeansConfigurator.checkSimpleWebBeanCondition(clazz);
         
