@@ -19,8 +19,8 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.producer.Producer1;
 import org.apache.webbeans.test.component.service.IService;
@@ -43,7 +43,7 @@ public class Producer1ConsumerComponentTest extends TestContext
     public void init()
     {
         super.init();
-        this.container = ManagerImpl.getManager();
+        this.container = BeanManagerImpl.getManager();
     }
 
     @Test
@@ -55,7 +55,7 @@ public class Producer1ConsumerComponentTest extends TestContext
         defineSimpleWebBean(Producer1.class);
         defineSimpleWebBean(Producer1ConsumerComponent.class);
 
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
         ContextFactory.initApplicationContext(null);

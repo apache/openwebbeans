@@ -23,7 +23,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.util.Asserts;
 
@@ -116,8 +116,8 @@ public class ConversationManager
     public Conversation getCurrentConversation()
     {
 
-        Bean<Conversation> bean = (Bean<Conversation>)ManagerImpl.getManager().resolveByType(Conversation.class, new CurrentLiteral()).iterator().next();
-        Conversation conversation = ManagerImpl.getManager().getInstance(bean);
+        Bean<Conversation> bean = (Bean<Conversation>)BeanManagerImpl.getManager().resolveByType(Conversation.class, new CurrentLiteral()).iterator().next();
+        Conversation conversation = BeanManagerImpl.getManager().getInstance(bean);
 
         return conversation;
     }

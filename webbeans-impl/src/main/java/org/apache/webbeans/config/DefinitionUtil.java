@@ -49,13 +49,13 @@ import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.annotation.specific.Realizes;
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.Component;
-import org.apache.webbeans.component.ComponentImpl;
-import org.apache.webbeans.component.IComponentHasParent;
-import org.apache.webbeans.component.ObservesMethodsOwner;
-import org.apache.webbeans.component.ProducerComponentImpl;
-import org.apache.webbeans.component.ProducerFieldComponent;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.BaseBean;
+import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.IBeanHasParent;
+import org.apache.webbeans.component.ObservesMethodsOwnerBean;
+import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -83,7 +83,7 @@ public final class DefinitionUtil
 
     }
     
-    public static <T> Class<? extends Annotation> defineDeploymentType(AbstractComponent<T> component, Annotation[] beanAnnotations, String errorMessage)
+    public static <T> Class<? extends Annotation> defineDeploymentType(AbstractBean<T> component, Annotation[] beanAnnotations, String errorMessage)
     {
         boolean found = false;
         for (Annotation annotation : beanAnnotations)
@@ -130,9 +130,9 @@ public final class DefinitionUtil
             if (result == null)
             {
                 //From parent
-                if (!found && (component instanceof IComponentHasParent))
+                if (!found && (component instanceof IBeanHasParent))
                 {
-                    IComponentHasParent child = (IComponentHasParent) component;
+                    IBeanHasParent child = (IBeanHasParent) component;
                     component.setType(child.getParent().getType());
                 }
                 
@@ -165,7 +165,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param clazz bean implementation class
      */
-    public static <T> void defineApiTypes(AbstractComponent<T> component, Class<T> clazz)
+    public static <T> void defineApiTypes(AbstractBean<T> component, Class<T> clazz)
     {
         ClassUtil.setTypeHierarchy(component.getTypes(), clazz);
     }
@@ -177,7 +177,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param clazz bean implementation class
      */
-    public static <T> void defineProducerMethodApiTypes(AbstractComponent<T> component, Type type)
+    public static <T> void defineProducerMethodApiTypes(AbstractBean<T> component, Type type)
     {
         Set<Type> types = component.getTypes();
         types.add(Object.class);
@@ -201,7 +201,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param annotations annotations
      */
-    public static <T> void defineBindingTypes(AbstractComponent<T> component, Annotation[] annotations)
+    public static <T> void defineBindingTypes(AbstractBean<T> component, Annotation[] annotations)
     {
         boolean find = false;
         for (Annotation annotation : annotations)
@@ -279,7 +279,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param annotations annotations
      */
-    public static <T> void defineScopeType(AbstractComponent<T> component, Annotation[] annotations, String exceptionMessage)
+    public static <T> void defineScopeType(AbstractBean<T> component, Annotation[] annotations, String exceptionMessage)
     {
         boolean found = false;
 
@@ -307,7 +307,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void defineStereoTypes(Component<?> component, Annotation[] anns)
+    public static <T> void defineStereoTypes(BaseBean<?> component, Annotation[] anns)
     {
         if (AnnotationUtil.isStereoTypeMetaAnnotationExist(anns))
         {
@@ -345,7 +345,7 @@ public final class DefinitionUtil
         
     }
 
-    public static void defineDefaultScopeType(Component<?> component, String exceptionMessage)
+    public static void defineDefaultScopeType(BaseBean<?> component, String exceptionMessage)
     {
         // Frist look for inherited scope
         IBeanInheritedMetaData metaData = component.getInheritedMetaData();
@@ -410,7 +410,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param defaultName default name of the web bean
      */
-    public static <T> void defineName(AbstractComponent<T> component, Annotation[] anns, String defaultName)
+    public static <T> void defineName(AbstractBean<T> component, Annotation[] anns, String defaultName)
     {
         Named nameAnnot = null;
         boolean isDefault = false;
@@ -454,14 +454,14 @@ public final class DefinitionUtil
     }
 
     /**
-     * Defines the set of {@link ProducerFieldComponent} components.
+     * Defines the set of {@link ProducerFieldBean} components.
      * 
      * @param component producer field owner component
      * @return the set of producer field components
      */
-    public static Set<ProducerFieldComponent<?>> defineProduerFields(AbstractComponent<?> component)
+    public static Set<ProducerFieldBean<?>> defineProduerFields(AbstractBean<?> component)
     {
-        Set<ProducerFieldComponent<?>> producerFields = new HashSet<ProducerFieldComponent<?>>();
+        Set<ProducerFieldBean<?>> producerFields = new HashSet<ProducerFieldBean<?>>();
         Field[] fields = component.getReturnType().getDeclaredFields();
 
         // From normal class
@@ -481,7 +481,7 @@ public final class DefinitionUtil
         return producerFields;
     }
 
-    private static void createProducerFieldWithRealizations(AbstractComponent<?> component, Set<ProducerFieldComponent<?>> producerFields, Field[] fields, boolean isRealizes)
+    private static void createProducerFieldWithRealizations(AbstractBean<?> component, Set<ProducerFieldBean<?>> producerFields, Field[] fields, boolean isRealizes)
     {
         for (Field field : fields)
         {            
@@ -510,7 +510,7 @@ public final class DefinitionUtil
                     }
                 }
                 
-                ProducerFieldComponent<?> newComponent = createProducerFieldComponent(field.getType(), field, component);
+                ProducerFieldBean<?> newComponent = createProducerFieldComponent(field.getType(), field, component);
 
                 if (newComponent != null)
                 {
@@ -561,11 +561,11 @@ public final class DefinitionUtil
      * @return the set of producer components
      * @throws WebBeansConfigurationException if any exception occurs
      */
-    public static Set<ProducerComponentImpl<?>> defineProducerMethods(AbstractComponent<?> component)
+    public static Set<ProducerMethodBean<?>> defineProducerMethods(AbstractBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
-        Set<ProducerComponentImpl<?>> producerComponents = new HashSet<ProducerComponentImpl<?>>();
+        Set<ProducerMethodBean<?>> producerComponents = new HashSet<ProducerMethodBean<?>>();
 
         Class<?> clazz = component.getReturnType();
         Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -603,7 +603,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void createProducerComponentsWithReliazes(AbstractComponent<T> component, Set<ProducerComponentImpl<?>> producerComponents, Method declaredMethod, Class<?> clazz, boolean isSpecializes, boolean isRealizes)
+    private static <T> void createProducerComponentsWithReliazes(AbstractBean<T> component, Set<ProducerMethodBean<?>> producerComponents, Method declaredMethod, Class<?> clazz, boolean isSpecializes, boolean isRealizes)
     {
         // Producer Method
         if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Produces.class))
@@ -620,7 +620,7 @@ public final class DefinitionUtil
                 isSpecializes = true;
             }
 
-            ProducerComponentImpl<?> newComponent = createProducerComponent(declaredMethod.getReturnType(), declaredMethod, component, isSpecializes);
+            ProducerMethodBean<?> newComponent = createProducerComponent(declaredMethod.getReturnType(), declaredMethod, component, isSpecializes);
 
             if (newComponent != null)
             {
@@ -661,9 +661,9 @@ public final class DefinitionUtil
 
     }
 
-    public static <T> ProducerComponentImpl<T> createProducerComponent(Class<T> returnType, Method method, AbstractComponent<?> parent, boolean isSpecializes)
+    public static <T> ProducerMethodBean<T> createProducerComponent(Class<T> returnType, Method method, AbstractBean<?> parent, boolean isSpecializes)
     {
-        ProducerComponentImpl<T> component = new ProducerComponentImpl<T>(parent, returnType);
+        ProducerMethodBean<T> component = new ProducerMethodBean<T>(parent, returnType);
         component.setCreatorMethod(method);
 
         if (isSpecializes)
@@ -701,9 +701,9 @@ public final class DefinitionUtil
         return component;
     }
 
-    private static <T> ProducerFieldComponent<T> createProducerFieldComponent(Class<T> returnType, Field field, AbstractComponent<?> parent)
+    private static <T> ProducerFieldBean<T> createProducerFieldComponent(Class<T> returnType, Field field, AbstractBean<?> parent)
     {
-        ProducerFieldComponent<T> component = new ProducerFieldComponent<T>(parent, returnType);
+        ProducerFieldBean<T> component = new ProducerFieldBean<T>(parent, returnType);
         component.setProducerField(field);
 
         if (returnType.isPrimitive())
@@ -737,7 +737,7 @@ public final class DefinitionUtil
         return component;
     }
 
-    public static <T> void defineDisposalMethods(AbstractComponent<T> component)
+    public static <T> void defineDisposalMethods(AbstractBean<T> component)
     {
         Class<?> clazz = component.getReturnType();
 
@@ -756,9 +756,9 @@ public final class DefinitionUtil
         createDisposalMethodsWithRealizations(component, genericMethods, clazz.getSuperclass(), true);
     }
 
-    private static <T> void createDisposalMethodsWithRealizations(AbstractComponent<T> component, Method[] methods, Class<?> clazz, boolean isRealizes)
+    private static <T> void createDisposalMethodsWithRealizations(AbstractBean<T> component, Method[] methods, Class<?> clazz, boolean isRealizes)
     {
-        ProducerComponentImpl<?> previous = null;
+        ProducerMethodBean<?> previous = null;
         for (Method declaredMethod : methods)
         {
             if (isRealizes)
@@ -784,16 +784,16 @@ public final class DefinitionUtil
 
             Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
             Bean<?> bean = set.iterator().next();
-            ProducerComponentImpl<?> pr = null;
+            ProducerMethodBean<?> pr = null;
 
-            if (bean == null || !(bean instanceof ProducerComponentImpl))
+            if (bean == null || !(bean instanceof ProducerMethodBean))
             {
                 throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + clazz.getName() + "is not found");
             }
 
             else
             {
-                pr = (ProducerComponentImpl<?>) bean;
+                pr = (ProducerMethodBean<?>) bean;
             }
 
             if (previous == null)
@@ -816,7 +816,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void defineInjectedFields(ComponentImpl<T> component)
+    public static <T> void defineInjectedFields(ManagedBean<T> component)
     {
         Class<T> clazz = component.getReturnType();
 
@@ -829,7 +829,7 @@ public final class DefinitionUtil
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> void defineInternalInjectedFieldsRecursively(ComponentImpl<T> component, Class<T> clazz)
+    private static <T> void defineInternalInjectedFieldsRecursively(ManagedBean<T> component, Class<T> clazz)
     {
         // From inheritance
         Class<?> superClazz = clazz.getSuperclass();
@@ -844,7 +844,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void defineInternalInjectedFields(ComponentImpl<T> component, Class<T> clazz, boolean fromSuperClazz)
+    private static <T> void defineInternalInjectedFields(ManagedBean<T> component, Class<T> clazz, boolean fromSuperClazz)
     {
 
         Field[] fields = clazz.getDeclaredFields();
@@ -933,7 +933,7 @@ public final class DefinitionUtil
 
     }
 
-    public static <T> void defineInjectedMethods(ComponentImpl<T> component)
+    public static <T> void defineInjectedMethods(ManagedBean<T> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
@@ -947,7 +947,7 @@ public final class DefinitionUtil
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> void defineInternalInjectedMethodsRecursively(ComponentImpl<T> component, Class<T> clazz)
+    private static <T> void defineInternalInjectedMethodsRecursively(ManagedBean<T> component, Class<T> clazz)
     {
         // From inheritance
         Class<?> superClazz = clazz.getSuperclass();
@@ -962,7 +962,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void defineInternalInjectedMethods(ComponentImpl<T> component, Class<T> clazz, boolean fromInherited)
+    private static <T> void defineInternalInjectedMethods(ManagedBean<T> component, Class<T> clazz, boolean fromInherited)
     {
 
         Method[] methods = clazz.getDeclaredMethods();
@@ -1032,7 +1032,7 @@ public final class DefinitionUtil
     /**
      * add the definitions for a &#x0040;Initializer method.
      */
-    private static <T> void checkForInjectedInitializerMethod(ComponentImpl<T> component, Class<T> clazz, Method method)
+    private static <T> void checkForInjectedInitializerMethod(ManagedBean<T> component, Class<T> clazz, Method method)
     {
         Annotation[][] anns = method.getParameterAnnotations();
         Type[] type = method.getGenericParameterTypes();
@@ -1056,7 +1056,7 @@ public final class DefinitionUtil
     /**
      * add the definitions for a &#x0040;Initializer method.
      */
-    private static <T> void checkForValidResourceMethod(ComponentImpl<T> component, Class<T> clazz, Method method)
+    private static <T> void checkForValidResourceMethod(ManagedBean<T> component, Class<T> clazz, Method method)
     {
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (parameterTypes == null || parameterTypes.length != 1)
@@ -1068,7 +1068,7 @@ public final class DefinitionUtil
         WebBeansUtil.checkForValidResources(parameterTypes[0], clazz, method.getName(), anns);
     }
 
-    public static void defineSimpleWebBeanInterceptorStack(AbstractComponent<?> component)
+    public static void defineSimpleWebBeanInterceptorStack(AbstractBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can no be null");
 
@@ -1079,12 +1079,12 @@ public final class DefinitionUtil
         WebBeansInterceptorConfig.configure(component, component.getInterceptorStack());
     }
 
-    public static void defineWebBeanDecoratorStack(AbstractComponent<?> component, Object object)
+    public static void defineWebBeanDecoratorStack(AbstractBean<?> component, Object object)
     {
         WebBeansDecoratorConfig.configureDecarotors(component, object);
     }
 
-    public static <T> void defineObserverMethods(ObservesMethodsOwner<T> component, Class<T> clazz)
+    public static <T> void defineObserverMethods(ObservesMethodsOwnerBean<T> component, Class<T> clazz)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         Asserts.nullCheckForClass(clazz);
@@ -1111,7 +1111,7 @@ public final class DefinitionUtil
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> void createObserverMethodsWithRealizes(ObservesMethodsOwner<T> component, Class<?> clazz, Method[] candidateMethods, boolean isRealizes)
+    private static <T> void createObserverMethodsWithRealizes(ObservesMethodsOwnerBean<T> component, Class<?> clazz, Method[] candidateMethods, boolean isRealizes)
     {
 
         for (Method candidateMethod : candidateMethods)
@@ -1131,12 +1131,12 @@ public final class DefinitionUtil
             component.addObservableMethod(candidateMethod);
             component.setFromRealizes(isRealizes);
 
-            addMethodInjectionPointMetaData((AbstractComponent<T>) component, candidateMethod);
+            addMethodInjectionPointMetaData((AbstractBean<T>) component, candidateMethod);
         }
 
     }
 
-    public static <T> void defineSerializable(AbstractComponent<T> component)
+    public static <T> void defineSerializable(AbstractBean<T> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         if (ClassUtil.isAssignable(Serializable.class, component.getReturnType()))
@@ -1145,7 +1145,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void addFieldInjectionPointMetaData(AbstractComponent<T> owner, Field field)
+    public static <T> void addFieldInjectionPointMetaData(AbstractBean<T> owner, Field field)
     {
         InjectionPoint injectionPoint = InjectionPointFactory.getFieldInjectionPointData(owner, field);
         if (injectionPoint != null)
@@ -1155,7 +1155,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void addMethodInjectionPointMetaData(AbstractComponent<T> owner, Method method)
+    public static <T> void addMethodInjectionPointMetaData(AbstractBean<T> owner, Method method)
     {
         List<InjectionPoint> injectionPoints = InjectionPointFactory.getMethodInjectionPointData(owner, method);
         for (InjectionPoint injectionPoint : injectionPoints)
@@ -1165,7 +1165,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void addConstructorInjectionPointMetaData(AbstractComponent<T> owner, Constructor<T> constructor)
+    public static <T> void addConstructorInjectionPointMetaData(AbstractBean<T> owner, Constructor<T> constructor)
     {
         List<InjectionPoint> injectionPoints = InjectionPointFactory.getConstructorInjectionPointData(owner, constructor);
         for (InjectionPoint injectionPoint : injectionPoints)

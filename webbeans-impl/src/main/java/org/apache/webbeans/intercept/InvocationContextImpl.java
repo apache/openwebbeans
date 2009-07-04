@@ -25,7 +25,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 
 /**
@@ -88,7 +88,7 @@ public class InvocationContextImpl implements InvocationContext
     @SuppressWarnings("unchecked")
     private void configureTarget(Bean<?> bean)
     {
-        Context webbeansContext = ManagerImpl.getManager().getContext(bean.getScopeType());
+        Context webbeansContext = BeanManagerImpl.getManager().getContext(bean.getScopeType());
         
         this.target = webbeansContext.get((Contextual<Object>)bean, (CreationalContext<Object>)CreationalContextFactory.getInstance().getCreationalContext(bean));        
         

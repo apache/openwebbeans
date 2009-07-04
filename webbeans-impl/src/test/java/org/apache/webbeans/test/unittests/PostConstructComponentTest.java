@@ -19,8 +19,8 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -52,7 +52,7 @@ public class PostConstructComponentTest extends TestContext
 
         defineSimpleWebBean(CheckWithCheckPayment.class);
         defineSimpleWebBean(PostConstructComponent.class);
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
 
@@ -68,7 +68,7 @@ public class PostConstructComponentTest extends TestContext
 
         pcc.getP();
 
-        ComponentImpl<PostConstructComponent> s = (ComponentImpl<PostConstructComponent>) comps.get(1);
+        ManagedBean<PostConstructComponent> s = (ManagedBean<PostConstructComponent>) comps.get(1);
         List<InterceptorData> stack = s.getInterceptorStack();
 
         Assert.assertEquals(1, stack.size());

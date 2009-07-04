@@ -26,8 +26,8 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
@@ -53,11 +53,11 @@ public class WebBeansDecorator<T> implements Decorator<T>
     protected Set<Annotation> delegateBindingTypes = new HashSet<Annotation>();
 
     /** Delegated component */
-    private AbstractComponent<T> delegateComponent;
+    private AbstractBean<T> delegateComponent;
     
     private CreationalContext<Object> creationalContext;
 
-    public WebBeansDecorator(AbstractComponent<T> delegateComponent)
+    public WebBeansDecorator(AbstractBean<T> delegateComponent)
     {
         this.delegateComponent = delegateComponent;
         this.clazz = delegateComponent.getReturnType();
@@ -221,7 +221,7 @@ public class WebBeansDecorator<T> implements Decorator<T>
     public void setInjections(Object proxy)
     {
         // Set injected fields
-        ComponentImpl<T> delegate = (ComponentImpl<T>) this.delegateComponent;
+        ManagedBean<T> delegate = (ManagedBean<T>) this.delegateComponent;
 
         Set<Field> injectedFields = delegate.getInjectedFields();
         for (Field injectedField : injectedFields)
@@ -294,7 +294,7 @@ public class WebBeansDecorator<T> implements Decorator<T>
     /**
      * @return the delegateComponent
      */
-    public AbstractComponent<T> getDelegateComponent()
+    public AbstractBean<T> getDelegateComponent()
     {
         return delegateComponent;
     }

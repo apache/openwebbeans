@@ -31,7 +31,7 @@ import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContainerDeployer;
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
@@ -80,7 +80,7 @@ public final class WebBeansLifeCycle
     
     /**Root container.*/
     //Activities are removed from the specification.
-    private final ManagerImpl rootManager;
+    private final BeanManagerImpl rootManager;
 
     /**
      * Creates a new lifecycle instance and initializes
@@ -88,7 +88,7 @@ public final class WebBeansLifeCycle
      */
     public WebBeansLifeCycle()
     {
-        this.rootManager = new ManagerImpl();
+        this.rootManager = new BeanManagerImpl();
         this.xmlDeployer = new WebBeansXMLConfigurator();
         this.deployer = new WebBeansContainerDeployer(xmlDeployer);
         this.jndiService = ServiceLoader.getService(JNDIService.class);

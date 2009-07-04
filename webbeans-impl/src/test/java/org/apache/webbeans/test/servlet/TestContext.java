@@ -36,10 +36,10 @@ import javax.servlet.http.HttpSession;
 import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.component.xml.XMLComponentImpl;
+import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.DependentContext;
@@ -310,9 +310,9 @@ public abstract class TestContext implements ITestContext
      * @param clazz simple webbeans class
      * @return simple webbean
      */
-    protected <T> AbstractComponent<T> defineSimpleWebBean(Class<T> clazz)
+    protected <T> AbstractBean<T> defineSimpleWebBean(Class<T> clazz)
     {
-        ComponentImpl<T> bean = null;
+        ManagedBean<T> bean = null;
 
         bean = SimpleWebBeansConfigurator.define(clazz, WebBeansType.SIMPLE);
 
@@ -322,7 +322,7 @@ public abstract class TestContext implements ITestContext
             DecoratorUtil.checkSimpleWebBeanDecoratorConditions(bean);
             // DefinitionUtil.defineSimpleWebBeanInterceptorStack(bean);
 
-            getComponents().add((AbstractComponent<?>) bean);
+            getComponents().add((AbstractBean<?>) bean);
             manager.addBean(bean);
         }
 
@@ -335,9 +335,9 @@ public abstract class TestContext implements ITestContext
      * @param simpleClass webbeans class
      * @param webBeanDecleration element decleration defines simple webbeans
      */
-    protected <T> XMLComponentImpl<T> defineXMLSimpleWebBeans(Class<T> simpleClass, Element webBeanDecleration)
+    protected <T> XMLManagedBean<T> defineXMLSimpleWebBeans(Class<T> simpleClass, Element webBeanDecleration)
     {
-        XMLComponentImpl<T> bean = null;
+        XMLManagedBean<T> bean = null;
         bean = this.xmlConfigurator.configureSimpleWebBean(simpleClass, webBeanDecleration);
 
         if (bean != null)
@@ -358,7 +358,7 @@ public abstract class TestContext implements ITestContext
      * @param xmlResourcePath
      * @return XMLComponentImpl<?> with the WebBean definition
      */
-    protected XMLComponentImpl<?> getWebBeanFromXml(String xmlResourcePath)
+    protected XMLManagedBean<?> getWebBeanFromXml(String xmlResourcePath)
     {
         InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
         Assert.assertNotNull(stream);
@@ -368,7 +368,7 @@ public abstract class TestContext implements ITestContext
 
         Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
 
-        XMLComponentImpl<?> def = defineXMLSimpleWebBeans(clazz, beanElement);
+        XMLManagedBean<?> def = defineXMLSimpleWebBeans(clazz, beanElement);
 
         return def;
     }
@@ -383,7 +383,7 @@ public abstract class TestContext implements ITestContext
      * @return XMLComponentImpl<?> with the WebBean definition
      */
     @SuppressWarnings("unchecked")
-    protected AbstractComponent<?> getWebBeanFromXml(String xmlResourcePath, Class<?> desiredClazz)
+    protected AbstractBean<?> getWebBeanFromXml(String xmlResourcePath, Class<?> desiredClazz)
     {
         InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
         Assert.assertNotNull(stream);
@@ -397,7 +397,7 @@ public abstract class TestContext implements ITestContext
             defineXMLSimpleWebBeans(clazz, beanElement);
         }
 
-        for (AbstractComponent<?> def : getComponents())
+        for (AbstractBean<?> def : getComponents())
         {
             if (def.getReturnType().equals(desiredClazz))
             {
@@ -415,9 +415,9 @@ public abstract class TestContext implements ITestContext
      * @return the new interceptor
      */
     @SuppressWarnings("unchecked")
-    protected <T> AbstractComponent<T> defineSimpleWebBeanInterceptor(Class<T> clazz)
+    protected <T> AbstractBean<T> defineSimpleWebBeanInterceptor(Class<T> clazz)
     {
-        ComponentImpl<T> component = null;
+        ManagedBean<T> component = null;
 
         SimpleWebBeansConfigurator.checkSimpleWebBeanCondition(clazz);
         {
@@ -426,7 +426,7 @@ public abstract class TestContext implements ITestContext
             {
                 InterceptorUtil.checkInterceptorConditions(clazz);
                 component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
-                WebBeansInterceptorConfig.configureInterceptorClass((ComponentImpl<Object>) component, clazz.getDeclaredAnnotations());
+                WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component, clazz.getDeclaredAnnotations());
             }
 
         }
@@ -441,9 +441,9 @@ public abstract class TestContext implements ITestContext
      * @return the new decorator
      */
     @SuppressWarnings("unchecked")
-    protected <T> AbstractComponent<T> defineSimpleWebBeansDecorators(Class<T> clazz)
+    protected <T> AbstractBean<T> defineSimpleWebBeansDecorators(Class<T> clazz)
     {
-        ComponentImpl<T> component = null;
+        ManagedBean<T> component = null;
 
         if (DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
         {
@@ -452,7 +452,7 @@ public abstract class TestContext implements ITestContext
 
             if (component != null)
             {
-                WebBeansDecoratorConfig.configureDecoratorClass((ComponentImpl<Object>) component);
+                WebBeansDecoratorConfig.configureDecoratorClass((ManagedBean<Object>) component);
             }
         }
 
@@ -474,7 +474,7 @@ public abstract class TestContext implements ITestContext
      * @param i ith component in the {@link MockManager}
      * @return the ith component in the list
      */
-    protected AbstractComponent<?> getComponent(int i)
+    protected AbstractBean<?> getComponent(int i)
     {
         return manager.getComponent(i);
     }
@@ -484,7 +484,7 @@ public abstract class TestContext implements ITestContext
      * 
      * @return all components
      */
-    protected List<AbstractComponent<?>> getComponents()
+    protected List<AbstractBean<?>> getComponents()
     {
         return manager.getComponents();
     }

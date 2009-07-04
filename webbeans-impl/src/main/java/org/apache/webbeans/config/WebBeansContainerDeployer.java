@@ -31,9 +31,9 @@ import javax.enterprise.inject.stereotype.Model;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
-import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.deployment.StereoTypeManager;
@@ -87,17 +87,17 @@ public class WebBeansContainerDeployer
             if (!deployed)
             {
                 // Register Manager built-in component
-                ManagerImpl.getManager().addBean(WebBeansUtil.getManagerComponent());
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.getManagerComponent());
 
                 // Register Conversation built-in component
-                ManagerImpl.getManager().addBean(WebBeansUtil.getConversationComponent());
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.getConversationComponent());
                 
                 // Register InjectionPoint bean
-                ManagerImpl.getManager().addBean(WebBeansUtil.getInjectionPointComponent());
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.getInjectionPointComponent());
 
                 // Bind manager
                 JNDIService service = ServiceLoader.getService(JNDIService.class);
-                service.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, ManagerImpl.getManager());
+                service.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, BeanManagerImpl.getManager());
 
                 deployFromXML(scanner);
                 checkStereoTypes(scanner);
@@ -155,7 +155,7 @@ public class WebBeansContainerDeployer
     {
         logger.info("Validation of injection points are started");
 
-        ManagerImpl manager = ManagerImpl.getManager();        
+        BeanManagerImpl manager = BeanManagerImpl.getManager();        
         Set<Bean<?>> beans = new HashSet<Bean<?>>();
         
         //Adding decorators to validate
@@ -199,7 +199,7 @@ public class WebBeansContainerDeployer
 
     private void validate(Set<Bean<?>> beans)
     {
-        ManagerImpl manager = ManagerImpl.getManager();
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
         
         if (beans != null && beans.size() > 0)
         {
@@ -429,7 +429,7 @@ public class WebBeansContainerDeployer
 
     protected void checkPassivationScopes()
     {
-        Set<Bean<?>> beans = ManagerImpl.getManager().getBeans();
+        Set<Bean<?>> beans = BeanManagerImpl.getManager().getBeans();
 
         if (beans != null && beans.size() > 0)
         {
@@ -437,9 +437,9 @@ public class WebBeansContainerDeployer
             while (itBeans.hasNext())
             {
                 Object beanObj = itBeans.next();
-                if (beanObj instanceof ComponentImpl)
+                if (beanObj instanceof ManagedBean)
                 {
-                    ComponentImpl<?> component = (ComponentImpl<?>) beanObj;
+                    ManagedBean<?> component = (ManagedBean<?>) beanObj;
                     ScopeType scope = component.getScopeType().getAnnotation(ScopeType.class);
                     if (scope.passivating())
                     {
@@ -502,20 +502,20 @@ public class WebBeansContainerDeployer
     
     protected <T> void defineSimpleWebBeans(Class<T> clazz)
     {
-        ComponentImpl<T> component = null;
+        ManagedBean<T> component = null;
 
         if (!AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class) && !AnnotationUtil.isAnnotationExistOnClass(clazz, javax.decorator.Decorator.class))
         {
             component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.SIMPLE);
             if (component != null)
             {
-                ManagerImpl.getManager().addBean(WebBeansUtil.createNewSimpleBeanComponent(component));
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewSimpleBeanComponent(component));
                 
                 DecoratorUtil.checkSimpleWebBeanDecoratorConditions(component);
 
                 /* I have added this into the ComponentImpl.afterCreate(); */
                 // DefinitionUtil.defineSimpleWebBeanInterceptorStack(component);
-                ManagerImpl.getManager().addBean(component);
+                BeanManagerImpl.getManager().addBean(component);
             }
         }
     }

@@ -20,8 +20,8 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.service.ITyped2;
 import org.apache.webbeans.test.component.service.Typed2;
@@ -44,7 +44,7 @@ public class TypedInjectedComponentTest extends TestContext
     public void init()
     {
         super.init();
-        this.container = ManagerImpl.getManager();
+        this.container = BeanManagerImpl.getManager();
     }
 
     @Test
@@ -54,7 +54,7 @@ public class TypedInjectedComponentTest extends TestContext
 
         defineSimpleWebBean(Typed2.class);
         defineSimpleWebBean(TypedInjection.class);
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();
 
@@ -86,7 +86,7 @@ public class TypedInjectedComponentTest extends TestContext
 
         defineSimpleWebBean(Typed2.class);
         defineSimpleWebBean(TypedInjectionWithoutArguments.class);
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();
 

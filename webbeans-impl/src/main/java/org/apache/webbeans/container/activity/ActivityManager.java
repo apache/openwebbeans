@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.spi.Context;
 
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
@@ -41,10 +41,10 @@ import org.apache.webbeans.exception.WebBeansException;
 public class ActivityManager
 {
     /**Root activity*/
-    private ManagerImpl rootActivity = null;
+    private BeanManagerImpl rootActivity = null;
     
     /**Setted current activities*/
-    private Map<Context, ManagerImpl> currentActivityMap = new ConcurrentHashMap<Context, ManagerImpl>();
+    private Map<Context, BeanManagerImpl> currentActivityMap = new ConcurrentHashMap<Context, BeanManagerImpl>();
     
     /**
      * Used by the system. Do not
@@ -73,7 +73,7 @@ public class ActivityManager
      * 
      * @param rootActivity root activity
      */
-    public synchronized void  setRootActivity(ManagerImpl rootActivity)
+    public synchronized void  setRootActivity(BeanManagerImpl rootActivity)
     {
         this.rootActivity = rootActivity;
     }
@@ -83,7 +83,7 @@ public class ActivityManager
      * 
      * @return the root activity
      */
-    public ManagerImpl getRootActivity()
+    public BeanManagerImpl getRootActivity()
     {
         return this.rootActivity;
     }
@@ -95,7 +95,7 @@ public class ActivityManager
      * @param context
      * @param currentManager
      */
-    public void addCurrentActivity(Context context, ManagerImpl currentManager)
+    public void addCurrentActivity(Context context, BeanManagerImpl currentManager)
     {
         this.currentActivityMap.put(context, currentManager); 
     }
@@ -111,12 +111,12 @@ public class ActivityManager
      * @return the current activity
      * @throws WebBeansException if more than one current activity exist
      */
-    public ManagerImpl getCurrentActivity()
+    public BeanManagerImpl getCurrentActivity()
     {
-        ManagerImpl currentActivity = null;
+        BeanManagerImpl currentActivity = null;
         
         Set<Context> contexts = this.currentActivityMap.keySet();
-        List<ManagerImpl> managers = new ArrayList<ManagerImpl>(); 
+        List<BeanManagerImpl> managers = new ArrayList<BeanManagerImpl>(); 
         for(Context context : contexts)
         {
             if(context.isActive())

@@ -17,7 +17,7 @@ package org.apache.webbeans.test.unittests.binding;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.test.component.binding.AnyBindingComponent;
 import org.apache.webbeans.test.component.binding.DefaultAnyBinding;
 import org.apache.webbeans.test.component.binding.NonAnyBindingComponent;
@@ -42,18 +42,18 @@ public class AnyBindingTest extends TestContext{
 	@Test
 	public void testAny()
 	{
-		AbstractComponent<AnyBindingComponent> comp1 = defineSimpleWebBean(AnyBindingComponent.class);
+		AbstractBean<AnyBindingComponent> comp1 = defineSimpleWebBean(AnyBindingComponent.class);
 		Set<Annotation> bindings = comp1.getBindings();
 		
 		Assert.assertEquals(2, bindings.size());
 		
-		AbstractComponent<NonAnyBindingComponent> comp2 = defineSimpleWebBean(NonAnyBindingComponent.class);
+		AbstractBean<NonAnyBindingComponent> comp2 = defineSimpleWebBean(NonAnyBindingComponent.class);
 		bindings = comp2.getBindings();
 		
 		Assert.assertEquals(4, bindings.size());
 		
 
-		AbstractComponent<DefaultAnyBinding> comp3 = defineSimpleWebBean(DefaultAnyBinding.class);
+		AbstractBean<DefaultAnyBinding> comp3 = defineSimpleWebBean(DefaultAnyBinding.class);
 		bindings = comp3.getBindings();
 		
 		Assert.assertEquals(2, bindings.size());

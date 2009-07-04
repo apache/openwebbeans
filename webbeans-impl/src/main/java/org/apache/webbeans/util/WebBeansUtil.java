@@ -78,23 +78,23 @@ import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.annotation.StandardLiteral;
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.Component;
-import org.apache.webbeans.component.ComponentImpl;
-import org.apache.webbeans.component.ConversationComponent;
-import org.apache.webbeans.component.ExtensionComponent;
-import org.apache.webbeans.component.InjectionPointComponentImpl;
-import org.apache.webbeans.component.InstanceComponentImpl;
-import org.apache.webbeans.component.ManagerComponentImpl;
-import org.apache.webbeans.component.NewComponentImpl;
-import org.apache.webbeans.component.ObservableComponentImpl;
-import org.apache.webbeans.component.ProducerComponentImpl;
-import org.apache.webbeans.component.ProducerFieldComponent;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.BaseBean;
+import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.ConversationBean;
+import org.apache.webbeans.component.ExtensionBean;
+import org.apache.webbeans.component.InjectionPointBean;
+import org.apache.webbeans.component.InstanceBean;
+import org.apache.webbeans.component.BeanManagerBean;
+import org.apache.webbeans.component.NewBean;
+import org.apache.webbeans.component.ObservableBean;
+import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
@@ -198,13 +198,13 @@ public final class WebBeansUtil
     	
     	Type type = null;
     	
-    	if(component instanceof ProducerComponentImpl)
+    	if(component instanceof ProducerMethodBean)
     	{
-    		type = ((ProducerComponentImpl<?>)component).getCreatorMethod().getGenericReturnType();
+    		type = ((ProducerMethodBean<?>)component).getCreatorMethod().getGenericReturnType();
     	}
-    	else if(component instanceof ProducerFieldComponent)
+    	else if(component instanceof ProducerFieldBean)
     	{
-    		type = ((ProducerFieldComponent<?>)component).getCreatorField().getGenericType();
+    		type = ((ProducerFieldBean<?>)component).getCreatorField().getGenericType();
     	}
     	else
     	{
@@ -600,15 +600,15 @@ public final class WebBeansUtil
      * @param clazz impl. class
      * @return the new component
      */
-    public static <T> NewComponentImpl<T> createNewComponent(Class<T> clazz)
+    public static <T> NewBean<T> createNewComponent(Class<T> clazz)
     {
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
 
-        NewComponentImpl<T> comp = null;
+        NewBean<T> comp = null;
 
         if (SimpleWebBeansConfigurator.isSimpleWebBean(clazz))
         {
-            comp = new NewComponentImpl<T>(clazz, WebBeansType.SIMPLE);
+            comp = new NewBean<T>(clazz, WebBeansType.SIMPLE);
             comp.setConstructor(WebBeansUtil.defineConstructor(clazz));
 
             DefinitionUtil.defineInjectedFields(comp);
@@ -616,7 +616,7 @@ public final class WebBeansUtil
         }
         else if (EJBWebBeansConfigurator.isEJBWebBean(clazz))
         {
-            comp = new NewComponentImpl<T>(clazz, WebBeansType.ENTERPRISE);
+            comp = new NewBean<T>(clazz, WebBeansType.ENTERPRISE);
         }
         else
         {
@@ -640,12 +640,12 @@ public final class WebBeansUtil
      * @param clazz impl. class
      * @return a new extension service bean
      */
-    public static <T> ExtensionComponent<T> createExtensionComponent(Class<T> clazz)
+    public static <T> ExtensionBean<T> createExtensionComponent(Class<T> clazz)
     {
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
 
-        ExtensionComponent<T> comp = null;
-        comp = new ExtensionComponent<T>(clazz);
+        ExtensionBean<T> comp = null;
+        comp = new ExtensionBean<T>(clazz);
         
         DefinitionUtil.defineApiTypes(comp, clazz);
         
@@ -666,13 +666,13 @@ public final class WebBeansUtil
      * @param component managed bean
      * @return the new bean from given managed bean
      */
-    public static <T> NewComponentImpl<T> createNewSimpleBeanComponent(ComponentImpl<T> component)
+    public static <T> NewBean<T> createNewSimpleBeanComponent(ManagedBean<T> component)
     {
         Asserts.assertNotNull(component, "component argument can not be null");
 
-        NewComponentImpl<T> comp = null;
+        NewBean<T> comp = null;
 
-        comp = new NewComponentImpl<T>(component.getReturnType(), WebBeansType.NEW);
+        comp = new NewBean<T>(component.getReturnType(), WebBeansType.NEW);
         
         DefinitionUtil.defineApiTypes(comp, component.getReturnType());
         comp.setConstructor(component.getConstructor());
@@ -708,9 +708,9 @@ public final class WebBeansUtil
         return comp;
     }    
     
-    public static <T, K> ObservableComponentImpl<T, K> createObservableImplicitComponent(Class<T> returnType, Class<K> eventType, Annotation... annotations)
+    public static <T, K> ObservableBean<T, K> createObservableImplicitComponent(Class<T> returnType, Class<K> eventType, Annotation... annotations)
     {
-        ObservableComponentImpl<T, K> component = new ObservableComponentImpl<T, K>(returnType, eventType, WebBeansType.OBSERVABLE);
+        ObservableBean<T, K> component = new ObservableBean<T, K>(returnType, eventType, WebBeansType.OBSERVABLE);
 
         DefinitionUtil.defineApiTypes(component, returnType);
         DefinitionUtil.defineBindingTypes(component, annotations);
@@ -739,9 +739,9 @@ public final class WebBeansUtil
         return component;
     }
 
-    public static ManagerComponentImpl getManagerComponent()
+    public static BeanManagerBean getManagerComponent()
     {
-        ManagerComponentImpl managerComponent = new ManagerComponentImpl();
+        BeanManagerBean managerComponent = new BeanManagerBean();
 
         managerComponent.setImplScopeType(new DependentScopeLiteral());
         managerComponent.setType(new StandardLiteral());
@@ -752,9 +752,9 @@ public final class WebBeansUtil
         return managerComponent;
     }
     
-    public static <T> InstanceComponentImpl<T> createInstanceComponent(ParameterizedType instance,Class<Instance<T>> clazz, Type injectedType, Annotation...obtainsBindings)
+    public static <T> InstanceBean<T> createInstanceComponent(ParameterizedType instance,Class<Instance<T>> clazz, Type injectedType, Annotation...obtainsBindings)
     {
-        InstanceComponentImpl<T> instanceComponent = new InstanceComponentImpl<T>(clazz,injectedType);
+        InstanceBean<T> instanceComponent = new InstanceBean<T>(clazz,injectedType);
         
         instanceComponent.addApiType(clazz);
         instanceComponent.addApiType(Object.class);
@@ -768,9 +768,9 @@ public final class WebBeansUtil
         return instanceComponent;
     }
 
-    public static ConversationComponent getConversationComponent()
+    public static ConversationBean getConversationComponent()
     {
-        ConversationComponent conversationComp = new ConversationComponent();
+        ConversationBean conversationComp = new ConversationBean();
 
         conversationComp.addApiType(Conversation.class);
         conversationComp.addApiType(ConversationImpl.class);
@@ -783,9 +783,9 @@ public final class WebBeansUtil
         return conversationComp;
     }
     
-    public static InjectionPointComponentImpl getInjectionPointComponent()
+    public static InjectionPointBean getInjectionPointComponent()
     {
-        return new InjectionPointComponentImpl(null);
+        return new InjectionPointBean(null);
     }
 
     /**
@@ -987,7 +987,7 @@ public final class WebBeansUtil
                 {
                     if (isDefinedWithWebBeans)
                     {
-                        Object interceptorProxy = ManagerImpl.getManager().getInstance(webBeansInterceptor);
+                        Object interceptorProxy = BeanManagerImpl.getManager().getInstance(webBeansInterceptor);
                         WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) webBeansInterceptor;
                         interceptor.setInjections(interceptorProxy);
 
@@ -1133,7 +1133,7 @@ public final class WebBeansUtil
      * @param anns annotation array
      * @return true if array contains the StereoType meta annotation
      */
-    public static boolean isComponentHasStereoType(Component<?> component)
+    public static boolean isComponentHasStereoType(BaseBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
@@ -1148,7 +1148,7 @@ public final class WebBeansUtil
         return false;
     }
 
-    public static Annotation[] getComponentStereoTypes(Component<?> component)
+    public static Annotation[] getComponentStereoTypes(BaseBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         if (isComponentHasStereoType(component))
@@ -1163,7 +1163,7 @@ public final class WebBeansUtil
         return new Annotation[] {};
     }
 
-    public static boolean isNamedExistOnStereoTypes(Component<?> component)
+    public static boolean isNamedExistOnStereoTypes(BaseBean<?> component)
     {
         Annotation[] types = getComponentStereoTypes(component);
 
@@ -1178,7 +1178,7 @@ public final class WebBeansUtil
         return false;
     }
 
-    public static Annotation getMaxPrecedenceSteroTypeDeploymentType(Component<?> component)
+    public static Annotation getMaxPrecedenceSteroTypeDeploymentType(BaseBean<?> component)
     {
         Annotation[] deploymentTypes = getComponentStereoTypes(component);
         Class<? extends Annotation> maxPrecedDeploymentType = null;
@@ -1362,9 +1362,9 @@ public final class WebBeansUtil
             
             for(Bean<?> candidates : resolvers)
             {
-                AbstractComponent<?> candidate = (AbstractComponent<?>)candidates;
+                AbstractBean<?> candidate = (AbstractBean<?>)candidates;
                 
-                if(!(candidate instanceof NewComponentImpl))
+                if(!(candidate instanceof NewBean))
                 {
                     if(candidate.getReturnType().equals(superClass))
                     {
@@ -1382,7 +1382,7 @@ public final class WebBeansUtil
                     throw new InconsistentSpecializationException("@Specializes exception. Class : " + specializedClass.getName() + " must have higher deployment type precedence from the class : " + superClass.getName());
                 }
                 
-                AbstractComponent<?> comp = (AbstractComponent<?>)specialized;
+                AbstractBean<?> comp = (AbstractBean<?>)specialized;
 
                 if(superBean.getName() != null)
                 {
@@ -1412,12 +1412,12 @@ public final class WebBeansUtil
         
         Set<Bean<?>> beans = new HashSet<Bean<?>>();
         
-        Set<Bean<?>> components = ManagerImpl.getManager().getComponents();
+        Set<Bean<?>> components = BeanManagerImpl.getManager().getComponents();
         Iterator<Bean<?>> it = components.iterator();
 
         while (it.hasNext())
         {
-            AbstractComponent<?> bean = (AbstractComponent<?>)it.next();
+            AbstractBean<?> bean = (AbstractBean<?>)it.next();
             
             if (bean.getTypes().contains(clazz))
             {
@@ -1425,7 +1425,7 @@ public final class WebBeansUtil
                 {
                     if(bean.getReturnType().isAnnotationPresent(Specializes.class))
                     {
-                        if(!(bean instanceof NewComponentImpl))
+                        if(!(bean instanceof NewBean))
                         {
                             if(DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(bean.getDeploymentType()))
                             {
@@ -1455,7 +1455,7 @@ public final class WebBeansUtil
      * @param errorMessage
      * @deprecated
      */
-    public static void checkSteroTypeRequirements(Component<?> component, Annotation[] anns, String errorMessage)
+    public static void checkSteroTypeRequirements(BaseBean<?> component, Annotation[] anns, String errorMessage)
     {
         Set<Class<? extends Annotation>> allSupportedScopes = new HashSet<Class<? extends Annotation>>();
         Annotation[] stereoTypes = getComponentStereoTypes(component);        
@@ -1534,7 +1534,7 @@ public final class WebBeansUtil
 
     }
 
-    public static void checkNullable(Class<?> type, AbstractComponent<?> component)
+    public static void checkNullable(Class<?> type, AbstractBean<?> component)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
         Asserts.assertNotNull(component, "component parameter can not be null");
@@ -1558,7 +1558,7 @@ public final class WebBeansUtil
      *         parent also has name
      * @throws WebBeansConfigurationException any other exceptions
      */
-    public static void configureProducerSpecialization(AbstractComponent<?> component, Method method, Class<?> superClass)
+    public static void configureProducerSpecialization(AbstractBean<?> component, Method method, Class<?> superClass)
     {
         Method superMethod = ClassUtil.getClassMethodWithTypes(superClass, method.getName(), Arrays.asList(method.getParameterTypes()));
         if (superMethod == null)
@@ -1591,7 +1591,7 @@ public final class WebBeansUtil
      * @param method specialized producer method
      * @param superMethod overriden super producer method
      */
-    public static void configuredProducerSpecializedName(AbstractComponent<?> component,Method method,Method superMethod)
+    public static void configuredProducerSpecializedName(AbstractBean<?> component,Method method,Method superMethod)
     {
         Asserts.assertNotNull(component,"component parameter can not be null");
         Asserts.assertNotNull(method,"method parameter can not be null");
@@ -1789,7 +1789,7 @@ public final class WebBeansUtil
         return true;
     }
 
-    public static <T> void checkPassivationScope(AbstractComponent<T> component, ScopeType scope)
+    public static <T> void checkPassivationScope(AbstractBean<T> component, ScopeType scope)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         Asserts.assertNotNull(scope, "scope type parameter can not be null");
@@ -1811,14 +1811,14 @@ public final class WebBeansUtil
     {
         if (InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
         {
-            ComponentImpl<T> component = null;
+            ManagedBean<T> component = null;
 
             InterceptorUtil.checkInterceptorConditions(clazz);
             component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
 
             if (component != null)
             {
-                WebBeansInterceptorConfig.configureInterceptorClass((ComponentImpl<Object>) component, clazz.getDeclaredAnnotations());
+                WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component, clazz.getDeclaredAnnotations());
             }
         }
 
@@ -1829,14 +1829,14 @@ public final class WebBeansUtil
     {
         if (DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
         {
-            ComponentImpl<T> component = null;
+            ManagedBean<T> component = null;
 
             DecoratorUtil.checkDecoratorConditions(clazz);
             component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.DECORATOR);
 
             if (component != null)
             {
-                WebBeansDecoratorConfig.configureDecoratorClass((ComponentImpl<Object>) component);
+                WebBeansDecoratorConfig.configureDecoratorClass((ManagedBean<Object>) component);
             }
         }
     }
@@ -1889,7 +1889,7 @@ public final class WebBeansUtil
         }
     }
     
-    public static boolean isSimpleWebBeans(AbstractComponent<?> component)
+    public static boolean isSimpleWebBeans(AbstractBean<?> component)
     {
         if(component.getWebBeansType().equals(WebBeansType.SIMPLE) ||
                 component.getWebBeansType().equals(WebBeansType.INTERCEPTOR) ||
@@ -1924,7 +1924,7 @@ public final class WebBeansUtil
             bindings = injectionPoint.getBindings().toArray(bindings);
             
             Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, bindings);
-            ManagerImpl.getManager().addBean(bean);                  
+            BeanManagerImpl.getManager().addBean(bean);                  
         }      
     }
     
@@ -1939,7 +1939,7 @@ public final class WebBeansUtil
         bindings = injectionPoint.getBindings().toArray(bindings);
         
         Bean<Instance<T>> bean = createInstanceComponent(genericType,clazz, genericType.getActualTypeArguments()[0], bindings);
-        ManagerImpl.getManager().addBean(bean);
+        BeanManagerImpl.getManager().addBean(bean);
         
     }
     

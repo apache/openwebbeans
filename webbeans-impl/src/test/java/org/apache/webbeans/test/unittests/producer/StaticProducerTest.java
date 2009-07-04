@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests.producer;
 
 import java.lang.annotation.Annotation;
 
-import org.apache.webbeans.component.ProducerComponentImpl;
+import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.producer.StaticProducer1;
 import org.apache.webbeans.test.servlet.TestContext;
@@ -46,14 +46,14 @@ public class StaticProducerTest extends TestContext
 
         defineSimpleWebBean(StaticProducer1.class);
 
-        ProducerComponentImpl<?> pc = (ProducerComponentImpl<?>) getManager().resolveByName("weight").iterator().next();
+        ProducerMethodBean<?> pc = (ProducerMethodBean<?>) getManager().resolveByName("weight").iterator().next();
 
         Object obj = getManager().getInstance(pc);
 
         Assert.assertTrue(obj instanceof Integer);
         Assert.assertEquals(79, obj);
 
-        pc = (ProducerComponentImpl<?>) getManager().resolveByType(int.class, new Annotation[] {}).iterator().next();
+        pc = (ProducerMethodBean<?>) getManager().resolveByType(int.class, new Annotation[] {}).iterator().next();
 
         obj = getManager().getInstance(pc);
 

@@ -31,23 +31,25 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.ObserverMethod;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 
 public class MockManager implements BeanManager
 {
-    private ManagerImpl manager = null;
+    private BeanManagerImpl manager = null;
 
-    private List<AbstractComponent<?>> componentList = new ArrayList<AbstractComponent<?>>();
+    private List<AbstractBean<?>> componentList = new ArrayList<AbstractBean<?>>();
 
     public MockManager()
     {
-        this.manager = new ManagerImpl();
+        this.manager = new BeanManagerImpl();
         ActivityManager.getInstance().setRootActivity(this.manager);
     }
 
@@ -56,17 +58,17 @@ public class MockManager implements BeanManager
     {
         componentList.clear();        
         
-        this.manager = new ManagerImpl();        
+        this.manager = new BeanManagerImpl();        
      
         ActivityManager.getInstance().setRootActivity(this.manager);        
     }
 
-    public List<AbstractComponent<?>> getComponents()
+    public List<AbstractBean<?>> getComponents()
     {
         return componentList;
     }
 
-    public AbstractComponent<?> getComponent(int i)
+    public AbstractBean<?> getComponent(int i)
     {
         return componentList.get(i);
     }
@@ -333,5 +335,19 @@ public class MockManager implements BeanManager
     {
         this.manager.validate(injectionPoint);
         
+    }
+
+
+    @Override
+    public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
+    {
+        return this.manager.createInjectionTarget(type);
+    }
+
+
+    @Override
+    public <T> Set<ObserverMethod<?, T>> resolveObserverMethods(T event, Annotation... bindings)
+    {
+        return this.manager.resolveObserverMethods(event, bindings);
     }
 }

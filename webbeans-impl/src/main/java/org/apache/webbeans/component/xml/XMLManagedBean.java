@@ -24,7 +24,7 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
 import org.apache.webbeans.inject.xml.XMLInjectableField;
@@ -33,10 +33,10 @@ import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
 
-public class XMLComponentImpl<T> extends ComponentImpl<T>
+public class XMLManagedBean<T> extends ManagedBean<T>
 {
     /**Logger instance*/
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(XMLComponentImpl.class);
+    private static WebBeansLogger logger = WebBeansLogger.getLogger(XMLManagedBean.class);
 
     /** Constructor injection point decleration */
     private XMLInjectableConstructor<T> injectableConstructor = null;
@@ -55,7 +55,7 @@ public class XMLComponentImpl<T> extends ComponentImpl<T>
      * 
      * @param returnType type of the webbeans component
      */
-    public XMLComponentImpl(Class<T> returnType)
+    public XMLManagedBean(Class<T> returnType)
     {
         super(returnType);
     }

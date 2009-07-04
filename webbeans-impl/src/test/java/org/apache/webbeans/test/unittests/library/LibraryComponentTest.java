@@ -17,7 +17,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.library.Book;
 import org.apache.webbeans.test.component.library.BookShop;
@@ -45,13 +45,13 @@ public class LibraryComponentTest extends TestContext
         clear();
 
         defineSimpleWebBean(BookShop.class);
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
 
         Assert.assertEquals(1, comps.size());
 
-        AbstractComponent<?> obj = comps.get(0);
+        AbstractBean<?> obj = comps.get(0);
 
         Object instance = getManager().getInstance(obj);
         Assert.assertTrue(instance instanceof Shop);

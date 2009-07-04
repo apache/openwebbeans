@@ -24,7 +24,7 @@ import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ResolutionUtil;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
@@ -78,7 +78,7 @@ class InstanceImpl<T> implements Instance<T>
         ResolutionUtil.checkResolvedBeans(beans, ClassUtil.getClazz(this.injectionClazz),anns);
 
         Bean<?> bean = beans.iterator().next();
-        instance = (T)ManagerImpl.getManager().getInstance(bean);
+        instance = (T)BeanManagerImpl.getManager().getInstance(bean);
 
         return instance;
     }
@@ -204,7 +204,7 @@ class InstanceImpl<T> implements Instance<T>
         Set<T> instances = new HashSet<T>();
         for(Bean<?> bean : beans)
         {
-            T instance = (T)ManagerImpl.getManager().getInstance(bean);
+            T instance = (T)BeanManagerImpl.getManager().getInstance(bean);
             instances.add(instance);
         }
         

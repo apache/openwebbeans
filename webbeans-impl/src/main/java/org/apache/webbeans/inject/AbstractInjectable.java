@@ -24,9 +24,9 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.event.Fires;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -46,7 +46,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public abstract class AbstractInjectable implements Injectable
 {
     /** Owner bean of the injection point*/
-    protected AbstractComponent<?> injectionOwnerComponent;
+    protected AbstractBean<?> injectionOwnerComponent;
     
     /**Creational context instance that is passed to bean's create*/
     protected CreationalContext<?> creationalContext;
@@ -60,7 +60,7 @@ public abstract class AbstractInjectable implements Injectable
      * @param bean owner bean
      * @param creaitonalContext creational context instance
      */
-    protected AbstractInjectable(AbstractComponent<?> bean, CreationalContext<?> creaitonalContext)
+    protected AbstractInjectable(AbstractBean<?> bean, CreationalContext<?> creaitonalContext)
     {
         this.injectionOwnerComponent = bean;
         this.creationalContext = creaitonalContext;
@@ -125,7 +125,7 @@ public abstract class AbstractInjectable implements Injectable
      */
     protected Object injectDependentOwnerInjectionPoint()
     {
-        AbstractComponent<?> dependentComponent = this.injectionOwnerComponent;
+        AbstractBean<?> dependentComponent = this.injectionOwnerComponent;
         InjectionPoint injectionPointOfOwner = dependentComponent.getDependentOwnerInjectionPoint();
         
         if(injectionPointOfOwner != null)
@@ -198,7 +198,7 @@ public abstract class AbstractInjectable implements Injectable
 
     private <T> Object injectForComponent(InjectionPoint injectionPoint)
     {
-        Object object = ManagerImpl.getManager().getInstanceToInject(injectionPoint,this.creationalContext);
+        Object object = BeanManagerImpl.getManager().getInstanceToInject(injectionPoint,this.creationalContext);
                 
         return object;
     }
@@ -216,7 +216,7 @@ public abstract class AbstractInjectable implements Injectable
      * 
      * @return the component
      */
-    public AbstractComponent<?> getInjectionOwnerComponent()
+    public AbstractBean<?> getInjectionOwnerComponent()
     {
         return injectionOwnerComponent;
     }

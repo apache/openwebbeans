@@ -23,7 +23,7 @@ import java.util.Set;
 import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorHandler;
@@ -76,7 +76,7 @@ public final class JavassistProxyFactory
 
             if (!(bean instanceof WebBeansDecorator) && !(bean instanceof WebBeansInterceptor))
             {
-                fact.setHandler(new InterceptorHandler((AbstractComponent<?>) bean));
+                fact.setHandler(new InterceptorHandler((AbstractBean<?>) bean));
             }
 
             result = fact.createClass().newInstance();

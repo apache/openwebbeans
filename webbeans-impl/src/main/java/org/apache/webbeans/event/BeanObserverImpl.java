@@ -26,10 +26,10 @@ import javax.enterprise.event.Observer;
 import javax.enterprise.event.Observes;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ObservesMethodsOwner;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.ObservesMethodsOwnerBean;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -64,7 +64,7 @@ public class BeanObserverImpl<T> implements Observer<T>
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(BeanObserverImpl.class);
 
     /**Observer owner bean that defines observer method*/
-    private final ObservesMethodsOwner<?> bean;
+    private final ObservesMethodsOwnerBean<?> bean;
 
     /**Event observer method*/
     private final Method observerMethod;
@@ -83,7 +83,7 @@ public class BeanObserverImpl<T> implements Observer<T>
      * @param ifExist if exist parameter
      * @param type transaction type
      */
-    public BeanObserverImpl(ObservesMethodsOwner<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
+    public BeanObserverImpl(ObservesMethodsOwnerBean<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
     {
         this.bean = bean;
         this.observerMethod = observerMethod;
@@ -97,14 +97,14 @@ public class BeanObserverImpl<T> implements Observer<T>
     @SuppressWarnings("unchecked")
     public void notify(T event)
     {
-        AbstractComponent<Object> baseComponent = (AbstractComponent<Object>) bean;
-        AbstractComponent<Object> specializedComponent = null;
+        AbstractBean<Object> baseComponent = (AbstractBean<Object>) bean;
+        AbstractBean<Object> specializedComponent = null;
         Object object = null;
 
         try
         {
-            ManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
-            specializedComponent = (AbstractComponent<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
+            BeanManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
+            specializedComponent = (AbstractBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
             Context context = manager.getContext(specializedComponent.getScopeType());
             
             if(this.ifExist)
@@ -181,7 +181,7 @@ public class BeanObserverImpl<T> implements Observer<T>
 
         List<Object> list = new ArrayList<Object>();
 
-        ManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
+        BeanManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
 
         if (types.length > 0)
         {
@@ -237,7 +237,7 @@ public class BeanObserverImpl<T> implements Observer<T>
      * 
      * @return the bean
      */
-    public ObservesMethodsOwner<?> getBean()
+    public ObservesMethodsOwnerBean<?> getBean()
     {
         return bean;
     }

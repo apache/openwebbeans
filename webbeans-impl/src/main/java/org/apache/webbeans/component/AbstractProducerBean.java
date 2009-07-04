@@ -13,46 +13,38 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.reflect.Method;
-import java.util.Set;
-
 /**
- * Defines contract for beans that coud have observable
- * method.
+ * Abstract class for producer components.
  * 
  * @version $Rev$ $Date$
  *
- * @param <T> bean type
+ * @param <T> bean type info
  */
-public interface ObservesMethodsOwner<T>
+public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements IBeanHasParent
 {
-    /**
-     * Returns set of observable methods.
-     * 
-     * @return set of observable methods
-     */
-    public Set<Method> getObservableMethods();
+    /**Owner of the producer field component*/
+    protected AbstractBean<?> ownerComponent;
 
     /**
-     * Adds new observer method.
+     * Create a new instance.
      * 
-     * @param observerMethod observer method
+     * @param type webbeans typr
+     * @param returnType bean type info
+     * @param ownerComponent owner bean
      */
-    public void addObservableMethod(Method observerMethod);
+    protected AbstractProducerBean(WebBeansType type, Class<T> returnType, AbstractBean<?> ownerComponent)
+    {
+        super(type,returnType);
+        this.ownerComponent = ownerComponent;
+    }
     
     /**
-     * Returns true if coming from <pre>@Realization</pre>.
-     * 
-     * @return true if coming from <pre>@Realization</pre>
+     * {@inheritDoc}
      */
-    @Deprecated //Removed from specification
-    public boolean isFromRealizes();
+    public AbstractBean<?> getParent()
+    {
+        return this.ownerComponent;
+    }
     
-    /**
-     * Set its realized.
-     * 
-     * @param realized is realized
-     */
-    @Deprecated //Removed from specification
-    public void setFromRealizes(boolean realized);
+    
 }

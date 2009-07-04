@@ -21,7 +21,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observer;
 import javax.event.Fires;
 
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 
 public class EventImpl<T> implements Event<T>
 {
@@ -29,13 +29,13 @@ public class EventImpl<T> implements Event<T>
 
     private Class<T> eventType;
 
-    private ManagerImpl manager = null;
+    private BeanManagerImpl manager = null;
 
     public EventImpl(Annotation[] injectedBindings, Class<T> eventType)
     {
         this.injectedBindings = injectedBindings;
         this.eventType = eventType;
-        this.manager = ManagerImpl.getManager();
+        this.manager = BeanManagerImpl.getManager();
     }
 
     public void fire(T event, Annotation... bindings)

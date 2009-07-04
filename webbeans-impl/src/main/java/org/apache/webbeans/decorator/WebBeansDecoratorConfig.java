@@ -25,8 +25,8 @@ import java.util.Set;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -40,7 +40,7 @@ public final class WebBeansDecoratorConfig
 
     }
 
-    public static <T> void configureDecoratorClass(AbstractComponent<T> delegate)
+    public static <T> void configureDecoratorClass(AbstractBean<T> delegate)
     {
         logger.info("Configuring the Web Beans Annoatated Decorator Class : " + delegate.getReturnType().getName() + " started");
 
@@ -48,10 +48,10 @@ public final class WebBeansDecoratorConfig
 
         logger.info("Configuring the Web Beans Annotated Decorator Class : " + delegate.getReturnType() + " ended");
 
-        ManagerImpl.getManager().addDecorator(decorator);
+        BeanManagerImpl.getManager().addDecorator(decorator);
     }
 
-    public static <T> void configureXMLDecoratorClass(AbstractComponent<T> delegate, XMLInjectionPointModel model)
+    public static <T> void configureXMLDecoratorClass(AbstractBean<T> delegate, XMLInjectionPointModel model)
     {
         logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType().getName() + " started");
 
@@ -59,23 +59,23 @@ public final class WebBeansDecoratorConfig
 
         logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType() + " ended");
 
-        ManagerImpl.getManager().addDecorator(decorator);
+        BeanManagerImpl.getManager().addDecorator(decorator);
     }
 
-    public static void configureDecarotors(AbstractComponent<?> component, Object instance)
+    public static void configureDecarotors(AbstractBean<?> component, Object instance)
     {
         Set<Annotation> bindingTypes = component.getBindings();
         Annotation[] anns = new Annotation[bindingTypes.size()];
         anns = bindingTypes.toArray(anns);
 
-        List<Decorator<?>> decoratorList = ManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
+        List<Decorator<?>> decoratorList = BeanManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
         Iterator<Decorator<?>> itList = decoratorList.iterator();
 
         while (itList.hasNext())
         {
             WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();
 
-            Object decoratorInstance = ManagerImpl.getManager().getInstance(decorator);
+            Object decoratorInstance = BeanManagerImpl.getManager().getInstance(decorator);
 
             decorator.setInjections(decoratorInstance);
             decorator.setDelegate(decoratorInstance, instance);
@@ -86,7 +86,7 @@ public final class WebBeansDecoratorConfig
 
     private static Set<Decorator<?>> getWebBeansDecorators()
     {
-        return Collections.unmodifiableSet(ManagerImpl.getManager().getDecorators());
+        return Collections.unmodifiableSet(BeanManagerImpl.getManager().getDecorators());
     }
 
     public static Set<Decorator<?>> findDeployedWebBeansDecorator(Set<Type> apiType, Annotation... anns)

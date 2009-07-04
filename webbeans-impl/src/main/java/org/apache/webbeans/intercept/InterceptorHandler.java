@@ -26,8 +26,8 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -43,7 +43,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
 
     private transient static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
 
-    private AbstractComponent<?> component = null;
+    private AbstractBean<?> component = null;
 
     private transient Method calledMethod = null;
 
@@ -51,7 +51,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
     
     private transient boolean isInDecoratorCall = false;
 
-    public InterceptorHandler(AbstractComponent<?> component)
+    public InterceptorHandler(AbstractBean<?> component)
     {
         this.component = component;
     }
@@ -59,7 +59,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
     @SuppressWarnings("unchecked")
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
-        Context webbeansContext = ManagerImpl.getManager().getContext(component.getScopeType());
+        Context webbeansContext = BeanManagerImpl.getManager().getContext(component.getScopeType());
         
         Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)CreationalContextFactory.getInstance().getCreationalContext(this.component));
         

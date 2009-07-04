@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.webbeans.component.ObservesMethodsOwner;
+import org.apache.webbeans.component.ObservesMethodsOwnerBean;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.event.BeanObserverImpl;
 import org.apache.webbeans.event.TransactionalObserverType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
@@ -30,7 +30,7 @@ public class BeanObserverXMLImpl<T> extends BeanObserverImpl<T>
 {
     private List<XMLInjectionPointModel> observersParameters = new ArrayList<XMLInjectionPointModel>();
 
-    public BeanObserverXMLImpl(ObservesMethodsOwner<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
+    public BeanObserverXMLImpl(ObservesMethodsOwnerBean<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
     {
         super(bean, observerMethod, ifExist, type);
     }
@@ -45,7 +45,7 @@ public class BeanObserverXMLImpl<T> extends BeanObserverImpl<T>
     protected List<Object> getMethodArguments(Object event)
     {
         List<Object> params = new ArrayList<Object>();
-        ManagerImpl manager = ManagerImpl.getManager();
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
         for (XMLInjectionPointModel model : observersParameters)
         {
             Set<Annotation> setBindingTypes = model.getBindingTypes();

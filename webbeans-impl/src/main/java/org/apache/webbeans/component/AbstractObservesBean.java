@@ -38,7 +38,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> bean class
  */
-public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> implements ObservesMethodsOwner<T>
+public abstract class AbstractObservesBean<T> extends AbstractBean<T> implements ObservesMethodsOwnerBean<T>
 {
     /**Logger instance*/
     private final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
@@ -61,7 +61,7 @@ public abstract class AbstractObservesComponent<T> extends AbstractComponent<T> 
      * @param webBeansType webbean type
      * @param returnType bean class type
      */
-    protected AbstractObservesComponent(WebBeansType webBeansType, Class<T> returnType)
+    protected AbstractObservesBean(WebBeansType webBeansType, Class<T> returnType)
     {
         super(webBeansType, returnType);
     }

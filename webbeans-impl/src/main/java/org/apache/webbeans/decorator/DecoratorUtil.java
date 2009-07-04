@@ -25,8 +25,8 @@ import java.util.Set;
 import javax.decorator.Decorates;
 import javax.enterprise.inject.spi.Decorator;
 
-import org.apache.webbeans.component.ComponentImpl;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -116,7 +116,7 @@ public final class DecoratorUtil
         
     }
 
-    public static void checkSimpleWebBeanDecoratorConditions(ComponentImpl<?> component)
+    public static void checkSimpleWebBeanDecoratorConditions(ManagedBean<?> component)
     {
         Asserts.assertNotNull("component", "component parameter can not be null");
 
@@ -124,7 +124,7 @@ public final class DecoratorUtil
         Annotation[] anns = new Annotation[annSet.size()];
         anns = annSet.toArray(anns);
 
-        List<Decorator<?>> decoratorList = ManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
+        List<Decorator<?>> decoratorList = BeanManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
         if (!decoratorList.isEmpty())
         {
             Class<?> clazz = component.getReturnType();

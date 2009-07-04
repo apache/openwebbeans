@@ -21,7 +21,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.exception.WebBeansException;
 
 @SuppressWarnings("unchecked")
@@ -39,7 +39,7 @@ public class InjectableMethods<T> extends AbstractInjectable
      * @param m injectable method
      * @param instance component instance
      */
-    public InjectableMethods(Method m, Object instance, AbstractComponent<?> owner,CreationalContext<?> creationalContext)
+    public InjectableMethods(Method m, Object instance, AbstractBean<?> owner,CreationalContext<?> creationalContext)
     {
         super(owner,creationalContext);
         this.method = m;

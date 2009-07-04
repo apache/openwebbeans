@@ -19,7 +19,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
@@ -53,7 +53,7 @@ public class PaymentProcessorComponentTest extends TestContext
         defineSimpleWebBean(CheckWithMoneyPayment.class);
         defineSimpleWebBean(PaymentProcessorComponent.class);
 
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
 

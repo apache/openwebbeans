@@ -23,8 +23,8 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.ITypeLiteralComponent;
 import org.apache.webbeans.test.component.InjectedTypeLiteralComponent;
@@ -53,7 +53,7 @@ public class TypedLiteralComponentTest extends TestContext
 
         defineSimpleWebBean(TypeLiteralComponent.class);
         defineSimpleWebBean(InjectedTypeLiteralComponent.class);
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
 
@@ -80,7 +80,7 @@ public class TypedLiteralComponentTest extends TestContext
         clear();
 
         defineSimpleWebBean(TypeLiteralComponent.class);
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
 
@@ -96,7 +96,7 @@ public class TypedLiteralComponentTest extends TestContext
 
         };
 
-        Bean<?> s = ManagerImpl.getManager().resolveByType(tl, anns).iterator().next();
+        Bean<?> s = BeanManagerImpl.getManager().resolveByType(tl, anns).iterator().next();
         Assert.assertNotNull(s);
 
         ContextFactory.destroyRequestContext(null);

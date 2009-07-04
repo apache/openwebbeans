@@ -16,37 +16,41 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.inject.instance.InstanceFactory;
+import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DependentScopeLiteral;
+import org.apache.webbeans.annotation.StandardLiteral;
 
-public class InstanceComponentImpl<T> extends AbstractComponent<Instance<T>>
+
+public class InjectionPointBean extends AbstractBean<InjectionPoint>
 {
-    private Type injectedType;
+    private InjectionPoint injectionPoint = null;
     
-    public InstanceComponentImpl(Class<Instance<T>> returnType, Type injectedType)
+    public InjectionPointBean(InjectionPoint injectionPoint)
     {
-        super(WebBeansType.INSTANCE, returnType);
-        this.injectedType = injectedType;
-    }
-    
-    @Override
-    protected Instance<T> createInstance(CreationalContext<Instance<T>> creationalContext)
-    {
-        Annotation[] anns = new Annotation[getBindings().size()];
-        anns = getBindings().toArray(anns);
+        super(WebBeansType.INJECTIONPOINT,InjectionPoint.class);
+        this.injectionPoint = injectionPoint;
         
-        return InstanceFactory.getInstance(this.injectedType, anns);
+        addBindingType(new CurrentLiteral());
+        setImplScopeType(new DependentScopeLiteral());
+        setType(new StandardLiteral());
+        addApiType(InjectionPoint.class);
+        addApiType(Object.class);
     }
 
     @Override
-    protected void destroyInstance(Instance<T> instance)
+    protected InjectionPoint createInstance(CreationalContext<InjectionPoint> creationalContext)
     {
-        
+        return injectionPoint;
     }
 
+    @Override
+    protected void destroyInstance(InjectionPoint instance)
+    {
+        this.injectionPoint = null;
+    }
+    
+    
 }

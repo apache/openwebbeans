@@ -24,13 +24,13 @@ import javax.enterprise.inject.Produces;
  * </ul>
  * <p>
  * Bean Implementation Class Components are defined with annotating the ordinary
- * classes with {@link Component} annotation. It maybe defined within the
+ * classes with {@link BaseBean} annotation. It maybe defined within the
  * web-beans.xml file using &lt;class&gt; element. It is possible to mix these
  * two definitions.
  * </p>
  * <p>
  * Producer Method Components are defined within the class that is annotated
- * with {@link Component} annotation. In these classes, there are methods that
+ * with {@link BaseBean} annotation. In these classes, there are methods that
  * are annotated with {@link Produces} annotation. These methods become the
  * producer method components of this web beans component. It maybe defined
  * using the web-beans.xml file using the &lt;producer&gt; element. It is

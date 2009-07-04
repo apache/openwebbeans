@@ -19,9 +19,9 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ComponentImpl;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -42,7 +42,7 @@ public class PreDestroyComponentTest extends TestContext
     @Before
     public void init()
     {
-        this.container = ManagerImpl.getManager();
+        this.container = BeanManagerImpl.getManager();
         super.init();
     }
 
@@ -54,7 +54,7 @@ public class PreDestroyComponentTest extends TestContext
 
         defineSimpleWebBean(CheckWithCheckPayment.class);
         defineSimpleWebBean(PreDestroyComponent.class);
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
 
@@ -70,7 +70,7 @@ public class PreDestroyComponentTest extends TestContext
 
         PreDestroyComponent pcc = (PreDestroyComponent) object2;
 
-        ComponentImpl<PreDestroyComponent> s = (ComponentImpl<PreDestroyComponent>) comps.get(1);
+        ManagedBean<PreDestroyComponent> s = (ManagedBean<PreDestroyComponent>) comps.get(1);
         List<InterceptorData> stack = s.getInterceptorStack();
 
         Assert.assertEquals(2, stack.size());

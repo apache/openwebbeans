@@ -14,44 +14,34 @@
 package org.apache.webbeans.component;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.New;
+import javax.enterprise.inject.spi.BeanManager;
 
-/**
- * Component definition with {@link New} binding annotation.
- * 
- * <p>
- * It is defined as concrete java class component.
- * </p>
- * 
- */
-public class NewComponentImpl<T> extends ComponentImpl<T>
+import org.apache.webbeans.container.BeanManagerImpl;
+
+public class BeanManagerBean extends AbstractBean<BeanManager>
 {
-    private WebBeansType definedType;
+    private BeanManager manager = null;
 
-    public NewComponentImpl(Class<T> returnType, WebBeansType definedType)
+    public BeanManagerBean()
     {
-        super(returnType);
-        this.definedType = definedType;        
+        super(WebBeansType.MANAGER, BeanManager.class);
     }
 
     @Override
-    protected T createInstance(CreationalContext<T> creationalContext)
+    protected BeanManager createInstance(CreationalContext<BeanManager> creationalContext)
     {
-        return super.createInstance(creationalContext);
+        if (this.manager == null)
+        {
+            manager = BeanManagerImpl.getManager();
+        }
+
+        return manager;
     }
 
     @Override
-    protected void destroyInstance(T instance)
+    protected void destroyInstance(BeanManager instance)
     {
-        super.destroyInstance(instance);
-    }
-
-    /**
-     * @return the definedType
-     */
-    public WebBeansType getDefinedType()
-    {
-        return definedType;
+        this.manager = null;
     }
 
 }

@@ -24,7 +24,7 @@ public class ManagerObjectFactory implements ObjectFactory
 
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception
     {
-        return ManagerImpl.getManager();
+        return BeanManagerImpl.getManager();
     }
 
 }

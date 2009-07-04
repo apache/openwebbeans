@@ -15,8 +15,8 @@ package org.apache.webbeans.test.unittests.xml.definition;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.xml.XMLComponentImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.test.annotation.binding.Mock;
@@ -52,7 +52,7 @@ public class XMLDefinitionTest extends TestContext
     {
         clear();
 
-        XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition1.xml");
+        XMLManagedBean<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition1.xml");
 
         Assert.assertEquals("definition1", compDef.getName());
 
@@ -67,7 +67,7 @@ public class XMLDefinitionTest extends TestContext
     {
         clear();
 
-        XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition2.xml");
+        XMLManagedBean<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition2.xml");
 
         Object instance = compDef.create(null);
 
@@ -108,7 +108,7 @@ public class XMLDefinitionTest extends TestContext
     {
         clear();
 
-        XMLComponentImpl<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanUnnamed.xml");
+        XMLManagedBean<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanUnnamed.xml");
 
         // an unnamed bean must not have a name
         Assert.assertNull(compDef.getName());
@@ -142,7 +142,7 @@ public class XMLDefinitionTest extends TestContext
 
         ContextFactory.initRequestContext(null);
 
-        AbstractComponent<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml", TstBeanConstructor.class);
+        AbstractBean<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml", TstBeanConstructor.class);
 
         Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
         Assert.assertNotNull(instance);

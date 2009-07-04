@@ -23,7 +23,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -60,7 +60,9 @@ public class ExtensionLoader
         return loader;
     }
     
-    
+    /**
+     * Load extension services.
+     */
     public void loadExtensionServices()
     {
         ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, WebBeansUtil.getCurrentClassLoader());
@@ -75,7 +77,7 @@ public class ExtensionLoader
                 Bean<?> bean = WebBeansUtil.createExtensionComponent(ext.getClass());                
                 map.put(bean, ext);
                 
-                ManagerImpl.getManager().addBean(bean);
+                BeanManagerImpl.getManager().addBean(bean);
             }
             catch (Exception e)
             {

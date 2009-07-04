@@ -21,7 +21,7 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.producer.ParametrizedModel1;
 import org.apache.webbeans.test.component.producer.ParametrizedModel2;
@@ -117,7 +117,7 @@ public class ProducerComponentTest extends TestContext
     public void testProducer4()
     {
         defineSimpleWebBean(Producer4.class);
-        AbstractComponent<Producer4ConsumerComponent> component = defineSimpleWebBean(Producer4ConsumerComponent.class);
+        AbstractBean<Producer4ConsumerComponent> component = defineSimpleWebBean(Producer4ConsumerComponent.class);
 
         ContextFactory.initSessionContext(new MockHttpSession());
 

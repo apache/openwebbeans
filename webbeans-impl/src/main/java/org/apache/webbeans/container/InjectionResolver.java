@@ -25,7 +25,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
@@ -50,14 +50,14 @@ import org.apache.webbeans.util.ClassUtil;
 public class InjectionResolver
 {
     /**Bean Manager*/
-    private ManagerImpl manager;
+    private BeanManagerImpl manager;
     
     /**
      * Creates a new injection resolve for given bean manager.
      * 
      * @param manager bean manager
      */
-    public InjectionResolver(ManagerImpl manager)
+    public InjectionResolver(BeanManagerImpl manager)
     {
         this.manager = manager;
 
@@ -254,7 +254,7 @@ public class InjectionResolver
         {
             for(Bean<?> bean : resolvedComponents)
             {
-                AbstractComponent<?> component = (AbstractComponent<?>)bean;
+                AbstractBean<?> component = (AbstractBean<?>)bean;
                 
                 if(component.isSpecializedBean())
                 {
@@ -357,7 +357,7 @@ public class InjectionResolver
         
         while(it.hasNext())
         {
-            AbstractComponent<?> component = (AbstractComponent<?>)it.next();
+            AbstractBean<?> component = (AbstractBean<?>)it.next();
             if(component.isSpecializedBean())
             {
                 res.add(component);

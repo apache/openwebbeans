@@ -26,12 +26,12 @@ import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.interceptor.InterceptorBindingType;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.util.AnnotationUtil;
 
 public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
 {
-    public BeanInheritedMetaData(AbstractComponent<T> component)
+    public BeanInheritedMetaData(AbstractBean<T> component)
     {
         super(component, component.getReturnType().getSuperclass());
     }

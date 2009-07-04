@@ -21,7 +21,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.test.component.service.ITyped;
 import org.apache.webbeans.test.component.service.TypedComponent;
 import org.apache.webbeans.test.servlet.TestContext;
@@ -49,10 +49,10 @@ public class TypedComponentTest extends TestContext
     {
         clear();
         defineSimpleWebBean(TypedComponent.class);
-        List<AbstractComponent<?>> list = getComponents();
+        List<AbstractBean<?>> list = getComponents();
 
         @SuppressWarnings("unused")
-        AbstractComponent<?> itype = (AbstractComponent<?>) getManager().resolveByType(TypedComponentTest.class.getDeclaredField("s").getType(), new Current()
+        AbstractBean<?> itype = (AbstractBean<?>) getManager().resolveByType(TypedComponentTest.class.getDeclaredField("s").getType(), new Current()
         {
 
             public Class<? extends Annotation> annotationType()

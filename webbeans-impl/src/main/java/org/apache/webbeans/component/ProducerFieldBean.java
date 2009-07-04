@@ -34,13 +34,11 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * @param <T> Type of the field decleration
  */
-public class ProducerFieldComponent<T> extends AbstractComponent<T> implements IComponentHasParent
+public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBeanHasParent
 {
     /**Producer field that defines the component*/
     private Field producerField;
     
-    /**Owner of the producer field component*/
-    private AbstractComponent<?> ownerComponent;
     
     
     /**
@@ -48,10 +46,9 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
      * 
      * @param returnType type of the field decleration 
      */
-    public ProducerFieldComponent(AbstractComponent<?> ownerComponent, Class<T> returnType)
+    public ProducerFieldBean(AbstractBean<?> ownerComponent, Class<T> returnType)
     {
-        super(WebBeansType.PRODUCERFIELD,returnType);
-        this.ownerComponent = ownerComponent;
+        super(WebBeansType.PRODUCERFIELD,returnType,ownerComponent);
     }
 
     @Override
@@ -139,7 +136,7 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
         Annotation[] anns = new Annotation[this.ownerComponent.getBindings().size()];
         anns = this.ownerComponent.getBindings().toArray(anns);
         
-        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractComponent<T>)this.ownerComponent);
+        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractBean<T>)this.ownerComponent);
         
         if(specialize != null)
         {
@@ -177,14 +174,6 @@ public class ProducerFieldComponent<T> extends AbstractComponent<T> implements I
         WebBeansUtil.checkSerializableScopeType(this.getScopeType(), this.isSerializable(), errorMessage);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.component.IComponentHasParent#getParent()
-     */
-    public AbstractComponent<?> getParent()
-    {
-        return this.ownerComponent;
-    }
-    
     public String toString()
     {
         return super.toString();

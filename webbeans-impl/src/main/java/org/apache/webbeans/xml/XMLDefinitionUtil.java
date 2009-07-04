@@ -37,9 +37,9 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.WebBeansConstants;
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.xml.XMLComponentImpl;
-import org.apache.webbeans.component.xml.XMLProducerComponentImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.xml.XMLManagedBean;
+import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
@@ -148,7 +148,7 @@ public final class XMLDefinitionUtil
      * @return applicable annotation class for given defineType parameter from
      *         the given set
      */
-    public static <T> Class<? extends Annotation> defineXMLTypeMetaData(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, Class<? extends Annotation> defineType, String errorMessage)
+    public static <T> Class<? extends Annotation> defineXMLTypeMetaData(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, Class<? extends Annotation> defineType, String errorMessage)
     {
         // Found annotation for given defineType parameter
         Class<? extends Annotation> metaType = null;
@@ -175,7 +175,7 @@ public final class XMLDefinitionUtil
         return metaType;
     }
 
-    public static <T> boolean defineXMLBindingType(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
+    public static <T> boolean defineXMLBindingType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         boolean found = false;
@@ -213,7 +213,7 @@ public final class XMLDefinitionUtil
         return found;
     }
 
-    public static <T> void defineXMLClassLevelInterceptorType(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
+    public static <T> void defineXMLClassLevelInterceptorType(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
 
@@ -255,7 +255,7 @@ public final class XMLDefinitionUtil
 
     }
 
-    public static <T> void defineXMLMethodLevelInterceptorType(XMLComponentImpl<T> component, Method interceptorMethod, Element interceptorMethodElement, String errorMessage)
+    public static <T> void defineXMLMethodLevelInterceptorType(XMLManagedBean<T> component, Method interceptorMethod, Element interceptorMethodElement, String errorMessage)
     {
         List<Element> bindingTypes = interceptorMethodElement.elements();
         Set<Annotation> bindingTypesSet = new HashSet<Annotation>();
@@ -291,7 +291,7 @@ public final class XMLDefinitionUtil
      * @param component webbeans component
      * @param annotationSet set of type-level metadata annotation set
      */
-    public static <T> void defineXMLStereoType(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet)
+    public static <T> void defineXMLStereoType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         while (it.hasNext())
@@ -304,7 +304,7 @@ public final class XMLDefinitionUtil
         }
     }
 
-    public static <T> boolean defineXMLName(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet)
+    public static <T> boolean defineXMLName(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         while (it.hasNext())
@@ -319,7 +319,7 @@ public final class XMLDefinitionUtil
         return false;
     }
 
-    public static <T> void defineXMLSpecializes(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet)
+    public static <T> void defineXMLSpecializes(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         while (it.hasNext())
@@ -332,7 +332,7 @@ public final class XMLDefinitionUtil
         }
     }
 
-    public static <T> void defineXMLInterceptors(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
+    public static <T> void defineXMLInterceptors(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         boolean found = false;
@@ -372,10 +372,10 @@ public final class XMLDefinitionUtil
         anns = interceptorBindingTypes.toArray(anns);
         InterceptorUtil.checkLifecycleConditions(component.getReturnType(), anns, errorMessage + "Lifecycle interceptor : " + component.getReturnType().getName() + " interceptor binding type must be defined as @Target{TYPE}");
 
-        WebBeansInterceptorConfig.configureInterceptorClass((XMLComponentImpl<Object>) component, anns);
+        WebBeansInterceptorConfig.configureInterceptorClass((XMLManagedBean<Object>) component, anns);
     }
 
-    public static <T> void defineXMLDecorators(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet, Element decoratorDecleration, String errorMessage)
+    public static <T> void defineXMLDecorators(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet, Element decoratorDecleration, String errorMessage)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         boolean found = false;
@@ -420,7 +420,7 @@ public final class XMLDefinitionUtil
 
                     XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(type, errorMessage);
 
-                    WebBeansDecoratorConfig.configureXMLDecoratorClass((AbstractComponent<Object>) component, model);
+                    WebBeansDecoratorConfig.configureXMLDecoratorClass((AbstractBean<Object>) component, model);
                 }
                 else
                 {
@@ -438,9 +438,9 @@ public final class XMLDefinitionUtil
      * @param producerMethodElement produce method xml element
      * @param errorMessage error message
      * @return newly created and configures xml webbeans producer component.
-     * @see XMLProducerComponentImpl
+     * @see XMLProducerBean
      */
-    public static <T> XMLProducerComponentImpl<T> defineXMLProducerMethod(WebBeansXMLConfigurator configurator, XMLComponentImpl<T> component, Method producesMethod, Element producerMethodElement, String errorMessage)
+    public static <T> XMLProducerBean<T> defineXMLProducerMethod(WebBeansXMLConfigurator configurator, XMLManagedBean<T> component, Method producesMethod, Element producerMethodElement, String errorMessage)
     {
         boolean producesDefined = false;
         List<Element> childElements = producerMethodElement.elements();
@@ -520,7 +520,7 @@ public final class XMLDefinitionUtil
             }
         }
 
-        XMLProducerComponentImpl<T> producerComponentImpl = configureProducerMethod(component, producesMethod, injectedParameters, type, arrayElement, typeElement, errorMessage);
+        XMLProducerBean<T> producerComponentImpl = configureProducerMethod(component, producesMethod, injectedParameters, type, arrayElement, typeElement, errorMessage);
 
         configureProducerTypeLevelMetaData(configurator, producerComponentImpl, producesMethod, producerMethodElement, memberLevelMetaData, memberLevelElement, component, errorMessage);
 
@@ -542,12 +542,12 @@ public final class XMLDefinitionUtil
      *            the Java type element
      * @param errorMessage error message
      * @return new xml defines producer method component
-     * @see XMLProducerComponentImpl
+     * @see XMLProducerBean
      */
-    private static <T> XMLProducerComponentImpl<T> configureProducerMethod(AbstractComponent<?> parentComponent, Method producesMethod, List<XMLInjectionPointModel> injectedParameters, Class<T> type, Element arrayElement, Element typeElement, String errorMessage)
+    private static <T> XMLProducerBean<T> configureProducerMethod(AbstractBean<?> parentComponent, Method producesMethod, List<XMLInjectionPointModel> injectedParameters, Class<T> type, Element arrayElement, Element typeElement, String errorMessage)
     {
         /* New producer webbeans component */
-        XMLProducerComponentImpl<T> producerComponentImpl = new XMLProducerComponentImpl<T>(parentComponent, type);
+        XMLProducerBean<T> producerComponentImpl = new XMLProducerBean<T>(parentComponent, type);
 
         /* Check return type is the array type */
         if (arrayElement != null)
@@ -597,9 +597,9 @@ public final class XMLDefinitionUtil
      * @param component parent component that defines producer method
      * @param errorMessage error message
      * @return type level metadata configured webbeans
-     * @see XMLProducerComponentImpl
+     * @see XMLProducerBean
      */
-    private static <T> XMLProducerComponentImpl<T> configureProducerTypeLevelMetaData(WebBeansXMLConfigurator configurator, XMLProducerComponentImpl<T> producerComponentImpl, Method producesMethod, Element producerMethodElement, List<Class<? extends Annotation>> memberLevelMetaData, List<Element> memberLevelElement, XMLComponentImpl<T> component, String errorMessage)
+    private static <T> XMLProducerBean<T> configureProducerTypeLevelMetaData(WebBeansXMLConfigurator configurator, XMLProducerBean<T> producerComponentImpl, Method producesMethod, Element producerMethodElement, List<Class<? extends Annotation>> memberLevelMetaData, List<Element> memberLevelElement, XMLManagedBean<T> component, String errorMessage)
     {
 
         for (Class<? extends Annotation> memberLevelMetaDataClass : memberLevelMetaData)
@@ -628,7 +628,7 @@ public final class XMLDefinitionUtil
      * @throws UnsatisfiedResolutionException if no producer method found for
      *             given disposal method
      */
-    public static <T> void defineXMLDisposalMethod(XMLComponentImpl<T> component, Method disposalMethod, Element disposalMethodElement, String errorMessage)
+    public static <T> void defineXMLDisposalMethod(XMLManagedBean<T> component, Method disposalMethod, Element disposalMethodElement, String errorMessage)
     {
         /* Disposal method element childs */
         List<Element> disposalChildElements = disposalMethodElement.elements();
@@ -639,7 +639,7 @@ public final class XMLDefinitionUtil
         /* Other parameter elements other than @Disposes */
         List<Element> otherParameterElements = new ArrayList<Element>();
 
-        XMLProducerComponentImpl<?> producerComponent = null;
+        XMLProducerBean<?> producerComponent = null;
 
         for (Element childElement : disposalChildElements)
         {
@@ -667,7 +667,7 @@ public final class XMLDefinitionUtil
                 bindingAnns = bindingTypes.toArray(bindingAnns);
 
                 Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(model.getInjectionGenericType(), bindingAnns);
-                producerComponent = (XMLProducerComponentImpl<?>) set.iterator().next();
+                producerComponent = (XMLProducerBean<?>) set.iterator().next();
 
                 if (producerComponent == null)
                 {
@@ -692,7 +692,7 @@ public final class XMLDefinitionUtil
         }
     }
 
-    public static <T, K> void defineXMLObservesMethod(XMLComponentImpl<T> component, Method observesMethod, Element observesMethodElement, String errorMessage)
+    public static <T, K> void defineXMLObservesMethod(XMLManagedBean<T> component, Method observesMethod, Element observesMethodElement, String errorMessage)
     {
         component.addObservableMethod(observesMethod);
 
@@ -744,7 +744,7 @@ public final class XMLDefinitionUtil
         }
     }
     
-    public static InjectionPoint getXMLMethodInjectionPoint(AbstractComponent<?> component, XMLInjectionPointModel model, Method method)
+    public static InjectionPoint getXMLMethodInjectionPoint(AbstractBean<?> component, XMLInjectionPointModel model, Method method)
     {
         Asserts.assertNotNull(model,"model parameter can not be null");
         Asserts.assertNotNull(method,"method parameter can not be null");

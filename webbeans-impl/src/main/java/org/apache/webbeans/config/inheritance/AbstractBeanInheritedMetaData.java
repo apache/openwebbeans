@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 
 /**
  * Defines the bean inherited meta-datas.
@@ -29,7 +29,7 @@ import org.apache.webbeans.component.AbstractComponent;
 abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaData
 {
     /**Component that inherits the meta-datas*/
-    protected AbstractComponent<T> component;
+    protected AbstractBean<T> component;
     
     /**Inherited class*/
     protected Class<?> inheritedClazz;
@@ -55,7 +55,7 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
      * @param component webbeans component
      * @param inheritedClazz inherited class
      */
-    protected AbstractBeanInheritedMetaData(AbstractComponent<T> component, Class<?> inheritedClazz)
+    protected AbstractBeanInheritedMetaData(AbstractBean<T> component, Class<?> inheritedClazz)
     {
         this.component = component;
         this.inheritedClazz = inheritedClazz;
@@ -93,7 +93,7 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
         return this.inheritedDeploymentType;
     }
     
-    protected AbstractComponent<T> getComponent()
+    protected AbstractBean<T> getComponent()
     {
         return this.component;
     }

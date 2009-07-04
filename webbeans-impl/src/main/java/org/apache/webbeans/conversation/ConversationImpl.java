@@ -16,7 +16,7 @@ package org.apache.webbeans.conversation;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.StringUtil;
@@ -50,7 +50,7 @@ public class ConversationImpl implements Conversation
         this.longRunning = true;
         this.id = StringUtil.generateUUIDStringWithoutDash();
 
-        ConversationManager.getInstance().addConversationContext(this, (ConversationContext) ManagerImpl.getManager().getContext(ConversationScoped.class));
+        ConversationManager.getInstance().addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));
     }
 
     public void begin(String id)
@@ -58,7 +58,7 @@ public class ConversationImpl implements Conversation
         this.longRunning = true;
         this.id = id;
 
-        ConversationManager.getInstance().addConversationContext(this, (ConversationContext) ManagerImpl.getManager().getContext(ConversationScoped.class));
+        ConversationManager.getInstance().addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));
     }
 
     public void end()

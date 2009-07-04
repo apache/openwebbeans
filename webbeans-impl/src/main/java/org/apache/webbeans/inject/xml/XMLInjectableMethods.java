@@ -21,14 +21,14 @@ import java.util.List;
 
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.inject.InjectableMethods;
 
 public class XMLInjectableMethods<T> extends InjectableMethods<T>
 {
     private List<XMLInjectionPointModel> injectionPointModelList = new ArrayList<XMLInjectionPointModel>();
 
-    public XMLInjectableMethods(Method m, Object instance, AbstractComponent<?> owner, List<XMLInjectionPointModel> injectionPointModelList,CreationalContext<?> creationalContext)
+    public XMLInjectableMethods(Method m, Object instance, AbstractBean<?> owner, List<XMLInjectionPointModel> injectionPointModelList,CreationalContext<?> creationalContext)
     {
         super(m, instance, owner,creationalContext);
         this.injectionPointModelList = injectionPointModelList;

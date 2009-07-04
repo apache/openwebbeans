@@ -20,7 +20,7 @@ import javax.enterprise.inject.AnnotationLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.annotation.binding.Role;
@@ -53,7 +53,7 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
-        AbstractComponent<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
+        AbstractBean<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
         ContextFactory.initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("Gurkan");
@@ -73,8 +73,8 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
-        AbstractComponent<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
-        AbstractComponent<ComponentWithObservable1> componentObservable = defineSimpleWebBean(ComponentWithObservable1.class);
+        AbstractBean<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
+        AbstractBean<ComponentWithObservable1> componentObservable = defineSimpleWebBean(ComponentWithObservable1.class);
 
         ContextFactory.initRequestContext(null);
 
@@ -91,7 +91,7 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
-        AbstractComponent<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
+        AbstractBean<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
         ContextFactory.initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("Gurkan");
@@ -126,7 +126,7 @@ public class ObserversComponentTest extends TestContext
         defineSimpleWebBean(CheckWithCheckPayment.class);
         defineSimpleWebBean(CheckWithMoneyPayment.class);
         defineSimpleWebBean(PaymentProcessorComponent.class);
-        AbstractComponent<ComponentWithObserves2> component = defineSimpleWebBean(ComponentWithObserves2.class);
+        AbstractBean<ComponentWithObserves2> component = defineSimpleWebBean(ComponentWithObserves2.class);
         ContextFactory.initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("USER");

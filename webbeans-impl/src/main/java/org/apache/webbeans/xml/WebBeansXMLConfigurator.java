@@ -52,12 +52,12 @@ import javax.interceptor.Interceptor;
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.xml.XMLComponentImpl;
-import org.apache.webbeans.component.xml.XMLProducerComponentImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.xml.XMLManagedBean;
+import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.SimpleWebBeansConfigurator;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.ejb.EJBUtil;
@@ -566,7 +566,7 @@ public final class WebBeansXMLConfigurator
      * @param simpleClass concrete java class defined in XML
      * @param webBeanDecleration webbeans decleration root element
      */
-    public <T> XMLComponentImpl<T> configureSimpleWebBean(Class<T> simpleClass, Element webBeanDecleration)
+    public <T> XMLManagedBean<T> configureSimpleWebBean(Class<T> simpleClass, Element webBeanDecleration)
     {
         /* Checking XML defined simple webbeans condition check. Spec : 3.2.4 */
         XMLDefinitionUtil.checkSimpleWebBeansInXML(simpleClass, webBeanDecleration, createConfigurationFailedMessage());
@@ -590,7 +590,7 @@ public final class WebBeansXMLConfigurator
         }
 
         /* Create new XML component with class name */
-        XMLComponentImpl<T> component = new XMLComponentImpl<T>(simpleClass);
+        XMLManagedBean<T> component = new XMLManagedBean<T>(simpleClass);
 
         /* Configures API type of the webbeans component */
         DefinitionUtil.defineApiTypes(component, simpleClass);
@@ -607,7 +607,7 @@ public final class WebBeansXMLConfigurator
         /* Add to the manager */
         else
         {
-            ManagerImpl.getManager().addBean(component);
+            BeanManagerImpl.getManager().addBean(component);
         }
 
         return component;
@@ -619,7 +619,7 @@ public final class WebBeansXMLConfigurator
      * @param component xml webbeans element
      * @param webBeanDecleration webbeans element
      */
-    private <T> void configureWebBeanDeclerationChilds(XMLComponentImpl<T> component, Element webBeanDecleration)
+    private <T> void configureWebBeanDeclerationChilds(XMLManagedBean<T> component, Element webBeanDecleration)
     {
         List<Element> childs = webBeanDecleration.elements();
         Iterator<Element> it = childs.iterator();
@@ -751,7 +751,7 @@ public final class WebBeansXMLConfigurator
      * @param annotationSet type level annotation set
      * @param webBeanDecleration webbeans decleration element
      */
-    public <T> void configureTypeLevelMetaData(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, Element webBeanDecleration)
+    public <T> void configureTypeLevelMetaData(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, Element webBeanDecleration)
     {
         boolean isInterceptor = false;
         boolean isDecorator = false;
@@ -812,7 +812,7 @@ public final class WebBeansXMLConfigurator
      * @param annotationSet type level annotation set
      * @param webBeanDecleration webbeans decleration element
      */
-    public <T> void configureProducerTypeLevelMetaData(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, Element webBeanDecleration)
+    public <T> void configureProducerTypeLevelMetaData(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, Element webBeanDecleration)
     {
         configureBindingType(component, annotationSet, annotationElementList);
 
@@ -840,7 +840,7 @@ public final class WebBeansXMLConfigurator
      * @throws DefinitionException if more than one constructor exists
      * @throws NonexistentConstructorException if no constructor exists
      */
-    private <T> void configureConstructorMetaData(XMLComponentImpl<T> component, List<Class<?>> typeList, List<Element> constructorParameterListElement)
+    private <T> void configureConstructorMetaData(XMLManagedBean<T> component, List<Class<?>> typeList, List<Element> constructorParameterListElement)
     {
         Class<T> implClazz = component.getReturnType();
         Constructor<T> cons[] = ClassUtil.getConstructors(implClazz);
@@ -929,7 +929,7 @@ public final class WebBeansXMLConfigurator
      * @param component xml webbeans component
      * @param child field or method child element
      */
-    private <T> void configureFieldOrMethodMetaData(XMLComponentImpl<T> component, Element child)
+    private <T> void configureFieldOrMethodMetaData(XMLManagedBean<T> component, Element child)
     {
         if (XMLUtil.isElementField(child))
         {
@@ -953,7 +953,7 @@ public final class WebBeansXMLConfigurator
      * @throws DefinitionException if contains more than one &lt;valuegt;
      *             element childs
      */
-    private <T> void configureField(XMLComponentImpl<T> component, Element child)
+    private <T> void configureField(XMLManagedBean<T> component, Element child)
     {
         Class<?> clazz = component.getReturnType();
 
@@ -1058,7 +1058,7 @@ public final class WebBeansXMLConfigurator
      * @throws DefinitionException if any other configuration related exception
      *             occurs.
      */
-    private <T> void configureMethod(XMLComponentImpl<T> component, Element child)
+    private <T> void configureMethod(XMLManagedBean<T> component, Element child)
     {
         if (!ClassUtil.isMethodExistWithName(component.getReturnType(), XMLUtil.getName(child)))
         {
@@ -1186,7 +1186,7 @@ public final class WebBeansXMLConfigurator
      * @param annotChild element child
      * @param type type of the configuration method
      */
-    private <T> void configureMethodAnnotationType(XMLComponentImpl<T> component, Method annotatedMethod, Element annotChild, int type, List<Element> methodParameterElements)
+    private <T> void configureMethodAnnotationType(XMLManagedBean<T> component, Method annotatedMethod, Element annotChild, int type, List<Element> methodParameterElements)
     {
         switch (type)
         {
@@ -1220,7 +1220,7 @@ public final class WebBeansXMLConfigurator
      * @param initializeMethod initialize method of the webbeans component
      * @param annotChild element child
      */
-    private <T> void configureMethodInitializeAnnotation(XMLComponentImpl<T> component, Method initializeMethod, List<Element> methodParameterElements)
+    private <T> void configureMethodInitializeAnnotation(XMLManagedBean<T> component, Method initializeMethod, List<Element> methodParameterElements)
     {
         if (methodParameterElements.isEmpty())
         {
@@ -1238,24 +1238,24 @@ public final class WebBeansXMLConfigurator
         }
     }
 
-    private <T> void configureMethodProducesAnnotation(XMLComponentImpl<T> component, Method producesMethod, Element annotChild)
+    private <T> void configureMethodProducesAnnotation(XMLManagedBean<T> component, Method producesMethod, Element annotChild)
     {
-        XMLProducerComponentImpl<T> producer = XMLDefinitionUtil.defineXMLProducerMethod(this, component, producesMethod, annotChild, createConfigurationFailedMessage());
-        ManagerImpl.getManager().addBean(producer);
+        XMLProducerBean<T> producer = XMLDefinitionUtil.defineXMLProducerMethod(this, component, producesMethod, annotChild, createConfigurationFailedMessage());
+        BeanManagerImpl.getManager().addBean(producer);
     }
 
-    private <T> void configureMethodDisposesAnnotation(XMLComponentImpl<T> component, Method disposalMethod, Element annotChild)
+    private <T> void configureMethodDisposesAnnotation(XMLManagedBean<T> component, Method disposalMethod, Element annotChild)
     {
         XMLDefinitionUtil.defineXMLDisposalMethod(component, disposalMethod, annotChild, createConfigurationFailedMessage());
 
     }
 
-    private <T> void configureMethodObservesAnnotation(XMLComponentImpl<T> component, Method observesMethod, Element annotChild)
+    private <T> void configureMethodObservesAnnotation(XMLManagedBean<T> component, Method observesMethod, Element annotChild)
     {
         XMLDefinitionUtil.defineXMLObservesMethod(component, observesMethod, annotChild, createConfigurationFailedMessage());
     }
 
-    private <T> void configureMethodInterceptorBindingTypeAnnotation(XMLComponentImpl<T> component, Method interceptorMethod, Element annotChild)
+    private <T> void configureMethodInterceptorBindingTypeAnnotation(XMLManagedBean<T> component, Method interceptorMethod, Element annotChild)
     {
         XMLDefinitionUtil.defineXMLMethodLevelInterceptorType(component, interceptorMethod, annotChild, createConfigurationFailedMessage());
     }
@@ -1271,7 +1271,7 @@ public final class WebBeansXMLConfigurator
      * @throws DefinitionException if more than one method satisfies the
      *             conditions
      */
-    private <T> Method checkConfigureMethodConditions(XMLComponentImpl<T> component, Element child, List<Class<?>> methodParameters)
+    private <T> Method checkConfigureMethodConditions(XMLManagedBean<T> component, Element child, List<Class<?>> methodParameters)
     {
         // Check with name and also parameter types
         List<Method> definedMethods = ClassUtil.getClassMethodsWithTypes(component.getReturnType(), XMLUtil.getName(child), methodParameters);
@@ -1297,7 +1297,7 @@ public final class WebBeansXMLConfigurator
      * @throws DefinitionException if disposes element can not contain exactly
      *             one child element
      */
-    private <T> void checkConfigureDisposes(AbstractComponent<T> component, Element disposes)
+    private <T> void checkConfigureDisposes(AbstractBean<T> component, Element disposes)
     {
         List<Element> disposesChilds = disposes.elements();
 
@@ -1319,7 +1319,7 @@ public final class WebBeansXMLConfigurator
      *             AfterTransactionFailure, BeforeTransactionCompletion}
      *             element.
      */
-    private <T> void checkConfigureObserves(AbstractComponent<T> component, Element observes)
+    private <T> void checkConfigureObserves(AbstractBean<T> component, Element observes)
     {
         List<Element> observesChilds = observes.elements();
 
@@ -1346,7 +1346,7 @@ public final class WebBeansXMLConfigurator
      * @param component xml defined web beans component
      * @param annotationSet all annotation defined in XML
      */
-    private <T> void configureDeploymentType(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
+    private <T> void configureDeploymentType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
         Class<? extends Annotation> deploymentType = XMLDefinitionUtil.defineXMLTypeMetaData(component, annotationSet, DeploymentType.class, createConfigurationFailedMessage() + "@DeploymentType annotation is not configured correctly for class : " + component.getReturnType().getName());
 
@@ -1378,7 +1378,7 @@ public final class WebBeansXMLConfigurator
      * @param component xml defined web beans component
      * @param annotationSet all annotation defined in XML
      */
-    private <T> void configureScopeType(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
+    private <T> void configureScopeType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
         Class<? extends Annotation> scopeType = XMLDefinitionUtil.defineXMLTypeMetaData(component, annotationSet, ScopeType.class, createConfigurationFailedMessage() + "@ScopeType annotation is not configured correctly");
 
@@ -1400,7 +1400,7 @@ public final class WebBeansXMLConfigurator
      * @param component web beans xml component
      * @param anns annotations defined in the xml documents
      */
-    private <T> void configureBindingType(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
+    private <T> void configureBindingType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
         boolean isDefined = XMLDefinitionUtil.defineXMLBindingType(component, annotationSet, annotationElementList, createConfigurationFailedMessage());
 
@@ -1417,7 +1417,7 @@ public final class WebBeansXMLConfigurator
      * @param component web beans xml component
      * @param anns annotations defined in the xml documents
      */
-    private <T> void configureInterceptorBindingType(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
+    private <T> void configureInterceptorBindingType(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
         XMLDefinitionUtil.defineXMLClassLevelInterceptorType(component, annotationSet, annotationElementList, createConfigurationFailedMessage());
     }
@@ -1428,7 +1428,7 @@ public final class WebBeansXMLConfigurator
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      */
-    private <T> void configureStereoType(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
+    private <T> void configureStereoType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
         XMLDefinitionUtil.defineXMLStereoType(component, annotationSet);
     }
@@ -1440,7 +1440,7 @@ public final class WebBeansXMLConfigurator
      * @param annotationSet type-level metadata annotation set
      * @param webBeanDecleration webbeans decleration element
      */
-    private <T> void configureNamed(AbstractComponent<T> component, List<Class<? extends Annotation>> annotationSet, Element webBeanDecleration)
+    private <T> void configureNamed(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, Element webBeanDecleration)
     {
         boolean isDefined = XMLDefinitionUtil.defineXMLName(component, annotationSet);
         if (isDefined)
@@ -1469,7 +1469,7 @@ public final class WebBeansXMLConfigurator
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      */
-    private <T> void configureSpecializes(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet)
+    private <T> void configureSpecializes(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet)
     {
         XMLDefinitionUtil.defineXMLSpecializes(component, annotationSet);
     }
@@ -1480,7 +1480,7 @@ public final class WebBeansXMLConfigurator
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      */
-    private <T> void configureInterceptor(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
+    private <T> void configureInterceptor(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
         XMLDefinitionUtil.defineXMLInterceptors(component, annotationSet, annotationElementList, createConfigurationFailedMessage());
 
@@ -1492,7 +1492,7 @@ public final class WebBeansXMLConfigurator
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      */
-    private <T> void configureDecorator(XMLComponentImpl<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, Element webBeanDecleration)
+    private <T> void configureDecorator(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, Element webBeanDecleration)
     {
         XMLDefinitionUtil.defineXMLDecorators(component, annotationSet, webBeanDecleration, createConfigurationFailedMessage());
     }
@@ -1575,7 +1575,7 @@ public final class WebBeansXMLConfigurator
      * @param child child element that declares field
      * @param isValueElement is it applicable for value setting
      */
-    private <T> void configureFieldValues(XMLComponentImpl<T> component, Field field, Element child, boolean isValueElement)
+    private <T> void configureFieldValues(XMLManagedBean<T> component, Field field, Element child, boolean isValueElement)
     {
         if (isValueElement)
         {
@@ -1728,7 +1728,7 @@ public final class WebBeansXMLConfigurator
      * @param child list field xml element
      * @param errorMessage error message
      */
-    private void configureFieldListValue(XMLComponentImpl<?> component, Field field, Element child, String errorMessage)
+    private void configureFieldListValue(XMLManagedBean<?> component, Field field, Element child, String errorMessage)
     {
         boolean isString = false;
         boolean isEnum = false;
@@ -1823,7 +1823,7 @@ public final class WebBeansXMLConfigurator
      * @param child list field xml element
      * @param errorMessage error message
      */
-    private void configureFieldSetValue(XMLComponentImpl<?> component, Field field, Element child, String errorMessage)
+    private void configureFieldSetValue(XMLManagedBean<?> component, Field field, Element child, String errorMessage)
     {
         boolean isString = false;
         boolean isEnum = false;

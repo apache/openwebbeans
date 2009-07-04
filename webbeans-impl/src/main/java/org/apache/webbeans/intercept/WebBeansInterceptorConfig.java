@@ -27,10 +27,10 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.Component;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.BaseBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -61,7 +61,7 @@ public final class WebBeansInterceptorConfig
      * 
      * @param interceptorClazz interceptor class
      */
-    public static <T> void configureInterceptorClass(AbstractComponent<T> delegate, Annotation[] interceptorBindingTypes)
+    public static <T> void configureInterceptorClass(AbstractBean<T> delegate, Annotation[] interceptorBindingTypes)
     {
         logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType().getName() + " started");
 
@@ -74,7 +74,7 @@ public final class WebBeansInterceptorConfig
 
         logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType() + " ended");
 
-        ManagerImpl.getManager().addInterceptor(interceptor);
+        BeanManagerImpl.getManager().addInterceptor(interceptor);
 
     }
 
@@ -83,7 +83,7 @@ public final class WebBeansInterceptorConfig
      * 
      * @param clazz configuration interceptors for this
      */
-    public static void configure(Component<?> component, List<InterceptorData> stack)
+    public static void configure(BaseBean<?> component, List<InterceptorData> stack)
     {
         Class<?> clazz = component.getReturnType();
         
@@ -218,7 +218,7 @@ public final class WebBeansInterceptorConfig
      */
     private static Set<Interceptor<?>> getWebBeansInterceptors()
     {
-        return Collections.unmodifiableSet(ManagerImpl.getManager().getInterceptors());
+        return Collections.unmodifiableSet(BeanManagerImpl.getManager().getInterceptors());
     }
 
     /*

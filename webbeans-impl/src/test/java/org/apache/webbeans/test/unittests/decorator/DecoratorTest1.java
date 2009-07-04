@@ -26,7 +26,7 @@ import javax.servlet.ServletContext;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.CurrentLiteral;
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.annotation.binding.Binding1Literal;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -69,7 +69,7 @@ public class DecoratorTest1 extends TestContext
     {
         defineSimpleWebBean(CheckWithCheckPayment.class);
         defineSimpleWebBeansDecorators(ServiceDecorator.class);
-        AbstractComponent<ServiceImpl1> component = defineSimpleWebBean(ServiceImpl1.class);
+        AbstractBean<ServiceImpl1> component = defineSimpleWebBean(ServiceImpl1.class);
 
         ContextFactory.initRequestContext(null);
         ContextFactory.initApplicationContext(null);
@@ -93,7 +93,7 @@ public class DecoratorTest1 extends TestContext
     public void test2()
     {
         defineSimpleWebBeansDecorators(LargeTransactionDecorator.class);
-        AbstractComponent<AccountComponent> component = defineSimpleWebBean(AccountComponent.class);
+        AbstractBean<AccountComponent> component = defineSimpleWebBean(AccountComponent.class);
 
         ContextFactory.initRequestContext(null);
 

@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.unittests.inject.generic;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.test.component.inject.generic.GenericComponent;
 import org.apache.webbeans.test.component.inject.generic.GenericComponentInjector;
 import org.apache.webbeans.test.servlet.TestContext;
@@ -39,7 +39,7 @@ public class GenericBeanTest extends TestContext
     public void testGenericBeanInjection()
     {
         defineSimpleWebBean(GenericComponent.class);
-        AbstractComponent<GenericComponentInjector> bean2 = defineSimpleWebBean(GenericComponentInjector.class);
+        AbstractBean<GenericComponentInjector> bean2 = defineSimpleWebBean(GenericComponentInjector.class);
         
         GenericComponentInjector<?> instance = getManager().getInstance(bean2);
         Assert.assertNotNull(instance.getInjection1());

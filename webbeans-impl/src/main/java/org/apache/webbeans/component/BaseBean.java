@@ -32,7 +32,7 @@ import org.apache.webbeans.intercept.InterceptorData;
  * @version $Rev$ $Date$
  * <T> bean class
  */
-public abstract class Component<T> implements Bean<T>
+public abstract class BaseBean<T> implements Bean<T>
 {
 	/**Bean Manager*/
     private final BeanManager manager;
@@ -42,7 +42,7 @@ public abstract class Component<T> implements Bean<T>
      * 
      * @param manager bean manager
      */
-    protected Component(BeanManager manager)
+    protected BaseBean(BeanManager manager)
     {
         this.manager = manager;
     }

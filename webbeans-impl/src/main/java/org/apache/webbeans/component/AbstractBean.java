@@ -29,7 +29,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -37,14 +37,14 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
- * Abstract implementation of the {@link Component} contract. 
+ * Abstract implementation of the {@link BaseBean} contract. 
  * 
  * @version $Rev$ $Date$
  * 
- * @see Component
+ * @see BaseBean
  * @see Bean
  */
-public abstract class AbstractComponent<T> extends Component<T>
+public abstract class AbstractBean<T> extends BaseBean<T>
 {
     /**Logger instance*/
     private final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
@@ -110,9 +110,9 @@ public abstract class AbstractComponent<T> extends Component<T>
      * @param name name of the component
      * @param webBeansType web beans type
      */
-    protected AbstractComponent(WebBeansType webBeansType, Class<T> returnType)
+    protected AbstractBean(WebBeansType webBeansType, Class<T> returnType)
     {
-        super(ManagerImpl.getManager());
+        super(BeanManagerImpl.getManager());
         this.webBeansType = webBeansType;
         this.returnType = returnType;
     }
@@ -122,9 +122,9 @@ public abstract class AbstractComponent<T> extends Component<T>
      * 
      * @param webBeanType beans type
      */
-    protected AbstractComponent(WebBeansType webBeanType)
+    protected AbstractBean(WebBeansType webBeanType)
     {
-        super(ManagerImpl.getManager());
+        super(BeanManagerImpl.getManager());
         this.webBeansType = webBeanType;
         
     }
@@ -235,9 +235,9 @@ public abstract class AbstractComponent<T> extends Component<T>
      */
     public Class<?> getBeanClass()
     {
-        if(IComponentHasParent.class.isAssignableFrom(getClass()))
+        if(IBeanHasParent.class.isAssignableFrom(getClass()))
         {
-            IComponentHasParent comp = (IComponentHasParent)this;
+            IBeanHasParent comp = (IBeanHasParent)this;
             
             return comp.getParent().getBeanClass();
         }
@@ -425,11 +425,11 @@ public abstract class AbstractComponent<T> extends Component<T>
         Object object = null;
         
         //Setting injection point owner
-        AbstractComponent<?> dependent = (AbstractComponent<?>)dependentComponent;
+        AbstractBean<?> dependent = (AbstractBean<?>)dependentComponent;
         dependent.setDependentOwnerInjectionPoint(injectionPoint);        
         
         //Get dependent instance
-        object = ManagerImpl.getManager().getInstance(dependentComponent);
+        object = BeanManagerImpl.getManager().getInstance(dependentComponent);
         
         CreationalContextImpl<T> cc = (CreationalContextImpl<T>)this.creationalContext;
 

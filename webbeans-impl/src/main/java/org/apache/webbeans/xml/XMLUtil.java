@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.annotation.WebBeansAnnotation;
-import org.apache.webbeans.component.xml.XMLProducerComponentImpl;
+import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
@@ -883,7 +883,7 @@ public final class XMLUtil
         return model;
     }
 
-    public static <T> void defineXMLProducerApiTypeFromArrayElement(XMLProducerComponentImpl<T> component, Element typeElement, String errorMessage)
+    public static <T> void defineXMLProducerApiTypeFromArrayElement(XMLProducerBean<T> component, Element typeElement, String errorMessage)
     {
         List<Element> childElements = typeElement.elements();
         boolean isElementTypeDefined = false;

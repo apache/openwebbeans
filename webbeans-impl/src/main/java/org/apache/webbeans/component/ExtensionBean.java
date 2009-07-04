@@ -24,14 +24,14 @@ import org.apache.webbeans.portable.events.ExtensionLoader;
  *
  * @param <T> type info
  */
-public class ExtensionComponent<T> extends AbstractObservesComponent<T>
+public class ExtensionBean<T> extends AbstractObservesBean<T>
 {
     /**
      * Creates a new extesion bean.
      * 
      * @param returnType return type
      */
-    public ExtensionComponent(Class<T> returnType)
+    public ExtensionBean(Class<T> returnType)
     {
         super(WebBeansType.EXTENSION,returnType);
     }

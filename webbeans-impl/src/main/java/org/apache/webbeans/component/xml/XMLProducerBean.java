@@ -20,13 +20,13 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ProducerComponentImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.inject.xml.XMLInjectableMethods;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.util.Asserts;
 
-public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
+public class XMLProducerBean<T> extends ProducerMethodBean<T>
 {
     private List<XMLInjectionPointModel> producerMethodParameters = new ArrayList<XMLInjectionPointModel>();
 
@@ -36,7 +36,7 @@ public class XMLProducerComponentImpl<T> extends ProducerComponentImpl<T>
     
     private CreationalContext<?> creationalContext;
 
-    public XMLProducerComponentImpl(AbstractComponent<?> parent, Class<T> returnType)
+    public XMLProducerBean(AbstractBean<?> parent, Class<T> returnType)
     {
         super(parent, returnType);
         this.parent = parent;

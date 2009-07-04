@@ -24,10 +24,10 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.WebBeansType;
 
-public class ThirdpartyBeanImpl<T> extends AbstractComponent<T>
+public class ThirdpartyBeanImpl<T> extends AbstractBean<T>
 {
     private Bean<T> bean = null;
     

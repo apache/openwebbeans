@@ -21,10 +21,10 @@ import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.conversation.ConversationService;
 
-public class ConversationComponent extends AbstractComponent<Conversation>
+public class ConversationBean extends AbstractBean<Conversation>
 {
 
-    public ConversationComponent()
+    public ConversationBean()
     {
         super(WebBeansType.CONVERSATION, Conversation.class);
     }

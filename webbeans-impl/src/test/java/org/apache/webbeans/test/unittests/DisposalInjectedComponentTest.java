@@ -19,8 +19,8 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.DisposalMethodComponent;
 import org.apache.webbeans.test.component.service.IService;
@@ -41,7 +41,7 @@ public class DisposalInjectedComponentTest extends TestContext
     @Before
     public void init()
     {
-        this.container = ManagerImpl.getManager();
+        this.container = BeanManagerImpl.getManager();
         super.init();
     }
 
@@ -53,7 +53,7 @@ public class DisposalInjectedComponentTest extends TestContext
         defineSimpleWebBean(ServiceImpl1.class);
         defineSimpleWebBean(DisposalMethodComponent.class);
 
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
         ContextFactory.initApplicationContext(null);

@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.component;
 
-public interface IComponentHasParent
+public interface IBeanHasParent
 {
-    public AbstractComponent<?> getParent();
+    public AbstractBean<?> getParent();
 }

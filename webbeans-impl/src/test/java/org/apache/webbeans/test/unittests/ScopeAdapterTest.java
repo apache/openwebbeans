@@ -19,7 +19,7 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.producer.ScopeAdaptorComponent;
@@ -56,7 +56,7 @@ public class ScopeAdapterTest extends TestContext
         ContextFactory.initSessionContext(session);
         ContextFactory.initApplicationContext(null);
 
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         Assert.assertEquals(7, getDeployedComponents());
 

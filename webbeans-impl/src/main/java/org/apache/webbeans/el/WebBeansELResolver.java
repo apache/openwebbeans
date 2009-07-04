@@ -25,7 +25,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.Bean;
 import javax.servlet.jsp.JspApplicationContext;
 
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 
 /**
  * JSF or JSP expression language a.k.a EL resolver.
@@ -80,7 +80,7 @@ public class WebBeansELResolver extends ELResolver
     @Override
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
-        ManagerImpl manager = ManagerImpl.getManager();
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
 
         Object object = null;
         Bean<?> bean = null;

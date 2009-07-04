@@ -13,53 +13,31 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
-
 import javax.enterprise.context.spi.CreationalContext;
-
-import org.apache.webbeans.exception.WebBeansException;
+import javax.enterprise.inject.New;
 
 /**
- * Implicit observable bean definition.
+ * Component definition with {@link New} binding annotation.
  * 
- * @version $Rev$ $Date$
+ * <p>
+ * It is defined as concrete java class component.
+ * </p>
+ * 
  */
-public class ObservableComponentImpl<T, K> extends ComponentImpl<T>
+public class NewBean<T> extends ManagedBean<T>
 {
     private WebBeansType definedType;
 
-    private Class<K> eventType = null;
-
-    public ObservableComponentImpl(Class<T> returnType, Class<K> eventType, WebBeansType definedType)
+    public NewBean(Class<T> returnType, WebBeansType definedType)
     {
         super(returnType);
-        this.definedType = definedType;
-        this.eventType = eventType;
+        this.definedType = definedType;        
     }
 
     @Override
     protected T createInstance(CreationalContext<T> creationalContext)
     {
-        Set<Annotation> setBindingTypes = getBindings();
-        Annotation[] bindingTypes = new Annotation[setBindingTypes.size()];
-
-        bindingTypes = setBindingTypes.toArray(bindingTypes);
-
-        T instance = null;
-
-        try
-        {
-            instance = getConstructor().newInstance(new Object[] { bindingTypes, eventType });
-
-        }
-        catch (Exception e)
-        {
-            throw new WebBeansException("Exception in creating Observable implicit component for event type : " + eventType.getName());
-        }
-
-        return instance;
-
+        return super.createInstance(creationalContext);
     }
 
     @Override
@@ -76,11 +54,4 @@ public class ObservableComponentImpl<T, K> extends ComponentImpl<T>
         return definedType;
     }
 
-    /**
-     * @return the eventType
-     */
-    public Class<K> getEventType()
-    {
-        return eventType;
-    }
 }

@@ -16,7 +16,7 @@ package org.apache.webbeans.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.SessionContextManager;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
@@ -33,7 +33,7 @@ import org.apache.webbeans.xml.XMLSpecializesManager;
 
 public class WebBeansFinder
 {
-    public static final String SINGLETON_MANAGER = ManagerImpl.class.getName();
+    public static final String SINGLETON_MANAGER = BeanManagerImpl.class.getName();
 
     public static final String SINGLETON_DECORATORS_MANAGER = DecoratorsManager.class.getName();
 

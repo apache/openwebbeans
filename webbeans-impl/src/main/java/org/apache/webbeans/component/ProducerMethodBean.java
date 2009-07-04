@@ -28,7 +28,7 @@ import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Concrete implementation of the {@link AbstractComponent}.
+ * Concrete implementation of the {@link AbstractBean}.
  * <p>
  * It is defined as producer method component.
  * </p>
@@ -36,10 +36,10 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IComponentHasParent
+public class ProducerMethodBean<T> extends AbstractBean<T> implements IBeanHasParent
 {
     /** Parent component that this producer method belongs */
-    protected AbstractComponent<?> parent;
+    protected AbstractBean<?> parent;
 
     /** Creator method of the parent component */
     protected Method creatorMethod;
@@ -52,7 +52,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
     /*
      * Constructor
      */
-    public ProducerComponentImpl(AbstractComponent<?> parent, Class<T> returnType)
+    public ProducerMethodBean(AbstractBean<?> parent, Class<T> returnType)
     {
         super(WebBeansType.PRODUCER, returnType);
         this.parent = parent;
@@ -83,7 +83,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
      * 
      * @return web bean component defines producer method
      */
-    public AbstractComponent<?> getParent()
+    public AbstractBean<?> getParent()
     {
         return parent;
     }
@@ -223,7 +223,7 @@ public class ProducerComponentImpl<T> extends AbstractComponent<T> implements IC
         Annotation[] anns = new Annotation[this.parent.getBindings().size()];
         anns = this.parent.getBindings().toArray(anns);
         
-        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractComponent<T>)this.parent);
+        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractBean<T>)this.parent);
         
         if(specialize != null)
         {

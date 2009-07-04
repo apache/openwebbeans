@@ -17,7 +17,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.ManagerComponentImpl;
+import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Before;
@@ -40,7 +40,7 @@ public class ManagerResolutionTest extends TestContext
     @Test
     public void testManagerResolution()
     {
-        ManagerComponentImpl component = WebBeansUtil.getManagerComponent();
+        BeanManagerBean component = WebBeansUtil.getManagerComponent();
         BeanManager manager = getManager().getInstance(component);
 
         Assert.assertNotNull(manager);

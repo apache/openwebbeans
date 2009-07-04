@@ -32,8 +32,8 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InterceptorBindingType;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
@@ -69,18 +69,18 @@ public class WebBeansInterceptor<T> implements Interceptor<T>
     private Class<?> clazz;
 
     /** Simple Web Beans component */
-    private AbstractComponent<T> delegateComponent;
+    private AbstractBean<T> delegateComponent;
     
     private CreationalContext<T> creationalContext;
 
-    public WebBeansInterceptor(AbstractComponent<T> delegateComponent)
+    public WebBeansInterceptor(AbstractBean<T> delegateComponent)
     {
         this.delegateComponent = delegateComponent;
         this.clazz = getDelegate().getReturnType();
 
     }
 
-    public AbstractComponent<T> getDelegate()
+    public AbstractBean<T> getDelegate()
     {
         return this.delegateComponent;
     }
@@ -262,7 +262,7 @@ public class WebBeansInterceptor<T> implements Interceptor<T>
     public void setInjections(Object proxy)
     {
         // Set injected fields
-        ComponentImpl<T> delegate = (ComponentImpl<T>) this.delegateComponent;
+        ManagedBean<T> delegate = (ManagedBean<T>) this.delegateComponent;
 
         Set<Field> injectedFields = delegate.getInjectedFields();
         for (Field injectedField : injectedFields)

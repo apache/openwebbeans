@@ -43,14 +43,14 @@ import org.apache.webbeans.exception.inject.DeploymentException;
  */
 @SuppressWarnings("unchecked")
 @Deprecated/*Activities are removed from specification*/
-public class ChildActivityManager extends ManagerImpl
+public class ChildActivityManager extends BeanManagerImpl
 {    
     
     /**
      * the ct will be called by {@code Manager#createActivity()}
      * @param parent is the Manager calling this ct
      */
-    public ChildActivityManager(ManagerImpl parent)
+    public ChildActivityManager(BeanManagerImpl parent)
     {
         super();
         
@@ -75,7 +75,7 @@ public class ChildActivityManager extends ManagerImpl
      * @param parent parent or the child or null if root
      * @return true if bean exist in parent false owise.
      */
-    private boolean checkBean(Bean<?> bean, ManagerImpl parent)
+    private boolean checkBean(Bean<?> bean, BeanManagerImpl parent)
     {
         if(parent == null)
         {

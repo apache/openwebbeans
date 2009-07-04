@@ -18,11 +18,11 @@ import javax.decorator.Decorator;
 import javax.enterprise.context.ScopeType;
 import javax.interceptor.Interceptor;
 
-import org.apache.webbeans.component.ComponentImpl;
-import org.apache.webbeans.component.ProducerComponentImpl;
-import org.apache.webbeans.component.ProducerFieldComponent;
+import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -102,13 +102,13 @@ public final class SimpleWebBeansConfigurator
      * @return the newly created Simple WebBean Component
      * @throws WebBeansConfigurationException if any configuration exception occurs
      */
-    public static <T> ComponentImpl<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
+    public static <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
     {
-        ManagerImpl manager = ManagerImpl.getManager();
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
 
         checkSimpleWebBeanCondition(clazz);
 
-        ComponentImpl<T> component = new ComponentImpl<T>(clazz, type);
+        ManagedBean<T> component = new ManagedBean<T>(clazz, type);
 
         DefinitionUtil.defineSerializable(component);
         DefinitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
@@ -138,10 +138,10 @@ public final class SimpleWebBeansConfigurator
         //Dropped from the speicification
         //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
 
-        Set<ProducerComponentImpl<?>> producerComponents = DefinitionUtil.defineProducerMethods(component);
+        Set<ProducerMethodBean<?>> producerComponents = DefinitionUtil.defineProducerMethods(component);
         manager.getBeans().addAll(producerComponents);
 
-        Set<ProducerFieldComponent<?>> producerFields = DefinitionUtil.defineProduerFields(component);
+        Set<ProducerFieldBean<?>> producerFields = DefinitionUtil.defineProduerFields(component);
         manager.getBeans().addAll(producerFields);
 
         DefinitionUtil.defineDisposalMethods(component);

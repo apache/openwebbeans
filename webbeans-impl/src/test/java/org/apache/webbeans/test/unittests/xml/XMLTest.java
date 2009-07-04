@@ -20,7 +20,7 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.xml.XMLUtil;
 import org.dom4j.Element;
@@ -44,7 +44,7 @@ public class XMLTest extends TestContext
     @Before
     public void init()
     {
-        this.container = ManagerImpl.getManager();
+        this.container = BeanManagerImpl.getManager();
     }
 
     public void startTests(ServletContext ctx)

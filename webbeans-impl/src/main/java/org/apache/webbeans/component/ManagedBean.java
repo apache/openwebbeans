@@ -30,12 +30,12 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * @version $Rev$ $Date$
  */
-public class ComponentImpl<T> extends AbstractObservesComponent<T>
+public class ManagedBean<T> extends AbstractObservesBean<T>
 {
     /** Constructor of the web bean component */
     private Constructor<T> constructor;
 
-    public ComponentImpl(Class<T> returnType)
+    public ManagedBean(Class<T> returnType)
     {
         this(returnType, WebBeansType.SIMPLE);
     }
@@ -46,7 +46,7 @@ public class ComponentImpl<T> extends AbstractObservesComponent<T>
      * @param returnType bean class
      * @param type webbeans type
      */
-    public ComponentImpl(Class<T> returnType, WebBeansType type)
+    public ManagedBean(Class<T> returnType, WebBeansType type)
     {
         super(type, returnType);
         

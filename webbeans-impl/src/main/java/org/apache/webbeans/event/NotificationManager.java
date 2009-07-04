@@ -32,8 +32,8 @@ import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 
-import org.apache.webbeans.component.ObservesMethodsOwner;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.ObservesMethodsOwnerBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -60,7 +60,7 @@ public final class NotificationManager implements Synchronization
 
     public static NotificationManager getInstance()
     {
-        ManagerImpl manager =  ActivityManager.getInstance().getCurrentActivity();
+        BeanManagerImpl manager =  ActivityManager.getInstance().getCurrentActivity();
         
         return manager.getNotificationManager();
     }
@@ -286,7 +286,7 @@ public final class NotificationManager implements Synchronization
         }
     }
 
-    public <T> void addObservableComponentMethods(ObservesMethodsOwner<?> component)
+    public <T> void addObservableComponentMethods(ObservesMethodsOwnerBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         Set<Method> observableMethods = component.getObservableMethods();

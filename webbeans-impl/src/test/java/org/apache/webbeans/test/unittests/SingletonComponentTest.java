@@ -20,8 +20,8 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.container.ManagerImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.Singleton;
 import org.apache.webbeans.test.component.service.ITyped2;
@@ -43,7 +43,7 @@ public class SingletonComponentTest extends TestContext
     public void init()
     {
         super.init();
-        this.container = ManagerImpl.getManager();
+        this.container = BeanManagerImpl.getManager();
     }
 
     @SuppressWarnings("unchecked")
@@ -54,7 +54,7 @@ public class SingletonComponentTest extends TestContext
 
         defineSimpleWebBean(Typed2.class);
         defineSimpleWebBean(Singleton.class);
-        List<AbstractComponent<?>> comps = getComponents();
+        List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();
 

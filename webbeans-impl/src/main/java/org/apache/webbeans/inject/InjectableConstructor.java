@@ -21,13 +21,13 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.component.AbstractComponent;
-import org.apache.webbeans.component.ComponentImpl;
+import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
- * Injects the parameters of the {@link ComponentImpl} constructor and returns
+ * Injects the parameters of the {@link ManagedBean} constructor and returns
  * the created instance.
  * 
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
@@ -44,7 +44,7 @@ public class InjectableConstructor<T> extends AbstractInjectable
      * 
      * @param cons injectable constructor
      */
-    public InjectableConstructor(Constructor<T> cons, AbstractComponent<?> owner,CreationalContext<?> creationalContext)
+    public InjectableConstructor(Constructor<T> cons, AbstractBean<?> owner,CreationalContext<?> creationalContext)
     {
         super(owner,creationalContext);
         this.con = cons;

@@ -46,16 +46,18 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 
-import org.apache.webbeans.component.AbstractComponent;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
@@ -79,14 +81,18 @@ import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 /**
- * Implementation of the {@link WebBeansManager} contract of the web beans
+ * Implementation of the {@link BeanManager} contract of the web beans
  * container.
  * 
- * @since 1.0
- * @see java.webbeans.WebBeansManager
+ * <p>
+ * It is written as thread-safe.
+ * </p>
+ * 
+ * @version $Rev$ $Date$
+ * @see BeanManager 
  */
 @SuppressWarnings("unchecked")
-public class ManagerImpl implements BeanManager, Referenceable
+public class BeanManagerImpl implements BeanManager, Referenceable
 {
     /**Holds the context with key scope*/
     private static Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
@@ -115,25 +121,25 @@ public class ManagerImpl implements BeanManager, Referenceable
     /**
      * The parent Manager this child is depending from.
      */
-    private ManagerImpl parent;
+    private BeanManagerImpl parent;
     
     /**
      * Creates a new {@link BeanManager} instance.
      * Called by the system. Do not use outside of the
      * system.
      */
-    public ManagerImpl()
+    public BeanManagerImpl()
     {
         injectionResolver = new InjectionResolver(this);
         notificationManager = new NotificationManager();
     }    
     
-    public ManagerImpl getParent()
+    public BeanManagerImpl getParent()
     {
         return this.parent;
     }
     
-    public synchronized void setParent(ManagerImpl parent)
+    public synchronized void setParent(BeanManagerImpl parent)
     {
        this.parent = parent;
     }
@@ -164,11 +170,11 @@ public class ManagerImpl implements BeanManager, Referenceable
      * 
      * @return the current activity
      */
-    public static ManagerImpl getManager()
+    public static BeanManagerImpl getManager()
     {
         ActivityManager activityManager = ActivityManager.getInstance();
         
-        ManagerImpl currentManager = activityManager.getCurrentActivity();
+        BeanManagerImpl currentManager = activityManager.getCurrentActivity();
         
         return currentManager;
     }
@@ -215,7 +221,7 @@ public class ManagerImpl implements BeanManager, Referenceable
             }
         }
         
-        List<Context> others = ManagerImpl.contextMap.get(scopeType);
+        List<Context> others = BeanManagerImpl.contextMap.get(scopeType);
         if(others != null)
         {
             for(Context otherContext : others)
@@ -251,7 +257,7 @@ public class ManagerImpl implements BeanManager, Referenceable
     
     public BeanManager addBean(Bean<?> component)
     {
-        if(component instanceof AbstractComponent)
+        if(component instanceof AbstractBean)
         {
             this.components.add(component);    
         }
@@ -290,7 +296,7 @@ public class ManagerImpl implements BeanManager, Referenceable
     
     public Object getInstanceByName(String name)
     {
-        AbstractComponent<?> component = null;
+        AbstractBean<?> component = null;
         Object object = null;
 
         Set<Bean<?>> set = this.injectionResolver.implResolveByName(name);
@@ -304,7 +310,7 @@ public class ManagerImpl implements BeanManager, Referenceable
             throw new AmbiguousResolutionException("There are more than one WebBeans with name : " + name);
         }
 
-        component = (AbstractComponent<?>) set.iterator().next();
+        component = (AbstractBean<?>) set.iterator().next();
 
         object = getInstance(component);
 
@@ -531,14 +537,14 @@ public class ManagerImpl implements BeanManager, Referenceable
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
         Asserts.assertNotNull(context, "context parameter can not be null");
 
-        List<Context> contextList = ManagerImpl.contextMap.get(scopeType);
+        List<Context> contextList = BeanManagerImpl.contextMap.get(scopeType);
         
         if(contextList == null)
         {
             contextList = new CopyOnWriteArrayList<Context>();
             contextList.add(context);
             
-            ManagerImpl.contextMap.put(scopeType, contextList);
+            BeanManagerImpl.contextMap.put(scopeType, contextList);
         }
         else
         {
@@ -549,7 +555,7 @@ public class ManagerImpl implements BeanManager, Referenceable
 
     public Reference getReference() throws NamingException
     {
-        return new Reference(ManagerImpl.class.getName(), new StringRefAddr("ManagerImpl", "ManagerImpl"), ManagerObjectFactory.class.getName(), null);
+        return new Reference(BeanManagerImpl.class.getName(), new StringRefAddr("ManagerImpl", "ManagerImpl"), ManagerObjectFactory.class.getName(), null);
     }
 
     /**
@@ -871,6 +877,26 @@ public class ManagerImpl implements BeanManager, Referenceable
         {
             this.injectionResolver.checkInjectionPoints(injectionPoint);
         }        
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> Set<ObserverMethod<?, T>> resolveObserverMethods(T event, Annotation... bindings)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }    
         
 }
