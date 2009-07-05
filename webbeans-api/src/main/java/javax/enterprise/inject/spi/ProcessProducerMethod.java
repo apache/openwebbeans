@@ -21,7 +21,7 @@ package javax.enterprise.inject.spi;
  * @param <X> bean class
  * @param <T> producer return type
  */
-public interface ProcessProducerMethod<X, T> extends ProcessBean<X>
+public interface ProcessProducerMethod<X, T> extends ProcessBean<T>
 {
     /**
      * Returns annotated method.
