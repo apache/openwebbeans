@@ -48,6 +48,7 @@
             <item name="IRC" href="irc.html" />
             <item name="FAQ" href="faq.html" />
             <item name="Extensions" href="extensions/index.html" />
+            <item name="Download OWB" href="http://www.apache.org/dist/incubator/openwebbeans/" />
         </menu>
 
         <menu ref="modules" />
