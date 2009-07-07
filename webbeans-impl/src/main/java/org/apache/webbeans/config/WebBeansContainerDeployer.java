@@ -16,7 +16,9 @@ package org.apache.webbeans.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,15 +26,24 @@ import java.util.Set;
 
 import javax.enterprise.context.ScopeType;
 import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Producer;
 import javax.enterprise.inject.stereotype.Model;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.ProducerFieldBean;
+import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
+import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -43,6 +54,18 @@ import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.portable.creation.InjectionTargetProducer;
+import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
+import org.apache.webbeans.portable.events.ProcessBeanImpl;
+import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
+import org.apache.webbeans.portable.events.ProcessManagedBeanImpl;
+import org.apache.webbeans.portable.events.ProcessProducerFieldImpl;
+import org.apache.webbeans.portable.events.ProcessProducerImpl;
+import org.apache.webbeans.portable.events.ProcessProducerMethodImpl;
+import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
+import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
+import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
@@ -60,12 +83,20 @@ import org.apache.webbeans.xml.XMLSpecializesManager;
 @SuppressWarnings("unchecked")
 public class WebBeansContainerDeployer
 {
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansContainerDeployer.class);
+    //Logger instance
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansContainerDeployer.class);
 
+    /**Deployment is started or not*/
     protected boolean deployed = false;
 
+    /**XML Configurator*/
     protected WebBeansXMLConfigurator xmlConfigurator = null;
 
+    /**
+     * Creates a new deployer with given xml configurator.
+     * 
+     * @param xmlConfigurator xml configurator
+     */
     public WebBeansContainerDeployer(WebBeansXMLConfigurator xmlConfigurator)
     {
         this.xmlConfigurator = xmlConfigurator;
@@ -99,22 +130,35 @@ public class WebBeansContainerDeployer
                 JNDIService service = ServiceLoader.getService(JNDIService.class);
                 service.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, BeanManagerImpl.getManager());
 
+                //Fire Event
+                fireBeforeBeanDiscoveryEvent();
+                
+                //Deploy bean from XML. Also configures deployments, interceptors, decorators.
                 deployFromXML(scanner);
+                
+                //Checking stereotype conditions
                 checkStereoTypes(scanner);
+                
+                //Configure Interceptors
                 configureInterceptors(scanner);
+                
+                //Configure Decorators
                 configureDecorators(scanner);
+                                
+                //Discover classpath classes
                 deployFromClassPath(scanner);
                 
+                //Check Specialization
                 checkSpecializations(scanner);
                 
-                //Fire @Initialized Event
-                fireInitializeEvent();
+                //Fire Event
+                fireAfterBeanDiscoveryEvent();
                 
                 //Validate injection Points
                 validateInjectionPoints();
                 
-                //Fire @Deployed Event
-                fireDeployedEvent();
+                //Fire Event
+                fireAfterDeploymentValidationEvent();
                 
                 deployed = true;
             }
@@ -137,20 +181,37 @@ public class WebBeansContainerDeployer
         }
     }
     
-    private void fireInitializeEvent()
+    /**
+     * Fires event before bean discovery.
+     */
+    private void fireBeforeBeanDiscoveryEvent()
     {
-        //BeanManager manager = ManagerImpl.getManager();
-        //manager.fireEvent(manager, new Annotation[] { new BeforeBeanDiscoveryLiteral() });
+        BeanManager manager = BeanManagerImpl.getManager();
+        manager.fireEvent(new BeforeBeanDiscoveryImpl(),new Annotation[0]);
     }
     
-    
-    private void fireDeployedEvent()
+    /**
+     * Fires event after bean discovery.
+     */
+    private void fireAfterBeanDiscoveryEvent()
     {
-        //BeanManager manager = ManagerImpl.getManager();
-        //manager.fireEvent(manager, new Annotation[] { new AfterBeanDiscoveryLiteral() });        
+        BeanManager manager = BeanManagerImpl.getManager();
+        manager.fireEvent(new AfterBeanDiscoveryImpl(),new Annotation[0]);
         
     }
     
+    /**
+     * Fires event after deployment valdiation.
+     */
+    private void fireAfterDeploymentValidationEvent()
+    {
+        BeanManager manager = BeanManagerImpl.getManager();
+        manager.fireEvent(new AfterDeploymentValidationImpl(),new Annotation[0]);        
+    }
+    
+    /**
+     * Validate all injection points.
+     */
     private void validateInjectionPoints()
     {
         logger.info("Validation of injection points are started");
@@ -196,7 +257,11 @@ public class WebBeansContainerDeployer
         logger.info("All injection points are validated succesfully");
     }
     
-
+    /**
+     * Validates beans.
+     * 
+     * @param beans deployed beans
+     */
     private void validate(Set<Bean<?>> beans)
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
@@ -217,7 +282,12 @@ public class WebBeansContainerDeployer
         
     }
     
-
+    /**
+     * Discovers and deploys classes from class path.
+     * 
+     * @param scanner discovery scanner
+     * @throws ClassNotFoundException if class not found
+     */
     protected void deployFromClassPath(MetaDataDiscoveryService scanner) throws ClassNotFoundException
     {
         logger.info("Deploying configurations from class files is started");
@@ -242,10 +312,10 @@ public class WebBeansContainerDeployer
                     continue;
                 }
                 
-                if (SimpleWebBeansConfigurator.isSimpleWebBean(implClass))
+                if (ManagedBeanConfigurator.isSimpleWebBean(implClass))
                 {
                     logger.info("Simple WebBeans Component with class name : " + componentClassName + " is found");
-                    defineSimpleWebBeans(implClass);
+                    defineManagedBean(implClass);
                 }
                 else if (EJBWebBeansConfigurator.isEJBWebBean(implClass))
                 {
@@ -258,7 +328,15 @@ public class WebBeansContainerDeployer
         logger.info("Deploying configurations from class files is ended");
 
     }
-
+    
+    /**
+     * Discovers and deploys classes from XML.
+     * 
+     * NOTE : Currently XML file is just used for configuring.
+     * 
+     * @param scanner discovery scanner
+     * @throws WebBeansDeploymentException if exception
+     */
     protected void deployFromXML(MetaDataDiscoveryService scanner) throws WebBeansDeploymentException
     {
         logger.info("Deploying configurations from XML files is started");
@@ -298,7 +376,13 @@ public class WebBeansContainerDeployer
 
         logger.info("Deploying configurations from XML is ended succesfully");
     }
-
+    
+    /**
+     * Discovers and deploys interceptors.
+     * 
+     * @param scanner discovery scanner
+     * @throws ClassNotFoundException if class not found
+     */
     protected void configureInterceptors(MetaDataDiscoveryService scanner) throws ClassNotFoundException
     {
         logger.info("Configuring the Interceptors is started");
@@ -315,7 +399,7 @@ public class WebBeansContainerDeployer
 
                 logger.info("Simple WebBeans Interceptor Component with class name : " + interceptorClazz + " is found");
 
-                defineSimpleWebBeansInterceptors(implClass);
+                defineInterceptors(implClass);
             }
         }
 
@@ -323,6 +407,12 @@ public class WebBeansContainerDeployer
 
     }
 
+    /**
+     * Discovers and deploys decorators.
+     * 
+     * @param scanner discovery scanner
+     * @throws ClassNotFoundException if class not found
+     */
     protected void configureDecorators(MetaDataDiscoveryService scanner) throws ClassNotFoundException
     {
         logger.info("Configuring the Decorators is started");
@@ -337,7 +427,7 @@ public class WebBeansContainerDeployer
                 Class<?> implClass = ClassUtil.getClassFromName(decoratorClazz);
                 logger.info("Simple WebBeans Decorator Component with class name : " + decoratorClazz + " is found");
 
-                defineSimpleWebBeansDecorators(implClass);
+                defineDecorators(implClass);
             }
         }
 
@@ -500,22 +590,148 @@ public class WebBeansContainerDeployer
         StereoTypeManager.getInstance().addStereoTypeModel(model);        
     }
     
-    protected <T> void defineSimpleWebBeans(Class<T> clazz)
+    /**
+     * Defines and creates a new {@link ManagedBean}.
+     * 
+     * <p>
+     * It fires each event that is defined in the specification
+     * section 11.5, <b>Container Lifecycle Events</b>
+     * </p>
+     * 
+     * @param <T> bean class
+     * @param clazz managed bean class
+     */
+    protected <T> void defineManagedBean(Class<T> clazz)
     {
-        ManagedBean<T> component = null;
-
         if (!AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class) && !AnnotationUtil.isAnnotationExistOnClass(clazz, javax.decorator.Decorator.class))
         {
-            component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.SIMPLE);
-            if (component != null)
+            AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(clazz);
+                        
+            ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = new ProcessAnnotatedTypeImpl<T>(annotatedType);
+            
+            //Fires ProcessAnnotatedType
+            BeanManagerImpl.getManager().fireEvent(processAnnotatedEvent, new Annotation[0]);
+            
+            ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);            
+            ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
+            
+            if(processAnnotatedEvent.isVeto())
             {
-                BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewSimpleBeanComponent(component));
+                return;
+            }
+            
+            if(processAnnotatedEvent.isSet())
+            {
+                managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
+            }
+            
+            InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(managedBean);
+            ProcessInjectionTargetImpl<T> processInjectionTargetEvent = new ProcessInjectionTargetImpl<T>(injectionTarget,annotatedType);
+            
+            //Fires ProcessInjectionTarget
+            BeanManagerImpl.getManager().fireEvent(processInjectionTargetEvent, new Annotation[0]);
+            
+            if(processInjectionTargetEvent.isSet())
+            {
+                managedBeanCreator.setInjectedTarget(processInjectionTargetEvent.getInjectionTarget());
+            }
+            
+            Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();
+            Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods = new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>(); 
+            for(ProducerMethodBean<?> producerMethod : producerMethods)
+            {
+                AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), producerMethod.getParent().getReturnType());
+                ProcessProducerImpl<?, ?> producerEvent = new ProcessProducerImpl(method);
                 
-                DecoratorUtil.checkSimpleWebBeanDecoratorConditions(component);
+                //Fires ProcessProducer for methods
+                BeanManagerImpl.getManager().fireEvent(producerEvent, new Annotation[0]);
+                
+                annotatedMethods.put(producerMethod, method);
+                
+                if(producerEvent.isProducerSet())
+                {
+                    producerMethod.setProducer((Producer) managedBeanCreator.getProducer());
+                }
+                
+                producerEvent.setProducerSet(false);
+            }
+            
+            Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();
+            Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields = new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
+            for(ProducerFieldBean<?> producerField : producerFields)
+            {
+                AnnotatedField<?> field = AnnotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), producerField.getParent().getReturnType());
+                ProcessProducerImpl<?, ?> producerEvent = new ProcessProducerImpl(field);
+                
+                //Fires ProcessProducer for fields
+                BeanManagerImpl.getManager().fireEvent(producerEvent, new Annotation[0]);
+                
+                annotatedFields.put(producerField, field);
+                
+                if(producerEvent.isProducerSet())
+                {
+                    producerField.setProducer((Producer) managedBeanCreator.getProducer());
+                }
+                
+                producerEvent.setProducerSet(false);
+            }
 
-                /* I have added this into the ComponentImpl.afterCreate(); */
-                // DefinitionUtil.defineSimpleWebBeanInterceptorStack(component);
-                BeanManagerImpl.getManager().addBean(component);
+            ProcessBeanImpl<T> processBeanEvent = new ProcessManagedBeanImpl<T>(managedBean,annotatedType);
+            
+            //Fires ProcessManagedBean
+            BeanManagerImpl.getManager().fireEvent(processBeanEvent, new Annotation[0]);
+            
+            for(ProducerMethodBean<?> bean : annotatedMethods.keySet())
+            {
+                AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(bean);                
+                Method disposal = bean.getDisposalMethod();
+                AnnotatedMethod<?> disposalAnnotated = AnnotatedElementFactory.newAnnotatedMethod(disposal, bean.getParent().getReturnType());
+                
+                ProcessProducerMethodImpl<?, ?> processProducerMethodEvent = new ProcessProducerMethodImpl(bean,annotatedMethod,disposalAnnotated.getParameters().get(0));
+
+                //Fires ProcessProducer
+                BeanManagerImpl.getManager().fireEvent(processProducerMethodEvent, new Annotation[0]);
+            }
+            
+            for(ProducerFieldBean<?> bean : annotatedFields.keySet())
+            {
+                AnnotatedField<?> field = annotatedFields.get(bean);
+                
+                ProcessProducerFieldImpl<?, ?> processProducerFieldEvent = new ProcessProducerFieldImpl(bean,field);
+                
+                //Fire ProcessProducer
+                BeanManagerImpl.getManager().fireEvent(processProducerFieldEvent, new Annotation[0]);
+            }
+            
+            managedBeanCreator.defineSerializable();
+            managedBeanCreator.defineStereoTypes();
+            Class<? extends Annotation> deploymentType = managedBeanCreator.defineDeploymentType("There are more than one @DeploymentType annotation in ManagedBean implementation class : " + managedBean.getReturnType().getName());
+            managedBeanCreator.defineApiType();
+            managedBeanCreator.defineScopeType("ManagedBean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
+            managedBeanCreator.defineBindingType();
+            managedBeanCreator.defineName(WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
+            managedBeanCreator.defineConstructor();            
+            Set<ProducerMethodBean<?>> producerMethodBeans = annotatedMethods.keySet();        
+            Set<ProducerFieldBean<?>> producerFieldBeans = annotatedFields.keySet();            
+            managedBeanCreator.defineDisposalMethods();
+            managedBeanCreator.defineInjectedFields();
+            managedBeanCreator.defineInjectedMethods();
+            managedBeanCreator.defineObserverMethods();
+            
+            //Set InjectionTarget that is used by the container to inject dependencies!
+            if(managedBeanCreator.isInjectionTargetSet())
+            {
+                managedBean.setInjectionTarget(managedBeanCreator.getInjectedTarget());   
+            }
+            
+            // Check if the deployment type is enabled.
+            if (WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
+            {                
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewSimpleBeanComponent(managedBean));                
+                DecoratorUtil.checkSimpleWebBeanDecoratorConditions(managedBean);
+                BeanManagerImpl.getManager().addBean(managedBean);
+                BeanManagerImpl.getManager().getBeans().addAll(producerMethodBeans);
+                BeanManagerImpl.getManager().getBeans().addAll(producerFieldBeans);
             }
         }
     }
@@ -525,14 +741,14 @@ public class WebBeansContainerDeployer
      * 
      * @param clazz interceptor class
      */
-    protected <T> void defineSimpleWebBeansInterceptors(Class<T> clazz)
+    protected <T> void defineInterceptors(Class<T> clazz)
     {
-        WebBeansUtil.defineSimpleWebBeansInterceptors(clazz);
+        WebBeansUtil.defineInterceptors(clazz);
     }
 
-    protected <T> void defineSimpleWebBeansDecorators(Class<T> clazz)
+    protected <T> void defineDecorators(Class<T> clazz)
     {
-        WebBeansUtil.defineSimpleWebBeansDecorators(clazz);
+        WebBeansUtil.defineDecorators(clazz);
     }
 
     protected void defineEnterpriseWebBeans()

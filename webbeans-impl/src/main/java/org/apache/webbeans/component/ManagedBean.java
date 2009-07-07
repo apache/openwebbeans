@@ -32,7 +32,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T>
 
     public ManagedBean(Class<T> returnType)
     {
-        this(returnType, WebBeansType.SIMPLE);
+        this(returnType, WebBeansType.MANAGED);
     }
 
     /**

@@ -37,12 +37,12 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * @version $Rev$ $Date$
  */
-public final class SimpleWebBeansConfigurator
+public final class ManagedBeanConfigurator
 {
     /**
      * Private constructor.
      */
-    private SimpleWebBeansConfigurator()
+    private ManagedBeanConfigurator()
     {
 
     }
@@ -101,6 +101,7 @@ public final class SimpleWebBeansConfigurator
      * @param clazz Simple WebBean Component implementation class
      * @return the newly created Simple WebBean Component
      * @throws WebBeansConfigurationException if any configuration exception occurs
+     * @deprecated
      */
     public static <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
     {

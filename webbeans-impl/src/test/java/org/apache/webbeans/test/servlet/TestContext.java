@@ -40,7 +40,7 @@ import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.xml.XMLManagedBean;
-import org.apache.webbeans.config.SimpleWebBeansConfigurator;
+import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
@@ -314,7 +314,7 @@ public abstract class TestContext implements ITestContext
     {
         ManagedBean<T> bean = null;
 
-        bean = SimpleWebBeansConfigurator.define(clazz, WebBeansType.SIMPLE);
+        bean = ManagedBeanConfigurator.define(clazz, WebBeansType.MANAGED);
 
         if (bean != null)
         {
@@ -419,13 +419,13 @@ public abstract class TestContext implements ITestContext
     {
         ManagedBean<T> component = null;
 
-        SimpleWebBeansConfigurator.checkSimpleWebBeanCondition(clazz);
+        ManagedBeanConfigurator.checkSimpleWebBeanCondition(clazz);
         {
             // This is the interceptor class
             if (InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
             {
                 InterceptorUtil.checkInterceptorConditions(clazz);
-                component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
+                component = ManagedBeanConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
                 WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component, clazz.getDeclaredAnnotations());
             }
 
@@ -448,7 +448,7 @@ public abstract class TestContext implements ITestContext
         if (DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
         {
             DecoratorUtil.checkDecoratorConditions(clazz);
-            component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.DECORATOR);
+            component = ManagedBeanConfigurator.define(clazz, WebBeansType.DECORATOR);
 
             if (component != null)
             {

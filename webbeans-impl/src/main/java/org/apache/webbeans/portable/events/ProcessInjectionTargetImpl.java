@@ -27,13 +27,24 @@ import javax.enterprise.inject.spi.ProcessInjectionTarget;
 public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
 {
     /**Annotated type instance that is used by container to read meta-data*/
-    private AnnotatedType<X> annotatedType = null;
+    private final AnnotatedType<X> annotatedType;
     
     /**Injection target that is used by container to inject dependencies*/
     private InjectionTarget<X> injectionTarget = null;
     
     /**Injection target is set or not*/
     private boolean set = false;
+    
+    /**
+     * Creates a new instance.
+     * 
+     * @param injectionTarget injection target
+     */
+    public ProcessInjectionTargetImpl(InjectionTarget<X> injectionTarget, AnnotatedType<X> annotatedType)
+    {
+        this.injectionTarget = injectionTarget;
+        this.annotatedType = annotatedType;
+    }
     
     /**
      * {@inheritDoc}

@@ -14,6 +14,7 @@
 package org.apache.webbeans.portable.events;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ProcessSessionBean;
 import javax.enterprise.inject.spi.SessionBeanType;
 
@@ -27,14 +28,22 @@ import javax.enterprise.inject.spi.SessionBeanType;
 public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implements ProcessSessionBean<X>
 {
     /**Session bean annotated type*/
-    private AnnotatedType<X> annotatedBeanClass;
+    private final AnnotatedType<X> annotatedBeanClass;
     
     /**Ejb name*/
-    private String ejbName;
+    private final String ejbName;
     
     /**Session bean type*/
-    private SessionBeanType type;
+    private final SessionBeanType type;
 
+    public ProcessSessionBeanImpl(Bean<Object> bean, AnnotatedType<X> annotatedType, String name, SessionBeanType type)
+    {
+        super(bean, annotatedType);
+        this.annotatedBeanClass = annotatedType;
+        this.ejbName = name;
+        this.type = type;
+    }
+    
     /**
      * {@inheritDoc}
      */

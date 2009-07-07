@@ -91,7 +91,7 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
-import org.apache.webbeans.config.SimpleWebBeansConfigurator;
+import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
@@ -604,9 +604,9 @@ public final class WebBeansUtil
 
         NewBean<T> comp = null;
 
-        if (SimpleWebBeansConfigurator.isSimpleWebBean(clazz))
+        if (ManagedBeanConfigurator.isSimpleWebBean(clazz))
         {
-            comp = new NewBean<T>(clazz, WebBeansType.SIMPLE);
+            comp = new NewBean<T>(clazz, WebBeansType.MANAGED);
             comp.setConstructor(WebBeansUtil.defineConstructor(clazz));
 
             DefinitionUtil.defineInjectedFields(comp);
@@ -1787,14 +1787,14 @@ public final class WebBeansUtil
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void defineSimpleWebBeansInterceptors(Class<T> clazz)
+    public static <T> void defineInterceptors(Class<T> clazz)
     {
         if (InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
         {
             ManagedBean<T> component = null;
 
             InterceptorUtil.checkInterceptorConditions(clazz);
-            component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
+            component = ManagedBeanConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
 
             if (component != null)
             {
@@ -1805,14 +1805,14 @@ public final class WebBeansUtil
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void defineSimpleWebBeansDecorators(Class<T> clazz)
+    public static <T> void defineDecorators(Class<T> clazz)
     {
         if (DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
         {
             ManagedBean<T> component = null;
 
             DecoratorUtil.checkDecoratorConditions(clazz);
-            component = SimpleWebBeansConfigurator.define(clazz, WebBeansType.DECORATOR);
+            component = ManagedBeanConfigurator.define(clazz, WebBeansType.DECORATOR);
 
             if (component != null)
             {
@@ -1871,7 +1871,7 @@ public final class WebBeansUtil
     
     public static boolean isSimpleWebBeans(AbstractBean<?> component)
     {
-        if(component.getWebBeansType().equals(WebBeansType.SIMPLE) ||
+        if(component.getWebBeansType().equals(WebBeansType.MANAGED) ||
                 component.getWebBeansType().equals(WebBeansType.INTERCEPTOR) ||
                 component.getWebBeansType().equals(WebBeansType.DECORATOR))
         {

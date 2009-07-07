@@ -11,38 +11,22 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.portable.events;
-
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.ProcessManagedBean;
+package org.apache.webbeans.component.creation;
 
 import org.apache.webbeans.component.ManagedBean;
 
 /**
- * Implementation of {@link ProcessManagedBean}.
+ * Contract for {@link ManagedBean}.
  * 
  * @version $Rev$ $Date$
  *
- * @param <X> bean class info
+ * @param <T> bean class
  */
-public class ProcessManagedBeanImpl<X> extends ProcessBeanImpl<X> implements ProcessManagedBean<X>
+public interface ManagedBeanCreator<T> extends InjectedTargetBeanCreator<T>
 {
-    /**Annotated managed bean class*/
-    private final AnnotatedType<X> annotatedBeanClass;
-
-    public ProcessManagedBeanImpl(ManagedBean<X> bean, AnnotatedType<X> annotatedType)
-    {        
-        super(bean, annotatedType);
-        this.annotatedBeanClass = annotatedType;
-    }
-    
     /**
-     * {@inheritDoc}
+     * Define managed bean constructor.
      */
-    @Override
-    public AnnotatedType<X> getAnnotatedBeanClass()
-    {
-        return this.annotatedBeanClass;
-    }
-
+    public void defineConstructor();
+    
 }

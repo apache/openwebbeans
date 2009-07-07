@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.lifecycle;
 
+import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Executors;
@@ -40,6 +41,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.events.ExtensionLoader;
+import org.apache.webbeans.portable.events.discovery.BeforeShutDownImpl;
 import org.apache.webbeans.servlet.WebBeansConfigurationListener;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ServiceLoader;
@@ -188,6 +190,9 @@ public final class WebBeansLifeCycle
 
     public void applicationEnded(ServletContextEvent event)
     {
+        //Fire shut down
+        this.rootManager.fireEvent(new BeforeShutDownImpl(), new Annotation[0]);
+                
         service.shutdownNow();
 
         ContextFactory.destroyApplicationContext(event.getServletContext());

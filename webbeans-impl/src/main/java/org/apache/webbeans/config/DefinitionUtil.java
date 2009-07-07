@@ -48,8 +48,8 @@ import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.annotation.specific.Realizes;
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.BaseBean;
-import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.IBeanHasParent;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -560,7 +560,7 @@ public final class DefinitionUtil
      * @return the set of producer components
      * @throws WebBeansConfigurationException if any exception occurs
      */
-    public static Set<ProducerMethodBean<?>> defineProducerMethods(AbstractBean<?> component)
+    public static Set<ProducerMethodBean<?>> defineProducerMethods(AbstractInjectionTargetBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
@@ -815,7 +815,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void defineInjectedFields(ManagedBean<T> component)
+    public static <T> void defineInjectedFields(AbstractInjectionTargetBean<T> component)
     {
         Class<T> clazz = component.getReturnType();
 
@@ -828,7 +828,7 @@ public final class DefinitionUtil
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> void defineInternalInjectedFieldsRecursively(ManagedBean<T> component, Class<T> clazz)
+    private static <T> void defineInternalInjectedFieldsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
     {
         // From inheritance
         Class<?> superClazz = clazz.getSuperclass();
@@ -843,7 +843,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void defineInternalInjectedFields(ManagedBean<T> component, Class<T> clazz, boolean fromSuperClazz)
+    private static <T> void defineInternalInjectedFields(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromSuperClazz)
     {
 
         Field[] fields = clazz.getDeclaredFields();
@@ -932,7 +932,7 @@ public final class DefinitionUtil
 
     }
 
-    public static <T> void defineInjectedMethods(ManagedBean<T> component)
+    public static <T> void defineInjectedMethods(AbstractInjectionTargetBean<T> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
@@ -946,7 +946,7 @@ public final class DefinitionUtil
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> void defineInternalInjectedMethodsRecursively(ManagedBean<T> component, Class<T> clazz)
+    private static <T> void defineInternalInjectedMethodsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
     {
         // From inheritance
         Class<?> superClazz = clazz.getSuperclass();
@@ -961,7 +961,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void defineInternalInjectedMethods(ManagedBean<T> component, Class<T> clazz, boolean fromInherited)
+    private static <T> void defineInternalInjectedMethods(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromInherited)
     {
 
         Method[] methods = clazz.getDeclaredMethods();
@@ -1031,7 +1031,7 @@ public final class DefinitionUtil
     /**
      * add the definitions for a &#x0040;Initializer method.
      */
-    private static <T> void checkForInjectedInitializerMethod(ManagedBean<T> component, Class<T> clazz, Method method)
+    private static <T> void checkForInjectedInitializerMethod(AbstractInjectionTargetBean<T> component, Class<T> clazz, Method method)
     {
         Annotation[][] anns = method.getParameterAnnotations();
         Type[] type = method.getGenericParameterTypes();
@@ -1055,7 +1055,7 @@ public final class DefinitionUtil
     /**
      * add the definitions for a &#x0040;Initializer method.
      */
-    private static <T> void checkForValidResourceMethod(ManagedBean<T> component, Class<T> clazz, Method method)
+    private static <T> void checkForValidResourceMethod(AbstractInjectionTargetBean<T> component, Class<T> clazz, Method method)
     {
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (parameterTypes == null || parameterTypes.length != 1)

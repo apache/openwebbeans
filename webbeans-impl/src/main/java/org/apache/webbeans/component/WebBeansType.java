@@ -45,8 +45,8 @@ import javax.enterprise.inject.Produces;
  */
 public enum WebBeansType
 {
-    SIMPLE, 
-    PRODUCER, 
+    MANAGED, 
+    PRODUCERMETHOD, 
     PRODUCERFIELD,
     NEW, 
     ENTERPRISE, 

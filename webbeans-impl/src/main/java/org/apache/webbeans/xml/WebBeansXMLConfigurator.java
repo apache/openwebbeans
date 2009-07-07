@@ -51,7 +51,7 @@ import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.SimpleWebBeansConfigurator;
+import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
@@ -539,7 +539,7 @@ public final class WebBeansXMLConfigurator
         else
         {
             /* Simple WebBeans */
-            if (SimpleWebBeansConfigurator.isSimpleWebBean(clazz))
+            if (ManagedBeanConfigurator.isSimpleWebBean(clazz))
             {
                 // Configure Simple WebBean
                 configureSimpleWebBean(clazz, webBeanElement);

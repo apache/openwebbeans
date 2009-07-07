@@ -17,6 +17,8 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 
+import org.apache.webbeans.component.ProducerMethodBean;
+
 /**
  * Implementation of {@link ProcessProducerMethod}.
  * 
@@ -28,11 +30,18 @@ import javax.enterprise.inject.spi.ProcessProducerMethod;
 public class ProcessProducerMethodImpl<X,T> extends ProcessBeanImpl<T> implements ProcessProducerMethod<X, T>
 {
     /**Disposed parameter*/
-    private AnnotatedParameter<X> annotatedDisposedParameter;
+    private final AnnotatedParameter<X> annotatedDisposedParameter;
     
     /**Producer method*/
-    private AnnotatedMethod<X> annotatedProducerMethod;
+    private final AnnotatedMethod<X> annotatedProducerMethod;
 
+    public ProcessProducerMethodImpl(ProducerMethodBean<T> bean, AnnotatedMethod<X> method, AnnotatedParameter<X> disposeParameter)
+    {
+        super(bean, method);
+        this.annotatedProducerMethod = method;
+        this.annotatedDisposedParameter = disposeParameter;
+    }
+    
     /**
      * {@inheritDoc}
      */

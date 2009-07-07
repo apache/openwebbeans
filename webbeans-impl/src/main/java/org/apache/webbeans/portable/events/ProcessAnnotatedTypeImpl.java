@@ -35,6 +35,16 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     private boolean set = false;
 
     /**
+     * Creates a new instance with the given annotated type.
+     * 
+     * @param annotatedType annotated type
+     */
+    public ProcessAnnotatedTypeImpl(AnnotatedType<X> annotatedType)
+    {
+        this.annotatedType = annotatedType;
+    }
+    
+    /**
      * {@inheritDoc}
      */
     @Override

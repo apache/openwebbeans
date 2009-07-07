@@ -27,10 +27,16 @@ import javax.enterprise.inject.spi.ProcessBean;
 public  abstract class ProcessBeanImpl<X> implements ProcessBean<X>
 {
     /**Annotated instance. Can be AnnotatedType, AnnotatedMethod or AnnotatedField*/
-    private Annotated annotated;
+    private final Annotated annotated;
     
     /**ManagedBean, SessionBean, ProducerMethodBean, ProducerFieldBean*/
-    private Bean<X> bean;
+    private final Bean<X> bean;
+    
+    protected ProcessBeanImpl(Bean<X> bean, Annotated annotated)
+    {
+        this.bean = bean;
+        this.annotated = annotated;
+    }
     
     /**
      * {@inheritDoc}

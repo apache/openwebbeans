@@ -13,7 +13,6 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -21,7 +20,6 @@ import java.lang.reflect.Type;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.InjectableMethods;
@@ -32,7 +30,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * <p>
  * It is defined as producer method component.
  * </p>
- *
+ * 
  * @version $Rev$ $Date$
  */
 public class ProducerMethodBean<T> extends AbstractProducerBean<T>
@@ -43,14 +41,18 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     /** Disposal method */
     protected Method disposalMethod;
 
+    /** @deprecated*/ /*, Realizations are removed from the specification*/
     protected boolean fromRealizes;
 
-    /*
-     * Constructor
+    /**
+     * Creates a new instance.
+     * 
+     * @param parent parent bean
+     * @param returnType producer method return type
      */
     public ProducerMethodBean(AbstractBean<?> parent, Class<T> returnType)
     {
-        super(WebBeansType.PRODUCER, returnType, parent);
+        super(WebBeansType.PRODUCERMETHOD, returnType, parent);
     }
 
     /**
@@ -97,6 +99,11 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         this.disposalMethod = disposalMethod;
     }
 
+    /**
+     * Gets actual type arguments.
+     * 
+     * @return actual type arguments
+     */
     public Type[] getActualTypeArguments()
     {
         Type type = creatorMethod.getGenericReturnType();
@@ -113,25 +120,51 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
 
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.webbeans.component.AbstractComponent#createInstance()
+    /**
+     * {@inheritDoc}
      */
     @Override
     protected T createInstance(CreationalContext<T> creationalContext)
+    {
+        T instance = null;
+
+        if (isProducerSet())
+        {
+            instance = getProducer().produce(creationalContext);
+        }
+        else
+        {
+            instance = createDefaultInstance(creationalContext);
+        }
+
+        // Check null instance
+        checkNullInstance(instance);
+
+        // Check scope type
+        checkScopeType();
+        return instance;
+    }
+
+    /**
+     * Default producer method creation.
+     * 
+     * @param creationalContext creational context
+     * @return producer method instance
+     */
+    protected T createDefaultInstance(CreationalContext<T> creationalContext)
     {
         T instance = null;
         Object parentInstance = null;
 
         try
         {
-            if(!Modifier.isStatic(creatorMethod.getModifiers()))
+            if (!Modifier.isStatic(creatorMethod.getModifiers()))
             {
                 parentInstance = getParentInstance();
             }
-            
+
             InjectableMethods<T> m = new InjectableMethods<T>(creatorMethod, parentInstance, this, null);
-            
+
             instance = m.doInjection();
 
         }
@@ -139,58 +172,58 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         {
             if (getParent().getScopeType().equals(Dependent.class))
             {
-                destroyBean(getParent(), parentInstance);                
+                destroyBean(getParent(), parentInstance);
             }
         }
 
-        checkNullInstance(instance);
-        checkScopeType();
-
         return instance;
+
     }
 
-    @SuppressWarnings("unchecked")
-    protected <K> void destroyBean(Bean<?> bean, Object instance)
-    {
-        Bean<K> destroy = (Bean<K>) bean;
-        K inst = (K) instance;
-
-        CreationalContext<K> cc = (CreationalContext<K>)this.creationalContext;
-        
-        destroy.destroy(inst,cc);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.webbeans.component.AbstractComponent#destroyInstance(java.
-     * lang.Object)
+    /**
+     * {@inheritDoc}
      */
     @Override
     protected void destroyInstance(T instance)
     {
         dispose(instance);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void dispose(T instance)
     {
+        if (isProducerSet())
+        {
+            getProducer().dispose(instance);
+        }
+        else
+        {
+            disposeDefault(instance);
+        }
+    }
+
+    /**
+     * Default dispose method used.
+     * 
+     * @param instance bean instance
+     */
+    protected void disposeDefault(T instance)
+    {
         if (disposalMethod != null)
         {
             Object parentInstance = null;
-            
+
             try
             {
-                if(!Modifier.isStatic(disposalMethod.getModifiers()))
+                if (!Modifier.isStatic(disposalMethod.getModifiers()))
                 {
                     parentInstance = getParentInstance();
                 }
 
+                InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, this.ownerComponent, null);
 
-                InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, this.ownerComponent,null);
-                
                 m.doInjection();
 
             }
@@ -202,41 +235,23 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
 
                 }
             }
-        }        
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Object getParentInstance()
-    {
-        //return getManager().getInstance(this.ownerComponent);
-        
-        Object parentInstance = null;
-        
-        //Added for most specialized bean
-        Annotation[] anns = new Annotation[this.ownerComponent.getBindings().size()];
-        anns = this.ownerComponent.getBindings().toArray(anns);
-        
-        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractBean<T>)this.ownerComponent);
-        
-        if(specialize != null)
-        {
-            parentInstance = getManager().getReference(specialize, null, null);
         }
-        else
-        {
-            parentInstance = getManager().getReference(this.ownerComponent, null, null);
-        }
-        
-        return parentInstance;
-        
     }
-
+    
+    /**
+     * Check null control.
+     * 
+     * @param instance bean instance
+     */
     protected void checkNullInstance(Object instance)
     {
         String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.ownerComponent.getReturnType().getName() + " scope type must be @Dependent to create null instance";
         WebBeansUtil.checkNullInstance(instance, this.getScopeType(), errorMessage);
     }
 
+    /**
+     * Check passivation check.
+     */
     protected void checkScopeType()
     {
         String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.ownerComponent.getReturnType().getName() + " with passivating scope @" + this.getScopeType().getName() + " must be Serializable";
@@ -245,6 +260,8 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     }
 
     /**
+     * Returns fromRealize.
+     * 
      * @return the fromRealizes
      */
     public boolean isFromRealizes()
@@ -253,6 +270,8 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     }
 
     /**
+     * Set fromRealize.
+     * 
      * @param fromRealizes the fromRealizes to set
      */
     public void setFromRealizes(boolean fromRealizes)

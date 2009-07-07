@@ -16,6 +16,8 @@ package org.apache.webbeans.portable.events;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.ProcessProducerField;
 
+import org.apache.webbeans.component.ProducerFieldBean;
+
 /**
  * Implementation of the {@link ProcessProducerField}.
  * 
@@ -27,8 +29,14 @@ import javax.enterprise.inject.spi.ProcessProducerField;
 public class ProcessProducerFieldImpl<X,T> extends ProcessBeanImpl<T> implements ProcessProducerField<X, T>
 {
     /**Annotated field*/
-    private AnnotatedField<X> annotatedField;
+    private final AnnotatedField<X> annotatedField;
 
+    public ProcessProducerFieldImpl(ProducerFieldBean<T> bean, AnnotatedField<X> annotatedField)
+    {
+        super(bean, annotatedField);
+        this.annotatedField = annotatedField;
+    }
+    
     /**
      * {@inheritDoc}
      */

@@ -28,7 +28,7 @@ import javax.enterprise.inject.spi.Producer;
 public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
 {
     /**Annotated method or annotated field according to producer method or field*/
-    private AnnotatedMember<X> annotateMember = null;
+    private final AnnotatedMember<X> annotateMember;
     
     /**Used by container to produce instance for producer method or field*/
     private Producer<T> producer = null;
@@ -36,6 +36,11 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     /**Set or not*/
     private boolean set;
 
+    public ProcessProducerImpl(AnnotatedMember<X> annotateMember)
+    {
+        this.annotateMember = annotateMember;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -79,9 +84,14 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
      * 
      * @return set or not
      */
-    public boolean isSet()
+    public boolean isProducerSet()
     {
         return this.set;
+    }
+    
+    public void setProducerSet(boolean set)
+    {
+        this.set = set;
     }
 
 }

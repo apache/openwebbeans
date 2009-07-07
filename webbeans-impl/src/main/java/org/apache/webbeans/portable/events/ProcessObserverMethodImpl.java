@@ -28,11 +28,17 @@ import javax.enterprise.inject.spi.ProcessObserverMethod;
 public class ProcessObserverMethodImpl<X,T> implements ProcessObserverMethod<X, T>
 {
     /**Observer annotated method*/
-    private AnnotatedMethod<X> annotatedMethod;
+    private final AnnotatedMethod<X> annotatedMethod;
     
     /**ObserverMethod instance*/
-    private ObserverMethod<X, T> observerMethod;
+    private final ObserverMethod<X, T> observerMethod;
 
+    public ProcessObserverMethodImpl(AnnotatedMethod<X> annotatedMethod,ObserverMethod<X, T> observerMethod)
+    {
+        this.annotatedMethod = annotatedMethod;
+        this.observerMethod = observerMethod;
+    }
+    
     /**
      * {@inheritDoc}
      */
