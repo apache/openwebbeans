@@ -314,7 +314,7 @@ public final class WebBeansUtil
         List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
         for (OpenWebBeansPlugin plugin : plugins)
         {
-            plugin.isSimpleBeanClass(clazz);
+            plugin.isManagedBean(clazz);
         }
     }
 

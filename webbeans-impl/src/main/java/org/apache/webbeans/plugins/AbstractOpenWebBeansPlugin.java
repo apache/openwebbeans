@@ -70,7 +70,7 @@ public abstract class AbstractOpenWebBeansPlugin implements OpenWebBeansPlugin
     /* (non-Javadoc)
      * @see org.apache.webbeans.plugins.OpenWebBeansPlugin#isSimpleBeanClass(java.lang.Class)
      */
-    public void isSimpleBeanClass(Class<?> clazz) throws WebBeansConfigurationException
+    public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
     {
         
         

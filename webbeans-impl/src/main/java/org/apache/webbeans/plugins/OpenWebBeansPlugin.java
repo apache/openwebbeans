@@ -68,7 +68,7 @@ public interface OpenWebBeansPlugin
      * @param clazz the class to check
      * @throws WebBeansConfigurationException if the given clazz cannot be used as simple web bean.
      */
-    public void isSimpleBeanClass(Class<?> clazz) throws WebBeansConfigurationException;
+    public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException;
     
     /**
      * If plugins applicable, it adds the component for the given {@code InjectionPoint}
