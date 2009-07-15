@@ -35,6 +35,7 @@ public final class EjbDefinitionUtility
         
     }
 
+    @SuppressWarnings("unchecked")
     public static void defineApiType(EjbBean<?> ejbComponent)
     {        
         EjbBeanCreatorImpl<?> creator = new EjbBeanCreatorImpl(ejbComponent);
