@@ -62,6 +62,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
         if(isDefaultMetaDataProvider())
         {
             Constructor<T> constructor = WebBeansUtil.defineConstructor(getBean().getReturnType());
+            getBean().setConstructor(constructor);
             DefinitionUtil.addConstructorInjectionPointMetaData(getBean(), constructor);
         }
         else

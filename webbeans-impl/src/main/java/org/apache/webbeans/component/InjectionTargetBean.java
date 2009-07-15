@@ -79,6 +79,7 @@ public interface InjectionTargetBean<T>
      * @param instance bean instance
      */
     public void preDestroy(T instance);
+        
     
     /**
      * Returns true if coming from <pre>@Realization</pre>.

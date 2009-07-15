@@ -22,7 +22,6 @@ import java.util.List;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.AbstractBean;
-import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.util.Asserts;
@@ -68,15 +67,12 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
 
         try
         {
-            if (!EJBUtil.isEJBSessionClass(con.getDeclaringClass()))
+            if(!con.isAccessible())
             {
-                if(!con.isAccessible())
-                {
-                    con.setAccessible(true);
-                }
-                
-                instance = con.newInstance(list.toArray());
+                con.setAccessible(true);
             }
+            
+            instance = con.newInstance(list.toArray());
 
         }
         catch (Exception e)

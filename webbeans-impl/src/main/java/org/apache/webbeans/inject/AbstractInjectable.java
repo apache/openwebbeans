@@ -94,7 +94,7 @@ public abstract class AbstractInjectable implements Injectable
         
         if (component.getScopeType().equals(Dependent.class))
         {
-            if(WebBeansUtil.isSimpleWebBeans(this.injectionOwnerComponent))
+            if(WebBeansUtil.isManagedBean(this.injectionOwnerComponent))
             {
                 return injectForDependent(component,injectionPoint);   
             }                

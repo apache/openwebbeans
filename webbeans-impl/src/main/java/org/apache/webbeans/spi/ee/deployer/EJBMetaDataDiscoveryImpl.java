@@ -16,7 +16,16 @@
  */
 package org.apache.webbeans.spi.ee.deployer;
 
-public interface EJBMetaDataDiscoveryImpl
+import org.apache.webbeans.spi.deployer.AbstractMetaDataDiscovery;
+
+public class EJBMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
 {
+
+    @Override
+    protected void configure() throws Exception
+    {
+        
+        
+    }
 
 }

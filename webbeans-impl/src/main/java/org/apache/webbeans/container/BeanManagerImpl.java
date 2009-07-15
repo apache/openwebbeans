@@ -58,6 +58,7 @@ import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
@@ -72,6 +73,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -285,10 +287,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public void fireEvent(Object event, Annotation... bindings)
     {
-        if (ClassUtil.isDefinitionConstainsTypeVariables(event.getClass()))
-        {
-            throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
-        }
+//        if (ClassUtil.isDefinitionConstainsTypeVariables(event.getClass()))
+//        {
+//            throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
+//        }
 
         this.notificationManager.fireEvent(event, bindings);
     }
@@ -320,33 +322,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
     {
-        T instance = null;
-        
-        if(injectionPoint == null)
-        {
-            return null;
-        }
-                
-        Annotation[] bindings = new Annotation[injectionPoint.getBindings().size()];
-        bindings = injectionPoint.getBindings().toArray(bindings);
-        
-        //Find the injection point Bean
-        Bean<?> bean = injectionResolver.getInjectionPointBean(injectionPoint);
-        
-        if(context != null && (context instanceof CreationalContextImpl))
-        {
-            CreationalContextImpl<T> creationalContext = (CreationalContextImpl<T>)context;
-            
-            instance = (T)creationalContext.get(bean);
-            
-        }
-        
-        if(instance == null)
-        {
-            instance = (T) getInstance(bean);
-        }
-        
-        return instance;
+        return (T)getInjectableReference(injectionPoint, context);
     }
     
     public Object getInstanceToInject(InjectionPoint injectionPoint)
@@ -624,6 +600,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return new WebBeansELResolver();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> context)
     {
@@ -647,10 +626,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             instance = creationalContext.get(bean);
             
         }
-        
+                
         if(instance == null)
         {
-            instance = getInstance(bean);
+            instance = getReference(bean, injectionPoint.getType(), context);
         }
         
         return instance;
@@ -688,12 +667,24 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> ctx)
     {
+        if(beanType != null)
+        {
+            if(!bean.getTypes().contains(beanType))
+            {
+                throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
+            }
+            
+        }
+
         Context context = null;
         Object instance = null;
-
+                
         CreationalContext<Object> creationalContext = (CreationalContext<Object>)ctx;
         
         if(ctx == null)
@@ -701,9 +692,16 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
         }
         
+        if(bean instanceof EnterpriseBeanMarker)
+        {
+            return PluginLoader.getInstance().getEjbPlugin().getProxy(bean);
+        }
+        
+        
         /* @ScopeType is normal */
         if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
         {
+            
             if (this.proxyMap.containsKey(bean))
             {
                 instance = this.proxyMap.get(bean);

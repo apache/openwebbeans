@@ -55,7 +55,6 @@ import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
-import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.NonexistentConstructorException;
 import org.apache.webbeans.exception.definition.NonexistentFieldException;
@@ -71,6 +70,8 @@ import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
+import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -530,7 +531,8 @@ public final class WebBeansXMLConfigurator
         boolean ok = false;
 
         /* Enterprise WebBean */
-        if (EJBUtil.isEJBClass(clazz))
+        OpenWebBeansEjbPlugin plugin = PluginLoader.getInstance().getEjbPlugin();
+        if (plugin != null && plugin.isEjbClass(clazz))
         {
             // Configure for EJB
             configureEJBWebBean(clazz);
@@ -1528,13 +1530,15 @@ public final class WebBeansXMLConfigurator
         List<Annotation> bindingTypes = new ArrayList<Annotation>();
         for(Element child : childs)
         {
-            Class<? extends Annotation> binding = (Class<Annotation>)XMLUtil.getElementJavaType(child);
-            
-            if(AnnotationUtil.isBindingAnnotation(binding))
+            if(child.getName() != WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE)
             {
-                bindingTypes.add(JavassistProxyFactory.createNewAnnotationProxy(binding));                
-            }
-            
+                Class<? extends Annotation> binding = (Class<Annotation>)XMLUtil.getElementJavaType(child);
+                
+                if(AnnotationUtil.isBindingAnnotation(binding))
+                {
+                    bindingTypes.add(JavassistProxyFactory.createNewAnnotationProxy(binding));                
+                }                
+            }            
         }
                         
         JMSType type = null;

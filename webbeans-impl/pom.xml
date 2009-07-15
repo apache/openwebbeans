@@ -36,10 +36,12 @@
 		<dependency>
 		    <groupId>org.apache.geronimo.specs</groupId>
 		    <artifactId>geronimo-jaxws_2.1_spec</artifactId>
+		    <optional>true</optional>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.geronimo.specs</groupId>
 		    <artifactId>geronimo-servlet_2.5_spec</artifactId>
+		    <optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>dom4j</groupId>
@@ -47,11 +49,8 @@
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.geronimo.specs</groupId>
-		    <artifactId>geronimo-ejb_3.0_spec</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.geronimo.specs</groupId>
 		    <artifactId>geronimo-el_1.0_spec</artifactId>
+		    <optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>javassist</groupId>
@@ -61,34 +60,42 @@
 			<groupId>net.sf.scannotation</groupId>
 			<artifactId>scannotation</artifactId>
 		</dependency>
-
 		<dependency>
 		    <groupId>javax.annotation</groupId>
 		    <artifactId>jsr250-api</artifactId>
+		    <optional>true</optional>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.geronimo.specs</groupId>
 		    <artifactId>geronimo-interceptor_3.0_spec</artifactId>
+		    <optional>true</optional>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.geronimo.specs</groupId>
 		    <artifactId>geronimo-jta_1.1_spec</artifactId>
+		    <optional>true</optional>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.geronimo.specs</groupId>
 		    <artifactId>geronimo-jsp_2.1_spec</artifactId>
+		    <optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-api</artifactId>
 		</dependency>
-
-        <!-- the following dependencies are needed for tests only -->  
-        <dependency>
+		<dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>      
+        </dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-ejb_3.0_spec</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+        <!-- the following dependencies are needed for tests only -->      
 	</dependencies>
 
     <build>

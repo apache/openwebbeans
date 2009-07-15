@@ -119,7 +119,16 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     @Override
     public Class<? extends Annotation> defineDeploymentType(String errorMessage)
     {
-        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(this.bean, this.beanAnnotations, errorMessage);
+        Class<? extends Annotation> deploymentType = null;
+        
+        if(isDefaultMetaDataProvider())
+        {
+            deploymentType = DefinitionUtil.defineDeploymentType(this.bean, this.beanAnnotations, errorMessage);
+        }
+        else
+        {
+            //TODO Define deployment type
+        }
         
         return deploymentType;
     }

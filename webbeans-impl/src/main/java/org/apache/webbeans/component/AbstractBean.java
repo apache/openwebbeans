@@ -564,6 +564,11 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         return set;
     }
     
+    public CreationalContext<T> getCreationalContext()
+    {
+        return this.creationalContext;
+    }
+    
     //TODO Replaces @Deploymeny Types, no starting work for now!
     public boolean isPolicy()
     {

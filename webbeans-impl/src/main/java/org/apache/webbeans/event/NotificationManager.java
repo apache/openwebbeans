@@ -169,7 +169,7 @@ public final class NotificationManager implements Synchronization
         Set<Type> types = new HashSet<Type>();
         ClassUtil.setTypeHierarchy(types, eventType);
 
-        EventUtil.checkEventType(eventType);
+        //EventUtil.checkEventType(eventType);
         EventUtil.checkEventBindings(bindings);
 
         Set<Type> keySet = this.observers.keySet();

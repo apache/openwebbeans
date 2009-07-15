@@ -59,8 +59,10 @@ public class InterceptorHandler implements MethodHandler, Serializable
     @SuppressWarnings("unchecked")
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
+        //Context of the bean
         Context webbeansContext = BeanManagerImpl.getManager().getContext(component.getScopeType());
         
+        //Get bean instance from context
         Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)CreationalContextFactory.getInstance().getCreationalContext(this.component));
         
         //toString is supported but no other object method names!!!

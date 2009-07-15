@@ -784,17 +784,28 @@ public final class ClassUtil
         else if(beanType instanceof ParameterizedType && requiredType instanceof Class)
         {
             boolean ok = true;
-            Type[]  beanTypeArgs = ((ParameterizedType)beanType).getActualTypeArguments();               
-            for(Type actual : beanTypeArgs)
+            ParameterizedType ptBean = (ParameterizedType)beanType;
+            Class<?> clazzBeanType = (Class<?>)ptBean.getRawType();
+            Class<?> clazzReqType = (Class<?>)requiredType;
+            if(isAssignable(clazzReqType, clazzBeanType ))
             {
-                if(!ClassUtil.isUnboundedTypeVariable(actual))
+                Type[]  beanTypeArgs = ptBean.getActualTypeArguments();               
+                for(Type actual : beanTypeArgs)
                 {
-                    if(actual instanceof Class)
+                    if(!ClassUtil.isUnboundedTypeVariable(actual))
                     {
-                        Class<?> clazz = (Class<?>)actual;
-                        if(clazz.equals(Object.class))
+                        if(actual instanceof Class)
                         {
-                            continue;
+                            Class<?> clazz = (Class<?>)actual;
+                            if(clazz.equals(Object.class))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                ok = false;
+                                break;
+                            }
                         }
                         else
                         {
@@ -802,13 +813,13 @@ public final class ClassUtil
                             break;
                         }
                     }
-                    else
-                    {
-                        ok = false;
-                        break;
-                    }
-                }
+                }                
             }
+            else
+            {
+                ok = false;
+            }
+            
             
             return ok;
         }

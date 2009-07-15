@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -56,6 +57,9 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
@@ -77,7 +81,9 @@ import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.annotation.StandardLiteral;
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.BaseBean;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ConversationBean;
 import org.apache.webbeans.component.ExtensionBean;
@@ -100,8 +106,6 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
-import org.apache.webbeans.ejb.EJBUtil;
-import org.apache.webbeans.ejb.orm.ORMUtil;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -117,11 +121,19 @@ import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.portable.creation.InjectionTargetProducer;
+import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
+import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
+import org.apache.webbeans.portable.events.ProcessProducerFieldImpl;
+import org.apache.webbeans.portable.events.ProcessProducerImpl;
+import org.apache.webbeans.portable.events.ProcessProducerMethodImpl;
 
 /**
  * Contains some utility methods used in the all project.
  * @version $Rev$ $Date$ 
  */
+@SuppressWarnings("unchecked")
 public final class WebBeansUtil
 {
     // No instantiate
@@ -274,7 +286,7 @@ public final class WebBeansUtil
         if (!ClassUtil.isConcrete(clazz) && !AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class))
             throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " have to be concrete if not defines as @Decorator");
 
-        if (EJBUtil.isEJBClass(clazz))
+        if (PluginLoader.getInstance().getEjbPlugin() != null && PluginLoader.getInstance().getEjbPlugin().isEjbClass(clazz))
             throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be EJB class");
 
         if (ClassUtil.isAssignable(Servlet.class, clazz))
@@ -294,14 +306,6 @@ public final class WebBeansUtil
 
         if (ClassUtil.isAssignable(EnterpriseBean.class, clazz))
             throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement EnterpriseBean");
-
-        // TODO ejb-jar.xml check
-        if (EJBUtil.isDefinedInXML(clazz.getName()))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not defined in the ejb-jar.xml");
-
-        // TODO orm.xml check
-        if (ORMUtil.isDefinedInXML(clazz.getName()))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not defined in orm.xml");
 
         if (!isConstructureOk(clazz))
             throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " must define at least one Constructor");
@@ -1047,7 +1051,7 @@ public final class WebBeansUtil
      * @param type interceptor type
      * @return list of interceptor
      */
-    @SuppressWarnings("unchecked")
+    
     public static List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptorType type)
     {
         List<InterceptorData> ai = new ArrayList<InterceptorData>();
@@ -1786,7 +1790,7 @@ public final class WebBeansUtil
         }
     }
 
-    @SuppressWarnings("unchecked")
+    
     public static <T> void defineInterceptors(Class<T> clazz)
     {
         if (InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
@@ -1804,7 +1808,7 @@ public final class WebBeansUtil
 
     }
 
-    @SuppressWarnings("unchecked")
+    
     public static <T> void defineDecorators(Class<T> clazz)
     {
         if (DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
@@ -1869,7 +1873,7 @@ public final class WebBeansUtil
         }
     }
     
-    public static boolean isSimpleWebBeans(AbstractBean<?> component)
+    public static boolean isManagedBean(AbstractBean<?> component)
     {
         if(component.getWebBeansType().equals(WebBeansType.MANAGED) ||
                 component.getWebBeansType().equals(WebBeansType.INTERCEPTOR) ||
@@ -1908,7 +1912,7 @@ public final class WebBeansUtil
         BeanManagerImpl.getManager().addBean(bean);                  
     }
     
-    @SuppressWarnings("unchecked")
+    
     public static <T> void addInjectedImplicitInstanceComponent(InjectionPoint injectionPoint)
     {
         ParameterizedType genericType = (ParameterizedType)injectionPoint.getType();
@@ -1952,7 +1956,117 @@ public final class WebBeansUtil
             return false;
         }
         
-        return true;
+        return true;        
+    }
+    
+    /**
+     * Returns <code>ProcessAnnotatedType</code> event. 
+     * @param <T> bean type
+     * @param clazz bean class
+     * @return event
+     */
+    public static <T> ProcessAnnotatedTypeImpl<T> fireProcessAnnotatedTypeEvent(AnnotatedType<T> annotatedType)
+    {                
+        ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = new ProcessAnnotatedTypeImpl<T>(annotatedType);
         
+        //Fires ProcessAnnotatedType
+        BeanManagerImpl.getManager().fireEvent(processAnnotatedEvent, new Annotation[0]);
+        
+        return processAnnotatedEvent;        
+    }
+    
+    /**
+     * Returns <code>ProcessInjectionTarget</code> event.
+     * @param <T> bean type
+     * @param bean bean instance
+     * @return event
+     */
+    public static <T> ProcessInjectionTargetImpl<T> fireProcessInjectionTargetEvent(AbstractInjectionTargetBean<T> bean)
+    {
+        AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(bean.getReturnType());
+        InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(bean);
+        ProcessInjectionTargetImpl<T> processInjectionTargetEvent = new ProcessInjectionTargetImpl<T>(injectionTarget,annotatedType);
+        
+        //Fires ProcessInjectionTarget
+        BeanManagerImpl.getManager().fireEvent(processInjectionTargetEvent, new Annotation[0]);
+        
+        return processInjectionTargetEvent;
+        
+    }
+    
+    public static ProcessProducerImpl<?, ?> fireProcessProducerEventForMethod(ProducerMethodBean<?> producerMethod,AnnotatedMethod<?> method)
+    {         
+        ProcessProducerImpl<?, ?> producerEvent = new ProcessProducerImpl(method);
+        
+        //Fires ProcessProducer for methods
+        BeanManagerImpl.getManager().fireEvent(producerEvent, new Annotation[0]);
+        
+        return producerEvent;
+    }
+    
+    public static ProcessProducerImpl<?, ?> fireProcessProducerEventForField(ProducerFieldBean<?> producerField,AnnotatedField<?> field)
+    {         
+        ProcessProducerImpl<?, ?> producerEvent = new ProcessProducerImpl(field);
+        
+        //Fires ProcessProducer for fields
+        BeanManagerImpl.getManager().fireEvent(producerEvent, new Annotation[0]);
+        
+        return producerEvent;
+    }
+    
+    public static void fireProcessProducerMethodBeanEvent(Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods)
+    {
+        for(ProducerMethodBean<?> bean : annotatedMethods.keySet())
+        {
+            AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(bean);                
+            Method disposal = bean.getDisposalMethod();
+            
+            AnnotatedMethod<?> disposalAnnotated = null;
+            ProcessProducerMethodImpl<?, ?> processProducerMethodEvent = null;
+            if(disposal != null)
+            {
+                disposalAnnotated = AnnotatedElementFactory.newAnnotatedMethod(disposal, bean.getParent().getReturnType());
+                processProducerMethodEvent = new ProcessProducerMethodImpl(bean,annotatedMethod,disposalAnnotated.getParameters().get(0));                
+            }
+            else
+            {
+                processProducerMethodEvent = new ProcessProducerMethodImpl(bean,annotatedMethod,null);
+            }
+            
+
+            //Fires ProcessProducer
+            BeanManagerImpl.getManager().fireEvent(processProducerMethodEvent, new Annotation[0]);
+        }                
+    }
+    
+    public static void fireProcessProducerFieldBeanEvent(Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields)
+    {
+        for(ProducerFieldBean<?> bean : annotatedFields.keySet())
+        {
+            AnnotatedField<?> field = annotatedFields.get(bean);
+            
+            ProcessProducerFieldImpl<?, ?> processProducerFieldEvent = new ProcessProducerFieldImpl(bean,field);
+            
+            //Fire ProcessProducer
+            BeanManagerImpl.getManager().fireEvent(processProducerFieldEvent, new Annotation[0]);
+        }        
+    }
+    
+    /**
+     * Returns true if bean instance is an enterprise bean instance
+     * false otherwise.
+     * @param beanInstance bean instance
+     * @return true if bean instance is an enterprise bean instance
+     */
+    public static boolean isBeanHasEnterpriseMarker(Object beanInstance)
+    {
+        Asserts.assertNotNull(beanInstance,"Bean instance is null");
+        
+        if(beanInstance instanceof EnterpriseBeanMarker)
+        {
+            return true;
+        }
+        
+        return false;
     }
  }

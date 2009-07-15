@@ -13,7 +13,11 @@
  */
 package org.apache.webbeans.config;
 
+import javax.enterprise.inject.spi.Bean;
+
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
+import org.apache.webbeans.plugins.PluginLoader;
 
 public final class EJBWebBeansConfigurator
 {
@@ -22,10 +26,32 @@ public final class EJBWebBeansConfigurator
 
     }
 
+    /**
+     * Returns true if given class is an deployed ejb bean class, false otherwise.
+     * @param clazz bean class
+     * @return true if given class is an deployed ejb bean class
+     * @throws WebBeansConfigurationException if any exception occurs
+     */
     public static boolean isEJBWebBean(Class<?> clazz) throws WebBeansConfigurationException
     {
-        return false;
-
+        PluginLoader loader = PluginLoader.getInstance();
+        OpenWebBeansEjbPlugin ejbPlugin = loader.getEjbPlugin();
+        
+        return ejbPlugin.isEjbClass(clazz);
     }
-
+    
+    /**
+     * Returns ejb bean.
+     * @param <T> bean class info
+     * @param clazz bean class
+     * @return ejb bean
+     */
+    public static <T> Bean<T> defineEjbBean(Class<T> clazz)
+    {
+        PluginLoader loader = PluginLoader.getInstance();
+        OpenWebBeansEjbPlugin ejbPlugin = loader.getEjbPlugin();
+        
+        return ejbPlugin.defineEjbComponent(clazz);
+    }
+    
 }

@@ -18,6 +18,7 @@ import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.BeanManager;
@@ -166,4 +167,6 @@ public abstract class BaseBean<T> implements Bean<T>
     public abstract void setSpecializedBean(boolean specialized);
     
     public abstract boolean isSpecializedBean();
+    
+    public abstract CreationalContext<T> getCreationalContext();
 }

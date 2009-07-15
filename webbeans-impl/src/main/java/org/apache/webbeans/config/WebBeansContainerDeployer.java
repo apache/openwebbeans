@@ -16,7 +16,6 @@ package org.apache.webbeans.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,14 +54,11 @@ import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessManagedBeanImpl;
-import org.apache.webbeans.portable.events.ProcessProducerFieldImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
-import org.apache.webbeans.portable.events.ProcessProducerMethodImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
@@ -166,10 +162,13 @@ public class WebBeansContainerDeployer
         }
         catch (WebBeansConfigurationException e)
         {
+            e.printStackTrace();
             throw e;
         }
         catch(Exception e)
         {
+            e.printStackTrace();
+            
             if(e instanceof WebBeansDeploymentException)
             {
                 throw  (WebBeansDeploymentException)e;
@@ -314,13 +313,13 @@ public class WebBeansContainerDeployer
                 
                 if (ManagedBeanConfigurator.isSimpleWebBean(implClass))
                 {
-                    logger.info("Simple WebBeans Component with class name : " + componentClassName + " is found");
+                    logger.info("Managed Bean with class name : " + componentClassName + " is found");
                     defineManagedBean(implClass);
                 }
                 else if (EJBWebBeansConfigurator.isEJBWebBean(implClass))
                 {
-                    logger.info("Enterprise WebBeans Component with class name : " + componentClassName + " is found");
-                    defineEnterpriseWebBeans();
+                    logger.info("Enterprise Bean with class name : " + componentClassName + " is found");
+                    defineEnterpriseWebBean(implClass);
                 }
             }
         }
@@ -397,9 +396,9 @@ public class WebBeansContainerDeployer
             {
                 Class<?> implClass = ClassUtil.getClassFromName(interceptorClazz);
 
-                logger.info("Simple WebBeans Interceptor Component with class name : " + interceptorClazz + " is found");
+                logger.info("Managed Bean Interceptor with class name : " + interceptorClazz + " is found");
 
-                defineInterceptors(implClass);
+                defineInterceptor(implClass);
             }
         }
 
@@ -425,9 +424,9 @@ public class WebBeansContainerDeployer
             for (String decoratorClazz : classes)
             {
                 Class<?> implClass = ClassUtil.getClassFromName(decoratorClazz);
-                logger.info("Simple WebBeans Decorator Component with class name : " + decoratorClazz + " is found");
+                logger.info("Managed Bean Decorator with class name : " + decoratorClazz + " is found");
 
-                defineDecorators(implClass);
+                defineDecorator(implClass);
             }
         }
 
@@ -605,13 +604,11 @@ public class WebBeansContainerDeployer
     {
         if (!AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class) && !AnnotationUtil.isAnnotationExistOnClass(clazz, javax.decorator.Decorator.class))
         {
+
             AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(clazz);
-                        
-            ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = new ProcessAnnotatedTypeImpl<T>(annotatedType);
             
             //Fires ProcessAnnotatedType
-            BeanManagerImpl.getManager().fireEvent(processAnnotatedEvent, new Annotation[0]);
-            
+            ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);             
             ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);            
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
             
@@ -625,27 +622,35 @@ public class WebBeansContainerDeployer
                 managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
             }
             
-            InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(managedBean);
-            ProcessInjectionTargetImpl<T> processInjectionTargetEvent = new ProcessInjectionTargetImpl<T>(injectionTarget,annotatedType);
-            
+            //Define meta-data
+            managedBeanCreator.defineSerializable();
+            managedBeanCreator.defineStereoTypes();
+            Class<? extends Annotation> deploymentType = managedBeanCreator.defineDeploymentType("There are more than one @DeploymentType annotation in ManagedBean implementation class : " + managedBean.getReturnType().getName());
+            managedBeanCreator.defineApiType();
+            managedBeanCreator.defineScopeType("ManagedBean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
+            managedBeanCreator.defineBindingType();
+            managedBeanCreator.defineName(WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
+            managedBeanCreator.defineConstructor();            
+            Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();       
+            Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();           
+            managedBeanCreator.defineDisposalMethods();
+            managedBeanCreator.defineInjectedFields();
+            managedBeanCreator.defineInjectedMethods();
+            managedBeanCreator.defineObserverMethods();
+                                    
             //Fires ProcessInjectionTarget
-            BeanManagerImpl.getManager().fireEvent(processInjectionTargetEvent, new Annotation[0]);
-            
+            ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);            
             if(processInjectionTargetEvent.isSet())
             {
                 managedBeanCreator.setInjectedTarget(processInjectionTargetEvent.getInjectionTarget());
             }
             
-            Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();
             Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods = new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>(); 
             for(ProducerMethodBean<?> producerMethod : producerMethods)
             {
                 AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), producerMethod.getParent().getReturnType());
-                ProcessProducerImpl<?, ?> producerEvent = new ProcessProducerImpl(method);
-                
-                //Fires ProcessProducer for methods
-                BeanManagerImpl.getManager().fireEvent(producerEvent, new Annotation[0]);
-                
+                ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForMethod(producerMethod,method);
+
                 annotatedMethods.put(producerMethod, method);
                 
                 if(producerEvent.isProducerSet())
@@ -656,15 +661,11 @@ public class WebBeansContainerDeployer
                 producerEvent.setProducerSet(false);
             }
             
-            Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();
             Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields = new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
             for(ProducerFieldBean<?> producerField : producerFields)
             {
                 AnnotatedField<?> field = AnnotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), producerField.getParent().getReturnType());
-                ProcessProducerImpl<?, ?> producerEvent = new ProcessProducerImpl(field);
-                
-                //Fires ProcessProducer for fields
-                BeanManagerImpl.getManager().fireEvent(producerEvent, new Annotation[0]);
+                ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForField(producerField, field);
                 
                 annotatedFields.put(producerField, field);
                 
@@ -676,47 +677,15 @@ public class WebBeansContainerDeployer
                 producerEvent.setProducerSet(false);
             }
 
-            ProcessBeanImpl<T> processBeanEvent = new ProcessManagedBeanImpl<T>(managedBean,annotatedType);
-            
             //Fires ProcessManagedBean
+            ProcessBeanImpl<T> processBeanEvent = new ProcessManagedBeanImpl<T>(managedBean,annotatedType);            
             BeanManagerImpl.getManager().fireEvent(processBeanEvent, new Annotation[0]);
             
-            for(ProducerMethodBean<?> bean : annotatedMethods.keySet())
-            {
-                AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(bean);                
-                Method disposal = bean.getDisposalMethod();
-                AnnotatedMethod<?> disposalAnnotated = AnnotatedElementFactory.newAnnotatedMethod(disposal, bean.getParent().getReturnType());
-                
-                ProcessProducerMethodImpl<?, ?> processProducerMethodEvent = new ProcessProducerMethodImpl(bean,annotatedMethod,disposalAnnotated.getParameters().get(0));
-
-                //Fires ProcessProducer
-                BeanManagerImpl.getManager().fireEvent(processProducerMethodEvent, new Annotation[0]);
-            }
+            //Fires ProcessProducerMethod
+            WebBeansUtil.fireProcessProducerMethodBeanEvent(annotatedMethods);
             
-            for(ProducerFieldBean<?> bean : annotatedFields.keySet())
-            {
-                AnnotatedField<?> field = annotatedFields.get(bean);
-                
-                ProcessProducerFieldImpl<?, ?> processProducerFieldEvent = new ProcessProducerFieldImpl(bean,field);
-                
-                //Fire ProcessProducer
-                BeanManagerImpl.getManager().fireEvent(processProducerFieldEvent, new Annotation[0]);
-            }
-            
-            managedBeanCreator.defineSerializable();
-            managedBeanCreator.defineStereoTypes();
-            Class<? extends Annotation> deploymentType = managedBeanCreator.defineDeploymentType("There are more than one @DeploymentType annotation in ManagedBean implementation class : " + managedBean.getReturnType().getName());
-            managedBeanCreator.defineApiType();
-            managedBeanCreator.defineScopeType("ManagedBean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
-            managedBeanCreator.defineBindingType();
-            managedBeanCreator.defineName(WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
-            managedBeanCreator.defineConstructor();            
-            Set<ProducerMethodBean<?>> producerMethodBeans = annotatedMethods.keySet();        
-            Set<ProducerFieldBean<?>> producerFieldBeans = annotatedFields.keySet();            
-            managedBeanCreator.defineDisposalMethods();
-            managedBeanCreator.defineInjectedFields();
-            managedBeanCreator.defineInjectedMethods();
-            managedBeanCreator.defineObserverMethods();
+            //Fires ProcessProducerField
+            WebBeansUtil.fireProcessProducerFieldBeanEvent(annotatedFields);
             
             //Set InjectionTarget that is used by the container to inject dependencies!
             if(managedBeanCreator.isInjectionTargetSet())
@@ -728,10 +697,10 @@ public class WebBeansContainerDeployer
             if (WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
             {                
                 BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewSimpleBeanComponent(managedBean));                
-                DecoratorUtil.checkSimpleWebBeanDecoratorConditions(managedBean);
+                DecoratorUtil.checkManagedBeanDecoratorConditions(managedBean);
                 BeanManagerImpl.getManager().addBean(managedBean);
-                BeanManagerImpl.getManager().getBeans().addAll(producerMethodBeans);
-                BeanManagerImpl.getManager().getBeans().addAll(producerFieldBeans);
+                BeanManagerImpl.getManager().getBeans().addAll(producerMethods);
+                BeanManagerImpl.getManager().getBeans().addAll(producerFields);
             }
         }
     }
@@ -741,18 +710,23 @@ public class WebBeansContainerDeployer
      * 
      * @param clazz interceptor class
      */
-    protected <T> void defineInterceptors(Class<T> clazz)
+    protected <T> void defineInterceptor(Class<T> clazz)
     {
         WebBeansUtil.defineInterceptors(clazz);
     }
 
-    protected <T> void defineDecorators(Class<T> clazz)
+    protected <T> void defineDecorator(Class<T> clazz)
     {
         WebBeansUtil.defineDecorators(clazz);
     }
 
-    protected void defineEnterpriseWebBeans()
+    /**
+     * Defines enterprise bean via plugin.
+     * @param <T> bean class type
+     * @param clazz bean class
+     */
+    protected <T> void defineEnterpriseWebBean(Class<T> clazz)
     {
-
+        EJBWebBeansConfigurator.defineEjbBean(clazz);
     }
 }

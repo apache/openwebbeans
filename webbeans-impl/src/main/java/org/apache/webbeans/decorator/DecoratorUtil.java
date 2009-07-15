@@ -116,7 +116,7 @@ public final class DecoratorUtil
         
     }
 
-    public static void checkSimpleWebBeanDecoratorConditions(ManagedBean<?> component)
+    public static void checkManagedBeanDecoratorConditions(ManagedBean<?> component)
     {
         Asserts.assertNotNull("component", "component parameter can not be null");
 
@@ -130,7 +130,7 @@ public final class DecoratorUtil
             Class<?> clazz = component.getReturnType();
             if (ClassUtil.isFinal(clazz.getModifiers()))
             {
-                throw new WebBeansConfigurationException("Simple web bean component : " + component.getReturnType().getName() + " can not be declared final, because it has one or more decorators");
+                throw new WebBeansConfigurationException("Managed Bean : " + component.getReturnType().getName() + " can not be declared final, because it has one or more decorators");
             }
 
             Method[] methods = clazz.getDeclaredMethods();
@@ -150,7 +150,7 @@ public final class DecoratorUtil
                         {
                             if (decClazz.getMethod(method.getName(), method.getParameterTypes()) != null)
                             {
-                                throw new WebBeansConfigurationException("Simple web bean component : " + component.getReturnType().getName() + " can not define non-private, non-static, final method : " + method.getName() + ", because one of its decorators implements this method");
+                                throw new WebBeansConfigurationException("Managed Bean : " + component.getReturnType().getName() + " can not define non-private, non-static, final method : " + method.getName() + ", because one of its decorators implements this method");
 
                             }
 

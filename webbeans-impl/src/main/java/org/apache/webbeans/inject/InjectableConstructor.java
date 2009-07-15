@@ -23,7 +23,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.ejb.EJBUtil;
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
@@ -78,15 +77,12 @@ public class InjectableConstructor<T> extends AbstractInjectable
 
         try
         {
-            if (!EJBUtil.isEJBSessionClass(con.getDeclaringClass()))
+            if(!con.isAccessible())
             {
-                if(!con.isAccessible())
-                {
-                    con.setAccessible(true);
-                }
-                
-                instance = con.newInstance(list.toArray());
+                con.setAccessible(true);
             }
+            
+            instance = con.newInstance(list.toArray());
 
         }
         catch (Exception e)

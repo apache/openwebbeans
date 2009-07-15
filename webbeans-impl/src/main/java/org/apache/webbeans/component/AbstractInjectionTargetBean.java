@@ -197,21 +197,24 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
      */
     protected void postConstructDefault(T instance)
     {
-        // Call Post Construct
-        if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
+        if(getWebBeansType().equals(WebBeansType.MANAGED))
         {
-            InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
-            try
+            // Call Post Construct
+            if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
             {
-                impl.proceed();
-            }
+                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
+                try
+                {
+                    impl.proceed();
+                }
 
-            catch (Exception e)
-            {
-                logger.error("Error is occured while executing @PostConstruct", e);
-                throw new WebBeansException(e);
-            }
-        }
+                catch (Exception e)
+                {
+                    logger.error("Error is occured while executing @PostConstruct", e);
+                    throw new WebBeansException(e);
+                }
+            }            
+        }        
     }
 
     /**
@@ -236,18 +239,21 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
      */
     protected void preDestroyDefault(T instance)
     {
-        if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
+        if(getWebBeansType().equals(WebBeansType.MANAGED))
         {
-            InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
-            try
+            if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
             {
-                impl.proceed();
-            }
-            catch (Exception e)
-            {
-                getLogger().error("Error is occıred while executing @PreDestroy method", e);
-                throw new WebBeansException(e);
-            }
+                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
+                try
+                {
+                    impl.proceed();
+                }
+                catch (Exception e)
+                {
+                    getLogger().error("Error is occıred while executing @PreDestroy method", e);
+                    throw new WebBeansException(e);
+                }
+            }            
         }
     }
 

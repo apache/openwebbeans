@@ -11,34 +11,15 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.ejb.orm;
-
-import org.apache.webbeans.util.Asserts;
+package org.apache.webbeans.component;
 
 /**
- * Some utility methods for parsing orm.xml file in folders META-INF/orm.xml.
+ * Marker interface for enterprise beans.
  * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ * @version $Rev$ $Date$
+ *
  */
-public final class ORMUtil
+public interface EnterpriseBeanMarker
 {
-    private ORMUtil()
-    {
-
-    }
-
-    /**
-     * Return true if it is defined in the ejb-jar.xml false otherwise.
-     * 
-     * @param clazzName class name
-     * @return true if it is defined in the orm.xml
-     */
-    public static boolean isDefinedInXML(String clazzName)
-    {
-        Asserts.assertNotNull(clazzName, "clazzName parameter can not be null");
-
-        return false;
-    }
 
 }
