@@ -16,8 +16,7 @@
  */
 package org.apache.webbeans.ejb;
 
-import org.apache.webbeans.ejb.component.EjbComponentImpl;
-import org.apache.webbeans.ejb.definition.EjbDefinition;
+import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.test.servlet.TestContext;
 
 public abstract class EjbTestContext extends TestContext
@@ -27,8 +26,8 @@ public abstract class EjbTestContext extends TestContext
         super(name);
     }
 
-    protected <T> EjbComponentImpl<T> defineEjbBean(Class<T> ejbClass)
+    protected <T> EjbBean<T> defineEjbBean(Class<T> ejbClass)
     {
-        return EjbDefinition.defineEjbBean(ejbClass);
+        return null;
     }
 }

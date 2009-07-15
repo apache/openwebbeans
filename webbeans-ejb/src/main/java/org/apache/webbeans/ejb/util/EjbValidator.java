@@ -20,11 +20,11 @@ package org.apache.webbeans.ejb.util;
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.spi.SessionBeanType;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.ejb.EjbConstants;
-import org.apache.webbeans.ejb.EjbType;
-import org.apache.webbeans.ejb.component.EjbComponentImpl;
+import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -37,7 +37,7 @@ public final class EjbValidator
     }
     
     
-    public static void validateEjbScopeType(EjbComponentImpl<?> ejbComponent)
+    public static void validateEjbScopeType(EjbBean<?> ejbComponent)
     {
         Asserts.assertNotNull(ejbComponent, "scopeType parameter can not be null");
 
@@ -51,7 +51,7 @@ public final class EjbValidator
             throw new NullPointerException("EjbComponent ejb type can not be null");
         }
         
-        if(ejbComponent.getEjbType().equals(EjbType.STATELESS))
+        if(ejbComponent.getEjbType().equals(SessionBeanType.STATELESS))
         {
             if(!ejbComponent.getScopeType().equals(Dependent.class))
             {
@@ -59,7 +59,7 @@ public final class EjbValidator
                 		"can not define scope other than @Dependent");
             }
         }
-        else if(ejbComponent.getEjbType().equals(EjbType.SINGLETON))
+        else if(ejbComponent.getEjbType().equals(SessionBeanType.SINGLETON))
         {
             if(!(ejbComponent.getScopeType().equals(Dependent.class) || ejbComponent.getScopeType().equals(ApplicationScoped.class) ))
             {

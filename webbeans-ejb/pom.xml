@@ -28,23 +28,24 @@
 	<packaging>jar</packaging>
 	<description>OpenWebBeans EJB Integration</description>
 	<dependencies>
+		
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-impl</artifactId>
-			<version>1.0.0-incubating-SNAPSHOT</version>
 		</dependency>
+		
+        <dependency>
+            <groupId>org.apache.openejb</groupId>
+            <artifactId>openejb-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+				
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.5</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>openwebbeans-impl</artifactId>
-			<version>1.0.0-incubating-SNAPSHOT</version>
-			<classifier>tests</classifier>
-			<scope>test</scope>
-		</dependency>
+		
 	</dependencies>
 </project>

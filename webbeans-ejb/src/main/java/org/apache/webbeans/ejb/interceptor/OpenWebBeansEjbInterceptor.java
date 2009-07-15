@@ -19,12 +19,32 @@ package org.apache.webbeans.ejb.interceptor;
 import javax.annotation.PostConstruct;
 import javax.interceptor.InvocationContext;
 
+import org.apache.webbeans.ejb.component.EjbBean;
+
 public class OpenWebBeansEjbInterceptor
 {
-    @PostConstruct
-    public void afterConstruct(InvocationContext context)
+    private static ThreadLocal<EjbBean<?>> threadLocal = new ThreadLocal<EjbBean<?>>();
+    
+    public static void setThreadLocal(EjbBean<?> ejbBean)
     {
+        threadLocal.set(ejbBean);
+    }
+    
+    public static void unsetThreadLocal()
+    {
+        threadLocal.remove();
+    }
+    
+    @PostConstruct
+    @SuppressWarnings("unchecked")
+    public void afterConstruct(InvocationContext context) throws Exception
+    {
+        Object instance = context.getTarget();
+        EjbBean<Object> bean = (EjbBean<Object>)threadLocal.get();
+        
+        threadLocal.get().injectFieldInInterceptor(instance, bean.getCreationalContext());
+        
         
     }
-
+    
 }

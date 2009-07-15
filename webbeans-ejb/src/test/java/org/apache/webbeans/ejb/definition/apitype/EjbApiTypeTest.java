@@ -20,7 +20,7 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 import org.apache.webbeans.ejb.EjbTestContext;
-import org.apache.webbeans.ejb.component.EjbComponentImpl;
+import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.util.EjbDefinitionUtility;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,7 +42,7 @@ public class EjbApiTypeTest extends EjbTestContext
     @Test
     public void testBalkiApiType()
     {
-        EjbComponentImpl<Balki> bean = defineEjbBean(Balki.class);
+        EjbBean<Balki> bean = defineEjbBean(Balki.class);
         EjbDefinitionUtility.defineApiType(bean);
         
         Set<Type> types = bean.getTypes();
@@ -53,7 +53,7 @@ public class EjbApiTypeTest extends EjbTestContext
     @Test
     public void testDefaultLocalBalkiApiType()
     {
-        EjbComponentImpl<Balki_DefaultLocal> bean = defineEjbBean(Balki_DefaultLocal.class);
+        EjbBean<Balki_DefaultLocal> bean = defineEjbBean(Balki_DefaultLocal.class);
         EjbDefinitionUtility.defineApiType(bean);
         
         Set<Type> types = bean.getTypes();
@@ -64,7 +64,7 @@ public class EjbApiTypeTest extends EjbTestContext
     @Test
     public void testClassLocalBalkiApiType()
     {
-        EjbComponentImpl<Balki_ClassLocal> bean = defineEjbBean(Balki_ClassLocal.class);
+        EjbBean<Balki_ClassLocal> bean = defineEjbBean(Balki_ClassLocal.class);
         EjbDefinitionUtility.defineApiType(bean);
         
         Set<Type> types = bean.getTypes();
@@ -75,7 +75,7 @@ public class EjbApiTypeTest extends EjbTestContext
     @Test
     public void testClassLocalViewBalkiApiType()
     {
-        EjbComponentImpl<Balki_ClassView> bean = defineEjbBean(Balki_ClassView.class);
+        EjbBean<Balki_ClassView> bean = defineEjbBean(Balki_ClassView.class);
         EjbDefinitionUtility.defineApiType(bean);
         
         Set<Type> types = bean.getTypes();

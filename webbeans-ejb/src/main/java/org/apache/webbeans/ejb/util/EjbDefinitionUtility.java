@@ -16,19 +16,13 @@
  */
 package org.apache.webbeans.ejb.util;
 
-import java.io.Externalizable;
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
+import javassist.util.proxy.ProxyFactory;
 
-import org.apache.webbeans.ejb.component.EjbComponentImpl;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.ejb.component.EjbBean;
+import org.apache.webbeans.ejb.proxy.EjbBeanProxyHandler;
+import org.apache.webbeans.exception.WebBeansException;
 
 /**
  * @version $Rev$ $Date$
@@ -40,91 +34,29 @@ public final class EjbDefinitionUtility
         
     }
 
-    public static void defineApiType(EjbComponentImpl<?> ejbComponent)
-    {
-        Class<?> ejbClass = ejbComponent.getReturnType();        
-        
-        Type[] businessInterfacesDefined = ejbClass.getGenericInterfaces();
-        
-        List<Type> businessInterfacesList = new ArrayList<Type>();
-        
-        for(Type businessInterfacesDefinedInArray : businessInterfacesDefined)
-        {
-            if(!(businessInterfacesDefinedInArray.equals(Serializable.class) || businessInterfacesDefinedInArray.equals(Externalizable.class)))
-            {
-                businessInterfacesList.add(businessInterfacesDefinedInArray);   
-            }
-        }
-        
-        businessInterfacesDefined = new Type[businessInterfacesList.size()];
-        businessInterfacesDefined = businessInterfacesList.toArray(businessInterfacesDefined);
-        
-        if(businessInterfacesDefined.length == 0)
-        {            
-            Annotation localAnnotation = AnnotationUtil.getAnnotation(ejbClass.getDeclaredAnnotations(), Local.class);
-                         
-            if(localAnnotation != null)
-            {
-                Local local = (Local)localAnnotation;
-                Class<?>[] localInterfaces = local.value();
-                
-                for(Class<?> localInterface : localInterfaces)
-                {
-                    if(!ClassUtil.isDefinitionConstainsTypeVariables(localInterface))
-                    {
-                        ClassUtil.setTypeHierarchy(ejbComponent.getTypes(), localInterface);
-                        
-                        EjbUtility.configureEjbBusinessMethods(ejbComponent, localInterface);
-                    }
-                }
-            }
-            else
-            {
-                defineLocalClassType(ejbComponent);
-            }
-            
-        }
-        else if(businessInterfacesDefined.length == 1)
-        {
-            Type businessInterface = businessInterfacesDefined[0];
-            defineLocalBusinessInterfaceType(ejbComponent, businessInterface);
-        }
-        else
-        {
-            for(Type busType : businessInterfacesDefined)
-            {
-                defineLocalBusinessInterfaceType(ejbComponent, busType);
-            }            
-        }
-        
+    public static void defineApiType(EjbBean<?> ejbComponent)
+    {        
         ejbComponent.getTypes().add(Object.class);
     }
     
-    private static void defineLocalBusinessInterfaceType(EjbComponentImpl<?> ejbComponent, Type type)
+    @SuppressWarnings("unchecked")
+    public static <T> T defineEjbBeanProxy(EjbBean<T> bean)
     {
-        Class<?> businessInterfaceClass = EjbClassUtility.getLocalInterfaceClass(type);
-        
-        if(businessInterfaceClass != null)
+        try
         {
-            if(!AnnotationUtil.isAnnotationExistOnClass(businessInterfaceClass, Remote.class))
-            {                    
-                ClassUtil.setTypeHierarchy(ejbComponent.getTypes(), businessInterfaceClass);
-                
-                EjbUtility.configureEjbBusinessMethods(ejbComponent, businessInterfaceClass);
-            }
-        }                                
-    }
-    
-    private static void defineLocalClassType(EjbComponentImpl<?> ejbComponent)
-    {
-        Class<?> clazz = ejbComponent.getReturnType();
-        
-        if(!ClassUtil.isDefinitionConstainsTypeVariables(clazz))
-        {
-            ClassUtil.setClassTypeHierarchy(ejbComponent.getTypes(), clazz);
+            ProxyFactory factory = new ProxyFactory();
             
-            EjbUtility.configureEjbBusinessMethods(ejbComponent, clazz);
+            EjbBeanProxyHandler handler = new EjbBeanProxyHandler(bean);
+            
+            factory.setHandler(handler);
+            List<Class> interfaces = bean.getDeploymentInfo().getBusinessLocalInterfaces();            
+            factory.setInterfaces(interfaces.toArray(new Class[0]));  
+         
+            return (T)factory.createClass().newInstance();
+            
+        }catch(Exception e)
+        {
+            throw new WebBeansException(e);
         }
-        
     }
 }

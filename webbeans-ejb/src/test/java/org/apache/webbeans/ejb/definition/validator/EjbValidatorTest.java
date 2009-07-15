@@ -17,7 +17,7 @@
 package org.apache.webbeans.ejb.definition.validator;
 
 import org.apache.webbeans.ejb.EjbTestContext;
-import org.apache.webbeans.ejb.definition.EjbDefinition;
+import org.apache.webbeans.ejb.util.EjbValidator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public class EjbValidatorTest extends EjbTestContext
         
         try
         {
-            EjbDefinition.defineEjbBean(Babos_Broken_Decorator.class);
+            EjbValidator.validateDecoratorOrInterceptor(Babos_Broken_Decorator.class);
             
         }
         catch(WebBeansConfigurationException e)
@@ -61,7 +61,7 @@ public class EjbValidatorTest extends EjbTestContext
         
         try
         {
-            EjbDefinition.defineEjbBean(Babos_Broken_Interceptor.class);
+            EjbValidator.validateDecoratorOrInterceptor(Babos_Broken_Interceptor.class);
             
         }
         catch(WebBeansConfigurationException e)
