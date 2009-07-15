@@ -23,8 +23,7 @@ import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.SimpleWebBeansConfigurator;
-import org.apache.webbeans.ejb.EJBUtil;
+import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.jboss.jsr299.tck.spi.Beans;
 
@@ -42,15 +41,15 @@ public class BeansImpl implements Beans
     {
         ManagedBean<T> bean = null;
 
-        SimpleWebBeansConfigurator.checkSimpleWebBeanCondition(clazz);
+        ManagedBeanConfigurator.checkSimpleWebBeanCondition(clazz);
         
-        bean = SimpleWebBeansConfigurator.define(clazz, WebBeansType.SIMPLE);
+        bean = ManagedBeanConfigurator.define(clazz, WebBeansType.MANAGED);
 
         return bean;
     }
 
     public boolean isEnterpriseBean( Class<?> clazz ) {
-        return EJBUtil.isEJBMessageDrivenClass(clazz) || EJBUtil.isEJBSessionClass(clazz);
+        return false;
     }
 
     public boolean isEntityBean( Class<?> clazz ) 
@@ -63,11 +62,11 @@ public class BeansImpl implements Beans
     }
 
     public boolean isStatefulBean( Class<?> clazz ) {
-        return EJBUtil.isEJBSessionStatefulClass(clazz);
+        return false;
     }
 
     public boolean isStatelessBean( Class<?> clazz ) {
-        return EJBUtil.isEJBSessionStateless(clazz);
+        return false;
     }
 
     public <T> T getEnterpriseBean(Class<? extends T> beanType, Class<T> localInterface)
