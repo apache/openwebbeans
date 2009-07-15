@@ -27,7 +27,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.xml.ws.BindingType;
+import javax.enterprise.inject.BindingType;
+
 
 @BindingType
 @Target( { TYPE, METHOD, PARAMETER, FIELD })

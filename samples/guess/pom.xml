@@ -56,33 +56,62 @@
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-jsf</artifactId>
             <version>1.0.0-incubating-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-jpa</artifactId>
             <version>1.0.0-incubating-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-api</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
         	<groupId>org.apache.openwebbeans</groupId>
         	<artifactId>openwebbeans-jms</artifactId>
         	<version>1.0.0-incubating-SNAPSHOT</version>
-        	<scope>provided</scope>
         </dependency>
+        <dependency>
+        	<groupId>org.apache.openwebbeans</groupId>
+        	<artifactId>openwebbeans-ejb</artifactId>
+        	<version>1.0.0-incubating-SNAPSHOT</version>
+        	<scope>compile</scope>
+        </dependency>
+        
+                <dependency>
+                    <groupId>org.apache.myfaces.core</groupId>
+                    <artifactId>myfaces-impl</artifactId>
+                    <optional>true</optional>
+                </dependency>
+                <dependency>
+                	<groupId>org.apache.geronimo.specs</groupId>
+                	<artifactId>geronimo-ejb_3.0_spec</artifactId>
+                	<scope>provided</scope>
+                	<optional>true</optional>
+                </dependency>
+                <dependency>
+                	<groupId>org.apache.geronimo.specs</groupId>
+                	<artifactId>geronimo-interceptor_3.0_spec</artifactId>
+                	<scope>provided</scope>
+                	<optional>true</optional>
+                </dependency>
+                <dependency>
+                	<groupId>org.apache.geronimo.specs</groupId>
+                	<artifactId>geronimo-jms_1.1_spec</artifactId>
+                	<version>1.1.1</version>
+                	<optional>true</optional>
+                </dependency>
+        
 	
       </dependencies>
 
