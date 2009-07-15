@@ -47,7 +47,7 @@ public class EjbApiTypeTest extends EjbTestContext
         
         Set<Type> types = bean.getTypes();
         
-        Assert.assertEquals(2, types.size());
+        Assert.assertEquals(3, types.size());
     }
     
     @Test
@@ -58,7 +58,7 @@ public class EjbApiTypeTest extends EjbTestContext
         
         Set<Type> types = bean.getTypes();
         
-        Assert.assertEquals(2, types.size());
+        Assert.assertEquals(3, types.size());
     }
     
     @Test

@@ -27,6 +27,7 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
     @Override
     public void checkCreateConditions()
     {
+        //TODO Add Scope checks
         EjbValidator.validateDecoratorOrInterceptor(getBean().getReturnType());
     }
     

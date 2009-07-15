@@ -28,6 +28,6 @@ public abstract class EjbTestContext extends TestContext
 
     protected <T> EjbBean<T> defineEjbBean(Class<T> ejbClass)
     {
-        return null;
+        return new EjbBean<T>(ejbClass);
     }
 }

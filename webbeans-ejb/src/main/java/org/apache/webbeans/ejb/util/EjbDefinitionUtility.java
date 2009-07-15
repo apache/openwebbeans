@@ -21,6 +21,7 @@ import java.util.List;
 import javassist.util.proxy.ProxyFactory;
 
 import org.apache.webbeans.ejb.component.EjbBean;
+import org.apache.webbeans.ejb.component.creation.EjbBeanCreatorImpl;
 import org.apache.webbeans.ejb.proxy.EjbBeanProxyHandler;
 import org.apache.webbeans.exception.WebBeansException;
 
@@ -36,7 +37,8 @@ public final class EjbDefinitionUtility
 
     public static void defineApiType(EjbBean<?> ejbComponent)
     {        
-        ejbComponent.getTypes().add(Object.class);
+        EjbBeanCreatorImpl<?> creator = new EjbBeanCreatorImpl(ejbComponent);
+        creator.defineApiType();
     }
     
     @SuppressWarnings("unchecked")
