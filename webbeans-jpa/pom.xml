@@ -33,6 +33,12 @@
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-impl</artifactId>
         </dependency>
+        
+		<dependency>
+		    <groupId>org.apache.geronimo.specs</groupId>
+		    <artifactId>geronimo-el_1.0_spec</artifactId>
+		    <scope>test</scope>
+		</dependency>        
 
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
@@ -45,6 +51,7 @@
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_3.0_spec</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -58,18 +65,35 @@
             <scope>test</scope>
         </dependency>
 
+		<dependency>
+		    <groupId>org.apache.geronimo.specs</groupId>
+		    <artifactId>geronimo-interceptor_3.0_spec</artifactId>
+		    <scope>test</scope>
+		</dependency>
+
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
             <version>1.2.0</version>
             <scope>test</scope>
         </dependency>
+        
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-ejb_3.0_spec</artifactId>
+			<scope>test</scope>
+		</dependency>        
 
         <dependency>
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>1.8.0.7</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.geronimo.specs</groupId>
+        	<artifactId>geronimo-servlet_2.5_spec</artifactId>
+        	<optional>true</optional>
         </dependency>
     </dependencies>
 </project>

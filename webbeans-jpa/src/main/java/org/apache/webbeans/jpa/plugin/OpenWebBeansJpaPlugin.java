@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.jpa.spi.JPAService;
 
+import javax.enterprise.inject.BindingType;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -48,7 +49,7 @@ public class OpenWebBeansJpaPlugin extends AbstractOpenWebBeansPlugin
     }
 
     /** {@inheritDoc} */
-    public void isSimpleBeanClass( Class<?> clazz ) throws WebBeansConfigurationException 
+    public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException 
     {
         if (AnnotationUtil.isAnnotationExistOnClass(clazz, Entity.class))
             throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be JPA Entity class");
