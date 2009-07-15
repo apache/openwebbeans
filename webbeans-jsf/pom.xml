@@ -38,13 +38,13 @@
         <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-api</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-el_1.0_spec</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -56,6 +56,11 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.geronimo.specs</groupId>
+        	<artifactId>geronimo-servlet_2.5_spec</artifactId>
+        	<optional>true</optional>
         </dependency>
       
     </dependencies>

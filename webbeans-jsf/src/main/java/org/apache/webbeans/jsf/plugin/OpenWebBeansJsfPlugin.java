@@ -38,7 +38,7 @@ public class OpenWebBeansJsfPlugin extends AbstractOpenWebBeansPlugin
     }
 
     /** {@inheritDoc} */
-    public void isSimpleBeanClass( Class<?> clazz ) throws WebBeansConfigurationException 
+    public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException 
     {
         if (ClassUtil.isAssignable(UIComponent.class, clazz))
         {
