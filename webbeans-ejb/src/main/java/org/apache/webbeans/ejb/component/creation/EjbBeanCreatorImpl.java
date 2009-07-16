@@ -17,6 +17,13 @@ import org.apache.webbeans.component.creation.AbstractInjectedTargetBeanCreator;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.util.EjbValidator;
 
+/**
+ * EjbBeanCreatorImpl.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> ejb class type
+ */
 public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> implements EjbBeanCreator<T>
 {
     public EjbBeanCreatorImpl(EjbBean<T> ejbBean)
@@ -24,12 +31,23 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
         super(ejbBean);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void checkCreateConditions()
     {
-        //TODO Add Scope checks
+        EjbValidator.validateEjbScopeType(getBean());        
         EjbValidator.validateDecoratorOrInterceptor(getBean().getReturnType());
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public EjbBean<T> getBean()
+    {
+        return EjbBean.class.cast(getBean());
+    }
     
 }

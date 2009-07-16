@@ -55,6 +55,7 @@ public final class EjbUtility
         //Fires ProcessAnnotatedType
         ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);             
         EjbBeanCreatorImpl<T> ejbBeanCreator = new EjbBeanCreatorImpl<T>(ejbBean);
+        ejbBeanCreator.checkCreateConditions();
         
         if(processAnnotatedEvent.isVeto())
         {

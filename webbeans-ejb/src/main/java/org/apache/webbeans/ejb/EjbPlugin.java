@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.ejb;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.SessionBeanType;
@@ -29,18 +29,27 @@ import org.apache.openejb.spi.ContainerSystem;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.util.EjbDefinitionUtility;
 import org.apache.webbeans.ejb.util.EjbUtility;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.AbstractOpenWebBeansPlugin;
 import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
 
+/**
+ * EJB related stuff.
+ * <p>
+ * EJB functionality depends on OpenEJB.
+ * </p>
+ * @version $Rev$ $Date$
+ *
+ */
 public class EjbPlugin extends AbstractOpenWebBeansPlugin implements OpenWebBeansEjbPlugin
 {
     private ContainerSystem containerSystem = null;
     
-    private Map<Class<?>,DeploymentInfo> statelessBeans = new HashMap<Class<?>, DeploymentInfo>();
+    private Map<Class<?>,DeploymentInfo> statelessBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
     
-    private Map<Class<?>,DeploymentInfo> statefullBeans = new HashMap<Class<?>, DeploymentInfo>();
+    private Map<Class<?>,DeploymentInfo> statefullBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
     
-    private Map<Class<?>,DeploymentInfo> singletonBeans = new HashMap<Class<?>, DeploymentInfo>();
+    private Map<Class<?>,DeploymentInfo> singletonBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
 
     public EjbPlugin()
     {
@@ -48,7 +57,7 @@ public class EjbPlugin extends AbstractOpenWebBeansPlugin implements OpenWebBean
     }
     
     @Override
-    public <T> Bean<T> defineEjbComponent(Class<T> clazz)
+    public <T> Bean<T> defineSessionBean(Class<T> clazz)
     {
         DeploymentInfo info = null;
         SessionBeanType type = SessionBeanType.STATELESS;
@@ -82,7 +91,7 @@ public class EjbPlugin extends AbstractOpenWebBeansPlugin implements OpenWebBean
     }
 
     @Override
-    public boolean isEjbClass(Class<?> clazz)
+    public boolean isSessionBean(Class<?> clazz)
     {
         if(this.containerSystem == null)
         {
@@ -128,6 +137,14 @@ public class EjbPlugin extends AbstractOpenWebBeansPlugin implements OpenWebBean
             }
         }
     }
+    
+    public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
+    {
+        if(isSessionBean(clazz))
+        {
+            throw new WebBeansConfigurationException("Managed Bean implementation class : " + clazz.getName() + " can not be sesion bean class");            
+        }
+    }
 
     @Override
     public boolean isSingletonBean(Class<?> clazz)
@@ -148,7 +165,7 @@ public class EjbPlugin extends AbstractOpenWebBeansPlugin implements OpenWebBean
     }
 
     @Override
-    public Object getProxy(Bean<?> bean)
+    public Object getSessionBeanProxy(Bean<?> bean)
     {
         return EjbDefinitionUtility.defineEjbBeanProxy((EjbBean<?>)bean);
     }
