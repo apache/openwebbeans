@@ -15,27 +15,58 @@ package org.apache.webbeans.plugins;
 
 import javax.enterprise.inject.spi.Bean;
 
+/**
+ * Session bean related plugin contract.
+ * 
+ * @version $Rev$ $Date$
+ */
 public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
 {
     /**
-     * Returns true if class is an ejb class false otherwise
+     * Returns true if class is an session bean class false otherwise
      * 
      * @param clazz class definition
      * @return true if class is an ejb class false otherwise
      */
-    public boolean isEjbClass(Class<?> clazz);
-    
+    public boolean isSessionBean(Class<?> clazz);
+
     /**
-     * Configures ejb component and adds it into the container.
-     * @param clazz ejb class
+     * Configures session bean and adds it into the container.
+     * 
+     * @param clazz session bean class
      */
-    public <T> Bean<T> defineEjbComponent(Class<T> clazz);
-    
+    public <T> Bean<T> defineSessionBean(Class<T> clazz);
+
+    /**
+     * Returns true if given class is singleton session bean, false otherwise.
+     * 
+     * @param clazz session bean class
+     * @return true if given class is singleton session bean, false otherwise
+     */
     public boolean isSingletonBean(Class<?> clazz);
-    
+
+    /**
+     * Returns true if given class is stateless session bean, false otherwise.
+     * 
+     * @param clazz session bean class
+     * @return true if given class is singleton session bean, false otherwise
+     */    
     public boolean isStatelessBean(Class<?> clazz);
-    
+
+    /**
+     * Returns true if given class is stateful session bean, false otherwise.
+     * 
+     * @param clazz session bean class
+     * @return true if given class is singleton session bean, false otherwise
+     */    
     public boolean isStatefulBean(Class<?> clazz);
 
-    public Object getProxy(Bean<?> bean);
+    /**
+     * Returns session bean proxy.
+     * 
+     * @param bean session bean
+     * @param proxy interface
+     * @return session bean proxy
+     */
+    public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface);
 }

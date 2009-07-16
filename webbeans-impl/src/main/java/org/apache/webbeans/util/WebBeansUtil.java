@@ -269,13 +269,13 @@ public final class WebBeansUtil
     }
     
     /**
-     * Return <code>true</code> if the given class is ok for simple web bean conditions,
+     * Return <code>true</code> if the given class is ok for manage bean conditions,
      * <code>false</code> otherwise.
      * 
      * @param clazz class in hand
      * @return <code>true</code> if the given class is ok for simple web bean conditions.
      */
-    public static void isSimpleWebBeanClass(Class<?> clazz)
+    public static void isManagedBeanClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
         int modifier = clazz.getModifiers();
@@ -285,9 +285,6 @@ public final class WebBeansUtil
 
         if (!ClassUtil.isConcrete(clazz) && !AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class))
             throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " have to be concrete if not defines as @Decorator");
-
-        if (PluginLoader.getInstance().getEjbPlugin() != null && PluginLoader.getInstance().getEjbPlugin().isEjbClass(clazz))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be EJB class");
 
         if (ClassUtil.isAssignable(Servlet.class, clazz))
             throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement Servlet interface");
@@ -608,7 +605,7 @@ public final class WebBeansUtil
 
         NewBean<T> comp = null;
 
-        if (ManagedBeanConfigurator.isSimpleWebBean(clazz))
+        if (ManagedBeanConfigurator.isManagedBean(clazz))
         {
             comp = new NewBean<T>(clazz, WebBeansType.MANAGED);
             comp.setConstructor(WebBeansUtil.defineConstructor(clazz));
@@ -616,7 +613,7 @@ public final class WebBeansUtil
             DefinitionUtil.defineInjectedFields(comp);
             DefinitionUtil.defineInjectedMethods(comp);
         }
-        else if (EJBWebBeansConfigurator.isEJBWebBean(clazz))
+        else if (EJBWebBeansConfigurator.isSessionBean(clazz))
         {
             comp = new NewBean<T>(clazz, WebBeansType.ENTERPRISE);
         }

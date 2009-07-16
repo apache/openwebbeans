@@ -80,11 +80,11 @@ public final class ManagedBeanConfigurator
      * @return true if this class can be candidate for simple web bean
      * @throws WebBeansConfigurationException if any configuration exception occurs
      */
-    public static boolean isSimpleWebBean(Class<?> clazz) throws WebBeansConfigurationException
+    public static boolean isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
     {
         try
         {
-            WebBeansUtil.isSimpleWebBeanClass(clazz);
+            WebBeansUtil.isManagedBeanClass(clazz);
 
         }
         catch (WebBeansConfigurationException e)

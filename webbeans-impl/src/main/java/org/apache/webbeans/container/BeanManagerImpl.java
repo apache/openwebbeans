@@ -73,6 +73,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
@@ -694,7 +695,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         if(bean instanceof EnterpriseBeanMarker)
         {
-            return PluginLoader.getInstance().getEjbPlugin().getProxy(bean);
+            OpenWebBeansEjbPlugin ejbPlugin = PluginLoader.getInstance().getEjbPlugin();
+            if(ejbPlugin == null)
+            {
+                throw new IllegalStateException("There is no EJB plugin provider. Injection is failed for bean : " + bean);
+            }
+            
+            return ejbPlugin.getSessionBeanProxy(bean,ClassUtil.getClazz(beanType));
         }
         
         

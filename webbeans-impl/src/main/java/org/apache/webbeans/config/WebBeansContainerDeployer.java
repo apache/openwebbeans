@@ -311,12 +311,12 @@ public class WebBeansContainerDeployer
                     continue;
                 }
                 
-                if (ManagedBeanConfigurator.isSimpleWebBean(implClass))
+                if (ManagedBeanConfigurator.isManagedBean(implClass))
                 {
                     logger.info("Managed Bean with class name : " + componentClassName + " is found");
                     defineManagedBean(implClass);
                 }
-                else if (EJBWebBeansConfigurator.isEJBWebBean(implClass))
+                else if (EJBWebBeansConfigurator.isSessionBean(implClass))
                 {
                     logger.info("Enterprise Bean with class name : " + componentClassName + " is found");
                     defineEnterpriseWebBean(implClass);

@@ -532,7 +532,7 @@ public final class WebBeansXMLConfigurator
 
         /* Enterprise WebBean */
         OpenWebBeansEjbPlugin plugin = PluginLoader.getInstance().getEjbPlugin();
-        if (plugin != null && plugin.isEjbClass(clazz))
+        if (plugin != null && plugin.isSessionBean(clazz))
         {
             // Configure for EJB
             configureEJBWebBean(clazz);
@@ -541,7 +541,7 @@ public final class WebBeansXMLConfigurator
         else
         {
             /* Simple WebBeans */
-            if (ManagedBeanConfigurator.isSimpleWebBean(clazz))
+            if (ManagedBeanConfigurator.isManagedBean(clazz))
             {
                 // Configure Simple WebBean
                 configureSimpleWebBean(clazz, webBeanElement);

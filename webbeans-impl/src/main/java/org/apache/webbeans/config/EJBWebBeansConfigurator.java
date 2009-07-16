@@ -32,12 +32,18 @@ public final class EJBWebBeansConfigurator
      * @return true if given class is an deployed ejb bean class
      * @throws WebBeansConfigurationException if any exception occurs
      */
-    public static boolean isEJBWebBean(Class<?> clazz) throws WebBeansConfigurationException
+    public static boolean isSessionBean(Class<?> clazz) throws WebBeansConfigurationException
     {
         PluginLoader loader = PluginLoader.getInstance();
         OpenWebBeansEjbPlugin ejbPlugin = loader.getEjbPlugin();
         
-        return ejbPlugin.isEjbClass(clazz);
+        //There is no ejb container
+        if(ejbPlugin == null)
+        {
+            return false;
+        }
+        
+        return ejbPlugin.isSessionBean(clazz);
     }
     
     /**
@@ -51,7 +57,12 @@ public final class EJBWebBeansConfigurator
         PluginLoader loader = PluginLoader.getInstance();
         OpenWebBeansEjbPlugin ejbPlugin = loader.getEjbPlugin();
         
-        return ejbPlugin.defineEjbComponent(clazz);
+        if(ejbPlugin == null)
+        {
+            throw new IllegalStateException("There is no provided EJB plugin. Unable to define session bean for class : " + clazz.getName());
+        }
+        
+        return ejbPlugin.defineSessionBean(clazz);
     }
     
 }
