@@ -165,9 +165,9 @@ public class EjbPlugin extends AbstractOpenWebBeansPlugin implements OpenWebBean
     }
 
     @Override
-    public Object getSessionBeanProxy(Bean<?> bean)
+    public Object getSessionBeanProxy(Bean<?> bean, Class<?> type)
     {
-        return EjbDefinitionUtility.defineEjbBeanProxy((EjbBean<?>)bean);
+        return EjbDefinitionUtility.defineEjbBeanProxy((EjbBean<?>)bean,type);
     }
     
 }

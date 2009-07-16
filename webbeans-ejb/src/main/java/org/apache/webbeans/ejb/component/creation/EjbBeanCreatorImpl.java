@@ -13,9 +13,15 @@
  */
 package org.apache.webbeans.ejb.component.creation;
 
+import javax.enterprise.context.ScopeType;
+
+import org.apache.openejb.DeploymentInfo;
+import org.apache.openejb.InterfaceType;
 import org.apache.webbeans.component.creation.AbstractInjectedTargetBeanCreator;
+import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.util.EjbValidator;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * EjbBeanCreatorImpl.
@@ -36,10 +42,38 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
      */
     @Override
     public void checkCreateConditions()
-    {
-        EjbValidator.validateEjbScopeType(getBean());        
+    {        
         EjbValidator.validateDecoratorOrInterceptor(getBean().getReturnType());
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void defineScopeType(String errorMessage)
+    {
+        super.defineScopeType(errorMessage);
+        EjbValidator.validateEjbScopeType(getBean());
+    }
+    
+    
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    public void defineApiType()
+//    {
+//        if(isDefaultMetaDataProvider())
+//        {
+//            DeploymentInfo info = getBean().getDeploymentInfo();
+//            info.geti
+//        }
+//        else
+//        {
+//            //TODO Define Api Types by third party
+//        }
+//    }
+    
     
     /**
      * {@inheritDoc}
@@ -47,7 +81,7 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
     @SuppressWarnings("unchecked")
     public EjbBean<T> getBean()
     {
-        return EjbBean.class.cast(getBean());
+        return EjbBean.class.cast(super.getBean());
     }
     
 }

@@ -16,8 +16,6 @@
  */
 package org.apache.webbeans.ejb.util;
 
-import java.util.List;
-
 import javassist.util.proxy.ProxyFactory;
 
 import org.apache.webbeans.ejb.component.EjbBean;
@@ -43,17 +41,25 @@ public final class EjbDefinitionUtility
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> T defineEjbBeanProxy(EjbBean<T> bean)
+    public static <T> T defineEjbBeanProxy(EjbBean<T> bean, Class<?> iface)
     {
         try
         {
+            bean.setIface(iface);
             ProxyFactory factory = new ProxyFactory();
             
             EjbBeanProxyHandler handler = new EjbBeanProxyHandler(bean);
             
             factory.setHandler(handler);
-            List<Class> interfaces = bean.getDeploymentInfo().getBusinessLocalInterfaces();            
-            factory.setInterfaces(interfaces.toArray(new Class[0]));  
+            
+            if(iface == null)
+            {
+                factory.setInterfaces(bean.getDeploymentInfo().getBusinessLocalInterfaces().toArray(new Class[0]));
+            }
+            else
+            {
+                factory.setInterfaces(new Class[]{iface});
+            }
          
             return (T)factory.createClass().newInstance();
             

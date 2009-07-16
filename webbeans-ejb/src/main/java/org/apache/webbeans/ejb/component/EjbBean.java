@@ -41,11 +41,18 @@ public class EjbBean<T> extends AbstractInjectionTargetBean<T> implements Enterp
     
     private T instance = null;
     
+    private Class<?> iface = null;
+    
     public EjbBean(Class<T> ejbClassType)
     {
         super(WebBeansType.ENTERPRISE,ejbClassType);
     }
 
+    public void setIface(Class<?> iface)
+    {
+        this.iface = iface;
+    }
+    
     public void setDeploymentInfo(DeploymentInfo deploymentInfo)
     {
         this.deploymentInfo = deploymentInfo;
@@ -80,9 +87,21 @@ public class EjbBean<T> extends AbstractInjectionTargetBean<T> implements Enterp
             DeploymentInfo deploymentInfo = this.getDeploymentInfo();
             try
             {
-                Class<T> intf = deploymentInfo.getInterface(InterfaceType.BUSINESS_LOCAL);
-                String jndiName = "java:openejb/Deployment/" + JndiBuilder.format(deploymentInfo.getDeploymentID(), intf.getName()); 
-                this.instance = intf.cast(jndiContext.lookup(jndiName));                             
+                if(iface != null)
+                {
+                    InterfaceType type = deploymentInfo.getInterfaceType(iface);
+                    if(!type.equals(InterfaceType.BUSINESS_LOCAL))
+                    {
+                        throw new IllegalArgumentException("Interface type is not legal business local interface for session bean class : " + getReturnType().getName());
+                    }   
+                }    
+                else
+                {
+                    iface = this.deploymentInfo.getBusinessLocalInterface();
+                }
+                
+                String jndiName = "java:openejb/Deployment/" + JndiBuilder.format(deploymentInfo.getDeploymentID(), this.iface.getName()); 
+                this.instance = (T)this.iface.cast(jndiContext.lookup(jndiName));                             
                 
             }catch(NamingException e)
             {
