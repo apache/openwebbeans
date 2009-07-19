@@ -15,6 +15,8 @@ package org.apache.webbeans.container;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.enterprise.context.ScopeType;
@@ -34,6 +36,22 @@ public final class ResolutionUtil
 
     }
 
+    public static boolean checkBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType)
+    { 
+        Iterator<Type> itBeanApiTypes = beanTypes.iterator();
+        while (itBeanApiTypes.hasNext())
+        {
+            Type beanApiType = itBeanApiTypes.next();                    
+            
+            if(ClassUtil.isAssignable(beanApiType, givenType))
+            {
+                return true;
+            }                    
+        }
+        
+        return false;
+    }
+    
     public static void resolveByTypeConditions(ParameterizedType type)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");

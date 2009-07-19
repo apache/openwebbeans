@@ -30,6 +30,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -432,8 +433,11 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         AbstractBean<?> dependent = (AbstractBean<?>)dependentComponent;
         dependent.setDependentOwnerInjectionPoint(injectionPoint);        
         
+        @SuppressWarnings("unchecked")
+        CreationalContext<?> dependentCreational = CreationalContextFactory.getInstance().getCreationalContext(dependentComponent);
+        
         //Get dependent instance
-        object = BeanManagerImpl.getManager().getInstance(dependentComponent);
+        object = BeanManagerImpl.getManager().getReference(dependentComponent, injectionPoint.getType(), dependentCreational);
         
         CreationalContextImpl<T> cc = (CreationalContextImpl<T>)this.creationalContext;
 

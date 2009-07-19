@@ -676,7 +676,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         if(beanType != null)
         {
-            if(!bean.getTypes().contains(beanType))
+            if(!ResolutionUtil.checkBeanTypeAssignableToGivenType(bean.getTypes(), beanType))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }

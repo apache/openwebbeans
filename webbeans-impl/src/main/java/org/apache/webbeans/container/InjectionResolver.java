@@ -265,7 +265,7 @@ public class InjectionResolver
         
         return specializedComponents;
     }
-
+    
     /**
      * Resolution by type.
      * 

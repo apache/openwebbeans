@@ -117,7 +117,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
         if(this.incompleteInstancesMap.containsKey(this.incompleteBean))
         {
             this.incompleteInstancesMap.remove(this.incompleteBean);
-            this.incompleteInstancesMap = null;
         }        
     }
     
