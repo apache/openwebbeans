@@ -16,7 +16,7 @@ package org.apache.webbeans.sample.ejb;
 import java.io.Serializable;
 
 import javax.ejb.Stateless;
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Current;
 import javax.interceptor.Interceptors;
 
@@ -24,7 +24,7 @@ import org.apache.webbeans.ejb.interceptor.OpenWebBeansEjbInterceptor;
 import org.apache.webbeans.sample.util.FacesMessageUtil;
 
 @Stateless
-@SessionScoped
+@Dependent
 @Interceptors({OpenWebBeansEjbInterceptor.class})
 public class HelloBean implements Hello,Serializable
 {
