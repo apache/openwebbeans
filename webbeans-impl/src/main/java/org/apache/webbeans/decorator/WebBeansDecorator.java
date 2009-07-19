@@ -36,6 +36,15 @@ import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
+/**
+ * Defines decorators. It wraps the bean instance related
+ * with decorator class. Actually, each decorator is an instance
+ * of the {@link ManagedBean}.
+ * 
+ * @version $Rev$ $Date$
+ *
+ * @param <T> decorator type info
+ */
 public class WebBeansDecorator<T> implements Decorator<T>
 {
     private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansDecorator.class);
@@ -52,15 +61,20 @@ public class WebBeansDecorator<T> implements Decorator<T>
     /** Delegate field binding types */
     protected Set<Annotation> delegateBindingTypes = new HashSet<Annotation>();
 
-    /** Delegated component */
-    private AbstractBean<T> delegateComponent;
+    /** Wrapped bean*/
+    private AbstractBean<T> wrappedBean;
     
+    /**Creational context*/
     private CreationalContext<Object> creationalContext;
 
-    public WebBeansDecorator(AbstractBean<T> delegateComponent)
+    /**
+     * Creates a new decorator bean instance with the given wrapped bean.
+     * @param delegateComponent delegate bean instance
+     */
+    public WebBeansDecorator(AbstractBean<T> wrappedBean)
     {
-        this.delegateComponent = delegateComponent;
-        this.clazz = delegateComponent.getReturnType();
+        this.wrappedBean = wrappedBean;
+        this.clazz = wrappedBean.getReturnType();
 
         init();
     }
@@ -221,7 +235,7 @@ public class WebBeansDecorator<T> implements Decorator<T>
     public void setInjections(Object proxy)
     {
         // Set injected fields
-        ManagedBean<T> delegate = (ManagedBean<T>) this.delegateComponent;
+        ManagedBean<T> delegate = (ManagedBean<T>) this.wrappedBean;
 
         Set<Field> injectedFields = delegate.getInjectedFields();
         for (Field injectedField : injectedFields)
@@ -230,7 +244,7 @@ public class WebBeansDecorator<T> implements Decorator<T>
 
             if (!isDecorates)
             {
-                InjectableField ife = new InjectableField(injectedField, proxy, this.delegateComponent,this.creationalContext);
+                InjectableField ife = new InjectableField(injectedField, proxy, this.wrappedBean,this.creationalContext);
                 ife.doInjection();
             }
         }
@@ -239,56 +253,56 @@ public class WebBeansDecorator<T> implements Decorator<T>
         for (Method injectedMethod : injectedMethods)
         {
             @SuppressWarnings("unchecked")
-            InjectableMethods<?> ife = new InjectableMethods(injectedMethod, proxy, this.delegateComponent,this.creationalContext);
+            InjectableMethods<?> ife = new InjectableMethods(injectedMethod, proxy, this.wrappedBean,this.creationalContext);
             ife.doInjection();
         }
     }
 
     public void destroy(T instance,CreationalContext<T> context)
     {
-        delegateComponent.destroy(instance,context);
+        wrappedBean.destroy(instance,context);
     }
 
     @Override
     public Set<Annotation> getBindings()
     {
-        return delegateComponent.getBindings();
+        return wrappedBean.getBindings();
     }
 
     @Override
     public Class<? extends Annotation> getDeploymentType()
     {
-        return delegateComponent.getDeploymentType();
+        return wrappedBean.getDeploymentType();
     }
 
     @Override
     public String getName()
     {
-        return delegateComponent.getName();
+        return wrappedBean.getName();
     }
 
     @Override
     public Class<? extends Annotation> getScopeType()
     {
-        return delegateComponent.getScopeType();
+        return wrappedBean.getScopeType();
     }
 
     
     public Set<Type> getTypes()
     {
-        return delegateComponent.getTypes();
+        return wrappedBean.getTypes();
     }
 
     @Override
     public boolean isNullable()
     {
-        return delegateComponent.isNullable();
+        return wrappedBean.isNullable();
     }
 
     @Override
     public boolean isSerializable()
     {
-        return delegateComponent.isSerializable();
+        return wrappedBean.isSerializable();
     }
 
     /**
@@ -296,12 +310,12 @@ public class WebBeansDecorator<T> implements Decorator<T>
      */
     public AbstractBean<T> getDelegateComponent()
     {
-        return delegateComponent;
+        return wrappedBean;
     }
     
     public Set<InjectionPoint> getInjectionPoints()
     {
-        return delegateComponent.getInjectionPoints();
+        return wrappedBean.getInjectionPoints();
     }
 
     /**
@@ -352,18 +366,18 @@ public class WebBeansDecorator<T> implements Decorator<T>
     @Override
     public Class<?> getBeanClass()
     {
-        return this.delegateComponent.getBeanClass();
+        return this.wrappedBean.getBeanClass();
     }
 
 	@Override
 	public Set<Class<? extends Annotation>> getStereotypes() 
 	{
-		return this.delegateComponent.getStereotypes();
+		return this.wrappedBean.getStereotypes();
 	}
 
 	@Override
 	public Set<Type> getDecoratedTypes() {
-		return this.delegateComponent.getTypes();
+		return this.wrappedBean.getTypes();
 	}
 
     @Override

@@ -84,12 +84,22 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     {
         T instance = null;
 
+        //If injection target is set by Exntesion Observer, use it
         if (isInjectionTargetSet())
         {
+            //Create instance
             instance = getInjectionTarget().produce(creationalContext);
+            
+            //Injection Operation
+            getInjectionTarget().inject(instance, creationalContext);
+            
+            //Call @PostConstrcut
+            postConstruct(instance);
         }
+        //Default operations
         else
         {
+            //Default creation phases
             instance = createDefaultInstance(creationalContext);
         }
 
@@ -144,7 +154,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     }
 
     /**
-     * Called before constructor
+     * Called before constructor.
      */
     protected void beforeConstructor()
     {

@@ -66,10 +66,8 @@ public abstract class AbstractInjectable implements Injectable
     }
 
     /**
-     * Gets the injected bean instance in its scoped context.
-     * 
-     * @param injectionPoint injection point definition 
-     * 
+     * Gets the injected bean instance in its scoped context. 
+     * @param injectionPoint injection point definition  
      * @return current bean instance in the resolved bean scope
      */
     public <T> Object inject(InjectionPoint injectionPoint)
@@ -89,25 +87,20 @@ public abstract class AbstractInjectable implements Injectable
             return injectResource(injectionPoint.getType(),injectionAnnotations);
         }
                     
-        //Get injection point Bean component
+        //Get injection point Bean to look for @Dependent
         Bean<?> component = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
         
+        //Managed @Dependence instances
         if (component.getScopeType().equals(Dependent.class))
         {
-            if(WebBeansUtil.isManagedBean(this.injectionOwnerComponent))
+            if(WebBeansUtil.isManagedBean(this.injectionOwnerComponent) || 
+                    WebBeansUtil.isEnterpriseBean(this.injectionOwnerComponent))
             {
                 return injectForDependent(component,injectionPoint);   
             }                
-            
-            else
-            {
-                return injectForComponent(injectionPoint);
-            }
         }
-        else
-        {
-            return injectForComponent(injectionPoint);
-        }
+
+        return injectForComponent(injectionPoint);
     }
     
     /**
@@ -161,21 +154,37 @@ public abstract class AbstractInjectable implements Injectable
         return null;
     }
     
-    private Object injectForDependent(Bean<?> component, InjectionPoint injectionPoint)
+    /**
+     * Return dependent scoped injection point bean instance.
+     * @param bean injected depedent scoped bean
+     * @param injectionPoint injection point
+     * @return injection point instance
+     */
+    private Object injectForDependent(Bean<?> bean, InjectionPoint injectionPoint)
     {
         Object object = null;
-        object = this.injectionOwnerComponent.getDependent(component,injectionPoint);
+        object = this.injectionOwnerComponent.getDependent(bean,injectionPoint);
 
         return object;
     }
 
-    private <T> Object injectForComponent(InjectionPoint injectionPoint)
+    /**
+     * Returns injection point instance.
+     * @param injectionPoint injection point
+     * @return injection point instance
+     */
+    private Object injectForComponent(InjectionPoint injectionPoint)
     {
         Object object = BeanManagerImpl.getManager().getInstanceToInject(injectionPoint,this.creationalContext);
                 
         return object;
     }
     
+    /**
+     * Returns injection points related with given member type of the bean.
+     * @param member java member
+     * @return injection points related with given member type
+     */
     protected List<InjectionPoint> getInjectedPoints(Member member)
     {
         List<InjectionPoint> injectedFields = this.injectionOwnerComponent.getInjectionPoint(member);

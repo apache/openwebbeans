@@ -1882,6 +1882,23 @@ public final class WebBeansUtil
         return false;
     }
     
+    /**
+     * Returns true if bean is an enterprise bean, false otherwise.
+     * @param bean bean instance
+     * @return true if bean is an enterprise bean
+     */
+    public static boolean isEnterpriseBean(AbstractBean<?> bean)
+    {
+        Asserts.assertNotNull(bean,"Bean is null");
+        
+        if(bean.getWebBeansType().equals(WebBeansType.ENTERPRISE))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
     public static void addInjectedImplicitEventComponent(InjectionPoint injectionPoint)
     {
         Type type = injectionPoint.getType();

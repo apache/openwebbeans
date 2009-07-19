@@ -34,15 +34,27 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
+/**
+ * Decorator related utility class.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
 public final class DecoratorUtil
 {
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(DecoratorUtil.class);
+    //Logger instance
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(DecoratorUtil.class);
 
+    //Non-instantiate
     private DecoratorUtil()
     {
-
+        //Empty
     }
 
+    /**
+     * Check decorator conditions.
+     * @param decoratorClazz decorator class
+     */
     public static void checkDecoratorConditions(Class<?> decoratorClazz)
     {       
         Set<Type> decoratorSet = new HashSet<Type>();
@@ -85,7 +97,7 @@ public final class DecoratorUtil
         boolean found = false;
         for (Field field : fields)
         {
-            if (AnnotationUtil.isAnnotationExist(field.getAnnotations(), Decorates.class))
+            if (AnnotationUtil.isAnnotationExist(field.getDeclaredAnnotations(), Decorates.class))
             {
                 if (found)
                 {
