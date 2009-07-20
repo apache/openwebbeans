@@ -40,10 +40,6 @@ public class StereoTypeModel implements IStereoTypeModel
 
     private String defaultName = null;
 
-    private Set<Class<? extends Annotation>> supportedScopes = null;
-
-    private Set<Class<?>> restrictedTypes = null;
-
     private Set<Annotation> interceptorBindingTypes = new HashSet<Annotation>();
 
     private Set<Annotation> inherits = new HashSet<Annotation>();
@@ -113,25 +109,6 @@ public class StereoTypeModel implements IStereoTypeModel
 
         }
 
-        configureScopes(clazz);
-        configureTypes(clazz);
-    }
-
-    private void configureScopes(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Stereotype type = clazz.getAnnotation(Stereotype.class);
-
-        Class<? extends Annotation>[] supportedScopes = type.supportedScopes();
-        this.supportedScopes = new HashSet<Class<? extends Annotation>>(Arrays.asList(supportedScopes));
-
-    }
-
-    private void configureTypes(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Stereotype type = clazz.getAnnotation(Stereotype.class);
-        this.restrictedTypes = new HashSet<Class<?>>(Arrays.asList(type.requiredTypes()));
     }
 
     /**
@@ -179,22 +156,6 @@ public class StereoTypeModel implements IStereoTypeModel
     public Set<Annotation> getInheritedStereoTypes()
     {
         return this.inherits;
-    }
-
-    /**
-     * @return the supportedScopes
-     */
-    public Set<Class<? extends Annotation>> getSupportedScopes()
-    {
-        return Collections.unmodifiableSet(this.supportedScopes);
-    }
-
-    /**
-     * @return the restrictedTypes
-     */
-    public Set<Class<?>> getRestrictedTypes()
-    {
-        return Collections.unmodifiableSet(this.restrictedTypes);
     }
 
     /*

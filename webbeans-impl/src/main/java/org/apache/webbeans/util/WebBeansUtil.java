@@ -1428,56 +1428,6 @@ public final class WebBeansUtil
         return beans;
     }
     
-    /**
-     * Stereotype runtime requirements are dropped from the specification.
-     * 
-     * @param component
-     * @param anns
-     * @param errorMessage
-     * @deprecated
-     */
-    public static void checkSteroTypeRequirements(BaseBean<?> component, Annotation[] anns, String errorMessage)
-    {
-        Set<Class<? extends Annotation>> allSupportedScopes = new HashSet<Class<? extends Annotation>>();
-        Annotation[] stereoTypes = getComponentStereoTypes(component);        
-        for (Annotation stereoType : stereoTypes)
-        {
-            IStereoTypeModel model = StereoTypeManager.getInstance().getStereoTypeModel(stereoType.annotationType().getName());
-            Set<Class<?>> rtypes = model.getRestrictedTypes();
-
-            if (rtypes != null)
-            {
-                Iterator<Class<?>> itTypes = rtypes.iterator();
-                while (itTypes.hasNext())
-                {
-                    if (!component.getTypes().contains(itTypes.next()))
-                    {
-                        throw new WebBeansConfigurationException(errorMessage + " must contains all supported api types in the @Stereotype annotation " + model.getName());
-
-                    }
-                }
-            }
-
-            Set<Class<? extends Annotation>> suppScopes = model.getSupportedScopes();
-            if (suppScopes != null)
-            {
-                if (!suppScopes.isEmpty())
-                {
-                    allSupportedScopes.addAll(suppScopes);
-                }
-            }
-        }
-        
-        if(allSupportedScopes.size() > 0)
-        {
-            if (!allSupportedScopes.contains(component.getScopeType()))
-            {
-                throw new WebBeansConfigurationException(errorMessage + " must contains at least one required scope types in its @Stereotype annotations");
-            }            
-        }        
-
-    }
-
     public static void checkUnproxiableApiType(Bean<?> bean, ScopeType scopeType)
     {
         Asserts.assertNotNull("bean", "bean parameter can not be null");

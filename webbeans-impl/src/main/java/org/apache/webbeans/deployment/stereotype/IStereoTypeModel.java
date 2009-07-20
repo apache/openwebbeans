@@ -39,16 +39,6 @@ public interface IStereoTypeModel
     public Annotation getDefaultScopeType();
 
     /**
-     * @return the supportedScopes
-     */
-    public Set<Class<? extends Annotation>> getSupportedScopes();
-
-    /**
-     * @return the restrictedTypes
-     */
-    public Set<Class<?>> getRestrictedTypes();
-
-    /**
      * @return
      */
     public Set<Annotation> getInterceptorBindingTypes();
