@@ -718,10 +718,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 instance = JavassistProxyFactory.createNewProxyInstance(bean);
                 this.proxyMap.put(bean, instance);
             }
-            
-            //Push proxy instance into the creational context
-            creationalContext.push(instance);
-            
         }
         /* @ScopeType is not normal, like @Dependent */
         else
