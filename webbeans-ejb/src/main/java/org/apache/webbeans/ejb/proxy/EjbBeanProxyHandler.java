@@ -17,10 +17,13 @@
 package org.apache.webbeans.ejb.proxy;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -29,19 +32,41 @@ import org.apache.webbeans.ejb.interceptor.OpenWebBeansEjbInterceptor;
 
 import javassist.util.proxy.MethodHandler;
 
+/**
+ * EJB beans proxy handler.
+ * @version $Rev$ $Date$
+ *
+ */
 @SuppressWarnings("unchecked")
 public class EjbBeanProxyHandler implements MethodHandler
 {
+    /**Proxy ejb bean instance*/
     private EjbBean<?> ejbBean;
     
+    /**
+     * Creates a new instance.
+     * @param ejbBean ejb bean instance
+     */
     public EjbBeanProxyHandler(EjbBean<?> ejbBean)
     {
         this.ejbBean = ejbBean;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
+        //Check ejb remove method
+        if(this.ejbBean.getEjbType().equals(SessionBeanType.STATEFUL))
+        {
+            if(checkEjbRemoveMethod(method))
+            {
+                this.ejbBean.setRemoveStatefulInstance(true);
+            }
+        }
+        
         OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean);
         
         //Context of the bean
@@ -57,5 +82,26 @@ public class EjbBeanProxyHandler implements MethodHandler
         return result;
     }
     
-
+    /**
+     * Check stateful bean remove method control.
+     * @param method called method
+     * @throws UnsupportedOperationException if not valid call
+     */
+    private boolean checkEjbRemoveMethod(Method method)
+    {
+        List<Method> removeMethods = this.ejbBean.getDeploymentInfo().getRemoveMethods();
+        if(removeMethods.contains(method))
+        {
+            if(this.ejbBean.getScopeType() != Dependent.class)
+            {
+                throw new UnsupportedOperationException("Can not call EJB Statefull Bean Remove Method without scoped @Dependent");
+            }
+            else
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }

@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.ejb.util;
 
+import java.lang.annotation.Annotation;
+
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
@@ -24,6 +26,7 @@ import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Validates session beans.
@@ -91,6 +94,25 @@ public final class EjbValidator
         if (AnnotationUtil.isAnnotationExistOnClass(ejbClass, Interceptor.class))
         {
             throw new WebBeansConfigurationException(EjbConstants.EJB_WEBBEANS_ERROR_CLASS_PREFIX + ejbClass.getName() + " can not annotated with @Interceptor");
+        }
+    }
+    
+    /**
+     * Check generic type conditions.
+     * @param ejbClass ebj class
+     * @param scopeType scope type
+     */
+    public static void validateGenericBeanType(Class<?> ejbClass, Class<? extends Annotation> scopeType)
+    {
+        Asserts.assertNotNull(ejbClass, "ejbClass parameter can not be null");
+        Asserts.assertNotNull(ejbClass, "scopeType parameter can not be null");
+        
+        if(ClassUtil.isDefinitionConstainsTypeVariables(ejbClass))
+        {
+            if(!scopeType.equals(Dependent.class))
+            {
+                throw new WebBeansConfigurationException("Ejb generic bean class : " + ejbClass.getName() + "scope must be @Dependent");
+            }
         }
     }
 

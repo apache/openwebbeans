@@ -13,15 +13,12 @@
  */
 package org.apache.webbeans.ejb.component.creation;
 
-import javax.enterprise.context.ScopeType;
+import java.util.List;
 
 import org.apache.openejb.DeploymentInfo;
-import org.apache.openejb.InterfaceType;
 import org.apache.webbeans.component.creation.AbstractInjectedTargetBeanCreator;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.util.EjbValidator;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * EjbBeanCreatorImpl.
@@ -54,25 +51,33 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
     {
         super.defineScopeType(errorMessage);
         EjbValidator.validateEjbScopeType(getBean());
+        EjbValidator.validateGenericBeanType(getBean().getReturnType(), getBean().getScopeType());
     }
     
     
-//    /**
-//     * {@inheritDoc}
-//     */
-//    @Override
-//    public void defineApiType()
-//    {
-//        if(isDefaultMetaDataProvider())
-//        {
-//            DeploymentInfo info = getBean().getDeploymentInfo();
-//            info.geti
-//        }
-//        else
-//        {
-//            //TODO Define Api Types by third party
-//        }
-//    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public void defineApiType()
+    {
+        if(isDefaultMetaDataProvider())
+        {
+            DeploymentInfo info = getBean().getDeploymentInfo();
+            List<Class> businessLocals = info.getBusinessLocalInterfaces();
+            for(Class clazz : businessLocals)
+            {
+                getBean().addApiType(clazz);
+            }
+            
+            getBean().addApiType(Object.class);
+        }
+        else
+        {
+            //TODO Define Api Types by third party
+        }
+    }
     
     
     /**
