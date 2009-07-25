@@ -16,6 +16,7 @@ package org.apache.webbeans.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -367,17 +368,7 @@ public final class ClassUtil
      */
     public static Class<?> getClass(Type type)
     {
-        Asserts.assertNotNull(type, "type parameter can not be null");
-
-        if (type instanceof ParameterizedType)
-        {
-            return (Class<?>) ((ParameterizedType) type).getRawType();
-        }
-
-        else
-        {
-            return (Class<?>) type;
-        }
+        return getClazz(type);
     }
 
     /**
@@ -1533,18 +1524,28 @@ public final class ClassUtil
     }
     
     
-    public static Class<?> getClazz(Type sc)
+    /**
+     * Return raw class type for given type.
+     * @param type base type instance
+     * @return class type for given type
+     */
+    public static Class<?> getClazz(Type type)
     {
         Class<?> raw = null;
         
-        if(sc instanceof ParameterizedType)
+        if(type instanceof ParameterizedType)
         {
-            ParameterizedType pt = (ParameterizedType)sc;
+            ParameterizedType pt = (ParameterizedType)type;
             raw = (Class<?>)pt.getRawType();                
         }
-        else
+        else if(type instanceof Class)
         {
-            raw = (Class<?>)sc;
+            raw = (Class<?>)type;
+        }
+        else if(type instanceof GenericArrayType)
+        {
+            GenericArrayType arrayType = (GenericArrayType)type;
+            raw = getClazz(arrayType.getGenericComponentType());
         }
         
         return raw;
