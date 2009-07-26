@@ -28,7 +28,8 @@ import org.apache.webbeans.intercept.InterceptorData;
 
 /**
  * OWB specific extension of the {@link Bean} interface.
- * It is used internally. Do not use it.
+ * It is used internally. Do not use it. Instead use {@link AbstractBean}
+ * for extension.
  * 
  * @version $Rev$ $Date$
  * <T> bean class
@@ -148,25 +149,76 @@ public abstract class BaseBean<T> implements Bean<T>
      */
     public abstract void setName(String name);
     
+    /**
+     * Gets injection points for given member.
+     * <p>
+     * For example, if member is field, it gets all
+     * injected field's injection points of bean.
+     * </p>
+     * @param member java member
+     * @return injection points for given member
+     */
     public abstract List<InjectionPoint> getInjectionPoint(Member member);
 
+    /**
+     * Gets precedence
+     * @return precedence
+     */
     public abstract int getPrecedence();
 
+    /**
+     * Returns bean class type
+     * @return bean class type
+     */
     public abstract Class<T> getReturnType();
 
-    public abstract Object getDependent(Bean<?> dependentComponent,InjectionPoint injectionPoint);
+    /**
+     * Gets dependent bean at given injection point.
+     * @param dependentBean dependent bean
+     * @param injectionPoint injection point of dependent bean
+     * @return dependent bean
+     */
+    public abstract Object getDependent(Bean<?> dependentBean,InjectionPoint injectionPoint);
 
+    /**
+     * Gets interceptor stack of bean instance.
+     * @return interceptor stack
+     */
     public abstract List<InterceptorData> getInterceptorStack();
 
+    /**
+     * Gets decorator stack of bean instance.
+     * @return decorator stack
+     */
     public abstract List<Object> getDecoratorStack();
 
+    /**
+     * Sets serializable flag.
+     * @param serializable flag
+     */
     public abstract void setSerializable(boolean serializable);
 
+    /**
+     * Set nullable flag.
+     * @param nullable flag
+     */
     public abstract void setNullable(boolean nullable);
     
+    /**
+     * Set specialized flag.
+     * @param specialized flag
+     */
     public abstract void setSpecializedBean(boolean specialized);
     
+    /**
+     * Returns true if bean is a specialized bean, false otherwise.
+     * @return true if bean is a specialized bean
+     */
     public abstract boolean isSpecializedBean();
     
+    /**
+     * Returns creational context of bean instance
+     * @return creational context of bean instance.
+     */
     public abstract CreationalContext<T> getCreationalContext();
 }

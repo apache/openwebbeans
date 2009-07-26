@@ -50,28 +50,28 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     /**Logger instance*/
     private final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
     
-    /** Name of the component */
+    /** Name of the bean */
     protected String name;
 
-    /** Deployment type of the component */
+    /** Deployment type of the bean */
     protected Annotation type;
 
-    /** Scope type of the component */
+    /** Scope type of the bean */
     protected Annotation implScopeType;
 
-    /** Binding types of the component */
+    /** Binding types of the bean */
     protected Set<Annotation> implBindingTypes = new HashSet<Annotation>();
 
-    /** Api types of the component */
+    /** Api types of the bean */
     protected Set<Type> apiTypes = new HashSet<Type>();
 
     /** Web Beans type */
     protected WebBeansType webBeansType;
 
-    /** Return type of the component */
+    /** Return type of the bean */
     protected Class<T> returnType;
 
-    /** Stereotypes of the component */
+    /** Stereotypes of the bean */
     protected Set<Annotation> stereoTypes = new HashSet<Annotation>();
     
     /**This bean is specialized or not*/
@@ -108,7 +108,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
      * Constructor definiton. Each subclass redefines its own constructor with
      * calling this.
      * 
-     * @param name name of the component
+     * @param name name of the bean
      * @param webBeansType web beans type
      */
     protected AbstractBean(WebBeansType webBeansType, Class<T> returnType)
@@ -138,14 +138,16 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         return this.inheritedMetaData;
     }
     
+    /**
+     * Sets inherited meta data.
+     */
     protected void setInheritedMetaData()
     {
         this.inheritedMetaData = new BeanInheritedMetaData<T>(this);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.webbeans.component.Component#create()
+    /**
+     * {@inheritDoc}
      */
     public T create(CreationalContext<T> creationalContext)
     {
@@ -177,16 +179,16 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Creates the instance of the component that has a specific implementation
+     * Creates the instance of the bean that has a specific implementation
      * type. Each subclass must define its own create mechanism.
      * 
-     * @return instance of the component
+     * @return instance of the bean
      */
     protected abstract T createInstance(CreationalContext<T> creationalContext);
 
     /*
      * (non-Javadoc)
-     * @see javax.webbeans.component.Component#destroy(java.lang.Object)
+     * @see javax.webbeans.bean.Component#destroy(java.lang.Object)
      */
     public void destroy(T instance, CreationalContext<T> creationalContext)
     {
@@ -213,10 +215,10 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Destroy the instance of the component. Each subclass must define its own
+     * Destroy the instance of the bean. Each subclass must define its own
      * destroy mechanism.
      * 
-     * @param instance instance that is being destroyed
+     * @param instance instance of the bean that is being destroyed
      */
     protected void destroyInstance(T instance)
     {
@@ -224,9 +226,9 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Get component type.
+     * Get bean type.
      * 
-     * @return component type
+     * @return bean type
      */
     public Annotation getType()
     {
@@ -251,9 +253,9 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Set component type.
+     * Set bean type.
      * 
-     * @param type component type
+     * @param type bean type
      */
     public void setType(Annotation type)
     {
@@ -281,9 +283,9 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Name of the component.
+     * Name of the bean.
      * 
-     * @return name of the component
+     * @return name of the bean
      */
     public String getName()
     {
@@ -291,7 +293,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Get web bean type of the component.
+     * Get web bean type of the bean.
      * 
      * @return web beans type
      */
@@ -343,7 +345,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     /**
      * Gets the stereotypes.
      * 
-     * @return stereotypes of the component
+     * @return stereotypes of the bean
      */
     public Set<Annotation> getOwbStereotypes()
     {
@@ -364,7 +366,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Gets predecence of the component.
+     * Gets predecence of the bean.
      * 
      * @return precedence
      */
@@ -420,10 +422,10 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Gets the dependent component instance.
+     * Gets the dependent bean instance.
      * 
-     * @param dependentComponent dependent web beans component
-     * @return the dependent component instance
+     * @param dependentComponent dependent web beans bean
+     * @return the dependent bean instance
      */
     public Object getDependent(Bean<?> dependentComponent, InjectionPoint injectionPoint)
     {
@@ -446,25 +448,25 @@ public abstract class AbstractBean<T> extends BaseBean<T>
 
         return object;
     }
-
+    
     /**
-     * Gets the interceptor stack.
-     * 
-     * @return the interceptor stack
+     * {@inheritDoc}
      */
     public List<InterceptorData> getInterceptorStack()
     {
         return this.interceptorStack;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public List<Object> getDecoratorStack()
     {
         return this.decoratorStack;
     }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.webbeans.component.Component#setNullable()
+    
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void setNullable(boolean nullable)
@@ -472,9 +474,8 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         this.nullable = nullable;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.webbeans.component.Component#setSerializable()
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void setSerializable(boolean serializable)
@@ -483,9 +484,8 @@ public abstract class AbstractBean<T> extends BaseBean<T>
 
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.webbeans.manager.Bean#isNullable()
+    /**
+     * {@inheritDoc}
      */
     @Override
     public boolean isNullable()
@@ -494,21 +494,26 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         return this.nullable;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.webbeans.manager.Bean#isSerializable()
+    /**
+     * {@inheritDoc}
      */
     @Override
     public boolean isSerializable()
     {
         return this.serializable;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */    
     public void addInjectionPoint(InjectionPoint injectionPoint)
     {
         this.injectionPoints.add(injectionPoint);
     }
     
+    /**
+     * {@inheritDoc}
+     */    
     public Set<InjectionPoint> getInjectionPoints()
     {
         return this.injectionPoints;
@@ -530,17 +535,26 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         this.dependentOwnerInjectionPoint = dependentOwnerInjectionPoint;
     }
     
-    
+    /**
+     * {@inheritDoc}
+     */    
     public void setSpecializedBean(boolean specialized)
     {
         this.specializedBean = specialized;
     }
     
+    
+    /**
+     * {@inheritDoc}
+     */    
     public boolean isSpecializedBean()
     {
         return this.specializedBean;
     }
     
+    /**
+     * {@inheritDoc}
+     */    
     public List<InjectionPoint> getInjectionPoint(Member member)
     {
         List<InjectionPoint> points = new ArrayList<InjectionPoint>();
@@ -556,6 +570,9 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         return points;
     }
     
+    /**
+     * {@inheritDoc}
+     */    
     public Set<Class<? extends Annotation>> getStereotypes()
     {
         Set<Class<? extends Annotation>> set = new HashSet<Class<? extends Annotation>>();
@@ -568,17 +585,26 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         return set;
     }
     
+    /**
+     * {@inheritDoc}
+     */    
     public CreationalContext<T> getCreationalContext()
     {
         return this.creationalContext;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */    
     //TODO Replaces @Deploymeny Types, no starting work for now!
     public boolean isPolicy()
     {
         return false;
     }
     
+    /**
+     * {@inheritDoc}
+     */    
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
