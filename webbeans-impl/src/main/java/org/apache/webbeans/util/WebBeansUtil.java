@@ -104,8 +104,6 @@ import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
-import org.apache.webbeans.deployment.StereoTypeManager;
-import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -131,6 +129,7 @@ import org.apache.webbeans.portable.events.ProcessProducerMethodImpl;
 
 /**
  * Contains some utility methods used in the all project.
+ * 
  * @version $Rev$ $Date$ 
  */
 @SuppressWarnings("unchecked")
@@ -1241,6 +1240,11 @@ public final class WebBeansUtil
         }
     }
 
+    /**
+     * Validates that given class obeys stereotype model
+     * defined by the specification.
+     * @param clazz stereotype class
+     */
     public static void checkStereoTypeClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);

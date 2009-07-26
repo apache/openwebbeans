@@ -16,34 +16,44 @@ package org.apache.webbeans.deployment;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.context.ScopeType;
 import javax.enterprise.inject.deployment.DeploymentType;
-import javax.enterprise.inject.stereotype.Stereotype;
 
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.Asserts;
 
+/**
+ * Default implementation of the {@link IStereoTypeModel} contract.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
 public class StereoTypeModel implements IStereoTypeModel
 {
+    /**Name of the stereotype model. It is usd for registering model with StereoTypeManager*/
     private String name;
 
+    /**Default deployment type*/
     private Annotation defaultDeploymentType;
 
+    /**Default scope type*/
     private Annotation defaultScopeType;
 
-    private String defaultName = null;
-
+    /**Interceptor Bindings*/
     private Set<Annotation> interceptorBindingTypes = new HashSet<Annotation>();
 
+    /**Inherit StereoType annotations*/
     private Set<Annotation> inherits = new HashSet<Annotation>();
 
+    /**
+     * Creates a new instance of the stereotype model for
+     * given class.
+     * @param clazz stereotype type
+     */
     public StereoTypeModel(Class<?> clazz)
     {
         this.name = clazz.getName();
@@ -110,9 +120,9 @@ public class StereoTypeModel implements IStereoTypeModel
         }
 
     }
-
+    
     /**
-     * @return the name
+     * {@inheritDoc}
      */
     public String getName()
     {
@@ -120,7 +130,7 @@ public class StereoTypeModel implements IStereoTypeModel
     }
 
     /**
-     * @param name the name to set
+     * {@inheritDoc}
      */
     public void setName(String name)
     {
@@ -128,39 +138,39 @@ public class StereoTypeModel implements IStereoTypeModel
     }
 
     /**
-     * @return the defaultDeploymentType
+     * {@inheritDoc}
      */
     public Annotation getDefaultDeploymentType()
     {
         return defaultDeploymentType;
     }
 
-    public String getDefaultName()
-    {
-        return this.defaultName;
-    }
-
     /**
-     * @return the defaultScopeType
+     * {@inheritDoc}
      */
     public Annotation getDefaultScopeType()
     {
         return defaultScopeType;
     }
 
+    /**
+     * {@inheritDoc}
+     */    
     public Set<Annotation> getInterceptorBindingTypes()
     {
         return this.interceptorBindingTypes;
     }
 
+    /**
+     * {@inheritDoc}
+     */    
     public Set<Annotation> getInheritedStereoTypes()
     {
         return this.inherits;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public boolean equals(Object obj)
@@ -171,16 +181,22 @@ public class StereoTypeModel implements IStereoTypeModel
         }
 
         if (!(obj instanceof StereoTypeModel))
-            return false;
+        {
+            return false;   
+        }
 
+        if(obj == null)
+        {
+            return false;
+        }
+        
         StereoTypeModel model = (StereoTypeModel) obj;
 
         return model.name.equals(this.name);
     }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
+    
+    /**
+     * {@inheritDoc}
      */
     @Override
     public int hashCode()
