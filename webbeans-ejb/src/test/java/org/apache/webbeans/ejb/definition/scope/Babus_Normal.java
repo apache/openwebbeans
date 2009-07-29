@@ -17,8 +17,10 @@
 package org.apache.webbeans.ejb.definition.scope;
 
 import javax.ejb.Stateless;
+import javax.jws.WebService;
 
 @Stateless
+@WebService
 public class Babus_Normal
 {
 

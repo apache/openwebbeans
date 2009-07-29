@@ -59,6 +59,11 @@ public class EjbPlugin extends AbstractOpenWebBeansPlugin implements OpenWebBean
     @Override
     public <T> Bean<T> defineSessionBean(Class<T> clazz)
     {
+        if(!isSessionBean(clazz))
+        {
+            throw new IllegalArgumentException("Given class is not an session bean class");
+        }
+        
         DeploymentInfo info = null;
         SessionBeanType type = SessionBeanType.STATELESS;
         

@@ -22,8 +22,9 @@ import java.util.Set;
 import org.apache.webbeans.ejb.EjbTestContext;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.util.EjbDefinitionUtility;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class EjbApiTypeTest extends EjbTestContext
@@ -33,10 +34,16 @@ public class EjbApiTypeTest extends EjbTestContext
         super(EjbApiTypeTest.class.getName());
     }
     
-    @Before
-    public void init()
+    @BeforeClass
+    public static void init()
     {
-        super.init();
+        initEjb();
+    }
+    
+    @AfterClass
+    public static void after()
+    {
+        destroyEjb();
     }
     
     @Test
@@ -47,7 +54,7 @@ public class EjbApiTypeTest extends EjbTestContext
         
         Set<Type> types = bean.getTypes();
         
-        Assert.assertEquals(3, types.size());
+        Assert.assertEquals(2, types.size());
     }
     
     @Test
@@ -58,7 +65,7 @@ public class EjbApiTypeTest extends EjbTestContext
         
         Set<Type> types = bean.getTypes();
         
-        Assert.assertEquals(3, types.size());
+        Assert.assertEquals(2, types.size());
     }
     
     @Test
@@ -80,7 +87,7 @@ public class EjbApiTypeTest extends EjbTestContext
         
         Set<Type> types = bean.getTypes();
         
-        Assert.assertEquals(2, types.size());
+        Assert.assertEquals(1, types.size());
     }
     
 

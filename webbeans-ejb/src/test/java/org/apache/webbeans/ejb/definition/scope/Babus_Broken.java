@@ -18,9 +18,11 @@ package org.apache.webbeans.ejb.definition.scope;
 
 import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
+import javax.jws.WebService;
 
 @Stateless
 @ApplicationScoped
+@WebService
 public class Babus_Broken
 {
 

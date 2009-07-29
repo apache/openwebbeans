@@ -17,8 +17,10 @@
 package org.apache.webbeans.ejb.definition.apitype;
 
 import javax.ejb.Stateless;
+import javax.jws.WebService;
 
 @Stateless
+@WebService
 public class Balki_ClassView
 {
 

@@ -33,7 +33,7 @@ public class EjbValidatorTest extends EjbTestContext
     @Before
     public void init()
     {
-        super.init();        
+        
     }
     
     @Test

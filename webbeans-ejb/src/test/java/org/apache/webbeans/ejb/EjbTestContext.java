@@ -16,18 +16,55 @@
  */
 package org.apache.webbeans.ejb;
 
+import org.apache.openejb.OpenEJB;
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.ejb.component.EjbBean;
-import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.plugins.PluginLoader;
 
-public abstract class EjbTestContext extends TestContext
-{
+public abstract class EjbTestContext
+{    
+    
     protected EjbTestContext(String name)
     {
-        super(name);
+        ActivityManager.getInstance().setRootActivity(new BeanManagerImpl());
     }
+ 
+    
+    protected static void initEjb()
+    {
+        try
+        {
+            PluginLoader.getInstance().startUp();
+            
+            System.out.println("INIT EJB");
+            
+            OpenEJB.init(System.getProperties());
 
+            
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    protected static void destroyEjb()
+    {
+        try
+        {
+            System.out.println("DESTROY EJB");
+            
+            OpenEJB.destroy();
+            
+        }catch(Exception e)
+        {
+            
+        }
+    }
+    
     protected <T> EjbBean<T> defineEjbBean(Class<T> ejbClass)
     {
-        return new EjbBean<T>(ejbClass);
+        EjbPlugin plugin = new EjbPlugin();
+       return (EjbBean<T>)plugin.defineSessionBean(ejbClass);
     }
 }

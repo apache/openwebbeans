@@ -11,69 +11,48 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.ejb.definition.scope;
+package org.apache.webbeans.ejb.bean;
 
+import junit.framework.Assert;
+
+import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.ejb.EjbTestContext;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.ejb.component.EjbBean;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class EjbScopeTypeTest extends EjbTestContext
+public class SimpleBeanTest extends EjbTestContext
 {
-    public EjbScopeTypeTest()
+    public SimpleBeanTest()
     {
-        super(EjbScopeTypeTest.class.getName());
+        super(SimpleBeanTest.class.getName());
     }
-
+    
     @BeforeClass
-    public static void init()
+    public static void setup()
     {
         initEjb();
     }
     
     @AfterClass
-    public static void after()
+    public static void destroy()
     {
         destroyEjb();
     }
 
     @Test
-    public void testBrokenScope()
+    public void testLocalMethod()
     {
-        WebBeansConfigurationException result = null;
-
-        try
-        {
-            defineEjbBean(Babus_Broken.class);
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            result = e;
-        }
-
-        Assert.assertNotNull(result);
+        EjbPlugin plugin = new EjbPlugin();
+        boolean value = plugin.isSessionBean(SimpleBean.class);
+        
+        Assert.assertTrue(value);
+        
+        EjbBean<SimpleBean> bean = (EjbBean<SimpleBean>)plugin.defineSessionBean(SimpleBean.class);
+        Assert.assertNotNull(bean);
+        
+        
+        
     }
-    
-    @Test
-    public void testNormalScope()
-    {
-        WebBeansConfigurationException result = null;
-
-        try
-        {
-            defineEjbBean(Babus_Normal.class);
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            result = e;
-        }
-
-        Assert.assertNull(result);
-    }
-    
-
 }

@@ -17,7 +17,9 @@
 package org.apache.webbeans.ejb.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,17 +29,21 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Producer;
 
+import org.apache.openejb.DeploymentInfo;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.component.creation.EjbBeanCreatorImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 @SuppressWarnings("unchecked")
@@ -76,6 +82,7 @@ public final class EjbUtility
         ejbBeanCreator.defineBindingType();
         ejbBeanCreator.defineName(WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));            
         Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods();        
+        checkProducerMethods(producerMethodBeans, ejbBean);
         Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields();           
         ejbBeanCreator.defineDisposalMethods();
         ejbBeanCreator.defineInjectedFields();
@@ -144,5 +151,45 @@ public final class EjbUtility
             BeanManagerImpl.getManager().getBeans().addAll(producerMethodBeans);
             BeanManagerImpl.getManager().getBeans().addAll(producerFieldBeans);
         }        
+    }
+    
+    private static void checkProducerMethods(Set<ProducerMethodBean<?>> producerMethodBeans, EjbBean<?> bean)
+    {
+        for(ProducerMethodBean<?> producerMethodBean : producerMethodBeans)
+        {
+            Method producerMethod = producerMethodBean.getCreatorMethod();
+            if(!ClassUtil.isStatic(producerMethod.getModifiers()))
+            {
+                if(!isBusinessMethod(producerMethod, bean))
+                {
+                    throw new WebBeansConfigurationException("Producer Method Bean must be business method of session bean : " + bean);
+                }
+            }
+        }        
+    }
+    
+    public static boolean isBusinessMethod(Method method, EjbBean<?> bean)
+    {
+        DeploymentInfo info = bean.getDeploymentInfo();
+        List<Class> businessLocals = info.getBusinessLocalInterfaces();
+        for(Class clz : businessLocals)
+        {
+            try
+            {
+                clz.getMethod(method.getName(), method.getParameterTypes());
+                
+                return true;
+            }
+            catch (SecurityException e)
+            {
+                throw new WebBeansException("Security exception",e);
+            }
+            catch (NoSuchMethodException e)
+            {
+                continue;
+            }
+        }
+        
+        return false;
     }
 }

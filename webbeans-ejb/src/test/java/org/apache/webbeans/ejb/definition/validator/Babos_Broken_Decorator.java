@@ -18,9 +18,11 @@ package org.apache.webbeans.ejb.definition.validator;
 
 import javax.decorator.Decorator;
 import javax.ejb.Stateless;
+import javax.jws.WebService;
 
 @Stateless
 @Decorator
+@WebService
 public class Babos_Broken_Decorator
 {
 

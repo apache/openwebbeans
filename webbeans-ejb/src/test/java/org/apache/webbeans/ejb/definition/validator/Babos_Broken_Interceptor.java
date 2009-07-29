@@ -18,9 +18,11 @@ package org.apache.webbeans.ejb.definition.validator;
 
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptor;
+import javax.jws.WebService;
 
 @Stateless
 @Interceptor
+@WebService
 public class Babos_Broken_Interceptor
 {
 
