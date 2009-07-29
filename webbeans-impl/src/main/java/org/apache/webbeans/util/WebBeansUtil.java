@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -38,7 +37,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.decorator.Decorator;
-import javax.ejb.EnterpriseBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
@@ -67,11 +65,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.http.HttpSessionListener;
 
 import org.apache.webbeans.annotation.ApplicationScopeLiteral;
 import org.apache.webbeans.annotation.CurrentLiteral;
@@ -196,41 +189,46 @@ public final class WebBeansUtil
     
     
     /**
-     * Check producer method return type.
-     * 
-     * @param component producer method component
-     * @param type return type 
+     * Check producer method/field bean return type. 
+     * @param bean producer bean instance
+     * @param member related member instance
      */
-    public static void checkProducerGenericType(Bean<?> component,Member member)
+    public static void checkProducerGenericType(Bean<?> bean,Member member)
     {
-    	Asserts.assertNotNull(component);
+    	Asserts.assertNotNull(bean,"Bean is null");
     	
     	Type type = null;
     	
-    	if(component instanceof ProducerMethodBean)
+    	if(bean instanceof ProducerMethodBean)
     	{
-    		type = ((ProducerMethodBean<?>)component).getCreatorMethod().getGenericReturnType();
+    		type = ((ProducerMethodBean<?>)bean).getCreatorMethod().getGenericReturnType();
     	}
-    	else if(component instanceof ProducerFieldBean)
+    	else if(bean instanceof ProducerFieldBean)
     	{
-    		type = ((ProducerFieldBean<?>)component).getCreatorField().getGenericType();
+    		type = ((ProducerFieldBean<?>)bean).getCreatorField().getGenericType();
     	}
     	else
     	{
-    		throw new IllegalArgumentException("Component must be producer field or method : " + component);
+    		throw new IllegalArgumentException("Bean must be Producer Field or Method Bean instance : " + bean);
     	}
     	
-    	String message = "Producer field/method : " + member.getName() + " in class : " + member.getDeclaringClass().getName(); 
+    	String message = "Producer Field/Method Bean with name : " + member.getName() + " in bean class : " + member.getDeclaringClass().getName(); 
     	
     	if(checkGenericForProducers(type, message))
     	{
-            if(!component.getScopeType().equals(Dependent.class))
+            if(!bean.getScopeType().equals(Dependent.class))
             {
                 throw new WebBeansConfigurationException(message + " scope type must bee @Dependent");
             }
     	}
     }
     
+    /**
+     * Check generic types for producer method and fields.
+     * @param type generic return type
+     * @param message error message
+     * @return true if parametrized type argument is TypeVariable 
+     */
     //Helper method
     private static boolean checkGenericForProducers(Type type, String message)
     {
@@ -276,36 +274,21 @@ public final class WebBeansUtil
      */
     public static void isManagedBeanClass(Class<?> clazz)
     {
-        Asserts.nullCheckForClass(clazz);
+        Asserts.nullCheckForClass(clazz, "Class is null");
+        
         int modifier = clazz.getModifiers();
 
         if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be non-static inner class");
+            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() + " can not be non-static inner class");
 
         if (!ClassUtil.isConcrete(clazz) && !AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " have to be concrete if not defines as @Decorator");
-
-        if (ClassUtil.isAssignable(Servlet.class, clazz))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement Servlet interface");
-
-        if (ClassUtil.isAssignable(Filter.class, clazz))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement Filter interface");
-
-        if (ClassUtil.isAssignable(ServletContextListener.class, clazz))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement ServletContextListener");
-
-        if (ClassUtil.isAssignable(HttpSessionListener.class, clazz))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement HttpSessionListener");
-
-        if (ClassUtil.isAssignable(ServletRequestListener.class, clazz))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can notimplement ServletRequestListener");
-
-        if (ClassUtil.isAssignable(EnterpriseBean.class, clazz))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not implement EnterpriseBean");
-
+            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() + " have to be concrete if not defines as @Decorator");
+                
         if (!isConstructureOk(clazz))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " must define at least one Constructor");
-
+        {
+            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() + " must define at least one Constructor");   
+        }
+            
         // and finally call all checks which are defined in plugins like JSF, JPA, etc
         List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
         for (OpenWebBeansPlugin plugin : plugins)
@@ -314,6 +297,13 @@ public final class WebBeansUtil
         }
     }
 
+    /**
+     * Defines applicable constructor.
+     * @param <T> type info
+     * @param clazz class type
+     * @return constructor
+     * @throws WebBeansConfigurationException any configuration exception
+     */
     public static <T> Constructor<T> defineConstructor(Class<T> clazz) throws WebBeansConfigurationException
     {
         Asserts.nullCheckForClass(clazz);
@@ -382,8 +372,7 @@ public final class WebBeansUtil
     }
 
     /**
-     * Check that simple web beans class has compatible constructor.
-     * 
+     * Check that simple web beans class has compatible constructor. 
      * @param clazz web beans simple class
      * @throws WebBeansConfigurationException if the web beans has incompatible
      *             constructor
@@ -423,72 +412,33 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
 
-        Type returnType = method.getGenericReturnType();
-        if (returnType instanceof ParameterizedType)
-        {
-            ParameterizedType pType = (ParameterizedType) returnType;
-
-            Type[] actualArguments = pType.getActualTypeArguments();
-
-            for (Type actualType : actualArguments)
-            {
-                if ((actualType instanceof TypeVariable) || (actualType instanceof WildcardType))
-                {
-                    throw new WebBeansConfigurationException("Producer method  : " + method.getName() + " in the class : " + parentImplClazzName + " can not return TypeVariable or WildcardType return type arguments.");
-                }
-            }
-        }
-
         if (AnnotationUtil.isMethodHasAnnotation(method, Initializer.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Disposes.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Observes.class))
         {
-            throw new WebBeansConfigurationException("Producer method : " + method.getName() + " in the class : " + parentImplClazzName + " can not be annotated with" + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
+            throw new WebBeansConfigurationException("Producer Method Bean with name : " + method.getName() + " in bean class : " + parentImplClazzName + " can not be annotated with" + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
         }
     }
     
     /**
-     * Check producer field is ok for deployment.
-     * 
-     * @param method producer method
-     * @param parentImplClazzName parent class name
+     * CheckProducerMethodDisposal.
+     * @param disposalMethod disposal method
+     * @param definedBeanClassName bean class name 
      */
-    public static void checkProducerFieldForDeployment(Field producerField, String parentImplClazzName)
-    {
-        Asserts.assertNotNull(producerField, "producerField argument can not be null");
-
-        Type returnType = producerField.getGenericType();
-        if (ClassUtil.isParametrizedType(returnType))
-        {
-            ParameterizedType pType = (ParameterizedType) returnType;
-
-            Type[] actualArguments = pType.getActualTypeArguments();
-
-            for (Type actualType : actualArguments)
-            {
-                if ((actualType instanceof TypeVariable) || (actualType instanceof WildcardType))
-                {
-                    throw new WebBeansConfigurationException("Producer field  : " + producerField.getName() + " in the class : " + parentImplClazzName + " can not return TypeVariable or WildcardType return type arguments.");
-                }
-            }
-        }
-    }    
-
-    public static void checkProducerMethodDisposal(Method disposalMethod, String parentImplClazzName)
+    public static void checkProducerMethodDisposal(Method disposalMethod, String definedBeanClassName)
     {
         if (AnnotationUtil.isMethodMultipleParameterAnnotationExist(disposalMethod, Disposes.class))
         {
-            throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in class " + parentImplClazzName + " has multiple @Disposes annotation parameter");
+            throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in class " + definedBeanClassName + " has multiple @Disposes annotation parameter");
         }
 
         if (AnnotationUtil.isMethodHasAnnotation(disposalMethod, Initializer.class) || AnnotationUtil.isMethodParameterAnnotationExist(disposalMethod, Observes.class) || AnnotationUtil.isMethodHasAnnotation(disposalMethod, Produces.class))
         {
-            throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in the class : " + parentImplClazzName + " can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes");
+            throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in the class : " + definedBeanClassName + " can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes");
         }
 
     }
 
     /**
-     * Check conditions for the new binding.
-     * 
+     * Check conditions for the new binding. 
      * @param annotations annotations
      * @return Annotation[] with all binding annotations
      * @throws WebBeansConfigurationException if &x0040;New plus any other binding annotation is set or
@@ -706,6 +656,14 @@ public final class WebBeansUtil
         return comp;
     }    
     
+    /**
+     * Creates a new event bean instance.
+     * @param <T> type info
+     * @param returnType bean api type
+     * @param eventType event type
+     * @param annotations event binding annotations
+     * @return new event bean instance
+     */
     public static <T> EventBean<T> createObservableImplicitComponent(Class<T> returnType, Type eventType, Annotation... annotations)
     {
         EventBean<T> component = new EventBean<T>(returnType, eventType, WebBeansType.OBSERVABLE);
@@ -719,6 +677,10 @@ public final class WebBeansUtil
         return component;
     }
 
+    /**
+     * Creates a new manager bean instance.
+     * @return new manager bean instance
+     */
     public static BeanManagerBean getManagerComponent()
     {
         BeanManagerBean managerComponent = new BeanManagerBean();
@@ -732,6 +694,15 @@ public final class WebBeansUtil
         return managerComponent;
     }
     
+    /**
+     * Creates a new instance bean.
+     * @param <T> type info
+     * @param instance Instance instance
+     * @param clazz Instance class
+     * @param injectedType injected type
+     * @param obtainsBindings instance bindings
+     * @return new instance bean
+     */
     public static <T> InstanceBean<T> createInstanceComponent(ParameterizedType instance,Class<Instance<T>> clazz, Type injectedType, Annotation...obtainsBindings)
     {
         InstanceBean<T> instanceComponent = new InstanceBean<T>(clazz,injectedType);
@@ -748,6 +719,10 @@ public final class WebBeansUtil
         return instanceComponent;
     }
 
+    /**
+     * Returns new conversation bean instance.
+     * @return new conversation bean
+     */
     public static ConversationBean getConversationComponent()
     {
         ConversationBean conversationComp = new ConversationBean();
@@ -763,6 +738,10 @@ public final class WebBeansUtil
         return conversationComp;
     }
     
+    /**
+     * Returns a new injected point bean instance.
+     * @return new injected point bean
+     */
     public static InjectionPointBean getInjectionPointComponent()
     {
         return new InjectionPointBean(null);
@@ -1128,12 +1107,17 @@ public final class WebBeansUtil
         return false;
     }
 
-    public static Annotation[] getComponentStereoTypes(BaseBean<?> component)
+    /**
+     * Returns bean stereotypes.
+     * @param bean bean instance
+     * @return bean stereotypes
+     */
+    public static Annotation[] getComponentStereoTypes(BaseBean<?> bean)
     {
-        Asserts.assertNotNull(component, "component parameter can not be null");
-        if (isComponentHasStereoType(component))
+        Asserts.assertNotNull(bean, "bean parameter can not be null");
+        if (isComponentHasStereoType(bean))
         {
-            Set<Annotation> set = component.getOwbStereotypes();
+            Set<Annotation> set = bean.getOwbStereotypes();
             Annotation[] anns = new Annotation[set.size()];
             anns = set.toArray(anns);
 
@@ -1143,9 +1127,14 @@ public final class WebBeansUtil
         return new Annotation[] {};
     }
 
-    public static boolean isNamedExistOnStereoTypes(BaseBean<?> component)
+    /**
+     * Returns true if name exists,false otherwise.
+     * @param bean bean instance
+     * @return true if name exists
+     */
+    public static boolean isNamedExistOnStereoTypes(BaseBean<?> bean)
     {
-        Annotation[] types = getComponentStereoTypes(component);
+        Annotation[] types = getComponentStereoTypes(bean);
 
         for (Annotation ann : types)
         {

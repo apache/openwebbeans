@@ -729,10 +729,6 @@ public final class DefinitionUtil
         DefinitionUtil.defineBindingTypes(component, fieldAnns);
         DefinitionUtil.defineName(component, fieldAnns, field.getName());
 
-        // WebBeansUtil.checkSteroTypeRequirements(component, fieldAnns,
-        // "WebBeans producer method : " + method.getName() + " in class : " +
-        // parent.getReturnType().getName());
-
         return component;
     }
 
