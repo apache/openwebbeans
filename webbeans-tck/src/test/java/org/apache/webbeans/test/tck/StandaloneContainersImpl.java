@@ -51,13 +51,13 @@ public class StandaloneContainersImpl implements StandaloneContainers
             
         }catch(Exception e)
         {
-            throw new DeploymentException(e);
+            throw new DeploymentException(e.getMessage());
         }
         
     }
 
 
-    public void deploy(Iterable<Class<?>> classes, Iterable<URL> beansXmls) throws DeploymentException
+    public boolean deploy(Iterable<Class<?>> classes, Iterable<URL> beansXmls)
     {
         try
         {
@@ -81,10 +81,9 @@ public class StandaloneContainersImpl implements StandaloneContainers
         }
         catch(Exception e)
         {
-            throw new DeploymentException(e);
+            throw new RuntimeException(e);
         }
-        
-        
+        return false;
     }
 
     public void setup()
@@ -95,6 +94,11 @@ public class StandaloneContainersImpl implements StandaloneContainers
     public void undeploy()
     {
         this.lifeCycle.applicationEnded(this.servletContextEvent);
+    }
+
+    public DeploymentException getDeploymentException()
+    {
+        return new DeploymentException("StandaloneContainer");
     }
 
 }

@@ -33,7 +33,7 @@
 	<description>All TCK tests for the  OpenWebBeans Implementation</description>
 
     <properties>
-        <webbeans.tck.version>1.0.0.BETA2</webbeans.tck.version>
+        <webbeans.tck.version>1.0.0-SNAPSHOT</webbeans.tck.version>
     </properties>
     
     <dependencies>
