@@ -1505,6 +1505,10 @@ public final class ClassUtil
     {
         Class<?> raw = getClazz(clazz);
         
+        if (raw == null) {
+            return null;
+        }
+        
         set.add(clazz);
 
         Type sc = raw.getGenericSuperclass();
