@@ -38,7 +38,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class ExtensionLoader
 {
     /**Map of extensions*/
-    private Map<Bean<?>, Object> extensions = null;
+    private Map<Bean<?>, Object> extensions = Collections.emptyMap();
     
     /**
      * Creates a new loader instance.
