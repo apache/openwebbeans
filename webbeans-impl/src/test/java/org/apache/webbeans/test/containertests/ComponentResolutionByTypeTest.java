@@ -13,7 +13,12 @@
  */
 package org.apache.webbeans.test.containertests;
 
+import java.util.Set;
+
+import javax.enterprise.inject.spi.Bean;
 import javax.servlet.ServletContext;
+
+import junit.framework.Assert;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
@@ -21,6 +26,7 @@ import org.apache.webbeans.test.annotation.binding.AnnotationWithNonBindingMembe
 import org.apache.webbeans.test.component.BindingComponent;
 import org.apache.webbeans.test.component.NonBindingComponent;
 import org.apache.webbeans.test.servlet.TestContext;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ComponentResolutionByTypeTest extends TestContext
@@ -37,17 +43,18 @@ public class ComponentResolutionByTypeTest extends TestContext
     public @AnnotationWithNonBindingMember(value = "C", arg1 = "arg11", arg2 = "arg21")
     NonBindingComponent s5 = null;
 
-    private static BeanManagerImpl cont = BeanManagerImpl.getManager();
+    private BeanManagerImpl cont;
     private static final String CLAZZ_NAME = ComponentResolutionByTypeTest.class.getName();
 
     public ComponentResolutionByTypeTest()
     {
         super(CLAZZ_NAME);
     }
-
+    
+    @Before
     public void init()
     {
-
+        cont = BeanManagerImpl.getManager();
     }
 
     public void endTests(ServletContext ctx)
@@ -55,121 +62,36 @@ public class ComponentResolutionByTypeTest extends TestContext
         cont = null;
     }
 
-    public void startTests(ServletContext ctx)
+    @Test
+    public void testBindingTypeOk() throws Throwable
     {
-
-        try
-        {
-            testBindingTypeNonOk();
-            testBindingTypeOk();
-            testNonBindingTypeNonOk();
-            testNonBindingTypeOk1();
-            testNonBindingTypeOk2();
-
-        }
-        catch (Throwable e)
-        {
-
-        }
+        cont.resolveByType(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s1").getAnnotations());
     }
 
     @Test
-    public void startTests()
-    {
-
-        try
-        {
-            testBindingTypeNonOk();
-            testBindingTypeOk();
-            testNonBindingTypeNonOk();
-            testNonBindingTypeOk1();
-            testNonBindingTypeOk2();
-
-        }
-        catch (Throwable e)
-        {
-
-        }
-    }
-
-    public void testBindingTypeOk() throws Throwable
-    {
-        try
-        {
-            cont.resolveByType(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s1").getAnnotations());
-            pass("testBindingTypeOk");
-
-        }
-        catch (Throwable e)
-        {
-            fail("testBindingTypeOk");
-
-        }
-
-    }
-
     public void testBindingTypeNonOk() throws Throwable
     {
-        try
-        {
-            cont.resolveByType(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s2").getAnnotations());
-            fail("testBindingTypeNonOk");
-
-        }
-        catch (Throwable e)
-        {
-            pass("testBindingTypeNonOk");
-
-        }
-
+        cont.resolveByType(BindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s2").getAnnotations());
     }
 
+    @Test
     public void testNonBindingTypeOk1() throws Throwable
     {
-        try
-        {
-            cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s3").getAnnotations());
-            pass("testNonBindingTypeOk1");
-
-        }
-        catch (Throwable e)
-        {
-            fail("testNonBindingTypeOk1");
-
-        }
-
+        cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s3").getAnnotations());
     }
 
+    @Test
     public void testNonBindingTypeOk2() throws Throwable
     {
-        try
-        {
-            cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s4").getAnnotations());
-            pass("testNonBindingTypeOk2");
-
-        }
-        catch (Throwable e)
-        {
-            fail("testNonBindingTypeOk2");
-
-        }
-
+        Set<Bean<?>> beans = cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s4").getAnnotations());
+        Assert.assertNotNull(beans);
+        Assert.assertTrue(beans.isEmpty());
     }
 
+    @Test
     public void testNonBindingTypeNonOk() throws Throwable
     {
-        try
-        {
-            cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s5").getAnnotations());
-            fail("testNonBindingTypeNonOk");
-
-        }
-        catch (Throwable e)
-        {
-            pass("testNonBindingTypeNonOk");
-
-        }
-
+        cont.resolveByType(NonBindingComponent.class, ComponentResolutionByTypeTest.class.getDeclaredField("s5").getAnnotations());
     }
 
 }
