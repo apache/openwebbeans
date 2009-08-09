@@ -778,6 +778,9 @@ public final class DefinitionUtil
             }
 
             Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
+            if (set == null || set.isEmpty()) {
+                continue;
+            }
             Bean<?> bean = set.iterator().next();
             ProducerMethodBean<?> pr = null;
 
