@@ -103,24 +103,18 @@ public final class XMLUtil
                 public void onStart(ElementPath path)
                 {
                     Element element = path.getCurrent();
-                    if (element.getNamespaceURI() == null || element.getNamespaceURI().equals(""))
+
+                    if (element.isRootElement())
                     {
-                        throw new WebBeansConfigurationException("All elements in the beans.xml file have to declare name space.");
-                    }
-                    else
-                    {
-                        if (element.isRootElement())
+                        WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(element.getNamespace().getURI());
+
+                        List allNs = element.declaredNamespaces();
+                        Iterator itNs = allNs.iterator();
+
+                        while (itNs.hasNext())
                         {
-                            WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(element.getNamespace().getURI());
-
-                            List allNs = element.declaredNamespaces();
-                            Iterator itNs = allNs.iterator();
-
-                            while (itNs.hasNext())
-                            {
-                                Namespace namespace = (Namespace)itNs.next();
-                                WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(namespace.getURI());
-                            }
+                            Namespace namespace = (Namespace)itNs.next();
+                            WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(namespace.getURI());
                         }
                     }
                 }

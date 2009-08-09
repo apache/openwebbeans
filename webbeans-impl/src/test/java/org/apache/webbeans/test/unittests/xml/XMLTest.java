@@ -74,23 +74,4 @@ public class XMLTest extends TestContext
         Assert.assertNull(e);
     }
 
-    @Test
-    public void nameSpacesNotDeclared()
-    {
-        Throwable e = null;
-        try
-        {
-            InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/nameSpaceNotDeclared.xml");
-            Assert.assertNotNull(stream);
-
-            XMLUtil.getRootElement(stream);
-
-        }
-        catch (Throwable e1)
-        {
-            e = e1;
-        }
-
-        Assert.assertNotNull(e);
-    }
 }
