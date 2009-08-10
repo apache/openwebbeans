@@ -778,9 +778,6 @@ public final class DefinitionUtil
             }
 
             Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
-            if (set == null || set.isEmpty()) {
-                continue;
-            }
             Bean<?> bean = set.iterator().next();
             ProducerMethodBean<?> pr = null;
 
@@ -807,6 +804,13 @@ public final class DefinitionUtil
                 }
             }
 
+            Method producerMethod = pr.getCreatorMethod();
+            //Disposer methods and producer methods must be in the same class
+            if(!producerMethod.getDeclaringClass().getName().equals(declaredMethod.getDeclaringClass().getName()))
+            {
+                throw new WebBeansConfigurationException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + clazz.getName() + " must be in the same class!");
+            }
+            
             pr.setDisposalMethod(declaredMethod);
 
             addMethodInjectionPointMetaData(component, declaredMethod);

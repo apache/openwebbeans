@@ -633,7 +633,6 @@ public class WebBeansContainerDeployer
             managedBeanCreator.defineConstructor();            
             Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();       
             Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();           
-            managedBeanCreator.defineDisposalMethods();
             managedBeanCreator.defineInjectedFields();
             managedBeanCreator.defineInjectedMethods();
             managedBeanCreator.defineObserverMethods();
@@ -700,6 +699,7 @@ public class WebBeansContainerDeployer
                 DecoratorUtil.checkManagedBeanDecoratorConditions(managedBean);
                 BeanManagerImpl.getManager().addBean(managedBean);
                 BeanManagerImpl.getManager().getBeans().addAll(producerMethods);
+                managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
                 BeanManagerImpl.getManager().getBeans().addAll(producerFields);
             }
         }
