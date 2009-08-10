@@ -17,5 +17,9 @@ import org.apache.webbeans.test.component.inject.parametrized.Persistent;
 
 public class GenericComponent<T extends Persistent> extends SuperGenericComponent<T>
 {
+    public void paramFunction(T paramInstance)
+    {
+        
+    }
 
 }
