@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.BindingType;
 import javax.enterprise.inject.NonBinding;
@@ -855,7 +854,6 @@ public final class AnnotationUtil
             return true;
         }
         else if (clazz.equals(Resource.class) ||
-                 clazz.equals(EJB.class) ||
                  clazz.equals(WebServiceRef.class) )
         {
             return true;
