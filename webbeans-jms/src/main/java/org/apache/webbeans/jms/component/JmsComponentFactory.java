@@ -18,8 +18,21 @@ package org.apache.webbeans.jms.component;
 
 import java.lang.annotation.Annotation;
 
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueReceiver;
+import javax.jms.QueueSender;
+import javax.jms.QueueSession;
+import javax.jms.Topic;
+import javax.jms.TopicConnection;
+import javax.jms.TopicPublisher;
+import javax.jms.TopicSession;
+import javax.jms.TopicSubscriber;
+
 import org.apache.webbeans.annotation.DependentScopeLiteral;
+import org.apache.webbeans.annotation.StandardLiteral;
 import org.apache.webbeans.jms.JMSModel;
+import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.util.Asserts;
 
 public final class JmsComponentFactory
@@ -36,15 +49,31 @@ public final class JmsComponentFactory
         return instance;
     }
     
-    public <T> JmsComponentImpl<T> getJmsComponent(JMSModel model, Class<T> clazz)
+    public <T> JmsBean<T> getJmsComponent(JMSModel model)
     {
         Asserts.assertNotNull(model,"model parameter can not be null");
-        Asserts.assertNotNull(clazz, "clazz parameter can not be null");
         
-        JmsComponentImpl<T> component = new JmsComponentImpl<T>(model,clazz);
+        JmsBean<T> component = new JmsBean<T>(model);
         
-        component.addApiType(clazz);
+        if(model.getJmsType().equals(JMSType.QUEUE))
+        {
+            component.addApiType(Queue.class);
+            component.addApiType(QueueConnection.class);
+            component.addApiType(QueueSession.class);
+            component.addApiType(QueueSender.class);
+            component.addApiType(QueueReceiver.class);
+        }
+        else
+        {
+            component.addApiType(Topic.class);
+            component.addApiType(TopicConnection.class);
+            component.addApiType(TopicSession.class);
+            component.addApiType(TopicPublisher.class);
+            component.addApiType(TopicSubscriber.class);
+        }
+        
         component.setImplScopeType(new DependentScopeLiteral());
+        component.setType(new StandardLiteral());
         
         Annotation[] anns = model.getBindings();
         

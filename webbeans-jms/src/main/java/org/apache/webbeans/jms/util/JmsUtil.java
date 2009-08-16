@@ -42,7 +42,7 @@ import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.exception.WebBeansCreationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
-import org.apache.webbeans.jms.component.JmsComponentImpl;
+import org.apache.webbeans.jms.component.JmsBean;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.Asserts;
@@ -157,28 +157,27 @@ public final class JmsUtil
         
     }
     
-    @SuppressWarnings("unchecked")
-    public static <T> T createNewJmsProxy(JmsComponentImpl<T> jmsComponent)
+    /**
+     * Gets jms related object.
+     * @param jmsComponent jms bean
+     * @param intf injection point class
+     * @return proxy object
+     */
+    public static Object createNewJmsProxy(JmsBean<?> jmsComponent, Class<?> intf)
     {
-        T result = null;
+       Object result = null;
 
         try
         {
             ProxyFactory pf = new ProxyFactory();
-            pf.setInterfaces(new Class<?>[] {Closable.class,
+            pf.setInterfaces(new Class<?>[] {
+                    Closable.class,
                     Serializable.class,
-                    QueueConnection.class,
-                    Queue.class,
-                    QueueSender.class,
-                    QueueSession.class,
-                    Topic.class,
-                    TopicConnection.class,
-                    TopicSession.class,
-                    TopicPublisher.class});
+                    intf});
             
-            pf.setHandler(new JmsProxyHandler(jmsComponent));
+            pf.setHandler(new JmsProxyHandler(jmsComponent,intf));
 
-            result = (T)pf.createClass().newInstance();
+            result = pf.createClass().newInstance();
 
         }
         catch (Exception e)
@@ -189,6 +188,4 @@ public final class JmsUtil
         return result;
     }
     
-    
- 
 }

@@ -19,70 +19,50 @@ package org.apache.webbeans.jms.component;
 import java.lang.reflect.Method;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.util.Closable;
-import org.apache.webbeans.jms.util.JmsUtil;
 
-public class JmsComponentImpl<T> extends AbstractBean<T> 
+public class JmsBean<T> extends AbstractBean<T> implements JmsBeanMarker
 {
     private JMSModel jmsModel = null;
     
-    private Class<T> jmsClass = null;
-        
-    JmsComponentImpl(JMSModel jmsModel, Class<T> jmsClass)
+    @SuppressWarnings("unchecked")
+    JmsBean(JMSModel jmsModel)
     {
-        super(WebBeansType.JMS);
-        
+        super(WebBeansType.JMS);        
         this.jmsModel = jmsModel;
-        this.jmsClass = jmsClass;
+        this.creationalContext = CreationalContextFactory.getInstance().getCreationalContext(this);
     }
 
     @Override
     protected T createInstance(CreationalContext<T> creationalContext)
     {
-        T jmsProxyInstance = JmsUtil.createNewJmsProxy(this);
-         
-        return jmsProxyInstance;
+        return null;
     }
 
     @Override
     protected void destroyInstance(T instance)
     {        
-        if(Session.class.isAssignableFrom(jmsClass) ||
-                MessageConsumer.class.isAssignableFrom(jmsClass) ||
-                MessageProducer.class.isAssignableFrom(jmsClass))
+        try
         {
-            try
+            if(instance != null)
             {
-                if(instance != null)
-                {
-                    Method method = Closable.class.getMethod("closeJMSObject", new Class[]{});
-                    
-                    method.invoke(instance, new Object[]{});                    
-                }
+                Method method = Closable.class.getMethod("closeJMSObject", new Class[]{});
+                
+                method.invoke(instance, new Object[]{});                    
             }
-            
-            catch (Exception e)
-            {
-                throw new WebBeansException("Unable to destroy instance " + this.toString() ,e);
-            }
-            
         }
-    }
-    
-
-    public Class<T> getJmsClass()
-    {
-        return this.jmsClass;
-    }
-    
+        
+        catch (Exception e)
+        {
+            getLogger().error("Error is occured while closing jms instance",e); 
+        }
+}
+        
     public JMSModel getJmsModel()
     {
         return this.jmsModel;

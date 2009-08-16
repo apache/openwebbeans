@@ -33,14 +33,14 @@ import javax.jms.TopicConnectionFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
-import org.apache.webbeans.jms.component.JmsComponentImpl;
+import org.apache.webbeans.jms.component.JmsBean;
 import org.apache.webbeans.util.ClassUtil;
 
 import javassist.util.proxy.MethodHandler;
 
 public class JmsProxyHandler implements MethodHandler
 {
-    private JmsComponentImpl<?> jmsComponent = null;
+    private JmsBean<?> jmsComponent = null;
 
     private static ConnectionFactory connectionFactory = null;
 
@@ -51,10 +51,13 @@ public class JmsProxyHandler implements MethodHandler
     private static Map<String, Destination> dests = new ConcurrentHashMap<String, Destination>();
     
     private Object jmsObject = null;
+    
+    private Class<?> injectionClazz = null;
 
-    public JmsProxyHandler(JmsComponentImpl<?> jmsComponent)
+    public JmsProxyHandler(JmsBean<?> jmsComponent, Class<?> injectionClazz)
     {
         this.jmsComponent = jmsComponent;
+        this.injectionClazz = injectionClazz;
     }
 
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
@@ -67,12 +70,12 @@ public class JmsProxyHandler implements MethodHandler
         }
         
         if (!ClassUtil.isObjectMethod(method.getName()))
-        {
+        {            
             Object cf = null;
 
             if (this.jmsObject == null)
             {
-                Class<?> jmsClazz = this.jmsComponent.getJmsClass();
+                Class<?> jmsClazz = this.injectionClazz;
 
                 if (cf == null && Connection.class.isAssignableFrom(jmsClazz))
                 {
@@ -272,7 +275,7 @@ public class JmsProxyHandler implements MethodHandler
             return dests.get(jndiName);
         }
 
-        Destination res = (Destination) JmsUtil.getInstanceFromJndi(this.jmsComponent.getJmsModel(), this.jmsComponent.getJmsClass());
+        Destination res = (Destination) JmsUtil.getInstanceFromJndi(this.jmsComponent.getJmsModel(), this.injectionClazz);
 
         dests.put(jndiName, res);
 
