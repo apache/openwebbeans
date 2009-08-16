@@ -252,11 +252,10 @@ public class WebBeansInterceptor<T> implements Interceptor<T>
     {
         T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this);
         
-        this.creationalContext = creationalContext;
+        this.delegateComponent.setCreationalContext(creationalContext);
 
         return proxy;
 
-        // return delegateComponent.create();
     }
 
     public void setInjections(Object proxy)

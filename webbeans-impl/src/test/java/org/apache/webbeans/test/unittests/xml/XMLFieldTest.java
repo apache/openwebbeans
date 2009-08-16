@@ -48,7 +48,7 @@ public class XMLFieldTest extends TestContext
         /* Clear the manager component list */
         clear();
 
-        this.xmlConfigurator.configure(stream, "fieldTest.xml");
+        this.xmlConfigurator.configureOwbSpecific(stream, "fieldTest.xml");
 
         ComponentForField cff = (ComponentForField) getManager().getInstanceByName("componentForField");
 

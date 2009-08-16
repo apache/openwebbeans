@@ -19,8 +19,6 @@ package org.apache.webbeans.plugins;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.enterprise.inject.spi.InjectionPoint;
-
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 /**
@@ -93,12 +91,5 @@ public abstract class AbstractOpenWebBeansPlugin implements OpenWebBeansPlugin
         
         
     }
-
-    public <T> boolean addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
-    {
-        return false;
-    }
-    
-    
 
 }

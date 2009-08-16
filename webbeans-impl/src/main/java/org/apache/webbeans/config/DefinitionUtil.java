@@ -64,8 +64,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
-import org.apache.webbeans.plugins.OpenWebBeansPlugin;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -1187,23 +1185,6 @@ public final class DefinitionUtil
         else if(EventUtil.checkObservableInjectionPointConditions(injectionPoint))
         {            
             WebBeansUtil.addInjectedImplicitEventComponent(injectionPoint);
-        }
-        else
-        {
-            Type injectionPointType = injectionPoint.getType();
-            
-            if(injectionPointType instanceof Class)
-            {
-                List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
-                
-                for(OpenWebBeansPlugin plugin : plugins)
-                {
-                    if(plugin.addImplicitComponentForInjectionPoint(injectionPoint))
-                    {
-                        break;
-                    }
-                }
-            }            
         }
     }
 }

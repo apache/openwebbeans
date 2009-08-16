@@ -20,8 +20,6 @@ import java.lang.reflect.Method;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Initializer;
@@ -78,10 +76,10 @@ public final class InterceptorUtil
         {
             return AroundInvoke.class;
         }
-        else if (type.equals(InterceptionType.POST_ACTIVATE))
-        {
-            return PostActivate.class;
-        }
+//        else if (type.equals(InterceptionType.POST_ACTIVATE))
+//        {
+//            return O;
+//        }
         else if (type.equals(InterceptionType.POST_CONSTRUCT))
         {
             return PostConstruct.class;
@@ -90,10 +88,10 @@ public final class InterceptorUtil
         {
             return PreDestroy.class;
         }
-        else if (type.equals(InterceptionType.PRE_PASSIVATE))
-        {
-            return PrePassivate.class;
-        }
+//        else if (type.equals(InterceptionType.PRE_PASSIVATE))
+//        {
+//            return PrePassivate.class;
+//        }
         else
         {
             throw new WebBeansException("Undefined interceotion type");
@@ -138,7 +136,10 @@ public final class InterceptorUtil
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods)
         {
-            if (AnnotationUtil.isMethodHasAnnotation(method, PostConstruct.class) || AnnotationUtil.isMethodHasAnnotation(method, PreDestroy.class) || AnnotationUtil.isMethodHasAnnotation(method, PostActivate.class) || AnnotationUtil.isMethodHasAnnotation(method, PrePassivate.class))
+            if (AnnotationUtil.isMethodHasAnnotation(method, PostConstruct.class) || AnnotationUtil.isMethodHasAnnotation(method, PreDestroy.class) 
+//                    AnnotationUtil.isMethodHasAnnotation(method, PostActivate.class) || 
+//                    AnnotationUtil.isMethodHasAnnotation(method, PrePassivate.class)
+                    )
             {
                 if (ClassUtil.isMethodHasParameter(method))
                 {

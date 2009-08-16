@@ -160,8 +160,7 @@ public class BeanObserverImpl<T> implements Observer<T>
         {
             if (baseComponent.getScopeType().equals(Dependent.class))
             {
-                //TODO Creational Context
-                baseComponent.destroy(object,null);
+                baseComponent.destroy(object,baseComponent.getCreationalContext());
             }
         }
 

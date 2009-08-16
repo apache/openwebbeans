@@ -45,6 +45,12 @@ public class OpenWebBeansConfiguration
     /**Conversation periodic delay in ms.*/
     public static final String CONVERSATION_PERIODIC_DELAY = "org.apache.webbeans.conversation.Conversation.periodicDelay";
     
+    /**Use OWB Specific XML Configuration or Strict Spec XML*/
+    public static final String USE_OWB_SPECIFIC_XML_CONFIGURATION = "org.apache.webbeans.useOwbSpecificXmlConfig";
+    
+    /**Use EJB Discovery or not*/
+    public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.UseEjbMetaDataDiscoveryService";
+    
     public static OpenWebBeansConfiguration getInstance() {
         return (OpenWebBeansConfiguration) WebBeansFinder.getSingletonInstance(OpenWebBeansConfiguration.class.getName());
     }

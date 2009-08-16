@@ -221,4 +221,10 @@ public abstract class BaseBean<T> implements Bean<T>
      * @return creational context of bean instance.
      */
     public abstract CreationalContext<T> getCreationalContext();
+    
+    /**
+     * Set creational context
+     * @param creationalContext creational context
+     */
+    public abstract void setCreationalContext(CreationalContext<T> creationalContext);
 }

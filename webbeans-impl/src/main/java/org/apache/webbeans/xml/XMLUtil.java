@@ -103,18 +103,24 @@ public final class XMLUtil
                 public void onStart(ElementPath path)
                 {
                     Element element = path.getCurrent();
-
-                    if (element.isRootElement())
+                    if (element.getNamespaceURI() == null || element.getNamespaceURI().equals(""))
                     {
-                        WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(element.getNamespace().getURI());
-
-                        List allNs = element.declaredNamespaces();
-                        Iterator itNs = allNs.iterator();
-
-                        while (itNs.hasNext())
+                        throw new WebBeansConfigurationException("All elements in the beans.xml file have to declare name space.");
+                    }
+                    else
+                    {
+                        if (element.isRootElement())
                         {
-                            Namespace namespace = (Namespace)itNs.next();
-                            WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(namespace.getURI());
+                            WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(element.getNamespace().getURI());
+
+                            List allNs = element.declaredNamespaces();
+                            Iterator itNs = allNs.iterator();
+
+                            while (itNs.hasNext())
+                            {
+                                Namespace namespace = (Namespace)itNs.next();
+                                WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(namespace.getURI());
+                            }
                         }
                     }
                 }
@@ -132,6 +138,36 @@ public final class XMLUtil
             throw new WebBeansException("Unable to read root element of the given input stream", e);
         }
     }
+    
+    /**
+     * Gets the root element of the parsed document.
+     * 
+     * @param stream parsed document
+     * @return root element of the document
+     * @throws WebBeansException if any runtime exception occurs
+     */
+    public static Element getSpecStrictRootElement(InputStream stream) throws WebBeansException
+    {
+        try
+        {  
+            SAXReader saxReader = getSaxReader();
+            saxReader.setMergeAdjacentText(true);
+            saxReader.setStripWhitespaceText(true);
+            saxReader.setErrorHandler(new WebBeansErrorHandler());
+            saxReader.setEntityResolver(new WebBeansResolver());
+            saxReader.setValidation(false);
+            Document document = saxReader.read(stream);
+
+            return document.getRootElement();
+
+        }
+        catch (DocumentException e)
+        {
+            log.fatal("Unable to read root element of the given input stream", e);
+            throw new WebBeansException("Unable to read root element of the given input stream", e);
+        }
+    }
+    
 
     public static boolean isElementInNamespace(Element element, String namespace)
     {

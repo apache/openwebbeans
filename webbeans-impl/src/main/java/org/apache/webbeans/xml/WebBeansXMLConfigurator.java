@@ -52,6 +52,7 @@ import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
@@ -71,6 +72,7 @@ import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
+import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -96,6 +98,9 @@ public final class WebBeansXMLConfigurator
 
     /** Current configuration file name */
     private String CURRENT_SCAN_FILE_NAME = null;
+    
+    /**OWB specific or not*/
+    private boolean owbSpecificConfiguration = false;
 
     /** Annotation type manager that manages the XML defined annotations */
     private XMLAnnotationTypeManager xmlAnnotTypeManager = XMLAnnotationTypeManager.getInstance();
@@ -105,16 +110,30 @@ public final class WebBeansXMLConfigurator
      */
     public WebBeansXMLConfigurator()
     {
-
+        String usage = OpenWebBeansConfiguration.getInstance().getProperty(OpenWebBeansConfiguration.USE_OWB_SPECIFIC_XML_CONFIGURATION);
+        this.owbSpecificConfiguration = Boolean.parseBoolean(usage);
     }
     
+    /**
+     * Configures XML configuration file.
+     * @param xmlStream xml configuration file
+     */
     public void configure(InputStream xmlStream)
     {
         try
         {
             if(xmlStream.available() > 0)
             {
-                configure(xmlStream, "No-name XML Stream");    
+                //Use OWB Specific XML Configuration
+                if(this.owbSpecificConfiguration)
+                {
+                    configureOwbSpecific(xmlStream, "No-name XML Stream");    
+                }
+                else
+                {
+                    configureSpecSpecific(xmlStream, "No-name XML Stream");
+                }
+                    
             }
         }
         catch (IOException e)
@@ -123,6 +142,37 @@ public final class WebBeansXMLConfigurator
         }
         
     }
+    
+    /**
+     * Configures XML configuration file.
+     * @param xmlStream xml configuration file
+     * @param fileName file name
+     */
+    public void configure(InputStream xmlStream, String fileName)
+    {
+        try
+        {
+            if(xmlStream.available() > 0)
+            {
+                //Use OWB Specific XML Configuration
+                if(this.owbSpecificConfiguration)
+                {
+                    configureOwbSpecific(xmlStream, fileName);    
+                }
+                else
+                {
+                    configureSpecSpecific(xmlStream, fileName);
+                }
+                    
+            }
+        }
+        catch (IOException e)
+        {
+            throw new WebBeansConfigurationException(e);
+        }
+        
+    }
+    
 
     /**
      * Configures the web beans from the given input stream.
@@ -130,7 +180,7 @@ public final class WebBeansXMLConfigurator
      * @param xmlStream xml file containing the web beans definitions.
      * @param fileName name of the configuration file
      */
-    public void configure(InputStream xmlStream, String fileName)
+    public void configureOwbSpecific(InputStream xmlStream, String fileName)
     {
         try
         {
@@ -145,7 +195,7 @@ public final class WebBeansXMLConfigurator
                 Element webBeansRoot = XMLUtil.getRootElement(xmlStream);
                 
                 //Start configuration
-                configure(webBeansRoot);            
+                configureOwbSpecific(webBeansRoot);            
             }
         }
         catch (IOException e)
@@ -153,13 +203,44 @@ public final class WebBeansXMLConfigurator
             throw new WebBeansConfigurationException(e);
         }
     }
+    
+    /**
+     * Configures the web beans from the given input stream.
+     * 
+     * @param xmlStream xml file containing the web beans definitions.
+     * @param fileName name of the configuration file
+     */
+    public void configureSpecSpecific(InputStream xmlStream, String fileName)
+    {
+        try
+        {
+            if(xmlStream.available() > 0)
+            {
+                Asserts.assertNotNull(xmlStream,"xmlStream parameter can not be null!");
+                Asserts.assertNotNull(fileName,"fileName parameter can not be null!");
+                
+                CURRENT_SCAN_FILE_NAME = fileName;
+                
+                //Get root element of the XML document
+                Element webBeansRoot = XMLUtil.getSpecStrictRootElement(xmlStream);
+                
+                //Start configuration
+                configureSpecSpecific(webBeansRoot);            
+            }
+        }
+        catch (IOException e)
+        {
+            throw new WebBeansConfigurationException(e);
+        }
+    }
+    
 
     /**
      * Configures the xml file root element.
      * 
      * @param webBeansRoot root element of the configuration xml file
      */
-    private void configure(Element webBeansRoot)
+    private void configureOwbSpecific(Element webBeansRoot)
     {
         List<Element> webBeanDeclerationList = new ArrayList<Element>();
         List<Element> childs = webBeansRoot.elements();
@@ -261,6 +342,83 @@ public final class WebBeansXMLConfigurator
 
     }
 
+    /**
+     * Configures the xml file root element.
+     * 
+     * @param webBeansRoot root element of the configuration xml file
+     */
+    private void configureSpecSpecific(Element webBeansRoot)
+    {
+        List<Element> childs = webBeansRoot.elements();
+        Iterator<Element> it = childs.iterator();
+
+        Element child = null;
+        while (it.hasNext())
+        {
+            child = it.next();
+
+            /* <Deploy> element decleration */
+            if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_DEPLOY_ELEMENT))
+            {
+                if (DEPLOY_IS_DEFINED)
+                {
+                    throw new DeploymentException("There can not be more than one web-beans.xml file that declares <deploy> element");
+                }
+                else
+                {
+                    if (!XMLUtil.isElementChildExist(child, WebBeansConstants.WEB_BEANS_XML_STANDART_ELEMENT))
+                    {
+                        throw new DeploymentException("<Deploy> element must have <Standard/> deployment type in the web-beans.xml");
+                    }
+                    
+                    DeploymentTypeManager.getInstance().removeProduction();
+                    
+                    configureDeploymentTypes(child);
+                    DEPLOY_IS_DEFINED = true;
+
+                }
+            }
+            /* <Interceptors> element decleration */
+            else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT))
+            {
+                if (INTERCEPTORS_IS_DEFINED)
+                {
+                    throw new WebBeansConfigurationException("There can not be more than one web-beans.xml file that declares <interceptors> element");
+                }
+                else
+                {
+                    configureInterceptorsElement(child);
+                    INTERCEPTORS_IS_DEFINED = true;
+
+                }
+            }
+            /* <Decorators> element decleration */
+            else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_DECORATORS_ELEMENT))
+            {
+                if (DECORATORS_IS_DEFINED)
+                {
+                    throw new WebBeansConfigurationException("There can not be more than one web-beans.xml file that declares <decorators> element");
+                }
+                else
+                {
+                    configureDecoratorsElement(child);
+                    DECORATORS_IS_DEFINED = true;
+
+                }
+            }
+        }
+
+        /*
+         * If no <Deploy> element is defined in any webbeans.xml in the current
+         * application
+         */
+        if (!DEPLOY_IS_DEFINED)
+        {
+            DeploymentTypeManager.getInstance().addNewDeploymentType(Production.class, 1);
+        }
+
+    }
+    
     /**
      * Configures the webbeans defined in the xml file.
      * 
@@ -414,7 +572,16 @@ public final class WebBeansXMLConfigurator
         while (itChilds.hasNext())
         {
             Element child = itChilds.next();
-            Class<?> clazz = XMLUtil.getElementJavaType(child);
+            Class<?> clazz = null;
+            
+            if(this.owbSpecificConfiguration)
+            {
+                clazz = XMLUtil.getElementJavaType(child);
+            }
+            else
+            {
+                clazz = ClassUtil.getClassFromName(child.getTextTrim());
+            }
 
             if (clazz == null)
             {
@@ -453,7 +620,16 @@ public final class WebBeansXMLConfigurator
         while (itChilds.hasNext())
         {
             Element child = itChilds.next();
-            Class<?> clazz = XMLUtil.getElementJavaType(child);
+            Class<?> clazz = null;
+            
+            if(this.owbSpecificConfiguration)
+            {
+                clazz = XMLUtil.getElementJavaType(child);
+            }
+            else
+            {
+                clazz = ClassUtil.getClassFromName(child.getTextTrim());
+            }
 
             if (clazz == null)
             {
@@ -488,7 +664,16 @@ public final class WebBeansXMLConfigurator
         while (itChilds.hasNext())
         {
             Element child = itChilds.next();
-            Class<?> clazz = XMLUtil.getElementJavaType(child);
+            Class<?> clazz = null;
+            
+            if(this.owbSpecificConfiguration)
+            {
+                clazz = XMLUtil.getElementJavaType(child);
+            }
+            else
+            {
+                clazz = ClassUtil.getClassFromName(child.getTextTrim());
+            }
 
             if (clazz == null)
             {
@@ -1564,6 +1749,10 @@ public final class WebBeansXMLConfigurator
         {
             model.addBinding(ann);
         }
+        
+        //Adding JMS Beans
+        OpenWebBeansJmsPlugin plugin = PluginLoader.getInstance().getJmsPlugin();
+        BeanManagerImpl.getManager().addBean(plugin.getJmsBean(model));
     }
 
     /**

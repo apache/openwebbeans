@@ -89,11 +89,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-ejb_3.0_spec</artifactId>
-			<optional>true</optional>
-		</dependency>
 
         <!-- the following dependencies are needed for tests only -->      
 	</dependencies>

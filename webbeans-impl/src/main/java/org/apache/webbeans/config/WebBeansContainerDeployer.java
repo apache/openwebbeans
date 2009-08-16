@@ -87,6 +87,9 @@ public class WebBeansContainerDeployer
 
     /**XML Configurator*/
     protected WebBeansXMLConfigurator xmlConfigurator = null;
+    
+    /**Discover ejb or not*/
+    protected boolean discoverEjb = false;
 
     /**
      * Creates a new deployer with given xml configurator.
@@ -96,6 +99,8 @@ public class WebBeansContainerDeployer
     public WebBeansContainerDeployer(WebBeansXMLConfigurator xmlConfigurator)
     {
         this.xmlConfigurator = xmlConfigurator;
+        String usage = OpenWebBeansConfiguration.getInstance().getProperty(OpenWebBeansConfiguration.USE_EJB_DISCOVERY);
+        this.discoverEjb = Boolean.parseBoolean(usage);
     }
 
     /**
@@ -316,10 +321,14 @@ public class WebBeansContainerDeployer
                     logger.info("Managed Bean with class name : " + componentClassName + " is found");
                     defineManagedBean(implClass);
                 }
-                else if (EJBWebBeansConfigurator.isSessionBean(implClass))
-                {
-                    logger.info("Enterprise Bean with class name : " + componentClassName + " is found");
-                    defineEnterpriseWebBean(implClass);
+                else if(this.discoverEjb)
+                {                    
+                    if(EJBWebBeansConfigurator.isSessionBean(implClass))
+                    {
+                        logger.info("Enterprise Bean with class name : " + componentClassName + " is found");
+                        defineEnterpriseWebBean(implClass);
+                        
+                    }
                 }
             }
         }

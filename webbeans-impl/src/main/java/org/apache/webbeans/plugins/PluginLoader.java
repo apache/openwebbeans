@@ -144,4 +144,23 @@ public class PluginLoader
         
         return null;
     }
+    
+    /**
+     * Gets ejb plugin
+     * 
+     * @return ejb plugin
+     */
+    public OpenWebBeansJmsPlugin getJmsPlugin()
+    {
+        for(OpenWebBeansPlugin plugin : this.plugins)
+        {
+            if(plugin instanceof OpenWebBeansJmsPlugin)
+            {
+                return (OpenWebBeansJmsPlugin)plugin;
+            }
+        }
+        
+        return null;
+    }
+    
 }

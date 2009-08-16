@@ -442,6 +442,11 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         object = BeanManagerImpl.getManager().getReference(dependentComponent, injectionPoint.getType(), dependentCreational);
         
         CreationalContextImpl<T> cc = (CreationalContextImpl<T>)this.creationalContext;
+        
+        if(cc == null)
+        {
+            System.out.println(this);
+        }
 
         //Put this into the dependent map
         cc.addDependent(dependentComponent, object);
@@ -595,6 +600,14 @@ public abstract class AbstractBean<T> extends BaseBean<T>
 
     /**
      * {@inheritDoc}
+     */
+    public  void setCreationalContext(CreationalContext<T> creationalContext)
+    {
+        this.creationalContext = creationalContext;
+    }
+    
+    /**
+     * {@inheritDoc}
      */    
     //TODO Replaces @Deploymeny Types, no starting work for now!
     public boolean isPolicy()
@@ -641,5 +654,10 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         builder.append("}\n");
         
         return builder.toString();
+    }
+    
+    protected WebBeansLogger getLogger()
+    {
+        return this.logger;
     }
 }

@@ -228,6 +228,8 @@ public class WebBeansDecorator<T> implements Decorator<T>
     public T create(CreationalContext<T> context)
     {
         T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this);
+        
+        this.wrappedBean.setCreationalContext(context);
 
         return proxy;
     }

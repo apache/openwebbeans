@@ -35,6 +35,7 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.exception.WebBeansException;
@@ -207,6 +208,9 @@ public final class WebBeansLifeCycle
         
         //Clear singleton list
         WebBeansFinder.clearInstances();
+        
+        //Clear CreationalContext
+        CreationalContextFactory.getInstance().clear();
         
         logger.info("Dependency injection container is stopped for context path : " + event.getServletContext().getContextPath());        
     }

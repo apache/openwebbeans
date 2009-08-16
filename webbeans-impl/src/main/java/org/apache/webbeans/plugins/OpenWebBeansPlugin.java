@@ -16,8 +16,6 @@ package org.apache.webbeans.plugins;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.enterprise.inject.spi.InjectionPoint;
-
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 /**
@@ -70,14 +68,6 @@ public interface OpenWebBeansPlugin
      */
     public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException;
     
-    /**
-     * If plugins applicable, it adds the component for the given {@code InjectionPoint}
-     * jms related bean into the manager.
-     *
-     * @param injectionPoint injection point for the jms bean
-     * @return <code>true</code> if plugin is capable for handling the injection point, <code>false</code> otherwise
-     */
-    public <T> boolean addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint);
 
     /**
      * Check whether the given annotation class represents a resource which

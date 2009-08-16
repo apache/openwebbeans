@@ -59,6 +59,7 @@ import javax.naming.StringRefAddr;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
@@ -74,6 +75,7 @@ import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
+import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
@@ -704,9 +706,17 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return ejbPlugin.getSessionBeanProxy(bean,ClassUtil.getClazz(beanType));
         }
         
-        
-        /* @ScopeType is normal */
-        if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
+        else if(bean instanceof JmsBeanMarker)
+        {
+            OpenWebBeansJmsPlugin jmsPlugin = PluginLoader.getInstance().getJmsPlugin();
+            if(jmsPlugin == null)
+            {
+                throw new IllegalStateException("There is no JMS plugin provider. Injection is failed for bean : " + bean);
+            }            
+            
+            return jmsPlugin.getJmsBeanProxy(bean, ClassUtil.getClass(beanType));
+        }
+        else if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
         {
             
             if (this.proxyMap.containsKey(bean))
@@ -719,7 +729,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 this.proxyMap.put(bean, instance);
             }
         }
-        /* @ScopeType is not normal, like @Dependent */
         else
         {
             context = getContext(bean.getScopeType());

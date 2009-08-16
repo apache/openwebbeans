@@ -15,12 +15,10 @@ package org.apache.webbeans.test.unittests.xml;
 
 import java.io.InputStream;
 
-import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.xml.XMLUtil;
 import org.dom4j.Element;
@@ -29,8 +27,6 @@ import org.junit.Test;
 
 public class XMLTest extends TestContext
 {
-    private BeanManager container = null;
-
     public XMLTest()
     {
         super(XMLTest.class.getSimpleName());
@@ -44,7 +40,6 @@ public class XMLTest extends TestContext
     @Before
     public void init()
     {
-        this.container = BeanManagerImpl.getManager();
     }
 
     public void startTests(ServletContext ctx)
@@ -74,4 +69,23 @@ public class XMLTest extends TestContext
         Assert.assertNull(e);
     }
 
+    @Test
+    public void nameSpacesNotDeclared()
+    {
+        Throwable e = null;
+        try
+        {
+            InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/nameSpaceNotDeclared.xml");
+            Assert.assertNotNull(stream);
+
+            XMLUtil.getRootElement(stream);
+
+        }
+        catch (Throwable e1)
+        {
+            e = e1;
+        }
+
+        Assert.assertNotNull(e);
+    }
 }
