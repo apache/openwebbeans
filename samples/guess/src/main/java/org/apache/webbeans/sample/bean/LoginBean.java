@@ -29,7 +29,6 @@ import javax.faces.application.FacesMessage;
 
 import org.apache.webbeans.sample.bindings.LoggedInUser;
 import org.apache.webbeans.sample.dependent.LoginCheck;
-import org.apache.webbeans.sample.ejb.Hello;
 import org.apache.webbeans.sample.event.LoggedInEvent;
 import org.apache.webbeans.sample.model.User;
 import org.apache.webbeans.sample.util.FacesMessageUtil;
@@ -50,8 +49,6 @@ public class LoginBean
 	
 	private @Any Event<LoggedInEvent> event;
 	
-	private @Current Hello hello;
-	
 	public LoginBean()
 	{
 		
@@ -66,8 +63,6 @@ public class LoginBean
 			user.setPassword(this.password);
 			
 			event.fire(new LoggedInEvent(this.user));
-			
-			this.hello.sayHello();
 			
 			return "loginSuccess";
 		}
