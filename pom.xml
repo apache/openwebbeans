@@ -332,6 +332,7 @@
     </reporting>
 	
     <modules>
+        <module>atinject-api</module>
         <module>webbeans-api</module>
         <module>webbeans-impl</module>
         <module>webbeans-ejb</module>
@@ -434,6 +435,11 @@
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-jsp_2.1_spec</artifactId>
 				<version>1.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.openwebbeans</groupId>
+				<artifactId>atinject-api</artifactId>
+				<version>${openwebbeans.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
