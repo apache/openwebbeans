@@ -48,6 +48,7 @@ public enum WebBeansType
     MANAGED, 
     PRODUCERMETHOD, 
     PRODUCERFIELD,
+    RESOURCEBEAN,
     NEW, 
     ENTERPRISE, 
     JMS, 

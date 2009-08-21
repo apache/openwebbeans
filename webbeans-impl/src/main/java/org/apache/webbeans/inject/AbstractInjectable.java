@@ -15,7 +15,6 @@ package org.apache.webbeans.inject;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
@@ -26,8 +25,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.plugins.OpenWebBeansPlugin;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -80,13 +77,6 @@ public abstract class AbstractInjectable implements Injectable
             return injectDependentOwnerInjectionPoint();
         }
         
-        Annotation[] injectionAnnotations = injectionPoint.getAnnotated().getAnnotations().toArray(new Annotation[0]);
-        
-        if (isResource(injectionAnnotations))
-        {
-            return injectResource(injectionPoint.getType(),injectionAnnotations);
-        }
-                    
         //Get injection point Bean to look for @Dependent
         Bean<?> component = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
         
@@ -129,29 +119,6 @@ public abstract class AbstractInjectable implements Injectable
     protected boolean isResource(Annotation... annotations)
     {
         return AnnotationUtil.hasResourceAnnotation(annotations); 
-    }
-
-    /**
-     * If the annotation is a resource annotation, we create 
-     * the instance for injecting web beans resources.
-     * @param type the class type which should be created
-     * @param annotations which has been defined in the web bean
-     * @return the instance linked with the annotation
-     * @see WebBeansUtil#checkForValidResources(Type, Class, String, Annotation[])
-     */
-    private Object injectResource(Type type, Annotation... annotations)
-    {
-        List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
-        for (OpenWebBeansPlugin plugin : plugins)
-        {
-            Object toInject = plugin.injectResource(type, annotations);
-            if (toInject != null)
-            {
-                return toInject;
-            }
-        }
-        
-        return null;
     }
     
     /**

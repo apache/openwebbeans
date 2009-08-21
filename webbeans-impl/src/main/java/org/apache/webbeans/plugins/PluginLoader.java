@@ -163,4 +163,22 @@ public class PluginLoader
         return null;
     }
     
+    /**
+     * Gets ejb plugin
+     * 
+     * @return ejb plugin
+     */
+    public OpenWebBeansResourcePlugin getResourcePlugin()
+    {
+        for(OpenWebBeansPlugin plugin : this.plugins)
+        {
+            if(plugin instanceof OpenWebBeansResourcePlugin)
+            {
+                return (OpenWebBeansResourcePlugin)plugin;
+            }
+        }
+        
+        return null;
+    }
+    
 }

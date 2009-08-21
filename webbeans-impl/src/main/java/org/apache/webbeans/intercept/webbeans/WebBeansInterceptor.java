@@ -34,6 +34,7 @@ import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
@@ -58,7 +59,7 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
  * 
  * @version $Rev$ $Date$
  */
-public class WebBeansInterceptor<T> implements Interceptor<T>
+public class WebBeansInterceptor<T> extends AbstractBean<T> implements Interceptor<T>
 {
 	private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptor.class);
 	
@@ -75,6 +76,8 @@ public class WebBeansInterceptor<T> implements Interceptor<T>
 
     public WebBeansInterceptor(AbstractBean<T> delegateComponent)
     {
+        super(WebBeansType.INTERCEPTOR,delegateComponent.getReturnType());
+        
         this.delegateComponent = delegateComponent;
         this.clazz = getDelegate().getReturnType();
 
@@ -247,15 +250,16 @@ public class WebBeansInterceptor<T> implements Interceptor<T>
         return method;
     }
 
+    
     @SuppressWarnings("unchecked")
-    public T create(CreationalContext<T> creationalContext)
+    protected T createInstance(CreationalContext<T> creationalContext)
     {
         T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this);
         
         this.delegateComponent.setCreationalContext(creationalContext);
 
         return proxy;
-
+        
     }
 
     public void setInjections(Object proxy)

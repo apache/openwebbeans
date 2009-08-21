@@ -676,6 +676,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> ctx)
     {
+        Context context = null;
+        Object instance = null;
+        
+        //Check type if bean type is given
         if(beanType != null)
         {
             if(!ResolutionUtil.checkBeanTypeAssignableToGivenType(bean.getTypes(), beanType))
@@ -684,17 +688,74 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             }
             
         }
-
-        Context context = null;
-        Object instance = null;
-                
+        
+        //Some casts for generic!
+        AbstractBean<Object> beanInstance = (AbstractBean<Object>)bean;
         CreationalContext<Object> creationalContext = (CreationalContext<Object>)ctx;
         
-        if(ctx == null)
+        //Always create reference if not exist
+        if(creationalContext == null)
         {
-            creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
+            creationalContext = createCreationalContext(beanInstance);
         }
         
+        //Set creational context
+        beanInstance.setCreationalContext(creationalContext);
+        
+        //Get bean context
+        context = getContext(beanInstance.getScopeType());        
+        
+        //Scope is normal
+        if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
+        {
+            instance = context.get(beanInstance);
+            
+            //Instance has already exist
+            if(instance != null)
+            {
+                return instance;
+            }          
+                        
+            instance = getEjbOrJmsProxyReference(beanInstance, beanType);
+            
+            if(instance != null)
+            {
+                return instance;
+            }            
+            //Create Managed Bean Proxy
+            else
+            {                
+                if (this.proxyMap.containsKey(bean))
+                {
+                    instance = this.proxyMap.get(bean);
+                }
+                else
+                {
+                    instance = JavassistProxyFactory.createNewProxyInstance(bean);
+                    this.proxyMap.put(bean, instance);
+                }
+            }            
+        }
+        //Create Pseudo-Scope Bean Instance
+        else
+        {
+            instance = getEjbOrJmsProxyReference(beanInstance, beanType);
+            
+            if(instance != null)
+            {
+                return instance;
+            }
+            
+            context = getContext(bean.getScopeType());
+            instance = context.get((Bean<Object>)bean, creationalContext);                                
+        }
+        
+        return instance;
+    }
+    
+    private Object getEjbOrJmsProxyReference(Bean<?> bean,Type beanType)
+    {
+        //Create session bean proxy
         if(bean instanceof EnterpriseBeanMarker)
         {
             OpenWebBeansEjbPlugin ejbPlugin = PluginLoader.getInstance().getEjbPlugin();
@@ -706,6 +767,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return ejbPlugin.getSessionBeanProxy(bean,ClassUtil.getClazz(beanType));
         }
         
+        //Create JMS Proxy
         else if(bean instanceof JmsBeanMarker)
         {
             OpenWebBeansJmsPlugin jmsPlugin = PluginLoader.getInstance().getJmsPlugin();
@@ -716,26 +778,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             
             return jmsPlugin.getJmsBeanProxy(bean, ClassUtil.getClass(beanType));
         }
-        else if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
-        {
-            
-            if (this.proxyMap.containsKey(bean))
-            {
-                instance = this.proxyMap.get(bean);
-            }
-            else
-            {
-                instance = JavassistProxyFactory.createNewProxyInstance(bean);
-                this.proxyMap.put(bean, instance);
-            }
-        }
-        else
-        {
-            context = getContext(bean.getScopeType());
-            instance = context.get((Bean<Object>)bean, creationalContext);                                
-        }
         
-        return instance;
+        return null;
     }
 
     @Override

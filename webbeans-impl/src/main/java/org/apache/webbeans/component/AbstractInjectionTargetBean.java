@@ -32,6 +32,8 @@ import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.plugins.OpenWebBeansResourcePlugin;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -209,6 +211,13 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     {
         if(getWebBeansType().equals(WebBeansType.MANAGED))
         {
+            //Inject Resources
+            OpenWebBeansResourcePlugin resourcePlugin = PluginLoader.getInstance().getResourcePlugin();
+            if(resourcePlugin != null)
+            {
+                resourcePlugin.injectResources(instance);
+            }
+            
             // Call Post Construct
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
             {

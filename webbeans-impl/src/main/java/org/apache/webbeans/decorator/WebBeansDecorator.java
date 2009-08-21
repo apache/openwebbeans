@@ -28,6 +28,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
@@ -45,7 +46,7 @@ import org.apache.webbeans.util.ClassUtil;
  *
  * @param <T> decorator type info
  */
-public class WebBeansDecorator<T> implements Decorator<T>
+public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T>
 {
     private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansDecorator.class);
 
@@ -73,6 +74,8 @@ public class WebBeansDecorator<T> implements Decorator<T>
      */
     public WebBeansDecorator(AbstractBean<T> wrappedBean)
     {
+        super(WebBeansType.DECORATOR,wrappedBean.getReturnType());
+        
         this.wrappedBean = wrappedBean;
         this.clazz = wrappedBean.getReturnType();
 
@@ -224,14 +227,16 @@ public class WebBeansDecorator<T> implements Decorator<T>
 
     }
 
-    @SuppressWarnings("unchecked")
-    public T create(CreationalContext<T> context)
+    
+    @SuppressWarnings("unchecked")    
+    protected  T createInstance(CreationalContext<T> creationalContext)
     {
         T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this);
         
-        this.wrappedBean.setCreationalContext(context);
+        this.wrappedBean.setCreationalContext(creationalContext);
 
         return proxy;
+        
     }
 
     public void setInjections(Object proxy)

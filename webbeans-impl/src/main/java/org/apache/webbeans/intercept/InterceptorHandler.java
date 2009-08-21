@@ -28,7 +28,6 @@ import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -63,7 +62,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
         Context webbeansContext = BeanManagerImpl.getManager().getContext(component.getScopeType());
         
         //Get bean instance from context
-        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)CreationalContextFactory.getInstance().getCreationalContext(this.component));
+        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)this.component.getCreationalContext());
         
         //toString is supported but no other object method names!!!
         if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) && InterceptorUtil.isWebBeansBusinessMethod(method))

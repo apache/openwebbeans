@@ -25,17 +25,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.annotation.Resource;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.BindingType;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.stereotype.Stereotype;
-import javax.xml.ws.WebServiceRef;
 
 import javax.interceptor.InterceptorBindingType;
 
-import org.apache.webbeans.annotation.specific.Realizes;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -848,18 +845,9 @@ public final class AnnotationUtil
     public static boolean isResourceAnnotation(Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(clazz, "clazz parameter can not be null");
-        XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
-        if (manager.isResourceExist(clazz))
-        {
-            return true;
-        }
-        else if (clazz.equals(Resource.class) ||
-                 clazz.equals(WebServiceRef.class) )
-        {
-            return true;
-        }
 
         List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+        
         for (OpenWebBeansPlugin plugin : plugins)
         {
             if (plugin.isResourceAnnotation(clazz))
