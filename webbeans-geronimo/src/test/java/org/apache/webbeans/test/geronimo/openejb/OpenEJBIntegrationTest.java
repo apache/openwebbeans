@@ -22,7 +22,6 @@ import javax.persistence.EntityManagerFactory;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.jpa.spi.JPAService;
 import org.apache.webbeans.spi.ee.openejb.jpa.JPAServiceOpenEJBImpl;
 import org.junit.Test;
 
@@ -47,12 +46,12 @@ public class OpenEJBIntegrationTest {
         Context context = new InitialContext(p);
 
         //X Movies movies = (Movies) context.lookup("MoviesLocal");
-        JPAService jpaService = new JPAServiceOpenEJBImpl(); 
+        JPAServiceOpenEJBImpl jpaService = new JPAServiceOpenEJBImpl(context); 
         
         EntityManagerFactory emf = jpaService.getPersistenceUnit( "TestUnit" );
         Assert.assertNotNull( emf );
         
-        EntityManager em = jpaService.getPersistenceContext( "TestUnit", null );
+        EntityManager em = jpaService.getPersistenceContext("TestUnit");
         Assert.assertNotNull( em );
     }
 

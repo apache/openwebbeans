@@ -37,7 +37,8 @@
 
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-jpa</artifactId>
+            <artifactId>openwebbeans-resource</artifactId>
+            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>

@@ -24,23 +24,18 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.persistence.JtaEntityManager;
 import org.apache.openejb.persistence.JtaEntityManagerRegistry;
-import org.apache.openejb.spi.ContainerSystem;
-import org.apache.webbeans.jpa.spi.JPAService;
 
-/**
- * {@inheritDoc} 
- * Implementation for getting the EntityManager and EntityManagerFactory 
- * from the OpenEJB container.
- */
-public class JPAServiceOpenEJBImpl implements JPAService 
+public class JPAServiceOpenEJBImpl
 {
-
-    /**
-     * {@inheritDoc}
-     * This will create a JtaEntityManager instead of a simply JPA EntityManager.
-     * So injecting this into a bean should be perfectly safe!
-     */
-    public EntityManager getPersistenceContext( String unitName, String name ) {
+    private Context context;
+    
+    public JPAServiceOpenEJBImpl(Context context)
+    {
+        this.context = context;
+        
+    }
+    
+    public  EntityManager getPersistenceContext( String unitName) {
         // get JtaEntityManagerRegistry
         JtaEntityManagerRegistry jtaEntityManagerRegistry = SystemInstance.get().getComponent(JtaEntityManagerRegistry.class);
 
@@ -51,23 +46,12 @@ public class JPAServiceOpenEJBImpl implements JPAService
         return jtaEntityManager;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * We have to search for the shortest full match!
-     * if our searched PersistenceUnit should be "movieDb" and the
-     * persistence.xml contains "movieDbMirror and movieDb", then we must find the 2nd
-     * otoh we cannot simply search for the PersistencUnits name, because in JNDI
-     * it additionally contains a hash code at the end of the name string.
-     * @param unitName the name of the PersistenceUnit to search for
-     * @return EntitMa
-     */
-    public EntityManagerFactory getPersistenceUnit( String unitName ) {
+    public  EntityManagerFactory getPersistenceUnit(String unitName) {
         EntityManagerFactory factory;
         try {
-            Context context = SystemInstance.get().getComponent(ContainerSystem.class).getJNDIContext();
 
             NamingEnumeration<NameClassPair> persUnits = context.list("java:openejb/PersistenceUnit");
+            
             if (persUnits == null)
             {
                 throw new CreationException( "No PersistenceUnit found in java:openejb/PersistenceUnit!" );
@@ -95,6 +79,8 @@ public class JPAServiceOpenEJBImpl implements JPAService
             }
             
             factory = (EntityManagerFactory) context.lookup("java:openejb/PersistenceUnit/" + shortestMatch);
+            
+            
         } catch (NamingException e) {
             throw new CreationException("PersistenceUnit '" + unitName + "' not found", e );
         }
