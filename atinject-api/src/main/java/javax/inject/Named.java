@@ -21,5 +21,5 @@ import java.lang.annotation.RetentionPolicy;
 @Qualifier
 @Retention(value=RetentionPolicy.RUNTIME)
 public @interface Named {
-
+    String value() default "";
 }
