@@ -13,9 +13,11 @@
  */
 package org.apache.webbeans.ejb;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.ejb.EJB;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.SessionBeanType;
 
@@ -174,5 +176,16 @@ public class EjbPlugin extends AbstractOpenWebBeansPlugin implements OpenWebBean
     {
         return EjbDefinitionUtility.defineEjbBeanProxy((EjbBean<?>)bean,type);
     }
-    
+
+    @Override
+    public boolean isResourceAnnotation(Class<? extends Annotation> annotationClass)
+    {
+        if(annotationClass.equals(EJB.class))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+       
 }

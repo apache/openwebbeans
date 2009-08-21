@@ -26,7 +26,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.interceptor.OpenWebBeansEjbInterceptor;
 
@@ -73,7 +72,7 @@ public class EjbBeanProxyHandler implements MethodHandler
         Context webbeansContext = BeanManagerImpl.getManager().getContext(ejbBean.getScopeType());
         
         //Get bean instance from context
-        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, (CreationalContext<Object>)CreationalContextFactory.getInstance().getCreationalContext(this.ejbBean));
+        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, (CreationalContext<Object>)this.ejbBean.getCreationalContext());
         
         Object result = method.invoke(webbeansInstance, arguments);
         
