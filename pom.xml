@@ -339,8 +339,9 @@
         <module>webbeans-jms</module>
         <module>webbeans-jsf</module>
         <module>webbeans-jpa</module>
-        <module>samples</module>
+        <module>webbeans-resource</module>
         <module>webbeans-geronimo</module>
+        <module>samples</module>
         <!-- <module>webbeans-tck</module>-->
   </modules>
     
@@ -467,6 +468,12 @@
 				<artifactId>openejb-core</artifactId>
 				<version>3.1.1</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.openejb</groupId>
+				<artifactId>openejb-tomcat-catalina</artifactId>
+				<version>3.1.1</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
