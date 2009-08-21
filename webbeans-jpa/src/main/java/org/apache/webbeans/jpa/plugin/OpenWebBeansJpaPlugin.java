@@ -20,7 +20,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.jpa.spi.JPAService;
 
 import javax.enterprise.inject.BindingType;
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
@@ -31,7 +30,6 @@ import org.apache.webbeans.plugins.AbstractOpenWebBeansPlugin;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 public class OpenWebBeansJpaPlugin extends AbstractOpenWebBeansPlugin 
 {
@@ -48,19 +46,6 @@ public class OpenWebBeansJpaPlugin extends AbstractOpenWebBeansPlugin
         // nothing to do
     }
 
-    /** {@inheritDoc} */
-    public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException 
-    {
-        if (AnnotationUtil.isAnnotationExistOnClass(clazz, Entity.class))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be JPA Entity class");
-
-        if (AnnotationUtil.isAnnotationExistOnClass(clazz, PersistenceContext.class))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be JPA Entity class");
-
-        if (AnnotationUtil.isAnnotationExistOnClass(clazz, PersistenceUnit.class))
-            throw new WebBeansConfigurationException("Web Beans component implementation class : " + clazz.getName() + " can not be JPA Entity class");
-        
-    }
 
     /** {@inheritDoc} */
     public Object injectResource(Type type, Annotation[] annotations)
@@ -116,12 +101,8 @@ public class OpenWebBeansJpaPlugin extends AbstractOpenWebBeansPlugin
     public boolean isResourceAnnotation(Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(clazz, "clazz parameter can not be null");
-        XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
-        if (manager.isResourceExist(clazz))
-        {
-            return true;
-        }
-        else if (clazz.equals(PersistenceContext.class) ||
+        
+        if (clazz.equals(PersistenceContext.class) ||
                  clazz.equals(PersistenceUnit.class) )
         {
             return true;

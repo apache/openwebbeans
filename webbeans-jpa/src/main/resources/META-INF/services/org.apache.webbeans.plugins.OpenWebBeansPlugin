@@ -18,4 +18,4 @@
 # this file contains the service implementation for the 
 # JMS integration into OpenWebBeans
 # this file contains information for java.util.ServiceLoader
-org.apache.webbeans.jpa.plugin.OpenWebBeansJpaPlugin
+#org.apache.webbeans.jpa.plugin.OpenWebBeansJpaPlugin
