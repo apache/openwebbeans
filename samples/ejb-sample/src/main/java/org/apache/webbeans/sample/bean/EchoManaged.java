@@ -16,8 +16,14 @@ package org.apache.webbeans.sample.bean;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Current;
 import javax.enterprise.inject.Named;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.Bean;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.sample.ejb.Echo;
+import org.apache.webbeans.sample.injection.InjectionTargetBean;
 
 
 @RequestScoped
@@ -25,10 +31,12 @@ import org.apache.webbeans.sample.ejb.Echo;
 public class EchoManaged
 {
     private @Current Echo echo;
-
+        
     private String text;
     
     private String name;
+    
+    private @Produces @Current @PersistenceUnit(unitName="myDataBase") EntityManagerFactory emf;
     
     public String getName()
     {
@@ -42,6 +50,12 @@ public class EchoManaged
 
     public String echo()
     {
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        Bean<?> b = manager.getBeans("injected").iterator().next();
+        InjectionTargetBean bean = (InjectionTargetBean)manager.getReference(b, InjectionTargetBean.class, manager.createCreationalContext(b)); 
+        
+        System.out.println("EMF --> " + bean.getFactory().equals(this.emf));
+        
         this.text = echo.echo(name);
         
         return null;
