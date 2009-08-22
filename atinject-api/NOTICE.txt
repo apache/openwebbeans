@@ -1,0 +1,9 @@
+Apache OpenWebBeans
+Copyright 2009 The Apache Software Foundation
+
+This product includes software developed by 
+The Apache Software Foundation (http://www.apache.org/).
+
+This product contains software defined by the JSR-330 EG
+http://jcp.org/en/jsr/detail?id=330
+http://groups.google.com/group/atinject-observer
