@@ -51,7 +51,19 @@ public final class WebBeansConstants
     public static final String WEB_BEANS_XML_SPEC_SPECIFIC_DECORATORS_ELEMENT = "decorators";
     
     public static final String WEB_BEANS_XML_SPEC_SPECIFIC_DEPLOY_ELEMENT = "deploy";
-
+    
+    public static final String WEB_BEANS_XML_OWB_SPECIFIC_ALTERNATIVES = "Alternatives";
+    
+    public static final String WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES = "alternatives";
+    
+    public static final String WEB_BEANS_XML_SPEC_SPECIFIC_CLASS = "class";
+    
+    public static final String WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE = "stereotype";
+    
+    public static final String WEB_BEANS_XML_OWB_SPECIFIC_CLASS = "Class";
+    
+    public static final String WEB_BEANS_XML_OWB_SPECIFIC_STEREOTYPE = "Stereotype";
+    
     public static final String WEB_BEANS_XML_INTERCEPTOR_ELEMENT = "Interceptor";
 
     /** <Decorators> XML Element */

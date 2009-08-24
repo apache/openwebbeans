@@ -33,6 +33,7 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
+import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
@@ -609,10 +610,9 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     /**
      * {@inheritDoc}
      */    
-    //TODO Replaces @Deploymeny Types, no starting work for now!
-    public boolean isPolicy()
+    public boolean isAlternative()
     {
-        return false;
+        return AlternativesManager.getInstance().isBeanHasAlternative(this);
     }
     
     /**

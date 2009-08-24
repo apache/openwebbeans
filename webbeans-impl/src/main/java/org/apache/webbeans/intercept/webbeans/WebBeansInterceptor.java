@@ -419,9 +419,8 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
 	}
 
     @Override
-    public boolean isPolicy()
+    public boolean isAlternative()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return this.delegateComponent.isAlternative();
     }
 }

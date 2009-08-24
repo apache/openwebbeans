@@ -388,10 +388,9 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
 	}
 
     @Override
-    public boolean isPolicy()
+    public boolean isAlternative()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return this.wrappedBean.isAlternative();
     }
 
  

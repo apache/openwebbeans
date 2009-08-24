@@ -63,6 +63,7 @@ import org.apache.webbeans.exception.definition.NonexistentMethodException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.DeploymentException;
+import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
 import org.apache.webbeans.inject.xml.XMLInjectionModelType;
@@ -71,6 +72,7 @@ import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -87,6 +89,8 @@ import org.dom4j.Element;
 @SuppressWarnings("unchecked")
 public final class WebBeansXMLConfigurator
 {
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansXMLConfigurator.class);
+    
     /** Enabled Deploy element check */
     private boolean DEPLOY_IS_DEFINED = false;
 
@@ -94,7 +98,7 @@ public final class WebBeansXMLConfigurator
     private boolean INTERCEPTORS_IS_DEFINED = false;
 
     /** Enabled Decorators element check */
-    private boolean DECORATORS_IS_DEFINED = false;
+    private boolean DECORATORS_IS_DEFINED = false;    
 
     /** Current configuration file name */
     private String CURRENT_SCAN_FILE_NAME = null;
@@ -321,11 +325,17 @@ public final class WebBeansXMLConfigurator
                 addNewInterceptorBindingType(child);
 
             }
+            
             /* <Stereotype> annotation element decleration */
             else if (XMLUtil.isElementStereoTypeDecleration(child))
             {
                 addNewStereoTypeType(child);
             }
+            else if(XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_ALTERNATIVES))
+            {
+                configureAlternativesElement(child);
+            }
+            
         }
 
         /*
@@ -405,6 +415,10 @@ public final class WebBeansXMLConfigurator
                     DECORATORS_IS_DEFINED = true;
 
                 }
+            }
+            else if(XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES))
+            {
+                configureAlternativesElement(child);
             }
         }
 
@@ -649,6 +663,69 @@ public final class WebBeansXMLConfigurator
         }
 
     }
+    
+    /**
+     * Configures enablements of the decorators.
+     * 
+     * @param decoratorsElement decorators element
+     */
+    private void configureAlternativesElement(Element alternativesElement)
+    {
+        List<Element> childs = alternativesElement.elements();
+        Iterator<Element> itChilds = childs.iterator();
+
+        while (itChilds.hasNext())
+        {
+            Element child = itChilds.next();
+
+            if(XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE) ||
+                    XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_STEREOTYPE))
+            {
+                addAlternative(child, true);
+            }
+            else if(XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_CLASS)
+                    || XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_CLASS))
+            {
+                addAlternative(child, false);
+            }
+            else
+            {
+                logger.warn("Alternative XML content is wrong. Child of <alternatives> must be <class>,<stereotype> but found " + XMLUtil.getName(child));
+            }            
+        }
+    }
+    
+    private void addAlternative(Element child, boolean isStereoType)
+    {
+        Class<?> clazz = null;
+        
+        if(this.owbSpecificConfiguration)
+        {
+            clazz = XMLUtil.getElementJavaType(child);
+        }
+        else
+        {
+            clazz = ClassUtil.getClassFromName(child.getTextTrim());
+        }
+
+        if (clazz == null)
+        {
+            throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Alternative class : " + XMLUtil.getName(child) + " not found");
+        }
+        else
+        {
+            AlternativesManager manager = AlternativesManager.getInstance();
+            if(isStereoType)
+            {
+                manager.addStereoTypeAlternative(clazz);
+            }
+            else
+            {
+                manager.addClazzAlternative(clazz);
+            }
+        }        
+    }
+    
 
     /**
      * Configures enablements of the deployment types.
