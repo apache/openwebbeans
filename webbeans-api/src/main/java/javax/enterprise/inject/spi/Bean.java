@@ -115,6 +115,6 @@ public interface Bean<T> extends Contextual<T>
      * 
      * @return true if declares as policy
      */
-    public boolean isPolicy();
+    public boolean isAlternative();
 
 }
