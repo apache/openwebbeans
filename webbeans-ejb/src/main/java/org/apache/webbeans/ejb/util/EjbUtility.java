@@ -43,6 +43,7 @@ import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
+import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -129,8 +130,9 @@ public final class EjbUtility
         }
 
         //Fires ProcessManagedBean
-        ProcessSessionBeanImpl<T> processBeanEvent = new ProcessSessionBeanImpl<T>((Bean<Object>)ejbBean,annotatedType,ejbBean.getEjbName(),ejbBean.getEjbType());            
+        ProcessSessionBeanImpl<T> processBeanEvent = new GProcessSessionBean((Bean<Object>)ejbBean,annotatedType,ejbBean.getEjbName(),ejbBean.getEjbType());            
         BeanManagerImpl.getManager().fireEvent(processBeanEvent, new Annotation[0]);
+        
         
         //Fires ProcessProducerMethod
         WebBeansUtil.fireProcessProducerMethodBeanEvent(annotatedMethods);
