@@ -289,15 +289,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     public void fireEvent(Object event, Annotation... bindings)
-    {
-//        if (ClassUtil.isDefinitionConstainsTypeVariables(event.getClass()))
-//        {
-//            throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
-//        }
+    {                
+        if (ClassUtil.isDefinitionConstainsTypeVariables(event.getClass()))
+        {
+            throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
+        }
 
         this.notificationManager.fireEvent(event, bindings);
     }
-
     
     public Object getInstanceByName(String name)
     {

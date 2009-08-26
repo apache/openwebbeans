@@ -66,9 +66,7 @@ public class EventExceptionTest extends TestContext
             exc = e;
         }
 
-        //Assert.assertNotNull(exc); TODO Event Generic !!!
-        Assert.assertNull(exc);
-
+        Assert.assertNotNull(exc);
     }
 
     @Test
@@ -92,8 +90,7 @@ public class EventExceptionTest extends TestContext
             exc = e;
         }
 
-      //Assert.assertNotNull(exc); TODO Event Generic !!!
-        Assert.assertNull(exc);
+      Assert.assertNotNull(exc);
 
     }
 

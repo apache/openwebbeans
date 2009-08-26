@@ -11,24 +11,17 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.component.portable.events;
+package org.apache.webbeans.portable.events.generics;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Current;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionTarget;
 
-public class MyExtension implements Extension
+import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
+
+public class GProcessInjectionTarget extends ProcessInjectionTargetImpl
 {
-    public static ProcessAnnotatedType<?> event = null;
-    
-    public MyExtension()
+    public GProcessInjectionTarget(InjectionTarget<?> injectionTarget,AnnotatedType<?> annotatedType)
     {
-        
-    }
-
-    public void observer(@Current @Observes ProcessAnnotatedType<?> annotatedType)
-    {
-        event = annotatedType;
+        super(injectionTarget, annotatedType);
     }
 }

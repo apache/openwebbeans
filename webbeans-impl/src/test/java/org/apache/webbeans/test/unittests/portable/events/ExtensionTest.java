@@ -15,9 +15,12 @@ package org.apache.webbeans.test.unittests.portable.events;
 
 import javax.enterprise.inject.spi.Bean;
 
+import junit.framework.Assert;
+
 import org.apache.webbeans.annotation.CurrentLiteral;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
+import org.apache.webbeans.test.component.library.BookShop;
 import org.apache.webbeans.test.component.portable.events.MyExtension;
 import org.apache.webbeans.test.mock.MockServletContext;
 import org.apache.webbeans.test.servlet.TestContext;
@@ -50,6 +53,9 @@ public class ExtensionTest extends TestContext
         MyExtension ext = getManager().getInstance(extension);
         System.out.println(ext.toString());
         
+        defineSimpleWebBean(BookShop.class);
+        
+        Assert.assertNotNull(MyExtension.event);
         
         ContextFactory.destroyApplicationContext(servletContext);
     }

@@ -49,10 +49,13 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
+import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMustImplementAllDecoratedTypes;
 import org.apache.webbeans.test.component.decorator.broken.MoreThanOneDelegateAttribute;
@@ -324,6 +327,9 @@ public abstract class TestContext implements ITestContext
 
             getComponents().add((AbstractBean<?>) bean);
             manager.addBean(bean);
+            
+            GProcessAnnotatedType type = new GProcessAnnotatedType(AnnotatedElementFactory.newAnnotatedType(clazz));
+            manager.fireEvent(type, new Annotation[0]);
         }
 
         return bean;

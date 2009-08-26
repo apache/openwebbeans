@@ -54,6 +54,7 @@ import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
@@ -126,6 +127,9 @@ public class WebBeansContainerDeployer
                 
                 // Register InjectionPoint bean
                 BeanManagerImpl.getManager().addBean(WebBeansUtil.getInjectionPointComponent());
+                
+                //Load Extensions
+                ExtensionLoader.getInstance().loadExtensionServices();
 
                 // Bind manager
                 JNDIService service = ServiceLoader.getService(JNDIService.class);

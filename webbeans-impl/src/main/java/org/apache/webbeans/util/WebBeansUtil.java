@@ -114,11 +114,11 @@ import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
-import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
-import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
-import org.apache.webbeans.portable.events.ProcessProducerFieldImpl;
-import org.apache.webbeans.portable.events.ProcessProducerImpl;
-import org.apache.webbeans.portable.events.ProcessProducerMethodImpl;
+import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
+import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
+import org.apache.webbeans.portable.events.generics.GProcessProducer;
+import org.apache.webbeans.portable.events.generics.GProcessProducerField;
+import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
 
 /**
  * Contains some utility methods used in the all project.
@@ -1922,9 +1922,9 @@ public final class WebBeansUtil
      * @param clazz bean class
      * @return event
      */
-    public static <T> ProcessAnnotatedTypeImpl<T> fireProcessAnnotatedTypeEvent(AnnotatedType<T> annotatedType)
+    public static <T> GProcessAnnotatedType fireProcessAnnotatedTypeEvent(AnnotatedType<T> annotatedType)
     {                
-        ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = new ProcessAnnotatedTypeImpl<T>(annotatedType);
+        GProcessAnnotatedType processAnnotatedEvent = new GProcessAnnotatedType(annotatedType);
         
         //Fires ProcessAnnotatedType
         BeanManagerImpl.getManager().fireEvent(processAnnotatedEvent, new Annotation[0]);
@@ -1938,11 +1938,11 @@ public final class WebBeansUtil
      * @param bean bean instance
      * @return event
      */
-    public static <T> ProcessInjectionTargetImpl<T> fireProcessInjectionTargetEvent(AbstractInjectionTargetBean<T> bean)
+    public static <T> GProcessInjectionTarget fireProcessInjectionTargetEvent(AbstractInjectionTargetBean<T> bean)
     {
         AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(bean.getReturnType());
         InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(bean);
-        ProcessInjectionTargetImpl<T> processInjectionTargetEvent = new ProcessInjectionTargetImpl<T>(injectionTarget,annotatedType);
+        GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,annotatedType);
         
         //Fires ProcessInjectionTarget
         BeanManagerImpl.getManager().fireEvent(processInjectionTargetEvent, new Annotation[0]);
@@ -1951,9 +1951,9 @@ public final class WebBeansUtil
         
     }
     
-    public static ProcessProducerImpl<?, ?> fireProcessProducerEventForMethod(ProducerMethodBean<?> producerMethod,AnnotatedMethod<?> method)
+    public static GProcessProducer fireProcessProducerEventForMethod(ProducerMethodBean<?> producerMethod,AnnotatedMethod<?> method)
     {         
-        ProcessProducerImpl<?, ?> producerEvent = new ProcessProducerImpl(method);
+        GProcessProducer producerEvent = new GProcessProducer(method);
         
         //Fires ProcessProducer for methods
         BeanManagerImpl.getManager().fireEvent(producerEvent, new Annotation[0]);
@@ -1961,9 +1961,9 @@ public final class WebBeansUtil
         return producerEvent;
     }
     
-    public static ProcessProducerImpl<?, ?> fireProcessProducerEventForField(ProducerFieldBean<?> producerField,AnnotatedField<?> field)
+    public static GProcessProducer fireProcessProducerEventForField(ProducerFieldBean<?> producerField,AnnotatedField<?> field)
     {         
-        ProcessProducerImpl<?, ?> producerEvent = new ProcessProducerImpl(field);
+        GProcessProducer producerEvent = new GProcessProducer(field);
         
         //Fires ProcessProducer for fields
         BeanManagerImpl.getManager().fireEvent(producerEvent, new Annotation[0]);
@@ -1979,15 +1979,15 @@ public final class WebBeansUtil
             Method disposal = bean.getDisposalMethod();
             
             AnnotatedMethod<?> disposalAnnotated = null;
-            ProcessProducerMethodImpl<?, ?> processProducerMethodEvent = null;
+            GProcessProducerMethod processProducerMethodEvent = null;
             if(disposal != null)
             {
                 disposalAnnotated = AnnotatedElementFactory.newAnnotatedMethod(disposal, bean.getParent().getReturnType());
-                processProducerMethodEvent = new ProcessProducerMethodImpl(bean,annotatedMethod,disposalAnnotated.getParameters().get(0));                
+                processProducerMethodEvent = new GProcessProducerMethod(bean,annotatedMethod,disposalAnnotated.getParameters().get(0));                
             }
             else
             {
-                processProducerMethodEvent = new ProcessProducerMethodImpl(bean,annotatedMethod,null);
+                processProducerMethodEvent = new GProcessProducerMethod(bean,annotatedMethod,null);
             }
             
 
@@ -2002,7 +2002,7 @@ public final class WebBeansUtil
         {
             AnnotatedField<?> field = annotatedFields.get(bean);
             
-            ProcessProducerFieldImpl<?, ?> processProducerFieldEvent = new ProcessProducerFieldImpl(bean,field);
+            GProcessProducerField processProducerFieldEvent = new GProcessProducerField(bean,field);
             
             //Fire ProcessProducer
             BeanManagerImpl.getManager().fireEvent(processProducerFieldEvent, new Annotation[0]);
