@@ -19,7 +19,6 @@ import java.lang.reflect.Type;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.jpa.spi.JPAService;
 
-import javax.enterprise.inject.BindingType;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;

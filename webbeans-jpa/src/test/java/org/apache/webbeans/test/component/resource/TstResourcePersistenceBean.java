@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.resource;
 
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
