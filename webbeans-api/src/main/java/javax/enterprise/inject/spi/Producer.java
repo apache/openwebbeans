@@ -16,7 +16,6 @@ package javax.enterprise.inject.spi;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Initializer;
 
 /**
  * Provides a generic operation for producing an instance of a type.

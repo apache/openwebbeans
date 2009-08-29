@@ -23,6 +23,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.inject.Qualifier;
+
 /**
  * Defines any binding type in the injection point.
  *
@@ -31,7 +33,7 @@ import java.lang.annotation.Target;
 @Target( { TYPE, METHOD, PARAMETER, FIELD })
 @Retention(RUNTIME)
 @Documented
-@BindingType
+@Qualifier
 public @interface Any
 {
 
