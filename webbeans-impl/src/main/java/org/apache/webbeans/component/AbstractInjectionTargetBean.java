@@ -20,7 +20,6 @@ import java.util.Set;
 
 import javax.decorator.Decorates;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 

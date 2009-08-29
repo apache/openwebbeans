@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.servlet.ServletContext;
 
 import junit.framework.Assert;

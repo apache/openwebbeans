@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.ScopeType;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.deployment.DeploymentType;
 
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;

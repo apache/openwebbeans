@@ -18,10 +18,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.enterprise.inject.BindingType;
 import javax.enterprise.inject.NonBinding;
+import javax.inject.Qualifier;
 
-@BindingType
+@Qualifier
 @Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AnnotationWithNonBindingMember {

@@ -26,11 +26,11 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.BindingType;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.stereotype.Stereotype;
 
+import javax.inject.Qualifier;
 import javax.interceptor.InterceptorBindingType;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -772,7 +772,7 @@ public final class AnnotationUtil
         {
             return true;
         }
-        else if (clazz.isAnnotationPresent(BindingType.class))
+        else if (clazz.isAnnotationPresent(Qualifier.class))
         {
             return true;
         }

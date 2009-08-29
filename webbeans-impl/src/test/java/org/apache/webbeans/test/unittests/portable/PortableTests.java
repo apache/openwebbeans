@@ -21,14 +21,14 @@ import java.util.Set;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Initializer;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.inject.Inject;
 import javax.interceptor.Interceptor;
 
 import junit.framework.Assert;
@@ -78,7 +78,7 @@ public class PortableTests extends TestContext
         Assert.assertEquals(1, cs.size());        
         AnnotatedConstructor<PortableType1> c = cs.iterator().next();
         
-        Assert.assertTrue(c.isAnnotationPresent(Initializer.class));        
+        Assert.assertTrue(c.isAnnotationPresent(Inject.class));        
         Set<AnnotatedField<? super PortableType1>> fields = type.getFields();
         
         Assert.assertEquals(3, fields.size());

@@ -17,7 +17,7 @@
 package org.apache.webbeans.test.component.exception.initializer;
 
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Initializer;
+import javax.inject.Inject;
 
 public class BrokenInitializer3
 {
@@ -26,7 +26,7 @@ public class BrokenInitializer3
         
     }
 
-    @Initializer
+    @Inject
     public void init3(@Disposes int x)
     {
         

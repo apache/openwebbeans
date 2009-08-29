@@ -16,9 +16,9 @@ package org.apache.webbeans.test.component;
 import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Initializer;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.SingletonBinding;
@@ -34,7 +34,7 @@ public class Singleton implements Serializable
     private ITyped2 typed2 = null;
 
     @SuppressWarnings("unchecked")
-    @Initializer
+    @Inject
     public void inject(@Binding1 ITyped2 typed2)
     {
         this.typed2 = typed2;

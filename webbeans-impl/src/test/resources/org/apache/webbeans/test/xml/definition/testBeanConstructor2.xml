@@ -21,7 +21,7 @@ under the License.
 		  	xmlns:myapp="urn:java:org.apache.webbeans.test.xml.definition"
 		  	xmlns:lang="urn:java:java.lang"
  			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:schemaLocation="urn:java:javax.webbeans http://java.sun.com/jee/web-beans-1.0.xsd">
+			xsi:schemaLocation="urn:java:ee http://java.sun.com/jee/web-beans-1.0.xsd">
 
     <!-- 
       The constructor under test: public TstBeanConstructor(Integer ctParam)
@@ -33,7 +33,7 @@ under the License.
         <RequestScoped/>          
 		
 		<myapp:setVal2>
-			<Initializer/>
+			<Inject/>
 		</myapp:setVal2>
 		 
     </myapp:TstBeanConstructor> 

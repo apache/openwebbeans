@@ -83,7 +83,7 @@ public final class WebBeansConstants
     
     public static final String WEB_BEANS_XML_JMS_RESOURCE_MAPPED_NAME = "mappedName";
 
-    public static final String WEB_BEANS_XML_INITIALIZER_ELEMENT = "Initializer";
+    public static final String WEB_BEANS_XML_INITIALIZER_ELEMENT = "Inject";
 
     public static final String WEB_BEANS_XML_DESTRUCTOR_ELEMENT = "Destructor";
 

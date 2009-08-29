@@ -16,8 +16,8 @@ package org.apache.webbeans.test.component;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 @Production
 @RequestScoped
@@ -25,7 +25,7 @@ public class TypeLiteralComponent implements ITypeLiteralComponent<List<String>>
 {
     public static String STR = "";
 
-    @Initializer
+    @Inject
     public TypeLiteralComponent()
     {
         super();

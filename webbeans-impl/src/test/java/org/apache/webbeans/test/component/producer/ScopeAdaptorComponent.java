@@ -16,7 +16,7 @@ package org.apache.webbeans.test.component.producer;
 import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.deployment.Production;
 

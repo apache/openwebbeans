@@ -21,9 +21,9 @@ import java.lang.annotation.Inherited;
 import java.util.Set;
 
 import javax.enterprise.context.ScopeType;
-import javax.enterprise.inject.BindingType;
 import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.stereotype.Stereotype;
+import javax.inject.Qualifier;
 import javax.interceptor.InterceptorBindingType;
 
 import org.apache.webbeans.component.AbstractBean;
@@ -41,7 +41,7 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     {
         if(this.inheritedClazz != Object.class)
         {
-            setInheritedTypes(getInheritedBindingTypes(), this.inheritedClazz, BindingType.class);
+            setInheritedTypes(getInheritedBindingTypes(), this.inheritedClazz, Qualifier.class);
         }        
     }
 

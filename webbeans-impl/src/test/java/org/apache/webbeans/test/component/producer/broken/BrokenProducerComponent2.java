@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.producer.broken;
 
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 
 public class BrokenProducerComponent2
 {
@@ -24,7 +24,7 @@ public class BrokenProducerComponent2
     }
 
     @Produces
-    @Initializer
+    @Inject
     public int broken2()
     {
         return 0;

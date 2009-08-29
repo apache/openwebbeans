@@ -17,7 +17,7 @@
 package org.apache.webbeans.test.component.producer.primitive;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;

@@ -47,9 +47,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.IllegalProductException;
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.UnproxyableResolutionException;
@@ -63,6 +62,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.stereotype.Stereotype;
+import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
@@ -317,7 +317,7 @@ public final class WebBeansUtil
         for (Constructor<T> constructor : constructors)
         {
             j++;
-            if (constructor.getAnnotation(Initializer.class) != null)
+            if (constructor.getAnnotation(Inject.class) != null)
             {
                 if (inAnnotation == true)// duplicate @In
                 {
@@ -393,7 +393,7 @@ public final class WebBeansUtil
         for (Constructor<?> constructor : constructors)
         {
             j++;
-            if (constructor.getAnnotation(Initializer.class) != null)
+            if (constructor.getAnnotation(Inject.class) != null)
             {
                 return true;
             }
@@ -412,7 +412,7 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
 
-        if (AnnotationUtil.isMethodHasAnnotation(method, Initializer.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Disposes.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Observes.class))
+        if (AnnotationUtil.isMethodHasAnnotation(method, Inject.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Disposes.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Observes.class))
         {
             throw new WebBeansConfigurationException("Producer Method Bean with name : " + method.getName() + " in bean class : " + parentImplClazzName + " can not be annotated with" + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
         }
@@ -430,7 +430,7 @@ public final class WebBeansUtil
             throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in class " + definedBeanClassName + " has multiple @Disposes annotation parameter");
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(disposalMethod, Initializer.class) || AnnotationUtil.isMethodParameterAnnotationExist(disposalMethod, Observes.class) || AnnotationUtil.isMethodHasAnnotation(disposalMethod, Produces.class))
+        if (AnnotationUtil.isMethodHasAnnotation(disposalMethod, Inject.class) || AnnotationUtil.isMethodParameterAnnotationExist(disposalMethod, Observes.class) || AnnotationUtil.isMethodHasAnnotation(disposalMethod, Produces.class))
         {
             throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in the class : " + definedBeanClassName + " can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes");
         }

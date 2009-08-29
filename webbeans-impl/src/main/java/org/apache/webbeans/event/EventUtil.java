@@ -22,9 +22,9 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -90,7 +90,7 @@ public final class EventUtil
             throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not define two parameters with annotated @Observes");
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Produces.class) || AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Initializer.class))
+        if (AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Produces.class) || AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Inject.class))
         {
             throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
 

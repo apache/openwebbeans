@@ -13,9 +13,9 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.component.service.ITyped2;
 
@@ -25,7 +25,7 @@ public class NewMethodComponentBindingComponent
     @New
     String src;
 
-    @Initializer
+    @Inject
     public void inject(@New ITyped2<String, String> s)
     {
 

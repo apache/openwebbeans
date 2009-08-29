@@ -13,19 +13,19 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 @Production
 public class MoreThanOneConstructureComponent
 {
-    @Initializer
+    @Inject
     public MoreThanOneConstructureComponent()
     {
 
     }
 
-    @Initializer
+    @Inject
     public MoreThanOneConstructureComponent(String m)
     {
 

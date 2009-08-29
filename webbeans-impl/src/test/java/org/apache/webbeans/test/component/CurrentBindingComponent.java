@@ -14,9 +14,9 @@
 package org.apache.webbeans.test.component;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Initializer;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
@@ -35,7 +35,7 @@ public class CurrentBindingComponent
 
     }
 
-    @Initializer
+    @Inject
     public CurrentBindingComponent(@Binding1 @Binding2 ITyped2 typed2)
     {
         this.typed2 = typed2;

@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.producer.specializes;
 
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.deployment.Specializes;
 

@@ -15,9 +15,9 @@ package org.apache.webbeans.test.component.portable;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Initializer;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
@@ -43,7 +43,7 @@ public class PortableType1
     
     private @Produces @BindingType2 CheckWithCheckPayment check;
     
-    @Initializer
+    @Inject
     public PortableType1()
     {
         

@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.xml.definition;
 
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.IPayment;

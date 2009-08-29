@@ -22,9 +22,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InterceptionType;
+import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
@@ -52,7 +52,7 @@ public final class InterceptorUtil
             return false;
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(method, Initializer.class))
+        if (AnnotationUtil.isMethodHasAnnotation(method, Inject.class))
         {
             return false;
         }

@@ -17,7 +17,7 @@
 package org.apache.webbeans.test.component.exception.initializer;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Initializer;
+import javax.inject.Inject;
 
 public class BrokenInitializer4
 {
@@ -27,7 +27,7 @@ public class BrokenInitializer4
         
     }
     
-    @Initializer
+    @Inject
     public void init4(@Observes int i)
     {
         

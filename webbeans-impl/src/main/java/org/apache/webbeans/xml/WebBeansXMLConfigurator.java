@@ -38,10 +38,10 @@ import javax.decorator.Decorator;
 import javax.enterprise.context.ScopeType;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
@@ -1385,7 +1385,7 @@ public final class WebBeansXMLConfigurator
                             type = 3;
                         }
                     }
-                    else if (childClazz.equals(Initializer.class))
+                    else if (childClazz.equals(Inject.class))
                     {
                         if (isDefineType)
                         {

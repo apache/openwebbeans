@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;

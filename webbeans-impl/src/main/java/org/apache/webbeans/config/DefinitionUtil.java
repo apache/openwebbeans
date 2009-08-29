@@ -30,8 +30,7 @@ import javax.decorator.Decorates;
 import javax.enterprise.context.ScopeType;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Initializer;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
@@ -40,6 +39,7 @@ import javax.enterprise.inject.deployment.Specializes;
 import javax.enterprise.inject.deployment.Standard;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.CurrentLiteral;
@@ -857,7 +857,7 @@ public final class DefinitionUtil
         
         for (Method method : methods)
         {
-            boolean isInitializer = AnnotationUtil.isMethodHasAnnotation(method, Initializer.class);
+            boolean isInitializer = AnnotationUtil.isMethodHasAnnotation(method, Inject.class);
             
             boolean isResource = AnnotationUtil.isMethodHasResourceAnnotation(method);
 

@@ -26,7 +26,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.decorator.Decorator;
 import javax.enterprise.context.ScopeType;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.deployment.DeploymentType;

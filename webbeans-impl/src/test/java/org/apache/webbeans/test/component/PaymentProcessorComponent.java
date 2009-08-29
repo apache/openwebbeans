@@ -15,8 +15,8 @@ package org.apache.webbeans.test.component;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Check;
 
@@ -28,14 +28,14 @@ public class PaymentProcessorComponent
     private IPayment paymentCheck;
     private IPayment paymentMoney;
 
-    @Initializer
+    @Inject
     public void setPaymentCheck(@Check(type = "CHECK") IPayment payment)
     {
         this.paymentCheck = payment;
 
     }
 
-    @Initializer
+    @Inject
     public void setPaymentMoney(@Check(type = "MONEY") IPayment payment)
     {
         this.paymentMoney = payment;

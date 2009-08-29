@@ -14,7 +14,7 @@
 package org.apache.webbeans.test.component;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.deployment.Production;
 
 import org.apache.webbeans.test.annotation.binding.Check;

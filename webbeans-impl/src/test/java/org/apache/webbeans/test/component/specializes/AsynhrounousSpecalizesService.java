@@ -18,7 +18,7 @@ package org.apache.webbeans.test.component.specializes;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 
 import org.apache.webbeans.test.annotation.binding.Asynchronous;
 

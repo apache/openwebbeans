@@ -17,7 +17,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Current;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.deployment.Production;
 

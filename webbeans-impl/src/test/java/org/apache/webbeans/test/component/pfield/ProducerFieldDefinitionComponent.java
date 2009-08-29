@@ -18,8 +18,8 @@ package org.apache.webbeans.test.component.pfield;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Synchronous;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
@@ -34,7 +34,7 @@ public class ProducerFieldDefinitionComponent
         
     }
     
-    @Initializer
+    @Inject
     public ProducerFieldDefinitionComponent(@Current PaymentProcessorComponent paymentProcessor)
     {
         this.paymentProcessor = paymentProcessor;

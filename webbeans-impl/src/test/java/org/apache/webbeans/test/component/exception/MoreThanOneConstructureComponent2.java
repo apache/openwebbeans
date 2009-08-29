@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.enterprise.inject.Initializer;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
@@ -22,13 +22,13 @@ import org.apache.webbeans.test.component.service.ServiceImpl1;
 @Production
 public class MoreThanOneConstructureComponent2
 {
-    @Initializer
+    @Inject
     public MoreThanOneConstructureComponent2()
     {
 
     }
 
-    @Initializer
+    @Inject
     public MoreThanOneConstructureComponent2(@Binding1 ServiceImpl1 s)
     {
 
