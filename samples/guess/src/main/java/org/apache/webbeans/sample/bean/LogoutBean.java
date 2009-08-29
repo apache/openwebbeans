@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.sample.bean;
 
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 

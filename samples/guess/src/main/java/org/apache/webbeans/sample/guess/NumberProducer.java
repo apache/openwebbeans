@@ -20,7 +20,7 @@ package org.apache.webbeans.sample.guess;
 import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 
 @SessionScoped

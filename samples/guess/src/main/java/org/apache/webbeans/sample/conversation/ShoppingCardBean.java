@@ -21,7 +21,7 @@ import java.io.Serializable;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 
 import org.apache.webbeans.sample.model.conversation.ConversationModel;

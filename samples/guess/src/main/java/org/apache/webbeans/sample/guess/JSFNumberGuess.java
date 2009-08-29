@@ -20,12 +20,12 @@ import java.util.Set;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.AnnotationLiteral;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Initializer;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 
 @Named(value = "game")
 @SessionScoped
@@ -47,7 +47,7 @@ public class JSFNumberGuess implements Serializable
 
     }
 
-    @Initializer
+    @Inject
     public JSFNumberGuess(@NextNumber Integer number, @Highest Integer maxNumber)
     {
         this.no = number;

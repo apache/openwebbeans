@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 
 @ConversationScoped
 @Named
