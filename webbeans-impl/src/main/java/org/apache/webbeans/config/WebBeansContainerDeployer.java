@@ -63,6 +63,7 @@ import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
+import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
@@ -690,7 +691,7 @@ public class WebBeansContainerDeployer
             }
 
             //Fires ProcessManagedBean
-            ProcessBeanImpl<T> processBeanEvent = new ProcessManagedBeanImpl<T>(managedBean,annotatedType);            
+            ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean,annotatedType);            
             BeanManagerImpl.getManager().fireEvent(processBeanEvent, new Annotation[0]);
             
             //Fires ProcessProducerMethod

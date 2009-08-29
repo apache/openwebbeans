@@ -13,11 +13,10 @@
  */
 package org.apache.webbeans.portable.events;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Extension;
@@ -38,7 +37,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class ExtensionLoader
 {
     /**Map of extensions*/
-    private Map<Bean<?>, Object> extensions = Collections.emptyMap();
+    private Map<Bean<?>, Object> extensions = new ConcurrentHashMap<Bean<?>, Object>();
     
     /**
      * Creates a new loader instance.
@@ -67,7 +66,6 @@ public class ExtensionLoader
     {
         ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, WebBeansUtil.getCurrentClassLoader());
         Iterator<Extension> iterator = loader.iterator();
-        Map<Bean<?>, Object> map = new HashMap<Bean<?>, Object>();
         
         while(iterator.hasNext())
         {
@@ -75,7 +73,7 @@ public class ExtensionLoader
             try
             {
                 Bean<?> bean = WebBeansUtil.createExtensionComponent(ext.getClass());                
-                map.put(bean, ext);
+                this.extensions.put(bean, ext);
                 
                 BeanManagerImpl.getManager().addBean(bean);
             }
@@ -83,9 +81,7 @@ public class ExtensionLoader
             {
                 throw new WebBeansException("Error is occured while reading Extension service list",e);
             }
-        }
-        
-        this.extensions = Collections.unmodifiableMap(map);
+        }        
     }
     
     /**
