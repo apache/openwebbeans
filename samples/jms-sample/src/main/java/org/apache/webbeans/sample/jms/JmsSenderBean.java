@@ -17,7 +17,7 @@
 package org.apache.webbeans.sample.jms;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.QueueSender;
 import javax.jms.QueueSession;
