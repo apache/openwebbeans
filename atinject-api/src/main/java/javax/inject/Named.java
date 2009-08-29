@@ -28,9 +28,17 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Indicates the name of the webbeans component.
+ * <p>
+ * If there is no <code>Named</code> annotation for the
+ * given webbeans component, its name is null.
+ * </p>
+ */
 @Documented
-@Qualifier
 @Retention(value=RetentionPolicy.RUNTIME)
-public @interface Named {
+public @interface Named 
+{
+ 
     String value() default "";
 }

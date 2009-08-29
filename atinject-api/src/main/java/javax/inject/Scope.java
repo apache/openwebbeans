@@ -33,6 +33,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target(value=ElementType.ANNOTATION_TYPE)
 @Retention(value=RetentionPolicy.RUNTIME)
-public @interface Scope {
+public @interface Scope 
+{
     
 }

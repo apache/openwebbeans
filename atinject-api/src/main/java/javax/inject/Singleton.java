@@ -31,6 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 @Documented
 @Scope
 @Retention(value=RetentionPolicy.RUNTIME)
-public @interface Singleton {
+public @interface Singleton 
+{
     
 }
