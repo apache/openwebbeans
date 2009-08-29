@@ -18,7 +18,7 @@ package org.apache.webbeans.reservation.beans.user;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 
 import org.apache.webbeans.reservation.controller.user.UserController;
 import org.apache.webbeans.reservation.entity.User;

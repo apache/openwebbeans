@@ -27,7 +27,7 @@ import java.util.Map;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.faces.component.html.HtmlDataTable;
 import javax.faces.model.SelectItem;
 

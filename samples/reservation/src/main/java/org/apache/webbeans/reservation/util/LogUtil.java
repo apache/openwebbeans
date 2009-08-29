@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.reservation.util;
 
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 

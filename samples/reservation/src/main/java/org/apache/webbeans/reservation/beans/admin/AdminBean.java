@@ -18,7 +18,7 @@ package org.apache.webbeans.reservation.beans.admin;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 
 import org.apache.webbeans.reservation.controller.admin.AdminController;
 import org.apache.webbeans.reservation.util.JSFUtility;

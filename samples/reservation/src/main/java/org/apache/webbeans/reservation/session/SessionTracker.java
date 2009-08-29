@@ -25,7 +25,7 @@ import org.apache.webbeans.reservation.events.LoggedInEvent;
 
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.enterprise.inject.spi.BeanManager;
 
 @SessionScoped

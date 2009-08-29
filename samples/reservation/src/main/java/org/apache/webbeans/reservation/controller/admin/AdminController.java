@@ -22,7 +22,7 @@ import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Current;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 

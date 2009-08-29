@@ -19,7 +19,7 @@ package org.apache.webbeans.reservation.beans;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Named;
+import javax.inject.Named;
 
 import org.apache.commons.validator.GenericValidator;
 import org.apache.webbeans.reservation.bindings.DatabaseLogin;
