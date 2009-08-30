@@ -32,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.el.ELResolver;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -52,6 +52,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.stereotype.Stereotype;
+import javax.inject.Scope;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
@@ -781,19 +782,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return null;
     }
 
-    @Override
-    public ScopeType getScopeDefinition(Class<? extends Annotation> scopeType)
-    {
-        Annotation annotation = AnnotationUtil.getAnnotation(scopeType.getDeclaredAnnotations(), ScopeType.class);
-        
-        if(annotation != null)
-        {
-            return (ScopeType)annotation;
-        }
-        
-        return null;
-    }
-
     
     @Override
     public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
@@ -810,7 +798,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     @Override
-    public boolean isBindingType(Class<? extends Annotation> annotationType)
+    public boolean isQualifier(Class<? extends Annotation> annotationType)
     {
         return AnnotationUtil.isBindingAnnotation(annotationType);
     }
@@ -822,15 +810,39 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     @Override
-    public boolean isScopeType(Class<? extends Annotation> annotationType)
+    public boolean isScope(Class<? extends Annotation> annotationType)
     {
-        if(AnnotationUtil.isAnnotationExist(annotationType.getDeclaredAnnotations(), ScopeType.class))
+        if(AnnotationUtil.isAnnotationExist(annotationType.getDeclaredAnnotations(), Scope.class))
         {
             return true;
         }
      
         return false;
     }
+    
+    @Override
+    public boolean isNormalScope(Class<? extends Annotation> annotationType)
+    {
+        if(AnnotationUtil.isAnnotationExist(annotationType.getDeclaredAnnotations(), NormalScope.class))
+        {
+            return true;
+        }
+     
+        return false;
+    }
+    
+    @Override
+    public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
+    {
+        if(AnnotationUtil.isAnnotationExist(annotationType.getDeclaredAnnotations(), NormalScope.class))
+        {
+            NormalScope scope = annotationType.getAnnotation(NormalScope.class);            
+            return scope.passivating();
+        }
+     
+        return false;
+    }    
+    
 
     @Override
     public boolean isStereotype(Class<? extends Annotation> annotationType)

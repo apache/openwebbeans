@@ -16,7 +16,7 @@ package org.apache.webbeans.component.creation;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
@@ -159,7 +159,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         if(isDefaultMetaDataProvider())
         {
             DefinitionUtil.defineScopeType(this.bean, this.beanAnnotations, errorMessage);
-            WebBeansUtil.checkPassivationScope(getBean(), getBean().getScopeType().getAnnotation(ScopeType.class));
+            WebBeansUtil.checkPassivationScope(getBean(), getBean().getScopeType().getAnnotation(NormalScope.class));
         }
         else
         {

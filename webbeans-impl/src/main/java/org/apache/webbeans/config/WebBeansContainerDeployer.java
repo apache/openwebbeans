@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.deployment.Specializes;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -58,7 +58,6 @@ import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
-import org.apache.webbeans.portable.events.ProcessManagedBeanImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
@@ -543,16 +542,19 @@ public class WebBeansContainerDeployer
                 if (beanObj instanceof ManagedBean)
                 {
                     ManagedBean<?> component = (ManagedBean<?>) beanObj;
-                    ScopeType scope = component.getScopeType().getAnnotation(ScopeType.class);
-                    if (scope.passivating())
+                    NormalScope scope = component.getScopeType().getAnnotation(NormalScope.class);
+                    if(scope != null)
                     {
-                        // TODO  Check constructor
+                        if (scope.passivating())
+                        {
+                            // TODO  Check constructor
 
-                        // TODO Check non-transient fields
+                            // TODO Check non-transient fields
 
-                        // TODO Check initializer methods
+                            // TODO Check initializer methods
 
-                        // TODO Check producer methods
+                            // TODO Check producer methods
+                        }                        
                     }
                 }
             }

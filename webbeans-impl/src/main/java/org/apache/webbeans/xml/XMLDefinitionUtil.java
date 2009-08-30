@@ -25,8 +25,9 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.decorator.Decorator;
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.inject.Named;
+import javax.inject.Scope;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.deployment.DeploymentType;
@@ -124,7 +125,15 @@ public final class XMLDefinitionUtil
             while (it.hasNext())
             {
                 Class<? extends Annotation> clazz = it.next();
-                if (clazz.isAnnotationPresent(DeploymentType.class) || clazz.isAnnotationPresent(ScopeType.class) || AnnotationUtil.isBindingAnnotation(clazz) || AnnotationUtil.isInterceptorBindingAnnotation(clazz) || AnnotationUtil.isStereoTypeAnnotation(clazz) || clazz.equals(Named.class) || clazz.equals(Specializes.class) || clazz.equals(javax.interceptor.Interceptor.class) || clazz.equals(Decorator.class))
+                if (clazz.isAnnotationPresent(DeploymentType.class) 
+                        || clazz.isAnnotationPresent(NormalScope.class) 
+                        || clazz.isAnnotationPresent(Scope.class)
+                        || AnnotationUtil.isBindingAnnotation(clazz) 
+                        || AnnotationUtil.isInterceptorBindingAnnotation(clazz) 
+                        || AnnotationUtil.isStereoTypeAnnotation(clazz) 
+                        || clazz.equals(Named.class) 
+                        || clazz.equals(Specializes.class) || clazz.equals(javax.interceptor.Interceptor.class) 
+                        || clazz.equals(Decorator.class))
                 {
                     continue;
                 }
@@ -604,7 +613,7 @@ public final class XMLDefinitionUtil
 
         for (Class<? extends Annotation> memberLevelMetaDataClass : memberLevelMetaData)
         {
-            if (!memberLevelMetaDataClass.isAnnotationPresent(DeploymentType.class) && !memberLevelMetaDataClass.isAnnotationPresent(ScopeType.class) && !AnnotationUtil.isStereoTypeAnnotation(memberLevelMetaDataClass) && !memberLevelMetaDataClass.equals(Named.class))
+            if (!memberLevelMetaDataClass.isAnnotationPresent(DeploymentType.class) && !memberLevelMetaDataClass.isAnnotationPresent(NormalScope.class) && !AnnotationUtil.isStereoTypeAnnotation(memberLevelMetaDataClass) && !memberLevelMetaDataClass.equals(Named.class))
             {
                 throw new WebBeansConfigurationException(errorMessage + "Defined annotations for producer method name : " + producesMethod.getName() + " in class : " + component.getReturnType().getName() + " is not correct");
             }

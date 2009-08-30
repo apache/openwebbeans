@@ -19,7 +19,6 @@ import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.enterprise.context.ScopeType;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.Bean;
@@ -98,7 +97,7 @@ public final class ResolutionUtil
         }
 
         Bean<?> bean = resolvedSet.iterator().next();
-        WebBeansUtil.checkUnproxiableApiType(bean, bean.getScopeType().getAnnotation(ScopeType.class));
+        WebBeansUtil.checkUnproxiableApiType(bean, bean.getScopeType());
 
     }
 }

@@ -20,10 +20,11 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
 import java.util.Set;
 
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.inject.Qualifier;
+import javax.inject.Scope;
 import javax.interceptor.InterceptorBindingType;
 
 import org.apache.webbeans.component.AbstractBean;
@@ -70,7 +71,9 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     {
         if(this.inheritedClazz != Object.class)
         {
-            setInheritedType(this.inheritedClazz, ScopeType.class);
+            setInheritedType(this.inheritedClazz, NormalScope.class);
+            setInheritedType(this.inheritedClazz, Scope.class);
+            
         }
     }
 
@@ -94,7 +97,7 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
             {
                 Annotation annotation = inheritedAnnotations[0];
                 
-                if(annotationType.equals(ScopeType.class))
+                if(annotationType.equals(NormalScope.class) || annotationType.equals(Scope.class))
                 {
                     this.inheritedScopeType = annotation;
                 }

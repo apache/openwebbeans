@@ -17,6 +17,7 @@ import javax.enterprise.inject.spi.AnnotatedMember;
 
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 
+@SuppressWarnings("unchecked")
 public class GProcessProducer extends ProcessProducerImpl
 {
     public GProcessProducer(AnnotatedMember<?> annotateMember)

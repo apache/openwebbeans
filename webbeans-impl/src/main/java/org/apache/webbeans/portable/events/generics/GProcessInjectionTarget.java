@@ -18,6 +18,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 
+@SuppressWarnings("unchecked")
 public class GProcessInjectionTarget extends ProcessInjectionTargetImpl
 {
     public GProcessInjectionTarget(InjectionTarget<?> injectionTarget,AnnotatedType<?> annotatedType)

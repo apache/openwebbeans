@@ -17,6 +17,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 
+@SuppressWarnings("unchecked")
 public class GProcessAnnotatedType extends ProcessAnnotatedTypeImpl
 {
     public GProcessAnnotatedType(AnnotatedType annotatedType )

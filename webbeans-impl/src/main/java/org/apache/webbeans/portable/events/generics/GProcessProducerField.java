@@ -18,6 +18,7 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.portable.events.ProcessProducerFieldImpl;
 
+@SuppressWarnings("unchecked")
 public class GProcessProducerField extends ProcessProducerFieldImpl
 {
     public GProcessProducerField(ProducerFieldBean<?> bean,AnnotatedField<?> annotatedField)

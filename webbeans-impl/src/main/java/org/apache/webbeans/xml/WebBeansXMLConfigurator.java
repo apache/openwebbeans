@@ -35,13 +35,14 @@ import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Decorator;
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.deployment.Production;
 import javax.inject.Inject;
+import javax.inject.Scope;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
@@ -1639,10 +1640,15 @@ public final class WebBeansXMLConfigurator
      */
     private <T> void configureScopeType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
-        Class<? extends Annotation> scopeType = XMLDefinitionUtil.defineXMLTypeMetaData(component, annotationSet, ScopeType.class, createConfigurationFailedMessage() + "@ScopeType annotation is not configured correctly");
+        Class<? extends Annotation> scopeType = XMLDefinitionUtil.defineXMLTypeMetaData(component, annotationSet, NormalScope.class, createConfigurationFailedMessage() + "@Scope/@NormalScope annotation is not configured correctly");
 
-        if (scopeType == null)
+        if(scopeType == null)
         {
+            scopeType = XMLDefinitionUtil.defineXMLTypeMetaData(component, annotationSet, Scope.class, createConfigurationFailedMessage() + "@Scope/@NormalScope annotation is not configured correctly");            
+        }
+        
+        if (scopeType == null)
+        { 
             // From stereotype
             DefinitionUtil.defineDefaultScopeType(component, createConfigurationFailedMessage() + "@ScopeType annotation is not configured correctly");
         }

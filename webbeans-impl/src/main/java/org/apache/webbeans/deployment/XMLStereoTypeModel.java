@@ -20,8 +20,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.inject.Named;
+import javax.inject.Scope;
 import javax.enterprise.inject.deployment.DeploymentType;
 
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
@@ -82,16 +83,16 @@ public class XMLStereoTypeModel implements IStereoTypeModel
                 annClazz = (Class<? extends Annotation>) clazz;
                 Annotation defaultAnn = JavassistProxyFactory.createNewAnnotationProxy(annClazz);
 
-                if (clazz.isAnnotationPresent(ScopeType.class))
+                if (clazz.isAnnotationPresent(NormalScope.class) || clazz.isAnnotationPresent(Scope.class))
                 {
                     if (scopeTypeFound)
                     {
-                        throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not contain more than one @ScopeType annotation");
+                        throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not contain more than one @Scope/@NormalScope annotation");
                     }
 
                     defaultScopeType = defaultAnn;
                     scopeTypeFound = true;
-                }
+                }                
                 else if (clazz.isAnnotationPresent(DeploymentType.class))
                 {
                     if (deploymentTypeFound)

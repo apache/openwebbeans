@@ -19,8 +19,9 @@ import java.lang.annotation.Target;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.deployment.DeploymentType;
+import javax.inject.Scope;
 
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -63,11 +64,16 @@ public class StereoTypeModel implements IStereoTypeModel
             this.defaultDeploymentType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), DeploymentType.class)[0];
         }
 
-        if (AnnotationUtil.isMetaAnnotationExist(clazz.getDeclaredAnnotations(), ScopeType.class))
+        if (AnnotationUtil.isMetaAnnotationExist(clazz.getDeclaredAnnotations(), NormalScope.class))
         {
-            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), ScopeType.class)[0];
+            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), NormalScope.class)[0];
         }
 
+        if (AnnotationUtil.isMetaAnnotationExist(clazz.getDeclaredAnnotations(), Scope.class))
+        {
+            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), Scope.class)[0];
+        }
+        
         if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
         {
             Annotation[] ibs = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());

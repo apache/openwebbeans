@@ -13,14 +13,12 @@
  */
 package org.apache.webbeans.portable.events.generics;
 
-import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessManagedBeanImpl;
 
+@SuppressWarnings("unchecked")
 public class GProcessManagedBean extends ProcessManagedBeanImpl
 {
     public GProcessManagedBean(ManagedBean<?> bean,AnnotatedType<?> annotated)

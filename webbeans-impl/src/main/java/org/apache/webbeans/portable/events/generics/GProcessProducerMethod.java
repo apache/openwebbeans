@@ -19,6 +19,7 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.portable.events.ProcessProducerMethodImpl;
 
+@SuppressWarnings("unchecked")
 public class GProcessProducerMethod extends ProcessProducerMethodImpl
 {
     public GProcessProducerMethod(ProducerMethodBean<?> bean,AnnotatedMethod<?> annotatedMethod, AnnotatedParameter dispose)

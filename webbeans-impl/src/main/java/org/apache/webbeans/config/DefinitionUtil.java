@@ -27,10 +27,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Decorates;
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.inject.Named;
+import javax.inject.Scope;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
@@ -279,10 +280,19 @@ public final class DefinitionUtil
         boolean found = false;
 
         for (Annotation annotation : annotations)
-        {
-            Annotation var = annotation.annotationType().getAnnotation(ScopeType.class);
+        {   
+            /*Normal scope*/
+            Annotation var = annotation.annotationType().getAnnotation(NormalScope.class);
+            /*Pseudo scope*/
+            Annotation pseudo = annotation.annotationType().getAnnotation(Scope.class);
+            
             if (var != null)
             {
+                if(pseudo != null)
+                {
+                    throw new WebBeansConfigurationException("Not to define both @Scope and @NormalScope on bean : " + component);
+                }
+                
                 if (found)
                 {
                     throw new WebBeansConfigurationException(exceptionMessage);
@@ -292,7 +302,21 @@ public final class DefinitionUtil
                     found = true;
                     component.setImplScopeType(annotation);
                 }
-
+            }
+            else
+            {
+                if(pseudo != null)
+                {
+                    if (found)
+                    {
+                        throw new WebBeansConfigurationException(exceptionMessage);
+                    }
+                    else
+                    {
+                        found = true;
+                        component.setImplScopeType(annotation);
+                    }                    
+                }
             }
         }
 
@@ -368,9 +392,21 @@ public final class DefinitionUtil
                 Set<Class<? extends Annotation>> anns = component.getStereotypes();
                 for (Class<? extends Annotation> stero : anns)
                 {
-                    if (AnnotationUtil.isMetaAnnotationExist(stero.getDeclaredAnnotations(), ScopeType.class))
-                    {
-                        Annotation next = AnnotationUtil.getMetaAnnotations(stero.getDeclaredAnnotations(), ScopeType.class)[0];
+                    boolean containsNormal = AnnotationUtil.isMetaAnnotationExist(stero.getDeclaredAnnotations(), NormalScope.class);
+                    
+                    if (AnnotationUtil.isMetaAnnotationExist(stero.getDeclaredAnnotations(), NormalScope.class) ||
+                            AnnotationUtil.isMetaAnnotationExist(stero.getDeclaredAnnotations(), Scope.class))
+                    {                        
+                        Annotation next = null;
+                        
+                        if(containsNormal)
+                        {
+                            next = AnnotationUtil.getMetaAnnotations(stero.getDeclaredAnnotations(), NormalScope.class)[0];
+                        }
+                        else
+                        {
+                            next = AnnotationUtil.getMetaAnnotations(stero.getDeclaredAnnotations(), Scope.class)[0];
+                        }
 
                         if (defined == null)
                         {

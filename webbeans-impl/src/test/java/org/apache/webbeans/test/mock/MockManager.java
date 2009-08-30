@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.el.ELResolver;
-import javax.enterprise.context.ScopeType;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -260,13 +259,6 @@ public class MockManager implements BeanManager
 
 
     @Override
-    public ScopeType getScopeDefinition(Class<? extends Annotation> scopeType)
-    {
-        return this.manager.getScopeDefinition(scopeType);
-    }
-
-
-    @Override
     public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
     {
         return this.manager.getStereotypeDefinition(stereotype);
@@ -274,9 +266,9 @@ public class MockManager implements BeanManager
 
 
     @Override
-    public boolean isBindingType(Class<? extends Annotation> annotationType)
+    public boolean isQualifier(Class<? extends Annotation> annotationType)
     {
-        return this.manager.isBindingType(annotationType);
+        return this.manager.isQualifier(annotationType);
     }
 
 
@@ -288,11 +280,22 @@ public class MockManager implements BeanManager
 
 
     @Override
-    public boolean isScopeType(Class<? extends Annotation> annotationType)
+    public boolean isScope(Class<? extends Annotation> annotationType)
     {
-        return this.manager.isScopeType(annotationType);
+        return this.manager.isScope(annotationType);
     }
 
+    @Override
+    public boolean isNormalScope(Class<? extends Annotation> annotationType)
+    {
+        return this.manager.isNormalScope(annotationType);
+    }
+    
+    @Override
+    public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
+    {
+        return this.manager.isPassivatingScope(annotationType);
+    }        
 
     @Override
     public boolean isStereotype(Class<? extends Annotation> annotationType)

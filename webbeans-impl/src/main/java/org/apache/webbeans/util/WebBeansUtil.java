@@ -42,13 +42,14 @@ import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.Instance;
 import javax.inject.Named;
+import javax.inject.Scope;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.UnproxyableResolutionException;
@@ -1257,11 +1258,11 @@ public final class WebBeansUtil
                     deploymentTypeFound = true;
                 }
             }
-            else if (annotType.isAnnotationPresent(ScopeType.class))
+            else if (annotType.isAnnotationPresent(NormalScope.class) || annotType.isAnnotationPresent(Scope.class))
             {
                 if (scopeTypeFound == true)
                 {
-                    throw new WebBeansConfigurationException("@StereoType annotation can not contain more than one @ScopeType annotation");
+                    throw new WebBeansConfigurationException("@StereoType annotation can not contain more than one @Scope/@NormalScope annotation");
                 }
                 else
                 {
@@ -1421,7 +1422,7 @@ public final class WebBeansUtil
         return beans;
     }
     
-    public static void checkUnproxiableApiType(Bean<?> bean, ScopeType scopeType)
+    public static void checkUnproxiableApiType(Bean<?> bean, Class<? extends Annotation> scopeType)
     {
         Asserts.assertNotNull("bean", "bean parameter can not be null");
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
@@ -1448,7 +1449,7 @@ public final class WebBeansUtil
 
             if (ClassUtil.isPrimitive(superClass) || ClassUtil.isArray(superClass) || ClassUtil.isFinal(superClass.getModifiers()) || ClassUtil.hasFinalMethod(superClass) || (cons == null || ClassUtil.isPrivate(cons.getModifiers())))
             {
-                if (scopeType.normal())
+                if (scopeType.isAnnotationPresent(NormalScope.class))
                 {
                     throw new UnproxyableResolutionException("WebBeans with api type with normal scope must be proxiable to inject, but class : " + superClass.getName() + " is not proxiable type");
                 }
@@ -1713,21 +1714,23 @@ public final class WebBeansUtil
         return true;
     }
 
-    public static <T> void checkPassivationScope(AbstractBean<T> component, ScopeType scope)
+    public static <T> void checkPassivationScope(AbstractBean<T> component, NormalScope scope)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
-        Asserts.assertNotNull(scope, "scope type parameter can not be null");
 
-        boolean passivating = scope.passivating();
-        Class<T> clazz = component.getReturnType();
-
-        if (passivating)
+        if(scope != null)
         {
-            if (!component.isSerializable())
+            boolean passivating = scope.passivating();
+            Class<T> clazz = component.getReturnType();
+
+            if (passivating)
             {
-                throw new WebBeansConfigurationException("WebBeans component implementation class : " + clazz.getName() + " with passivating scope @" + scope.annotationType().getName() + " must be Serializable");
-            }
-        }
+                if (!component.isSerializable())
+                {
+                    throw new WebBeansConfigurationException("WebBeans component implementation class : " + clazz.getName() + " with passivating scope @" + scope.annotationType().getName() + " must be Serializable");
+                }
+            }            
+        }        
     }
 
     
@@ -1769,22 +1772,17 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(scopeType, "scopeType argument can not be null");
 
-        if (scopeType.isAnnotationPresent(ScopeType.class))
+        if (scopeType.isAnnotationPresent(NormalScope.class))
         {
-            ScopeType scope = scopeType.getAnnotation(ScopeType.class);
-            if (scope.normal())
-            {
-                return true;
-            }
-
-            else
-            {
-                return false;
-            }
+            return true;
+        }
+        else if(scopeType.isAnnotationPresent(Scope.class))
+        {
+            return false;
         }
         else
         {
-            throw new IllegalArgumentException("scopeType argument must be annotated with @ScopeType");
+            throw new IllegalArgumentException("scopeType argument must be annotated with @Scope or @NormalScope");
         }
     }
     
@@ -1803,13 +1801,16 @@ public final class WebBeansUtil
     public static void checkSerializableScopeType(Class<?> scopeType, boolean isSerializable, String errorMessage)
     {
         // Scope type check
-        ScopeType scope = scopeType.getAnnotation(ScopeType.class);
-        if (scope.passivating())
+        NormalScope scope = scopeType.getAnnotation(NormalScope.class);
+        if(scope != null)
         {
-            if (!isSerializable)
+            if (scope.passivating())
             {
-                throw new IllegalProductException(errorMessage);
-            }
+                if (!isSerializable)
+                {
+                    throw new IllegalProductException(errorMessage);
+                }
+            }            
         }
     }
     

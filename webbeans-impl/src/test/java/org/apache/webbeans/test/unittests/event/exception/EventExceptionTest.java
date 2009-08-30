@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests.event.exception;
 
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.AnnotationLiteral;
 import javax.servlet.ServletContext;
 
@@ -135,7 +135,7 @@ public class EventExceptionTest extends TestContext
         try
         {
             Annotation[] anns = new Annotation[1];
-            anns[0] = new AnnotationLiteral<ScopeType>()
+            anns[0] = new AnnotationLiteral<NormalScope>()
             {
             };
 

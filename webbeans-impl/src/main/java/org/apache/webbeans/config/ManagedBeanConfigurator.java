@@ -15,7 +15,7 @@ import java.lang.reflect.Constructor;
 import java.util.Set;
 
 import javax.decorator.Decorator;
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.ManagedBean;
@@ -128,7 +128,7 @@ public final class ManagedBeanConfigurator
         DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
         
         WebBeansUtil.checkGenericType(component);
-        WebBeansUtil.checkPassivationScope(component, component.getScopeType().getAnnotation(ScopeType.class));
+        WebBeansUtil.checkPassivationScope(component, component.getScopeType().getAnnotation(NormalScope.class));
         DefinitionUtil.defineBindingTypes(component, clazzAnns);
         DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
 

@@ -19,6 +19,7 @@ import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
 
+@SuppressWarnings("unchecked")
 public class GProcessSessionBean extends ProcessSessionBeanImpl
 {
     public GProcessSessionBean(Bean<Object> bean, AnnotatedType<?> annotatedType, String name, SessionBeanType type)
