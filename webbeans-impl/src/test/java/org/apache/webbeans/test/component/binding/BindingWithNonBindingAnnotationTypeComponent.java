@@ -14,14 +14,14 @@
 package org.apache.webbeans.test.component.binding;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.deployment.Production;
 
 import org.apache.webbeans.test.annotation.binding.NonBindingAnnotationType;
 
 @Production
 @RequestScoped
-@NonBindingAnnotationType(currenr = @Current)
+@NonBindingAnnotationType(currenr = @Default)
 public class BindingWithNonBindingAnnotationTypeComponent
 {
 

@@ -17,14 +17,15 @@
 package org.apache.webbeans.test.component.specializes;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Asynchronous;
 
 @RequestScoped
 public class SpecializesServiceInjectorComponent
 {
-    @Current @Asynchronous ServiceForSpecializes service;
+    @Inject @Default @Asynchronous ServiceForSpecializes service;
     
     public SpecializesServiceInjectorComponent()
     {

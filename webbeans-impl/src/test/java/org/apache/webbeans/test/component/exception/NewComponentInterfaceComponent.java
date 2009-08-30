@@ -15,13 +15,13 @@ package org.apache.webbeans.test.component.exception;
 
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.component.service.IService;
 
 @Production
 public class NewComponentInterfaceComponent
 {
-    @New
-    IService src;
+    @Inject @New IService src;
 
 }

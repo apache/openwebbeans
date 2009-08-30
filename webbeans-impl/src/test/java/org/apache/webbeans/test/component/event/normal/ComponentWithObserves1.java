@@ -16,7 +16,7 @@ package org.apache.webbeans.test.component.event.normal;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.deployment.Production;
 
 import org.apache.webbeans.test.annotation.binding.Check;
@@ -24,7 +24,7 @@ import org.apache.webbeans.test.event.LoggedInEvent;
 
 @Production
 @RequestScoped
-@Current
+@Default
 public class ComponentWithObserves1
 {
     private String userName;

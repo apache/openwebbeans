@@ -14,6 +14,7 @@
 package org.apache.webbeans.test.component.service;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.enterprise.inject.deployment.Production;
 
@@ -24,8 +25,7 @@ import org.apache.webbeans.test.annotation.binding.ProducerBinding1;
 @Named
 public class Producer1ConsumerComponent
 {
-    private @ProducerBinding1
-    IService service;
+    private @Inject @ProducerBinding1 IService service;
 
     public IService getService()
     {

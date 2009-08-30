@@ -17,7 +17,7 @@
 package org.apache.webbeans.test.component.pfield;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
@@ -35,7 +35,7 @@ public class ProducerFieldDefinitionComponent
     }
     
     @Inject
-    public ProducerFieldDefinitionComponent(@Current PaymentProcessorComponent paymentProcessor)
+    public ProducerFieldDefinitionComponent(@Default PaymentProcessorComponent paymentProcessor)
     {
         this.paymentProcessor = paymentProcessor;
     }

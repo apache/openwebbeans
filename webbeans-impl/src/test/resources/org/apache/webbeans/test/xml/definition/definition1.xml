@@ -24,7 +24,7 @@ under the License.
 	
 	<myapp:Definition1>
 		<RequestScoped/>
-		<Current/>
+		<Default/>
 		<Production/>
 	</myapp:Definition1>	
 	

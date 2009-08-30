@@ -17,7 +17,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 import javax.enterprise.inject.AnnotationLiteral;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.Bean;
 
@@ -69,7 +69,7 @@ public class TypedLiteralComponentTest extends TestContext
         
         Assert.assertNotNull(tc.getEraseComponent());
 
-        Assert.assertEquals("GURKAN", TypeLiteralComponent.STR);
+        Assert.assertEquals("GURKAN", TypeLiteralComponent.getSTR());
 
         ContextFactory.destroyRequestContext(null);
     }
@@ -91,7 +91,7 @@ public class TypedLiteralComponentTest extends TestContext
         };
 
         Annotation[] anns = new Annotation[1];
-        anns[0] = new AnnotationLiteral<Current>()
+        anns[0] = new AnnotationLiteral<Default>()
         {
 
         };

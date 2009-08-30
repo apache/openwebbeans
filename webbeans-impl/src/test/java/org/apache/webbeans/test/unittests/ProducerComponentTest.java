@@ -100,8 +100,8 @@ public class ProducerComponentTest extends TestContext
 
         List<ParametrizedModel1> instance = getManager().getInstanceByType(model1, new Annotation[0]);
         Assert.assertNull(instance);
-        Assert.assertTrue(ParametrizedProducer.callModel1);
-        Assert.assertTrue(!ParametrizedProducer.callModel2);
+        Assert.assertTrue(ParametrizedProducer.getCALLMODEL1());
+        Assert.assertTrue(!ParametrizedProducer.getCALLMODEL2());
 
         TypeLiteral<List<ParametrizedModel2>> model2 = new TypeLiteral<List<ParametrizedModel2>>()
         {
@@ -109,7 +109,7 @@ public class ProducerComponentTest extends TestContext
         List<ParametrizedModel2> instance2 = getManager().getInstanceByType(model2, new Annotation[0]);
 
         Assert.assertNull(instance2);
-        Assert.assertTrue(ParametrizedProducer.callModel2);
+        Assert.assertTrue(ParametrizedProducer.getCALLMODEL2());
 
     }
 

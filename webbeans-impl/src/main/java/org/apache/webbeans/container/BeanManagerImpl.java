@@ -39,7 +39,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observer;
 import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -903,7 +903,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         if (rawType.equals(InjectionPoint.class))
         {
             Annotated annotated = injectionPoint.getAnnotated();
-            if (annotated.getAnnotations().size() == 1 && annotated.isAnnotationPresent(Current.class))
+            if (annotated.getAnnotations().size() == 1 && annotated.isAnnotationPresent(Default.class))
             {
                 if (!bean.getScopeType().equals(Dependent.class))
                 {

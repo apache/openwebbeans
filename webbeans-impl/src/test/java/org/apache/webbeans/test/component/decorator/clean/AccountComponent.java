@@ -16,14 +16,14 @@ package org.apache.webbeans.test.component.decorator.clean;
 import java.math.BigDecimal;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.inject.Named;
 import javax.enterprise.inject.deployment.Production;
 
 @Production
 @Named
 @RequestScoped
-@Current
+@Default
 public class AccountComponent implements Account
 {
     private BigDecimal amount;

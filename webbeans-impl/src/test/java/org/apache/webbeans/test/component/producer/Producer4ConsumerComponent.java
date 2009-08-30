@@ -17,14 +17,14 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Users;
 
 @SessionScoped
 public class Producer4ConsumerComponent implements Serializable
-{
-    @Users
-    private List<User> users;
+{    
+    private @Inject @Users List<User> users;
 
     public int count()
     {

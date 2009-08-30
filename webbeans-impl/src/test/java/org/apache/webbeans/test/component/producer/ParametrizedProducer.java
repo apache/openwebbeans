@@ -23,9 +23,9 @@ import javax.enterprise.inject.deployment.Production;
 @RequestScoped
 public class ParametrizedProducer
 {
-    public static boolean callModel1 = false;
+    static boolean callModel1 = false;
 
-    public static boolean callModel2 = false;
+    static boolean callModel2 = false;
 
     @Produces
     public List<ParametrizedModel1> getModel1()
@@ -40,4 +40,15 @@ public class ParametrizedProducer
         callModel2 = true;
         return null;
     }
+    
+    public static boolean getCALLMODEL1()
+    {
+        return callModel1;
+    }
+    
+    public static boolean getCALLMODEL2()
+    {
+        return callModel2;
+    }
+    
 }

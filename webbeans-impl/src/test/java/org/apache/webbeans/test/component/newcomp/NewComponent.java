@@ -15,14 +15,14 @@ package org.apache.webbeans.test.component.newcomp;
 
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.component.dependent.DependentOwnerComponent;
 
 @Production
 public class NewComponent
 {
-    @New
-    DependentOwnerComponent owner;
+    @Inject @New DependentOwnerComponent owner;
 
     public DependentOwnerComponent owner()
     {

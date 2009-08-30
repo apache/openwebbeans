@@ -14,7 +14,7 @@
 package org.apache.webbeans.test.component.portable.events;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 
@@ -27,7 +27,7 @@ public class MyExtension implements Extension
         
     }
 
-    public void observer(@Current @Observes ProcessAnnotatedType<?> annotatedType)
+    public void observer(@Default @Observes ProcessAnnotatedType<?> annotatedType)
     {
         event = annotatedType;
     }

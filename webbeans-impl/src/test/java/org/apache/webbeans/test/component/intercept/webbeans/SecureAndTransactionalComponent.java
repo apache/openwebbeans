@@ -27,7 +27,7 @@ import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactio
 @SessionScoped
 public class SecureAndTransactionalComponent implements Serializable
 {
-    public static boolean CALL = false;
+    static boolean CALL = false;
     
     @Secure2
     public void pay()
@@ -35,4 +35,8 @@ public class SecureAndTransactionalComponent implements Serializable
         
     }
 
+    public static boolean getCALL()
+    {
+        return CALL;
+    }
 }

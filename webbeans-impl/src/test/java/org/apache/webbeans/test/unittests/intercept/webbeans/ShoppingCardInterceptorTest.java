@@ -57,11 +57,11 @@ public class ShoppingCardInterceptorTest extends TestContext
         
         card.placeOrder();
         
-        Assert.assertTrue(ShoppingCard.CALLED);
+        Assert.assertTrue(ShoppingCard.getCALLED());
         
         card.placeOrder2();
         
-        Assert.assertFalse(ShoppingCard.CALLED);
+        Assert.assertFalse(ShoppingCard.getCALLED());
                 
         ContextFactory.destroySessionContext(new MockHttpSession());
     }

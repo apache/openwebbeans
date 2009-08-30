@@ -18,9 +18,10 @@ package org.apache.webbeans.test.component.inject.broken;
 
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 
 public class InstanceInjectedBrokenComponent1
 {
-    @Any Instance payment;
+    @Inject @Any Instance payment;
 }

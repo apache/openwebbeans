@@ -29,11 +29,16 @@ import org.apache.webbeans.test.annotation.binding.Binding1;
 @SessionScoped
 public class Disposal1 implements Serializable
 {
-    public static boolean disposeCall = false;
+    static boolean disposeCall = false;
 
     public Disposal1()
     {
 
+    }
+    
+    public static boolean getDISPOSCALL()
+    {
+        return disposeCall;
     }
 
     @Produces

@@ -13,20 +13,21 @@
  */
 package org.apache.webbeans.test.component.inject.generic;
 
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.component.inject.parametrized.Persistent;
 import org.apache.webbeans.test.component.inject.parametrized.PersistentSuper;
 
 public class GenericComponentInjector<Y extends Persistent>
 {
-    private @Current GenericComponent<?> injection1;
+    private @Inject @Default GenericComponent<?> injection1;
     
-    private @Current GenericComponent<? extends PersistentSuper> injection2;
+    private @Inject @Default GenericComponent<? extends PersistentSuper> injection2;
     
-    private @Current GenericComponent<Persistent> injection3;
+    private @Inject @Default GenericComponent<Persistent> injection3;
  
-    private @Current GenericComponent<Y> injection4;
+    private @Inject @Default GenericComponent<Y> injection4;
 
     public GenericComponent<?> getInjection1()
     {

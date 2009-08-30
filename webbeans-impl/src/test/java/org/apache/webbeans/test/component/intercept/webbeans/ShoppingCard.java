@@ -22,7 +22,7 @@ import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactio
 @SessionScoped
 public class ShoppingCard implements Serializable
 {
-    public static boolean CALLED = false;
+    static boolean CALLED = false;
     
     @Transactional
     public void placeOrder() 
@@ -34,5 +34,9 @@ public class ShoppingCard implements Serializable
     { 
         CALLED = false;
     }
-        
+    
+    public static boolean getCALLED()
+    {
+        return CALLED;
+    }
 }

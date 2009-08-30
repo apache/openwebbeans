@@ -16,6 +16,7 @@ package org.apache.webbeans.test.component;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.test.annotation.binding.Check;
@@ -27,13 +28,12 @@ import org.apache.webbeans.test.component.intercept.Interceptor2;
 @Interceptors(value = { Interceptor1.class, Interceptor2.class })
 public class PostConstructDoubleInterceptorComponent
 {
-    private @Check(type = "CHECK")
-    IPayment payment;
+    private @Inject @Check(type = "CHECK") IPayment payment;
 
     @SuppressWarnings("unused")
     private IPayment p = null;
 
-    public static String setininterceptor2 = null;
+    static String setininterceptor2 = null;
 
     @PostConstruct
     public void init()
@@ -51,4 +51,10 @@ public class PostConstructDoubleInterceptorComponent
     {
         return setininterceptor2;
     }
+    
+    public static void setValue(String s)
+    {
+        setininterceptor2 = s;
+    }
+    
 }

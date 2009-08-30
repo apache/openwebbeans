@@ -14,15 +14,15 @@
 package org.apache.webbeans.test.component;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 @RequestScoped
 @Production
 public class ContaintsCurrentComponent
 {
-    @Current
-    CurrentBindingComponent comp;
+    @Inject @Default CurrentBindingComponent comp;
 
     public CurrentBindingComponent getInstance()
     {

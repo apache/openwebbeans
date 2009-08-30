@@ -17,6 +17,7 @@ import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
@@ -25,9 +26,7 @@ import org.apache.webbeans.test.annotation.binding.Binding2;
 @SessionScoped
 public class TypedInjection implements Serializable
 {
-    public @Binding1
-    @Binding2
-    ITyped2<String, Object> v = null;
+    @Inject @Binding1 @Binding2 ITyped2<String, Object> v = null;
 
     public ITyped2<String, Object> getV()
     {

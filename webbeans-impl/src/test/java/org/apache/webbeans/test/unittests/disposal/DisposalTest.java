@@ -53,7 +53,7 @@ public class DisposalTest extends TestContext
         Assert.assertTrue(list.size() == 1);
         ContextFactory.destroyRequestContext(null);
 
-        Assert.assertTrue(Disposal1.disposeCall);
+        Assert.assertTrue(Disposal1.getDISPOSCALL());
 
     }
 }

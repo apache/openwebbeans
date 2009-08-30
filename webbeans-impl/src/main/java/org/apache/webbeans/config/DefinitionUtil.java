@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Decorates;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
@@ -785,22 +786,27 @@ public final class DefinitionUtil
     {
 
         Field[] fields = clazz.getDeclaredFields();
+        boolean useOwbSpecificInjection = OpenWebBeansConfiguration.getInstance().isOwbSpecificFieldInjection();
+            
         if (fields.length != 0)
         {
             for (Field field : fields)
             {
+                if(!useOwbSpecificInjection)
+                {
+                    if(!field.isAnnotationPresent(Inject.class))
+                    {
+                        continue;
+                    }                       
+                }
                 
-            	//TODO Check TEsts
-            	/*
-            	 *
                 if(ClassUtil.isPublic(field.getModifiers()))
                 {
                     if(!component.getScopeType().equals(Dependent.class))
                     {
                         throw new WebBeansConfigurationException("If bean has a public modifier injection point, bean scope type must be defined as @Dependent");
                     }
-                }            	 
-            	 */
+                }                
                 
                 Annotation[] anns = field.getDeclaredAnnotations();
 
@@ -850,11 +856,9 @@ public final class DefinitionUtil
                             }
                         }
                     }
-                }
-
+                }                                    
             }
         }
-
     }
 
     public static <T> void defineInjectedMethods(AbstractInjectionTargetBean<T> component)

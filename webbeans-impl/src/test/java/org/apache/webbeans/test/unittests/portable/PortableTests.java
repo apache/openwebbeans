@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
@@ -67,7 +67,7 @@ public class PortableTests extends TestContext
         }
         
         Assert.assertTrue(clazzesAnnots.contains(Named.class));
-        Assert.assertTrue(clazzesAnnots.contains(Current.class));
+        Assert.assertTrue(clazzesAnnots.contains(Default.class));
         Assert.assertTrue(clazzesAnnots.contains(Binding1.class));
         Assert.assertTrue(clazzesAnnots.contains(Binding2.class));
         Assert.assertTrue(clazzesAnnots.contains(Interceptor.class));
@@ -87,12 +87,12 @@ public class PortableTests extends TestContext
         {
             if(field.getJavaMember().getName().equals("payment"))
             {
-                Assert.assertTrue(field.isAnnotationPresent(Current.class));
+                Assert.assertTrue(field.isAnnotationPresent(Default.class));
                 Assert.assertEquals(IPayment.class, field.getBaseType());
             }
             else if(field.getJavaMember().getName().equals("book"))
             {
-                Assert.assertTrue(field.isAnnotationPresent(Current.class));
+                Assert.assertTrue(field.isAnnotationPresent(Default.class));
                 Assert.assertTrue(field.isAnnotationPresent(Binding2.class));
                 Assert.assertEquals(Book.class, field.getBaseType());                
             }

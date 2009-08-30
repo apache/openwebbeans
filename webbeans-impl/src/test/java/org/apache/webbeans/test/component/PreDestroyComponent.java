@@ -17,6 +17,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Check;
 
@@ -24,8 +25,7 @@ import org.apache.webbeans.test.annotation.binding.Check;
 @RequestScoped
 public class PreDestroyComponent
 {
-    private @Check(type = "CHECK")
-    IPayment payment;
+    private @Inject @Check(type = "CHECK") IPayment payment;
 
     private IPayment p = null;
 

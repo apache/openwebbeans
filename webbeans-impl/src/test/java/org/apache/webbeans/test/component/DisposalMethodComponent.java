@@ -15,8 +15,9 @@ package org.apache.webbeans.test.component;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.deployment.Production;
@@ -29,11 +30,11 @@ import org.apache.webbeans.test.component.service.IService;
 @Named
 public class DisposalMethodComponent
 {
-    private @Current IService service = null;
+    private @Inject @Default IService service = null;
 
     @Produces
     @ApplicationScoped
-    @Current
+    @Default
     @Named
     public IService getService(@Binding1 IService service)
     {
@@ -47,7 +48,7 @@ public class DisposalMethodComponent
         return this.service;
     }
 
-    public void dispose(@Disposes @Current IService service)
+    public void dispose(@Disposes @Default IService service)
     {
         service = null;
         this.service = null;

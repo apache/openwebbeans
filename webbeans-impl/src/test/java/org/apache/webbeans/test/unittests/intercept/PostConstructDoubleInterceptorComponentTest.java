@@ -71,8 +71,8 @@ public class PostConstructDoubleInterceptorComponentTest extends TestContext
 
         Assert.assertEquals(5, stack.size());
 
-        Assert.assertNotNull(PostConstructDoubleInterceptorComponent.setininterceptor2);
-        Assert.assertEquals("value1", PostConstructDoubleInterceptorComponent.setininterceptor2);
+        Assert.assertNotNull(PostConstructDoubleInterceptorComponent.getValue());
+        Assert.assertEquals("value1", PostConstructDoubleInterceptorComponent.getValue());
 
         ContextFactory.destroyRequestContext(null);
     }

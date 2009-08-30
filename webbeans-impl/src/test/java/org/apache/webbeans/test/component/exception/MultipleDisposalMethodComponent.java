@@ -14,7 +14,7 @@
 package org.apache.webbeans.test.component.exception;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.deployment.Production;
@@ -29,7 +29,7 @@ public class MultipleDisposalMethodComponent
 
     @Produces
     @ApplicationScoped
-    @Current
+    @Default
     public IService getService(@Binding1 IService service)
     {
         this.service = service;
@@ -42,13 +42,13 @@ public class MultipleDisposalMethodComponent
         return this.service;
     }
 
-    public void dispose(@Disposes @Current IService service)
+    public void dispose(@Disposes @Default IService service)
     {
         service = null;
         this.service = null;
     }
 
-    public void dispose2(@Disposes @Current IService service)
+    public void dispose2(@Disposes @Default IService service)
     {
         service = null;
         this.service = null;

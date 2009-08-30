@@ -16,17 +16,18 @@ package org.apache.webbeans.test.component.event.normal;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.event.LoggedInEvent;
 
 @RequestScoped
 @Production
-@Current
+@Default
 public class ComponentWithObservable1
 {
-    private @Any Event<LoggedInEvent> event;
+    private @Inject @Any Event<LoggedInEvent> event;
 
     public void afterLoggedIn()
     {

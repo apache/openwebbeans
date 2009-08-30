@@ -48,6 +48,9 @@ public class OpenWebBeansConfiguration
     /**Use OWB Specific XML Configuration or Strict Spec XML*/
     public static final String USE_OWB_SPECIFIC_XML_CONFIGURATION = "org.apache.webbeans.useOwbSpecificXmlConfig";
     
+    /**Use OWB Specific Field Injection*/
+    public static final String USE_OWB_SPECIFIC_FIELD_INJECTION = "org.apache.webbeans.fieldInjection.useOwbSpecificInjection";    
+    
     /**Use EJB Discovery or not*/
     public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.UseEjbMetaDataDiscoveryService";
     
@@ -126,6 +129,13 @@ public class OpenWebBeansConfiguration
     public String getProperty(String key,String defaultValue)
     {
         return configProperties.getProperty(key, defaultValue);
+    }
+    
+    public boolean isOwbSpecificFieldInjection()
+    {
+        String value = getProperty(USE_OWB_SPECIFIC_FIELD_INJECTION);
+        
+        return Boolean.valueOf(value);
     }
     
 }

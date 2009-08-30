@@ -17,14 +17,15 @@
 package org.apache.webbeans.test.component.dependent;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 
 @RequestScoped
 public class MultipleDependentComponent
 {
-    @Current DependentComponent dependent1;
+    @Inject @Default DependentComponent dependent1;
     
-    @Current DependentComponent dependent2;
+    @Inject @Default DependentComponent dependent2;
 
     public MultipleDependentComponent()
     {

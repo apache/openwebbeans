@@ -14,15 +14,15 @@
 package org.apache.webbeans.test.component.dependent;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 @Production
 @RequestScoped
 public class DependentOwnerComponent
 {
-    private @Current
-    DependentComponent dependentComponent;
+    private @Inject @Default DependentComponent dependentComponent;
 
     public DependentComponent getDependent()
     {

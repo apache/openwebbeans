@@ -16,6 +16,7 @@ package org.apache.webbeans.test.component;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.test.annotation.binding.Check;
@@ -26,8 +27,7 @@ import org.apache.webbeans.test.component.intercept.PostConstructInterceptor;
 @Interceptors(value = { PostConstructInterceptor.class })
 public class PostConstructInterceptorComponent
 {
-    private @Check(type = "CHECK")
-    IPayment payment;
+    private @Inject @Check(type = "CHECK") IPayment payment;
 
     @SuppressWarnings("unused")
     private IPayment p = null;

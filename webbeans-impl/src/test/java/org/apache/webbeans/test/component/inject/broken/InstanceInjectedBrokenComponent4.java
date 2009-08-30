@@ -18,9 +18,10 @@ package org.apache.webbeans.test.component.inject.broken;
 
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 @SuppressWarnings("unchecked")
 public class InstanceInjectedBrokenComponent4
 {
-    @Any Instance instance;
+    @Inject @Any Instance instance;
 }

@@ -19,13 +19,13 @@ import javax.decorator.Decorates;
 import javax.decorator.Decorator;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 
 @Decorator
 @RequestScoped
 public abstract class LargeTransactionDecorator implements Account
 {
-    @Decorates @Any @Current
+    @Decorates @Any @Default
     Account account;
 
     BigDecimal depositeAmount = null;

@@ -14,13 +14,13 @@
 package org.apache.webbeans.test.component.dependent.circular;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 
 @RequestScoped
 public class DependentA
 {
-    private @Current
-    DependentB dependentB;
+    private @Inject @Default DependentB dependentB;
 
     public DependentA()
     {

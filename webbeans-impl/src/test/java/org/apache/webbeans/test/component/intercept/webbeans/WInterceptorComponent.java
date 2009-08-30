@@ -23,9 +23,9 @@ import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactio
 @RequestScoped
 public class WInterceptorComponent
 {
-    public static int s = 0;
+    static int s = 0;
 
-    public static int sWithMeta = 0;
+    static int sWithMeta = 0;
 
     public int hello()
     {
@@ -37,4 +37,13 @@ public class WInterceptorComponent
         return sWithMeta;
     }
 
+    public static int getS()
+    {
+        return s;
+    }
+    
+    public static int getSWITHMETA()
+    {
+        return sWithMeta;
+    }
 }

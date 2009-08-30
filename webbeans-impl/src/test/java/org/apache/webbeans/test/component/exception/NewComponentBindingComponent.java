@@ -15,14 +15,13 @@ package org.apache.webbeans.test.component.exception;
 
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 
 @Production
 public class NewComponentBindingComponent
 {
-    @New
-    @Binding1
-    String src;
+    @Inject @New @Binding1 String src;
 
 }

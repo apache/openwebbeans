@@ -14,15 +14,15 @@
 package org.apache.webbeans.annotation;
 
 import javax.enterprise.inject.AnnotationLiteral;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 
 /**
- * {@link Current} literal annotation.
+ * {@link Default} literal annotation.
  * 
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class CurrentLiteral extends AnnotationLiteral<Current> implements Current
+public class CurrentLiteral extends AnnotationLiteral<Default> implements Default
 {
 
 }

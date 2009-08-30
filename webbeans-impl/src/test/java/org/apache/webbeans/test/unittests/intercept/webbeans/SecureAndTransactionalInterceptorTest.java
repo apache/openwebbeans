@@ -52,11 +52,11 @@ public class SecureAndTransactionalInterceptorTest extends TestContext
         Bean<SecureAndTransactionalComponent> bean = defineSimpleWebBean(SecureAndTransactionalComponent.class);
         SecureAndTransactionalComponent payment = getManager().getInstance(bean);
         
-        Assert.assertFalse(SecureAndTransactionalComponent.CALL);
+        Assert.assertFalse(SecureAndTransactionalComponent.getCALL());
         
         payment.pay();
         
-        Assert.assertTrue(SecureAndTransactionalComponent.CALL);
+        Assert.assertTrue(SecureAndTransactionalComponent.getCALL());
         
                 
         ContextFactory.destroySessionContext(new MockHttpSession());

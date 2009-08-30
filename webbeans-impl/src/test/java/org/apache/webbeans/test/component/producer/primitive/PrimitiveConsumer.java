@@ -17,6 +17,7 @@
 package org.apache.webbeans.test.component.producer.primitive;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
@@ -26,7 +27,7 @@ import org.apache.webbeans.test.annotation.binding.Binding2;
 @Named
 public class PrimitiveConsumer
 {
-    private @Binding1 @Binding2 Float primitiveProducer;
+    private @Inject @Binding1 @Binding2 Float primitiveProducer;
     
     public PrimitiveConsumer()
     {

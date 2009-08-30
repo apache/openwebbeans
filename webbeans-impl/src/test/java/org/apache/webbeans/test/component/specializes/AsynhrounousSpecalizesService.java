@@ -17,12 +17,12 @@
 package org.apache.webbeans.test.component.specializes;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.inject.Named;
 
 import org.apache.webbeans.test.annotation.binding.Asynchronous;
 
-@Current @Asynchronous @Named("asyncService") @RequestScoped
+@Default @Asynchronous @Named("asyncService") @RequestScoped
 public class AsynhrounousSpecalizesService implements ServiceForSpecializes
 {
 

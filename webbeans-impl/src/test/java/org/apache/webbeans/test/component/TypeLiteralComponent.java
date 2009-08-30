@@ -23,12 +23,17 @@ import javax.inject.Inject;
 @RequestScoped
 public class TypeLiteralComponent implements ITypeLiteralComponent<List<String>>
 {
-    public static String STR = "";
+    static String STR = "";
 
     @Inject
     public TypeLiteralComponent()
     {
         super();
         STR = "GURKAN";
+    }
+    
+    public static String getSTR()
+    {
+        return STR;
     }
 }

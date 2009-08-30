@@ -14,7 +14,7 @@
 package org.apache.webbeans.test.component.portable;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -30,16 +30,16 @@ import org.apache.webbeans.test.event.LoggedInEvent;
 import org.apache.webbeans.test.xml.annot.BindingType1;
 import org.apache.webbeans.test.xml.annot.BindingType2;
 
-@Current
+@Default
 @Binding1
 @Binding2
 @Interceptor
 @Named
 public class PortableType1
 {
-    private @Current IPayment payment;
+    private @Default IPayment payment;
     
-    private @Binding2 @Current Book book;
+    private @Binding2 @Default Book book;
     
     private @Produces @BindingType2 CheckWithCheckPayment check;
     

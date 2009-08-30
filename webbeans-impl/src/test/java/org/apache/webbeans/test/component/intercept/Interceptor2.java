@@ -37,7 +37,7 @@ public class Interceptor2
         try
         {
             String value = ctx.getContextData().get("key1").toString();
-            PostConstructDoubleInterceptorComponent.setininterceptor2 = value;
+            PostConstructDoubleInterceptorComponent.setValue( value);
 
             ctx.proceed();
 

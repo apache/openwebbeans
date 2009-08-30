@@ -17,6 +17,7 @@
 package org.apache.webbeans.test.component.pfield;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Synchronous;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
@@ -24,7 +25,7 @@ import org.apache.webbeans.test.component.PaymentProcessorComponent;
 @RequestScoped
 public class ProducerFieldInjectedComponent
 {
-    private @Synchronous PaymentProcessorComponent paymentProcessor;
+    private @Inject @Synchronous PaymentProcessorComponent paymentProcessor;
     
     public ProducerFieldInjectedComponent()
     {

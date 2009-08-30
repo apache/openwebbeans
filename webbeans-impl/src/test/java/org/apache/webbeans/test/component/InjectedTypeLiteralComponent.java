@@ -13,17 +13,17 @@ package org.apache.webbeans.test.component;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.deployment.Production;
+import javax.inject.Inject;
 
 @Production
 @RequestScoped
 public class InjectedTypeLiteralComponent
 {
-    private @Current
-    ITypeLiteralComponent<List<String>> component;
+    private @Inject @Default ITypeLiteralComponent<List<String>> component;
     
-    private @Current ITypeLiteralComponent eraseComponent;
+    private @Inject @Default ITypeLiteralComponent eraseComponent;
 
     public InjectedTypeLiteralComponent()
     {

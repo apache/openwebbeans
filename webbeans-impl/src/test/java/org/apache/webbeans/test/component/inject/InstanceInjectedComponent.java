@@ -18,15 +18,16 @@ package org.apache.webbeans.test.component.inject;
 
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 
 @RequestScoped
 public class InstanceInjectedComponent
 {
-    @Current Instance<PaymentProcessorComponent> instance;
+    @Inject @Default Instance<PaymentProcessorComponent> instance;
     
     public InstanceInjectedComponent()
     {

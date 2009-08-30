@@ -18,10 +18,11 @@ package org.apache.webbeans.test.component.inject.broken;
 
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 import org.apache.webbeans.test.component.ITypeLiteralComponent;
 
 public class InstanceInjectedBrokenComponent2
 {
-    @Any Instance<ITypeLiteralComponent<?>> instance;
+    @Inject @Any Instance<ITypeLiteralComponent<?>> instance;
 }
