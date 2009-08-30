@@ -15,10 +15,13 @@ package org.apache.webbeans.ejb.component.creation;
 
 import java.util.List;
 
+import javax.enterprise.inject.spi.SessionBeanType;
+
 import org.apache.openejb.DeploymentInfo;
 import org.apache.webbeans.component.creation.AbstractInjectedTargetBeanCreator;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.util.EjbValidator;
+import org.apache.webbeans.exception.WebBeansPassivationException;
 
 /**
  * EjbBeanCreatorImpl.
@@ -47,9 +50,21 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
      * {@inheritDoc}
      */
     @Override
-    public void defineScopeType(String errorMessage)
+    public void defineScopeType(String errorMessage) throws WebBeansPassivationException
     {
-        super.defineScopeType(errorMessage);
+        try
+        {
+            super.defineScopeType(errorMessage);   
+        }
+        catch(WebBeansPassivationException e)
+        {
+            SessionBeanType type = getBean().getEjbType();
+            if(!type.equals(SessionBeanType.STATEFUL))
+            {
+                throw e;
+            }
+        }
+        
         EjbValidator.validateEjbScopeType(getBean());
         EjbValidator.validateGenericBeanType(getBean().getReturnType(), getBean().getScopeType());
     }
@@ -87,6 +102,5 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
     public EjbBean<T> getBean()
     {
         return EjbBean.class.cast(super.getBean());
-    }
-    
+    }    
 }
