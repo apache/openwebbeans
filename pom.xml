@@ -447,10 +447,15 @@
 				<artifactId>openwebbeans-api</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
-<!--  this is used for TCK tests        -->
+			<!--  this is used for TCK tests        -->
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>openwebbeans-impl</artifactId>
+				<version>${openwebbeans.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.openwebbeans</groupId>
+				<artifactId>atinject-api</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
 			<dependency>
