@@ -16,6 +16,7 @@
  */
 package org.apache.webbeans.sample.bean;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
@@ -26,7 +27,7 @@ import org.apache.webbeans.sample.model.User;
 @Named
 public class LogoutBean
 {
-	private @LoggedInUser User user;
+	private @Inject @LoggedInUser User user;
 
 	public LogoutBean()
 	{

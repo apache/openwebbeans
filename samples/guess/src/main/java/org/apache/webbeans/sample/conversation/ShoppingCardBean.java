@@ -20,7 +20,8 @@ import java.io.Serializable;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 
@@ -33,11 +34,11 @@ public class ShoppingCardBean implements Serializable
 {
     private static final long serialVersionUID = 7914095399647910625L;
 
-    private @Current Conversation conversation;
+    private @Inject @Default Conversation conversation;
     
-    private @Current ConversationModel model;
+    private @Inject @Default ConversationModel model;
     
-    private @Current FacesMessageUtil messageUtil;
+    private @Inject @Default FacesMessageUtil messageUtil;
     
     private String book;
     

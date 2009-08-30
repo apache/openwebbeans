@@ -22,7 +22,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.faces.application.FacesMessage;
@@ -43,11 +44,11 @@ public class LoginBean
 	
 	private String password;
 	
-	private @Current LoginCheck loginCheck;
+	private @Inject @Default LoginCheck loginCheck;
 	
-	private @Current FacesMessageUtil messageUtil;
+	private @Inject @Default FacesMessageUtil messageUtil;
 	
-	private @Any Event<LoggedInEvent> event;
+	private @Inject @Any Event<LoggedInEvent> event;
 	
 	public LoginBean()
 	{

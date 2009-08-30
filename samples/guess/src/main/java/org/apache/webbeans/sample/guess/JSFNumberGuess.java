@@ -19,7 +19,7 @@ import java.util.Set;
 
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.AnnotationLiteral;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.inject.Named;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -39,8 +39,7 @@ public class JSFNumberGuess implements Serializable
     private int smallRange;
     private int maxRange;
     private int remainder;
-    private @Current
-    BeanManager manager;
+    private @Inject @Default BeanManager manager;
 
     public JSFNumberGuess()
     {
