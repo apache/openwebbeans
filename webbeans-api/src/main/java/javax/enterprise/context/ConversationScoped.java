@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * 
  * @see Conversation
  */
-@ScopeType(passivating=true)
+@NormalScope(passivating=true)
 @Target( { ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

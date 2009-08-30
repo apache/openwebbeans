@@ -19,6 +19,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.inject.Scope;
+
 /**
  * Dependent scope type.
  * <p>
@@ -37,7 +39,7 @@ import java.lang.annotation.Target;
  * </p>
  * 
  */
-@ScopeType(normal = false)
+@Scope
 @Target( { ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

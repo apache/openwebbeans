@@ -20,14 +20,17 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Defines normal scoped meta-data.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
 @Documented
-public @interface ScopeType
+public @interface NormalScope
 {
-
-    boolean normal() default true;
-
+    /**Defines passivation semantic*/
     boolean passivating() default false;
-
 }

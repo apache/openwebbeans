@@ -16,11 +16,11 @@ package javax.enterprise.context.spi;
 import java.lang.annotation.Annotation;
 
 import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.ScopeType;
+import javax.enterprise.context.NormalScope;
 
 /**
  * Every webbeans component has an associated context that are
- * defined by the {@link ScopeType} annotation. Webbeans components
+ * defined by the {@link NormalScope} annotation. Webbeans components
  * that are contained in the context are managed by the webbeans container.
  * 
  * <p>

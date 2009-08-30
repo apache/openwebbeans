@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 @Target( { TYPE, METHOD, FIELD })
 @Retention(RUNTIME)
 @Documented
-@ScopeType
+@NormalScope
 @Inherited
 public @interface RequestScoped
 {

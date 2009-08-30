@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.el.ELResolver;
-import javax.enterprise.context.ScopeType;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -208,7 +207,24 @@ public interface BeanManager
      * @param annotationType annotation type
      * @return true if given type is a scope type, false otherwise
      */
-    public boolean isScopeType(Class<? extends Annotation> annotationType);
+    public boolean isScope(Class<? extends Annotation> annotationType);
+    
+    /**
+     * Returns true if given type is a normal scope type, false otherwise.
+     * 
+     * @param annotationType annotation type
+     * @return true if given type is a scope type, false otherwise
+     */
+    public boolean isNormalScope(Class<? extends Annotation> annotationType);
+    
+    /**
+     * Returns true if given type is a passivating scope type, false otherwise.
+     * 
+     * @param annotationType annotation type
+     * @return true if given type is a scope type, false otherwise
+     */
+    public boolean isPassivatingScope(Class<? extends Annotation> annotationType);    
+    
 
     /**
      * Returns true if given type is a binding type, false otherwise.
@@ -216,7 +232,7 @@ public interface BeanManager
      * @param annotationType annotation type
      * @return true if given type is a binding type, false otherwise
      */    
-    public boolean isBindingType(Class<? extends Annotation> annotationType);
+    public boolean isQualifier(Class<? extends Annotation> annotationType);
     
     /**
      * Returns true if given type is a interceptor binding type, false otherwise.
@@ -234,15 +250,7 @@ public interface BeanManager
      * @return true if given type is a stereotype, false otherwise
      */
     public boolean isStereotype(Class<? extends Annotation> annotationType);
-    
-    /**
-     * Gets a scope type annotation.
-     * 
-     * @param scopeType scope class type
-     * @return a scope type annotation
-     */
-    public ScopeType getScopeDefinition(Class<? extends Annotation> scopeType);
-    
+        
     /**
      * Returns a set of meta-annotations that are defined on the binding type
      * 

@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * of the specification.
  * </p>
  */
-@ScopeType
+@NormalScope
 @Target( { ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
