@@ -18,7 +18,8 @@ package org.apache.webbeans.reservation.beans;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.enterprise.inject.spi.BeanManager;
 
@@ -31,7 +32,7 @@ import org.apache.webbeans.reservation.util.JSFUtility;
 @RequestScoped
 public class RegisterBean
 {
-    private @ApplicationLog Log logger;
+    private @Inject @ApplicationLog Log logger;
     
     private String name;
     
@@ -45,9 +46,9 @@ public class RegisterBean
     
     private boolean admin;
     
-    private @Current RegisterController personController;
+    private @Inject @Default RegisterController personController;
     
-    private @Current BeanManager manager; 
+    private @Inject @Default BeanManager manager; 
     
     public RegisterBean()
     {

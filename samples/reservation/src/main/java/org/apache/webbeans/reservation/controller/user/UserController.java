@@ -24,8 +24,9 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
@@ -39,9 +40,9 @@ import org.apache.webbeans.reservation.model.ReservationModel;
 @RequestScoped
 public class UserController
 {
-    private @Current EntityManager entityManager;
+    private @Inject @Default EntityManager entityManager;
     
-    private @ApplicationLog Log logger;
+    private @Inject @ApplicationLog Log logger;
 
     public UserController()
     {

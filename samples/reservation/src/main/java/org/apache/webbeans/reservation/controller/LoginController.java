@@ -21,7 +21,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -40,7 +41,7 @@ public class LoginController implements ILoginController
     private Logger logger = Logger.getLogger(LoginController.class.getName());
     
     /**Injection of the request scope entity manager*/
-    private @Current EntityManager entityManager;
+    private @Inject @Default EntityManager entityManager;
 
     /**
      * Returns true if user exist else false

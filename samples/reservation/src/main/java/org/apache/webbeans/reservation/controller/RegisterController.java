@@ -17,7 +17,8 @@
 package org.apache.webbeans.reservation.controller;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
@@ -34,9 +35,9 @@ import org.apache.webbeans.reservation.util.CalendarUtil;
 @RequestScoped
 public class RegisterController implements IRegisterController
 {
-    private @ApplicationLog Log logger;
+    private @Inject @ApplicationLog Log logger;
     
-    private @Current EntityManager entityManager;
+    private @Inject @Default EntityManager entityManager;
 
     /**
      * Register the user.

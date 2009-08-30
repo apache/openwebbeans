@@ -26,7 +26,8 @@ import java.util.Map;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.component.html.HtmlDataTable;
 import javax.faces.model.SelectItem;
@@ -46,19 +47,19 @@ public class UserReservationBean implements Serializable
 
     private List<SelectItem> reservations = new ArrayList<SelectItem>();
     
-    private @Current UserController controller;
+    private @Inject @Default UserController controller;
     
     private List<Hotel> hotels = new ArrayList<Hotel>();
     
-    private @Current AdminController adminController;
+    private @Inject @Default AdminController adminController;
     
     private String reservationDate;
     
     private HtmlDataTable model;
     
-    private @Current Conversation conversation;
+    private @Inject @Default Conversation conversation;
     
-    private @Current SessionTracker tracker;
+    private @Inject @Default SessionTracker tracker;
         
     private Integer[] itemSelected = new Integer[0];
     

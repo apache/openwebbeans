@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.component.html.HtmlDataTable;
 
@@ -38,9 +39,9 @@ public class UserListBean
     
     private HtmlDataTable model = null;
     
-    private @Current UserController controller;
+    private @Inject @Default UserController controller;
     
-    private @Current SessionTracker tracker;
+    private @Inject @Default SessionTracker tracker;
     
     public UserListBean()
     {

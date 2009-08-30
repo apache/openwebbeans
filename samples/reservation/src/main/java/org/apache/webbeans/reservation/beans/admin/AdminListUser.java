@@ -22,7 +22,8 @@ import java.util.Set;
 
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.component.html.HtmlDataTable;
 
@@ -36,7 +37,7 @@ public class AdminListUser
 {
     private List<User> users = new ArrayList<User>();
     
-    private @Current AdminController controller;
+    private @Inject @Default AdminController controller;
     
     private HtmlDataTable model;
     

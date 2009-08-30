@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -41,9 +42,9 @@ import org.apache.webbeans.reservation.entity.User;
 @RequestScoped
 public class AdminController
 {
-    private @ApplicationLog Log logger;
+    private @Inject @ApplicationLog Log logger;
     
-    private @Current EntityManager entityManager;
+    private @Inject @Default EntityManager entityManager;
     
     @Transactional
     public void createNewHotel(String name, int star, String city, String country)

@@ -17,7 +17,8 @@
 package org.apache.webbeans.reservation.beans.user;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.webbeans.reservation.controller.user.UserController;
@@ -39,9 +40,9 @@ public class UserUpdateBean
     
     private String password;
     
-    private @Current UserController controller;
+    private @Inject @Default UserController controller;
     
-    private @Current SessionTracker tracker;
+    private @Inject @Default SessionTracker tracker;
     
     public UserUpdateBean()
     {

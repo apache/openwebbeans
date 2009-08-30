@@ -17,7 +17,8 @@
 package org.apache.webbeans.reservation.beans.admin;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.webbeans.reservation.controller.admin.AdminController;
@@ -38,7 +39,7 @@ public class AdminBean
     
     private Number star;
     
-    private @Current AdminController adminController;
+    private @Inject @Default AdminController adminController;
 
     /**
      * Add new hotel

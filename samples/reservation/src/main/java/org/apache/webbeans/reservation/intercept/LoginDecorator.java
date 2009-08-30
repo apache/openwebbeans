@@ -20,6 +20,7 @@ package org.apache.webbeans.reservation.intercept;
 import javax.decorator.Decorates;
 import javax.decorator.Decorator;
 import javax.enterprise.inject.Any;
+import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;
@@ -32,7 +33,7 @@ public class LoginDecorator implements ILoginController
 {
     @Decorates @Any @DatabaseLogin ILoginController decorator;
     
-    private @ApplicationLog Log logger;
+    private @Inject @ApplicationLog Log logger;
 
     /* (non-Javadoc)
      * @see org.apache.webbeans.reservation.controller.LoginController#checkLogin(java.lang.String, java.lang.String)

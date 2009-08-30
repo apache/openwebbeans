@@ -17,7 +17,7 @@
 package org.apache.webbeans.reservation.util;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
@@ -26,21 +26,20 @@ import javax.persistence.PersistenceContext;
 @RequestScoped
 public class EntityManagerUtil
 {
-    private @PersistenceContext(unitName="reservation")
-    EntityManager entityManager;
+    private @PersistenceContext(unitName="reservation") EntityManager entityManager;
     
     public EntityManagerUtil()
     {
         
     }
     
-    @Produces @RequestScoped @Current
+    @Produces @RequestScoped @Default
     public EntityManager createEntityManager()
     {        
         return entityManager;
     }
     
-    public void dispose(@Disposes @Current EntityManager entityManager)
+    public void dispose(@Disposes @Default EntityManager entityManager)
     {
         entityManager.close();        
     }

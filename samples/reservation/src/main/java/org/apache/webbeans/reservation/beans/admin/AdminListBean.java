@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.component.html.HtmlDataTable;
 
@@ -40,7 +41,7 @@ public class AdminListBean implements Serializable
     
     private HtmlDataTable model;
     
-    private @Current AdminController controller;
+    private @Inject @Default AdminController controller;
     
     private Hotel selected;
     

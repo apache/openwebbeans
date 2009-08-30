@@ -16,7 +16,8 @@
  */
 package org.apache.webbeans.reservation.intercept;
 
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
@@ -31,9 +32,9 @@ import org.apache.webbeans.reservation.bindings.intercep.Transactional;
 @Transactional
 public class TransactionalInterceptor
 {
-    private @Current EntityManager entityManager;
+    private @Inject @Default EntityManager entityManager;
     
-    private @ApplicationLog Log logger; 
+    private @Inject @ApplicationLog Log logger; 
     
     @AroundInvoke
     public Object invoke(InvocationContext context) throws Exception

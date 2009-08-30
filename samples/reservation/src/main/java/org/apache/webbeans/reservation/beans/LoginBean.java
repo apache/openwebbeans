@@ -19,6 +19,7 @@ package org.apache.webbeans.reservation.beans;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.validator.GenericValidator;
@@ -42,10 +43,10 @@ public class LoginBean
     private String password;
 
     /**Inject of the event instance*/
-    private @Any Event<LoggedInEvent> loggedInEvent;
+    private @Inject @Any Event<LoggedInEvent> loggedInEvent;
     
     /**Database related login controller*/
-    private @DatabaseLogin LoginController loginController;
+    private @Inject @DatabaseLogin LoginController loginController;
 
     /**
      * Check user login.
