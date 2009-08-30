@@ -25,7 +25,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
     <artifactId>openwebbeans-api</artifactId>
-    <name>Apache OpenWebBeans :: WebBeans-API</name>
+    <name>Apache OpenWebBeans :: JSR-299 API</name>
     <packaging>jar</packaging>
     <description>JSR-299 Application Programming Interface</description>
     <dependencies>
