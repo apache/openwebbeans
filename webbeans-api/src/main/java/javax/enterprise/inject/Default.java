@@ -25,11 +25,16 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
+/**
+ * Default qualifier.
+ * @version $Rev$ $Date$
+ *
+ */
 @Target( { TYPE, METHOD, PARAMETER, FIELD })
 @Retention(RUNTIME)
 @Documented
 @Qualifier
-public @interface Current
+public @interface Default
 {
 
 }
