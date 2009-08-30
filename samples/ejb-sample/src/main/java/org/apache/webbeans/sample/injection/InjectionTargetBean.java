@@ -15,7 +15,8 @@ package org.apache.webbeans.sample.injection;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -24,7 +25,7 @@ import javax.sql.DataSource;
 @Named("injected")
 public class InjectionTargetBean
 {
-    @Current EntityManagerFactory emf;
+    @Inject @Default EntityManagerFactory emf;
     
     @Resource(name="My DataSource") DataSource dataSource;
     

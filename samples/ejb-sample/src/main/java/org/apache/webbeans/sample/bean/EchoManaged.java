@@ -14,7 +14,8 @@
 package org.apache.webbeans.sample.bean;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Current;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Bean;
@@ -30,13 +31,13 @@ import org.apache.webbeans.sample.injection.InjectionTargetBean;
 @Named("echo")
 public class EchoManaged
 {
-    private @Current Echo echo;
+    private @Inject @Default Echo echo;
         
     private String text;
     
     private String name;
     
-    private @Produces @Current @PersistenceUnit(unitName="myDataBase") EntityManagerFactory emf;
+    private @Produces @Default @PersistenceUnit(unitName="myDataBase") EntityManagerFactory emf;
     
     public String getName()
     {

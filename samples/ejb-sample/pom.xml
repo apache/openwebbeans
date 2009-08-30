@@ -57,7 +57,7 @@
 			<scope>provided</scope>
 		</dependency>
 		
-		<!-- JSR-299 API, provided -->
+		<!-- JSR-299 Implementation -->
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-impl</artifactId>
