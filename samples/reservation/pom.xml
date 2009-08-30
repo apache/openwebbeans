@@ -126,9 +126,6 @@
 	<profiles>
 		<profile>
 			<id>jetty</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>						
 			<dependencies>
 				
 				<!-- OWB API -->
