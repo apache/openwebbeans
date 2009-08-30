@@ -101,6 +101,7 @@ import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.exception.WebBeansPassivationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
@@ -1727,7 +1728,7 @@ public final class WebBeansUtil
             {
                 if (!component.isSerializable())
                 {
-                    throw new WebBeansConfigurationException("WebBeans component implementation class : " + clazz.getName() + " with passivating scope @" + scope.annotationType().getName() + " must be Serializable");
+                    throw new WebBeansPassivationException("WebBeans component implementation class : " + clazz.getName() + " with passivating scope @" + scope.annotationType().getName() + " must be Serializable");
                 }
             }            
         }        
