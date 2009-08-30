@@ -17,6 +17,7 @@
 package org.apache.webbeans.sample.jms;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.QueueSender;
@@ -29,9 +30,9 @@ import org.apache.webbeans.sample.bindings.JmsBinding;
 @Named("sender")
 public class JmsSenderBean
 {
-    private @JmsBinding QueueSender queueSender;
+    private @Inject @JmsBinding QueueSender queueSender;
     
-    private @JmsBinding QueueSession queueSession;
+    private @Inject @JmsBinding QueueSession queueSession;
     
     private String text;
 

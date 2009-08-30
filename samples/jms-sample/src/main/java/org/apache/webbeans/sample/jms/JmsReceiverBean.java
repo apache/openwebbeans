@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -34,9 +35,9 @@ public class JmsReceiverBean implements MessageListener,Serializable
 {
     private static final long serialVersionUID = 5704416477431590842L;
 
-    private @JmsBinding QueueReceiver queueReceiver;
+    private @Inject @JmsBinding QueueReceiver queueReceiver;
     
-    private @JmsBinding QueueConnection queueConnection;
+    private @Inject @JmsBinding QueueConnection queueConnection;
     
     private String message;
     
