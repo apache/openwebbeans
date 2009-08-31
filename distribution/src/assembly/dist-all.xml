@@ -37,7 +37,7 @@ under the License.
         </file>
 
         <file>
-            <source>../readme/README_M2.txt</source>
+            <source>../readme/README_M3.txt</source>
         </file>
 
         <file>
@@ -53,6 +53,11 @@ under the License.
             <source>../samples/guess/src/main/webapp/WEB-INF/web.xml</source>
         </file>
 
+       <file>
+           <outputDirectory>config</outputDirectory>
+           <source>../webbeans-impl/src/main/resources/META-INF/openwebbeans/openwebbeans-default.properties</source>
+       </file>
+
     </files>
 
     <dependencySets>
@@ -60,6 +65,7 @@ under the License.
         <dependencySet>
             <outputDirectory></outputDirectory>
             <includes>
+                <include>org.apache.openwebbeans:atinject-api</include>
                 <include>org.apache.openwebbeans:openwebbeans-api</include>
                 <include>org.apache.openwebbeans:openwebbeans-impl</include>
                 <include>org.apache.openwebbeans:openwebbeans-ejb</include>
@@ -67,8 +73,10 @@ under the License.
                 <include>org.apache.openwebbeans:openwebbeans-jpa</include>
                 <include>org.apache.openwebbeans:openwebbeans-jms</include>
                 <include>org.apache.openwebbeans:openwebbeans-geronimo</include>
+                <include>org.apache.openwebbeans:openwebbeans-resource</include>
             </includes>
 	    <excludes>
+		<exclude>org.apache.openwebbeans:atinject-api:jar:sources</exclude>
 		<exclude>org.apache.openwebbeans:openwebbeans-api:jar:sources</exclude>
 		<exclude>org.apache.openwebbeans:openwebbeans-impl:jar:sources</exclude>
 		<exclude>org.apache.openwebbeans:openwebbeans-ejb:jar:sources</exclude>
@@ -76,6 +84,7 @@ under the License.
 		<exclude>org.apache.openwebbeans:openwebbeans-jpa:jar:sources</exclude>
 		<exclude>org.apache.openwebbeans:openwebbeans-jms:jar:sources</exclude>
 		<exclude>org.apache.openwebbeans:openwebbeans-geronimo:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-resources:jar:sources</exclude>
 	    </excludes>
         </dependencySet>
 
@@ -83,35 +92,7 @@ under the License.
         <dependencySet>
             <outputDirectory>samples</outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans.samples:guess:war</include>
-                <include>org.apache.openwebbeans.samples:reservation:war</include>
-            </includes>
-        </dependencySet>
-
-        <dependencySet>
-            <outputDirectory>lib/thirdparty</outputDirectory>
-            <includes>
-                <include>log4j:log4j</include>
-                <include>dom4j:dom4j</include>
-                <include>javassist:javassist</include>
-                <include>net.sf.scannotation:scannotation</include>
-            </includes>
-        </dependencySet>
-
-        <dependencySet>
-            <outputDirectory>lib/javaee</outputDirectory>
-            <includes>
-                <include>org.apache.geronimo.specs:geronimo-servlet_2.5_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-ejb_3.0_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-el_1.0_spec</include>
-                <include>org.apache.myfaces.core:myfaces-api</include>
-                <include>javax.annotation:jsr250-api</include>
-                <include>org.apache.geronimo.specs:geronimo-interceptor_3.0_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-jsp_2.1_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-jpa_3.0_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-jaxws_2.1_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
+                <include>org.apache.openwebbeans.samples:jms-sample:war</include>
             </includes>
         </dependencySet>
 

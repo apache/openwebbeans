@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.0.0-incubating-M2</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -77,7 +77,7 @@
         </plugins>
     </build>
     <properties>
-      <siteId>/OWB/1.0.0-incubating-M2/distribution</siteId>
+      <siteId>/OWB/1.0.0-incubating-M3-rc1/distribution</siteId>
     </properties>
     <!--
         The assemblies work off of dependency sets since the stuff to be
@@ -98,8 +98,25 @@
     	    <type>war</type>
         </dependency>
         <dependency>
+            <groupId>org.apache.openwebbeans.samples</groupId>
+            <artifactId>ejb-sample</artifactId>
+            <version>${project.version}</version>
+    	    <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans.samples</groupId>
+            <artifactId>jms-sample</artifactId>
+            <version>${project.version}</version>
+    	    <type>war</type>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openwebbeans-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>atinject-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -130,6 +147,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openwebbeans-geronimo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>openwebbeans-resource</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
