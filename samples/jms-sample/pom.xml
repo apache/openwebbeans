@@ -19,7 +19,7 @@
 	<parent>
 		<artifactId>samples</artifactId>
 		<groupId>org.apache.openwebbeans</groupId>
-		<version>1.0.0-incubating-M3</version>
+		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.openwebbeans.samples</groupId>
@@ -52,21 +52,21 @@
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-api</artifactId>
-			<version>1.0.0-incubating-M3</version>
+			<version>1.0.0-incubating-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- OWB implementation -->
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-api</artifactId>
-			<version>1.0.0-incubating-M3</version>
+			<version>1.0.0-incubating-SNAPSHOT</version>
 		</dependency>		
 		
 		<!-- JSF Plugin -->
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-jsf</artifactId>
-			<version>1.0.0-incubating-M3</version>
+			<version>1.0.0-incubating-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- MyFaces API -->
@@ -95,7 +95,7 @@
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-jms</artifactId>
-			<version>1.0.0-incubating-M3</version>
+			<version>1.0.0-incubating-SNAPSHOT</version>
 		</dependency>						
 			
 	</dependencies>

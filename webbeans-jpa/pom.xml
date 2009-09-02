@@ -20,12 +20,12 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.0.0-incubating-M3</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>openwebbeans-jpa</artifactId>
     <name>Apache OpenWebBeans :: JPA integration</name>
-    <version>1.0.0-incubating-M3</version>
+    <version>1.0.0-incubating-SNAPSHOT</version>
     <description>JPA plugin for  OpenWebBeans</description>
 
     <dependencies>
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-impl</artifactId>
-            <version>1.0.0-incubating-M3</version>
+            <version>1.0.0-incubating-SNAPSHOT</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
