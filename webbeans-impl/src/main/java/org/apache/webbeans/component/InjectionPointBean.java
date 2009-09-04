@@ -33,7 +33,7 @@ public class InjectionPointBean extends AbstractBean<InjectionPoint>
         super(WebBeansType.INJECTIONPOINT,InjectionPoint.class);
         this.injectionPoint = injectionPoint;
         
-        addBindingType(new CurrentLiteral());
+        addQualifier(new CurrentLiteral());
         setImplScopeType(new DependentScopeLiteral());
         setType(new StandardLiteral());
         addApiType(InjectionPoint.class);

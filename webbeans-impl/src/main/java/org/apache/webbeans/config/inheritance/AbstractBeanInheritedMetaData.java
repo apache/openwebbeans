@@ -34,21 +34,21 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
     /**Inherited class*/
     protected Class<?> inheritedClazz;
     
-    /**Inherited binding types*/
-    protected Set<Annotation> inheritedBindingTypes = new HashSet<Annotation>();
+    /**Inherited qualifiers*/
+    protected Set<Annotation> inheritedQualifiers = new HashSet<Annotation>();
     
     /**Inherited stereotypes*/
     protected Set<Annotation> inheritedStereoTypes = new HashSet<Annotation>();
     
-    /**Inherited interceptor binding types*/
-    protected Set<Annotation> inheritedInterceptorBindingTypes = new HashSet<Annotation>();
+    /**Inherited interceptor bindings*/
+    protected Set<Annotation> inheritedInterceptorBindings = new HashSet<Annotation>();
     
     /**Inherited scope type*/
     protected Annotation inheritedScopeType = null;
     
     /**Inherited deployment type*/
     protected Annotation inheritedDeploymentType = null;
-    
+
     /**
      * Create a new bean inherited data.
      * 
@@ -60,17 +60,17 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
         this.component = component;
         this.inheritedClazz = inheritedClazz;
         
-        setInheritedBindingTypes();
+        setInheritedQualifiers();
         setInheritedDeploymentType();
-        setInheritedInterceptorBindingTypes();
+        setInheritedInterceptorBindings();
         setInheritedScopeType();
         setInheritedStereoTypes();
     }     
      
     
-    public Set<Annotation> getInheritedBindingTypes()
+    public Set<Annotation> getInheritedQualifiers()
     {
-        return this.inheritedBindingTypes;
+        return this.inheritedQualifiers;
     }
 
     public Set<Annotation> getInheritedStereoTypes()
@@ -78,9 +78,9 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
         return this.inheritedStereoTypes;
     }
     
-    public Set<Annotation> getInheritedInterceptorBindingTypes()
+    public Set<Annotation> getInheritedInterceptorBindings()
     {
-        return this.inheritedInterceptorBindingTypes;
+        return this.inheritedInterceptorBindings;
     }
     
     public Annotation getInheritedScopeType()
@@ -107,7 +107,7 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
     /**
      * @param inheritedBindingTypes the inheritedBindingTypes to set
      */
-    abstract protected void setInheritedBindingTypes();
+    abstract protected void setInheritedQualifiers();
 
     /**
      * @param inheritedStereoTypes the inheritedStereoTypes to set
@@ -115,9 +115,9 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
     abstract protected void setInheritedStereoTypes();
 
     /**
-     * @param inheritedInterceptorBindingTypes the inheritedInterceptorBindingTypes to set
+     * @param inheritedInterceptorBindings the inheritedInterceptorBindingTypes to set
      */
-    abstract protected void setInheritedInterceptorBindingTypes();
+    abstract protected void setInheritedInterceptorBindings();
 
     /**
      * @param inheritedScopeType the inheritedScopeType to set
@@ -128,6 +128,6 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
      * @param inheritedDeploymentType the inheritedDeploymentType to set
      */
     abstract protected void setInheritedDeploymentType();
-    
-    
+
+
 }

@@ -81,7 +81,7 @@ public abstract class AbstractInjectable implements Injectable
         Bean<?> component = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
         
         //Managed @Dependence instances
-        if (component.getScopeType().equals(Dependent.class))
+        if (component.getScope().equals(Dependent.class))
         {
             if(WebBeansUtil.isManagedBean(this.injectionOwnerComponent) || 
                     WebBeansUtil.isEnterpriseBean(this.injectionOwnerComponent))

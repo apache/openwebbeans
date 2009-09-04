@@ -45,11 +45,11 @@ public interface InjectionPoint
     public Type getType();
 
     /**
-     * Returns required binding types of the injection point.
+     * Returns required qualifiers of the injection point.
      * 
-     * @return bindings at the injection point
+     * @return qualifiers at the injection point
      */
-    public Set<Annotation> getBindings();
+    public Set<Annotation> getQualifiers();
 
     /**
      * Returns the injection point owner bean.

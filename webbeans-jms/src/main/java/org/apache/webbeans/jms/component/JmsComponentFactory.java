@@ -79,7 +79,7 @@ public final class JmsComponentFactory
         
         for(Annotation a : anns)
         {
-            component.addBindingType(a);   
+            component.addQualifier(a);
         }
         
         return component;

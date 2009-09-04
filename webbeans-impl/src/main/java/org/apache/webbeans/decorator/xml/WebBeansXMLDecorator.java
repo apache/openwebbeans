@@ -35,7 +35,7 @@ public class WebBeansXMLDecorator<T> extends WebBeansDecorator<T>
     protected void initDelegate()
     {
         this.delegateType = decoratesModel.getInjectionClassType();
-        this.delegateBindingTypes = decoratesModel.getBindingTypes();
+        this.delegateBindings = decoratesModel.getBindingTypes();
     }
 
 }

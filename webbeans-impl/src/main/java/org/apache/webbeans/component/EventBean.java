@@ -50,10 +50,10 @@ public class EventBean<T> extends AbstractBean<T>
     @Override
     protected T createInstance(CreationalContext<T> creationalContext)
     {
-        Set<Annotation> setBindingTypes = getBindings();
-        Annotation[] bindingTypes = new Annotation[setBindingTypes.size()];
+        Set<Annotation> setQualifiers = getQualifiers();
+        Annotation[] qualifiers = new Annotation[setQualifiers.size()];
 
-        bindingTypes = setBindingTypes.toArray(bindingTypes);
+        qualifiers = setQualifiers.toArray(qualifiers);
 
         T instance = null;
 
@@ -62,7 +62,7 @@ public class EventBean<T> extends AbstractBean<T>
             Constructor<T> constructor = null;
             constructor = returnType.getConstructor(new Class<?>[] { Annotation[].class, Type.class });
 
-            instance = constructor.newInstance(new Object[] { bindingTypes, eventType });
+            instance = constructor.newInstance(new Object[] { qualifiers, eventType });
         }
         catch (Exception e)
         {

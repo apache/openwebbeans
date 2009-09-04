@@ -100,15 +100,15 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      * {@inheritDoc}
      */
     @Override
-    public void defineBindingType()
+    public void defineQualifier()
     {
         if(isDefaultMetaDataProvider())
         {
-            DefinitionUtil.defineBindingTypes(this.bean, this.beanAnnotations);
+            DefinitionUtil.defineQualifiers(this.bean, this.beanAnnotations);
         }
         else
         {
-            //TODO Define Binding Types
+            //TODO Define Qualifiers
         }
         
     }
@@ -159,7 +159,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         if(isDefaultMetaDataProvider())
         {
             DefinitionUtil.defineScopeType(this.bean, this.beanAnnotations, errorMessage);
-            WebBeansUtil.checkPassivationScope(getBean(), getBean().getScopeType().getAnnotation(NormalScope.class));
+            WebBeansUtil.checkPassivationScope(getBean(), getBean().getScope().getAnnotation(NormalScope.class));
         }
         else
         {

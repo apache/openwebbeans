@@ -172,7 +172,7 @@ public final class DefinitionUtil
      * 
      * @param <T> generic class type
      * @param component configuring web beans component
-     * @param clazz bean implementation class
+     * @param type bean implementation class
      */
     public static <T> void defineProducerMethodApiTypes(AbstractBean<T> component, Type type)
     {
@@ -193,19 +193,19 @@ public final class DefinitionUtil
     }
 
     /**
-     * Configure web beans component binding type.
+     * Configure web beans component qualifier.
      * 
      * @param component configuring web beans component
      * @param annotations annotations
      */
-    public static <T> void defineBindingTypes(AbstractBean<T> component, Annotation[] annotations)
+    public static <T> void defineQualifiers(AbstractBean<T> component, Annotation[] annotations)
     {
         boolean find = false;
         for (Annotation annotation : annotations)
         {
             Class<? extends Annotation> type = annotation.annotationType();
 
-            if (AnnotationUtil.isBindingAnnotation(type))
+            if (AnnotationUtil.isQualifierAnnotation(type))
             {
                 Method[] methods = type.getDeclaredMethods();
 
@@ -216,7 +216,7 @@ public final class DefinitionUtil
                     {
                         if (!AnnotationUtil.isAnnotationExist(method.getDeclaredAnnotations(), NonBinding.class))
                         {
-                            throw new WebBeansConfigurationException("WebBeans definition class : " + component.getReturnType().getName() + " @BindingType : " + annotation.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                            throw new WebBeansConfigurationException("WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : " + annotation.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                         }
                     }
                 }
@@ -226,22 +226,22 @@ public final class DefinitionUtil
                     find = true;
                 }
 
-                component.addBindingType(annotation);
+                component.addQualifier(annotation);
             }
         }
         
-        // Adding inherited binding types
+        // Adding inherited qualifiers
         IBeanInheritedMetaData inheritedMetaData = component.getInheritedMetaData();
         if (inheritedMetaData != null)
         {
-            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedBindingTypes();
+            Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedQualifiers();
             for (Annotation inherited : inheritedTypes)
             {
-                Set<Annotation> bindings = component.getBindings();
+                Set<Annotation> qualifiers = component.getQualifiers();
                 boolean found = false;
-                for (Annotation existBinding : bindings)
+                for (Annotation existQualifier : qualifiers)
                 {
-                    if (existBinding.annotationType().equals(inherited.annotationType()))
+                    if (existQualifier.annotationType().equals(inherited.annotationType()))
                     {
                         found = true;
                         break;
@@ -249,22 +249,22 @@ public final class DefinitionUtil
                 }
                 if (!found)
                 {
-                    component.addBindingType(inherited);
+                    component.addQualifier(inherited);
                 }
             }
         }
         
 
         // No-binding annotation
-        if (component.getBindings().size() == 0)
+        if (component.getQualifiers().size() == 0)
         {
-            component.addBindingType(new CurrentLiteral());
+            component.addQualifier(new CurrentLiteral());
         }
         
         //Add @Any support
-        if(!AnnotationUtil.isAnyBindingExist(component))
+        if(!AnnotationUtil.isAnyQualifierExist(component))
         {
-        	component.addBindingType(new AnyLiteral());
+        	component.addQualifier(new AnyLiteral());
         }
         	 
     }
@@ -339,18 +339,18 @@ public final class DefinitionUtil
             }
         }
         
-        // Adding inherited binding types
+        // Adding inherited qualifiers
         IBeanInheritedMetaData inheritedMetaData = component.getInheritedMetaData();
         if (inheritedMetaData != null)
         {
             Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedStereoTypes();        
             for (Annotation inherited : inheritedTypes)
             {
-                Set<Class<? extends Annotation>> bindings = component.getStereotypes();
+                Set<Class<? extends Annotation>> qualifiers = component.getStereotypes();
                 boolean found = false;
-                for (Class<? extends Annotation> existBinding : bindings)
+                for (Class<? extends Annotation> existQualifier : qualifiers)
                 {
-                    if (existBinding.equals(inherited.annotationType()))
+                    if (existQualifier.equals(inherited.annotationType()))
                     {
                         found = true;
                         break;
@@ -624,9 +624,9 @@ public final class DefinitionUtil
         Annotation[] methodAnns = method.getDeclaredAnnotations();
 
         DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType());
-        DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() + " must declare default @ScopeType annotation");        
+        DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
         WebBeansUtil.checkProducerGenericType(component,method);        
-        DefinitionUtil.defineBindingTypes(component, methodAnns);
+        DefinitionUtil.defineQualifiers(component, methodAnns);
         DefinitionUtil.defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
 
         //Drop from the specification
@@ -654,7 +654,7 @@ public final class DefinitionUtil
             component.setProducerField(field);
             component.addApiType(Object.class);
             component.addApiType(field.getType());
-            defineBindingTypes(component, field.getDeclaredAnnotations());
+            defineQualifiers(component, field.getDeclaredAnnotations());
             component.setImplScopeType(new DependentScopeLiteral());
             
             return component;
@@ -681,9 +681,9 @@ public final class DefinitionUtil
         Annotation[] fieldAnns = field.getDeclaredAnnotations();
 
         DefinitionUtil.defineProducerMethodApiTypes(component, returnType);
-        DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName() + " must declare default @ScopeType annotation");
+        DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
         WebBeansUtil.checkProducerGenericType(component,field);
-        DefinitionUtil.defineBindingTypes(component, fieldAnns);
+        DefinitionUtil.defineQualifiers(component, fieldAnns);
         DefinitionUtil.defineName(component, fieldAnns, field.getName());
 
         return component;
@@ -709,7 +709,7 @@ public final class DefinitionUtil
             WebBeansUtil.checkProducerMethodDisposal(declaredMethod, clazz.getName());
 
             Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(declaredMethod, Disposes.class);
-            Annotation[] annot = AnnotationUtil.getMethodFirstParameterBindingTypesWithGivenAnnotation(declaredMethod, Disposes.class);
+            Annotation[] annot = AnnotationUtil.getMethodFirstParameterQualifierWithGivenAnnotation(declaredMethod, Disposes.class);
 
 
             Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
@@ -802,9 +802,9 @@ public final class DefinitionUtil
                 
                 if(ClassUtil.isPublic(field.getModifiers()))
                 {
-                    if(!component.getScopeType().equals(Dependent.class))
+                    if(!component.getScope().equals(Dependent.class))
                     {
-                        throw new WebBeansConfigurationException("If bean has a public modifier injection point, bean scope type must be defined as @Dependent");
+                        throw new WebBeansConfigurationException("If bean has a public modifier injection point, bean scope must be defined as @Dependent");
                     }
                 }                
                 
@@ -816,13 +816,13 @@ public final class DefinitionUtil
                     continue;
                 }
 
-                Annotation[] bindingAnns = AnnotationUtil.getBindingAnnotations(anns);
+                Annotation[] qualifierAnns = AnnotationUtil.getQualifierAnnotations(anns);
 
-                if (bindingAnns.length > 0)
+                if (qualifierAnns.length > 0)
                 {
-                    if (bindingAnns.length > 0)
+                    if (qualifierAnns.length > 0)
                     {
-                        WebBeansUtil.checkForNewBindingForDeployment(field.getGenericType(), clazz, field.getName(), anns);
+                        WebBeansUtil.checkForNewQualifierForDeployment(field.getGenericType(), clazz, field.getName(), anns);
                     }
 
                     int mod = field.getModifiers();
@@ -968,7 +968,7 @@ public final class DefinitionUtil
         {
             Annotation[] a = anns[i];
             Type t = type[i];
-            WebBeansUtil.checkForNewBindingForDeployment(t, clazz, method.getName(), a);
+            WebBeansUtil.checkForNewQualifierForDeployment(t, clazz, method.getName(), a);
         }
 
         if (method.getAnnotation(Produces.class) == null)

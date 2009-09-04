@@ -60,7 +60,7 @@ public class ScopeTypeExceptionComponentTest extends TestContext
         defineSimpleWebBean(ComponentWithNonScopeStero.class);
         Bean<?> bean = getComponents().get(0);
 
-        Assert.assertEquals(Dependent.class, bean.getScopeType());
+        Assert.assertEquals(Dependent.class, bean.getScope());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class ScopeTypeExceptionComponentTest extends TestContext
         defineSimpleWebBean(ComponentDefaultScopeWithNonScopeStero.class);
         Bean<?> bean = getComponents().get(0);
 
-        Assert.assertEquals(SessionScoped.class, bean.getScopeType());
+        Assert.assertEquals(SessionScoped.class, bean.getScope());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class ScopeTypeExceptionComponentTest extends TestContext
         defineSimpleWebBean(ComponentWithDefaultScopeStero.class);
         Bean<?> bean = getComponents().get(0);
 
-        Assert.assertEquals(RequestScoped.class, bean.getScopeType());
+        Assert.assertEquals(RequestScoped.class, bean.getScope());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class ScopeTypeExceptionComponentTest extends TestContext
         defineSimpleWebBean(ComponentWithoutScopeStero.class);
         Bean<?> bean = getComponents().get(0);
 
-        Assert.assertEquals(Dependent.class, bean.getScopeType());
+        Assert.assertEquals(Dependent.class, bean.getScope());
     }
 
     @Test
@@ -116,7 +116,7 @@ public class ScopeTypeExceptionComponentTest extends TestContext
         defineSimpleWebBean(ComponentWithSameScopeSteros.class);
         Bean<?> bean = getComponents().get(0);
 
-        Assert.assertEquals(SessionScoped.class, bean.getScopeType());
+        Assert.assertEquals(SessionScoped.class, bean.getScope());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class ScopeTypeExceptionComponentTest extends TestContext
         defineSimpleWebBean(ComponentDefaultScopeWithDifferentScopeSteros.class);
         Bean<?> bean = getComponents().get(0);
 
-        Assert.assertEquals(SessionScoped.class, bean.getScopeType());
+        Assert.assertEquals(SessionScoped.class, bean.getScope());
     }
 
     @Test

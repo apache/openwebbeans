@@ -29,7 +29,6 @@ import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
-import javax.interceptor.InterceptorBindingType;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.AbstractBean;
@@ -50,7 +49,7 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 /**
  * Defines the webbeans specific interceptors.
  * <p>
- * WebBeans interceotor classes has at least one {@link InterceptorBindingType}
+ * WebBeans interceotor classes has at least one {@link javax.interceptor.InterceptorBinding}
  * annotation. It can be defined on the class or method level at the component.
  * WebBeans interceptors are called after the EJB related interceptors are
  * called in the chain. Semantics of the interceptors are specified by the EJB
@@ -91,12 +90,12 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     /**
      * Add new binding type to the interceptor.
      * 
-     * @param bindingType interceptor binding type annot. class
+     * @param binding interceptor binding annotation. class
      * @param annot binding type annotation
      */
-    public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation annot)
+    public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation annot)
     {
-        Method[] methods = bindingType.getDeclaredMethods();
+        Method[] methods = binding.getDeclaredMethods();
 
         for (Method method : methods)
         {
@@ -105,12 +104,12 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
             {
                 if (!AnnotationUtil.isAnnotationExist(method.getAnnotations(), NonBinding.class))
                 {
-                    throw new WebBeansConfigurationException("Interceptor definition class : " + getClazz().getName() + " @InterceptorBindingType : " + bindingType.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                    throw new WebBeansConfigurationException("Interceptor definition class : " + getClazz().getName() + " @InterceptorBinding : " + binding.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                 }
             }
         }
 
-        interceptorBindingSet.put(bindingType, annot);
+        interceptorBindingSet.put(binding, annot);
     }
 
     /**
@@ -121,7 +120,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
      * @param annots binding types annots.
      * @return true if binding types exist ow false
      */
-    public boolean isBindingTypesExist(List<Class<? extends Annotation>> bindingTypes, List<Annotation> annots)
+    public boolean isBindingExist(List<Class<? extends Annotation>> bindingTypes, List<Annotation> annots)
     {
         boolean result = false;
 
@@ -190,7 +189,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
             }
 
             /*
-             * For example: @InterceptorBindingType @Transactional @Action
+             * For example: @InterceptorBinding @Transactional @Action
              * public @interface ActionTransactional @ActionTransactional
              * @Production { }
              */
@@ -228,7 +227,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     }
 
     @Override
-    public Set<Annotation> getInterceptorBindingTypes()
+    public Set<Annotation> getInterceptorBindings()
     {
         Set<Annotation> set = new HashSet<Annotation>();
         Set<Class<? extends Annotation>> keySet = this.interceptorBindingSet.keySet();
@@ -290,9 +289,9 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     }
 
     @Override
-    public Set<Annotation> getBindings()
+    public Set<Annotation> getQualifiers()
     {
-        return delegateComponent.getBindings();
+        return delegateComponent.getQualifiers();
     }
 
     @Override
@@ -308,9 +307,9 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     }
 
     @Override
-    public Class<? extends Annotation> getScopeType()
+    public Class<? extends Annotation> getScope()
     {
-        return delegateComponent.getScopeType();
+        return delegateComponent.getScope();
     }
 
     public Set<Type> getTypes()

@@ -170,7 +170,7 @@ public final class InterceptorUtil
         Asserts.nullCheckForClass(clazz);
         if (!AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
         {
-            throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName() + " must have at least one @InterceptorBindingType annotation");
+            throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName() + " must have at least one @InterceptorBinding annotation");
         }
 
         checkLifecycleConditions(clazz, clazz.getDeclaredAnnotations(), "Lifecycle interceptor : " + clazz.getName() + " interceptor binding type must be defined as @Target{TYPE}");
@@ -224,7 +224,7 @@ public final class InterceptorUtil
         //Simple webbeans 
         if(ClassUtil.isFinal(clazz.getModifiers()) && hasClassInterceptors)
         {
-            throw new WebBeansConfigurationException("Final Simple class with name : " + clazz.getName() + " can not define any InterceptorBinding types");
+            throw new WebBeansConfigurationException("Final Simple class with name : " + clazz.getName() + " can not define any InterceptorBindings");
         }
 
         Method[] methods = clazz.getDeclaredMethods();
@@ -236,13 +236,13 @@ public final class InterceptorUtil
             {
                 if (hasClassInterceptors)
                 {
-                    throw new WebBeansConfigurationException("Simple web bean class : " + clazz.getName() + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBindintType");
+                    throw new WebBeansConfigurationException("Simple web bean class : " + clazz.getName() + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
                 }
                 else
                 {
                     if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(method.getDeclaredAnnotations()))
                     {
-                        throw new WebBeansConfigurationException("Method : " + method.getName() + "in simple web bean class : " + clazz.getName() + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBindintType");
+                        throw new WebBeansConfigurationException("Method : " + method.getName() + "in simple web bean class : " + clazz.getName() + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");
                     }
                 }
             }

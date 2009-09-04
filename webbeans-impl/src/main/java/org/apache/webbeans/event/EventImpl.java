@@ -73,7 +73,7 @@ public class EventImpl<T> implements Event<T>
      */
     private Annotation[] getEventBindings(Annotation... annotations)
     {
-        AnnotationUtil.checkBindingTypeConditions(annotations);
+        AnnotationUtil.checkQualifierConditions(annotations);
         
         List<Annotation> eventBindings = new ArrayList<Annotation>();
         Annotation[] anns = null;

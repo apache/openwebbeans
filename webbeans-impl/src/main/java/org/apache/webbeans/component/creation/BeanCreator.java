@@ -111,9 +111,9 @@ public interface BeanCreator<T> extends Producer<T>
     public void defineScopeType(String errorMessage);
     
     /**
-     * Defines binding type.
+     * Defines qualifier.
      */
-    public void defineBindingType();
+    public void defineQualifier();
     
     /**
      * Defines bean name.

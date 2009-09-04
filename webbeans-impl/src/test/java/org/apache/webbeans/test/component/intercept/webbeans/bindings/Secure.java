@@ -19,9 +19,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import javax.enterprise.inject.NonBinding;
-import javax.interceptor.InterceptorBindingType;
+import javax.interceptor.InterceptorBinding;
 
-@InterceptorBindingType
+@InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.TYPE, ElementType.METHOD })
 @Transactional

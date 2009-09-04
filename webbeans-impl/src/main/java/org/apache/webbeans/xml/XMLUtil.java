@@ -624,9 +624,9 @@ public final class XMLUtil
                 else if (((Class) actualType).isAnnotation())
                 {
                     Class<? extends Annotation> annotClazz = (Class<? extends Annotation>) actualType;
-                    if (!AnnotationUtil.isBindingAnnotation(annotClazz))
+                    if (!AnnotationUtil.isQualifierAnnotation(annotClazz))
                     {
-                        throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is not a @BindingType");
+                        throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is not a @Qualifier");
                     }
 
                     if (definedBindingType == null)
@@ -952,12 +952,12 @@ public final class XMLUtil
 
         if (anns.size() == 0)
         {
-            component.addBindingType(new CurrentLiteral());
+            component.addQualifier(new CurrentLiteral());
         }
 
         for (Annotation ann : anns)
         {
-            component.addBindingType(ann);
+            component.addQualifier(ann);
         }
 
     }

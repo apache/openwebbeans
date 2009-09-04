@@ -31,7 +31,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.stereotype.Stereotype;
 
 import javax.inject.Qualifier;
-import javax.interceptor.InterceptorBindingType;
+import javax.interceptor.InterceptorBinding;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
@@ -277,13 +277,13 @@ public final class AnnotationUtil
     }
 
     /**
-     * Gets the method first found parameter binding types.
+     * Gets the method first found parameter qualifiers.
      * 
      * @param method method
      * @param annotation checking annotation
      * @return annotation array
      */
-    public static Annotation[] getMethodFirstParameterBindingTypesWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
+    public static Annotation[] getMethodFirstParameterQualifierWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
@@ -305,7 +305,7 @@ public final class AnnotationUtil
                     continue;
                 }
 
-                if (AnnotationUtil.isBindingAnnotation(btype))
+                if (AnnotationUtil.isQualifierAnnotation(btype))
                 {
                     list.add(param);
                 }
@@ -492,12 +492,12 @@ public final class AnnotationUtil
     }
 
     /**
-     * Gets the array of binding annotations on the given array.
+     * Gets the array of qualifier annotations on the given array.
      * 
      * @param annotations annotation array
-     * @return array containing binding type anns
+     * @return array containing qualifier anns
      */
-    public static Annotation[] getBindingAnnotations(Annotation... annotations)
+    public static Annotation[] getQualifierAnnotations(Annotation... annotations)
     {
         Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
@@ -505,7 +505,7 @@ public final class AnnotationUtil
 
         for (Annotation annot : annotations)
         {
-            if (AnnotationUtil.isBindingAnnotation(annot.annotationType()))
+            if (AnnotationUtil.isQualifierAnnotation(annot.annotationType()))
             {
                 set.add(annot);
             }
@@ -712,11 +712,11 @@ public final class AnnotationUtil
         return fields;
     }
 
-    public static void checkBindingTypeConditions(Annotation... bindignTypeAnnots)
+    public static void checkQualifierConditions(Annotation... qualifierAnnots)
     {
         Annotation before = null;
 
-        for (Annotation ann : bindignTypeAnnots)
+        for (Annotation ann : qualifierAnnots)
         {
             Method[] methods = ann.annotationType().getDeclaredMethods();
 
@@ -727,15 +727,15 @@ public final class AnnotationUtil
                 {
                     if (!AnnotationUtil.isAnnotationExist(method.getDeclaredAnnotations(), NonBinding.class))
                     {
-                        throw new WebBeansConfigurationException("@BindingType : " + ann.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                        throw new WebBeansConfigurationException("@Qualifier : " + ann.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                     }
                 }
             }
             
             
-            if (!AnnotationUtil.isBindingAnnotation(ann.annotationType()))
+            if (!AnnotationUtil.isQualifierAnnotation(ann.annotationType()))
             {
-                throw new IllegalArgumentException("Binding annotations must be annotated with @BindingType");
+                throw new IllegalArgumentException("Qualifier annotations must be annotated with @Qualifier");
             }
 
             if (before == null)
@@ -746,7 +746,7 @@ public final class AnnotationUtil
             {
                 if (before.equals(ann))
                 {
-                    throw new IllegalArgumentException("Binding annotations can not contain duplicate binding : @" + before.annotationType().getName());
+                    throw new IllegalArgumentException("Qualifier annotations can not contain duplicate qualifier : @" + before.annotationType().getName());
                 }
                 else
                 {
@@ -758,13 +758,13 @@ public final class AnnotationUtil
 
     /**
      * Returns true if the annotation is defined in xml or annotated with
-     * {@link BindingType} false otherwise.
+     * {@link javax.inject.Qualifier} false otherwise.
      * 
      * @param clazz type of the annotation
      * @return true if the annotation is defined in xml or annotated with
-     *         {@link BindingType} false otherwise
+     *         {@link javax.inject.Qualifier} false otherwise
      */
-    public static boolean isBindingAnnotation(Class<? extends Annotation> clazz)
+    public static boolean isQualifierAnnotation(Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(clazz, "clazz parameter can not be null");
         XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
@@ -787,12 +787,12 @@ public final class AnnotationUtil
      * @param bean bean
      * @return true if any binding exist
      */
-    public static boolean isAnyBindingExist(Bean<?> bean)
+    public static boolean isAnyQualifierExist(Bean<?> bean)
     {
     	Asserts.assertNotNull(bean, "bean parameter can not be null");
-    	Set<Annotation> bindings = bean.getBindings();
+    	Set<Annotation> qualifiers = bean.getQualifiers();
     	
-    	for(Annotation ann : bindings)
+    	for(Annotation ann : qualifiers)
     	{
     		if(ann.annotationType().equals(Any.class))
     		{
@@ -840,7 +840,7 @@ public final class AnnotationUtil
      * 
      * @param clazz type of the annotation
      * @return true if the annotation is defined in xml or annotated with
-     *         {@link BindingType} false otherwise
+     *         {@link javax.inject.Qualifier} false otherwise
      */
     public static boolean isResourceAnnotation(Class<? extends Annotation> clazz)
     {
@@ -861,11 +861,11 @@ public final class AnnotationUtil
 
     /**
      * Returns true if the annotation is defined in xml or annotated with
-     * {@link InterceptorBindingType} false otherwise.
+     * {@link javax.interceptor.InterceptorBinding} false otherwise.
      * 
      * @param clazz type of the annotation
      * @return true if the annotation is defined in xml or annotated with
-     *         {@link InterceptorBindingType} false otherwise
+     *         {@link javax.interceptor.InterceptorBinding} false otherwise
      */
     public static boolean isInterceptorBindingAnnotation(Class<? extends Annotation> clazz)
     {
@@ -875,7 +875,7 @@ public final class AnnotationUtil
         {
             return true;
         }
-        else if (clazz.isAnnotationPresent(InterceptorBindingType.class))
+        else if (clazz.isAnnotationPresent(InterceptorBinding.class))
         {
             return true;
         }
@@ -994,12 +994,12 @@ public final class AnnotationUtil
     /**
      * If the bean extends generic class via {@link Realizes}
      * annotation, realized based producer methods, fields and observer
-     * methods binding type is 
+     * methods qualifier is
      * 
      * <ul>
-     *  <li>Binding types on the definitions</li>
-     *  <li>Plus class binding types</li>
-     *  <li>Minus generic class binding types</li>
+     *  <li>Qualifiers on the definitions</li>
+     *  <li>Plus class qualifiers</li>
+     *  <li>Minus generic class qualifiers</li>
      * </ul>
      * 
      * @param clazz realized definition class
@@ -1014,14 +1014,14 @@ public final class AnnotationUtil
             setAnnots.add(definedAnn);
         }
         
-        Annotation[] genericReliazesAnns = AnnotationUtil.getBindingAnnotations(clazz.getSuperclass().getDeclaredAnnotations());
+        Annotation[] genericReliazesAnns = AnnotationUtil.getQualifierAnnotations(clazz.getSuperclass().getDeclaredAnnotations());
         
         for(Annotation generic : genericReliazesAnns)
         {
             setAnnots.remove(generic);
         }
         
-        genericReliazesAnns = AnnotationUtil.getBindingAnnotations(clazz.getDeclaredAnnotations());
+        genericReliazesAnns = AnnotationUtil.getQualifierAnnotations(clazz.getDeclaredAnnotations());
 
         for(Annotation generic : genericReliazesAnns)
         {

@@ -64,9 +64,9 @@ public final class WebBeansDecoratorConfig
 
     public static void configureDecarotors(AbstractBean<?> component, Object instance)
     {
-        Set<Annotation> bindingTypes = component.getBindings();
-        Annotation[] anns = new Annotation[bindingTypes.size()];
-        anns = bindingTypes.toArray(anns);
+        Set<Annotation> qualifiers = component.getQualifiers();
+        Annotation[] anns = new Annotation[qualifiers.size()];
+        anns = qualifiers.toArray(anns);
 
         List<Decorator<?>> decoratorList = BeanManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
         Iterator<Decorator<?>> itList = decoratorList.iterator();

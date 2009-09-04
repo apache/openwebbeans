@@ -503,7 +503,7 @@
     </distributionManagement>
       
 	<properties>
-          <openwebbeans.version>1.0.0-incubating-M3</openwebbeans.version>
+          <openwebbeans.version>1.0.0-incubating-SNAPSHOT</openwebbeans.version>
 	  <siteId>/OWB/1.0.0-incubating-M3-rc1/plugins</siteId>
 	</properties>
 

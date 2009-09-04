@@ -88,7 +88,7 @@ public class InvocationContextImpl implements InvocationContext
     @SuppressWarnings("unchecked")
     private void configureTarget(Bean<?> bean)
     {
-        Context webbeansContext = BeanManagerImpl.getManager().getContext(bean.getScopeType());
+        Context webbeansContext = BeanManagerImpl.getManager().getContext(bean.getScope());
         
         this.target = webbeansContext.get((Contextual<Object>)bean, (CreationalContext<Object>)CreationalContextFactory.getInstance().getCreationalContext(bean));        
         

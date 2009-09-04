@@ -280,7 +280,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public BeanManager addContext(Context context)
     {
-        addContext(context.getScopeType(), ContextFactory.getCustomContext(context));
+        addContext(context.getScope(), ContextFactory.getCustomContext(context));
 
         return this;
 
@@ -585,7 +585,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             throw new WebBeansConfigurationException("Exception in getBeans method. Bean type can not be TypeVariable");
         }
         
-        AnnotationUtil.checkBindingTypeConditions(bindings);
+        AnnotationUtil.checkQualifierConditions(bindings);
         
         return this.injectionResolver.implResolveByType(beanType, bindings);
         
@@ -616,8 +616,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return null;
         }
                 
-        Annotation[] bindings = new Annotation[injectionPoint.getBindings().size()];
-        bindings = injectionPoint.getBindings().toArray(bindings);
+        Annotation[] bindings = new Annotation[injectionPoint.getQualifiers().size()];
+        bindings = injectionPoint.getQualifiers().toArray(bindings);
         
         //Find the injection point Bean
         Bean<?> bean = injectionResolver.getInjectionPointBean(injectionPoint);
@@ -643,9 +643,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     @Override
-    public Set<Annotation> getInterceptorBindingTypeDefinition(Class<? extends Annotation> bindingType)
+    public Set<Annotation> getInterceptorBindingDefinition(Class<? extends Annotation> binding)
     {
-        Annotation[] annotations = AnnotationUtil.getInterceptorBindingMetaAnnotations(bindingType.getDeclaredAnnotations());
+        Annotation[] annotations = AnnotationUtil.getInterceptorBindingMetaAnnotations(binding.getDeclaredAnnotations());
         Set<Annotation> set = new HashSet<Annotation>();
         
         for(Annotation ann : annotations)
@@ -703,10 +703,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         beanInstance.setCreationalContext(creationalContext);
         
         //Get bean context
-        context = getContext(beanInstance.getScopeType());        
+        context = getContext(beanInstance.getScope());
         
         //Scope is normal
-        if (WebBeansUtil.isScopeTypeNormal(bean.getScopeType()))
+        if (WebBeansUtil.isScopeTypeNormal(bean.getScope()))
         {
             instance = context.get(beanInstance);
             
@@ -746,7 +746,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 return instance;
             }
             
-            context = getContext(bean.getScopeType());
+            context = getContext(bean.getScope());
             instance = context.get((Bean<Object>)bean, creationalContext);                                
         }
         
@@ -800,11 +800,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public boolean isQualifier(Class<? extends Annotation> annotationType)
     {
-        return AnnotationUtil.isBindingAnnotation(annotationType);
+        return AnnotationUtil.isQualifierAnnotation(annotationType);
     }
 
     @Override
-    public boolean isInterceptorBindingType(Class<? extends Annotation> annotationType)
+    public boolean isInterceptorBinding(Class<? extends Annotation> annotationType)
     {
         return AnnotationUtil.isInterceptorBindingAnnotation(annotationType);
     }
@@ -905,7 +905,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             Annotated annotated = injectionPoint.getAnnotated();
             if (annotated.getAnnotations().size() == 1 && annotated.isAnnotationPresent(Default.class))
             {
-                if (!bean.getScopeType().equals(Dependent.class))
+                if (!bean.getScope().equals(Dependent.class))
                 {
                     throw new WebBeansConfigurationException("Bean " + bean + "scope can not define other scope except @Dependent to inject InjectionPoint");
                 }
@@ -935,6 +935,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         // TODO Auto-generated method stub
         return null;
-    }    
-        
+    }
+
 }

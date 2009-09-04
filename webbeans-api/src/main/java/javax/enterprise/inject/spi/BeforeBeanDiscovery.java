@@ -25,20 +25,20 @@ import java.lang.annotation.Annotation;
 public interface BeforeBeanDiscovery
 {
     /**
-     * Declares a new binding type.
+     * Declares a new qualifier.
      * 
-     * @param bindingType binding type
+     * @param qualifier qualifier
      */
-    public void addBindingType(Class<? extends Annotation> bindingType);
+    public void addQualifier(Class<? extends Annotation> qualifier);
     
     /**
-     * Declares a new scope type.
+     * Declares a new scope.
      * 
-     * @param scopeType scope type
+     * @param scope scope
      * @param normal is normal or not
      * @param passivating passivated or not
      */
-    public void addScopeType(Class<? extends Annotation> scopeType, boolean normal, boolean passivating);
+    public void addScope(Class<? extends Annotation> scope, boolean normal, boolean passivating);
     
     /**
      * Declares a new stereotype.
@@ -49,12 +49,12 @@ public interface BeforeBeanDiscovery
     public void addStereotype(Class<? extends Annotation> stereotype, Annotation... stereotypeDef);
     
     /**
-     * Declares a new binding type.
+     * Declares a new interceptor binding.
      * 
-     * @param bindingType binding type class
-     * @param bindingTypeDef meta annotations
+     * @param binding binding class
+     * @param bindingDef meta annotations
      */
-    public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation... bindingTypeDef);
+    public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation... bindingDef);
     
     /**
      * Adds new annotated type.

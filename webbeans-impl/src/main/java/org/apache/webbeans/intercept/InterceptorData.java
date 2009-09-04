@@ -20,7 +20,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
-import javax.interceptor.InterceptorBindingType;
 import javax.interceptor.Interceptors;
 
 
@@ -31,7 +30,7 @@ import javax.interceptor.Interceptors;
  * <ul>
  * <li>EJB related interceptors with {@link Interceptors} annotation</li>
  * <li>WebBeans specific interceptor definition with using
- * {@link InterceptorBindingType} and {@link Interceptor}</li>
+ * {@link javax.interceptor.InterceptorBinding} and {@link Interceptor}</li>
  * </ul>
  * </p>
  * <p>

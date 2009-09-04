@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import javax.inject.Qualifier;
 
 /**
- * Defines any binding type in the injection point.
+ * Defines any qualifier in the injection point.
  *
  * @version $Rev$ $Date$
  */

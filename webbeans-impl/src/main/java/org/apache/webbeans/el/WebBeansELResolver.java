@@ -128,7 +128,7 @@ public class WebBeansELResolver extends ELResolver
     @SuppressWarnings("unchecked")
     private <T> void destroyBean(Bean<T> bean, Object instance)
     {
-        if (bean.getScopeType().equals(Dependent.class))
+        if (bean.getScope().equals(Dependent.class))
         {
             T inst = (T) instance;
 

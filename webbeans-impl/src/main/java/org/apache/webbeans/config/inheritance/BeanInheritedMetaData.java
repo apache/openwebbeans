@@ -25,7 +25,7 @@ import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
-import javax.interceptor.InterceptorBindingType;
+import javax.interceptor.InterceptorBinding;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -38,11 +38,11 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     }
 
     
-    protected void setInheritedBindingTypes()
+    protected void setInheritedQualifiers()
     {
         if(this.inheritedClazz != Object.class)
         {
-            setInheritedTypes(getInheritedBindingTypes(), this.inheritedClazz, Qualifier.class);
+            setInheritedTypes(getInheritedQualifiers(), this.inheritedClazz, Qualifier.class);
         }        
     }
 
@@ -57,11 +57,11 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     }
 
     
-    protected void setInheritedInterceptorBindingTypes()
+    protected void setInheritedInterceptorBindings()
     {
         if(this.inheritedClazz != Object.class)
         {
-            setInheritedTypes(getInheritedInterceptorBindingTypes(), this.inheritedClazz, InterceptorBindingType.class);
+            setInheritedTypes(getInheritedInterceptorBindings(), this.inheritedClazz, InterceptorBinding.class);
         }        
         
     }

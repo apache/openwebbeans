@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 public @interface Observes
 {
     /**Specifies whether or not call observer according to owner bean instace*/
-    public Notify notifyObserver() default Notify.ALWAYS;
+    public Reception notifyObserver() default Reception.ALWAYS;
     
     /**Transaction phase*/
     public TransactionPhase during() default TransactionPhase.IN_PROGRESS;

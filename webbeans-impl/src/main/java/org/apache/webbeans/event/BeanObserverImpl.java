@@ -50,7 +50,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *  }
  * </pre>
  * Above class X instance observes for the event with type <code>LoggedInEvent</code>
- * and event binding type is <code>Current</code>. Whenever event is fired, its {@link Observer#notify()}
+ * and event qualifier is <code>Current</code>. Whenever event is fired, its {@link Observer#notify()}
  * method is called.
  * </p>
  * 
@@ -105,7 +105,7 @@ public class BeanObserverImpl<T> implements Observer<T>
         {
             BeanManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
             specializedComponent = (AbstractBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
-            Context context = manager.getContext(specializedComponent.getScopeType());
+            Context context = manager.getContext(specializedComponent.getScope());
             
             if(this.ifExist)
             {
@@ -158,7 +158,7 @@ public class BeanObserverImpl<T> implements Observer<T>
         }
         finally
         {
-            if (baseComponent.getScopeType().equals(Dependent.class))
+            if (baseComponent.getScope().equals(Dependent.class))
             {
                 baseComponent.destroy(object,baseComponent.getCreationalContext());
             }
@@ -212,7 +212,7 @@ public class BeanObserverImpl<T> implements Observer<T>
                 if (!observesAnnotation)
                 {
                     //Get parameter annotations
-                    Annotation[] bindingTypes = AnnotationUtil.getBindingAnnotations(annot);
+                    Annotation[] bindingTypes = AnnotationUtil.getQualifierAnnotations(annot);
 
                     if (bindingTypes.length > 0)
                     {

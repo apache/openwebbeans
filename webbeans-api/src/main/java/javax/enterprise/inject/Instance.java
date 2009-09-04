@@ -17,7 +17,7 @@ import java.lang.annotation.Annotation;
 
 /**
  * The <code>Instance</code> interface provides a method for obtaining 
- * instances of beans with required types and bindings.
+ * instances of beans with required types and qualifiers.
  * 
  * @version $Rev$ $Date$
  *
@@ -27,41 +27,41 @@ public interface Instance<T> extends Iterable<T>
 {
     /**
      * Returns bean instance with required type 
-     * and required binding type that are defined
+     * and required qualifier that are defined
      * at the injection point.
      * 
-     * @return bean instance with required type and required binding type
+     * @return bean instance with required type and required qualifier
      */
     public T get();
     
     /**
      * Creates new <code>Instance</code> with given
-     * binding annotations. 
+     * qualifiers. 
      * 
-     * @param bindings
-     * @return new child instance with given binding types.
+     * @param qualifiers
+     * @return new child instance with given qualifiers.
      */
-    public Instance<T> select(Annotation... bindings);
+    public Instance<T> select(Annotation... qualifiers);
     
     /**
-     * Returns new child instance with given class and binding types.
+     * Returns new child instance with given class and qualifiers.
      * 
      * @param <U> subtype info
      * @param subtype subtype class
-     * @param bindings binding types
-     * @return new child instance with given class and binding types
+     * @param qualifiers qualifiers
+     * @return new child instance with given class and qualifiers
      */
-    public <U extends T> Instance<U> select(Class<U> subtype, Annotation... bindings);
+    public <U extends T> Instance<U> select(Class<U> subtype, Annotation... qualifiers);
     
     /**
-     * Return new child instance with given class info and binding types.
+     * Return new child instance with given class info and qualifiers.
      * 
      * @param <U> subtype info
      * @param subtype subtype class
-     * @param bindings binding types
-     * @return new child instance with given class info and binding types
+     * @param qualifiers qualifiers
+     * @return new child instance with given class info and qualifiers
      */
-    public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... bindings);
+    public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers);
     
     /**
      * Return true if resulotion is unsatisfied, false otherwise.

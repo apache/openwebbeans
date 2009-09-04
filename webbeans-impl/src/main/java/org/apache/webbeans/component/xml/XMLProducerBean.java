@@ -98,7 +98,7 @@ public class XMLProducerBean<T> extends ProducerMethodBean<T>
         }
         finally
         {
-            if (getParent().getScopeType().equals(Dependent.class))
+            if (getParent().getScope().equals(Dependent.class))
             {
                 destroyBean(getParent(), parentInstance);
             }

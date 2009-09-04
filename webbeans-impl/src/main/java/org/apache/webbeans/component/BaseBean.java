@@ -103,11 +103,11 @@ public abstract class BaseBean<T> implements Bean<T>
     public abstract WebBeansType getWebBeansType();
 
     /**
-     * Adds binding type.
+     * Adds qualifier.
      * 
-     * @param bindingType bean binding type
+     * @param qualifier bean qualifier
      */
-    public abstract void addBindingType(Annotation bindingType);
+    public abstract void addQualifier(Annotation qualifier);
 
     /**
      * Adds new stereotype annotation.
@@ -131,11 +131,11 @@ public abstract class BaseBean<T> implements Bean<T>
     public abstract void addInjectionPoint(InjectionPoint injectionPoint);
 
     /**
-     * Returns set of binding type annotations.
+     * Returns set of qualifier annotations.
      * 
-     * @return set of binding type annotations
+     * @return set of qualifier annotations
      */
-    public abstract Set<Annotation> getImplBindingTypes();
+    public abstract Set<Annotation> getImplQualifiers();
 
     /**
      * Gets stereotypes annotations.

@@ -50,7 +50,7 @@ public final class EventUtil
 
     public static void checkEventBindings(Annotation... annotations)
     {
-        AnnotationUtil.checkBindingTypeConditions(annotations);
+        AnnotationUtil.checkQualifierConditions(annotations);
     }
 
     public static TransactionalObserverType getObserverMethodTransactionType(Method observerMethod)

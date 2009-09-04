@@ -231,9 +231,9 @@ public class MockManager implements BeanManager
 
 
     @Override
-    public Set<Annotation> getInterceptorBindingTypeDefinition(Class<? extends Annotation> bindingType)
+    public Set<Annotation> getInterceptorBindingDefinition(Class<? extends Annotation> binding)
     {
-        return this.manager.getInterceptorBindingTypeDefinition(bindingType);
+        return this.manager.getInterceptorBindingDefinition(binding);
     }
 
 
@@ -273,9 +273,9 @@ public class MockManager implements BeanManager
 
 
     @Override
-    public boolean isInterceptorBindingType(Class<? extends Annotation> annotationType)
+    public boolean isInterceptorBinding(Class<? extends Annotation> annotationType)
     {
-        return this.manager.isInterceptorBindingType(annotationType);
+        return this.manager.isInterceptorBinding(annotationType);
     }
 
 

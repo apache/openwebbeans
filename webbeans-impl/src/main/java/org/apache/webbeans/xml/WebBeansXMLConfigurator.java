@@ -1650,7 +1650,7 @@ public final class WebBeansXMLConfigurator
         if (scopeType == null)
         { 
             // From stereotype
-            DefinitionUtil.defineDefaultScopeType(component, createConfigurationFailedMessage() + "@ScopeType annotation is not configured correctly");
+            DefinitionUtil.defineDefaultScopeType(component, createConfigurationFailedMessage() + "@Scope annotation is not configured correctly");
         }
         else
         {
@@ -1671,7 +1671,7 @@ public final class WebBeansXMLConfigurator
 
         if (!isDefined)
         {
-            component.addBindingType(new CurrentLiteral());
+            component.addQualifier(new CurrentLiteral());
         }
 
     }
@@ -1802,7 +1802,7 @@ public final class WebBeansXMLConfigurator
             {
                 Class<? extends Annotation> binding = (Class<Annotation>)XMLUtil.getElementJavaType(child);
                 
-                if(AnnotationUtil.isBindingAnnotation(binding))
+                if(AnnotationUtil.isQualifierAnnotation(binding))
                 {
                     bindingTypes.add(JavassistProxyFactory.createNewAnnotationProxy(binding));                
                 }                

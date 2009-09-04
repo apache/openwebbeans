@@ -31,7 +31,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 class InjectionPointImpl implements InjectionPoint
 {
-    private Set<Annotation> bindingAnnotations = new HashSet<Annotation>();
+    private Set<Annotation> qualifierAnnotations = new HashSet<Annotation>();
     
     private Bean<?> ownerBean;
     
@@ -40,7 +40,7 @@ class InjectionPointImpl implements InjectionPoint
     private Type injectionType;
     
     private Annotated annotated;
-    
+
     InjectionPointImpl(Bean<?> ownerBean, Type type, Member member, Annotated annotated)
     {
         this.ownerBean = ownerBean;
@@ -49,9 +49,9 @@ class InjectionPointImpl implements InjectionPoint
         this.annotated = annotated;
     }
     
-    void addBindingAnnotation(Annotation bindingannotation)
+    void addBindingAnnotation(Annotation qualifierAnnotations)
     {
-        this.bindingAnnotations.add(bindingannotation);        
+        this.qualifierAnnotations.add(qualifierAnnotations);
     }
     
     public Bean<?> getBean()
@@ -60,10 +60,10 @@ class InjectionPointImpl implements InjectionPoint
         return this.ownerBean;
     }
 
-    public Set<Annotation> getBindings()
+    public Set<Annotation> getQualifiers()
     {
         
-        return this.bindingAnnotations;
+        return this.qualifierAnnotations;
     }
 
     public Member getMember()

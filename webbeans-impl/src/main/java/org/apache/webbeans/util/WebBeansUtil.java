@@ -182,9 +182,9 @@ public final class WebBeansUtil
     	
         if (ClassUtil.isDefinitionConstainsTypeVariables(clazz))
         {
-            if(!bean.getScopeType().equals(Dependent.class))
+            if(!bean.getScope().equals(Dependent.class))
             {
-                throw new WebBeansConfigurationException("Generic type may only defined with scope type @Dependent for bean class : " + clazz.getName());
+                throw new WebBeansConfigurationException("Generic type may only defined with scope @Dependent for bean class : " + clazz.getName());
             }
         }
     }
@@ -218,9 +218,9 @@ public final class WebBeansUtil
     	
     	if(checkGenericForProducers(type, message))
     	{
-            if(!bean.getScopeType().equals(Dependent.class))
+            if(!bean.getScope().equals(Dependent.class))
             {
-                throw new WebBeansConfigurationException(message + " scope type must bee @Dependent");
+                throw new WebBeansConfigurationException(message + " scope must bee @Dependent");
             }
     	}
     }
@@ -343,14 +343,14 @@ public final class WebBeansUtil
                     Annotation btype = param.annotationType().getAnnotation(Disposes.class);
                     if (btype != null)
                     {
-                        throw new WebBeansConfigurationException("Constructor parameter binding type annotation can not be @Disposes annotation in class " + clazz.getName());
+                        throw new WebBeansConfigurationException("Constructor parameter qualifier annotation can not be @Disposes annotation in class " + clazz.getName());
                     }
                     else
                     {
                         btype = param.annotationType().getAnnotation(Observes.class);
                         if (btype != null)
                         {
-                            throw new WebBeansConfigurationException("Constructor parameter binding type annotation can not be @Observes annotation in class " + clazz.getName());
+                            throw new WebBeansConfigurationException("Constructor parameter qualifier annotation can not be @Observes annotation in class " + clazz.getName());
                         }
                     }
                 }
@@ -446,13 +446,13 @@ public final class WebBeansUtil
      * @throws WebBeansConfigurationException if &x0040;New plus any other binding annotation is set or
      *         if &x0040;New is used for an Interface or an abstract class.
      */
-    public static Annotation[] checkForNewBindingForDeployment(Type type, Class<?> clazz, String name, Annotation[] annotations)
+    public static Annotation[] checkForNewQualifierForDeployment(Type type, Class<?> clazz, String name, Annotation[] annotations)
     {
         Asserts.assertNotNull(type, "Type argument can not be null");
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
         Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
-        Annotation[] as = AnnotationUtil.getBindingAnnotations(annotations);
+        Annotation[] as = AnnotationUtil.getQualifierAnnotations(annotations);
         for (Annotation a : annotations)
         {
             if (a.annotationType().equals(New.class))
@@ -574,7 +574,7 @@ public final class WebBeansUtil
         }
 
         comp.setImplScopeType(new DependentScopeLiteral());
-        comp.addBindingType(new NewLiteral());
+        comp.addQualifier(new NewLiteral());
         comp.setName(null);
         comp.addApiType(clazz);
         comp.addApiType(Object.class);
@@ -600,7 +600,7 @@ public final class WebBeansUtil
         DefinitionUtil.defineApiTypes(comp, clazz);
         
         comp.setImplScopeType(new ApplicationScopeLiteral());
-        comp.addBindingType(new CurrentLiteral());        
+        comp.addQualifier(new CurrentLiteral());
         comp.setType(new ProductionLiteral());
         
         DefinitionUtil.defineObserverMethods(comp, clazz);
@@ -645,7 +645,7 @@ public final class WebBeansUtil
         
         
         comp.setImplScopeType(new DependentScopeLiteral());
-        comp.addBindingType(new NewLiteral());
+        comp.addQualifier(new NewLiteral());
         comp.setType(new StandardLiteral());
         comp.setName(null);
         
@@ -671,7 +671,7 @@ public final class WebBeansUtil
         EventBean<T> component = new EventBean<T>(returnType, eventType, WebBeansType.OBSERVABLE);
 
         DefinitionUtil.defineApiTypes(component, returnType);
-        DefinitionUtil.defineBindingTypes(component, annotations);
+        DefinitionUtil.defineQualifiers(component, annotations);
 
         component.setType(new StandardLiteral());
         component.setImplScopeType(new DependentScopeLiteral());                      
@@ -689,7 +689,7 @@ public final class WebBeansUtil
 
         managerComponent.setImplScopeType(new DependentScopeLiteral());
         managerComponent.setType(new StandardLiteral());
-        managerComponent.addBindingType(new CurrentLiteral());
+        managerComponent.addQualifier(new CurrentLiteral());
         managerComponent.addApiType(BeanManager.class);
         managerComponent.addApiType(Object.class);
 
@@ -712,7 +712,7 @@ public final class WebBeansUtil
         instanceComponent.addApiType(clazz);
         instanceComponent.addApiType(Object.class);
         
-        DefinitionUtil.defineBindingTypes(instanceComponent, obtainsBindings);
+        DefinitionUtil.defineQualifiers(instanceComponent, obtainsBindings);
         instanceComponent.setImplScopeType(new DependentScopeLiteral());
         instanceComponent.setType(new StandardLiteral());
         instanceComponent.setName(null);
@@ -734,7 +734,7 @@ public final class WebBeansUtil
         conversationComp.addApiType(Object.class);
         conversationComp.setImplScopeType(new RequestedScopeLiteral());
         conversationComp.setType(new StandardLiteral());
-        conversationComp.addBindingType(new CurrentLiteral());
+        conversationComp.addQualifier(new CurrentLiteral());
         conversationComp.setName("javax.context.conversation");
 
         return conversationComp;
@@ -1278,9 +1278,9 @@ public final class WebBeansUtil
                     throw new WebBeansConfigurationException("@StereoType annotation can not define @Named annotation with value");
                 }
             }
-            else if (AnnotationUtil.isBindingAnnotation(annotType))
+            else if (AnnotationUtil.isQualifierAnnotation(annotType))
             {
-                throw new WebBeansConfigurationException("@StereoType annotation can not define @BindingType annotation");
+                throw new WebBeansConfigurationException("@StereoType annotation can not define @Qualifier annotation");
             }
             else if (AnnotationUtil.isInterceptorBindingAnnotation(annotType))
             {
@@ -1289,7 +1289,7 @@ public final class WebBeansUtil
 
                 if (type.length != 1 && !type[0].equals(ElementType.TYPE))
                 {
-                    throw new WebBeansConfigurationException("Stereotype with @InterceptorBindingType must be defined as @Target{TYPE}");
+                    throw new WebBeansConfigurationException("Stereotype with @InterceptorBinding must be defined as @Target{TYPE}");
                 }
 
             }
@@ -1371,7 +1371,7 @@ public final class WebBeansUtil
                     comp.setSpecializedBean(true);
                 }
                                 
-                specialized.getBindings().addAll(superBean.getBindings());
+                specialized.getQualifiers().addAll(superBean.getQualifiers());
             }
             
             else
@@ -1497,11 +1497,11 @@ public final class WebBeansUtil
             throw new WebBeansConfigurationException("Producer method specialization is failed. Method " + method.getName() + " found in super class : " + superClass.getName() + " is not annotated with @Produces");
         }
 
-        Annotation[] anns = AnnotationUtil.getBindingAnnotations(superMethod.getAnnotations());
+        Annotation[] anns = AnnotationUtil.getQualifierAnnotations(superMethod.getAnnotations());
 
         for (Annotation ann : anns)
         {
-            component.addBindingType(ann);
+            component.addQualifier(ann);
         }
         
         configuredProducerSpecializedName(component, method, superMethod);
@@ -1582,38 +1582,38 @@ public final class WebBeansUtil
 
     }
 
-    public static void checkInterceptorResolverParams(Annotation... interceptorBindingTypes)
+    public static void checkInterceptorResolverParams(Annotation... interceptorBindings)
     {
-        if (interceptorBindingTypes == null || interceptorBindingTypes.length == 0)
+        if (interceptorBindings == null || interceptorBindings.length == 0)
         {
-            throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor binding types array argument can not be empty");
+            throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings array argument can not be empty");
         }
 
         Annotation old = null;
-        for (Annotation interceptorBindingType : interceptorBindingTypes)
+        for (Annotation interceptorBinding : interceptorBindings)
         {
             if (old == null)
             {
-                old = interceptorBindingType;
+                old = interceptorBinding;
             }
             else
             {
-                if (old.equals(interceptorBindingType))
+                if (old.equals(interceptorBinding))
                 {
-                    throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor binding types array argument can not define duplicate binding annotation with name : @" + old.getClass().getName());
+                    throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings array argument can not define duplicate binding annotation with name : @" + old.getClass().getName());
                 }
 
-                if (!AnnotationUtil.isInterceptorBindingAnnotation(interceptorBindingType.annotationType()))
+                if (!AnnotationUtil.isInterceptorBindingAnnotation(interceptorBinding.annotationType()))
                 {
-                    throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor binding types array can not contain other annotation that is not @InterceptorBindingType");
+                    throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings array can not contain other annotation that is not @InterceptorBinding");
                 }
 
-                old = interceptorBindingType;
+                old = interceptorBinding;
             }
         }
     }
 
-    public static void checkDecoratorResolverParams(Set<Type> apiTypes, Annotation... bindingTypes)
+    public static void checkDecoratorResolverParams(Set<Type> apiTypes, Annotation... qualifiers)
     {
         if (apiTypes == null || apiTypes.size() == 0)
         {
@@ -1621,25 +1621,25 @@ public final class WebBeansUtil
         }
 
         Annotation old = null;
-        for (Annotation bindingType : bindingTypes)
+        for (Annotation qualifier : qualifiers)
         {
             if (old == null)
             {
-                old = bindingType;
+                old = qualifier;
             }
             else
             {
-                if (old.annotationType().equals(bindingType.annotationType()))
+                if (old.annotationType().equals(qualifier.annotationType()))
                 {
-                    throw new IllegalArgumentException("Manager.resolveDecorators() method parameter binding types array argument can not define duplicate binding annotation with name : @" + old.annotationType().getName());
+                    throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array argument can not define duplicate qualifier annotation with name : @" + old.annotationType().getName());
                 }
 
-                if (!AnnotationUtil.isBindingAnnotation(bindingType.annotationType()))
+                if (!AnnotationUtil.isQualifierAnnotation(qualifier.annotationType()))
                 {
-                    throw new IllegalArgumentException("Manager.resolveDecorators() method parameter binding types array can not contain other annotation that is not @BindingType");
+                    throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array can not contain other annotation that is not @Qualifier");
                 }
 
-                old = bindingType;
+                old = qualifier;
             }
         }
 
@@ -1864,10 +1864,10 @@ public final class WebBeansUtil
         
         clazz = (Class<?>)args[0];
         
-        Annotation[] bindings = new Annotation[injectionPoint.getBindings().size()];
-        bindings = injectionPoint.getBindings().toArray(bindings);
+        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
+        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
         
-        Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, bindings);
+        Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, qualifiers);
         BeanManagerImpl.getManager().addBean(bean);                  
     }
     
@@ -1878,17 +1878,17 @@ public final class WebBeansUtil
         
         Class<Instance<T>> clazz = (Class<Instance<T>>)genericType.getRawType();
         
-        Annotation[] bindings = new Annotation[injectionPoint.getBindings().size()];
-        bindings = injectionPoint.getBindings().toArray(bindings);
+        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
+        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
         
-        Bean<Instance<T>> bean = createInstanceComponent(genericType,clazz, genericType.getActualTypeArguments()[0], bindings);
+        Bean<Instance<T>> bean = createInstanceComponent(genericType,clazz, genericType.getActualTypeArguments()[0], qualifiers);
         BeanManagerImpl.getManager().addBean(bean);
         
     }
     
     public static Bean<?> getMostSpecializedBean(BeanManager manager, Bean<?> component)
     {
-        Set<Bean<?>> beans = manager.getBeans(component.getBeanClass(), AnnotationUtil.getAnnotationsFromSet(component.getBindings()));
+        Set<Bean<?>> beans = manager.getBeans(component.getBeanClass(), AnnotationUtil.getAnnotationsFromSet(component.getQualifiers()));
                 
         for(Bean<?> bean : beans)
         {
@@ -2028,4 +2028,4 @@ public final class WebBeansUtil
         
         return false;
     }
- }
+}

@@ -80,7 +80,7 @@ public final class EjbUtility
         Class<? extends Annotation> deploymentType = ejbBeanCreator.defineDeploymentType("There are more than one @DeploymentType annotation in Session Bean implementation class : " + ejbBean.getReturnType().getName());
         ejbBeanCreator.defineApiType();
         ejbBeanCreator.defineScopeType("Session Bean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
-        ejbBeanCreator.defineBindingType();
+        ejbBeanCreator.defineQualifier();
         ejbBeanCreator.defineName(WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));            
         Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods();        
         checkProducerMethods(producerMethodBeans, ejbBean);

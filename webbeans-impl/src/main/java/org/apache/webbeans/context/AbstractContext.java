@@ -266,7 +266,7 @@ public abstract class AbstractContext implements WebBeansContext
     /**
      * {@inheritDoc}
      */
-    public Class<? extends Annotation> getScopeType()
+    public Class<? extends Annotation> getScope()
     {
 
         return this.scopeType;
@@ -284,7 +284,7 @@ public abstract class AbstractContext implements WebBeansContext
     {
         if (!active)
         {
-            throw new ContextNotActiveException("WebBeans context with scope type annotation @" + getScopeType().getName() + " is not active with respect to the current thread");
+            throw new ContextNotActiveException("WebBeans context with scope annotation @" + getScope().getName() + " is not active with respect to the current thread");
         }        
     }
 

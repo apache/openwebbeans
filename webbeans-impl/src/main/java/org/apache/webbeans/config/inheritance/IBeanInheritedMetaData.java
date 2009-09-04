@@ -22,13 +22,13 @@ import java.util.Set;
 public interface IBeanInheritedMetaData
 {
 
-    public Set<Annotation> getInheritedBindingTypes();
+    public Set<Annotation> getInheritedQualifiers();
 
     public Set<Annotation> getInheritedStereoTypes();
     
-    public Set<Annotation> getInheritedInterceptorBindingTypes();
+    public Set<Annotation> getInheritedInterceptorBindings();
     
     public Annotation getInheritedScopeType();
     
-    public Annotation getInheritedDeploymentType();    
+    public Annotation getInheritedDeploymentType();
 }
