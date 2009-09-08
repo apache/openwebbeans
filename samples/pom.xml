@@ -33,4 +33,51 @@ under the License.
            <module>jms-sample</module>
            <module>reservation</module>
         </modules>
+	<build>
+	<plugins>
+	      <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.0.2</version>
+                    <configuration>
+                        <archiveClasses>true</archiveClasses>
+                        <archive>
+                            <!-- Do not include META-INF/maven to avoid long file problems on windows -->
+                            <addMavenDescriptor>false</addMavenDescriptor>
+                        </archive>
+
+                        <!--
+                        HACK: Include legal files explicity, otherwise they will end up in the wrong path
+                              or in another jar file in the war.
+
+                        NOTE: targetPath is broken for webResources (as documented)
+                        -->
+                        <webResources>
+                            <resource>
+                                <directory>.</directory>
+				<targetPath>META-INF</targetPath>
+                                <includes>
+                                    <include>LICENCE.txt</include>
+                                    <include>NOTICE.txt</include>
+				    <include>licences/*</include>
+                                    <include>DISCLAIMER</include>
+                                </includes>
+                            </resource>
+                        </webResources>
+		            <archive>
+		                <manifestEntries>
+		                    <Specification-Title>${project.name}</Specification-Title>
+		                    <Specification-Version>${project.version}</Specification-Version>
+		                    <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+		                    <Implementation-Title>${project.name}</Implementation-Title>
+		                    <Implementation-Version>${project.version}</Implementation-Version>
+		                    <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+		                    <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
+		                </manifestEntries>
+		            </archive>
+
+                    </configuration>
+             </plugin>
+	</plugins>
+	</build>
 </project>
