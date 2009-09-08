@@ -126,12 +126,12 @@ public class InjectionResolver
             clazz = (Class<?>) type;
         }
         
-        Annotation[] bindingTypes = new Annotation[injectionPoint.getBindings().size()];
-        bindingTypes = injectionPoint.getBindings().toArray(bindingTypes);
+        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
+        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
         
-        Set<Bean<?>> beanSet = implResolveByType(type ,bindingTypes);
+        Set<Bean<?>> beanSet = implResolveByType(type, qualifiers);
         
-        ResolutionUtil.checkResolvedBeans(beanSet, clazz, bindingTypes);
+        ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers);
         
         Bean<?> bean = beanSet.iterator().next();
         
@@ -168,13 +168,13 @@ public class InjectionResolver
             clazz = (Class<?>) type;
         }
         
-        Annotation[] bindingTypes = new Annotation[injectionPoint.getBindings().size()];
-        bindingTypes = injectionPoint.getBindings().toArray(bindingTypes);
-        
-        Set<Bean<?>> beanSet = implResolveByType(type ,bindingTypes);
-        
-        ResolutionUtil.checkResolvedBeans(beanSet, clazz, bindingTypes);
-        
+        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
+        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
+
+        Set<Bean<?>> beanSet = implResolveByType(type, qualifiers);
+
+        ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers);
+
         return beanSet.iterator().next();
         
     }    
@@ -272,28 +272,28 @@ public class InjectionResolver
      * @param <T> bean type info
      * @param injectionPointType injection point api type
      * @param injectionPointTypeArguments actual type arguments if parameterized type
-     * @param binding binding type of the injection point
+     * @param qualifier qualifier of the injection point
      * @return set of resolved beans
      */
-    public Set<Bean<?>> implResolveByType(Type injectionPointType, Annotation... binding)
+    public Set<Bean<?>> implResolveByType(Type injectionPointType, Annotation... qualifier)
     {
         Asserts.assertNotNull(injectionPointType, "injectionPointType parameter can not be null");
-        Asserts.assertNotNull(binding, "binding parameter can not be null");
+        Asserts.assertNotNull(qualifier, "qualifier parameter can not be null");
         
         Set<Bean<?>> results = new HashSet<Bean<?>>();
         Set<Bean<?>> deployedComponents = this.manager.getBeans();
 
-        boolean currentBinding = false;
+        boolean currentQualifier = false;
         boolean returnAll = false;
 
-        if (binding.length == 0)
+        if (qualifier.length == 0)
         {
-            binding = new Annotation[1];
-            binding[0] = new CurrentLiteral();
-            currentBinding = true;
+            qualifier = new Annotation[1];
+            qualifier[0] = new CurrentLiteral();
+            currentQualifier = true;
         }
         
-        if (injectionPointType.equals(Object.class) && currentBinding)
+        if (injectionPointType.equals(Object.class) && currentQualifier)
         {
             returnAll = true;
         }
@@ -327,8 +327,8 @@ public class InjectionResolver
             }            
         }
  
-        //Look for binding types
-        results = findByBindingType(results, binding);
+        //Look for qualifiers
+        results = findByQualifier(results, qualifier);
         
         //Look for precedence
         results = findByPrecedence(results);
@@ -420,14 +420,14 @@ public class InjectionResolver
     }
 
     /**
-     * Returns filtered bean set according to the binding types.
+     * Returns filtered bean set according to the qualifiers.
      * 
      * @param <T> bean class
-     * @param remainingSet bean set for filtering by binding type
-     * @param annotations binding types on injection point
-     * @return filtered bean set according to the binding types
+     * @param remainingSet bean set for filtering by qualifier
+     * @param annotations qualifiers on injection point
+     * @return filtered bean set according to the qualifiers
      */
-    private Set<Bean<?>> findByBindingType(Set<Bean<?>> remainingSet, Annotation... annotations)
+    private Set<Bean<?>> findByQualifier(Set<Bean<?>> remainingSet, Annotation... annotations)
     {
         Iterator<Bean<?>> it = remainingSet.iterator();
         Set<Bean<?>> result = new HashSet<Bean<?>>();
@@ -435,18 +435,18 @@ public class InjectionResolver
         while (it.hasNext())
         {
             Bean<?> component = it.next();
-            Set<Annotation> bTypes = component.getBindings();
+            Set<Annotation> qTypes = component.getQualifiers();
 
             int i = 0;
             for (Annotation annot : annotations)
             {
-                Iterator<Annotation> itBindingTypes = bTypes.iterator();
-                while (itBindingTypes.hasNext())
+                Iterator<Annotation> itQualifiers = qTypes.iterator();
+                while (itQualifiers.hasNext())
                 {
-                    Annotation bindingType = itBindingTypes.next();
-                    if (annot.annotationType().equals(bindingType.annotationType()))
+                    Annotation qualifier = itQualifiers.next();
+                    if (annot.annotationType().equals(qualifier.annotationType()))
                     {
-                        if (AnnotationUtil.isAnnotationMemberExist(bindingType.annotationType(), bindingType, annot))
+                        if (AnnotationUtil.isAnnotationMemberExist(qualifier.annotationType(), qualifier, annot))
                         {
                             i++;
                         }

@@ -38,11 +38,11 @@ public interface Bean<T> extends Contextual<T>
     public abstract Set<Type> getTypes();
 
     /**
-     * Returns binding types of a bean.
+     * Returns qualifiers of a bean.
      * 
-     * @return binding types of a bean
+     * @return qualifiers of a bean
      */
-    public abstract Set<Annotation> getBindings();
+    public abstract Set<Annotation> getQualifiers();
 
 
     /**
@@ -54,11 +54,11 @@ public interface Bean<T> extends Contextual<T>
     
     
     /**
-     * Returns scope types of a bean.
+     * Returns scope of a bean.
      * 
-     * @return scope type
+     * @return scope
      */
-    public abstract Class<? extends Annotation> getScopeType();
+    public abstract Class<? extends Annotation> getScope();
 
     /**
      * Returns name of a bean.

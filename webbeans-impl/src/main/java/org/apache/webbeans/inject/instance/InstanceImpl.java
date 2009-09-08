@@ -39,15 +39,15 @@ class InstanceImpl<T> implements Instance<T>
     /** Injected class type */
     private Type injectionClazz;
 
-    /** Binding annotations appeared on the injection point */
-    private Set<Annotation> bindingAnnotations = new HashSet<Annotation>();
+    /** Qualifier annotations appeared on the injection point */
+    private Set<Annotation> qualifierAnnotations = new HashSet<Annotation>();
 
     /**
      * Creates new instance.
      * 
      * @param injectionClazz injection class type
      * @param actualTypeArguments actual type arguments
-     * @param annotations binding annotations
+     * @param annotations qualifier annotations
      */
     InstanceImpl(Type injectionClazz, Annotation... annotations)
     {
@@ -55,14 +55,14 @@ class InstanceImpl<T> implements Instance<T>
 
         for (Annotation ann : annotations)
         {
-            bindingAnnotations.add(ann);
+            qualifierAnnotations.add(ann);
         }
     }
 
     /**
-     * Returns the bean instance with given binding annotations.
+     * Returns the bean instance with given qualifier annotations.
      * 
-     * @param annotations binding annotations
+     * @param annotations qualifier annotations
      * @return bean instance
      */
     @SuppressWarnings("unchecked")
@@ -70,8 +70,8 @@ class InstanceImpl<T> implements Instance<T>
     {
         T instance = null;
 
-        Annotation[] anns = new Annotation[this.bindingAnnotations.size()];
-        anns = this.bindingAnnotations.toArray(anns);
+        Annotation[] anns = new Annotation[this.qualifierAnnotations.size()];
+        anns = this.qualifierAnnotations.toArray(anns);
         
         Set<Bean<?>> beans = resolveBeans();
 
@@ -90,8 +90,8 @@ class InstanceImpl<T> implements Instance<T>
      */
     private Set<Bean<?>> resolveBeans()
     {
-        Annotation[] anns = new Annotation[this.bindingAnnotations.size()];
-        anns = this.bindingAnnotations.toArray(anns);
+        Annotation[] anns = new Annotation[this.qualifierAnnotations.size()];
+        anns = this.qualifierAnnotations.toArray(anns);
 
         InjectionResolver resolver = InjectionResolver.getInstance();
         Set<Bean<?>> beans = resolver.implResolveByType(this.injectionClazz, anns);
@@ -125,51 +125,51 @@ class InstanceImpl<T> implements Instance<T>
      * {@inheritDoc}
      */
     @Override
-    public Instance<T> select(Annotation... bindings)
+    public Instance<T> select(Annotation... qualifiers)
     {
-        Annotation[] newBindingsArray = getAdditionalBindings(bindings);
-        InstanceImpl<T> newInstance = new InstanceImpl<T>(this.injectionClazz, newBindingsArray);
+        Annotation[] newQualifiersArray = getAdditionalQualifiers(qualifiers);
+        InstanceImpl<T> newInstance = new InstanceImpl<T>(this.injectionClazz, newQualifiersArray);
 
         return newInstance;
     }
 
     /**
-     * Returns total binding types array
+     * Returns total qualifiers array
      * 
-     * @param bindings additional bindings
-     * @return total binding types array
+     * @param qualifiers additional qualifiers
+     * @return total qualifiers array
      */
-    private Annotation[] getAdditionalBindings(Annotation[] bindings)
+    private Annotation[] getAdditionalQualifiers(Annotation[] qualifiers)
     {
-        AnnotationUtil.checkBindingTypeConditions(bindings);
-        Set<Annotation> newBindings = new HashSet<Annotation>(this.bindingAnnotations);
+        AnnotationUtil.checkQualifierConditions(qualifiers);
+        Set<Annotation> newQualifiers = new HashSet<Annotation>(this.qualifierAnnotations);
 
-        if (bindings != null && bindings.length > 0)
+        if (qualifiers != null && qualifiers.length > 0)
         {
-            for (Annotation annot : bindings)
+            for (Annotation annot : qualifiers)
             {
-                if (newBindings.contains(annot))
+                if (newQualifiers.contains(annot))
                 {
-                    throw new IllegalArgumentException("Duplicate Binding Exception, " + this.toString());
+                    throw new IllegalArgumentException("Duplicate Qualifier Exception, " + this.toString());
                 }
 
-                newBindings.add(annot);
+                newQualifiers.add(annot);
             }
         }
 
-        Annotation[] newBindingsArray = new Annotation[newBindings.size()];
-        newBindingsArray = newBindings.toArray(newBindingsArray);
+        Annotation[] newQualifiersArray = new Annotation[newQualifiers.size()];
+        newQualifiersArray = newQualifiers.toArray(newQualifiersArray);
         
-        return newBindingsArray;
+        return newQualifiersArray;
     }
     
     /**
      * {@inheritDoc}
      */
     @Override
-    public <U extends T> Instance<U> select(Class<U> subtype, Annotation... bindings)
+    public <U extends T> Instance<U> select(Class<U> subtype, Annotation... qualifiers)
     {
-        AnnotationUtil.checkBindingTypeConditions(bindings);
+        AnnotationUtil.checkQualifierConditions(qualifiers);
         
         Type sub = subtype;
         
@@ -178,9 +178,9 @@ class InstanceImpl<T> implements Instance<T>
             sub = this.injectionClazz;
         }
         
-        Annotation[] newBindings = getAdditionalBindings(bindings);
+        Annotation[] newQualifiers = getAdditionalQualifiers(qualifiers);
         
-        InstanceImpl<U> newInstance = new InstanceImpl<U>(sub, newBindings);
+        InstanceImpl<U> newInstance = new InstanceImpl<U>(sub, newQualifiers);
                     
         return newInstance;
     }
@@ -189,9 +189,9 @@ class InstanceImpl<T> implements Instance<T>
      * {@inheritDoc}
      */
     @Override
-    public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... bindings)
+    public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers)
     {        
-        return select(subtype.getRawType(), bindings);
+        return select(subtype.getRawType(), qualifiers);
     }
 
     /**
@@ -219,16 +219,16 @@ class InstanceImpl<T> implements Instance<T>
         builder.append(ClassUtil.getClazz(this.injectionClazz).getName());
         builder.append(">");
 
-        builder.append(",with binding annotations {");
+        builder.append(",with qualifier annotations {");
         int i = 0;
-        for (Annotation binding : this.bindingAnnotations)
+        for (Annotation qualifier : this.qualifierAnnotations)
         {
             if (i != 0)
             {
                 builder.append(",");
             }
 
-            builder.append(binding.toString());
+            builder.append(qualifier.toString());
         }
 
         builder.append("}");

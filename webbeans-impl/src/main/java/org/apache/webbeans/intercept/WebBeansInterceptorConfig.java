@@ -69,7 +69,7 @@ public final class WebBeansInterceptorConfig
 
         for (Annotation ann : interceptorBindingTypes)
         {
-            interceptor.addInterceptorBindingType(ann.annotationType(), ann);
+            interceptor.addInterceptorBinding(ann.annotationType(), ann);
         }
 
         logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType() + " ended");
@@ -117,7 +117,7 @@ public final class WebBeansInterceptorConfig
             IBeanInheritedMetaData metadata = component.getInheritedMetaData();
             if(metadata != null)
             {
-                Set<Annotation> inheritedBindingTypes = metadata.getInheritedInterceptorBindingTypes();
+                Set<Annotation> inheritedBindingTypes = metadata.getInheritedInterceptorBindings();
                 if(!inheritedBindingTypes.isEmpty())
                 {
                     bindingTypeSet.addAll(inheritedBindingTypes);   
@@ -243,7 +243,7 @@ public final class WebBeansInterceptorConfig
         {
             interceptor = (WebBeansInterceptor<?>) it.next();
 
-            if (interceptor.isBindingTypesExist(bindingTypes, listAnnot))
+            if (interceptor.isBindingExist(bindingTypes, listAnnot))
             {
                 set.add(interceptor);
                 set.addAll(interceptor.getMetaInceptors());

@@ -41,10 +41,10 @@ public class ThirdpartyBeanImpl<T> extends AbstractBean<T>
     }
     
     @Override
-    public Set<Annotation> getBindings()
+    public Set<Annotation> getQualifiers()
     {
         
-        return bean.getBindings();
+        return bean.getQualifiers();
     }
 
     @Override
@@ -69,10 +69,10 @@ public class ThirdpartyBeanImpl<T> extends AbstractBean<T>
     }
 
     @Override
-    public Class<? extends Annotation> getScopeType()
+    public Class<? extends Annotation> getScope()
     {
         
-        return bean.getScopeType();
+        return bean.getScope();
     }
 
     @Override

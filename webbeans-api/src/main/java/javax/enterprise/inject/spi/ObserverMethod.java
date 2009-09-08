@@ -17,7 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.enterprise.event.Notify;
+import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 
 public interface ObserverMethod<X,T>
@@ -26,9 +26,9 @@ public interface ObserverMethod<X,T>
     
     public Type getObservedType();
     
-    public Set<Annotation> getObservedBindings();
+    public Set<Annotation> getObservedQualifiers();
     
-    public Notify getNotify();
+    public Reception getReception();
     
     public TransactionPhase getTransactionPhase();
 

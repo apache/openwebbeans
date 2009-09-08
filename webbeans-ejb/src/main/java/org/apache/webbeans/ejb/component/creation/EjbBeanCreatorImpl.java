@@ -66,7 +66,7 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
         }
         
         EjbValidator.validateEjbScopeType(getBean());
-        EjbValidator.validateGenericBeanType(getBean().getReturnType(), getBean().getScopeType());
+        EjbValidator.validateGenericBeanType(getBean().getReturnType(), getBean().getScope());
     }
     
     

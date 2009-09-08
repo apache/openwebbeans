@@ -109,7 +109,7 @@ public class XMLStereoTypeModel implements IStereoTypeModel
 
                     if (type.length != 1 && !type[0].equals(ElementType.TYPE))
                     {
-                        throw new WebBeansConfigurationException(errorMessage + "Stereotype with @InterceptorBindingType must be defined as @Target{TYPE}");
+                        throw new WebBeansConfigurationException(errorMessage + "Stereotype with @InterceptorBinding must be defined as @Target{TYPE}");
                     }
 
                     interceptorBindingTypes.add(XMLUtil.getXMLDefinedAnnotationMember(child, annClazz, errorMessage));
@@ -123,9 +123,9 @@ public class XMLStereoTypeModel implements IStereoTypeModel
                         throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not define @Named annotation with value");
                     }
                 }
-                else if (AnnotationUtil.isBindingAnnotation(annClazz))
+                else if (AnnotationUtil.isQualifierAnnotation(annClazz))
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not define @BindingType annotation");
+                    throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not define @Qualifier annotation");
                 }
 
                 else if (AnnotationUtil.isStereoTypeAnnotation(annClazz))

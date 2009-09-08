@@ -22,9 +22,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.interceptor.InterceptorBindingType;
+import javax.interceptor.InterceptorBinding;
 
-@InterceptorBindingType
+@InterceptorBinding
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.FIELD, ElementType.METHOD, ElementType.TYPE, ElementType.PARAMETER })

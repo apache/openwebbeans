@@ -62,25 +62,25 @@ public final class ResolutionUtil
         }
     }
 
-    public static void getInstanceByTypeConditions(Annotation[] bindingTypes)
+    public static void getInstanceByTypeConditions(Annotation[] qualifiers)
     {
-        AnnotationUtil.checkBindingTypeConditions(bindingTypes);
+        AnnotationUtil.checkQualifierConditions(qualifiers);
     }
 
-    public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] bindingTypes)
+    public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers)
     {
         if (resolvedSet.isEmpty())
         {
-            StringBuffer message = new StringBuffer("Api type [" + type.getName() + "] is not found with the binding types [");
+            StringBuffer message = new StringBuffer("Api type [" + type.getName() + "] is not found with the qualifiers [");
             
             int i = 0;
-            for(Annotation annot : bindingTypes)
+            for(Annotation annot : qualifiers)
             {
                 i++;
                 
                 message.append(annot);
                 
-                if(i != bindingTypes.length)
+                if(i != qualifiers.length)
                 {
                     message.append(",");   
                 }
@@ -97,7 +97,7 @@ public final class ResolutionUtil
         }
 
         Bean<?> bean = resolvedSet.iterator().next();
-        WebBeansUtil.checkUnproxiableApiType(bean, bean.getScopeType());
+        WebBeansUtil.checkUnproxiableApiType(bean, bean.getScope());
 
     }
 }

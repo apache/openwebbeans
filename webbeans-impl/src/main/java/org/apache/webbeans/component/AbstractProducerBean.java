@@ -135,8 +135,8 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
         Object parentInstance = null;
 
         // Added for most specialized bean
-        Annotation[] anns = new Annotation[this.ownerComponent.getBindings().size()];
-        anns = this.ownerComponent.getBindings().toArray(anns);
+        Annotation[] anns = new Annotation[this.ownerComponent.getQualifiers().size()];
+        anns = this.ownerComponent.getQualifiers().toArray(anns);
 
         Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractBean<T>) this.ownerComponent);
 

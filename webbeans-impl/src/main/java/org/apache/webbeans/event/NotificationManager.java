@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.enterprise.event.Notify;
+import javax.enterprise.event.Reception;
 import javax.enterprise.event.Observer;
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
@@ -119,7 +119,7 @@ public final class NotificationManager implements Synchronization
                 ObserverWrapper<?> s = it.next();
                 Observer<T> ob = (Observer<T>) s.getObserver();
 
-                Set<Annotation> evenBindings = s.getEventBindingTypes();
+                Set<Annotation> evenBindings = s.getEventQualifiers();
                 Annotation[] anns = new Annotation[evenBindings.size()];
                 anns = evenBindings.toArray(anns);
                 
@@ -145,7 +145,7 @@ public final class NotificationManager implements Synchronization
                 ObserverWrapper<?> s = it.next();
                 Observer<T> ob = (Observer<T>) s.getObserver();
 
-                Set<Annotation> evenBindings = s.getEventBindingTypes();
+                Set<Annotation> evenBindings = s.getEventQualifiers();
                 Annotation[] anns = new Annotation[evenBindings.size()];
                 anns = evenBindings.toArray(anns);
                 
@@ -194,7 +194,7 @@ public final class NotificationManager implements Synchronization
         {
             ObserverWrapper<T> impl = (ObserverWrapper<T>) it.next();
 
-            if (impl.isObserverOfBindings(bindings))
+            if (impl.isObserverOfQualifiers(bindings))
             {
                 unres.add(impl.getObserver());
             }
@@ -301,11 +301,11 @@ public final class NotificationManager implements Synchronization
             Method observableMethod = itMethods.next();
             Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observableMethod, Observes.class);
             
-            Annotation[] bindingTypes = AnnotationUtil.getMethodFirstParameterBindingTypesWithGivenAnnotation(observableMethod, Observes.class);
+            Annotation[] bindingTypes = AnnotationUtil.getMethodFirstParameterQualifierWithGivenAnnotation(observableMethod, Observes.class);
             
             boolean ifExist = false;
 
-            if (observes.notifyObserver().equals(Notify.IF_EXISTS))
+            if (observes.notifyObserver().equals(Reception.IF_EXISTS))
             {
                 ifExist = true;
             }

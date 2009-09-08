@@ -85,20 +85,20 @@ public interface BeanManager
     
     /**
      * Returns set of beans that their api types contain
-     * given bean type and given bindings.
+     * given bean type and given qualifiers.
      * 
      * <p>
-     * If no binding is given, <code>@Current</code> is assumed.
+     * If no qualifier is given, <code>@Current</code> is assumed.
      * </p>
      * 
      * @param beanType required bean type
-     * @param bindings required binding types
+     * @param qualifiers required qualifiers
      * @return set of beans
      * @throws IllegalArgumentException given bean type is a {@link TypeVariable}
-     * @throws IllegalArgumentException given binding annotation is not a binding type
-     * @throws IllegalArgumentException same binding type is given
+     * @throws IllegalArgumentException given qualifier annotation is not a qualifier
+     * @throws IllegalArgumentException same qualifier is given
      */
-    public Set<Bean<?>> getBeans(Type beanType, Annotation... bindings);
+    public Set<Bean<?>> getBeans(Type beanType, Annotation... qualifiers);
         
     /**
      * Returns set of beans with given name.
@@ -136,50 +136,50 @@ public interface BeanManager
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans);
         
     /**
-     * Fires an event with given even object and bindings.
+     * Fires an event with given even object and qualifiers.
      * 
      * @param event observer event object
-     * @param bindings event bindings
+     * @param qualifiers event qualifiers
      * @throws IllegalArgumentException event object contains a {@link TypeVariable}
-     * @throws IllegalArgumentException given binding annotation is not a binding type
-     * @throws IllegalArgumentException same binding type is given
+     * @throws IllegalArgumentException given qualifier annotation is not a qualifier
+     * @throws IllegalArgumentException same qualifier is given
      */
-    public void fireEvent(Object event, Annotation... bindings);
+    public void fireEvent(Object event, Annotation... qualifiers);
     
     /**
-     * Returns a set of observers that observe for given event type and bindings
+     * Returns a set of observers that observe for given event type and qualifiers
      * 
      * @param <T> observer type info
      * @param event observer event type
-     * @param bindings event bindings
-     * @return set of observers that observe for given event type and bindings
+     * @param qualifiers event qualifiers
+     * @return set of observers that observe for given event type and qualifiers
      * @throws IllegalArgumentException event object contains a {@link TypeVariable}
-     * @throws IllegalArgumentException given binding annotation is not a binding type
-     * @throws IllegalArgumentException same binding type is given 
+     * @throws IllegalArgumentException given qualifier annotation is not a qualifier
+     * @throws IllegalArgumentException same qualifier is given
      */
-    public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings);
+    public <T> Set<Observer<T>> resolveObservers(T event, Annotation... qualifiers);
     
     /**
      * Returns set of observer methods.
      * 
      * @param <T> event type
      * @param event even object
-     * @param bindings event bindings
+     * @param qualifiers event qualifiers
      * @return set of observer methods
      */
-    public <T> Set<ObserverMethod<?,T>> resolveObserverMethods(T event, Annotation... bindings);
+    public <T> Set<ObserverMethod<?,T>> resolveObserverMethods(T event, Annotation... qualifiers);
     
     /**
      * Returns a list of decorator.
      * 
      * @param types bean types of the decorated bean
-     * @param bindings decorated bean bindings
+     * @param qualifiers decorated bean qualifiers
      * @return list of decorator
-     * @throws IllegalArgumentException given binding annotation is not a binding type
-     * @throws IllegalArgumentException same binding type is given
+     * @throws IllegalArgumentException given qualifier annotation is not a qualifier
+     * @throws IllegalArgumentException same qualifier is given
      * @throws IllegalArgumentException if types is empty set
      */
-    List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindings);
+    List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... qualifiers);
     
     /**
      * Returns a list of interceptor.
@@ -187,9 +187,9 @@ public interface BeanManager
      * @param type interception type
      * @param interceptorBindings interceptor bindings
      * @return list of interceptor
-     * @throws IllegalArgumentException given binding annotation is not a binding type
-     * @throws IllegalArgumentException same binding type is given
-     * @throws IllegalArgumentException binding is not an interceptor binding type
+     * @throws IllegalArgumentException given binding annotation is not a binding
+     * @throws IllegalArgumentException same binding is given
+     * @throws IllegalArgumentException binding is not an interceptor binding
      */
     List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings);
     
@@ -227,20 +227,20 @@ public interface BeanManager
     
 
     /**
-     * Returns true if given type is a binding type, false otherwise.
+     * Returns true if given type is a qualifier, false otherwise.
      * 
      * @param annotationType annotation type
-     * @return true if given type is a binding type, false otherwise
+     * @return true if given type is a qualifier, false otherwise
      */    
     public boolean isQualifier(Class<? extends Annotation> annotationType);
     
     /**
-     * Returns true if given type is a interceptor binding type, false otherwise.
+     * Returns true if given type is a interceptor binding, false otherwise.
      * 
      * @param annotationType annotation type
-     * @return true if given type is a interceptor binding type, false otherwise
+     * @return true if given type is a interceptor binding, false otherwise
      */        
-    public boolean isInterceptorBindingType(Class<? extends Annotation> annotationType);
+    public boolean isInterceptorBinding(Class<? extends Annotation> annotationType);
     
         
     /**
@@ -252,12 +252,12 @@ public interface BeanManager
     public boolean isStereotype(Class<? extends Annotation> annotationType);
         
     /**
-     * Returns a set of meta-annotations that are defined on the binding type
+     * Returns a set of meta-annotations that are defined on the binding
      * 
-     * @param bindingType binding type class
-     * @return a set of meta-annotations that are defined on the binding type
+     * @param qualifier binding class
+     * @return a set of meta-annotations that are defined on the binding
      */
-    public Set<Annotation> getInterceptorBindingTypeDefinition(Class<? extends Annotation> bindingType);
+    public Set<Annotation> getInterceptorBindingDefinition(Class<? extends Annotation> qualifier);
     
     /**
      * Returns a set of meta-annotations that are defined on the stereotype type.
@@ -270,10 +270,10 @@ public interface BeanManager
     /**
      * Returns a context with given scope type.
      * 
-     * @param scopeType scope type class type
+     * @param scope scope type class type
      * @return a context with given scope type
      */
-    public Context getContext(Class<? extends Annotation> scopeType);
+    public Context getContext(Class<? extends Annotation> scope);
     
     /**
      * Returns el resolver.

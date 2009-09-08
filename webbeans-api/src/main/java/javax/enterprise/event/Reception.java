@@ -19,7 +19,7 @@ package javax.enterprise.event;
  * @version $Rev$ $Date$
  *
  */
-public enum Notify
+public enum Reception
 {
     /**Notify observer if owner bean exist*/
     IF_EXISTS,

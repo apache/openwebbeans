@@ -101,11 +101,6 @@ under the License.
     <fileSets>
 
         <fileSet>
-            <directory>../licences</directory>
-            <outputDirectory>licences</outputDirectory>
-        </fileSet>
-
-        <fileSet>
             <directory>..</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <outputDirectory>src</outputDirectory>

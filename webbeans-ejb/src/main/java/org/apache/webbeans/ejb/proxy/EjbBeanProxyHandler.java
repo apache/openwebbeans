@@ -69,7 +69,7 @@ public class EjbBeanProxyHandler implements MethodHandler
         OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean);
         
         //Context of the bean
-        Context webbeansContext = BeanManagerImpl.getManager().getContext(ejbBean.getScopeType());
+        Context webbeansContext = BeanManagerImpl.getManager().getContext(ejbBean.getScope());
         
         //Get bean instance from context
         Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, (CreationalContext<Object>)this.ejbBean.getCreationalContext());
@@ -91,7 +91,7 @@ public class EjbBeanProxyHandler implements MethodHandler
         List<Method> removeMethods = this.ejbBean.getDeploymentInfo().getRemoveMethods();
         if(removeMethods.contains(method))
         {
-            if(this.ejbBean.getScopeType() != Dependent.class)
+            if(this.ejbBean.getScope() != Dependent.class)
             {
                 throw new UnsupportedOperationException("Can not call EJB Statefull Bean Remove Method without scoped @Dependent");
             }

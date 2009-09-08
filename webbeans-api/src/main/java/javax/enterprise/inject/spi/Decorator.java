@@ -24,6 +24,6 @@ public interface Decorator<T> extends Bean<T>
     
     public abstract Type getDelegateType();
 
-    public abstract Set<Annotation> getDelegateBindingTypes();
+    public abstract Set<Annotation> getDelegateBindings();
 
 }

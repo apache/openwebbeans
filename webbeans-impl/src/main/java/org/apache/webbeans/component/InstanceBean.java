@@ -37,8 +37,8 @@ public class InstanceBean<T> extends AbstractBean<Instance<T>>
     @Override
     protected Instance<T> createInstance(CreationalContext<Instance<T>> creationalContext)
     {
-        Annotation[] anns = new Annotation[getBindings().size()];
-        anns = getBindings().toArray(anns);
+        Annotation[] anns = new Annotation[getQualifiers().size()];
+        anns = getQualifiers().toArray(anns);
         
         return InstanceFactory.getInstance(this.injectedType, anns);
     }

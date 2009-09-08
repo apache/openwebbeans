@@ -60,8 +60,8 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     /** Scope type of the bean */
     protected Annotation implScopeType;
 
-    /** Binding types of the bean */
-    protected Set<Annotation> implBindingTypes = new HashSet<Annotation>();
+    /** Qualifiers of the bean */
+    protected Set<Annotation> implQualifiers = new HashSet<Annotation>();
 
     /** Api types of the bean */
     protected Set<Type> apiTypes = new HashSet<Type>();
@@ -304,18 +304,8 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Add new binding type.
-     * 
-     * @param bindingType new binding type
-     */
-    public void addBindingType(Annotation bindingType)
-    {
-        this.implBindingTypes.add(bindingType);
-    }
-
-    /**
      * Add new stereotype.
-     * 
+     *
      * @param stereoType new stereotype annotation
      */
     public void addStereoType(Annotation stereoType)
@@ -325,7 +315,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
 
     /**
      * Add new api type.
-     * 
+     *
      * @param apiType new api type
      */
     public void addApiType(Class<?> apiType)
@@ -334,23 +324,33 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Get binding types.
-     * 
-     * @return binding types
+     * Get qualifiers.
+     *
+     * @return qualifiers
      */
-    public Set<Annotation> getImplBindingTypes()
+    public Set<Annotation> getImplQualifiers()
     {
-        return implBindingTypes;
+        return implQualifiers;
     }
 
     /**
      * Gets the stereotypes.
-     * 
+     *
      * @return stereotypes of the bean
      */
     public Set<Annotation> getOwbStereotypes()
     {
         return this.stereoTypes;
+    }
+
+    /**
+     * Add new qualifier.
+     *
+     * @param qualifier new qualifier
+     */
+    public void addQualifier(Annotation qualifier)
+    {
+        this.implQualifiers.add(qualifier);
     }
 
     /**
@@ -378,12 +378,12 @@ public abstract class AbstractBean<T> extends BaseBean<T>
 
     /*
      * (non-Javadoc)
-     * @see javax.webbeans.manager.Bean#getBindingTypes()
+     * @see javax.webbeans.manager.Bean#getQualifiers()
      */
     @Override
-    public Set<Annotation> getBindings()
+    public Set<Annotation> getQualifiers()
     {
-        return this.implBindingTypes;
+        return this.implQualifiers;
     }
 
     /*
@@ -398,10 +398,10 @@ public abstract class AbstractBean<T> extends BaseBean<T>
 
     /*
      * (non-Javadoc)
-     * @see javax.webbeans.manager.Bean#getScopeType()
+     * @see javax.webbeans.manager.Bean#getScope()
      */
     @Override
-    public Class<? extends Annotation> getScopeType()
+    public Class<? extends Annotation> getScope()
     {
         return this.implScopeType.annotationType();
     }
@@ -642,10 +642,10 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         
         builder.append("\t]\n");
         builder.append("\t,\n");
-        builder.append("\tBinding Types:\n");
+        builder.append("\tQualifiers:\n");
         builder.append("\t[\n");
         
-        for(Annotation ann : getBindings())
+        for(Annotation ann : getQualifiers())
         {
             builder.append("\t\t\t"+ann.annotationType().getName()+"\n");
         }

@@ -61,10 +61,6 @@ under the License.
 
    <fileSets>
         <fileSet>
-            <directory>../licences</directory>
-            <outputDirectory>licences</outputDirectory>
-        </fileSet>
-        <fileSet>
             <directory>../samples/guess</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <outputDirectory>samples/guess</outputDirectory>

@@ -22,10 +22,10 @@ public interface Event<T>
 
     public void fire(T event);
     
-    public Event<T> select(Annotation... bindings);
+    public Event<T> select(Annotation... qualifiers);
     
-    public <U extends T> Event<U> select(Class<U> subtype, Annotation... bindings);
+    public <U extends T> Event<U> select(Class<U> subtype, Annotation... qualifiers);
     
-    public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... bindings);
+    public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... qualifiers);
 
 }

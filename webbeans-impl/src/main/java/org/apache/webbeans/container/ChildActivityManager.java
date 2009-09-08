@@ -83,17 +83,17 @@ public class ChildActivityManager extends BeanManagerImpl
         }
         else
         {
-            Set<Annotation> bindings = bean.getBindings();
+            Set<Annotation> qualifiers = bean.getQualifiers();
             Set<Type> apiTypes = bean.getTypes();
             
             Set<Bean<?>> beans = parent.getBeans();
             boolean found = false;
             for(Bean<?> b : beans)
             {
-                Set<Annotation> parentBindings = b.getBindings();
+                Set<Annotation> parentQualifiers = b.getQualifiers();
                 Set<Type> parentApiTypes = b.getTypes();
                 
-                if(parentBindings.containsAll(bindings))
+                if(parentQualifiers.containsAll(qualifiers))
                 {
                     for(Type t : apiTypes)
                     {

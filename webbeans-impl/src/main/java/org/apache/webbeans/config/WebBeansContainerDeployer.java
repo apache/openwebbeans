@@ -542,7 +542,7 @@ public class WebBeansContainerDeployer
                 if (beanObj instanceof ManagedBean)
                 {
                     ManagedBean<?> component = (ManagedBean<?>) beanObj;
-                    NormalScope scope = component.getScopeType().getAnnotation(NormalScope.class);
+                    NormalScope scope = component.getScope().getAnnotation(NormalScope.class);
                     if(scope != null)
                     {
                         if (scope.passivating())
@@ -643,8 +643,8 @@ public class WebBeansContainerDeployer
             managedBeanCreator.defineStereoTypes();
             Class<? extends Annotation> deploymentType = managedBeanCreator.defineDeploymentType("There are more than one @DeploymentType annotation in ManagedBean implementation class : " + managedBean.getReturnType().getName());
             managedBeanCreator.defineApiType();
-            managedBeanCreator.defineScopeType("ManagedBean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
-            managedBeanCreator.defineBindingType();
+            managedBeanCreator.defineScopeType("ManagedBean implementation class : " + clazz.getName() + " stereotypes must declare same @Scope annotations");
+            managedBeanCreator.defineQualifier();
             managedBeanCreator.defineName(WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
             managedBeanCreator.defineConstructor();            
             Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();       

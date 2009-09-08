@@ -43,20 +43,20 @@ public class AnyBindingTest extends TestContext{
 	public void testAny()
 	{
 		AbstractBean<AnyBindingComponent> comp1 = defineSimpleWebBean(AnyBindingComponent.class);
-		Set<Annotation> bindings = comp1.getBindings();
+		Set<Annotation> qualifiers = comp1.getQualifiers();
 		
-		Assert.assertEquals(2, bindings.size());
+		Assert.assertEquals(2, qualifiers.size());
 		
 		AbstractBean<NonAnyBindingComponent> comp2 = defineSimpleWebBean(NonAnyBindingComponent.class);
-		bindings = comp2.getBindings();
+		qualifiers = comp2.getQualifiers();
 		
-		Assert.assertEquals(4, bindings.size());
+		Assert.assertEquals(4, qualifiers.size());
 		
 
 		AbstractBean<DefaultAnyBinding> comp3 = defineSimpleWebBean(DefaultAnyBinding.class);
-		bindings = comp3.getBindings();
+		qualifiers = comp3.getQualifiers();
 		
-		Assert.assertEquals(2, bindings.size());
+		Assert.assertEquals(2, qualifiers.size());
 
 		
 	}

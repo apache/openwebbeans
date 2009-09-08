@@ -46,7 +46,7 @@ public interface Context
      * 
      * @return the scope type of the context
      */
-    public Class<? extends Annotation> getScopeType();
+    public Class<? extends Annotation> getScope();
 
     /**
      * If the context is not active, throws {@link ContextNotActiveException}.

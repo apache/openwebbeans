@@ -59,7 +59,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         //Context of the bean
-        Context webbeansContext = BeanManagerImpl.getManager().getContext(component.getScopeType());
+        Context webbeansContext = BeanManagerImpl.getManager().getContext(component.getScope());
         
         //Get bean instance from context
         Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)this.component.getCreationalContext());

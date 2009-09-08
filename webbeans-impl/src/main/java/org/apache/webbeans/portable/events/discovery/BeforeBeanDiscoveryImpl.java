@@ -41,7 +41,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
      * {@inheritDoc}
      */
     @Override
-    public void addBindingType(Class<? extends Annotation> bindingType)
+    public void addQualifier(Class<? extends Annotation> qualifier)
     {
         // TODO Auto-generated method stub
         
@@ -51,7 +51,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
      * {@inheritDoc}
      */
     @Override
-    public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation... bindingTypeDef)
+    public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation... bindingDef)
     {
         // TODO Auto-generated method stub
         
@@ -61,7 +61,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
      * {@inheritDoc}
      */
     @Override
-    public void addScopeType(Class<? extends Annotation> scopeType, boolean normal, boolean passivating)
+    public void addScope(Class<? extends Annotation> scope, boolean normal, boolean passivating)
     {
         // TODO Auto-generated method stub
         

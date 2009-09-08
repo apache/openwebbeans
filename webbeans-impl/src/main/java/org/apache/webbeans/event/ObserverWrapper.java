@@ -29,7 +29,7 @@ import javax.enterprise.event.Observer;
 public class ObserverWrapper<T>
 {
     /** Event binding types apeearing on the parameter */
-    private Set<Annotation> eventBindingTypes = new HashSet<Annotation>();
+    private Set<Annotation> eventQualifiers = new HashSet<Annotation>();
 
     /** Event object type */
     private Type eventType;
@@ -59,7 +59,7 @@ public class ObserverWrapper<T>
     {
         for (Annotation annotation : annotations)
         {
-            this.eventBindingTypes.add(annotation);
+            this.eventQualifiers.add(annotation);
         }
 
         this.observer = observer;
@@ -68,15 +68,15 @@ public class ObserverWrapper<T>
         this.transObserverType = type;
     }
 
-    public boolean isObserverOfBindings(Annotation... annotations)
+    public boolean isObserverOfQualifiers(Annotation... annotations)
     {
         boolean ok = true;
                 
-        if(this.eventBindingTypes.size() >= annotations.length)
+        if(this.eventQualifiers.size() >= annotations.length)
         {
             for (Annotation annot : annotations)
             {
-                if (!this.eventBindingTypes.contains(annot))
+                if (!this.eventQualifiers.contains(annot))
                 {
                     ok = false;
                     break;
@@ -92,7 +92,7 @@ public class ObserverWrapper<T>
                 eventAnnots.add(eventAnnot);
             }
             
-            for (Annotation annot : this.eventBindingTypes)
+            for (Annotation annot : this.eventQualifiers)
             {
                 if (!eventAnnots.contains(annot))
                 {
@@ -111,9 +111,9 @@ public class ObserverWrapper<T>
     /**
      * Gets event binding types.
      */
-    public Set<Annotation> getEventBindingTypes()
+    public Set<Annotation> getEventQualifiers()
     {
-        return this.eventBindingTypes;
+        return this.eventQualifiers;
     }
 
     /**

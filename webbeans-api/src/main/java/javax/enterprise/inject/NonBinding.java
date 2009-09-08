@@ -21,21 +21,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that <code>BindingType</code> annotation member
+ * Indicates that <code>Qualifier</code> annotation member
  * is not contained in the type safe resolution algorithm.
  * 
  * <p>
  * Example:
  * 
  * <pre>
- * @BindingType
+ * @Qualifier
  * public @interface Mock {
  *   @NonBinding String name;
  * }
  * </pre>
  * 
- * <b>Mock</b> binding type <i>name</i> member variable is excepted from the
- * type safe resolution algorithm while comparing the binding types.
+ * <b>Mock</b> qualifier <i>name</i> member variable is excepted from the
+ * type safe resolution algorithm while comparing the qualifiers.
  * 
  * </p>
  */

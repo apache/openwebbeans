@@ -59,8 +59,8 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     /** Delegate field class type */
     protected Type delegateType;
 
-    /** Delegate field binding types */
-    protected Set<Annotation> delegateBindingTypes = new HashSet<Annotation>();
+    /** Delegate field bindings */
+    protected Set<Annotation> delegateBindings = new HashSet<Annotation>();
 
     /** Wrapped bean*/
     private AbstractBean<T> wrappedBean;
@@ -133,9 +133,9 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
 
         for (Annotation ann : anns)
         {
-            if (AnnotationUtil.isBindingAnnotation(ann.annotationType()))
+            if (AnnotationUtil.isQualifierAnnotation(ann.annotationType()))
             {
-                this.delegateBindingTypes.add(ann);
+                this.delegateBindings.add(ann);
             }
         }
         
@@ -160,7 +160,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
             for (Annotation annot : annotation)
             {
                 boolean bindingOk = false;
-                for (Annotation bindingType : delegateBindingTypes)
+                for (Annotation bindingType : delegateBindings)
                 {
                     if (AnnotationUtil.isAnnotationMemberExist(bindingType.annotationType(), annot, bindingType))
                     {
@@ -190,9 +190,9 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     }
 
     @Override
-    public Set<Annotation> getDelegateBindingTypes()
+    public Set<Annotation> getDelegateBindings()
     {
-        return delegateBindingTypes;
+        return delegateBindings;
     }
 
     @Override
@@ -271,9 +271,9 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     }
 
     @Override
-    public Set<Annotation> getBindings()
+    public Set<Annotation> getQualifiers()
     {
-        return wrappedBean.getBindings();
+        return wrappedBean.getQualifiers();
     }
 
     @Override
@@ -289,9 +289,9 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     }
 
     @Override
-    public Class<? extends Annotation> getScopeType()
+    public Class<? extends Annotation> getScope()
     {
-        return wrappedBean.getScopeType();
+        return wrappedBean.getScope();
     }
 
     
@@ -393,5 +393,5 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
         return this.wrappedBean.isAlternative();
     }
 
- 
+
 }

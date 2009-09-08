@@ -125,11 +125,11 @@ public final class ManagedBeanConfigurator
         Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
 
         DefinitionUtil.defineApiTypes(component, clazz);
-        DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
+        DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName() + " stereotypes must declare same @Scope annotations");
         
         WebBeansUtil.checkGenericType(component);
-        WebBeansUtil.checkPassivationScope(component, component.getScopeType().getAnnotation(NormalScope.class));
-        DefinitionUtil.defineBindingTypes(component, clazzAnns);
+        WebBeansUtil.checkPassivationScope(component, component.getScope().getAnnotation(NormalScope.class));
+        DefinitionUtil.defineQualifiers(component, clazzAnns);
         DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
 
         Constructor<T> constructor = WebBeansUtil.defineConstructor(clazz);

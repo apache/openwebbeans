@@ -115,7 +115,7 @@ public class InjectionPointFactory
     {
         InjectionPointImpl injectionPoint = null;
 
-        Annotation[] bindingAnnots = AnnotationUtil.getBindingAnnotations(annots);
+        Annotation[] bindingAnnots = AnnotationUtil.getQualifierAnnotations(annots);
         injectionPoint = new InjectionPointImpl(owner, type, member, annotated);
 
         addAnnotation(injectionPoint, bindingAnnots, true);

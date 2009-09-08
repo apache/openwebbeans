@@ -21,7 +21,7 @@ import javax.interceptor.InvocationContext;
 
 public interface Interceptor<T> extends Bean<T>
 {
-    public abstract Set<Annotation> getInterceptorBindingTypes();
+    public abstract Set<Annotation> getInterceptorBindings();
     
     public boolean intercepts(InterceptionType type);
 

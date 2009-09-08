@@ -128,7 +128,7 @@ public final class XMLDefinitionUtil
                 if (clazz.isAnnotationPresent(DeploymentType.class) 
                         || clazz.isAnnotationPresent(NormalScope.class) 
                         || clazz.isAnnotationPresent(Scope.class)
-                        || AnnotationUtil.isBindingAnnotation(clazz) 
+                        || AnnotationUtil.isQualifierAnnotation(clazz)
                         || AnnotationUtil.isInterceptorBindingAnnotation(clazz) 
                         || AnnotationUtil.isStereoTypeAnnotation(clazz) 
                         || clazz.equals(Named.class) 
@@ -192,7 +192,7 @@ public final class XMLDefinitionUtil
         while (it.hasNext())
         {
             Class<? extends Annotation> temp = it.next();
-            if (AnnotationUtil.isBindingAnnotation(temp))
+            if (AnnotationUtil.isQualifierAnnotation(temp))
             {
                 Method[] methods = temp.getDeclaredMethods();
 
@@ -203,7 +203,7 @@ public final class XMLDefinitionUtil
                     {
                         if (!AnnotationUtil.isAnnotationExist(method.getAnnotations(), NonBinding.class))
                         {
-                            throw new WebBeansConfigurationException(errorMessage + "WebBeans definition class : " + component.getReturnType().getName() + " @BindingType : " + temp.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                            throw new WebBeansConfigurationException(errorMessage + "WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : " + temp.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                         }
                     }
                 }
@@ -213,7 +213,7 @@ public final class XMLDefinitionUtil
                     found = true;
                 }
 
-                component.addBindingType(XMLUtil.getXMLDefinedAnnotationMember(annotationElementList.get(i), temp, errorMessage));
+                component.addQualifier(XMLUtil.getXMLDefinedAnnotationMember(annotationElementList.get(i), temp, errorMessage));
             }
 
             i++;

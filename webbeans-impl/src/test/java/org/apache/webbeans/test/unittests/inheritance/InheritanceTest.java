@@ -55,13 +55,13 @@ public class InheritanceTest extends TestContext
         
         BeanInheritedMetaData<InheritFromParentComponent> data = new BeanInheritedMetaData<InheritFromParentComponent>(component);
         
-        Set<Annotation> btypes = data.getInheritedBindingTypes();
+        Set<Annotation> btypes = data.getInheritedQualifiers();
         Assert.assertEquals(2, btypes.size());
         
         Annotation annot = data.getInheritedDeploymentType();
         Assert.assertNotNull(annot);
         
-        btypes = data.getInheritedInterceptorBindingTypes();
+        btypes = data.getInheritedInterceptorBindings();
         Assert.assertEquals(2, btypes.size());
         
         annot = data.getInheritedScopeType();

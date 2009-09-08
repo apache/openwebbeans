@@ -42,7 +42,7 @@ public final class EjbValidator
     }
 
     /**
-     * Validates session bean's scope types.
+     * Validates session bean's scope.
      * 
      * @param ejbBean ejb bean
      */
@@ -50,9 +50,9 @@ public final class EjbValidator
     {
         Asserts.assertNotNull(ejbBean, "Session Bean can not be null");
 
-        if (ejbBean.getScopeType() == null)
+        if (ejbBean.getScope() == null)
         {
-            throw new NullPointerException("Session Bean scope type can not be null");
+            throw new NullPointerException("Session Bean scope can not be null");
         }
 
         if (ejbBean.getEjbType() == null)
@@ -62,14 +62,14 @@ public final class EjbValidator
 
         if (ejbBean.getEjbType().equals(SessionBeanType.STATELESS))
         {
-            if (!ejbBean.getScopeType().equals(Dependent.class))
+            if (!ejbBean.getScope().equals(Dependent.class))
             {
                 throw new WebBeansConfigurationException("Stateless Session Bean class : " + ejbBean.getReturnType() + " " + "can not define scope other than @Dependent");
             }
         }
         else if (ejbBean.getEjbType().equals(SessionBeanType.SINGLETON))
         {
-            if (!(ejbBean.getScopeType().equals(Dependent.class) || ejbBean.getScopeType().equals(ApplicationScoped.class)))
+            if (!(ejbBean.getScope().equals(Dependent.class) || ejbBean.getScope().equals(ApplicationScoped.class)))
             {
                 throw new WebBeansConfigurationException("Singleton Session Bean class : " + ejbBean.getReturnType() + " " + "can not define scope other than @Dependent or @ApplicationScoped");
             }
