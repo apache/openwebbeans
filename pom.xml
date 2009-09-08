@@ -24,7 +24,7 @@
 	<artifactId>openwebbeans</artifactId>
 	<name>Apache OpenWebBeans</name>
 	<packaging>pom</packaging>
-	<version>1.0.0-incubating-SNAPSHOT</version>
+	<version>1.0.0-incubating-M3</version>
     
 	<description> 
         Apache OpenWebBeans is an open source implementation of
@@ -39,9 +39,9 @@
     <inceptionYear>2008</inceptionYear>
 
 	<scm>
-	    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</connection>
-	    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</developerConnection>
-	    <url>https://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</url>
+	    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/openwebbeans/tags/openwebbeans-1.0.0-incubating-M3-rc1</connection>
+	    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/openwebbeans/tags/openwebbeans-1.0.0-incubating-M3-rc1</developerConnection>
+	    <url>https://svn.apache.org/repos/asf/incubator/openwebbeans/tags/openwebbeans-1.0.0-incubating-M3-rc1</url>
     </scm>
 
     <issueManagement>
@@ -503,7 +503,7 @@
     </distributionManagement>
       
 	<properties>
-          <openwebbeans.version>1.0.0-incubating-SNAPSHOT</openwebbeans.version>
+          <openwebbeans.version>1.0.0-incubating-M3</openwebbeans.version>
 	  <siteId>/OWB/1.0.0-incubating-M3-rc1/plugins</siteId>
 	</properties>
 
