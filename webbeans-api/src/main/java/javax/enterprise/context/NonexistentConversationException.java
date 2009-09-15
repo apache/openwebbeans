@@ -23,20 +23,17 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
 /**
- * A long running conversation must only be used by one request at the same time!
+ * If a long running conversation cannot be restored, OWB will
+ * assign a fresh conversation and throws this very Exception.
  * 
- * If a parallel long running conversation gets detected, this very Exception will
- * be thrown for the new request and the 2nd request will get a 
- * fresh Conversation assigned.
- * 
- * The customer application may decide to catch this Exception and continue it's work
- * with the new conversation.
+ * The user code is free to catch it and continue his work
+ * with this new conversation.  
  * 
  * @see Context#get(Contextual, CreationalContext)
  * @see Context#get(Contextual)
  * @since 1.0 PFD2
  */
-public class BusyConversationException extends ContextException
+public class NonexistentConversationException extends ContextException
 {
 
     private static final long serialVersionUID = 4783816486073845333L;
@@ -46,7 +43,7 @@ public class BusyConversationException extends ContextException
      * 
      * @param message message
      */
-    public BusyConversationException(String message)
+    public NonexistentConversationException(String message)
     {
         super(message);
     }
@@ -56,7 +53,7 @@ public class BusyConversationException extends ContextException
      * 
      * @param cause cause of the exception
      */
-    public BusyConversationException(Throwable cause)
+    public NonexistentConversationException(Throwable cause)
     {
         super(cause);
     }
@@ -67,7 +64,7 @@ public class BusyConversationException extends ContextException
      * @param message exception message
      * @param cause root cause of the exception
      */
-    public BusyConversationException(String message, Throwable cause)
+    public NonexistentConversationException(String message, Throwable cause)
     {
         super(message, cause);
     }
