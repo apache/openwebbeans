@@ -504,7 +504,7 @@
       
 	<properties>
           <openwebbeans.version>1.0.0-incubating-SNAPSHOT</openwebbeans.version>
-	  <siteId>/OWB/1.0.0-incubating-M3-rc1/plugins</siteId>
+	  <siteId>/OWB/1.0.0-incubating-M3-rc2/plugins</siteId>
 	</properties>
 
     <profiles>
