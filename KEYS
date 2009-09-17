@@ -1,40 +1,3 @@
-pub   1024D/646A89B4 2008-10-28
-uid                  Gurkan Erdogdu <cgurkanerdogdu@gmail.com>
-sig 3        646A89B4 2008-10-28  Gurkan Erdogdu <cgurkanerdogdu@gmail.com>
-sub   2048g/9FD40A52 2008-10-28
-sig          646A89B4 2008-10-28  Gurkan Erdogdu <cgurkanerdogdu@gmail.com>
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-Version: GnuPG v1.4.6 (GNU/Linux)
-
-mQGiBEkG1OERBADSdnS14qMKgE35QUqqMeMRx0V+UBeNTxb+aLNej/z+cNZ3BJSF
-tnK833gDAlvCrpndJ5y778fkK/tyn33S7KF6yFPyXc3BuJ6/b3PdtDxA6zTYbG6M
-yg349QdRJj9ulj2XbTJS1kNFK6zuHl7vRBtsDwtFZTL687DSiWOS4tzTMwCgjmv0
-3Xog/3kNfcq20/sNg1aW7SUD/iBOhsFEGYk+UodQROE7AbHUIQk8NgNNyQLFVU3G
-Uoaz0u/e/EmhzEtZ7ChM76l4a+YDbT6va02C9jsAAGzibcCgRzA9kkh1LanA6fEA
-VyORVjjQ8QNFmL/bHtwHFdrYjozqZs69ieIs/Xt44HVw1lWHXZotffjVlzqDXHQz
-JWLABAC93ZAlo2fyweNAWBTyL3yw0lN/F5iYs8HtFWCfv+UG9Qy4V38Duq62wfmF
-J2SuWE6Jrj4isDI+pOJFpd/9wUUKnw1Zl30SYooF9sicys2jyJ0im4oN0M3JbWIO
-rAIcBRXAj1d8yhNXMe9uxfCjp0DcdOUVOT3rCiAPlpUubbIlI7QpR3Vya2FuIEVy
-ZG9nZHUgPGNndXJrYW5lcmRvZ2R1QGdtYWlsLmNvbT6IYAQTEQIAIAUCSQbU4QIb
-IwYLCQgHAwIEFQIIAwQWAgMBAh4BAheAAAoJEAnhzdBkaom0SuoAn3GVD7zO3v9u
-Q3ZFgTQ0slJ+u/2RAKCErqxQgWKQf8tKQnwUPm13MA8yH7kCDQRJBtTsEAgAso2T
-gorCNfqM3S9yPmmo8HnZ6y5WkrhDzSSej4vR2Tj1DHggxAvTR/5aJQosxWB8/1MJ
-o0wKofXRUeR6z73XlwmnpCe1qecEKTf+IXNaOqsbJ8zGEfDyOiBrJRdwIFvv5bGz
-WlOuh8m5fZkbiyOMWXod56Oq3g+sxxngXVo0RIu6loZY+0vXQrTcRWKcdzK00TXh
-TbW0MJ9tc7YsSQfGH8SH6BKDf49qlTMI2/Z7MvLhW6zUcFHhVytLWgfgKUJrgLZi
-Ku2jzvMJs2wbFjxDwgmbC7ORYueEvTWnpkJbIM8mTzO8M1bIJB1/v76fLzrCQwDB
-yYC4lHJAQi+A0Bm7hwADBQf/YkTvQvKZTE81eZIPKKCFH9Lnx/oGLYundeKNMl/s
-+lbzbIR9BPu+t4HHeFv68MHVoPD9MsTLQfjEqOPlMMqxSc082DSvH5QY0b0/f1Jb
-QuxxIpNnFYqDnUSh9U3TUQHN3V9rzvdEfhGDB01vVR/JxY8lRd4xUYmo8NZtbDGL
-OtbAkUigdICI4x21TnjYC1KijLdPQbe6KF+afhPDYms09uBuMTJ8bCk1p0bVGpAy
-I8gMea8zcaivAf4BLwrmP8Mcfm0lL+85DCnVxvOdwspIlfPao8X02sVewlyg1Lfi
-ElLhuGLzeIvXeTbIQx1UcpppXy6zA9KxsI+f37ILKKg0HIhJBBgRAgAJBQJJBtTs
-AhsMAAoJEAnhzdBkaom0b5sAn2m6CRg3Hx/kK9Yikp7r4j96qUABAJ42dwBU3KCm
-Pa0WpcUjiqbafIULZA==
-=TEbf
------END PGP PUBLIC KEY BLOCK-----
-
 pub   1024D/668FD47B 2009-01-23
 uid                  Mark Struberg (strub) <struberg@yahoo.de>
 sig 3        668FD47B 2009-01-23  Mark Struberg (strub) <struberg@yahoo.de>
@@ -72,3 +35,44 @@ zg9ZiSCkkUA0suupEA==
 =5VsA
 -----END PGP PUBLIC KEY BLOCK-----
 
+pub   1024D/646A89B4 2008-10-28
+uid                  Gurkan Erdogdu (Apache Org. Account) <gerdogdu@apache.org>
+sig 3        646A89B4 2009-09-17  Gurkan Erdogdu (Apache Org. Account) <gerdogdu@apache.org>
+uid                  Gurkan Erdogdu <cgurkanerdogdu@gmail.com>
+sig 3        646A89B4 2008-10-28  Gurkan Erdogdu (Apache Org. Account) <gerdogdu@apache.org>
+sub   2048g/9FD40A52 2008-10-28
+sig          646A89B4 2008-10-28  Gurkan Erdogdu (Apache Org. Account) <gerdogdu@apache.org>
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+mQGiBEkG1OERBADSdnS14qMKgE35QUqqMeMRx0V+UBeNTxb+aLNej/z+cNZ3BJSF
+tnK833gDAlvCrpndJ5y778fkK/tyn33S7KF6yFPyXc3BuJ6/b3PdtDxA6zTYbG6M
+yg349QdRJj9ulj2XbTJS1kNFK6zuHl7vRBtsDwtFZTL687DSiWOS4tzTMwCgjmv0
+3Xog/3kNfcq20/sNg1aW7SUD/iBOhsFEGYk+UodQROE7AbHUIQk8NgNNyQLFVU3G
+Uoaz0u/e/EmhzEtZ7ChM76l4a+YDbT6va02C9jsAAGzibcCgRzA9kkh1LanA6fEA
+VyORVjjQ8QNFmL/bHtwHFdrYjozqZs69ieIs/Xt44HVw1lWHXZotffjVlzqDXHQz
+JWLABAC93ZAlo2fyweNAWBTyL3yw0lN/F5iYs8HtFWCfv+UG9Qy4V38Duq62wfmF
+J2SuWE6Jrj4isDI+pOJFpd/9wUUKnw1Zl30SYooF9sicys2jyJ0im4oN0M3JbWIO
+rAIcBRXAj1d8yhNXMe9uxfCjp0DcdOUVOT3rCiAPlpUubbIlI7Q6R3Vya2FuIEVy
+ZG9nZHUgKEFwYWNoZSBPcmcuIEFjY291bnQpIDxnZXJkb2dkdUBhcGFjaGUub3Jn
+PohjBBMRAgAjAhsjBgsJCAcDAgQVAggDBBYCAwECHgECF4AFAkqxmhsCGQEACgkQ
+CeHN0GRqibQmEQCfffP2ETpx0LGbP/DDvnJmr/9ixGwAnjAEmS9+qfq1zyKynk/k
+hT9ZIk+ntClHdXJrYW4gRXJkb2dkdSA8Y2d1cmthbmVyZG9nZHVAZ21haWwuY29t
+PohgBBMRAgAgBQJJBtThAhsjBgsJCAcDAgQVAggDBBYCAwECHgECF4AACgkQCeHN
+0GRqibRK6gCfcZUPvM7e/25DdkWBNDSyUn67/ZEAoISurFCBYpB/y0pCfBQ+bXcw
+DzIfuQINBEkG1OwQCACyjZOCisI1+ozdL3I+aajwednrLlaSuEPNJJ6Pi9HZOPUM
+eCDEC9NH/lolCizFYHz/UwmjTAqh9dFR5HrPvdeXCaekJ7Wp5wQpN/4hc1o6qxsn
+zMYR8PI6IGslF3AgW+/lsbNaU66Hybl9mRuLI4xZeh3no6reD6zHGeBdWjREi7qW
+hlj7S9dCtNxFYpx3MrTRNeFNtbQwn21ztixJB8YfxIfoEoN/j2qVMwjb9nsy8uFb
+rNRwUeFXK0taB+ApQmuAtmIq7aPO8wmzbBsWPEPCCZsLs5Fi54S9NaemQlsgzyZP
+M7wzVsgkHX+/vp8vOsJDAMHJgLiUckBCL4DQGbuHAAMFB/9iRO9C8plMTzV5kg8o
+oIUf0ufH+gYti6d14o0yX+z6VvNshH0E+763gcd4W/rwwdWg8P0yxMtB+MSo4+Uw
+yrFJzTzYNK8flBjRvT9/UltC7HEik2cVioOdRKH1TdNRAc3dX2vO90R+EYMHTW9V
+H8nFjyVF3jFRiajw1m1sMYs61sCRSKB0gIjjHbVOeNgLUqKMt09Bt7ooX5p+E8Ni
+azT24G4xMnxsKTWnRtUakDIjyAx5rzNxqK8B/gEvCuY/wxx+bSUv7zkMKdXG853C
+ykiV89qjxfTaxV7CXKDUt+ISUuG4YvN4i9d5NshDHVRymmlfLrMD0rGwj5/fsgso
+qDQciEkEGBECAAkFAkkG1OwCGwwACgkQCeHN0GRqibRvmwCfaboJGDcfH+Qr1iKS
+nuviP3qpQAEAnjZ3AFTcoKY9rRalxSOKptp8hQtk
+=iBw8
+-----END PGP PUBLIC KEY BLOCK-----
