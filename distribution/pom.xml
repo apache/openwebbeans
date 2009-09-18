@@ -25,7 +25,7 @@
     </parent>
 
     <groupId>org.apache.openwebbeans</groupId>
-    <artifactId>apache-openwebbeans-distribution</artifactId>
+    <artifactId>apache-openwebbeans</artifactId>
     <packaging>pom</packaging>
 
     <name>OpenWebBeans :: Distribution</name>
@@ -40,7 +40,7 @@
                 <configuration>
                     <tarLongFileMode>gnu</tarLongFileMode>
                     <descriptors>
-                        <descriptor>src/assembly/dist-all.xml</descriptor>
+                       <!-- <descriptor>src/assembly/dist-all.xml</descriptor> -->
                         <descriptor>src/assembly/dist-sources.xml</descriptor>
                         <descriptor>src/assembly/dist-binary.xml</descriptor>
                     </descriptors>
