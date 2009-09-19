@@ -40,7 +40,6 @@
                 <configuration>
                     <tarLongFileMode>gnu</tarLongFileMode>
                     <descriptors>
-                        <descriptor>src/assembly/dist-all.xml</descriptor>
                         <descriptor>src/assembly/dist-sources.xml</descriptor>
                         <descriptor>src/assembly/dist-binary.xml</descriptor>
                     </descriptors>
