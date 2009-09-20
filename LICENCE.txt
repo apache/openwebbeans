@@ -200,6 +200,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
+/*jsf-facelet-1.1.14.jar*/
+
+jsf-facelets-1.1.14.jar is released under the terms of the Apache
+License, version 2.0 which is included at the start of this file.
+
 /*dom4j-licence for dom4j-1.6.1.jar*/
 
  Redistribution and use of this software and associated documentation ("Software"), with or without modification, are permitted provided that the following conditions are met:
