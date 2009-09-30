@@ -49,11 +49,11 @@ public final class NotificationManager implements Synchronization
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(NotificationManager.class);
 
-    private Map<Type, Set<ObserverWrapper<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverWrapper<?>>>();
+    private final Map<Type, Set<ObserverWrapper<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverWrapper<?>>>();
 
-    private Set<TransactionalNotifier> transactionSet = new CopyOnWriteArraySet<TransactionalNotifier>();
+    private final Set<TransactionalNotifier> transactionSet = new CopyOnWriteArraySet<TransactionalNotifier>();
     
-    private TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
+    private final TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
 
     public NotificationManager()
     {
@@ -113,16 +113,14 @@ public final class NotificationManager implements Synchronization
         if (observers.containsKey(eventType))
         {
             Set<ObserverWrapper<?>> set = observers.get(eventType);
-            Iterator<ObserverWrapper<?>> it = set.iterator();
-            while (it.hasNext())
+            for (ObserverWrapper<?> s : set)
             {
-                ObserverWrapper<?> s = it.next();
                 Observer<T> ob = (Observer<T>) s.getObserver();
 
                 Set<Annotation> evenBindings = s.getEventQualifiers();
                 Annotation[] anns = new Annotation[evenBindings.size()];
                 anns = evenBindings.toArray(anns);
-                
+
                 if (ob.equals(observer) && Arrays.equals(anns, annotations))
                 {
                     set.remove(s);
@@ -139,16 +137,14 @@ public final class NotificationManager implements Synchronization
         if (observers.containsKey(eventType.getRawType()))
         {
             Set<ObserverWrapper<?>> set = observers.get(eventType.getRawType());
-            Iterator<ObserverWrapper<?>> it = set.iterator();
-            while (it.hasNext())
+            for (ObserverWrapper<?> s : set)
             {
-                ObserverWrapper<?> s = it.next();
-                Observer<T> ob = (Observer<T>) s.getObserver();
+                Observer<T> ob = (Observer<T>) ((ObserverWrapper<?>) s).getObserver();
 
                 Set<Annotation> evenBindings = s.getEventQualifiers();
                 Annotation[] anns = new Annotation[evenBindings.size()];
                 anns = evenBindings.toArray(anns);
-                
+
                 if (ob.equals(observer) && Arrays.equals(anns, annotations))
                 {
                     set.remove(s);
@@ -173,30 +169,24 @@ public final class NotificationManager implements Synchronization
         EventUtil.checkEventBindings(bindings);
 
         Set<Type> keySet = this.observers.keySet();
-        Iterator<Type> itKeySet = keySet.iterator();
 
-        while (itKeySet.hasNext())
+        for (Type type : keySet)
         {
-            Type type = itKeySet.next();
-            
-            for(Type check : types)
+            for (Type check : types)
             {
                 if (ClassUtil.isAssignable(check, type))
                 {
                     resolvedSet.addAll(this.observers.get(type));
                     break;
-                }                
-            }            
+                }
+            }
         }
 
-        Iterator<ObserverWrapper<?>> it = resolvedSet.iterator();
-        while (it.hasNext())
+        for (ObserverWrapper<?> impl : resolvedSet)
         {
-            ObserverWrapper<T> impl = (ObserverWrapper<T>) it.next();
-
             if (impl.isObserverOfQualifiers(bindings))
             {
-                unres.add(impl.getObserver());
+                unres.add(((ObserverWrapper<T>) impl).getObserver());
             }
         }
 
@@ -206,12 +196,10 @@ public final class NotificationManager implements Synchronization
     public void fireEvent(Object event, Annotation... bindings)
     {
         Set<Observer<Object>> observers = resolveObservers(event, bindings);
-        Iterator<Observer<Object>> it = observers.iterator();
 
         TransactionalNotifier transNotifier = null;
-        while (it.hasNext())
+        for (Observer<Object> observer: observers)
         {
-            Observer<Object> observer = it.next();
             try
             {
                 if(observer instanceof BeanObserverImpl)
@@ -294,15 +282,13 @@ public final class NotificationManager implements Synchronization
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         Set<Method> observableMethods = component.getObservableMethods();
-        Iterator<Method> itMethods = observableMethods.iterator();
 
-        while (itMethods.hasNext())
+        for (Method observableMethod : observableMethods)
         {
-            Method observableMethod = itMethods.next();
             Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observableMethod, Observes.class);
-            
+
             Annotation[] bindingTypes = AnnotationUtil.getMethodFirstParameterQualifierWithGivenAnnotation(observableMethod, Observes.class);
-            
+
             boolean ifExist = false;
 
             if (observes.notifyObserver().equals(Reception.IF_EXISTS))
@@ -325,12 +311,9 @@ public final class NotificationManager implements Synchronization
     {
         try
         {
-            Iterator<TransactionalNotifier> it = this.transactionSet.iterator();
 
-            while (it.hasNext())
+            for (TransactionalNotifier notifier : this.transactionSet)
             {
-                TransactionalNotifier notifier = it.next();
-
                 notifier.notifyAfterCompletion();
 
                 if (status == Status.STATUS_COMMITTED)
@@ -342,7 +325,6 @@ public final class NotificationManager implements Synchronization
                 {
                     notifier.notifyAfterCompletionFailure();
                 }
-
             }
 
         }
@@ -361,10 +343,8 @@ public final class NotificationManager implements Synchronization
         // Call @BeforeTransactionCompletion
         try
         {
-            Iterator<TransactionalNotifier> it = this.transactionSet.iterator();
-            while (it.hasNext())
+            for (TransactionalNotifier notifier : this.transactionSet)
             {
-                TransactionalNotifier notifier = it.next();
                 notifier.notifyBeforeCompletion();
             }
 
