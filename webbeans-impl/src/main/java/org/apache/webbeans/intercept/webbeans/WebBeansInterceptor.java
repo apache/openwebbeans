@@ -122,35 +122,38 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
      */
     public boolean hasBinding(List<Class<? extends Annotation>> bindingTypes, List<Annotation> annots)
     {
-        boolean result = false;
-
-        if (bindingTypes != null && annots != null && (bindingTypes.size() == annots.size()))
+        if (bindingTypes == null || annots == null)
         {
-            int i = 0;
-            for (Class<? extends Annotation> bindingType : bindingTypes)
-            {
-                if (this.interceptorBindingSet.containsKey(bindingType))
-                {
-                    Annotation target = this.interceptorBindingSet.get(bindingType);
-                    if (AnnotationUtil.hasAnnotationMember(bindingType, annots.get(i), target))
-                    {
-                        result = true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-
-                i++;
-            }
+            return false;
+        }
+        if (bindingTypes.size() != annots.size())
+        {
+            return false;
+        }
+        if (bindingTypes.size() == 0)
+        {
+            return false;
         }
 
-        return result;
+        int i = 0;
+        for (Class<? extends Annotation> bindingType : bindingTypes)
+        {
+            Annotation target = this.interceptorBindingSet.get(bindingType);
+
+            if (target == null)
+            {
+                return false;
+            }
+
+            if (!AnnotationUtil.hasAnnotationMember(bindingType, annots.get(i), target))
+            {
+                return false;
+            }
+
+            i++;
+        }
+
+        return true;
     }
 
     /**
