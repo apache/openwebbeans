@@ -59,22 +59,22 @@ public class StereoTypeModel implements IStereoTypeModel
     {
         this.name = clazz.getName();
 
-        if (AnnotationUtil.isMetaAnnotationExist(clazz.getDeclaredAnnotations(), DeploymentType.class))
+        if (AnnotationUtil.hasMetaAnnotation(clazz.getDeclaredAnnotations(), DeploymentType.class))
         {
             this.defaultDeploymentType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), DeploymentType.class)[0];
         }
 
-        if (AnnotationUtil.isMetaAnnotationExist(clazz.getDeclaredAnnotations(), NormalScope.class))
+        if (AnnotationUtil.hasMetaAnnotation(clazz.getDeclaredAnnotations(), NormalScope.class))
         {
             this.defaultScopeType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), NormalScope.class)[0];
         }
 
-        if (AnnotationUtil.isMetaAnnotationExist(clazz.getDeclaredAnnotations(), Scope.class))
+        if (AnnotationUtil.hasMetaAnnotation(clazz.getDeclaredAnnotations(), Scope.class))
         {
             this.defaultScopeType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), Scope.class)[0];
         }
         
-        if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
+        if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
         {
             Annotation[] ibs = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
             for (Annotation ann : ibs)
@@ -83,7 +83,7 @@ public class StereoTypeModel implements IStereoTypeModel
             }
         }
 
-        if (AnnotationUtil.isStereoTypeMetaAnnotationExist(clazz.getDeclaredAnnotations()))
+        if (AnnotationUtil.hasStereoTypeMetaAnnotation(clazz.getDeclaredAnnotations()))
         {
             Annotation[] isy = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
 

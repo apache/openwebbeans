@@ -102,7 +102,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
             Class<?> clazz = method.getReturnType();
             if (clazz.isArray() || clazz.isAnnotation())
             {
-                if (!AnnotationUtil.isAnnotationExist(method.getAnnotations(), NonBinding.class))
+                if (!AnnotationUtil.hasAnnotation(method.getAnnotations(), NonBinding.class))
                 {
                     throw new WebBeansConfigurationException("Interceptor definition class : " + getClazz().getName() + " @InterceptorBinding : " + binding.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                 }
@@ -120,7 +120,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
      * @param annots binding types annots.
      * @return true if binding types exist ow false
      */
-    public boolean isBindingExist(List<Class<? extends Annotation>> bindingTypes, List<Annotation> annots)
+    public boolean hasBinding(List<Class<? extends Annotation>> bindingTypes, List<Annotation> annots)
     {
         boolean result = false;
 
@@ -132,7 +132,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
                 if (this.interceptorBindingSet.containsKey(bindingType))
                 {
                     Annotation target = this.interceptorBindingSet.get(bindingType);
-                    if (AnnotationUtil.isAnnotationMemberExist(bindingType, annots.get(i), target))
+                    if (AnnotationUtil.hasAnnotationMember(bindingType, annots.get(i), target))
                     {
                         result = true;
                     }
@@ -176,14 +176,14 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
             Set<Annotation> declared = null;
             Annotation[] anns = null;
 
-            if (XMLAnnotationTypeManager.getInstance().isInterceptorBindingTypeExist(clazzAnnot))
+            if (XMLAnnotationTypeManager.getInstance().hasInterceptorBindingType(clazzAnnot))
             {
                 declared = XMLAnnotationTypeManager.getInstance().getInterceptorBindingTypeInherites(clazzAnnot);
                 anns = new Annotation[declared.size()];
                 anns = declared.toArray(anns);
             }
 
-            else if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazzAnnot.getDeclaredAnnotations()))
+            else if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazzAnnot.getDeclaredAnnotations()))
             {
                 anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazzAnnot.getDeclaredAnnotations());
             }

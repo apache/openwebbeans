@@ -58,7 +58,7 @@ public class XMLAnnotationTypeManager
         xmlResources.add(resource);
     }
 
-    public boolean isBindingTypeExist(Class<? extends Annotation> bindingType)
+    public boolean hasBindingType(Class<? extends Annotation> bindingType)
     {
         if (xmlBindingTypes.contains(bindingType))
         {
@@ -68,7 +68,7 @@ public class XMLAnnotationTypeManager
         return false;
     }
 
-    public boolean isResourceExist(Class<? extends Annotation> resource)
+    public boolean hasResource(Class<? extends Annotation> resource)
     {
         if (xmlResources.contains(resource))
         {
@@ -90,7 +90,7 @@ public class XMLAnnotationTypeManager
         xmlStereoTypes.add(stereoType);
     }
 
-    public boolean isStereoTypeExist(Class<? extends Annotation> stereoType)
+    public boolean hasStereoType(Class<? extends Annotation> stereoType)
     {
         if (xmlStereoTypes.contains(stereoType))
         {
@@ -115,7 +115,7 @@ public class XMLAnnotationTypeManager
         }
     }
 
-    public boolean isInterceptorBindingTypeExist(Class<? extends Annotation> bindingType)
+    public boolean hasInterceptorBindingType(Class<? extends Annotation> bindingType)
     {
         if (xmlInterceptorBindingTypes.keySet().contains(bindingType))
         {

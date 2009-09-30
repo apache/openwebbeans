@@ -446,7 +446,7 @@ public class InjectionResolver
                     Annotation qualifier = itQualifiers.next();
                     if (annot.annotationType().equals(qualifier.annotationType()))
                     {
-                        if (AnnotationUtil.isAnnotationMemberExist(qualifier.annotationType(), qualifier, annot))
+                        if (AnnotationUtil.hasAnnotationMember(qualifier.annotationType(), qualifier, annot))
                         {
                             i++;
                         }

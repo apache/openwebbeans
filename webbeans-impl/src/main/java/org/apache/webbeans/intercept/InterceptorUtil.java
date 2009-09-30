@@ -52,17 +52,17 @@ public final class InterceptorUtil
             return false;
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(method, Inject.class))
+        if (AnnotationUtil.hasMethodAnnotation(method, Inject.class))
         {
             return false;
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(method, PreDestroy.class) || AnnotationUtil.isMethodHasAnnotation(method, PostConstruct.class) || AnnotationUtil.isMethodHasAnnotation(method, AroundInvoke.class))
+        if (AnnotationUtil.hasMethodAnnotation(method, PreDestroy.class) || AnnotationUtil.hasMethodAnnotation(method, PostConstruct.class) || AnnotationUtil.hasMethodAnnotation(method, AroundInvoke.class))
         {
             return false;
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(method, Produces.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Disposes.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Observes.class))
+        if (AnnotationUtil.hasMethodAnnotation(method, Produces.class) || AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class) || AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
         {
             return true;
         }
@@ -104,7 +104,7 @@ public final class InterceptorUtil
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods)
         {
-            if (AnnotationUtil.isMethodHasAnnotation(method, AroundInvoke.class))
+            if (AnnotationUtil.hasMethodAnnotation(method, AroundInvoke.class))
             {
                 if (ClassUtil.isMethodHasParameter(method))
                 {
@@ -136,7 +136,7 @@ public final class InterceptorUtil
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods)
         {
-            if (AnnotationUtil.isMethodHasAnnotation(method, PostConstruct.class) || AnnotationUtil.isMethodHasAnnotation(method, PreDestroy.class) 
+            if (AnnotationUtil.hasMethodAnnotation(method, PostConstruct.class) || AnnotationUtil.hasMethodAnnotation(method, PreDestroy.class)
 //                    AnnotationUtil.isMethodHasAnnotation(method, PostActivate.class) || 
 //                    AnnotationUtil.isMethodHasAnnotation(method, PrePassivate.class)
                     )
@@ -168,7 +168,7 @@ public final class InterceptorUtil
     public static void checkInterceptorConditions(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        if (!AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
+        if (!AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
         {
             throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName() + " must have at least one @InterceptorBinding annotation");
         }
@@ -213,7 +213,7 @@ public final class InterceptorUtil
             Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
             for (Annotation stero : stereoTypes)
             {
-                if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))
+                if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
                 {
                     hasClassInterceptors = true;
                     break;
@@ -240,7 +240,7 @@ public final class InterceptorUtil
                 }
                 else
                 {
-                    if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(method.getDeclaredAnnotations()))
+                    if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(method.getDeclaredAnnotations()))
                     {
                         throw new WebBeansConfigurationException("Method : " + method.getName() + "in simple web bean class : " + clazz.getName() + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");
                     }

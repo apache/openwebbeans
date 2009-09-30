@@ -85,18 +85,18 @@ public final class EventUtil
         Asserts.assertNotNull(candidateObserverMethod, "candidateObserverMethod parameter can not be null");
         Asserts.nullCheckForClass(clazz);
 
-        if (AnnotationUtil.isMethodMultipleParameterAnnotationExist(candidateObserverMethod, Observes.class))
+        if (AnnotationUtil.hasMethodMultipleParameterAnnotation(candidateObserverMethod, Observes.class))
         {
             throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not define two parameters with annotated @Observes");
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Produces.class) || AnnotationUtil.isMethodHasAnnotation(candidateObserverMethod, Inject.class))
+        if (AnnotationUtil.hasMethodAnnotation(candidateObserverMethod, Produces.class) || AnnotationUtil.hasMethodAnnotation(candidateObserverMethod, Inject.class))
         {
             throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
 
         }
 
-        if (AnnotationUtil.isMethodParameterAnnotationExist(candidateObserverMethod, Disposes.class))
+        if (AnnotationUtil.hasMethodParameterAnnotation(candidateObserverMethod, Disposes.class))
         {
             throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not annotated with annotation @Disposes");
         }

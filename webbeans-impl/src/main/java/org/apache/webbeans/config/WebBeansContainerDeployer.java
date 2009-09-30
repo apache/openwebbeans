@@ -314,8 +314,8 @@ public class WebBeansContainerDeployer
                 Class<?> implClass = ClassUtil.getClassFromName(componentClassName);
 
                 //It must not be @Interceptor or @Decorator
-                if(AnnotationUtil.isAnnotationExistOnClass(implClass, javax.decorator.Decorator.class) ||
-                        AnnotationUtil.isAnnotationExistOnClass(implClass, Interceptor.class))
+                if(AnnotationUtil.hasClassAnnotation(implClass, javax.decorator.Decorator.class) ||
+                        AnnotationUtil.hasClassAnnotation(implClass, Interceptor.class))
                 {
                     continue;
                 }
@@ -580,7 +580,7 @@ public class WebBeansContainerDeployer
                 
                 if (AnnotationUtil.isStereoTypeAnnotation(stereoClass))
                 {
-                    if (!XMLAnnotationTypeManager.getInstance().isStereoTypeExist(stereoClass))
+                    if (!XMLAnnotationTypeManager.getInstance().hasStereoType(stereoClass))
                     {
                         WebBeansUtil.checkStereoTypeClass(stereoClass);
                         StereoTypeModel model = new StereoTypeModel(stereoClass);
@@ -618,7 +618,7 @@ public class WebBeansContainerDeployer
      */
     protected <T> void defineManagedBean(Class<T> clazz)
     {
-        if (!AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class) && !AnnotationUtil.isAnnotationExistOnClass(clazz, javax.decorator.Decorator.class))
+        if (!AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class) && !AnnotationUtil.hasClassAnnotation(clazz, javax.decorator.Decorator.class))
         {
 
             AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(clazz);

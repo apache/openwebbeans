@@ -97,7 +97,7 @@ public final class DecoratorUtil
         boolean found = false;
         for (Field field : fields)
         {
-            if (AnnotationUtil.isAnnotationExist(field.getDeclaredAnnotations(), Decorates.class))
+            if (AnnotationUtil.hasAnnotation(field.getDeclaredAnnotations(), Decorates.class))
             {
                 if (found)
                 {

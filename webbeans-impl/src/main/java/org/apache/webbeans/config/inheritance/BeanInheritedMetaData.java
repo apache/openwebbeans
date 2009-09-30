@@ -125,7 +125,7 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
         {
             if(!types.contains(annotation))
             {
-                if(AnnotationUtil.isAnnotationExistOnClass(annotation.annotationType(), Inherited.class))
+                if(AnnotationUtil.hasClassAnnotation(annotation.annotationType(), Inherited.class))
                 {
                     types.add(annotation);   
                 }

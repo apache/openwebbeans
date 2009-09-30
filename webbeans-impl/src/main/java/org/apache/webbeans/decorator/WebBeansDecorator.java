@@ -162,7 +162,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
                 boolean bindingOk = false;
                 for (Annotation bindingType : delegateBindings)
                 {
-                    if (AnnotationUtil.isAnnotationMemberExist(bindingType.annotationType(), annot, bindingType))
+                    if (AnnotationUtil.hasAnnotationMember(bindingType.annotationType(), annot, bindingType))
                     {
                         bindingOk = true;
                         break;

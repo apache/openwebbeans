@@ -283,7 +283,7 @@ public final class WebBeansUtil
         if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
             throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() + " can not be non-static inner class");
 
-        if (!ClassUtil.isConcrete(clazz) && !AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class))
+        if (!ClassUtil.isConcrete(clazz) && !AnnotationUtil.hasClassAnnotation(clazz, Decorator.class))
             throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() + " have to be concrete if not defines as @Decorator");
                 
         if (!isConstructureOk(clazz))
@@ -414,7 +414,7 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
 
-        if (AnnotationUtil.isMethodHasAnnotation(method, Inject.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Disposes.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Observes.class))
+        if (AnnotationUtil.hasMethodAnnotation(method, Inject.class) || AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class) || AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
         {
             throw new WebBeansConfigurationException("Producer Method Bean with name : " + method.getName() + " in bean class : " + parentImplClazzName + " can not be annotated with" + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
         }
@@ -427,12 +427,12 @@ public final class WebBeansUtil
      */
     public static void checkProducerMethodDisposal(Method disposalMethod, String definedBeanClassName)
     {
-        if (AnnotationUtil.isMethodMultipleParameterAnnotationExist(disposalMethod, Disposes.class))
+        if (AnnotationUtil.hasMethodMultipleParameterAnnotation(disposalMethod, Disposes.class))
         {
             throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in class " + definedBeanClassName + " has multiple @Disposes annotation parameter");
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(disposalMethod, Inject.class) || AnnotationUtil.isMethodParameterAnnotationExist(disposalMethod, Observes.class) || AnnotationUtil.isMethodHasAnnotation(disposalMethod, Produces.class))
+        if (AnnotationUtil.hasMethodAnnotation(disposalMethod, Inject.class) || AnnotationUtil.hasMethodParameterAnnotation(disposalMethod, Observes.class) || AnnotationUtil.hasMethodAnnotation(disposalMethod, Produces.class))
         {
             throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in the class : " + definedBeanClassName + " can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes");
         }
@@ -771,7 +771,7 @@ public final class WebBeansUtil
         boolean found = false;
         for (Method method : methods)
         {
-            if (AnnotationUtil.isMethodHasAnnotation(method, commonAnnotation))
+            if (AnnotationUtil.hasMethodAnnotation(method, commonAnnotation))
             {
                 if (ClassUtil.isMoreThanOneMethodWithName(method.getName(), clazz))
                 {
@@ -844,7 +844,7 @@ public final class WebBeansUtil
         boolean found = false;
         for (Method method : methods)
         {
-            if (AnnotationUtil.isMethodHasAnnotation(method, AroundInvoke.class))
+            if (AnnotationUtil.hasMethodAnnotation(method, AroundInvoke.class))
             {
                 // Overriden methods
                 if (ClassUtil.isMoreThanOneMethodWithName(method.getName(), clazz))
@@ -1101,7 +1101,7 @@ public final class WebBeansUtil
         Set<Annotation> set = component.getOwbStereotypes();
         Annotation[] anns = new Annotation[set.size()];
         anns = set.toArray(anns);
-        if (AnnotationUtil.isStereoTypeMetaAnnotationExist(anns))
+        if (AnnotationUtil.hasStereoTypeMetaAnnotation(anns))
         {
             return true;
         }
@@ -1134,13 +1134,13 @@ public final class WebBeansUtil
      * @param bean bean instance
      * @return true if name exists
      */
-    public static boolean isNamedExistOnStereoTypes(BaseBean<?> bean)
+    public static boolean hasNamedOnStereoTypes(BaseBean<?> bean)
     {
         Annotation[] types = getComponentStereoTypes(bean);
-
+        
         for (Annotation ann : types)
         {
-            if (AnnotationUtil.isAnnotationExistOnClass(ann.annotationType(), Named.class))
+            if (AnnotationUtil.hasClassAnnotation(ann.annotationType(), Named.class))
             {
                 return true;
             }
@@ -1158,7 +1158,7 @@ public final class WebBeansUtil
         {
             for (Annotation dt : deploymentTypes)
             {
-                if (AnnotationUtil.isMetaAnnotationExist(dt.annotationType().getDeclaredAnnotations(), DeploymentType.class))
+                if (AnnotationUtil.hasMetaAnnotation(dt.annotationType().getDeclaredAnnotations(), DeploymentType.class))
                 {
                     Annotation result2[] = AnnotationUtil.getMetaAnnotations(dt.annotationType().getDeclaredAnnotations(), DeploymentType.class);
 
@@ -1492,7 +1492,7 @@ public final class WebBeansUtil
             throw new WebBeansConfigurationException("Producer method specialization is failed. Method " + method.getName() + " not found in super class : " + superClass.getName());
         }
         
-        if (!AnnotationUtil.isAnnotationExist(superMethod.getAnnotations(), Produces.class))
+        if (!AnnotationUtil.hasAnnotation(superMethod.getAnnotations(), Produces.class))
         {
             throw new WebBeansConfigurationException("Producer method specialization is failed. Method " + method.getName() + " found in super class : " + superClass.getName() + " is not annotated with @Produces");
         }
@@ -1525,7 +1525,7 @@ public final class WebBeansUtil
         
         String name = null;
         boolean hasName = false;
-        if(AnnotationUtil.isMethodHasAnnotation(superMethod, Named.class))
+        if(AnnotationUtil.hasMethodAnnotation(superMethod, Named.class))
         {
           Named named =  superMethod.getAnnotation(Named.class);
           hasName = true;
@@ -1554,7 +1554,7 @@ public final class WebBeansUtil
         
         if(hasName)
         {
-            if(AnnotationUtil.isMethodHasAnnotation(method, Named.class))
+            if(AnnotationUtil.hasMethodAnnotation(method, Named.class))
             {
                 throw new DefinitionException("Specialized method : " + method.getName() + " in class : " + component.getReturnType().getName() + " may not define @Named annotation");
             }
@@ -1574,7 +1574,7 @@ public final class WebBeansUtil
         Asserts.assertNotNull(method, "method parameter can not be null");
         Asserts.nullCheckForClass(clazz);
 
-        if (AnnotationUtil.isMethodParameterAnnotationExist(method, Disposes.class) || AnnotationUtil.isMethodParameterAnnotationExist(method, Observes.class))
+        if (AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class) || AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
         {
             throw new WebBeansConfigurationException("Initializer method parameters in method : " + method.getName() + " in class : " + clazz.getName() + " can not be annotated with @Disposes or @Observers");
 
@@ -1896,7 +1896,7 @@ public final class WebBeansUtil
             
             if(!find.equals(component))
             {
-                if(AnnotationUtil.isAnnotationExistOnClass(find.getBeanClass(), Specializes.class))
+                if(AnnotationUtil.hasClassAnnotation(find.getBeanClass(), Specializes.class))
                 {
                     return getMostSpecializedBean(manager, find);
                 }                

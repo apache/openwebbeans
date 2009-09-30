@@ -812,7 +812,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public boolean isScope(Class<? extends Annotation> annotationType)
     {
-        if(AnnotationUtil.isAnnotationExist(annotationType.getDeclaredAnnotations(), Scope.class))
+        if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Scope.class))
         {
             return true;
         }
@@ -823,7 +823,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public boolean isNormalScope(Class<? extends Annotation> annotationType)
     {
-        if(AnnotationUtil.isAnnotationExist(annotationType.getDeclaredAnnotations(), NormalScope.class))
+        if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class))
         {
             return true;
         }
@@ -834,7 +834,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
     {
-        if(AnnotationUtil.isAnnotationExist(annotationType.getDeclaredAnnotations(), NormalScope.class))
+        if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class))
         {
             NormalScope scope = annotationType.getAnnotation(NormalScope.class);            
             return scope.passivating();
@@ -847,7 +847,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public boolean isStereotype(Class<? extends Annotation> annotationType)
     {
-        if(AnnotationUtil.isAnnotationExist(annotationType.getDeclaredAnnotations(), Stereotype.class))
+        if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Stereotype.class))
         {
             return true;
         }

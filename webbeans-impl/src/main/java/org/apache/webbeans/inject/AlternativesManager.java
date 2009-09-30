@@ -49,7 +49,7 @@ public class AlternativesManager
             boolean ok = false;
             if(AnnotationUtil.isStereoTypeAnnotation(stereo))
             {
-                if(AnnotationUtil.isAnnotationExistOnClass(stereo, Alternative.class))
+                if(AnnotationUtil.hasClassAnnotation(stereo, Alternative.class))
                 {
                     if(this.stereoAlternatives.contains(stereo))
                     {
@@ -75,7 +75,7 @@ public class AlternativesManager
     
     public void addClazzAlternative(Class<?> alternative)
     {
-        if(AnnotationUtil.isAnnotationExistOnClass(alternative, Alternative.class))
+        if(AnnotationUtil.hasClassAnnotation(alternative, Alternative.class))
         {
             if(this.alternatives.contains(alternative))
             {

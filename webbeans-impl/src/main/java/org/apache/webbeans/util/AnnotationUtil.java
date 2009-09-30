@@ -59,7 +59,7 @@ public final class AnnotationUtil
      * @param clazz annotation class
      * @return true or false
      */
-    public static boolean isMethodHasAnnotation(Method method, Class<? extends Annotation> clazz)
+    public static boolean hasMethodAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
@@ -83,7 +83,7 @@ public final class AnnotationUtil
      * @param method method
      * @return <code>true</code> if any resource annotation exists for the given method
      */
-    public static boolean isMethodHasResourceAnnotation(Method method)
+    public static boolean hasResourceAnnotation(Method method)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
         
@@ -99,7 +99,7 @@ public final class AnnotationUtil
      * @param annotation checking annotation
      * @return true or false
      */
-    public static boolean isMethodParameterAnnotationExist(Method method, Class<? extends Annotation> clazz)
+    public static boolean hasMethodParameterAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
@@ -197,7 +197,7 @@ public final class AnnotationUtil
      * @param annotation checking annotation
      * @return true or false
      */
-    public static boolean isMethodMultipleParameterAnnotationExist(Method method, Class<? extends Annotation> clazz)
+    public static boolean hasMethodMultipleParameterAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
@@ -365,7 +365,7 @@ public final class AnnotationUtil
      * @param annotation checking annotation
      * @return true or false
      */
-    public static boolean isMethodParameterAnnotationCrossRefExist(Method method, Class<? extends Annotation> clazz)
+    public static boolean hasMethodParameterAnnotationCrossRef(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
@@ -400,7 +400,7 @@ public final class AnnotationUtil
      * @param member annotation for querying the binding type
      * @return true or false
      */
-    public static boolean isAnnotationMemberExist(Class<? extends Annotation> clazz, Annotation src, Annotation member)
+    public static boolean hasAnnotationMember(Class<? extends Annotation> clazz, Annotation src, Annotation member)
     {
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
         Asserts.assertNotNull(src, "Src argument can not be null");
@@ -562,7 +562,7 @@ public final class AnnotationUtil
 
         for (Method m : methods)
         {
-            if (isMethodParameterAnnotationExist(m, annotation))
+            if (hasMethodParameterAnnotation(m, annotation))
             {
                 list.add(m);
             }
@@ -592,7 +592,7 @@ public final class AnnotationUtil
 
         for (Method m : methods)
         {
-            if (isMethodHasAnnotation(m, annotation))
+            if (hasMethodAnnotation(m, annotation))
             {
                 list.add(m);
             }
@@ -611,7 +611,7 @@ public final class AnnotationUtil
      * @param annotation annotation class
      * @return return true or false
      */
-    public static boolean isAnnotationExistOnClass(Class<?> clazz, Class<? extends Annotation> annotation)
+    public static boolean hasClassAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
     {
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
         Asserts.assertNotNull(annotation, "Annotation argument can not be null");
@@ -626,7 +626,7 @@ public final class AnnotationUtil
         return false;
     }
 
-    public static boolean isMetaAnnotationExist(Annotation[] anns, Class<? extends Annotation> metaAnnotation)
+    public static boolean hasMetaAnnotation(Annotation[] anns, Class<? extends Annotation> metaAnnotation)
     {
         Asserts.assertNotNull(anns, "Anns argument can not be null");
         Asserts.assertNotNull(metaAnnotation, "MetaAnnotation argument can not be null");
@@ -643,7 +643,7 @@ public final class AnnotationUtil
 
     }
 
-    public static boolean isAnnotationExist(Annotation[] anns, Class<? extends Annotation> annotation)
+    public static boolean hasAnnotation(Annotation[] anns, Class<? extends Annotation> annotation)
     {
         return getAnnotation(anns, annotation) != null;
     }
@@ -668,7 +668,14 @@ public final class AnnotationUtil
 
         return null;
     }
-    
+
+    /**
+     * Returns a subset of annotations that are annotated with the specified meta-annotation
+     * 
+     * @param anns
+     * @param metaAnnotation
+     * @return
+     */
     public static Annotation[] getMetaAnnotations(Annotation[] anns, Class<? extends Annotation> metaAnnotation)
     {
         List<Annotation> annots = new ArrayList<Annotation>();
@@ -725,7 +732,7 @@ public final class AnnotationUtil
                 Class<?> clazz = method.getReturnType();
                 if (clazz.isArray() || clazz.isAnnotation())
                 {
-                    if (!AnnotationUtil.isAnnotationExist(method.getDeclaredAnnotations(), NonBinding.class))
+                    if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), NonBinding.class))
                     {
                         throw new WebBeansConfigurationException("@Qualifier : " + ann.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                     }
@@ -768,7 +775,7 @@ public final class AnnotationUtil
     {
         Asserts.assertNotNull(clazz, "clazz parameter can not be null");
         XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
-        if (manager.isBindingTypeExist(clazz))
+        if (manager.hasBindingType(clazz))
         {
             return true;
         }
@@ -787,7 +794,7 @@ public final class AnnotationUtil
      * @param bean bean
      * @return true if any binding exist
      */
-    public static boolean isAnyQualifierExist(Bean<?> bean)
+    public static boolean hasAnyQualifier(Bean<?> bean)
     {
     	Asserts.assertNotNull(bean, "bean parameter can not be null");
     	Set<Annotation> qualifiers = bean.getQualifiers();
@@ -871,7 +878,7 @@ public final class AnnotationUtil
     {
         Asserts.assertNotNull(clazz, "clazz parameter can not be null");
         XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
-        if (manager.isInterceptorBindingTypeExist(clazz))
+        if (manager.hasInterceptorBindingType(clazz))
         {
             return true;
         }
@@ -891,7 +898,7 @@ public final class AnnotationUtil
      * @return true if candidate class has an interceptor binding annotation
      *         type false otherwise
      */
-    public static boolean isInterceptorBindingMetaAnnotationExist(Annotation[] anns)
+    public static boolean hasInterceptorBindingMetaAnnotation(Annotation[] anns)
     {
         Asserts.assertNotNull(anns, "anns parameter can not be null");
 
@@ -948,7 +955,7 @@ public final class AnnotationUtil
         return ret;
     }
 
-    public static boolean isStereoTypeMetaAnnotationExist(Annotation[] anns)
+    public static boolean hasStereoTypeMetaAnnotation(Annotation[] anns)
     {
         Asserts.assertNotNull(anns, "anns parameter can not be null");
 
@@ -979,7 +986,7 @@ public final class AnnotationUtil
     {
         Asserts.assertNotNull(clazz, "clazz parameter can not be null");
         XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
-        if (manager.isStereoTypeExist(clazz))
+        if (manager.hasStereoType(clazz))
         {
             return true;
         }

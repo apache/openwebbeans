@@ -738,7 +738,7 @@ public final class ClassUtil
      * @param clazz class type
      * @return true if class has a default constructor.
      */
-    public static <T> boolean isDefaultConstructorExist(Class<T> clazz)
+    public static <T> boolean hasDefaultConstructor(Class<T> clazz)
     {
         Asserts.nullCheckForClass(clazz);
         
@@ -1260,7 +1260,7 @@ public final class ClassUtil
         return null;
     }
 
-    public static boolean isMethodExistWithName(Class<?> clazz, String methodName)
+    public static boolean hasMethodWithName(Class<?> clazz, String methodName)
     {
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(methodName, "methodName parameter can not be null");
@@ -1690,7 +1690,7 @@ public final class ClassUtil
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields)
         {
-            if (AnnotationUtil.isAnnotationExist(field.getAnnotations(), annotation))
+            if (AnnotationUtil.hasAnnotation(field.getAnnotations(), annotation))
             {
                 return field;
             }
@@ -1819,5 +1819,5 @@ public final class ClassUtil
         
         return rawType;
     }
-    
+
 }

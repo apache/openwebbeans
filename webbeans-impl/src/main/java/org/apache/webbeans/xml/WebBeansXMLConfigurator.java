@@ -271,7 +271,7 @@ public final class WebBeansXMLConfigurator
                 }
                 else
                 {
-                    if (!XMLUtil.isElementChildExist(child, WebBeansConstants.WEB_BEANS_XML_STANDART_ELEMENT))
+                    if (!XMLUtil.hasChildElement(child, WebBeansConstants.WEB_BEANS_XML_STANDART_ELEMENT))
                     {
                         throw new DeploymentException("<Deploy> element must have <Standard/> deployment type in the web-beans.xml");
                     }
@@ -377,7 +377,7 @@ public final class WebBeansXMLConfigurator
                 }
                 else
                 {
-                    if (!XMLUtil.isElementChildExist(child, WebBeansConstants.WEB_BEANS_XML_STANDART_ELEMENT))
+                    if (!XMLUtil.hasChildElement(child, WebBeansConstants.WEB_BEANS_XML_STANDART_ELEMENT))
                     {
                         throw new DeploymentException("<Deploy> element must have <Standard/> deployment type in the web-beans.xml");
                     }
@@ -485,7 +485,7 @@ public final class WebBeansXMLConfigurator
             clazzAnnot = (Class<? extends Annotation>) clazz;
         }
 
-        if (xmlAnnotTypeManager.isBindingTypeExist(clazzAnnot))
+        if (xmlAnnotTypeManager.hasBindingType(clazzAnnot))
         {
             throw new DeploymentException(createConfigurationFailedMessage() + "Binding type with given class : " + bindingTypeElement.getName() + " is already defined in the XML");
         }
@@ -516,7 +516,7 @@ public final class WebBeansXMLConfigurator
             clazzAnnot = (Class<? extends Annotation>) clazz;
         }
 
-        if (xmlAnnotTypeManager.isInterceptorBindingTypeExist(clazzAnnot))
+        if (xmlAnnotTypeManager.hasInterceptorBindingType(clazzAnnot))
         {
             throw new DeploymentException(createConfigurationFailedMessage() + "InterceptorBinding type with given class : " + interceptorBindingTypeElement.getName() + " is already defined in the XML");
         }
@@ -564,7 +564,7 @@ public final class WebBeansXMLConfigurator
             clazzAnnot = (Class<? extends Annotation>) clazz;
         }
 
-        if (xmlAnnotTypeManager.isStereoTypeExist(clazzAnnot))
+        if (xmlAnnotTypeManager.hasStereoType(clazzAnnot))
         {
             throw new DeploymentException(createConfigurationFailedMessage() + "Stereotype with given class : " + stereoTypeElement.getName() + " is already defined in the XML");
         }
@@ -604,7 +604,7 @@ public final class WebBeansXMLConfigurator
             }
             else
             {
-                if (!AnnotationUtil.isInterceptorBindingMetaAnnotationExist(clazz.getDeclaredAnnotations()))
+                if (!AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + XMLUtil.getName(child) + " must have at least one @InterceptorBindingType");
                 }
@@ -832,7 +832,7 @@ public final class WebBeansXMLConfigurator
         XMLDefinitionUtil.checkSimpleWebBeansInXML(simpleClass, webBeanDecleration, createConfigurationFailedMessage());
 
         /* If interceptor, check this is enabled */
-        if (XMLUtil.isElementChildExistWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_ELEMENT))
+        if (XMLUtil.hasChildElementWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_ELEMENT))
         {
             if (!InterceptorsManager.getInstance().isInterceptorEnabled(simpleClass))
             {
@@ -841,7 +841,7 @@ public final class WebBeansXMLConfigurator
         }
 
         /* If decorator, check this is enabled */
-        if (XMLUtil.isElementChildExistWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_DECORATOR_ELEMENT))
+        if (XMLUtil.hasChildElementWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_DECORATOR_ELEMENT))
         {
             if (!DecoratorsManager.getInstance().isDecoratorEnabled(simpleClass))
             {
@@ -1320,7 +1320,7 @@ public final class WebBeansXMLConfigurator
      */
     private <T> void configureMethod(XMLManagedBean<T> component, Element child)
     {
-        if (!ClassUtil.isMethodExistWithName(component.getReturnType(), XMLUtil.getName(child)))
+        if (!ClassUtil.hasMethodWithName(component.getReturnType(), XMLUtil.getName(child)))
         {
             throw new NonexistentMethodException(createConfigurationFailedMessage() + "Method declaration with name " + XMLUtil.getName(child) + " is not found in the class : " + component.getReturnType().getName());
         }

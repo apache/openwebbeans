@@ -206,10 +206,10 @@ public class InterceptorHandler implements MethodHandler, Serializable
         boolean isMethodAnnotatedWithInterceptorClass = false;
         boolean isMethodAnnotatedWithExcludeInterceptorClass = false;
 
-        if (AnnotationUtil.isMethodHasAnnotation(method, Interceptors.class))
+        if (AnnotationUtil.hasMethodAnnotation(method, Interceptors.class))
             isMethodAnnotatedWithInterceptorClass = true;
 
-        if (AnnotationUtil.isMethodHasAnnotation(method, ExcludeClassInterceptors.class))
+        if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
             isMethodAnnotatedWithExcludeInterceptorClass = true;
 
         Iterator<InterceptorData> it = stack.iterator();
@@ -265,12 +265,12 @@ public class InterceptorHandler implements MethodHandler, Serializable
         boolean isMethodAnnotatedWithInterceptorClass = false;
         boolean isMethodAnnotatedWithExcludeInterceptorClass = false;
 
-        if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(method.getDeclaredAnnotations()))
+        if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(method.getDeclaredAnnotations()))
         {
             isMethodAnnotatedWithInterceptorClass = true;
         }
 
-        if (AnnotationUtil.isMethodHasAnnotation(method, ExcludeClassInterceptors.class))
+        if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
         {
             isMethodAnnotatedWithExcludeInterceptorClass = true;
         }

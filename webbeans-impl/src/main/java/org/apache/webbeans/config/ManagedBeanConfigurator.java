@@ -57,12 +57,12 @@ public final class ManagedBeanConfigurator
     {
         int modifier = clazz.getModifiers();
 
-        if (AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class) && AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class))
+        if (AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
         {
             throw new WebBeansConfigurationException("Simple WebBean Component implementation class : " + clazz.getName() + " may not annotated with both @Interceptor and @Decorator annotation");
         }
 
-        if (!AnnotationUtil.isAnnotationExistOnClass(clazz, Decorator.class) && !AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptor.class))
+        if (!AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && !AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
         {
             InterceptorUtil.checkSimpleWebBeansInterceptorConditions(clazz);
         }

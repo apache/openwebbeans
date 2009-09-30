@@ -99,7 +99,7 @@ public final class XMLDefinitionUtil
 
         if (clazz.isAnnotationPresent(javax.interceptor.Interceptor.class))
         {
-            boolean found = XMLUtil.isElementChildExistWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_ELEMENT);
+            boolean found = XMLUtil.hasChildElementWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_ELEMENT);
             if (!found)
             {
                 throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " must be declared as <Interceptor> element in the XML");
@@ -108,7 +108,7 @@ public final class XMLDefinitionUtil
 
         if (clazz.isAnnotationPresent(Decorator.class))
         {
-            boolean found = XMLUtil.isElementChildExistWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_DECORATOR_ELEMENT);
+            boolean found = XMLUtil.hasChildElementWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_DECORATOR_ELEMENT);
             if (!found)
             {
                 throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " must be declared as <Decorator> element in the XML");
@@ -201,7 +201,7 @@ public final class XMLDefinitionUtil
                     Class<?> clazz = method.getReturnType();
                     if (clazz.isArray() || clazz.isAnnotation())
                     {
-                        if (!AnnotationUtil.isAnnotationExist(method.getAnnotations(), NonBinding.class))
+                        if (!AnnotationUtil.hasAnnotation(method.getAnnotations(), NonBinding.class))
                         {
                             throw new WebBeansConfigurationException(errorMessage + "WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : " + temp.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                         }
@@ -244,7 +244,7 @@ public final class XMLDefinitionUtil
         stereoTypes = stereoTypesSet.toArray(stereoTypes);
         for (Annotation stero : stereoTypes)
         {
-            if (AnnotationUtil.isInterceptorBindingMetaAnnotationExist(stero.annotationType().getDeclaredAnnotations()))
+            if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
             {
                 Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
 

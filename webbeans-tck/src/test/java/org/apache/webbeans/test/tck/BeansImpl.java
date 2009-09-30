@@ -54,7 +54,7 @@ public class BeansImpl implements Beans
 
     public boolean isEntityBean( Class<?> clazz ) 
     {
-        return (AnnotationUtil.isAnnotationExistOnClass(clazz, Entity.class));
+        return (AnnotationUtil.hasClassAnnotation(clazz, Entity.class));
     }        
 
     public boolean isProxy( Object instance ) {

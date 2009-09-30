@@ -53,7 +53,7 @@ public final class EJBInterceptorConfig
     {
         Asserts.assertNotNull(clazz, "Clazz argument can not be null");
 
-        if (AnnotationUtil.isAnnotationExistOnClass(clazz, Interceptors.class))
+        if (AnnotationUtil.hasClassAnnotation(clazz, Interceptors.class))
         {
             Interceptors incs = clazz.getAnnotation(Interceptors.class);
             Class<?>[] intClasses = incs.value();

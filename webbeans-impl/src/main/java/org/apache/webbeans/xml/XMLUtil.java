@@ -236,9 +236,9 @@ public final class XMLUtil
         if (!isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DEPLOY_ELEMENT) && 
                 !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTORS_ELEMENT) && 
                 !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT) && 
-                !isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE) && 
-                !isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE) && 
-                !isElementChildExist(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
+                !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE) &&
+                !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE) &&
+                !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
         {
             return true;
         }
@@ -259,7 +259,7 @@ public final class XMLUtil
     {
         nullCheckForElement(element);
 
-        if (isElementChildExistWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE))
+        if (hasChildElementWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE))
         {
             return true;
         }
@@ -279,7 +279,7 @@ public final class XMLUtil
     {
         nullCheckForElement(element);
 
-        if (isElementChildExistWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE))
+        if (hasChildElementWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE))
         {
             return true;
         }
@@ -299,7 +299,7 @@ public final class XMLUtil
     {
         nullCheckForElement(element);
 
-        if (isElementChildExistWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
+        if (hasChildElementWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
         {
             return true;
         }
@@ -371,7 +371,7 @@ public final class XMLUtil
     public static boolean isElementHasDecoratesChild(Element element)
     {
         nullCheckForElement(element);
-        if (isElementChildExistWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_DECORATES_ELEMENT))
+        if (hasChildElementWithWebBeansNameSpace(element, WebBeansConstants.WEB_BEANS_XML_DECORATES_ELEMENT))
         {
             return true;
         }
@@ -522,7 +522,7 @@ public final class XMLUtil
         Asserts.nullCheckForDomElement(element);
     }
 
-    public static boolean isElementChildExist(Element parent, String childName)
+    public static boolean hasChildElement(Element parent, String childName)
     {
         Asserts.assertNotNull(parent, "parent parameter can not be null");
         Asserts.assertNotNull(childName, "childName parameter can not be null");
@@ -538,7 +538,7 @@ public final class XMLUtil
      * @return if child element exist within webbeans namespace with given child
      *         name
      */
-    public static boolean isElementChildExistWithWebBeansNameSpace(Element parent, String childName)
+    public static boolean hasChildElementWithWebBeansNameSpace(Element parent, String childName)
     {
         Asserts.assertNotNull(parent, "parent parameter can not be null");
         Asserts.assertNotNull(childName, "childName parameter can not be null");

@@ -76,7 +76,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
     {
         WebBeansAnnotation anno = (WebBeansAnnotation) self;
 
-        if (isMethodExist(m) && proceed == null)
+        if (hasMethod(m) && proceed == null)
         {
             return anno.getAnnotationMembersValueMap().get(m.getName());
         }
@@ -202,7 +202,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
         }
     }
 
-    private boolean isMethodExist(Method method)
+    private boolean hasMethod(Method method)
     {
         for (Method m : members)
         {

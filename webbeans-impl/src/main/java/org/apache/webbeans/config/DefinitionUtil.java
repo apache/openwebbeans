@@ -214,7 +214,7 @@ public final class DefinitionUtil
                     Class<?> clazz = method.getReturnType();
                     if (clazz.isArray() || clazz.isAnnotation())
                     {
-                        if (!AnnotationUtil.isAnnotationExist(method.getDeclaredAnnotations(), NonBinding.class))
+                        if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), NonBinding.class))
                         {
                             throw new WebBeansConfigurationException("WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : " + annotation.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                         }
@@ -262,7 +262,7 @@ public final class DefinitionUtil
         }
         
         //Add @Any support
-        if(!AnnotationUtil.isAnyQualifierExist(component))
+        if(!AnnotationUtil.hasAnyQualifier(component))
         {
         	component.addQualifier(new AnyLiteral());
         }
@@ -329,7 +329,7 @@ public final class DefinitionUtil
 
     public static <T> void defineStereoTypes(BaseBean<?> component, Annotation[] anns)
     {
-        if (AnnotationUtil.isStereoTypeMetaAnnotationExist(anns))
+        if (AnnotationUtil.hasStereoTypeMetaAnnotation(anns))
         {
             Annotation[] steroAnns = AnnotationUtil.getStereotypeMetaAnnotations(anns);
 
@@ -393,10 +393,10 @@ public final class DefinitionUtil
                 Set<Class<? extends Annotation>> anns = component.getStereotypes();
                 for (Class<? extends Annotation> stero : anns)
                 {
-                    boolean containsNormal = AnnotationUtil.isMetaAnnotationExist(stero.getDeclaredAnnotations(), NormalScope.class);
+                    boolean containsNormal = AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), NormalScope.class);
                     
-                    if (AnnotationUtil.isMetaAnnotationExist(stero.getDeclaredAnnotations(), NormalScope.class) ||
-                            AnnotationUtil.isMetaAnnotationExist(stero.getDeclaredAnnotations(), Scope.class))
+                    if (AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), NormalScope.class) ||
+                            AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), Scope.class))
                     {                        
                         Annotation next = null;
                         
@@ -458,7 +458,7 @@ public final class DefinitionUtil
         if (nameAnnot == null) // no @Named
         {
             // Check for stereottype
-            if (WebBeansUtil.isNamedExistOnStereoTypes(component))
+            if (WebBeansUtil.hasNamedOnStereoTypes(component))
             {
                 isDefault = true;
             }
@@ -510,7 +510,7 @@ public final class DefinitionUtil
         for (Field field : fields)
         {            
             // Producer field
-            if (AnnotationUtil.isAnnotationExist(field.getDeclaredAnnotations(), Produces.class))
+            if (AnnotationUtil.hasAnnotation(field.getDeclaredAnnotations(), Produces.class))
             {
                 Type genericType = field.getGenericType();
                 
@@ -570,11 +570,11 @@ public final class DefinitionUtil
     private static <T> void createProducerComponents(AbstractBean<T> component, Set<ProducerMethodBean<?>> producerComponents, Method declaredMethod, Class<?> clazz, boolean isSpecializes)
     {
         // Producer Method
-        if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Produces.class))
+        if (AnnotationUtil.hasMethodAnnotation(declaredMethod, Produces.class))
         {
             WebBeansUtil.checkProducerMethodForDeployment(declaredMethod, clazz.getName());
 
-            if (AnnotationUtil.isMethodHasAnnotation(declaredMethod, Specializes.class))
+            if (AnnotationUtil.hasMethodAnnotation(declaredMethod, Specializes.class))
             {
                 if (ClassUtil.isStatic(declaredMethod.getModifiers()))
                 {
@@ -811,7 +811,7 @@ public final class DefinitionUtil
                 Annotation[] anns = field.getDeclaredAnnotations();
 
                 // Injected fields can not be @Decorates or @Produces
-                if (AnnotationUtil.isAnnotationExist(anns, Produces.class) || AnnotationUtil.isAnnotationExist(anns, Decorates.class))
+                if (AnnotationUtil.hasAnnotation(anns, Produces.class) || AnnotationUtil.hasAnnotation(anns, Decorates.class))
                 {
                     continue;
                 }
@@ -897,9 +897,9 @@ public final class DefinitionUtil
         
         for (Method method : methods)
         {
-            boolean isInitializer = AnnotationUtil.isMethodHasAnnotation(method, Inject.class);
+            boolean isInitializer = AnnotationUtil.hasMethodAnnotation(method, Inject.class);
             
-            boolean isResource = AnnotationUtil.isMethodHasResourceAnnotation(method);
+            boolean isResource = AnnotationUtil.hasResourceAnnotation(method);
 
             if (isInitializer && isResource)
             {

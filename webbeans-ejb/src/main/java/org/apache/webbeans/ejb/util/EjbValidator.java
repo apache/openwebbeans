@@ -85,13 +85,13 @@ public final class EjbValidator
     {
         Asserts.assertNotNull(ejbClass, "ejbClass parameter can not be null");
 
-        if (AnnotationUtil.isAnnotationExistOnClass(ejbClass, Decorator.class))
+        if (AnnotationUtil.hasClassAnnotation(ejbClass, Decorator.class))
         {
             throw new WebBeansConfigurationException(EjbConstants.EJB_WEBBEANS_ERROR_CLASS_PREFIX + ejbClass.getName() + " can not annotated with @Decorator");
 
         }
 
-        if (AnnotationUtil.isAnnotationExistOnClass(ejbClass, Interceptor.class))
+        if (AnnotationUtil.hasClassAnnotation(ejbClass, Interceptor.class))
         {
             throw new WebBeansConfigurationException(EjbConstants.EJB_WEBBEANS_ERROR_CLASS_PREFIX + ejbClass.getName() + " can not annotated with @Interceptor");
         }
