@@ -18,7 +18,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -166,6 +165,8 @@ public final class NotificationManager implements Synchronization
 
     public void fireEvent(Object event, Annotation... bindings)
     {
+        Transaction transaction = transactionService.getTransaction();
+
         Set<Observer<Object>> observers = resolveObservers(event, bindings);
 
         TransactionalNotifier transNotifier = null;
@@ -173,52 +174,37 @@ public final class NotificationManager implements Synchronization
         {
             try
             {
-                if(observer instanceof BeanObserverImpl)
+                if (transaction != null && isTransactional(observer))
                 {
+
+                    // TODO: we only need to register once
+                    transaction.registerSynchronization(this);
+
+                    if (transNotifier == null)
+                    {
+                        transNotifier = new TransactionalNotifier(event);
+                        this.transactionSet.add(transNotifier);
+                    }
+
+                    // Register for transaction
                     BeanObserverImpl<Object> beanObserver = (BeanObserverImpl<Object>) observer;
                     TransactionalObserverType type = beanObserver.getType();
-                    if (!(type.equals(TransactionalObserverType.NONE)))
+                    if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_COMPLETION))
                     {
-                        Transaction transaction = transactionService.getTransaction();
-
-                        if (transaction != null)
-                        {
-                            transaction.registerSynchronization(this);
-
-                            if (transNotifier == null)
-                            {
-                                transNotifier = new TransactionalNotifier(event);
-                                this.transactionSet.add(transNotifier);
-                            }
-
-                            // Register for transaction
-                            if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_COMPLETION))
-                            {
-                                transNotifier.addAfterCompletionObserver(observer);
-                            }
-                            else if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_SUCCESS))
-                            {
-                                transNotifier.addAfterCompletionSuccessObserver(observer);
-                            }
-                            else if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_FAILURE))
-                            {
-                                transNotifier.addAfterCompletionFailureObserver(observer);
-                            }
-                            else if (type.equals(TransactionalObserverType.BEFORE_TRANSACTION_COMPLETION))
-                            {
-                                transNotifier.addBeforeCompletionObserver(observer);
-                            }
-                        }
-                        else
-                        {
-                            observer.notify(event);
-                        }
+                        transNotifier.addAfterCompletionObserver(observer);
                     }
-                    else
+                    else if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_SUCCESS))
                     {
-                        observer.notify(event);
+                        transNotifier.addAfterCompletionSuccessObserver(observer);
                     }
-
+                    else if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_FAILURE))
+                    {
+                        transNotifier.addAfterCompletionFailureObserver(observer);
+                    }
+                    else if (type.equals(TransactionalObserverType.BEFORE_TRANSACTION_COMPLETION))
+                    {
+                        transNotifier.addBeforeCompletionObserver(observer);
+                    }
                 }
                 else
                 {
@@ -247,6 +233,23 @@ public final class NotificationManager implements Synchronization
                 throw new WebBeansException(e);
             }
         }
+    }
+
+    private boolean isTransactional(Observer<?> observer)
+    {
+        if (!(observer instanceof BeanObserverImpl))
+        {
+            return false;
+        }
+
+        BeanObserverImpl<?> beanObserver = (BeanObserverImpl<?>) observer;
+
+        if (beanObserver.getType().equals(TransactionalObserverType.NONE))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public <T> void addObservableComponentMethods(InjectionTargetBean<?> component)
