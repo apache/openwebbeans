@@ -88,21 +88,11 @@ public final class NotificationManager implements Synchronization
         set.add(observerImpl);
     }
 
-    public <T> void addObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... annotations)
+    public <T> void addObserver(Observer<T> observer, TypeLiteral<T> typeLiteral, Annotation... annotations)
     {
-        EventUtil.checkEventType(eventType.getRawType());
-        EventUtil.checkEventBindings(annotations);
+        EventUtil.checkEventType(typeLiteral.getRawType());
 
-        ObserverWrapper<T> observerImpl = new ObserverWrapper<T>(observer, eventType.getRawType(), annotations);
-
-        Set<ObserverWrapper<?>> set = observers.get(eventType.getRawType());
-        if (set == null)
-        {
-            set = new HashSet<ObserverWrapper<?>>();
-            observers.put(eventType.getRawType(), set);
-        }
-
-        set.add(observerImpl);
+        addObserver(observer, false, TransactionalObserverType.NONE, typeLiteral.getRawType(), annotations);
     }
 
     public <T> void removeObserver(Observer<T> observer, Class<T> eventType, Annotation... annotations)
@@ -129,28 +119,9 @@ public final class NotificationManager implements Synchronization
         }
     }
 
-    public <T> void removeObserver(Observer<T> observer, TypeLiteral<T> eventType, Annotation... annotations)
+    public <T> void removeObserver(Observer<T> observer, TypeLiteral<T> typeLiteral, Annotation... annotations)
     {
-        EventUtil.checkEventType(eventType.getRawType());
-        EventUtil.checkEventBindings(annotations);
-
-        if (observers.containsKey(eventType.getRawType()))
-        {
-            Set<ObserverWrapper<?>> set = observers.get(eventType.getRawType());
-            for (ObserverWrapper<?> s : set)
-            {
-                Observer<T> ob = (Observer<T>) ((ObserverWrapper<?>) s).getObserver();
-
-                Set<Annotation> evenBindings = s.getEventQualifiers();
-                Annotation[] anns = new Annotation[evenBindings.size()];
-                anns = evenBindings.toArray(anns);
-
-                if (ob.equals(observer) && Arrays.equals(anns, annotations))
-                {
-                    set.remove(s);
-                }
-            }
-        }
+        removeObserver(observer, typeLiteral.getRawType(), annotations);
     }
 
     public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings)
