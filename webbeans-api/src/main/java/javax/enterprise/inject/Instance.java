@@ -20,6 +20,8 @@ package javax.enterprise.inject;
 
 import java.lang.annotation.Annotation;
 
+import javax.inject.Provider;
+
 /**
  * The <code>Instance</code> interface provides a method for obtaining 
  * instances of beans with required types and qualifiers.
@@ -28,17 +30,8 @@ import java.lang.annotation.Annotation;
  *
  * @param <T> bean required type
  */
-public interface Instance<T> extends Iterable<T>
-{
-    /**
-     * Returns bean instance with required type 
-     * and required qualifier that are defined
-     * at the injection point.
-     * 
-     * @return bean instance with required type and required qualifier
-     */
-    public T get();
-    
+public interface Instance<T> extends Iterable<T>, Provider<T>
+{    
     /**
      * Creates new <code>Instance</code> with given
      * qualifiers. 

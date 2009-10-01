@@ -28,6 +28,11 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Session scoped.
+ * @version $Rev$ $Date$
+ *
+ */
 @Target( { TYPE, METHOD, FIELD})
 @Retention(RUNTIME)
 @Documented

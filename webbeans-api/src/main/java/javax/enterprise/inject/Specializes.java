@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package javax.enterprise.inject.deployment;
+package javax.enterprise.inject;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.METHOD;
