@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;

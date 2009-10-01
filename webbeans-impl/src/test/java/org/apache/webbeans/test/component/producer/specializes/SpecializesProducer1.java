@@ -15,7 +15,7 @@ package org.apache.webbeans.test.component.producer.specializes;
 
 import javax.inject.Named;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.Specializes;
 
 import org.apache.webbeans.test.annotation.deployment.DeploymentType2;
 import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;

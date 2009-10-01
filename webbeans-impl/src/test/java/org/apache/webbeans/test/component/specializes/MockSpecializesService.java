@@ -17,7 +17,7 @@
 package org.apache.webbeans.test.component.specializes;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.deployment.Specializes;
+import javax.enterprise.inject.Specializes;
 
 import org.apache.webbeans.test.annotation.binding.Mock;
 
