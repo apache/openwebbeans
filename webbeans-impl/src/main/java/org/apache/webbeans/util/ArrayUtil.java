@@ -13,6 +13,9 @@
  */
 package org.apache.webbeans.util;
 
+import java.util.Set;
+import java.util.HashSet;
+
 public final class ArrayUtil
 {
 
@@ -83,4 +86,15 @@ public final class ArrayUtil
         return true;
     }
 
+    public static <T> Set<T> asSet(T... items)
+    {
+        Set<T> set = new HashSet<T>();
+
+        for(T item : items)
+        {
+            set.add(item);
+        }
+
+        return set;
+    }
 }
