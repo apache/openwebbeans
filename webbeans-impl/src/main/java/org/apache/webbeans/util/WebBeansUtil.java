@@ -68,7 +68,7 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.annotation.ApplicationScopeLiteral;
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
@@ -600,7 +600,7 @@ public final class WebBeansUtil
         DefinitionUtil.defineApiTypes(comp, clazz);
         
         comp.setImplScopeType(new ApplicationScopeLiteral());
-        comp.addQualifier(new CurrentLiteral());
+        comp.addQualifier(new DefaultLiteral());
         comp.setType(new ProductionLiteral());
         
         DefinitionUtil.defineObserverMethods(comp, clazz);
@@ -689,7 +689,7 @@ public final class WebBeansUtil
 
         managerComponent.setImplScopeType(new DependentScopeLiteral());
         managerComponent.setType(new StandardLiteral());
-        managerComponent.addQualifier(new CurrentLiteral());
+        managerComponent.addQualifier(new DefaultLiteral());
         managerComponent.addApiType(BeanManager.class);
         managerComponent.addApiType(Object.class);
 
@@ -734,7 +734,7 @@ public final class WebBeansUtil
         conversationComp.addApiType(Object.class);
         conversationComp.setImplScopeType(new RequestedScopeLiteral());
         conversationComp.setType(new StandardLiteral());
-        conversationComp.addQualifier(new CurrentLiteral());
+        conversationComp.addQualifier(new DefaultLiteral());
         conversationComp.setName("javax.context.conversation");
 
         return conversationComp;

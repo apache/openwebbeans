@@ -29,7 +29,7 @@ import java.util.Set;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.webbeans.WebBeansConstants;
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -675,7 +675,7 @@ public final class XMLUtil
 
             if (bindingAnnots.isEmpty())
             {
-                model.addBindingType(new CurrentLiteral());
+                model.addBindingType(new DefaultLiteral());
             }
 
             for (Annotation annot : bindingAnnots)
@@ -902,7 +902,7 @@ public final class XMLUtil
 
         if (anns.size() == 0)
         {
-            model.addBindingType(new CurrentLiteral());
+            model.addBindingType(new DefaultLiteral());
         }
 
         for (Annotation ann : anns)
@@ -952,7 +952,7 @@ public final class XMLUtil
 
         if (anns.size() == 0)
         {
-            component.addQualifier(new CurrentLiteral());
+            component.addQualifier(new DefaultLiteral());
         }
 
         for (Annotation ann : anns)

@@ -58,6 +58,10 @@ public class InterceptorHandler implements MethodHandler, Serializable
     @SuppressWarnings("unchecked")
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
+        Object result = null;
+        
+        boolean interceptorRun = false;
+        
         //Context of the bean
         Context webbeansContext = BeanManagerImpl.getManager().getContext(component.getScope());
         
@@ -69,6 +73,9 @@ public class InterceptorHandler implements MethodHandler, Serializable
         {
             checkDecoratorStackForSameDecorator(method);
 
+            //Gets component decorator stack
+            List<Object> decorators = component.getDecoratorStack();
+                        
             // Run around invoke chain
             List<InterceptorData> stack = component.getInterceptorStack();
             
@@ -88,17 +95,21 @@ public class InterceptorHandler implements MethodHandler, Serializable
             //Call Around Invokes
             if (WebBeansUtil.isContainsInterceptorMethod(temp, InterceptorType.AROUND_INVOKE))
             {
-                return callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(stack, InterceptorType.AROUND_INVOKE));
+                result = callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(stack, InterceptorType.AROUND_INVOKE));
+                interceptorRun = true;
             }
-
-            //Gets component decorator stack
-            List<Object> decorators = component.getDecoratorStack();
             
             //Call decarators
-            callDecorators(decorators, method, arguments);
+            callDecorators(decorators, method, arguments);            
+            
 
         }
 
+        if(interceptorRun)
+        {
+            return result;
+        }
+        
         if (!method.isAccessible())
         {
             method.setAccessible(true);

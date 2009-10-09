@@ -44,7 +44,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
 import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.component.AbstractBean;
@@ -256,9 +256,17 @@ public final class DefinitionUtil
         
 
         // No-binding annotation
-        if (component.getQualifiers().size() == 0)
+        if (component.getQualifiers().size() == 0 )
         {
-            component.addQualifier(new CurrentLiteral());
+            component.addQualifier(new DefaultLiteral());
+        }
+        else if(component.getQualifiers().size() == 1)
+        {
+            Annotation annot = component.getQualifiers().iterator().next();
+            if(annot.annotationType().equals(Named.class))
+            {
+                component.addQualifier(new DefaultLiteral());
+            }
         }
         
         //Add @Any support

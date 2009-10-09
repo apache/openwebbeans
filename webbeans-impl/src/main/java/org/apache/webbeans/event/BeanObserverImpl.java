@@ -25,7 +25,7 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.event.Observer;
 import javax.enterprise.event.Observes;
 
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.container.InjectionResolver;
@@ -194,7 +194,7 @@ public class BeanObserverImpl<T> implements Observer<T>
                 if (annot.length == 0)
                 {
                     annot = new Annotation[1];
-                    annot[0] = new CurrentLiteral();
+                    annot[0] = new DefaultLiteral();
                 }
                 else
                 {

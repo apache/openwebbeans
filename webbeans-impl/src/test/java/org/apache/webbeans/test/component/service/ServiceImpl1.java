@@ -14,7 +14,6 @@
 package org.apache.webbeans.test.component.service;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
 import javax.enterprise.inject.deployment.Production;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
@@ -22,7 +21,6 @@ import org.apache.webbeans.test.annotation.binding.Binding1;
 @Production
 @Binding1
 @ApplicationScoped
-@Named
 public class ServiceImpl1 implements IService
 {
 

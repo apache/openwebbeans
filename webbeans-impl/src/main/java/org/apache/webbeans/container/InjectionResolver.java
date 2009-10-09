@@ -24,7 +24,7 @@ import java.util.Set;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.activity.ActivityManager;
@@ -289,7 +289,7 @@ public class InjectionResolver
         if (qualifier.length == 0)
         {
             qualifier = new Annotation[1];
-            qualifier[0] = new CurrentLiteral();
+            qualifier[0] = new DefaultLiteral();
             currentQualifier = true;
         }
         

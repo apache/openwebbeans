@@ -17,7 +17,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.test.component.library.BookShop;
@@ -48,7 +48,7 @@ public class ExtensionTest extends TestContext
         
         MockServletContext servletContext = new MockServletContext();
         ContextFactory.initApplicationContext(servletContext);
-        Bean<MyExtension> extension = (Bean<MyExtension>)getManager().resolveByType(MyExtension.class, new CurrentLiteral()).iterator().next();
+        Bean<MyExtension> extension = (Bean<MyExtension>)getManager().resolveByType(MyExtension.class, new DefaultLiteral()).iterator().next();
         
         MyExtension ext = getManager().getInstance(extension);
         System.out.println(ext.toString());

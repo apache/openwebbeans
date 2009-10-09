@@ -24,7 +24,7 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.Decorator;
 
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
@@ -106,7 +106,7 @@ public final class WebBeansDecoratorConfig
 
         if (listAnnot.isEmpty())
         {
-            listAnnot.add(new CurrentLiteral());
+            listAnnot.add(new DefaultLiteral());
         }
 
         while (it.hasNext())

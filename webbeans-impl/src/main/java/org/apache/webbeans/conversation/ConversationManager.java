@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ConversationContext;
@@ -116,7 +116,7 @@ public class ConversationManager
     public Conversation getCurrentConversation()
     {
 
-        Bean<Conversation> bean = (Bean<Conversation>)BeanManagerImpl.getManager().resolveByType(Conversation.class, new CurrentLiteral()).iterator().next();
+        Bean<Conversation> bean = (Bean<Conversation>)BeanManagerImpl.getManager().resolveByType(Conversation.class, new DefaultLiteral()).iterator().next();
         Conversation conversation = BeanManagerImpl.getManager().getInstance(bean);
 
         return conversation;

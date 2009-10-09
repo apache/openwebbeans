@@ -20,7 +20,7 @@ import javax.enterprise.inject.AnnotationLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.annotation.binding.Check;

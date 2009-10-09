@@ -46,7 +46,7 @@ import javax.inject.Scope;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
@@ -1671,7 +1671,7 @@ public final class WebBeansXMLConfigurator
 
         if (!isDefined)
         {
-            component.addQualifier(new CurrentLiteral());
+            component.addQualifier(new DefaultLiteral());
         }
 
     }

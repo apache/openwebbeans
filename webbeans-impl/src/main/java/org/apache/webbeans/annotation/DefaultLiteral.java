@@ -22,7 +22,7 @@ import javax.enterprise.inject.Default;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class CurrentLiteral extends AnnotationLiteral<Default> implements Default
+public class DefaultLiteral extends AnnotationLiteral<Default> implements Default
 {
 
 }
