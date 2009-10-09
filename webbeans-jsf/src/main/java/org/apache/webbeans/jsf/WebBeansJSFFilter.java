@@ -26,7 +26,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.apache.webbeans.annotation.CurrentLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.JSFUtil;
 
@@ -53,7 +53,7 @@ public class WebBeansJSFFilter implements Filter
             @Override
             public void sendRedirect(String location) throws IOException
             {
-                Bean<?> bean = BeanManagerImpl.getManager().resolveByType(Conversation.class, new CurrentLiteral()).iterator().next();
+                Bean<?> bean = BeanManagerImpl.getManager().resolveByType(Conversation.class, new DefaultLiteral()).iterator().next();
                 Conversation conversation = (Conversation)BeanManagerImpl.getManager().getInstance(bean);
 
                 String path = location;
