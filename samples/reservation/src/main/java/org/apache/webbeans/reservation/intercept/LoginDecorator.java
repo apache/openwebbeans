@@ -21,6 +21,7 @@ import javax.decorator.Decorates;
 import javax.decorator.Decorator;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;
@@ -31,7 +32,7 @@ import org.apache.webbeans.reservation.entity.User;
 @Decorator
 public class LoginDecorator implements ILoginController 
 {
-    @Decorates @Any @DatabaseLogin ILoginController decorator;
+    @Decorates @Any @DatabaseLogin @Named ILoginController decorator;
     
     private @Inject @ApplicationLog Log logger;
 
