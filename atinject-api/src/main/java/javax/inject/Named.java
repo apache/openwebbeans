@@ -37,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Documented
 @Retention(value=RetentionPolicy.RUNTIME)
+@Qualifier
 public @interface Named 
 {
  
