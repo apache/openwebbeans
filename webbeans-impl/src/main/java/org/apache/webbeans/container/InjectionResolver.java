@@ -34,6 +34,7 @@ import org.apache.webbeans.exception.inject.NullableDependencyException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Injection point resolver class. 
@@ -105,9 +106,10 @@ public class InjectionResolver
      * @throws If bean is not avialable in the current deployment for given injection
      */
     public void checkInjectionPoints(InjectionPoint injectionPoint)
-    {
-        Type type = injectionPoint.getType();
+    {        
+        WebBeansUtil.checkInjectionPointNamedQualifier(injectionPoint);
         
+        Type type = injectionPoint.getType();        
         Class<?> clazz = null;
         
         if (type instanceof ParameterizedType)
@@ -145,7 +147,7 @@ public class InjectionResolver
         
     }
     
-
+        
     /**
      * Returns bean for injection point.
      * 

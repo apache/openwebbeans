@@ -30,7 +30,9 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Named;
 
+import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.inject.xml.XMLInjectionModelType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -111,14 +113,48 @@ public class InjectionPointFactory
         return false;
     }
 
+    /**
+     * Gets injected point instance.
+     * @param owner owner of the injection point
+     * @param annots annotations of the injection point
+     * @param type type of the injection point
+     * @param member member of the injection point
+     * @param annotated annotated instance of injection point
+     * @return injection point instance
+     */
     private static InjectionPoint getGenericInjectionPoint(Bean<?> owner, Annotation[] annots, Type type, Member member,Annotated annotated)
     {
         InjectionPointImpl injectionPoint = null;
 
-        Annotation[] bindingAnnots = AnnotationUtil.getQualifierAnnotations(annots);
+        Annotation[] qualifierAnnots = AnnotationUtil.getQualifierAnnotations(annots);
+        
+        //@Named update for injection fields!
+        if(member instanceof Field)
+        {
+            for(int i=0;i<qualifierAnnots.length;i++)
+            {
+                Annotation qualifier = qualifierAnnots[i];
+                if(qualifier.annotationType().equals(Named.class))
+                {
+                    Named named = (Named)qualifier;
+                    String value = named.value();
+                    
+                    if(value == null || value.equals(""))
+                    {
+                        NamedLiteral namedLiteral = new NamedLiteral();
+                        namedLiteral.setValue(member.getName());
+                        qualifierAnnots[i] = namedLiteral;
+                    }
+                    
+                    break;
+                }
+            }            
+        }    
+        
+        
         injectionPoint = new InjectionPointImpl(owner, type, member, annotated);
 
-        addAnnotation(injectionPoint, bindingAnnots, true);
+        addAnnotation(injectionPoint, qualifierAnnots, true);
 
         return injectionPoint;
 

@@ -2028,4 +2028,34 @@ public final class WebBeansUtil
         
         return false;
     }
+    
+    public static void checkInjectionPointNamedQualifier(InjectionPoint injectionPoint)
+    {
+        Set<Annotation> qualifierset = injectionPoint.getQualifiers();
+        Named namedQualifier = null;
+        for(Annotation qualifier : qualifierset)
+        {
+            if(qualifier.annotationType().equals(Named.class))
+            {
+                namedQualifier = (Named)qualifier;
+                break;
+            }
+        }
+        
+        if(namedQualifier != null)
+        {
+            String value = namedQualifier.value();
+            
+            if(value == null || value.equals(""))
+            {
+                Member member = injectionPoint.getMember();
+                if(!(member instanceof Field))
+                {
+                    throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " can not define @Named qualifier without value!");
+                }
+            }
+        }        
+        
+    }
+    
 }
