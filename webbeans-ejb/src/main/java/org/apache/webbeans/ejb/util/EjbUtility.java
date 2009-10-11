@@ -33,6 +33,7 @@ import org.apache.openejb.DeploymentInfo;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.component.creation.EjbBeanCreatorImpl;
@@ -146,8 +147,18 @@ public final class EjbUtility
             ejbBean.setInjectionTarget(ejbBeanCreator.getInjectedTarget());   
         }
         
-        // Check if the deployment type is enabled.
-        if (WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
+        boolean addBeans = true;        
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        
+        if(!useAlternative)
+        {
+            if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
+            {
+                addBeans = false;
+            }
+        }
+        
+        if (addBeans)
         {                                
             BeanManagerImpl.getManager().addBean(ejbBean);
             BeanManagerImpl.getManager().getBeans().addAll(producerMethodBeans);
