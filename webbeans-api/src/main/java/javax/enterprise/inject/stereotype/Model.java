@@ -29,11 +29,9 @@ import java.lang.annotation.Target;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import javax.enterprise.inject.deployment.Production;
 
 @Named
 @RequestScoped
-@Production
 @Stereotype
 @Target( { TYPE, METHOD, FIELD })
 @Retention(RUNTIME)
