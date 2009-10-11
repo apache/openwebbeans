@@ -19,6 +19,7 @@ import javax.servlet.ServletContext;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithFinalMethodComponent;
@@ -49,7 +50,6 @@ import org.apache.webbeans.test.component.exception.ProducerTypeStaticComponent;
 import org.apache.webbeans.test.component.exception.InnerComponent.InnerInnerComponent;
 import org.apache.webbeans.test.component.intercept.NoArgConstructorInterceptorComponent;
 import org.apache.webbeans.test.servlet.TestContext;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,6 +78,7 @@ public class ExceptionComponentTest extends TestContext
     {
         try
         {
+            OpenWebBeansConfiguration.getInstance().setProperty(OpenWebBeansConfiguration.USE_INJECTION_RESOLVER_VIA_ALTERNATIVE, "false");
             clear();
             defineSimpleWebBean(ComponentTypeExceptionComponent.class);
         }
@@ -85,6 +86,10 @@ public class ExceptionComponentTest extends TestContext
         {
             System.out.println(e.getMessage());
             return; // all ok!
+        }
+        finally
+        {
+            OpenWebBeansConfiguration.getInstance().setProperty(OpenWebBeansConfiguration.USE_INJECTION_RESOLVER_VIA_ALTERNATIVE, "true");
         }
         Assert.fail("expecting an exception!");
     }
@@ -95,6 +100,7 @@ public class ExceptionComponentTest extends TestContext
         WebBeansConfigurationException exc = null;
         try
         {
+            OpenWebBeansConfiguration.getInstance().setProperty(OpenWebBeansConfiguration.USE_INJECTION_RESOLVER_VIA_ALTERNATIVE, "false");
             clear();
             defineSimpleWebBean(ProducerTypeExceptionComponent.class);
 
@@ -103,6 +109,10 @@ public class ExceptionComponentTest extends TestContext
         {
             System.out.println("got expected exception: " + e.getMessage());
             return; // all ok!
+        }
+        finally
+        {
+            OpenWebBeansConfiguration.getInstance().setProperty(OpenWebBeansConfiguration.USE_INJECTION_RESOLVER_VIA_ALTERNATIVE, "true");
         }
         Assert.fail("expecting an exception!");
     }

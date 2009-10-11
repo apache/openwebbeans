@@ -19,8 +19,8 @@ import javax.enterprise.context.NormalScope;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ProducerFieldBean;
+import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -110,18 +110,29 @@ public final class ManagedBeanConfigurator
         checkSimpleWebBeanCondition(clazz);
 
         ManagedBean<T> component = new ManagedBean<T>(clazz, type);
-
+        
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        
+        if(useAlternative)
+        {
+            WebBeansUtil.setBeanEnableFlag(component);   
+        }
+        
         DefinitionUtil.defineSerializable(component);
         DefinitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
-
-        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, clazz.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in Simple WebBean Component implementation class : " + component.getReturnType().getName());
-
-        // Check if the deployment type is enabled.
-        if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
+        
+        //Use @DeploymentType instead of using @Alternative
+        if(!useAlternative)
         {
-            return null;
-        }
+            Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, clazz.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in Simple WebBean Component implementation class : " + component.getReturnType().getName());
 
+            // Check if the deployment type is enabled.
+            if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
+            {
+                return null;
+            }            
+        }
+        
         Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
 
         DefinitionUtil.defineApiTypes(component, clazz);

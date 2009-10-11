@@ -23,8 +23,8 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ResolutionUtil;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;

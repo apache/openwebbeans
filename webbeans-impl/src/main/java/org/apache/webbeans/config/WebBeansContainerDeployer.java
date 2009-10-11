@@ -625,7 +625,7 @@ public class WebBeansContainerDeployer
             
             //Fires ProcessAnnotatedType
             ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);             
-            ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);            
+            ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);                  
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
             
             if(processAnnotatedEvent.isVeto())
@@ -708,8 +708,19 @@ public class WebBeansContainerDeployer
                 managedBean.setInjectionTarget(managedBeanCreator.getInjectedTarget());   
             }
             
-            // Check if the deployment type is enabled.
-            if (WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
+            boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+            boolean addBeans = true;
+            if(!useAlternative)
+            {
+                // Check if the deployment type is enabled.
+                if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
+                {
+                    addBeans = false;
+                }
+                
+            }
+            
+            if (addBeans)
             {                
                 BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewSimpleBeanComponent(managedBean));                
                 DecoratorUtil.checkManagedBeanDecoratorConditions(managedBean);

@@ -26,6 +26,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
@@ -191,42 +192,37 @@ public class InjectionResolver
     {
         Asserts.assertNotNull(name, "name parameter can not be null");
 
-        Set<Bean<?>> resolvedComponents = new HashSet<Bean<?>>();
-        
-        Bean<?> resolvedComponent = null;
-        
+        Set<Bean<?>> resolvedComponents = new HashSet<Bean<?>>();        
         Set<Bean<?>> deployedComponents = this.manager.getBeans();
-
+        
         Iterator<Bean<?>> it = deployedComponents.iterator();
+        //Finding all beans with given name
         while (it.hasNext())
         {
             Bean<?> component = it.next();
-
             if (component.getName() != null)
             {
                 if (component.getName().equals(name))
                 {
-                    if (resolvedComponent == null)
-                    {
-                        resolvedComponent = component;
-                        resolvedComponents.add(resolvedComponent);
-                    }
-                    else
-                    {
-                        if (DeploymentTypeManager.getInstance().comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) > 0)
-                        {
-                            resolvedComponents.clear();
-                            resolvedComponent = component;
-                            resolvedComponents.add(resolvedComponent);
-                        }
-                        else if (DeploymentTypeManager.getInstance().comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) == 0)
-                        {
-                            resolvedComponents.add(component);
-                        }
-                    }
+                     resolvedComponents.add(component);
                 }
             }
         }
+        
+        //check for alternative
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        
+        //Check for enable/disable status of bean
+        if(useAlternative)
+        {
+            //Look for enable/disable
+            resolvedComponents = findByEnabled(resolvedComponents);
+        }
+        else
+        {
+            //Look for precedence
+            resolvedComponents = findByPrecedence(resolvedComponents);   
+        }                
         
         //Still Ambigious, check for specialization
         if(resolvedComponents.size() > 1)
@@ -242,6 +238,26 @@ public class InjectionResolver
         return resolvedComponents;
     }
      
+    private Set<Bean<?>> findByEnabled(Set<Bean<?>> resolvedComponents)
+    {
+        Set<Bean<?>> specializedComponents = new HashSet<Bean<?>>(); 
+        if(resolvedComponents.size() > 0)
+        {
+            for(Bean<?> bean : resolvedComponents)
+            {
+                AbstractBean<?> component = (AbstractBean<?>)bean;
+                
+                if(component.isEnabled())
+                {
+                    specializedComponents.add(component);
+                }
+            }
+        }
+        
+        return specializedComponents;
+        
+    }
+    
     
     /**
      * Returns filtered set by specialization.
@@ -332,9 +348,19 @@ public class InjectionResolver
         //Look for qualifiers
         results = findByQualifier(results, qualifier);
         
-        //Look for precedence
-        results = findByPrecedence(results);
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
         
+        if(useAlternative)
+        {
+            //Look for alternative
+            results = findByAlternatives(results);
+        }
+        else
+        {
+            //Look for precedence
+            results = findByPrecedence(results);   
+        }        
+
         //Ambigious resulotion, check for specialization
         if(results.size() > 1)
         {
@@ -419,6 +445,48 @@ public class InjectionResolver
         }
 
         return res;
+    }
+    
+    /**
+     * Gets alternatives from set.
+     * @param result resolved set
+     * @return containes alternatives
+     */
+    public Set<Bean<?>> findByAlternatives(Set<Bean<?>> result)
+    {
+        Set<Bean<?>> alternativeSet = new HashSet<Bean<?>>();
+        Set<Bean<?>> enableSet = new HashSet<Bean<?>>();
+        boolean containsAlternative = false;
+        
+        for(Bean<?> bean : result)
+        {
+            if(bean.isAlternative())
+            {
+                if(!containsAlternative)
+                {
+                    containsAlternative = true;
+                }
+                alternativeSet.add(bean);
+            }
+            else
+            {
+                if(!containsAlternative)
+                {                    
+                    AbstractBean<?> temp = (AbstractBean<?>)bean;
+                    if(temp.isEnabled())
+                    {
+                        enableSet.add(bean);
+                    }                    
+                }                
+            }
+        }
+        
+        if(containsAlternative)
+        {
+            return alternativeSet;
+        }
+        
+        return enableSet;
     }
 
     /**

@@ -22,7 +22,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
 
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.test.component.IPayment;

@@ -14,8 +14,9 @@
 package org.apache.webbeans.test.component.exception;
 
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.deployment.Production;
-import javax.enterprise.inject.deployment.Standard;
+
+import org.apache.webbeans.annotation.deployment.Production;
+import org.apache.webbeans.annotation.deployment.Standard;
 
 @Production
 public class ProducerTypeExceptionComponent

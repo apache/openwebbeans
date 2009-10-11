@@ -13,8 +13,9 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.enterprise.inject.deployment.Production;
 import javax.interceptor.AroundInvoke;
+
+import org.apache.webbeans.annotation.deployment.Production;
 
 @Production
 public class AroundInvokeWithoutParameterComponent

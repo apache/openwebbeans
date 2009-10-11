@@ -41,29 +41,29 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Specializes;
-import javax.inject.Named;
-import javax.inject.Scope;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.UnproxyableResolutionException;
-import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Scope;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
@@ -74,24 +74,26 @@ import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.annotation.StandardLiteral;
+import org.apache.webbeans.annotation.deployment.DeploymentType;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.BaseBean;
-import org.apache.webbeans.component.EnterpriseBeanMarker;
-import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.component.ConversationBean;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InstanceBean;
-import org.apache.webbeans.component.BeanManagerBean;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
-import org.apache.webbeans.component.EventBean;
-import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ProducerFieldBean;
+import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
@@ -105,6 +107,7 @@ import org.apache.webbeans.exception.WebBeansPassivationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
+import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.intercept.InterceptorType;
@@ -1352,12 +1355,22 @@ public final class WebBeansUtil
                         
             if (superBean != null)
             {
-                int res = DeploymentTypeManager.getInstance().comparePrecedences(specialized.getDeploymentType(), superBean.getDeploymentType());
-                if (res <= 0)
-                {
-                    throw new InconsistentSpecializationException("@Specializes exception. Class : " + specializedClass.getName() + " must have higher deployment type precedence from the class : " + superClass.getName());
-                }
+                //check for alternative
+                boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
                 
+                if(!useAlternative)
+                {
+                    int res = DeploymentTypeManager.getInstance().comparePrecedences(specialized.getDeploymentType(), superBean.getDeploymentType());
+                    if (res <= 0)
+                    {
+                        throw new InconsistentSpecializationException("@Specializes exception. Class : " + specializedClass.getName() + " must have higher deployment type precedence from the class : " + superClass.getName());
+                    }    
+                }
+                else
+                {
+                    ((AbstractBean<?>)superBean).setEnabled(false);
+                }
+                                
                 AbstractBean<?> comp = (AbstractBean<?>)specialized;
 
                 if(superBean.getName() != null)
@@ -1390,7 +1403,9 @@ public final class WebBeansUtil
         
         Set<Bean<?>> components = BeanManagerImpl.getManager().getComponents();
         Iterator<Bean<?>> it = components.iterator();
-
+        
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        
         while (it.hasNext())
         {
             AbstractBean<?> bean = (AbstractBean<?>)it.next();
@@ -1403,18 +1418,33 @@ public final class WebBeansUtil
                     {
                         if(!(bean instanceof NewBean))
                         {
-                            if(DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(bean.getDeploymentType()))
+                            if(!useAlternative)
                             {
-                                beans.add(bean);    
-                            }                            
+                                if(DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(bean.getDeploymentType()))
+                                {
+                                    beans.add(bean);    
+                                }                                                            
+                            }
+                            
+                            else
+                            {
+                                beans.add(bean);
+                            }
                         }                           
                     }                                    
                 }
                 else
                 {
-                    if(DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(bean.getDeploymentType()))
+                    if(!useAlternative)
                     {
-                        beans.add(bean);   
+                        if(DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(bean.getDeploymentType()))
+                        {
+                            beans.add(bean);   
+                        }                        
+                    }
+                    else
+                    {
+                        beans.add(bean);
                     }
                 }
             }
@@ -2058,4 +2088,16 @@ public final class WebBeansUtil
         
     }
     
+    public static void setBeanEnableFlag(AbstractBean<?> bean)
+    {
+        Asserts.assertNotNull(bean, "bean can not be null");
+        
+        if(AnnotationUtil.hasClassAnnotation(bean.getBeanClass(), Alternative.class))
+        {
+            if(!AlternativesManager.getInstance().isBeanHasAlternative(bean))
+            {
+                bean.setEnabled(false);
+            }
+        }
+    }
 }

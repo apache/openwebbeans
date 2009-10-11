@@ -20,7 +20,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
-
 import org.apache.webbeans.component.AbstractBean;
 
 /**

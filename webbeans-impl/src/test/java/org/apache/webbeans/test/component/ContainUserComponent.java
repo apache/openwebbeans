@@ -15,8 +15,9 @@ package org.apache.webbeans.test.component;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
-import javax.enterprise.inject.deployment.Production;
 import javax.inject.Inject;
+
+import org.apache.webbeans.annotation.deployment.Production;
 
 @Production
 @RequestScoped

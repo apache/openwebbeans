@@ -24,10 +24,9 @@ import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.deployment.Production;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.interceptor.Interceptor;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
@@ -36,6 +35,7 @@ import javax.servlet.http.HttpSession;
 import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -49,7 +49,6 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
-import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
@@ -318,7 +317,6 @@ public abstract class TestContext implements ITestContext
         ManagedBean<T> bean = null;
 
         bean = ManagedBeanConfigurator.define(clazz, WebBeansType.MANAGED);
-
         if (bean != null)
         {
             manager.addBean(WebBeansUtil.createNewSimpleBeanComponent(bean));

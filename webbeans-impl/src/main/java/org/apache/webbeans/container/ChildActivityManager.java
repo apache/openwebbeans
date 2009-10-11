@@ -25,11 +25,11 @@ import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.exception.inject.DeploymentException;
 

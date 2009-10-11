@@ -17,7 +17,8 @@ import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import javax.enterprise.inject.deployment.Production;
+
+import org.apache.webbeans.annotation.deployment.Production;
 
 @Production
 @SessionScoped

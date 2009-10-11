@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javassist.util.proxy.ProxyFactory;
+
 import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
@@ -29,8 +31,6 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.util.ClassUtil;
-
-import javassist.util.proxy.ProxyFactory;
 
 public final class JavassistProxyFactory
 {

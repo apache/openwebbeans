@@ -15,8 +15,8 @@ package org.apache.webbeans.test.component.producer;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.deployment.Production;
 
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.service.IService;

@@ -21,6 +21,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -48,6 +49,13 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
     {
         super(type, returnType);
         this.ownerComponent = ownerComponent;
+        
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        
+        if(useAlternative)
+        {
+            setEnabled(ownerComponent.isEnabled());   
+        }
     }
 
     /**

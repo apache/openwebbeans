@@ -21,12 +21,12 @@ import java.lang.annotation.Inherited;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.deployment.DeploymentType;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
 
+import org.apache.webbeans.annotation.deployment.DeploymentType;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.util.AnnotationUtil;
 

@@ -78,6 +78,9 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     /**This bean is specialized or not*/
     protected boolean specializedBean;
 
+    /**This bean is enabled or disabled*/
+    protected boolean enabled = true;
+    
     /**
      * Holds the all of the interceptor related data, contains around-invoke,
      * post-construct and pre-destroy
@@ -549,6 +552,13 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         this.specializedBean = specialized;
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
     
     /**
      * {@inheritDoc}
@@ -613,6 +623,14 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     public boolean isAlternative()
     {
         return AlternativesManager.getInstance().isBeanHasAlternative(this);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isEnabled()
+    {
+        return this.enabled;
     }
     
     /**

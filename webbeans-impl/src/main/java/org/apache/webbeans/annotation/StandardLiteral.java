@@ -14,7 +14,8 @@
 package org.apache.webbeans.annotation;
 
 import javax.enterprise.inject.AnnotationLiteral;
-import javax.enterprise.inject.deployment.Standard;
+
+import org.apache.webbeans.annotation.deployment.Standard;
 
 public class StandardLiteral extends AnnotationLiteral<Standard> implements Standard
 {

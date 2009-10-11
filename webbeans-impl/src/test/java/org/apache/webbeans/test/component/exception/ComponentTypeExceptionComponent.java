@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.enterprise.inject.deployment.Production;
-import javax.enterprise.inject.deployment.Standard;
+import org.apache.webbeans.annotation.deployment.Production;
+import org.apache.webbeans.annotation.deployment.Standard;
 
 @Production
 @Standard

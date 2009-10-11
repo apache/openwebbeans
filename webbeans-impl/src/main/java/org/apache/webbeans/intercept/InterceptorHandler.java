@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javassist.util.proxy.MethodHandler;
+
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -33,8 +35,6 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-
-import javassist.util.proxy.MethodHandler;
 
 public class InterceptorHandler implements MethodHandler, Serializable
 {

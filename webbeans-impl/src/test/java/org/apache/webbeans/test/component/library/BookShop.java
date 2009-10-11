@@ -14,9 +14,10 @@
 package org.apache.webbeans.test.component.library;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.deployment.Production;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
+
+import org.apache.webbeans.annotation.deployment.Production;
 
 @Production
 @RequestScoped

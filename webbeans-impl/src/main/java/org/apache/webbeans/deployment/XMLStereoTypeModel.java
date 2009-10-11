@@ -23,8 +23,8 @@ import java.util.Set;
 import javax.enterprise.context.NormalScope;
 import javax.inject.Named;
 import javax.inject.Scope;
-import javax.enterprise.inject.deployment.DeploymentType;
 
+import org.apache.webbeans.annotation.deployment.DeploymentType;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;

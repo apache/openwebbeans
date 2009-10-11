@@ -20,8 +20,8 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -215,6 +215,18 @@ public abstract class BaseBean<T> implements Bean<T>
      * @return true if bean is a specialized bean
      */
     public abstract boolean isSpecializedBean();
+    
+    /**
+     * Set enableed flag.
+     * @param enabled flag
+     */
+    public abstract void setEnabled(boolean enabled);    
+    
+    /**
+     * Bean is enabled or not.
+     * @return true if enabled
+     */    
+    public abstract boolean isEnabled();
     
     /**
      * Returns creational context of bean instance

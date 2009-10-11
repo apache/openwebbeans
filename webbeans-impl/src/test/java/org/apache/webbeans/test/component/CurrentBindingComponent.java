@@ -14,10 +14,10 @@
 package org.apache.webbeans.test.component;
 
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
-import javax.enterprise.inject.deployment.Production;
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.service.ITyped2;

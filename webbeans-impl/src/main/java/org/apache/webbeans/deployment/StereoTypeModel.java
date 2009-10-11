@@ -20,9 +20,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.deployment.DeploymentType;
 import javax.inject.Scope;
 
+import org.apache.webbeans.annotation.deployment.DeploymentType;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;

@@ -17,7 +17,8 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.deployment.Production;
+
+import org.apache.webbeans.annotation.deployment.Production;
 
 @Production
 @RequestScoped

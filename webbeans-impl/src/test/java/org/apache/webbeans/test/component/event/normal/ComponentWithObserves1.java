@@ -17,8 +17,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
-import javax.enterprise.inject.deployment.Production;
 
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.event.LoggedInEvent;
 

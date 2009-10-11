@@ -15,8 +15,6 @@ package org.apache.webbeans.container;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -46,12 +44,12 @@ import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.inject.Scope;
@@ -64,6 +62,7 @@ import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -866,7 +865,16 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             set.add(obj);
         }
         
-        set = this.injectionResolver.findByPrecedence(set);
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        
+        if(useAlternative)
+        {
+            set = this.injectionResolver.findByAlternatives(set);
+        }        
+        else
+        {
+            set = this.injectionResolver.findByPrecedence(set);   
+        }
         
         if(set.size() > 1)
         {

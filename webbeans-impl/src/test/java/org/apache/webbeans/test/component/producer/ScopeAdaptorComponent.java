@@ -16,10 +16,10 @@ package org.apache.webbeans.test.component.producer;
 import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.deployment.Production;
+import javax.inject.Named;
 
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.component.IPayment;

@@ -17,6 +17,8 @@ import java.io.InputStream;
 
 import javax.enterprise.inject.spi.Bean;
 
+import junit.framework.Assert;
+
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.test.servlet.TestContext;
@@ -25,8 +27,6 @@ import org.apache.webbeans.test.xml.strict.Alternative1;
 import org.apache.webbeans.test.xml.strict.Alternative2;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 public class AlternativesTest extends TestContext
 {

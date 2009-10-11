@@ -15,10 +15,10 @@ package org.apache.webbeans.test.component;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.deployment.Production;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.component.intercept.Interceptor1;
 import org.apache.webbeans.test.component.intercept.Interceptor2;

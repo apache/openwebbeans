@@ -16,15 +16,19 @@ package org.apache.webbeans.event;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.enterprise.event.Reception;
 import javax.enterprise.event.Observer;
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.event.Reception;
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.TypeLiteral;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
@@ -37,10 +41,9 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.ArrayUtil;
-import static org.apache.webbeans.util.ArrayUtil.asSet;
 
 @SuppressWarnings("unchecked")
 public final class NotificationManager

@@ -23,9 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.enterprise.inject.deployment.Production;
-import javax.enterprise.inject.deployment.Standard;
-
+import org.apache.webbeans.annotation.deployment.Production;
+import org.apache.webbeans.annotation.deployment.Standard;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.util.Asserts;
 

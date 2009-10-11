@@ -1,0 +1,114 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
+package org.apache.webbeans.test.unittests.specializes.logger;
+
+import java.io.InputStream;
+
+import javax.enterprise.inject.spi.Bean;
+
+import junit.framework.Assert;
+
+import org.apache.webbeans.inject.AlternativesManager;
+import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.test.component.specializes.logger.ISomeLogger;
+import org.apache.webbeans.test.component.specializes.logger.MockNotSpecializedLogger;
+import org.apache.webbeans.test.component.specializes.logger.MockSpecializedLogger;
+import org.apache.webbeans.test.component.specializes.logger.SpecializedInjector;
+import org.apache.webbeans.test.component.specializes.logger.SystemLogger;
+import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.test.unittests.xml.XMLTest;
+import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.xml.WebBeansXMLConfigurator;
+import org.junit.Test;
+
+public class LoggerSpecializationTest extends TestContext
+{
+    public LoggerSpecializationTest()
+    {
+        super(LoggerSpecializationTest.class.getName());
+    }
+
+    @Test
+    public void testNotSpecializedVersion()
+    {
+        clear();
+        
+        PluginLoader.getInstance().startUp();
+        
+        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/specializes/alternatives.xml");
+        Assert.assertNotNull(stream);
+
+        WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
+        configurator.configureSpecSpecific(stream, "alternative.xml");
+        
+        defineSimpleWebBean(SystemLogger.class);
+        defineSimpleWebBean(MockNotSpecializedLogger.class);        
+        
+        Bean<SpecializedInjector> bean = defineSimpleWebBean(SpecializedInjector.class);
+        Object instance = getManager().getReference(bean, SpecializedInjector.class, null);
+        
+        Assert.assertTrue(instance instanceof SpecializedInjector);
+        SpecializedInjector injector = (SpecializedInjector)instance;
+        
+        ISomeLogger logger = injector.logger();
+        
+        Assert.assertTrue(logger instanceof SystemLogger);
+        
+        logger.printError("Hello World");
+        
+        SystemLogger sysLogger = (SystemLogger)logger;
+        
+        Assert.assertEquals("Hello World", sysLogger.getMessage());
+        
+        PluginLoader.getInstance().shutDown();
+        AlternativesManager.getInstance().clear();
+    }
+    
+    @Test
+    public void testSpecializedVersion()
+    {
+        clear();
+        
+        PluginLoader.getInstance().startUp();
+        
+        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/specializes/alternatives.xml");
+        Assert.assertNotNull(stream);
+
+        WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
+        configurator.configureSpecSpecific(stream, "alternatives.xml");
+        
+        defineSimpleWebBean(SystemLogger.class);
+        defineSimpleWebBean(MockSpecializedLogger.class);
+        
+        WebBeansUtil.configureSpecializations(MockSpecializedLogger.class);
+        
+        Bean<SpecializedInjector> bean = defineSimpleWebBean(SpecializedInjector.class);
+        Object instance = getManager().getReference(bean, SpecializedInjector.class, null);
+        
+        Assert.assertTrue(instance instanceof SpecializedInjector);
+        SpecializedInjector injector = (SpecializedInjector)instance;
+        
+        ISomeLogger logger = injector.logger();
+        
+        Assert.assertTrue(logger instanceof MockSpecializedLogger);
+        
+        logger.printError("Hello World");
+        
+        MockSpecializedLogger sysLogger = (MockSpecializedLogger)logger;
+        
+        Assert.assertEquals("Hello World", sysLogger.getMessage());
+        
+        PluginLoader.getInstance().shutDown();
+    }
+}

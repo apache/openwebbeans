@@ -14,13 +14,11 @@
 package org.apache.webbeans.spi.se.deployer;
 
 import java.io.IOException;
-
 import java.net.URL;
 import java.util.Enumeration;
 
 import org.apache.webbeans.spi.deployer.AbstractMetaDataDiscovery;
 import org.apache.webbeans.util.WebBeansUtil;
-
 import org.scannotation.ClasspathUrlFinder;
 
 public class MetaDataDiscoveryStandard extends AbstractMetaDataDiscovery

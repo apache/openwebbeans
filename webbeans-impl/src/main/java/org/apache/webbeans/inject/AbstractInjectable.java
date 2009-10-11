@@ -23,8 +23,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractBean;
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 

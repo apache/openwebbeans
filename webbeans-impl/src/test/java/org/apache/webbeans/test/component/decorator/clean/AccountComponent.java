@@ -17,7 +17,8 @@ import java.math.BigDecimal;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
-import javax.enterprise.inject.deployment.Production;
+
+import org.apache.webbeans.annotation.deployment.Production;
 
 @Production
 @RequestScoped

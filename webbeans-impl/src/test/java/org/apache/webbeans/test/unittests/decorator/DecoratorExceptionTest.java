@@ -31,7 +31,6 @@ import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMust
 import org.apache.webbeans.test.component.decorator.broken.MoreThanOneDelegateAttribute;
 import org.apache.webbeans.test.component.decorator.broken.PaymentDecorator;
 import org.apache.webbeans.test.servlet.TestContext;
-import org.apache.webbeans.util.Asserts;
 import org.junit.Before;
 import org.junit.Test;
 

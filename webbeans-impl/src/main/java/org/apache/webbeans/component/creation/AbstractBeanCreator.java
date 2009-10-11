@@ -21,9 +21,9 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
-
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.DefinitionUtil;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -60,6 +60,12 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     {
         this.bean = bean;
         this.beanAnnotations = beanAnnotations;
+        
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        if(useAlternative)
+        {
+            WebBeansUtil.setBeanEnableFlag(bean);   
+        }
     }
 
     /**
@@ -123,7 +129,11 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         
         if(isDefaultMetaDataProvider())
         {
-            deploymentType = DefinitionUtil.defineDeploymentType(this.bean, this.beanAnnotations, errorMessage);
+            boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+            if(!useAlternative)
+            {
+                deploymentType = DefinitionUtil.defineDeploymentType(this.bean, this.beanAnnotations, errorMessage);   
+            }
         }
         else
         {

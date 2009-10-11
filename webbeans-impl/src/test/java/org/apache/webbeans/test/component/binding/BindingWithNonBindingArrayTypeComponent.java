@@ -14,8 +14,8 @@
 package org.apache.webbeans.test.component.binding;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.deployment.Production;
 
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.NonBindingArrayType;
 
 @Production

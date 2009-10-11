@@ -13,8 +13,7 @@
  */
 package org.apache.webbeans.test.component.exception.stero;
 
-import javax.enterprise.inject.deployment.Production;
-
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.sterotype.StereoWithNonScope;
 
 @Production

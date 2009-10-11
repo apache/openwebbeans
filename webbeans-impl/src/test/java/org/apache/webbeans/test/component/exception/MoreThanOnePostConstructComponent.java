@@ -14,7 +14,8 @@
 package org.apache.webbeans.test.component.exception;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.deployment.Production;
+
+import org.apache.webbeans.annotation.deployment.Production;
 
 @Production
 public class MoreThanOnePostConstructComponent

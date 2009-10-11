@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.enterprise.inject.deployment.Production;
+import org.apache.webbeans.annotation.deployment.Production;
 
 @Production
 abstract public class AbstractComponent

@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.event.BeanObserverImpl;
 import org.apache.webbeans.event.TransactionalObserverType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;

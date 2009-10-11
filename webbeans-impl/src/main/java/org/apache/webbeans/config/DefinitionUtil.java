@@ -31,29 +31,29 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
-import javax.inject.Named;
-import javax.inject.Scope;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
-import javax.enterprise.inject.deployment.DeploymentType;
-import javax.enterprise.inject.deployment.Standard;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Scope;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.ProductionLiteral;
+import org.apache.webbeans.annotation.deployment.DeploymentType;
+import org.apache.webbeans.annotation.deployment.Standard;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.BaseBean;
 import org.apache.webbeans.component.IBeanHasParent;
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ProducerFieldBean;
+import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -621,12 +621,17 @@ public final class DefinitionUtil
         defineSerializable(component);
         defineStereoTypes(component, method.getDeclaredAnnotations());
 
-        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, method.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
-
-        // Check if the deployment type is enabled.
-        if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        
+        if(!useAlternative)
         {
-            return null;
+            Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, method.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
+
+            // Check if the deployment type is enabled.
+            if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
+            {
+                return null;
+            }            
         }
 
         Annotation[] methodAnns = method.getDeclaredAnnotations();
@@ -678,14 +683,19 @@ public final class DefinitionUtil
         defineSerializable(component);
         defineStereoTypes(component, field.getDeclaredAnnotations());
 
-        Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, field.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
-
-        // Check if the deployment type is enabled.
-        if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        
+        if(!useAlternative)
         {
-            return null;
-        }
+            Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, field.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
 
+            // Check if the deployment type is enabled.
+            if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
+            {
+                return null;
+            }            
+        }
+        
         Annotation[] fieldAnns = field.getDeclaredAnnotations();
 
         DefinitionUtil.defineProducerMethodApiTypes(component, returnType);

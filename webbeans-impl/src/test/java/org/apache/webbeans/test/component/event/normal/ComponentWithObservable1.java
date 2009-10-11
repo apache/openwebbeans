@@ -17,9 +17,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
-import javax.enterprise.inject.deployment.Production;
 import javax.inject.Inject;
 
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.event.LoggedInEvent;
 
 @RequestScoped

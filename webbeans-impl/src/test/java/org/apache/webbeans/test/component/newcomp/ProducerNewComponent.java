@@ -15,11 +15,11 @@ package org.apache.webbeans.test.component.newcomp;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.deployment.Production;
+import javax.inject.Named;
 
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.IPayment;
 

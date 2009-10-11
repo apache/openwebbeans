@@ -13,10 +13,9 @@
  */
 package org.apache.webbeans.annotation;
 
-import java.lang.annotation.Annotation;
-
 import javax.enterprise.inject.AnnotationLiteral;
-import javax.enterprise.inject.deployment.Production;
+
+import org.apache.webbeans.annotation.deployment.Production;
 
 public class ProductionLiteral extends AnnotationLiteral<Production> implements Production
 {

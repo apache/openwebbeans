@@ -14,8 +14,8 @@
 package org.apache.webbeans.test.component.intercept.webbeans;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.deployment.Production;
 
+import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Action;
 
 @Production

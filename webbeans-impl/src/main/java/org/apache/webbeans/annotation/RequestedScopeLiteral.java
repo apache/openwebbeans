@@ -15,7 +15,6 @@ package org.apache.webbeans.annotation;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.AnnotationLiteral;
-import javax.enterprise.inject.Default;
 
 /**
  * {@link RequestScoped} literal annotation.
