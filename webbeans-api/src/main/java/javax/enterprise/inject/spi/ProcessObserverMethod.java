@@ -41,7 +41,7 @@ public interface ProcessObserverMethod<X, T>
      * 
      * @return observer method instance
      */
-    public ObserverMethod<X,T> getObserverMethod();
+    public ObserverMethod<X> getObserverMethod();
 
     /**
      * Add throwable.

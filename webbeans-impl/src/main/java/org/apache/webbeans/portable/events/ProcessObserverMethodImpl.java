@@ -31,9 +31,9 @@ public class ProcessObserverMethodImpl<X,T> implements ProcessObserverMethod<X, 
     private final AnnotatedMethod<X> annotatedMethod;
     
     /**ObserverMethod instance*/
-    private final ObserverMethod<X, T> observerMethod;
+    private final ObserverMethod<X> observerMethod;
 
-    public ProcessObserverMethodImpl(AnnotatedMethod<X> annotatedMethod,ObserverMethod<X, T> observerMethod)
+    public ProcessObserverMethodImpl(AnnotatedMethod<X> annotatedMethod,ObserverMethod<X> observerMethod)
     {
         this.annotatedMethod = annotatedMethod;
         this.observerMethod = observerMethod;
@@ -62,7 +62,7 @@ public class ProcessObserverMethodImpl<X,T> implements ProcessObserverMethod<X, 
      * {@inheritDoc}
      */
     @Override
-    public ObserverMethod<X, T> getObserverMethod()
+    public ObserverMethod<X> getObserverMethod()
     {
         return this.observerMethod;
     }

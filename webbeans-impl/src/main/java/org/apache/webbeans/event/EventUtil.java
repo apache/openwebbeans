@@ -53,31 +53,15 @@ public final class EventUtil
         AnnotationUtil.checkQualifierConditions(annotations);
     }
 
-    public static TransactionalObserverType getObserverMethodTransactionType(Method observerMethod)
+    public static TransactionPhase getObserverMethodTransactionType(Method observerMethod)
     {
         Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observerMethod, Observes.class);
+        if (observes != null)
+        {
+            return observes.during();
+        }
         
-        if (observes.during().equals(TransactionPhase.AFTER_COMPLETION))
-        {
-            return TransactionalObserverType.AFTER_TRANSACTION_COMPLETION;
-        }
-        else if (observes.during().equals(TransactionPhase.AFTER_SUCCESS))
-        {
-            return TransactionalObserverType.AFTER_TRANSACTION_SUCCESS;
-        }
-        else if (observes.during().equals(TransactionPhase.AFTER_FAILURE))
-        {
-            return TransactionalObserverType.AFTER_TRANSACTION_FAILURE;
-        }
-        else if (observes.during().equals(TransactionPhase.BEFORE_COMPLETION))
-        {
-            return TransactionalObserverType.BEFORE_TRANSACTION_COMPLETION;
-        }
-        else
-        {
-            return TransactionalObserverType.NONE;
-        }
-
+        return null;
     }
 
     public static void checkObserverMethodConditions(Method candidateObserverMethod, Class<?> clazz)

@@ -9,12 +9,13 @@
 ~~ distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 ~~ KIND, either express or implied. See the License for the specific language
 ~~ governing permissions and limitations under the License.
-JSR-299 Contexts and Dependency Injection for the Java EE platform
+JSR-330 Dependency Injection for Java
 
-  The purpose of the WebBeans specification is to unify the JSF managed bean component model 
-  with the EJB component model, resulting in a significantly simplified programming model 
-  for web-based applications. 
+  The purpose of the JSR-330 'atinject' specification is to provide basic dependency
+  injection annotations for Java.
 
 * Official Resources
     
-  *  {{{http://www.jcp.org/en/jsr/detail?id=299}Java Specification Request 299}}
+  *  {{{http://www.jcp.org/en/jsr/detail?id=330}Java Specification Request 330}}
+  
+  * TODO googlecode page

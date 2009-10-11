@@ -17,13 +17,17 @@
 package org.apache.webbeans.sample.observer;
 
 
+import javax.enterprise.event.Observes;
+
 import org.apache.webbeans.sample.event.LoggedInEvent;
 import org.apache.webbeans.sample.model.User;
 
-public class LoggedInObserver implements javax.enterprise.event.Observer<LoggedInEvent>
+
+
+public class LoggedInObserver
 {
 
-	public void notify(LoggedInEvent event)
+	public void afterLogin(@Observes LoggedInEvent event)
 	{
 		User user = event.getUser();
 		System.out.println("User with user name : " + user.getUserName());

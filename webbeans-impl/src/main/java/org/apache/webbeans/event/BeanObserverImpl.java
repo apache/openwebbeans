@@ -19,11 +19,15 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
-import javax.enterprise.event.Observer;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.Reception;
+import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
@@ -58,7 +62,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> event type
  */
-public class BeanObserverImpl<T> implements Observer<T>
+public class BeanObserverImpl<T> implements ObserverMethod<T>
 {
     /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(BeanObserverImpl.class);
@@ -72,9 +76,6 @@ public class BeanObserverImpl<T> implements Observer<T>
     /**Using existing bean instance or not*/
     private final boolean ifExist;
 
-    /**Observer transaction type*/
-    private final TransactionalObserverType type;
-
     /**
      * Creates a new bean observer instance.
      * 
@@ -83,12 +84,11 @@ public class BeanObserverImpl<T> implements Observer<T>
      * @param ifExist if exist parameter
      * @param type transaction type
      */
-    public BeanObserverImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist, TransactionalObserverType type)
+    public BeanObserverImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist)
     {
         this.bean = bean;
         this.observerMethod = observerMethod;
         this.ifExist = ifExist;
-        this.type = type;
     }
 
     /**
@@ -147,14 +147,7 @@ public class BeanObserverImpl<T> implements Observer<T>
         }
         catch (Exception e)
         {
-            if (!getType().equals(TransactionalObserverType.NONE))
-            {
-                logger.error("Error is occured while notifying observer in class : " + observerMethod.getDeclaringClass().getName() + " in method : " + observerMethod.getName(), e);
-            }
-            else
-            {
-                throw new WebBeansException(e.getCause());
-            }
+                throw new WebBeansException(e);
         }
         finally
         {
@@ -232,23 +225,33 @@ public class BeanObserverImpl<T> implements Observer<T>
     }
 
     /**
-     * Returrns observer owner bean.
+     * Returns observer owner bean.
      * 
      * @return the bean
      */
-    public InjectionTargetBean<?> getBean()
+    public Class<?> getBeanClass()
     {
-        return bean;
+        return bean.getClass();
     }
 
-    /**
-     * Returns observer's transactional type.
-     * 
-     * @return transactional type
-     */
-    public TransactionalObserverType getType()
-    {
-        return type;
+    public Set<Annotation> getObservedQualifiers() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Type getObservedType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Reception getReception() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public TransactionPhase getTransactionPhase() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

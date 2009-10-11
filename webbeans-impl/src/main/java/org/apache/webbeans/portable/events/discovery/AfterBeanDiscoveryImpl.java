@@ -61,7 +61,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
      * {@inheritDoc}
      */
     @Override
-    public void addObserverMethod(ObserverMethod<?, ?> observerMethod)
+    public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
         // TODO Auto-generated method stub
         

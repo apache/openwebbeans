@@ -25,9 +25,9 @@ import java.util.Set;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 
-public interface ObserverMethod<X,T>
+public interface ObserverMethod<T>
 {
-    public Bean<X> getBean();
+    public Class<?> getBeanClass();
     
     public Type getObservedType();
     

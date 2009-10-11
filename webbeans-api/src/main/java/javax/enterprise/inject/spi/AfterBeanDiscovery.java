@@ -48,7 +48,7 @@ public interface AfterBeanDiscovery
      * 
      * @param observerMethod observer method
      */
-    public void addObserverMethod(ObserverMethod<?, ?> observerMethod);
+    public void addObserverMethod(ObserverMethod<?> observerMethod);
     
     /**
      * Adds given context to the container.

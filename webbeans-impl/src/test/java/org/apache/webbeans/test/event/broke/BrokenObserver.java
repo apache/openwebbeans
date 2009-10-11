@@ -13,15 +13,52 @@
  */
 package org.apache.webbeans.test.event.broke;
 
-import javax.enterprise.event.Observer;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
+
+import javax.enterprise.event.Reception;
+import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.ObserverMethod;
+
 
 @SuppressWarnings("unchecked")
-public class BrokenObserver implements Observer<BrokenEvent>
+public class BrokenObserver implements ObserverMethod<BrokenEvent>
 {
 
     public void notify(BrokenEvent event)
     {
 
+    }
+
+    @Override
+    public Class<?> getBeanClass() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<Annotation> getObservedQualifiers() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Type getObservedType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Reception getReception() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public TransactionPhase getTransactionPhase() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -28,7 +28,6 @@ import javax.el.ELResolver;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.event.Observer;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.InjectionException;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
@@ -150,20 +149,7 @@ public interface BeanManager
      * @throws IllegalArgumentException same qualifier is given
      */
     public void fireEvent(Object event, Annotation... qualifiers);
-    
-    /**
-     * Returns a set of observers that observe for given event type and qualifiers
-     * 
-     * @param <T> observer type info
-     * @param event observer event type
-     * @param qualifiers event qualifiers
-     * @return set of observers that observe for given event type and qualifiers
-     * @throws IllegalArgumentException event object contains a {@link TypeVariable}
-     * @throws IllegalArgumentException given qualifier annotation is not a qualifier
-     * @throws IllegalArgumentException same qualifier is given
-     */
-    public <T> Set<Observer<T>> resolveObservers(T event, Annotation... qualifiers);
-    
+        
     /**
      * Returns set of observer methods.
      * 
@@ -172,7 +158,7 @@ public interface BeanManager
      * @param qualifiers event qualifiers
      * @return set of observer methods
      */
-    public <T> Set<ObserverMethod<?,T>> resolveObserverMethods(T event, Annotation... qualifiers);
+    public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... qualifiers);
     
     /**
      * Returns a list of decorator.

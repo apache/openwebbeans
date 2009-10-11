@@ -43,6 +43,7 @@
 
         <menu name="OpenWebBeans">
             <item name="JSR-299" href="jsr299.html" />
+            <item name="JSR-330" href="jsr330.html" />
             <item name="Contributing" href="contributing.html" />
             <item name="IRC" href="irc.html" />
             <item name="FAQ" href="faq.html" />

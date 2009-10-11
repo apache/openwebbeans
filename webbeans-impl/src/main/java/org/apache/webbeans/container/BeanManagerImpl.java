@@ -37,7 +37,6 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observer;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.TypeLiteral;
@@ -381,15 +380,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return this.injectionResolver.implResolveByType(apiType.getType(), bindingTypes);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings)
-    {
-        return this.notificationManager.resolveObservers(event, bindings);
-    }
-
     
     public Set<Bean<?>> getComponents()
     {
@@ -523,15 +513,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         this.xmlConfigurator.configure(xmlStream);
         
         return this;
-    }
-
-    /**
-     * Create a new ChildActivityManager.
-     */
-    
-    public BeanManager createActivity()
-    {
-        return new ChildActivityManager(this);
     }
 
     /**
@@ -937,14 +918,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public <T> Set<ObserverMethod<?, T>> resolveObserverMethods(T event, Annotation... bindings)
-    {
+    public <T> Set<ObserverMethod<? super T>> resolveObserverMethods( T event, Annotation... qualifiers ) {
         // TODO Auto-generated method stub
         return null;
     }
+
 
 }

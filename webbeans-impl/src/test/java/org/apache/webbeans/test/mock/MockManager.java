@@ -24,7 +24,6 @@ import javax.el.ELResolver;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.event.Observer;
 import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -166,20 +165,10 @@ public class MockManager implements BeanManager
         return manager.resolveInterceptors(type, interceptorBindings);
     }
 
-    public <T> Set<Observer<T>> resolveObservers(T event, Annotation... bindings)
-    {
-        return manager.resolveObservers(event, bindings);
-    }
-
     public BeanManager parse(InputStream xmlStream)
     {
         manager.parse(xmlStream);
         return manager;
-    }
-
-    public BeanManager createActivity()
-    {
-        return manager.createActivity();
     }
 
     public BeanManager setCurrent(Class<? extends Annotation> scopeType)
@@ -327,7 +316,7 @@ public class MockManager implements BeanManager
 
 
     @Override
-    public <T> Set<ObserverMethod<?, T>> resolveObserverMethods(T event, Annotation... bindings)
+    public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... bindings)
     {
         return this.manager.resolveObserverMethods(event, bindings);
     }

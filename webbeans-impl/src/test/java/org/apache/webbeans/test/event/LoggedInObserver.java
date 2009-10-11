@@ -13,9 +13,16 @@
  */
 package org.apache.webbeans.test.event;
 
-import javax.enterprise.event.Observer;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
 
-public class LoggedInObserver implements Observer<LoggedInEvent>
+import javax.enterprise.event.Reception;
+import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.ObserverMethod;
+
+
+public class LoggedInObserver implements ObserverMethod<LoggedInEvent>
 {
     private String result = null;
 
@@ -39,6 +46,36 @@ public class LoggedInObserver implements Observer<LoggedInEvent>
     public void setResult(String result)
     {
         this.result = result;
+    }
+
+    @Override
+    public Class<?> getBeanClass() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<Annotation> getObservedQualifiers() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Type getObservedType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Reception getReception() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public TransactionPhase getTransactionPhase() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

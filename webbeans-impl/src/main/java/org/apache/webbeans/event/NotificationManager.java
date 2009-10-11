@@ -23,12 +23,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.enterprise.event.Observer;
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
+import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
@@ -66,7 +67,7 @@ public final class NotificationManager
         return manager.getNotificationManager();
     }
 
-    public <T> void addObserver(Observer<T> observer, Type eventType, Annotation... annotations)
+    public <T> void addObserver(ObserverMethod<T> observer, Type eventType, Annotation... annotations)
     {
         EventUtil.checkEventBindings(annotations);
 
@@ -80,14 +81,14 @@ public final class NotificationManager
         set.add(new ObserverWrapper<T>(observer, annotations));
     }
 
-    public <T> void addObserver(Observer<T> observer, TypeLiteral<T> typeLiteral, Annotation... annotations)
+    public <T> void addObserver(ObserverMethod<T> observer, TypeLiteral<T> typeLiteral, Annotation... annotations)
     {
         EventUtil.checkEventType(typeLiteral.getRawType());
 
         addObserver(observer, typeLiteral.getRawType(), annotations);
     }
 
-    public <T> void removeObserver(Observer<T> observer, Class<T> eventType, Annotation... annotations)
+    public <T> void removeObserver(ObserverMethod<T> observer, Class<T> eventType, Annotation... annotations)
     {
         EventUtil.checkEventType(eventType);
         EventUtil.checkEventBindings(annotations);
@@ -97,7 +98,7 @@ public final class NotificationManager
             Set<ObserverWrapper<?>> set = observers.get(eventType);
             for (ObserverWrapper<?> s : set)
             {
-                Observer<T> ob = (Observer<T>) s.getObserver();
+                ObserverMethod<T> ob = (ObserverMethod<T>) s.getObserver();
 
                 Set<Annotation> evenBindings = s.getQualifiers();
                 Annotation[] anns = new Annotation[evenBindings.size()];
@@ -111,12 +112,12 @@ public final class NotificationManager
         }
     }
 
-    public <T> void removeObserver(Observer<T> observer, TypeLiteral<T> typeLiteral, Annotation... annotations)
+    public <T> void removeObserver(ObserverMethod<T> observer, TypeLiteral<T> typeLiteral, Annotation... annotations)
     {
         removeObserver(observer, typeLiteral.getRawType(), annotations);
     }
 
-    public <T> Set<Observer<T>> resolveObservers(T event, Annotation... eventQualifiers)
+    public <T> Set<ObserverMethod<T>> resolveObservers(T event, Annotation... eventQualifiers)
     {
         EventUtil.checkEventBindings(eventQualifiers);
 
@@ -187,9 +188,9 @@ public final class NotificationManager
         return matching;
     }
 
-    private <T> Set<Observer<T>> unwrap(Set<ObserverWrapper<T>> wrappers)
+    private <T> Set<ObserverMethod<T>> unwrap(Set<ObserverWrapper<T>> wrappers)
     {
-        Set<Observer<T>> observers = new HashSet<Observer<T>>();
+        Set<ObserverMethod<T>> observers = new HashSet<ObserverMethod<T>>();
 
         for (ObserverWrapper<T> wrapper : wrappers)
         {
@@ -203,36 +204,34 @@ public final class NotificationManager
     {
         Transaction transaction = transactionService.getTransaction();
 
-        Set<Observer<Object>> observers = resolveObservers(event, qualifiers);
+        Set<ObserverMethod<Object>> observers = resolveObservers(event, qualifiers);
 
-        for (Observer<Object> observer: observers)
+        for (ObserverMethod<Object> observer: observers)
         {
             try
             {
-                if (transaction != null && isTransactional(observer))
+                TransactionPhase phase = observer.getTransactionPhase();
+                if (transaction != null && phase != null)
                 {
-                    BeanObserverImpl<Object> beanObserver = (BeanObserverImpl<Object>) observer;
-
-                    TransactionalObserverType type = beanObserver.getType();
-
-                    if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_COMPLETION))
+                    if (phase.equals(TransactionPhase.AFTER_COMPLETION))
                     {
                         transaction.registerSynchronization(new AfterCompletion(observer, event));
                     }
-                    else if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_SUCCESS))
+                    else if (phase.equals(TransactionPhase.AFTER_SUCCESS))
                     {
                         transaction.registerSynchronization(new AfterCompletionSuccess(observer, event));
                     }
-                    else if (type.equals(TransactionalObserverType.AFTER_TRANSACTION_FAILURE))
+                    else if (phase.equals(TransactionPhase.AFTER_FAILURE))
                     {
                         transaction.registerSynchronization(new AfterCompletionFailure(observer, event));
                     }
-                    else if (type.equals(TransactionalObserverType.BEFORE_TRANSACTION_COMPLETION))
+                    else if (phase.equals(TransactionPhase.BEFORE_COMPLETION))
                     {
                         transaction.registerSynchronization(new BeforeCompletion(observer, event));
                     }
-                    else {
-                        throw new IllegalStateException("TransactionalObserverType not supported: " + type);
+                    else 
+                    {
+                        throw new IllegalStateException("TransactionPhase not supported: " + phase);
                     }
                 }
                 else
@@ -264,23 +263,6 @@ public final class NotificationManager
         }
     }
 
-    private boolean isTransactional(Observer<?> observer)
-    {
-        if (!(observer instanceof BeanObserverImpl))
-        {
-            return false;
-        }
-
-        BeanObserverImpl<?> beanObserver = (BeanObserverImpl<?>) observer;
-
-        if (beanObserver.getType().equals(TransactionalObserverType.NONE))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
     public <T> void addObservableComponentMethods(InjectionTargetBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
@@ -299,9 +281,9 @@ public final class NotificationManager
                 ifExist = true;
             }
 
-            TransactionalObserverType type = EventUtil.getObserverMethodTransactionType(observableMethod);
+            //X TODO TransactionPhase phase = EventUtil.getObserverMethodTransactionType(observableMethod);
 
-            BeanObserverImpl<T> observer = new BeanObserverImpl(component, observableMethod, ifExist, type);
+            BeanObserverImpl<T> observer = new BeanObserverImpl(component, observableMethod, ifExist);
 
             Class<T> clazz = (Class<T>) AnnotationUtil.getMethodFirstParameterTypeClazzWithAnnotation(observableMethod, Observes.class);
 
@@ -339,9 +321,9 @@ public final class NotificationManager
         private final Set<Annotation> qualifiers;
 
         /**Wrapped observer instance*/
-        private final Observer<T> observer;
+        private final ObserverMethod<T> observer;
 
-        public ObserverWrapper(Observer<T> observer, Annotation... qualifiers)
+        public ObserverWrapper(ObserverMethod<T> observer, Annotation... qualifiers)
         {
             this.qualifiers = toQualiferSet(qualifiers);
             this.qualifiers.remove(Default.class);
@@ -353,7 +335,7 @@ public final class NotificationManager
             return this.qualifiers;
         }
 
-        public Observer<T> getObserver()
+        public ObserverMethod<T> getObserver()
         {
             return observer;
         }
@@ -361,10 +343,10 @@ public final class NotificationManager
 
     private static class AbstractSynchronization<T> implements Synchronization {
 
-        private final Observer<T> observer;
+        private final ObserverMethod<T> observer;
         private final T event;
 
-        public AbstractSynchronization(Observer<T> observer, T event)
+        public AbstractSynchronization(ObserverMethod<T> observer, T event)
         {
             this.observer = observer;
             this.event = event;
@@ -391,7 +373,7 @@ public final class NotificationManager
     }
 
     private static class BeforeCompletion extends AbstractSynchronization {
-        private BeforeCompletion(Observer observer, Object event)
+        private BeforeCompletion(ObserverMethod observer, Object event)
         {
             super(observer, event);
         }
@@ -404,7 +386,7 @@ public final class NotificationManager
     }
 
     private static class AfterCompletion extends AbstractSynchronization {
-        private AfterCompletion(Observer observer, Object event)
+        private AfterCompletion(ObserverMethod observer, Object event)
         {
             super(observer, event);
         }
@@ -417,7 +399,7 @@ public final class NotificationManager
     }
 
     private static class AfterCompletionSuccess extends AbstractSynchronization {
-        private AfterCompletionSuccess(Observer observer, Object event)
+        private AfterCompletionSuccess(ObserverMethod observer, Object event)
         {
             super(observer, event);
         }
@@ -433,7 +415,7 @@ public final class NotificationManager
     }
 
     private static class AfterCompletionFailure extends AbstractSynchronization {
-        private AfterCompletionFailure(Observer observer, Object event)
+        private AfterCompletionFailure(ObserverMethod observer, Object event)
         {
             super(observer, event);
         }

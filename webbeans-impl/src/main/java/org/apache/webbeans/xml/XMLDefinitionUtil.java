@@ -44,7 +44,6 @@ import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
-import org.apache.webbeans.event.TransactionalObserverType;
 import org.apache.webbeans.event.xml.BeanObserverXMLImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.NonexistentFieldException;
@@ -711,7 +710,7 @@ public final class XMLDefinitionUtil
         /* Other parameter elements other than @Observes */
         List<Element> otherParameterElements = new ArrayList<Element>();
 
-        BeanObserverXMLImpl<K> beanObserver = new BeanObserverXMLImpl<K>(component, observesMethod, false, TransactionalObserverType.NONE);
+        BeanObserverXMLImpl<K> beanObserver = new BeanObserverXMLImpl<K>(component, observesMethod, false);
 
         Class<K> eventType = null;
 
