@@ -32,6 +32,7 @@ import javax.enterprise.inject.stereotype.Stereotype;
 import javax.inject.Qualifier;
 import javax.interceptor.InterceptorBinding;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -509,6 +510,13 @@ public final class AnnotationUtil
                 set.add(annot);
             }
         }
+        
+        //Add the default qualifier if no others exist.  Section 3.10, OWB-142///
+        if(set.size() == 0)
+        {
+        	set.add(new DefaultLiteral());
+        }
+        ////////////////////////////////////////////////////////////////////////
 
         Annotation[] a = new Annotation[set.size()];
         a = set.toArray(a);
