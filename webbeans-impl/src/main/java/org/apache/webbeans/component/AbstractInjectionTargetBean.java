@@ -179,8 +179,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         // Interceptor and decorator stack
         if (getWebBeansType().equals(WebBeansType.MANAGED))
         {
-            DefinitionUtil.defineSimpleWebBeanInterceptorStack(this);
-            DefinitionUtil.defineWebBeanDecoratorStack(this, instance);
+            DefinitionUtil.defineBeanInterceptorStack(this);
+            DefinitionUtil.defineBeanDecoratorStack(this, instance);
         }
 
         postConstruct(instance);

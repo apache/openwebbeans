@@ -1013,21 +1013,32 @@ public final class DefinitionUtil
         Annotation[] anns = method.getDeclaredAnnotations();
         WebBeansUtil.checkForValidResources(parameterTypes[0], clazz, method.getName(), anns);
     }
-
-    public static void defineSimpleWebBeanInterceptorStack(AbstractBean<?> component)
+    
+    /**
+     * Configure bean instance interceptor stack.
+     * @param bean bean instance
+     */
+    public static void defineBeanInterceptorStack(AbstractBean<?> bean)
     {
-        Asserts.assertNotNull(component, "component parameter can no be null");
+        Asserts.assertNotNull(bean, "bean parameter can no be null");
 
         // @javax.interceptor.Interceptors
-        EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+        EJBInterceptorConfig.configure(bean.getReturnType(), bean.getInterceptorStack());
 
         // @javax.webbeans.Interceptor
-        WebBeansInterceptorConfig.configure(component, component.getInterceptorStack());
+        WebBeansInterceptorConfig.configure(bean, bean.getInterceptorStack());
     }
 
-    public static void defineWebBeanDecoratorStack(AbstractBean<?> component, Object object)
+    /**
+     * Configure bean instance decorator stack.
+     * @param bean bean
+     * @param object actual instantiated bean instance
+     */
+    public static void defineBeanDecoratorStack(AbstractBean<?> bean, Object object)
     {
-        WebBeansDecoratorConfig.configureDecarotors(component, object);
+        Asserts.assertNotNull(bean, "bean parameter can no be null");
+        
+        WebBeansDecoratorConfig.configureDecarotors(bean, object);
     }
 
     public static <T> void defineObserverMethods(InjectionTargetBean<T> component, Class<T> clazz)
