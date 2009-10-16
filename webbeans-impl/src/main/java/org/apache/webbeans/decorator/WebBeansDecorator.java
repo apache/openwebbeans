@@ -140,50 +140,36 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
         }
         
     }
+    
+    private boolean bindingMatchesAnnotations(Annotation bindingType, Set<Annotation> annotations)
+    {
+    	
+    	for (Annotation annot : annotations)
+    	{
+    		if (AnnotationUtil.hasAnnotationMember(bindingType.annotationType(), annot, bindingType))
+    		{
+    			return true;
+            }
+        }
+    	
+    	return false;
+    }
 
     public boolean isDecoratorMatch(Set<Type> apiType, Set<Annotation> annotation)
     {
-        boolean foundApi = false;
-        for (Type t : apiType)
-        {           
-        	//TODO Check for generic
-            if (this.delegateType.equals(t))
-            {
-                foundApi = true;
-                break;
-            }
-        }
-
-        boolean allBindingsOk = false;
-        if (foundApi)
+        
+    	//TODO Check for generic
+        if(!apiType.contains(this.delegateType))
         {
-            for (Annotation annot : annotation)
-            {
-                boolean bindingOk = false;
-                for (Annotation bindingType : delegateBindings)
-                {
-                    if (AnnotationUtil.hasAnnotationMember(bindingType.annotationType(), annot, bindingType))
-                    {
-                        bindingOk = true;
-                        break;
-                    }
-                }
-
-                if (bindingOk)
-                {
-                    allBindingsOk = true;
-                }
-                else
-                {
-                    allBindingsOk = false;
-                    break;
-                }
-            }
+        	return false;
         }
-
-        if (!allBindingsOk)
+   
+        for (Annotation bindingType : delegateBindings)
         {
-            return false;
+        	if(!bindingMatchesAnnotations(bindingType, annotation))
+        	{
+        		return false;
+        	}
         }
 
         return true;
