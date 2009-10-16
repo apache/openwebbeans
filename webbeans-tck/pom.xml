@@ -27,40 +27,25 @@
 	</parent>
     
 	<artifactId>openwebbeans-tck</artifactId>
-	<name>Apache OpenWebBeans :: WebBeans-TCK</name>
+	<name>Apache OpenWebBeans :: OpenWebBeans TCK Suite</name>
 	<packaging>jar</packaging>
 	<version>1.0.0-incubating-SNAPSHOT</version>
 	<description>All TCK tests for the  OpenWebBeans Implementation</description>
 
     <properties>
         <webbeans.tck.version>1.0.0-SNAPSHOT</webbeans.tck.version>
+        <openwebbeans.porting.version>1.0.0-incubating-SNAPSHOT</openwebbeans.porting.version>
     </properties>
     
     <dependencies>
-        <!-- we need some test classes like e.g. MockMangager from webbeans-impl -->
-        <dependency>
+		
+		 <dependency>
             <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-impl</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
-            <classifier>tests</classifier>
+            <artifactId>openwebbeans-porting</artifactId>
+            <version>${openwebbeans.porting.version}</version>
+            <scope>test</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-impl</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-jsf</artifactId>
-        </dependency>
-                
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-jpa</artifactId>
-        </dependency>
-                
-                
+		                            
         <dependency>
             <groupId>org.jboss.jsr299.tck</groupId>
             <artifactId>jsr299-tck-impl</artifactId>
