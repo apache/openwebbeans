@@ -29,7 +29,6 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.context.type.ContextTypes;
 
@@ -216,7 +215,7 @@ public abstract class AbstractContext implements WebBeansContext
             CreationalContext<Object> cc = (CreationalContext<Object>)this.creationalContextMap.get(component);
 
             //Destroy instance
-            destroyInstance((Bean<Object>) component, instance, cc);
+            destroyInstance((Contextual<Object>) component, instance, cc);
 
         }
         

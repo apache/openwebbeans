@@ -614,7 +614,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 
         if(instance == null)
         {
-            instance = getReference(bean, injectionPoint.getType(), context);
+            //Creating a new creational context for target bean instance
+            instance = getReference(bean, injectionPoint.getType(), createCreationalContext(bean));
         }
         
         return instance;

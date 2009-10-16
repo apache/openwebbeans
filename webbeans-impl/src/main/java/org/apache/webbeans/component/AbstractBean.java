@@ -447,11 +447,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         
         CreationalContextImpl<T> cc = (CreationalContextImpl<T>)this.creationalContext;
         
-        if(cc == null)
-        {
-            System.out.println(this);
-        }
-
         //Put this into the dependent map
         cc.addDependent(dependentComponent, object);
 

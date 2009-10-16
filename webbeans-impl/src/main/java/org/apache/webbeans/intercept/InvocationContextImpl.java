@@ -221,6 +221,7 @@ public class InvocationContextImpl implements InvocationContext
             currentMethod++;
 
             Object t = intc.getInterceptorInstance();
+            
             if (t == null)
             {
                 t = target;

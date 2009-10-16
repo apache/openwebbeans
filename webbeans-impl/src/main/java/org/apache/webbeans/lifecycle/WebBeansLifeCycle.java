@@ -131,6 +131,10 @@ public final class WebBeansLifeCycle
 
     public void applicationStarted(ServletContextEvent event)
     {
+        // Initalize Application Context
+        logger.info("Initializing of the application context");
+        ContextFactory.initApplicationContext(event.getServletContext());
+
         this.discovery = ServiceLoader.getService(MetaDataDiscoveryService.class);
         this.discovery.init(event.getServletContext());
 
@@ -158,13 +162,6 @@ public final class WebBeansLifeCycle
 
         logger.info("Deploying is ended");
 
-        long end = System.currentTimeMillis();
-        logger.info("Dependency injection container configuration is ended, takes " + Long.toString(end - begin) + " ms.");
-
-        // Initalize Application Context
-        logger.info("Initializing of the application context");
-        ContextFactory.initApplicationContext(event.getServletContext());
-
         ServletContext context = event.getServletContext();
 
         try
@@ -186,7 +183,8 @@ public final class WebBeansLifeCycle
             throw new WebBeansException(e);
         }
         
-    	logger.info("Dependency injection container is started for context path : " + event.getServletContext().getContextPath());
+        long end = System.currentTimeMillis();
+        logger.info("Dependency injection container configuration is ended, takes " + Long.toString(end - begin) + " ms.");
     }
 
     public void applicationEnded(ServletContextEvent event)
@@ -206,12 +204,12 @@ public final class WebBeansLifeCycle
         //Clear extensions
         ExtensionLoader.getInstance().clear();
         
-        //Clear singleton list
-        WebBeansFinder.clearInstances();
-        
         //Clear CreationalContext
         CreationalContextFactory.getInstance().clear();
-        
+
+        //Clear singleton list
+        WebBeansFinder.clearInstances();
+                
         logger.info("Dependency injection container is stopped for context path : " + event.getServletContext().getContextPath());        
     }
     
