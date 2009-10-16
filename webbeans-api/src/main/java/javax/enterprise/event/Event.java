@@ -22,6 +22,13 @@ import java.lang.annotation.Annotation;
 
 import javax.enterprise.inject.TypeLiteral;
 
+/**
+ * The event interface is used for firing events with specific classifiers and types.
+ *
+ * A built-in event bean is provided by the container.
+ * 
+ * @param <T> the event type 
+ */
 public interface Event<T>
 {
 

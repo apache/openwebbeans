@@ -22,7 +22,6 @@ package javax.enterprise.event;
  * Exception related with observers.
  * 
  * @version $Rev$ $Date$
- *
  */
 public class ObserverException extends RuntimeException
 {

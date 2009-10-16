@@ -26,10 +26,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Speicifies that method is observer method.
- * 
+ * <p>Specifies that a method is an observer method and which event should be observed.</p>
+ * Sample:
+ * <pre>
+ * public class UserHandler 
+ * {
+ *   public void afterUserLogin(@Observes UserLoginEvent userHasLoggedIn) 
+ *   {
+ *     ...
+ *   }
+ * }
+ * </pre>
  * @version $Rev$ $Date$
- * 
+ * @see javax.enterprise.inject.spi.ObserverMethod
  */
 @Target(PARAMETER)
 @Retention(RUNTIME)
