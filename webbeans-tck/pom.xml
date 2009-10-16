@@ -27,7 +27,7 @@
 	</parent>
     
 	<artifactId>openwebbeans-tck</artifactId>
-	<name>Apache OpenWebBeans :: OpenWebBeans TCK Suite</name>
+	<name>Apache OpenWebBeans :: OpenWebBeans JSR-299 TCK</name>
 	<packaging>jar</packaging>
 	<version>1.0.0-incubating-SNAPSHOT</version>
 	<description>All TCK tests for the  OpenWebBeans Implementation</description>
