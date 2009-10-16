@@ -29,17 +29,111 @@ import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.config.DefinitionUtil;
+import org.apache.webbeans.config.WebBeansContainerDeployer;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.decorator.WebBeansDecorator;
+import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
+/**
+ * Logic for how interceptors & decorators work in OWB.
+ * 
+ * <ul>
+ * <li><b>1- Configuration of decorators and interceptors</b>
+ * <p>
+ * Decorators and Interceptors are configured from {@link WebBeansContainerDeployer}
+ * class via methods <code>configureInterceptors(scanner)</code> and
+ * <code>configureDecorators(scanner)</code>. Those methods further call
+ * <code>defineInterceptor(interceptor class)</code> and <code>defineDecorator(decorator class)</code>
+ * methods. Those methods finally call {@link WebBeansUtil#defineInterceptors(Class)} and
+ * {@link WebBeansUtil#defineDecorators(Class)} methods for actual configuration.
+ * <p>
+ * Let's look at the "WebBeansUtil's" methods; 
+ * </p>
+ * <ul>
+ * <li>
+ * <code>defineInterceptors</code> : This method firstly
+ * creates a "Managed Bean" for the given interceptor with
+ * "WebBeansType.INTERCEPTOR" as a type. After checking some controls, it calls
+ * "WebBeansInterceptorConfig#configureInterceptorClass".
+ * "configureInterceptorClass" method creates a "WebBeansInterceptor" instance
+ * that wraps the given managed bean instance and configuring interceptor's
+ * *Interceptor Binding* annotations. If everything goes well, it adds
+ * interceptor instance into the "BeanManager" interceptor list.
+ * </li>
+ * <li><code>defineDecorators</code> : Exactly doing same thing as "defineInterceptors". If
+ * everything goes well, it adds decorator instance into the "BeanManager"
+ * decorator list.</li>
+ * </p>
+ * </li></ul>
+ * <li><b>2* Configuring ManagedBean Instance Interceptor and Decorator Stack</b>
+ * <p>
+ * Currently interceptors and decorators are supported for the "Managed Beans".
+ * OWB delegates calling of "EJB Beans" interceptors to the EJB container. It
+ * does not provide built-in interceptor and decorator support for EJB beans.
+ * Current implementation supports configuration of the interceptors on the
+ * "Managed Beans" with 2 different scenarios, i.e. it supports
+ * "EJB related interceptors ( defined by EJB specification)" and
+ * "JSR-299 related interceptors (defined by interceptor bindings)". Managed
+ * Beans interceptor and decorator stacks are configured after they are
+ * instantiated by the container first time. This method can be found in the
+ * AbstractInjectionTargetBean" class "afterConstructor()" method. Actual
+ * configuration is done by the
+ * {@link DefinitionUtil#defineSimpleWebBeanInterceptorStack(AbstractBean)} and
+ * {@link DefinitionUtil#defineWebBeanDecoratorStack}. In
+ * "DefinitionUtil.defineSimpleWebBeanInterceptorStack", firstly it configures
+ * "EJB spec. interceptors" after that configures "JSR-299 spec. interceptors."
+ * In "DefinitionUtil.defineSimpleWebBeanDecoratorStack", it configures
+ * decorator stack. "EJBInterceptorConfig" class is responsible for finding all
+ * interceptors for given managed bean class according to the EJB Specification.
+ * (But as you said, it may not include AroundInvoke/PostConstruct etc.
+ * disablement scenario!). "WebBeansInterceptorConfig" class is responsible for
+ * finding all interceptors for a given managed bean class according to the
+ * "JSR-299, spec." It adds all interceptors into the bean's interceptor stack.
+ * It first adds "EJB" related interceptors, after that adds "JSR-299" related
+ * interceptors. For "JSR-299" related interceptors, it orders the interceptors
+ * according to the "InterceptorComparator". Basically, it puts interceptors in
+ * order according to how they are ordered in a "beans.xml" configuration file.
+ * Similarly, it configures managed bean's decorator stack according to the
+ * decorator resolution rules. Also, it orders decorators according to the
+ * "beans.xml" configuration file that contains decorator declarations.
+ * </p>
+ * </li>
+ * <li><b>3* Invocation of Interceptors and Decorators</b>
+ * <p>
+ * Invocation is handled by the "InterceptorHandler" class (It has an absurd
+ * name, it can be changed to a more meaningful name :)). It works nearly same
+ * as what you have explained. First of all, it checks that calling method is a
+ * business method of a managed bean or not. After that it filters interceptor
+ * stack for calling method (Current design of filtering may not be optimal!).
+ * Firstly it adds EJB interceptor to the list and then adds JSR-299
+ * interceptors. After that, it starts to call all interceptors in order. After
+ * consuming all interceptors it calls decorators. (as you explained, seems that
+ * the logic may not be correct here. Currently, interceptors and decorators are
+ * not related with each other. They are called independently).This must be changed!.
+ * </p>
+ * </li>
+ * </ul>
+ * 
+ * @version $Rev$ $Date$
+ * 
+ * @see WebBeansInterceptorConfig
+ * @see WebBeansDecoratorConfig
+ * @see WebBeansInterceptor
+ * @see WebBeansDecorator
+ * @see EJBInterceptorConfig
+ */
 public class InterceptorHandler implements MethodHandler, Serializable
 {
     private static final long serialVersionUID = 1657109769733323541L;
-
+    
     private transient static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
 
     private AbstractBean<?> component = null;
@@ -79,13 +173,8 @@ public class InterceptorHandler implements MethodHandler, Serializable
             // Run around invoke chain
             List<InterceptorData> stack = component.getInterceptorStack();
             
-            List<InterceptorData> temp = new ArrayList<InterceptorData>();
+            List<InterceptorData> temp = new ArrayList<InterceptorData>(stack);
             
-            for(InterceptorData data : stack)
-            {
-                temp.add(data);
-            }
-
             //EJB specific interceptor stack
             filterEJBInterceptorStackList(temp, method);
             
