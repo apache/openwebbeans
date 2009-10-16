@@ -30,6 +30,7 @@ import javax.decorator.Decorates;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.BeanTypes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.Produces;
@@ -49,6 +50,7 @@ import org.apache.webbeans.annotation.deployment.DeploymentType;
 import org.apache.webbeans.annotation.deployment.Standard;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.BaseBean;
 import org.apache.webbeans.component.IBeanHasParent;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -159,37 +161,80 @@ public final class DefinitionUtil
      * Configures the web bean api types.
      * 
      * @param <T> generic class type
-     * @param component configuring web beans component
+     * @param bean configuring web beans component
      * @param clazz bean implementation class
      */
-    public static <T> void defineApiTypes(AbstractBean<T> component, Class<T> clazz)
+    public static <T> void defineApiTypes(AbstractBean<T> bean, Class<T> clazz)
     {
-        ClassUtil.setTypeHierarchy(component.getTypes(), clazz);
+        Annotation[] annots = clazz.getDeclaredAnnotations();
+        
+        //Looking for bean types
+        if(AnnotationUtil.hasAnnotation(annots, BeanTypes.class))
+        {
+            BeanTypes beanTypes = (BeanTypes) AnnotationUtil.getAnnotation(annots, BeanTypes.class);
+            defineUserDefinedBeanTypes(bean, beanTypes);
+        }
+        else
+        {
+            ClassUtil.setTypeHierarchy(bean.getTypes(), clazz);   
+        }        
     }
+     
+    
+    private static <T> void defineUserDefinedBeanTypes(AbstractBean<T> bean, BeanTypes beanTypes)
+    {
+        Class<?> beanClazz = bean.getReturnType();        
+        Class<?>[] types = beanTypes.value();
+        
+        Set<Type> apiTypes = bean.getTypes();
+        for(Class<?> type : types)
+        {
+            if(!type.isAssignableFrom(beanClazz))
+            {
+                throw new WebBeansConfigurationException("@BeanType values must be assignable. Bean type : " + beanClazz.getName() + " @BeanType value is : " + type.getName());
+            }
+            
+            apiTypes.add(type);
+        }
+        
+    }
+    
+    
 
     /**
      * Configures the producer method web bean api types.
      * 
      * @param <T> generic class type
-     * @param component configuring web beans component
+     * @param producerBean configuring web beans component
      * @param type bean implementation class
      */
-    public static <T> void defineProducerMethodApiTypes(AbstractBean<T> component, Type type)
+    public static <T> void defineProducerMethodApiTypes(AbstractProducerBean<T> producerBean, Type type, Annotation[] annots)
     {
-        Set<Type> types = component.getTypes();
-        types.add(Object.class);
         
-        Class<?> clazz  = ClassUtil.getClazz(type);
-        
-        if (clazz.isPrimitive() || clazz.isArray())
+        //Looking for bean types
+        if(AnnotationUtil.hasAnnotation(annots, BeanTypes.class))
         {
-            types.add(clazz);
-
+            BeanTypes beanTypes = (BeanTypes) AnnotationUtil.getAnnotation(annots, BeanTypes.class);
+            defineUserDefinedBeanTypes(producerBean, beanTypes);
         }
+        
         else
         {
-            ClassUtil.setTypeHierarchy(component.getTypes(), type);
-        }
+            Set<Type> types = producerBean.getTypes();
+            types.add(Object.class);
+            
+            Class<?> clazz  = ClassUtil.getClazz(type);
+            
+            if (clazz.isPrimitive() || clazz.isArray())
+            {
+                types.add(clazz);
+
+            }
+            else
+            {
+                ClassUtil.setTypeHierarchy(producerBean.getTypes(), type);
+            }            
+        }        
     }
 
     /**
@@ -636,7 +681,7 @@ public final class DefinitionUtil
 
         Annotation[] methodAnns = method.getDeclaredAnnotations();
 
-        DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType());
+        DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
         DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
         WebBeansUtil.checkProducerGenericType(component,method);        
         DefinitionUtil.defineQualifiers(component, methodAnns);
@@ -698,7 +743,7 @@ public final class DefinitionUtil
         
         Annotation[] fieldAnns = field.getDeclaredAnnotations();
 
-        DefinitionUtil.defineProducerMethodApiTypes(component, returnType);
+        DefinitionUtil.defineProducerMethodApiTypes(component, returnType, fieldAnns);
         DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
         WebBeansUtil.checkProducerGenericType(component,field);
         DefinitionUtil.defineQualifiers(component, fieldAnns);
