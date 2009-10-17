@@ -575,6 +575,7 @@ public final class WebBeansUtil
         {
             comp = new NewBean<T>(clazz, WebBeansType.MANAGED);
             comp.setConstructor(WebBeansUtil.defineConstructor(clazz));
+            DefinitionUtil.addConstructorInjectionPointMetaData(comp, comp.getConstructor());
 
             DefinitionUtil.defineInjectedFields(comp);
             DefinitionUtil.defineInjectedMethods(comp);

@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.New;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
@@ -136,6 +137,14 @@ public class InjectionResolver
         
         Set<Bean<?>> beanSet = implResolveByType(type, qualifiers);
         
+        if(beanSet.isEmpty())
+        {
+            if(qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
+            {
+                beanSet.add(WebBeansUtil.createNewComponent(clazz));
+            }
+        }
+        
         ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers);
         
         Bean<?> bean = beanSet.iterator().next();
@@ -192,6 +201,15 @@ public class InjectionResolver
         }
 
         Set<Bean<?>> beanSet = implResolveByType(type, qualifiers);
+        
+        if(beanSet.isEmpty())
+        {
+            if(qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
+            {
+                beanSet.add(WebBeansUtil.createNewComponent(clazz));
+            }
+        }
+        
 
         ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers);   
 
