@@ -24,8 +24,6 @@ public class InjectedTypeLiteralComponent
 {
     private @Inject @Default ITypeLiteralComponent<List<String>> component;
     
-    private @Inject @Default ITypeLiteralComponent eraseComponent;
-
     public InjectedTypeLiteralComponent()
     {
         super();
@@ -47,20 +45,5 @@ public class InjectedTypeLiteralComponent
         this.component = component;
     }
 
-    /**
-     * @return the eraseComponent
-     */
-    public ITypeLiteralComponent getEraseComponent()
-    {
-        return eraseComponent;
-    }
-
-    /**
-     * @param eraseComponent the eraseComponent to set
-     */
-    public void setEraseComponent(ITypeLiteralComponent eraseComponent)
-    {
-        this.eraseComponent = eraseComponent;
-    }
 
 }

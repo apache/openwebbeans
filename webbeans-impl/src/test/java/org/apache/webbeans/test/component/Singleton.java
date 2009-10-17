@@ -31,11 +31,11 @@ import org.apache.webbeans.test.component.service.ITyped2;
 public class Singleton implements Serializable
 {
     @SuppressWarnings("unchecked")
-    private ITyped2 typed2 = null;
+    private ITyped2<String, Object> typed2 = null;
 
     @SuppressWarnings("unchecked")
     @Inject
-    public void inject(@Binding1 ITyped2 typed2)
+    public void inject(@Binding1 ITyped2<String, Object> typed2)
     {
         this.typed2 = typed2;
     }

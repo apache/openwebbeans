@@ -15,8 +15,10 @@ package org.apache.webbeans.test.unittests;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Set;
 
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
@@ -52,7 +54,7 @@ public class TypedComponentTest extends TestContext
         List<AbstractBean<?>> list = getComponents();
 
         @SuppressWarnings("unused")
-        AbstractBean<?> itype = (AbstractBean<?>) getManager().resolveByType(TypedComponentTest.class.getDeclaredField("s").getType(), new Default()
+        Set<Bean<?>> beans= getManager().resolveByType(TypedComponentTest.class.getDeclaredField("s").getType(), new Default()
         {
 
             public Class<? extends Annotation> annotationType()
@@ -61,9 +63,9 @@ public class TypedComponentTest extends TestContext
                 return Default.class;
             }
 
-        }).iterator().next();
+        });
 
-        Assert.assertTrue(list.size() > 0 ? true : false);
+        Assert.assertTrue(beans.size() == 0 ? true : false);
     }
 
 }

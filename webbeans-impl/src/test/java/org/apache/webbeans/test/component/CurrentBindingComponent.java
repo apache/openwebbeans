@@ -28,7 +28,7 @@ import org.apache.webbeans.test.component.service.ITyped2;
 @SuppressWarnings("unchecked")
 public class CurrentBindingComponent
 {
-    private ITyped2 typed2 = null;
+    private ITyped2<String, Object> typed2 = null;
 
     public CurrentBindingComponent()
     {
@@ -36,7 +36,7 @@ public class CurrentBindingComponent
     }
 
     @Inject
-    public CurrentBindingComponent(@Binding1 @Binding2 ITyped2 typed2)
+    public CurrentBindingComponent(@Binding1 @Binding2 ITyped2<String, Object> typed2)
     {
         this.typed2 = typed2;
     }

@@ -67,10 +67,6 @@ public class TypedLiteralComponentTest extends TestContext
 
         Assert.assertTrue(tc.getComponent() instanceof TypeLiteralComponent);
         
-        Assert.assertNotNull(tc.getEraseComponent());
-
-        Assert.assertEquals("GURKAN", TypeLiteralComponent.getSTR());
-
         ContextFactory.destroyRequestContext(null);
     }
 

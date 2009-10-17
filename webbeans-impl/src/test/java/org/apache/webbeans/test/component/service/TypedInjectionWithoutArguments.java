@@ -27,7 +27,7 @@ import org.apache.webbeans.test.annotation.binding.Binding2;
 @SuppressWarnings("unchecked")
 public class TypedInjectionWithoutArguments implements Serializable
 {
-    @Inject @Binding1 @Binding2 ITyped2 v = null;
+    @Inject @Binding1 @Binding2 ITyped2<String, Object> v = null;
 
     public ITyped2<String, Object> getV()
     {

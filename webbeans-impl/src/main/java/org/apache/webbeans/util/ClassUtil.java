@@ -770,7 +770,7 @@ public final class ClassUtil
         }
         else if (beanType instanceof Class && requiredType instanceof Class)
         {
-            return isAssignable((Class) requiredType, (Class) beanType);
+            return requiredType.equals(beanType);
         }
         else if(beanType instanceof ParameterizedType && requiredType instanceof Class)
         {
