@@ -16,6 +16,9 @@ package org.apache.webbeans.test.tck;
 import java.net.URL;
 import java.util.Iterator;
 
+import javax.enterprise.inject.spi.BeanManager;
+
+import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.lifecycle.WebBeansLifeCycle;
 import org.apache.webbeans.spi.ServiceLoader;
@@ -57,6 +60,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
         }catch(Throwable e)
         {
             this.excpetion = new DeploymentException("Standalone Container Impl.",e);
+            throw this.excpetion;
         }
         
     }
@@ -89,6 +93,8 @@ public class StandaloneContainersImpl implements StandaloneContainers
         catch(Throwable e)
         {
             this.excpetion = new DeploymentException("Standalone Container Impl.",e);
+            
+            return false;
         }
         
         return true;
@@ -131,4 +137,8 @@ public class StandaloneContainersImpl implements StandaloneContainers
         return this.excpetion;
     }
 
+    protected BeanManager getBeanManager()
+    {
+        return ActivityManager.getInstance().getRootActivity();
+    }
 }
