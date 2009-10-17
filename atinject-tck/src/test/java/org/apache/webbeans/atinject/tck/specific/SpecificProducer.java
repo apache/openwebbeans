@@ -21,9 +21,7 @@ import javax.inject.Named;
 
 import org.atinject.tck.auto.Drivers;
 import org.atinject.tck.auto.DriversSeat;
-import org.atinject.tck.auto.FuelTank;
 import org.atinject.tck.auto.Seat;
-import org.atinject.tck.auto.accessories.Cupholder;
 import org.atinject.tck.auto.accessories.SpareTire;
 
 
@@ -35,29 +33,29 @@ public class SpecificProducer
     }
     
     @Produces @Drivers
-    public Seat produceDrivers(@New Cupholder cupHolder)
+    public Seat produceDrivers(@New DriversSeat seat)
     {
-        return new DriversSeat(cupHolder);
+        return seat;
     }
     
     
     @Produces @DriverBinding @BeanTypes(value={DriversSeat.class})
-    public DriversSeat produceDriverSeat(@New Cupholder cupHolder)
+    public DriversSeat produceDriverSeat(@New DriversSeat seat)
     {
-        return new DriversSeat(cupHolder);
+        return seat;
     }
     
     
     @Produces @Named("spare") @SpareBinding
-    public SpareTire produceSpare(@New FuelTank forSuper, @New FuelTank forSub)
+    public SpareTire produceSpare(@New SpareTire tire)
     {
-        return new SpareTire(forSuper, forSub);
+        return tire;
     }
     
     @Produces @Default @BeanTypes(value={SpareTire.class})
-    public SpareTire produceSpareTire(@New FuelTank forSuper, @New FuelTank forSub)
+    public SpareTire produceSpareTire(@New SpareTire tire)
     {
-        return new SpareTire(forSuper, forSub);
+        return tire;
     }
     
 }
