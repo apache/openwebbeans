@@ -36,6 +36,9 @@ import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
@@ -74,6 +77,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 /**
  * Defines the web beans components common properties.
  */
+@SuppressWarnings("unchecked")
 public final class DefinitionUtil
 {
     private DefinitionUtil()
@@ -130,7 +134,6 @@ public final class DefinitionUtil
                 //From parent
                 if (!found && (component instanceof IBeanHasParent))
                 {
-                    @SuppressWarnings("unchecked")
                     IBeanHasParent<T> child = (IBeanHasParent<T>) component;
                     component.setType(child.getParent().getType());
                 }
@@ -687,9 +690,6 @@ public final class DefinitionUtil
         DefinitionUtil.defineQualifiers(component, methodAnns);
         DefinitionUtil.defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
 
-        //Drop from the specification
-        //WebBeansUtil.checkSteroTypeRequirements(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class : " + parent.getReturnType().getName());
-
         return component;
     }
 
@@ -828,7 +828,6 @@ public final class DefinitionUtil
 
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> void defineInternalInjectedFieldsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
     {
         // From inheritance
@@ -937,7 +936,6 @@ public final class DefinitionUtil
         defineInternalInjectedMethodsRecursively(component, clazz);
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> void defineInternalInjectedMethodsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
     {
         // From inheritance
@@ -971,9 +969,10 @@ public final class DefinitionUtil
 
             if (isInitializer)
             {
+                //Do not support static
                 if(ClassUtil.isStatic(method.getModifiers()))
                 {
-                    throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName() + " can not be static!");
+                    continue;
                 }
                 
                 checkForInjectedInitializerMethod(component, clazz, method);
@@ -1102,7 +1101,6 @@ public final class DefinitionUtil
 
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> void createObserverMethods(InjectionTargetBean<T> component, Class<?> clazz, Method[] candidateMethods)
     {
 
@@ -1160,12 +1158,105 @@ public final class DefinitionUtil
     {
         if(WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint))
         {
-            WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
-        }
-        
+            //Do nothing
+        }        
         else if(EventUtil.checkObservableInjectionPointConditions(injectionPoint))
         {            
             WebBeansUtil.addInjectedImplicitEventComponent(injectionPoint);
         }
     }
+    
+    public static <X> Set<ProducerMethodBean<?>> defineProducerMethods(AbstractBean<X> bean, AnnotatedType<X> annotatedType)
+    {
+        Set<ProducerMethodBean<?>> producerComponents = new HashSet<ProducerMethodBean<?>>();
+        Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
+        
+        for(AnnotatedMethod annotatedMethod: annotatedMethods)
+        {
+            createProducerBeansFromAnnotatedType(bean, producerComponents, annotatedMethod, bean.getReturnType(), false);
+        }
+        
+        return producerComponents;
+    }
+    
+    private static <X> void createProducerBeansFromAnnotatedType(AbstractBean<X> bean, Set<ProducerMethodBean<?>> producerComponents, AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
+    {
+        Annotation[] anns = annotatedMethod.getAnnotations().toArray(new Annotation[0]);
+        
+        List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
+        // Producer Method
+        if (AnnotationUtil.hasAnnotation(anns, Produces.class))
+        {
+            for(AnnotatedParameter<X> parameter : parameters)
+            {
+                Annotation[] parameterAnns = parameter.getAnnotations().toArray(new Annotation[0]);
+                if (AnnotationUtil.hasAnnotation(anns, Inject.class) || AnnotationUtil.hasAnnotation(parameterAnns, Disposes.class) || AnnotationUtil.hasAnnotation(parameterAnns, Observes.class))
+                {
+                    throw new WebBeansConfigurationException("Producer Method Bean with name : " + annotatedMethod.getJavaMember().getName() + " in bean class : " + clazz + " can not be annotated with" + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
+                }
+                
+            }
+            
+            if (AnnotationUtil.hasAnnotation(anns, Specializes.class))
+            {
+                if (ClassUtil.isStatic(annotatedMethod.getJavaMember().getModifiers()))
+                {
+                    throw new WebBeansConfigurationException("Specializing producer method : " + annotatedMethod.getJavaMember().getName() + " in class : " + clazz.getName() + " can not be static");
+                }
+
+                isSpecializes = true;
+            }
+
+            ProducerMethodBean<?> newComponent = createProducerBeanFromAnnotatedType((Class<X>)annotatedMethod.getJavaMember().getReturnType(), annotatedMethod, bean, isSpecializes);
+            if (newComponent != null)
+            {
+                producerComponents.add(newComponent);
+                addMethodInjectionPointMetaData(newComponent, annotatedMethod.getJavaMember());
+            }
+        }
+
+    }
+
+    public static <X> ProducerMethodBean<X> createProducerBeanFromAnnotatedType(Class<X> returnType, AnnotatedMethod<X> method, AbstractBean<?> parent, boolean isSpecializes)
+    {
+        ProducerMethodBean<X> bean = new ProducerMethodBean<X>(parent, returnType);
+        bean.setCreatorMethod(method.getJavaMember());
+
+        if (isSpecializes)
+        {
+            WebBeansUtil.configureProducerSpecialization(bean, method.getJavaMember(), parent.getReturnType().getSuperclass());
+        }
+
+        if (returnType.isPrimitive())
+        {
+            bean.setNullable(false);
+        }
+
+        Annotation[] anns = method.getAnnotations().toArray(new Annotation[0]);
+        
+        defineSerializable(bean);
+        defineStereoTypes(bean, anns);
+
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        
+        if(!useAlternative)
+        {
+            Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(bean, anns, "There are more than one @DeploymentType annotation in the bean class : " + bean.getReturnType().getName());
+
+            // Check if the deployment type is enabled.
+            if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
+            {
+                return null;
+            }            
+        }
+
+        DefinitionUtil.defineProducerMethodApiTypes(bean, method.getBaseType(), anns);
+        DefinitionUtil.defineScopeType(bean, anns, "Bean producer method : " + method.getJavaMember().getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
+        WebBeansUtil.checkProducerGenericType(bean,method.getJavaMember());        
+        DefinitionUtil.defineQualifiers(bean, anns);
+        DefinitionUtil.defineName(bean, anns, WebBeansUtil.getProducerDefaultName(method.getJavaMember().getName()));
+
+        return bean;
+    }
+    
 }

@@ -27,6 +27,7 @@ package org.apache.webbeans.context.type;
  *  <li>Session Context</li>
  *  <li>Application Context</li>
  *  <li>Conversation Context</li>
+ *  <li>Singleton Context</li>
  * </ul>
  * 
  * </p>
@@ -34,7 +35,12 @@ package org.apache.webbeans.context.type;
  */
 public enum ContextTypes
 {
-    REQUEST(0), SESSION(1), APPLICATION(2), CONVERSATION(3), DEPENDENT(4);
+    REQUEST(0), 
+    SESSION(1), 
+    APPLICATION(2), 
+    CONVERSATION(3), 
+    DEPENDENT(4),
+    SINGLETON(5);
 
     int name;
 
@@ -43,29 +49,32 @@ public enum ContextTypes
         this.name = name;
     }
 
-    public int getName()
+    public int getCardinal()
     {
         return name;
     }
 
-    public String getTypeName()
+    public String getContextName()
     {
-        switch (getName())
+        switch (getCardinal())
         {
-        case 0:
-            return "request";
-
-        case 1:
-            return "session";
-
-        case 2:
-            return "application";
-
-        case 3:
-            return "conversation";
-
-        case 4:
-            return "dependent";
+            case 0:
+                return "request";
+    
+            case 1:
+                return "session";
+    
+            case 2:
+                return "application";
+    
+            case 3:
+                return "conversation";
+    
+            case 4:
+                return "dependent";
+            
+            case 5:
+                return "singleton";
 
         }
 

@@ -52,6 +52,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -63,10 +64,12 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.stereotype.Stereotype;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Scope;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
+import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.ApplicationScopeLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
@@ -312,9 +315,17 @@ public final class WebBeansUtil
     public static <T> Constructor<T> defineConstructor(Class<T> clazz) throws WebBeansConfigurationException
     {
         Asserts.nullCheckForClass(clazz);
-        Constructor<T> result = null;
         Constructor<T>[] constructors = ClassUtil.getConstructors(clazz);
-
+        
+        return defineConstructor(constructors, clazz);
+        
+    }
+    
+    
+    public static <T>  Constructor<T> defineConstructor(Constructor<T>[] constructors, Class<T> clazz)
+    {
+        Constructor<T> result = null;
+        
         boolean inAnnotation = false;
         int j = 0;
 
@@ -335,7 +346,7 @@ public final class WebBeansUtil
                 }
             }
         }
-
+        
         if (result != null)
         {
             Annotation[][] parameterAnns = result.getParameterAnnotations();
@@ -373,7 +384,8 @@ public final class WebBeansUtil
             }
         }
 
-        return result;
+        return result;        
+        
     }
 
     /**
@@ -619,7 +631,7 @@ public final class WebBeansUtil
      * @param component managed bean
      * @return the new bean from given managed bean
      */
-    public static <T> NewBean<T> createNewSimpleBeanComponent(ManagedBean<T> component)
+    public static <T> NewBean<T> createNewBean(ManagedBean<T> component)
     {
         Asserts.assertNotNull(component, "component argument can not be null");
 
@@ -686,7 +698,7 @@ public final class WebBeansUtil
      * Creates a new manager bean instance.
      * @return new manager bean instance
      */
-    public static BeanManagerBean getManagerComponent()
+    public static BeanManagerBean getManagerBean()
     {
         BeanManagerBean managerComponent = new BeanManagerBean();
 
@@ -708,19 +720,19 @@ public final class WebBeansUtil
      * @param obtainsBindings instance bindings
      * @return new instance bean
      */
-    public static <T> InstanceBean<T> createInstanceComponent(ParameterizedType instance,Class<Instance<T>> clazz, Type injectedType, Annotation...obtainsBindings)
+    public static <T> InstanceBean<T> getInstanceBean()
     {
-        InstanceBean<T> instanceComponent = new InstanceBean<T>(clazz,injectedType);
+        InstanceBean<T> instanceComponent = new InstanceBean<T>();
         
-        instanceComponent.addApiType(clazz);
+        instanceComponent.getTypes().add(new TypeLiteral<Instance<?>>(){}.getRawType());
+        instanceComponent.getTypes().add(new TypeLiteral<Provider<?>>(){}.getRawType());
         instanceComponent.addApiType(Object.class);
         
-        DefinitionUtil.defineQualifiers(instanceComponent, obtainsBindings);
+        instanceComponent.addQualifier(new AnyLiteral());
         instanceComponent.setImplScopeType(new DependentScopeLiteral());
         instanceComponent.setType(new StandardLiteral());
         instanceComponent.setName(null);
-        
-        
+                
         return instanceComponent;
     }
 
@@ -728,7 +740,7 @@ public final class WebBeansUtil
      * Returns new conversation bean instance.
      * @return new conversation bean
      */
-    public static ConversationBean getConversationComponent()
+    public static ConversationBean getConversationBean()
     {
         ConversationBean conversationComp = new ConversationBean();
 
@@ -747,7 +759,7 @@ public final class WebBeansUtil
      * Returns a new injected point bean instance.
      * @return new injected point bean
      */
-    public static InjectionPointBean getInjectionPointComponent()
+    public static InjectionPointBean getInjectionPointBean()
     {
         return new InjectionPointBean(null);
     }
@@ -1696,7 +1708,7 @@ public final class WebBeansUtil
             candidateClazz = (Class<?>)pt.getRawType();
         }
         
-        if(!candidateClazz.equals(Instance.class))
+        if(!candidateClazz.isAssignableFrom(Instance.class))
         {
             return false;
         }        
@@ -1711,7 +1723,7 @@ public final class WebBeansUtil
             
             Type[] typeArgs = pt.getActualTypeArguments();
             
-            if(!(rawType.equals(Instance.class)))
+            if(!(rawType.isAssignableFrom(Instance.class)))
             {
                 throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must have type javax.inject.Instance");
             }                
@@ -1902,19 +1914,19 @@ public final class WebBeansUtil
     }
     
     
-    public static <T> void addInjectedImplicitInstanceComponent(InjectionPoint injectionPoint)
-    {
-        ParameterizedType genericType = (ParameterizedType)injectionPoint.getType();
-        
-        Class<Instance<T>> clazz = (Class<Instance<T>>)genericType.getRawType();
-        
-        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
-        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
-        
-        Bean<Instance<T>> bean = createInstanceComponent(genericType,clazz, genericType.getActualTypeArguments()[0], qualifiers);
-        BeanManagerImpl.getManager().addBean(bean);
-        
-    }
+//    public static <T> void addInjectedImplicitInstanceComponent(InjectionPoint injectionPoint)
+//    {
+//        ParameterizedType genericType = (ParameterizedType)injectionPoint.getType();
+//        
+//        Class<Instance<T>> clazz = (Class<Instance<T>>)genericType.getRawType();
+//        
+//        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
+//        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
+//        
+//        Bean<Instance<T>> bean = createInstanceComponent(genericType,clazz, genericType.getActualTypeArguments()[0], qualifiers);
+//        BeanManagerImpl.getManager().addBean(bean);
+//        
+//    }
     
     public static Bean<?> getMostSpecializedBean(BeanManager manager, Bean<?> component)
     {

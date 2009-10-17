@@ -18,15 +18,12 @@ import java.math.BigDecimal;
 import javax.decorator.Decorates;
 import javax.decorator.Decorator;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
 
 @Decorator
 @RequestScoped
 public abstract class LargeTransactionDecorator implements Account
 {
-    @Decorates @Any @Default
-    Account account;
+    @Decorates Account account;
 
     BigDecimal depositeAmount = null;
     BigDecimal withDrawAmount = null;

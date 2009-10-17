@@ -14,6 +14,7 @@
 package org.apache.webbeans.portable.creation;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
@@ -32,6 +33,8 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     {
         super(bean);
     }
+    
+    
     
     @Override
     public void inject(T instance, CreationalContext<T> ctx)

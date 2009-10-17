@@ -118,6 +118,10 @@ public abstract class AbstractContext implements WebBeansContext
         {
             this.scopeType = ConversationScoped.class;
         }
+        else if (type.equals(ContextTypes.SINGLETON))
+        {
+            this.scopeType = ConversationScoped.class;
+        }
         else
         {
             throw new IllegalArgumentException("Not known scope type : " + type.toString());

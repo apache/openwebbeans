@@ -21,9 +21,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
@@ -160,23 +162,38 @@ public class InjectionResolver
         Type type = injectionPoint.getType();
         
         Class<?> clazz = null;
-        
+        boolean injectInstanceProvider = false;
         if (type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType) type;            
             clazz = (Class<?>) pt.getRawType();
+                        
+            if(clazz.isAssignableFrom(Instance.class))
+            {
+                injectInstanceProvider = true;
+            }
+            
         }
         else
         {
             clazz = (Class<?>) type;
         }
         
-        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
-        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
+        Annotation[] qualifiers = new Annotation[1]; 
+            
+        if(injectInstanceProvider)
+        {
+            qualifiers[0] = new AnyLiteral();
+        }
+        else
+        {
+            qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
+            qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);            
+        }
 
         Set<Bean<?>> beanSet = implResolveByType(type, qualifiers);
 
-        ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers);
+        ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers);   
 
         return beanSet.iterator().next();
         

@@ -16,6 +16,7 @@ import java.util.Set;
 
 import javax.decorator.Decorator;
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.ManagedBean;
@@ -163,4 +164,51 @@ public final class ManagedBeanConfigurator
 
         return component;
     }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> ManagedBean<T> defineFromAnnotatedType(AnnotatedType<T> annotatedType) throws WebBeansConfigurationException
+    {
+        Class<T> javaClazz = annotatedType.getJavaClass();
+        ManagedBean<T> component = new ManagedBean<T>(javaClazz, WebBeansType.MANAGED);
+        
+        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
+        
+        if(useAlternative)
+        {
+            WebBeansUtil.setBeanEnableFlag(component);   
+        }
+        
+        Annotation[] clazzAnns = annotatedType.getAnnotations().toArray(new Annotation[0]);
+        
+        DefinitionUtil.defineSerializable(component);
+        DefinitionUtil.defineStereoTypes(component, clazzAnns);
+        
+        //Use @DeploymentType instead of using @Alternative
+        if(!useAlternative)
+        {
+            Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, clazzAnns, "There are more than one @DeploymentType annotation in Simple WebBean Component implementation class : " + component.getReturnType().getName());
+
+            // Check if the deployment type is enabled.
+            if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
+            {
+                return null;
+            }            
+        }
+        
+
+        DefinitionUtil.defineApiTypes(component, javaClazz);
+        DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + javaClazz.getName() + " stereotypes must declare same @Scope annotations");
+        
+        WebBeansUtil.checkGenericType(component);
+        WebBeansUtil.checkPassivationScope(component, component.getScope().getAnnotation(NormalScope.class));
+        DefinitionUtil.defineQualifiers(component, clazzAnns);
+        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(javaClazz.getSimpleName()));
+
+        Constructor<T> constructor = WebBeansUtil.defineConstructor(annotatedType.getConstructors().toArray(new Constructor[0]), javaClazz);
+        component.setConstructor(constructor);
+        DefinitionUtil.addConstructorInjectionPointMetaData(component, constructor);
+
+
+        return component;
+    }    
 }

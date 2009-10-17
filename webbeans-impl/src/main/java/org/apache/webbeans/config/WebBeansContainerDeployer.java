@@ -120,13 +120,16 @@ public class WebBeansContainerDeployer
             if (!deployed)
             {
                 // Register Manager built-in component
-                BeanManagerImpl.getManager().addBean(WebBeansUtil.getManagerComponent());
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.getManagerBean());
 
                 // Register Conversation built-in component
-                BeanManagerImpl.getManager().addBean(WebBeansUtil.getConversationComponent());
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.getConversationBean());
                 
                 // Register InjectionPoint bean
-                BeanManagerImpl.getManager().addBean(WebBeansUtil.getInjectionPointComponent());
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.getInjectionPointBean());
+                
+                //Register Instance Bean
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.getInstanceBean());
                 
                 //Load Extensions
                 ExtensionLoader.getInstance().loadExtensionServices();
@@ -722,7 +725,7 @@ public class WebBeansContainerDeployer
             
             if (addBeans)
             {                
-                BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewSimpleBeanComponent(managedBean));                
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewBean(managedBean));                
                 DecoratorUtil.checkManagedBeanDecoratorConditions(managedBean);
                 BeanManagerImpl.getManager().addBean(managedBean);
                 BeanManagerImpl.getManager().getBeans().addAll(producerMethods);

@@ -24,6 +24,7 @@ import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.apache.webbeans.test.component.inject.InstanceInjectedComponent;
 import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,8 @@ public class InjectedInstanceComponentTest extends TestContext
     @Test
     public void testInstanceInjectedComponent()
     {
+        getManager().addBean(WebBeansUtil.getInstanceBean());
+        
         ContextFactory.initRequestContext(null);
         Bean<PaymentProcessorComponent> bean =  defineSimpleWebBean(PaymentProcessorComponent.class);
         

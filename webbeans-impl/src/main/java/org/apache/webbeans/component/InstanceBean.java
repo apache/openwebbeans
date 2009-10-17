@@ -17,29 +17,39 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import java.lang.reflect.ParameterizedType;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.inject.instance.InstanceFactory;
 
 public class InstanceBean<T> extends AbstractBean<Instance<T>>
 {
-    private Type injectedType;
+    public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     
-    public InstanceBean(Class<Instance<T>> returnType, Type injectedType)
+    public InstanceBean()
     {
-        super(WebBeansType.INSTANCE, returnType);
-        this.injectedType = injectedType;
+        super(WebBeansType.INSTANCE, new TypeLiteral<Instance<T>>(){}.getRawType());        
     }
     
+         
     @Override
     protected Instance<T> createInstance(CreationalContext<Instance<T>> creationalContext)
     {
-        Annotation[] anns = new Annotation[getQualifiers().size()];
-        anns = getQualifiers().toArray(anns);
-        
-        return InstanceFactory.getInstance(this.injectedType, anns);
+        try
+        {
+            ParameterizedType injectedType = (ParameterizedType)local.get().getType();
+            Instance<T> instance = InstanceFactory.getInstance(injectedType.getActualTypeArguments()[0], local.get().getQualifiers().toArray(new Annotation[0])); 
+            
+            return instance;
+        }
+        finally
+        {
+            local.set(null);
+        }
     }
+    
 }

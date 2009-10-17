@@ -133,7 +133,12 @@ public final class WebBeansLifeCycle
     {
         // Initalize Application Context
         logger.info("Initializing of the application context");
+        
+        //Application Context initialization
         ContextFactory.initApplicationContext(event.getServletContext());
+        
+        //Singleton context
+        ContextFactory.initSingletonContext();
 
         this.discovery = ServiceLoader.getService(MetaDataDiscoveryService.class);
         this.discovery.init(event.getServletContext());
@@ -195,6 +200,8 @@ public final class WebBeansLifeCycle
         service.shutdownNow();
 
         ContextFactory.destroyApplicationContext(event.getServletContext());
+        
+        ContextFactory.destroySingletonContext();
 
         jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
 

@@ -34,13 +34,13 @@ public class ManagerResolutionTest extends TestContext
     public void beforeTest()
     {
         super.init();
-        getManager().addBean(WebBeansUtil.getManagerComponent());
+        getManager().addBean(WebBeansUtil.getManagerBean());
     }
 
     @Test
     public void testManagerResolution()
     {
-        BeanManagerBean component = WebBeansUtil.getManagerComponent();
+        BeanManagerBean component = WebBeansUtil.getManagerBean();
         BeanManager manager = getManager().getInstance(component);
 
         Assert.assertNotNull(manager);

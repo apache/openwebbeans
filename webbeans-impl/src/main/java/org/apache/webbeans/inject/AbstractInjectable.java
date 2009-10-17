@@ -15,14 +15,18 @@ package org.apache.webbeans.inject;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -75,6 +79,11 @@ public abstract class AbstractInjectable implements Injectable
             //If this injection owner is dependent object then its
             //dependentOwnerInjectionPoint can not be null.
             return injectDependentOwnerInjectionPoint();
+        }
+        
+        if(isInstanceProviderInjection(injectionPoint))
+        {
+            InstanceBean.local.set(injectionPoint);
         }
         
         //Get injection point Bean to look for @Dependent
@@ -160,6 +169,25 @@ public abstract class AbstractInjectable implements Injectable
 
     }
 
+    private boolean isInstanceProviderInjection(InjectionPoint injectionPoint)
+    {
+        Type type = injectionPoint.getType();
+        
+        if (type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType) type;            
+            Class<?> clazz = (Class<?>) pt.getRawType();
+            
+            if(clazz.isAssignableFrom(Instance.class))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    
     /**
      * Gets the component.
      * 

@@ -24,6 +24,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
+import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +48,8 @@ public final class ContextFactory
     private static ThreadLocal<ApplicationContext> applicationContext = null;
 
     private static ThreadLocal<ConversationContext> conversationContext = null;
+    
+    private static ThreadLocal<SingletonContext> singletonContext = null;
 
     private static ThreadLocal<DependentContext> dependentContext = null;
 
@@ -63,6 +66,7 @@ public final class ContextFactory
         applicationContext = new ThreadLocal<ApplicationContext>();
         conversationContext = new ThreadLocal<ConversationContext>();
         dependentContext = new ThreadLocal<DependentContext>();
+        singletonContext = new ThreadLocal<SingletonContext>();
     }
 
     private ContextFactory()
@@ -230,6 +234,30 @@ public final class ContextFactory
         sessionCtxManager.destroyAllSessions();
         conversationManager.destroyAllConversations();
     }
+    
+    public static void initSingletonContext()
+    {
+        SingletonContext context = new SingletonContext();
+        context.setActive(true);
+        
+        singletonContext.set(context);
+    }
+    
+    public static void destroySingletonContext()
+    {
+        if (singletonContext != null)
+        {
+            SingletonContext context = getSingletonContext();
+
+            if (context != null)
+            {
+                context.destroy();
+            }
+            
+            singletonContext.remove();            
+        }
+        
+    }
 
     public static void initConversationContext(ConversationContext context)
     {
@@ -281,7 +309,7 @@ public final class ContextFactory
     {
         WebBeansContext context = null;
 
-        switch (type.getName())
+        switch (type.getCardinal())
         {
             case 0:
                 context = getRequestContext();
@@ -304,7 +332,7 @@ public final class ContextFactory
                 break;
             
             default:
-                throw new IllegalArgumentException("There is no such a standard context with name id=" + type.getName());
+                throw new IllegalArgumentException("There is no such a standard context with context id=" + type.getCardinal());
         }
 
         return context;
@@ -340,6 +368,10 @@ public final class ContextFactory
         {
             context = getDependentContext();
         }
+        else if (scopeType.equals(Singleton.class))
+        {
+            context = getSingletonContext();
+        }
         
         return context;
     }
@@ -360,9 +392,14 @@ public final class ContextFactory
         return sessionContext.get();
     }
 
-     private static ApplicationContext getApplicationContext()
+    private static ApplicationContext getApplicationContext()
     {
         return applicationContext.get();
+    }
+
+    private static SingletonContext getSingletonContext()
+    {
+        return singletonContext.get();
     }
 
     /*

@@ -133,7 +133,7 @@ public abstract class TestContext implements ITestContext
             initInterceptors();
             initDecorators();
             initStereoTypes();
-            initDependentContext();
+            initDependentContext();            
 
             PluginLoader.getInstance().startUp();
             
@@ -201,7 +201,7 @@ public abstract class TestContext implements ITestContext
             //If contains the @Obtains, defines implicit component
             if(injectionPoint.getAnnotated().getBaseType().equals(Instance.class))
             {
-                WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
+                //WebBeansUtil.addInjectedImplicitInstanceComponent(injectionPoint);
             }                                    
         }
 
@@ -319,7 +319,7 @@ public abstract class TestContext implements ITestContext
         bean = ManagedBeanConfigurator.define(clazz, WebBeansType.MANAGED);
         if (bean != null)
         {
-            manager.addBean(WebBeansUtil.createNewSimpleBeanComponent(bean));
+            manager.addBean(WebBeansUtil.createNewBean(bean));
             DecoratorUtil.checkManagedBeanDecoratorConditions(bean);
             // DefinitionUtil.defineSimpleWebBeanInterceptorStack(bean);
 

@@ -69,35 +69,37 @@ public final class ResolutionUtil
 
     public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers)
     {
+        StringBuffer qualifierMessage = new StringBuffer("[");
+        
+        int i = 0;
+        for(Annotation annot : qualifiers)
+        {
+            i++;            
+            qualifierMessage.append(annot);
+            
+            if(i != qualifiers.length)
+            {                
+                qualifierMessage.append(",");
+            }
+        }
+        
+        qualifierMessage.append("]");
+        
         if (resolvedSet.isEmpty())
         {
-            StringBuffer message = new StringBuffer("Api type [" + type.getName() + "] is not found with the qualifiers [");
-            
-            int i = 0;
-            for(Annotation annot : qualifiers)
-            {
-                i++;
-                
-                message.append(annot);
-                
-                if(i != qualifiers.length)
-                {
-                    message.append(",");   
-                }
-            }
-            
-            message.append("]");
+            StringBuffer message = new StringBuffer("Api type [" + type.getName() + "] is not found with the qualifiers ");            
+            message.append(qualifierMessage);
             
             throw new UnsatisfiedResolutionException(message.toString());
         }
 
         if (resolvedSet.size() > 1)
         {
-            throw new AmbiguousResolutionException("There is more than one api type with : " + type.getName());
+            throw new AmbiguousResolutionException("There is more than one api type with : " + type.getName() + " with qualifiers : " + qualifierMessage);
         }
 
         Bean<?> bean = resolvedSet.iterator().next();
         WebBeansUtil.checkUnproxiableApiType(bean, bean.getScope());
 
-    }
+    }    
 }
