@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletRequestEvent;
@@ -30,7 +31,7 @@ import javax.servlet.jsp.JspFactory;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
-import org.apache.webbeans.config.WebBeansContainerDeployer;
+import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
@@ -45,6 +46,7 @@ import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.discovery.BeforeShutDownImpl;
 import org.apache.webbeans.servlet.WebBeansConfigurationListener;
 import org.apache.webbeans.spi.JNDIService;
+import org.apache.webbeans.spi.Lifecycle;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
@@ -60,10 +62,10 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
  * @version $Rev$ $Date$
  * @see WebBeansConfigurationListener
  */
-public final class WebBeansLifeCycle
+public final class EnterpriseLifeCycle implements Lifecycle
 {
 	//Logger instance
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansLifeCycle.class);
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(EnterpriseLifeCycle.class);
 
     /**Manages unused conversations*/
     private ScheduledExecutorService service = null;
@@ -72,7 +74,7 @@ public final class WebBeansLifeCycle
     private MetaDataDiscoveryService discovery = null;
 
     /**Deploy discovered beans*/
-    private final WebBeansContainerDeployer deployer;
+    private final BeansDeployer deployer;
 
     /**XML discovery. */
     //XML discovery is removed from the specification. It is here for next revisions of spec.
@@ -89,18 +91,21 @@ public final class WebBeansLifeCycle
      * Creates a new lifecycle instance and initializes
      * the instance variables.
      */
-    public WebBeansLifeCycle()
+    public EnterpriseLifeCycle()
     {
         this.rootManager = new BeanManagerImpl();
         this.xmlDeployer = new WebBeansXMLConfigurator();
-        this.deployer = new WebBeansContainerDeployer(xmlDeployer);
+        this.deployer = new BeansDeployer(xmlDeployer);
         this.jndiService = ServiceLoader.getService(JNDIService.class);
         
-        rootManager.setXMLConfigurator(this.xmlDeployer);
-        
-        ActivityManager.getInstance().setRootActivity(this.rootManager);
+        init();
     }
 
+    public void init()
+    {
+        rootManager.setXMLConfigurator(this.xmlDeployer);        
+        ActivityManager.getInstance().setRootActivity(this.rootManager);        
+    }
     
     public void requestStarted(ServletRequestEvent event)
     {
@@ -129,11 +134,20 @@ public final class WebBeansLifeCycle
         conversationManager.destroyConversationContextWithSessionId(event.getSession().getId());
     }
 
-    public void applicationStarted(ServletContextEvent event)
+    public void applicationStarted(Object startupObject)
     {
-        // Initalize Application Context
-        logger.info("Initializing of the application context");
+        if(startupObject != null && !(ServletContextEvent.class.isAssignableFrom(startupObject.getClass())))
+        {
+            throw new WebBeansException("Wrong initialization object");
+        }
         
+        ServletContextEvent event = (ServletContextEvent)startupObject; 
+        
+        // Initalize Application Context
+        logger.info("OpenWebBeans Container is starting");
+        
+        long begin = System.currentTimeMillis();
+
         //Application Context initialization
         ContextFactory.initApplicationContext(event.getServletContext());
         
@@ -152,20 +166,13 @@ public final class WebBeansLifeCycle
         service = Executors.newScheduledThreadPool(1);
         service.scheduleWithFixedDelay(new ConversationCleaner(), delay, delay, TimeUnit.MILLISECONDS);
 
-        logger.info("Starting the dependency injection container configuration");
-        long begin = System.currentTimeMillis();
-
-        logger.info("Scanning classpaths for beans artifacts is started");
+        logger.info("Scanning classpaths for beans artifacts");
 
         this.discovery.scan();
 
-        logger.info("Scanning is ended");
-
-        logger.info("Deploying the scanned beans artifacts");
+        logger.info("Deploying scanned beans");
 
         deployer.deploy(this.discovery);
-
-        logger.info("Deploying is ended");
 
         ServletContext context = event.getServletContext();
 
@@ -189,11 +196,21 @@ public final class WebBeansLifeCycle
         }
         
         long end = System.currentTimeMillis();
-        logger.info("Dependency injection container configuration is ended, takes " + Long.toString(end - begin) + " ms.");
+        
+        logger.info("OpenWebBeans Container is started, it takes " + Long.toString(end - begin) + " ms.");
     }
 
-    public void applicationEnded(ServletContextEvent event)
+    public void applicationEnded(Object endObject)
     {
+        logger.info("OpenWebBeans Container is stopping");
+        
+        if(endObject != null && !(ServletContextEvent.class.isAssignableFrom(endObject.getClass())))
+        {
+            throw new WebBeansException("Wrong ended object");
+        }
+        
+        ServletContextEvent event = (ServletContextEvent)endObject;
+        
         //Fire shut down
         this.rootManager.fireEvent(new BeforeShutDownImpl(), new Annotation[0]);
                 
@@ -217,7 +234,7 @@ public final class WebBeansLifeCycle
         //Clear singleton list
         WebBeansFinder.clearInstances();
                 
-        logger.info("Dependency injection container is stopped for context path : " + event.getServletContext().getContextPath());        
+        logger.info("OpenWebBeans Container is stopped for context path, " + event.getServletContext().getContextPath());        
     }
     
     public void sessionPassivated(HttpSessionEvent event)
@@ -242,6 +259,12 @@ public final class WebBeansLifeCycle
             ConversationManager.getInstance().destroyWithRespectToTimout();
 
         }    	
+    }
+
+    @Override
+    public BeanManager getBeanManager()
+    {
+        return this.rootManager;
     }
 
 }

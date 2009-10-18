@@ -78,10 +78,10 @@ import org.apache.webbeans.xml.XMLSpecializesManager;
  * the scanner phase.
  */
 @SuppressWarnings("unchecked")
-public class WebBeansContainerDeployer
+public class BeansDeployer
 {
     //Logger instance
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansContainerDeployer.class);
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(BeansDeployer.class);
 
     /**Deployment is started or not*/
     protected boolean deployed = false;
@@ -97,7 +97,7 @@ public class WebBeansContainerDeployer
      * 
      * @param xmlConfigurator xml configurator
      */
-    public WebBeansContainerDeployer(WebBeansXMLConfigurator xmlConfigurator)
+    public BeansDeployer(WebBeansXMLConfigurator xmlConfigurator)
     {
         this.xmlConfigurator = xmlConfigurator;
         String usage = OpenWebBeansConfiguration.getInstance().getProperty(OpenWebBeansConfiguration.USE_EJB_DISCOVERY);

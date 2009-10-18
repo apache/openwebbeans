@@ -30,7 +30,7 @@ import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.WebBeansContainerDeployer;
+import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -48,7 +48,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * <ul>
  * <li><b>1- Configuration of decorators and interceptors</b>
  * <p>
- * Decorators and Interceptors are configured from {@link WebBeansContainerDeployer}
+ * Decorators and Interceptors are configured from {@link BeansDeployer}
  * class via methods <code>configureInterceptors(scanner)</code> and
  * <code>configureDecorators(scanner)</code>. Those methods further call
  * <code>defineInterceptor(interceptor class)</code> and <code>defineDecorator(decorator class)</code>

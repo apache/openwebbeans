@@ -57,6 +57,8 @@ public class OpenWebBeansConfiguration
     /**Use EJB Discovery or not*/
     public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.UseEjbMetaDataDiscoveryService";
     
+    public static final String CONTAINER_LIFECYCLE = "org.apache.webbeans.spi.lifecycle";
+    
     public static OpenWebBeansConfiguration getInstance() {
         return (OpenWebBeansConfiguration) WebBeansFinder.getSingletonInstance(OpenWebBeansConfiguration.class.getName());
     }
