@@ -230,27 +230,55 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
         // Set injected fields
         ManagedBean<T> delegate = (ManagedBean<T>) this.wrappedBean;
 
-        Set<Field> injectedFields = delegate.getInjectedFields();
+        Set<Field> injectedFields = delegate.getInjectedFromSuperFields();
         for (Field injectedField : injectedFields)
         {
             boolean isDecorates = injectedField.isAnnotationPresent(Decorates.class);
 
             if (!isDecorates)
             {
-                InjectableField ife = new InjectableField(injectedField, proxy, this.wrappedBean,this.creationalContext);
-                ife.doInjection();
+                injectField(injectedField, proxy);
             }
         }
-
-        Set<Method> injectedMethods = delegate.getInjectedMethods();
+        
+        Set<Method> injectedMethods = delegate.getInjectedFromSuperMethods();
         for (Method injectedMethod : injectedMethods)
         {
-            @SuppressWarnings("unchecked")
-            InjectableMethods<?> ife = new InjectableMethods(injectedMethod, proxy, this.wrappedBean,this.creationalContext);
-            ife.doInjection();
+            injectMethod(injectedMethod, proxy);
+        }        
+
+        injectedFields = delegate.getInjectedFields();
+        for (Field injectedField : injectedFields)
+        {
+            boolean isDecorates = injectedField.isAnnotationPresent(Decorates.class);
+
+            if (!isDecorates)
+            {
+                injectField(injectedField, proxy);
+            }
         }
+        
+        injectedMethods = delegate.getInjectedMethods();
+        for (Method injectedMethod : injectedMethods)
+        {
+            injectMethod(injectedMethod, proxy);
+        }        
+    }
+    
+    private void injectField(Field field, Object instance)
+    {
+        InjectableField f = new InjectableField(field, instance, this.wrappedBean, this.creationalContext);
+        f.doInjection();        
     }
 
+    @SuppressWarnings("unchecked")
+    private void injectMethod(Method method, Object instance)
+    {
+        InjectableMethods m = new InjectableMethods(method, instance, this.wrappedBean, this.creationalContext);
+        m.doInjection();        
+    }
+    
+    
     public void destroy(T instance,CreationalContext<T> context)
     {
         wrappedBean.destroy(instance,context);

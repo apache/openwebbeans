@@ -49,11 +49,18 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     /** Bean observable method */
     private Set<Method> observableMethods = new HashSet<Method>();
 
-    /** Injected fields of the component */
+    /** Injected fields of the bean */
     private Set<Field> injectedFields = new HashSet<Field>();
 
-    /** Injected methods of the component */
+    /** Injected methods of the bean */
     private Set<Method> injectedMethods = new HashSet<Method>();
+    
+    /** Injected fields of the bean */
+    private Set<Field> injectedFromSuperFields = new HashSet<Field>();
+
+    /** Injected methods of the bean */
+    private Set<Method> injectedFromSuperMethods = new HashSet<Method>();
+    
 
     /** @deprecated */
     /* Removed from specification */
@@ -176,6 +183,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
      */
     protected void afterConstructor(T instance, CreationalContext<T> creationalContext)
     {
+        injectSuperFields(instance, creationalContext);
+        injectSuperMethods(instance, creationalContext);
+        
         // Inject fields
         injectFields(instance, creationalContext);
 
@@ -294,10 +304,38 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         {
             if (field.getAnnotation(Decorates.class) == null)
             {
-                InjectableField f = new InjectableField(field, instance, this, creationalContext);
-                f.doInjection();
+                injectField(field, instance);
             }
-        }
+        }                
+    }
+    
+    public void injectSuperFields(T instance, CreationalContext<T> creationalContext)
+    {
+        Set<Field> fields = getInjectedFromSuperFields();
+        for (Field field : fields)
+        {
+            if (field.getAnnotation(Decorates.class) == null)
+            {
+                injectField(field, instance);
+            }
+        }                        
+    }
+    
+    public void injectSuperMethods(T instance, CreationalContext<T> creationalContext)
+    {
+        Set<Method> methods = getInjectedFromSuperMethods();
+
+        for (Method method : methods)
+        {
+            injectMethod(method, instance);
+        }        
+    }
+    
+    
+    private void injectField(Field field, Object instance)
+    {
+        InjectableField f = new InjectableField(field, instance, this, creationalContext);
+        f.doInjection();        
     }
 
     /**
@@ -306,16 +344,21 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
      * @param instance bean instance
      * @param creationalContext creational context instance
      */
-    @SuppressWarnings("unchecked")
     public void injectMethods(T instance, CreationalContext<T> creationalContext)
     {
         Set<Method> methods = getInjectedMethods();
 
         for (Method method : methods)
         {
-            InjectableMethods m = new InjectableMethods(method, instance, this, creationalContext);
-            m.doInjection();
+            injectMethod(method, instance);
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void injectMethod(Method method, Object instance)
+    {
+        InjectableMethods m = new InjectableMethods(method, instance, this, creationalContext);
+        m.doInjection();        
     }
 
     /**
@@ -379,6 +422,27 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     {
         this.injectedFields.add(field);
     }
+    
+    /**
+     * Gets injected from super fields.
+     * 
+     * @return injected fields
+     */
+    public Set<Field> getInjectedFromSuperFields()
+    {
+        return this.injectedFromSuperFields;
+    }
+
+    /**
+     * Add new injected field.
+     * 
+     * @param field new injected field
+     */
+    public void addInjectedFieldToSuper(Field field)
+    {
+        this.injectedFromSuperFields.add(field);
+    }
+    
 
     /**
      * Gets injected methods.
@@ -400,6 +464,26 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         this.injectedMethods.add(method);
     }
 
+    /**
+     * Gets injected from super methods.
+     * 
+     * @return injected methods
+     */
+    public Set<Method> getInjectedFromSuperMethods()
+    {
+        return this.injectedFromSuperMethods;
+    }
+
+    /**
+     * Add new injected method.
+     * 
+     * @param field new injected method
+     */
+    public void addInjectedMethodToSuper(Method method)
+    {
+        this.injectedFromSuperMethods.add(method);
+    }
+    
     /**
      * Sets injection target instance.
      * 

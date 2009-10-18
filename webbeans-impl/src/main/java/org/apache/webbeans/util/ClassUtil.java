@@ -1820,4 +1820,31 @@ public final class ClassUtil
         return rawType;
     }
 
+    public static boolean isOverriden(Method subClassMethod, Method superClassMethod)
+    {
+        if (subClassMethod.getName().equals(superClassMethod.getName()) && Arrays.equals(subClassMethod.getParameterTypes(), superClassMethod.getParameterTypes()))
+        {
+            int modifiers = superClassMethod.getModifiers();
+            if(Modifier.isPrivate(modifiers))
+            {
+                return false;
+            }
+            
+            if(!Modifier.isProtected(modifiers) && !Modifier.isPublic(modifiers))                 
+            {
+                Class<?> superClass = superClassMethod.getDeclaringClass();
+                Class<?> subClass = subClassMethod.getDeclaringClass();
+                
+                //Same package
+                if(!subClass.getPackage().getName().equals(superClass.getPackage().getName()))
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        return false;
+    }
 }

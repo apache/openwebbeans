@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -609,22 +608,19 @@ public final class DefinitionUtil
         Class<?> clazz = component.getReturnType();
         Method[] declaredMethods = clazz.getDeclaredMethods();
 
-
-        boolean isSpecializes = false;
-
         // This methods defined in the class
         for (Method declaredMethod : declaredMethods)
         {
-            createProducerComponents(component, producerComponents, declaredMethod, clazz, isSpecializes);
+            createProducerComponents(component, producerComponents, declaredMethod, clazz);
         }
-
-
+        
         return producerComponents;
-
     }
 
-    private static <T> void createProducerComponents(AbstractBean<T> component, Set<ProducerMethodBean<?>> producerComponents, Method declaredMethod, Class<?> clazz, boolean isSpecializes)
+    private static <T> void createProducerComponents(AbstractBean<T> component, Set<ProducerMethodBean<?>> producerComponents, Method declaredMethod, Class<?> clazz)
     {
+        boolean isSpecializes = false;
+        
         // Producer Method
         if (AnnotationUtil.hasMethodAnnotation(declaredMethod, Produces.class))
         {
@@ -891,49 +887,33 @@ public final class DefinitionUtil
                     
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod))
                     {
-                        if (!fromSuperClazz)
+                        if(fromSuperClazz)
                         {
-                            component.addInjectedField(field);
-                            
-                            addFieldInjectionPointMetaData(component, field);
+                            component.addInjectedFieldToSuper(field);    
                         }
                         else
                         {
-                            // Check that field is already exist
-                            Set<Field> definedInjectedFields = component.getInjectedFields();
-                            boolean defined = false;
-                            for (Field defineInjectedField : definedInjectedFields)
-                            {
-                                if (defineInjectedField.getName().equals(field.getName()) && defineInjectedField.getType().equals(field.getType()))
-                                {
-                                    defined = true;
-                                    break;
-                                }
-                            }
-                            
-                            if(!defined)
-                            {
-                                component.addInjectedField(field);
-                                addFieldInjectionPointMetaData(component, field);                                
-                            }
+                            component.addInjectedField(field);
                         }
+                        
+                        addFieldInjectionPointMetaData(component, field);                                
                     }
                 }                                    
             }
         }
     }
 
-    public static <T> void defineInjectedMethods(AbstractInjectionTargetBean<T> component)
+    public static <T> void defineInjectedMethods(AbstractInjectionTargetBean<T> bean)
     {
-        Asserts.assertNotNull(component, "component parameter can not be null");
+        Asserts.assertNotNull(bean, "bean parameter can not be null");
 
-        Class<T> clazz = component.getReturnType();
+        Class<T> clazz = bean.getReturnType();
 
-        // From component class definition
-        defineInternalInjectedMethods(component, clazz, false);
+        // From bean class definition
+        defineInternalInjectedMethods(bean, clazz, false);
 
         // From inheritance hierarchy
-        defineInternalInjectedMethodsRecursively(component, clazz);
+        defineInternalInjectedMethodsRecursively(bean, clazz);
     }
 
     private static <T> void defineInternalInjectedMethodsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
@@ -994,12 +974,12 @@ public final class DefinitionUtil
                     addMethodInjectionPointMetaData(component, method);
                 }
                 else
-                {
-                    Set<Method> injectedMethods = component.getInjectedMethods();
+                {                    
+                    Method[] beanMethods = component.getReturnType().getDeclaredMethods();
                     boolean defined = false;
-                    for (Method definedInjectedMethod : injectedMethods)
+                    for (Method beanMethod : beanMethods)
                     {
-                        if (definedInjectedMethod.getName().equals(method.getName()) && Arrays.equals(definedInjectedMethod.getParameterTypes(), method.getParameterTypes()))
+                        if(ClassUtil.isOverriden(beanMethod, method))                        
                         {
                             defined = true;
                             break;
@@ -1008,13 +988,11 @@ public final class DefinitionUtil
                     
                     if(!defined)
                     {
-                        component.addInjectedMethod(method);
+                        component.addInjectedMethodToSuper(method);
                         addMethodInjectionPointMetaData(component, method);                        
                     }
                 }
-
             }
-
         }
 
     }

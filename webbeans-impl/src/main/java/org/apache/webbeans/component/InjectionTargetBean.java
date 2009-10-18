@@ -67,6 +67,23 @@ public interface InjectionTargetBean<T>
     public void injectMethods(T instance, CreationalContext<T> creationalContext);
     
     /**
+     * Inject fields of the bean instance.
+     * 
+     * @param instance bean instance
+     * @param creationalContext creational context
+     */
+    public void injectSuperFields(T instance, CreationalContext<T> creationalContext);
+    
+    /**
+     * Inject initializer methods of the bean instance.
+     * 
+     * @param instance bean instance
+     * @param creationalContext creational context
+     */
+    public void injectSuperMethods(T instance, CreationalContext<T> creationalContext);
+
+    
+    /**
      * Calls post constrcut method.
      * 
      * @param instance bean instance
