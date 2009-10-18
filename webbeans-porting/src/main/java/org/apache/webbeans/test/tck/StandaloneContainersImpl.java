@@ -20,7 +20,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.lifecycle.WebBeansLifeCycle;
+import org.apache.webbeans.lifecycle.EnterpriseLifeCycle;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.test.mock.MockHttpSession;
@@ -31,7 +31,7 @@ import org.jboss.testharness.spi.StandaloneContainers;
 
 public class StandaloneContainersImpl implements StandaloneContainers
 {
-    private WebBeansLifeCycle lifeCycle = null;
+    private EnterpriseLifeCycle lifeCycle = null;
     
     private MockServletContextEvent servletContextEvent;
     
@@ -45,7 +45,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
         
         TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(MetaDataDiscoveryService.class);
         
-        this.lifeCycle = new WebBeansLifeCycle();
+        this.lifeCycle = new EnterpriseLifeCycle();
         
         try
         {
@@ -74,7 +74,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
             
             TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(MetaDataDiscoveryService.class);
             
-            this.lifeCycle = new WebBeansLifeCycle();
+            this.lifeCycle = new EnterpriseLifeCycle();
             
             Iterator<Class<?>> it = classes.iterator();
             while(it.hasNext())
