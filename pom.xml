@@ -453,6 +453,14 @@
 				<artifactId>openwebbeans-impl</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
+
+			 <dependency>
+			         <groupId>org.apache.openwebbeans</groupId>
+            		         <artifactId>openwebbeans-porting</artifactId>
+		                 <version>${openwebbeans.version}</version>
+            			 <scope>test</scope>
+		        </dependency>
+
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>atinject-api</artifactId>
@@ -588,5 +596,22 @@
             </build>
         </profile>  
         <!-- END release profile -->
+	
+	<profile>
+		<id>jsr330-tck</id>
+		<modules>
+			<module>atinject-tck</module>
+		</modules>
+		
+	</profile>
+
+	<profile>
+		<id>jsr299-tck</id>
+		<modules>
+			<module>webbeans-tck</module>
+		</modules>
+		
+	</profile>
+
     </profiles>
 </project>
