@@ -32,5 +32,6 @@ under the License.
            <module>ejb-sample</module>
            <module>jms-sample</module>
            <module>reservation</module>
+           <module>standalone-sample</module>
         </modules>
 </project>
