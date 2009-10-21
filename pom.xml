@@ -341,6 +341,7 @@
         <module>webbeans-jpa</module>
         <module>webbeans-resource</module>
         <module>webbeans-geronimo</module>
+        <module>webbeans-porting</module>
         <module>samples</module>
         <!-- <module>webbeans-tck</module>-->
   </modules>
