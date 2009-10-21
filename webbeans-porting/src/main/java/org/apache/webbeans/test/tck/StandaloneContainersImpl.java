@@ -14,6 +14,7 @@
 package org.apache.webbeans.test.tck;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.enterprise.inject.spi.BeanManager;
@@ -39,7 +40,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
     
     private DeploymentException excpetion;
         
-    public void deploy(Iterable<Class<?>> classes) throws DeploymentException
+    public void deployInternal(Iterable<Class<?>> classes) throws DeploymentException
     {
         initializeContexts();
         
@@ -66,7 +67,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
     }
 
 
-    public boolean deploy(Iterable<Class<?>> classes, Iterable<URL> beansXmls)
+    public boolean deployInternal(Iterable<Class<?>> classes, Iterable<URL> beansXmls)
     {
         try
         {
@@ -140,5 +141,19 @@ public class StandaloneContainersImpl implements StandaloneContainers
     protected BeanManager getBeanManager()
     {
         return ActivityManager.getInstance().getRootActivity();
+    }
+
+
+    @Override
+    public void deploy(Collection<Class<?>> classes) throws DeploymentException
+    {        
+        deployInternal(classes);
+    }
+
+
+    @Override
+    public boolean deploy(Collection<Class<?>> classes, Collection<URL> xmls)
+    {
+        return deployInternal(classes, xmls);
     }
 }
