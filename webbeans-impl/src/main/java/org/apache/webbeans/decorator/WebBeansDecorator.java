@@ -143,33 +143,52 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     
     private boolean bindingMatchesAnnotations(Annotation bindingType, Set<Annotation> annotations)
     {
-    	
-    	for (Annotation annot : annotations)
-    	{
-    		if (AnnotationUtil.hasAnnotationMember(bindingType.annotationType(), annot, bindingType))
-    		{
-    			return true;
+
+        for (Annotation annot : annotations)
+        {
+            if (AnnotationUtil.hasAnnotationMember(bindingType.annotationType(), annot, bindingType))
+            {
+                return true;
             }
         }
-    	
-    	return false;
+
+        return false;
     }
 
-    public boolean isDecoratorMatch(Set<Type> apiType, Set<Annotation> annotation)
+    /**
+     * Helper method to check if any of a list of Types are assignable to the
+     * delegate type.
+     * 
+     * @param apiTypes Set of apiTypes to check against the delegate type
+     * @return true if one of the types is assignable to the delegate type
+     */
+    private boolean apiTypesMatchDelegateType(Set<Type> apiTypes)
     {
-        
-    	//TODO Check for generic
-        if(!apiType.contains(this.delegateType))
+        for (Type apiType : apiTypes)
         {
-        	return false;
+            if (ClassUtil.isAssignable(apiType, this.delegateType))
+            {
+                return true;
+            }
         }
-   
+
+        return false;
+    }
+
+    public boolean isDecoratorMatch(Set<Type> apiTypes, Set<Annotation> annotations)
+    {
+
+        if (!apiTypesMatchDelegateType(apiTypes))
+        {
+            return false;
+        }
+
         for (Annotation bindingType : delegateBindings)
         {
-        	if(!bindingMatchesAnnotations(bindingType, annotation))
-        	{
-        		return false;
-        	}
+            if (!bindingMatchesAnnotations(bindingType, annotations))
+            {
+                return false;
+            }
         }
 
         return true;
