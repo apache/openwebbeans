@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Set;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -46,6 +47,11 @@ public final class EventUtil
         {
             throw new IllegalArgumentException("Event type : " + eventType.getName() + " can not be generic");
         }
+    }
+
+    public static void checkEventBindings(Set<Annotation> annotations)
+    {
+        AnnotationUtil.checkQualifierConditions(annotations);
     }
 
     public static void checkEventBindings(Annotation... annotations)

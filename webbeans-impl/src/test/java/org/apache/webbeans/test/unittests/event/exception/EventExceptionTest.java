@@ -14,6 +14,8 @@
 package org.apache.webbeans.test.unittests.event.exception;
 
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.AnnotationLiteral;
@@ -25,6 +27,7 @@ import org.apache.webbeans.test.event.LoggedInEvent;
 import org.apache.webbeans.test.event.LoggedInObserver;
 import org.apache.webbeans.test.event.broke.BrokenEvent;
 import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.util.ArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -82,16 +85,13 @@ public class EventExceptionTest extends TestContext
             };
 
             getManager().fireEvent(new BrokenEvent(), anns);
+            Assert.fail();
 
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            exc = e;
+            // this is an expected exception!
         }
-
-      Assert.assertNotNull(exc);
-
     }
 
     @Test
@@ -109,8 +109,8 @@ public class EventExceptionTest extends TestContext
             {
             };
 
-            LoggedInObserver observer = new LoggedInObserver();
-            NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class, anns);
+            LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
+            NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class);
 
             getManager().fireEvent(new LoggedInEvent(), anns);
 
@@ -134,13 +134,13 @@ public class EventExceptionTest extends TestContext
 
         try
         {
-            Annotation[] anns = new Annotation[1];
+            Annotation[] anns = new Annotation[2];
             anns[0] = new AnnotationLiteral<NormalScope>()
             {
             };
-
-            LoggedInObserver observer = new LoggedInObserver();
-            NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class, anns);
+            
+            LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
+            NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class);
 
             getManager().fireEvent(new LoggedInEvent(), anns);
 

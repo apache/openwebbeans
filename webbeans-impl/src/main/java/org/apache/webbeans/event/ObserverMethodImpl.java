@@ -1,15 +1,20 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements. See the NOTICE file distributed with this
- * work for additional information regarding copyright ownership. The ASF
- * licenses this file to You under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
- * or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.webbeans.event;
 
@@ -18,6 +23,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +32,6 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -62,10 +67,10 @@ import org.apache.webbeans.util.WebBeansUtil;
  *
  * @param <T> event type
  */
-public class BeanObserverImpl<T> implements ObserverMethod<T>
+public class ObserverMethodImpl<T> implements ObserverMethod<T>
 {
     /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(BeanObserverImpl.class);
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ObserverMethodImpl.class);
 
     /**Observer owner bean that defines observer method*/
     private final InjectionTargetBean<?> bean;
@@ -75,7 +80,17 @@ public class BeanObserverImpl<T> implements ObserverMethod<T>
 
     /**Using existing bean instance or not*/
     private final boolean ifExist;
+    
+    /** the observed qualifiers */
+    private final Set<Annotation> observedQualifiers;
 
+    /** the type of the observed event */
+    private final Type observedEventType;
+    
+    /** the transaction phase */
+    private final TransactionPhase phase;
+    
+    
     /**
      * Creates a new bean observer instance.
      * 
@@ -84,11 +99,48 @@ public class BeanObserverImpl<T> implements ObserverMethod<T>
      * @param ifExist if exist parameter
      * @param type transaction type
      */
-    public BeanObserverImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist)
+    public ObserverMethodImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist)
     {
         this.bean = bean;
         this.observerMethod = observerMethod;
         this.ifExist = ifExist;
+        
+        Annotation[] qualifiers = AnnotationUtil.getMethodFirstParameterQualifierWithGivenAnnotation(observerMethod, Observes.class);
+        AnnotationUtil.checkQualifierConditions(qualifiers);
+        this.observedQualifiers = new HashSet<Annotation>(qualifiers.length);
+        
+        for (Annotation qualifier : qualifiers)
+        {
+            observedQualifiers.add(qualifier);
+        }
+
+        this.observedEventType = null; //X TODO
+        
+        this.phase = EventUtil.getObserverMethodTransactionType(observerMethod);
+    }
+
+    /**
+     * used if the qualifiers and event type are already known, e.g. from the XML.
+     * @param bean
+     * @param observerMethod
+     * @param ifExist
+     * @param observedQualifiers
+     * @param observedEventType
+     */
+    protected ObserverMethodImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist,
+                                 Annotation[] qualifiers, Type observedEventType)
+    {
+        this.bean = bean;
+        this.observerMethod = observerMethod;
+        this.ifExist = ifExist;
+        this.observedQualifiers = new HashSet<Annotation>(qualifiers.length);
+        for (Annotation qualifier : qualifiers)
+        {
+            observedQualifiers.add(qualifier);
+        }
+        this.observedEventType = null; //X TODO
+        this.phase = EventUtil.getObserverMethodTransactionType(observerMethod); //X TODO might be overriden via XML?
+
     }
 
     /**
@@ -234,24 +286,30 @@ public class BeanObserverImpl<T> implements ObserverMethod<T>
         return bean.getClass();
     }
 
-    public Set<Annotation> getObservedQualifiers() {
-        // TODO Auto-generated method stub
-        return null;
+    /** 
+     * {@inheritDoc}
+     */
+    public Set<Annotation> getObservedQualifiers() 
+    {
+        return observedQualifiers;
     }
-
+    
+    /** 
+     * {@inheritDoc}
+     */
     public Type getObservedType() {
-        // TODO Auto-generated method stub
-        return null;
+        return observedEventType;
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     public Reception getReception() {
-        // TODO Auto-generated method stub
-        return null;
+        return ifExist ? Reception.IF_EXISTS : Reception.ALWAYS;
     }
 
     public TransactionPhase getTransactionPhase() {
-        // TODO Auto-generated method stub
-        return null;
+        return phase;
     }
 
 }

@@ -728,45 +728,49 @@ public final class AnnotationUtil
 
     public static void checkQualifierConditions(Annotation... qualifierAnnots)
     {
-        Annotation before = null;
+        Set<Annotation> annSet = ArrayUtil.asSet(qualifierAnnots);
 
+        //check for duplicate annotations
+        if (qualifierAnnots.length != annSet.size())
+        {
+            throw new IllegalArgumentException("Qualifier annotations can not contain duplicate qualifiers:" + qualifierAnnots);
+        }
+
+        checkQualifierConditions(annSet);
+    }
+
+    /**
+     * This function obviously cannot check for duplicate annotations.
+     * So this must have been done before!
+     * @param qualifierAnnots
+     */
+    public static void checkQualifierConditions(Set<Annotation> qualifierAnnots)
+    {
         for (Annotation ann : qualifierAnnots)
         {
-            Method[] methods = ann.annotationType().getDeclaredMethods();
+            checkQualifierConditions(ann);
+        }
+    }
 
-            for (Method method : methods)
-            {
-                Class<?> clazz = method.getReturnType();
-                if (clazz.isArray() || clazz.isAnnotation())
-                {
-                    if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), NonBinding.class))
-                    {
-                        throw new WebBeansConfigurationException("@Qualifier : " + ann.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
-                    }
-                }
-            }
-            
-            
-            if (!AnnotationUtil.isQualifierAnnotation(ann.annotationType()))
-            {
-                throw new IllegalArgumentException("Qualifier annotations must be annotated with @Qualifier");
-            }
+    private static void checkQualifierConditions(Annotation ann) {
+        Method[] methods = ann.annotationType().getDeclaredMethods();
 
-            if (before == null)
+        for (Method method : methods)
+        {
+            Class<?> clazz = method.getReturnType();
+            if (clazz.isArray() || clazz.isAnnotation())
             {
-                before = ann;
-            }
-            else
-            {
-                if (before.equals(ann))
+                if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), NonBinding.class))
                 {
-                    throw new IllegalArgumentException("Qualifier annotations can not contain duplicate qualifier : @" + before.annotationType().getName());
-                }
-                else
-                {
-                    before = ann;
+                    throw new WebBeansConfigurationException("@Qualifier : " + ann.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                 }
             }
+        }
+        
+        
+        if (!AnnotationUtil.isQualifierAnnotation(ann.annotationType()))
+        {
+            throw new IllegalArgumentException("Qualifier annotations must be annotated with @Qualifier");
         }
     }
 

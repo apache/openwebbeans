@@ -14,7 +14,10 @@
 package org.apache.webbeans.test.unittests.event;
 
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.AnnotationLiteral;
 import javax.enterprise.inject.TypeLiteral;
 import javax.servlet.ServletContext;
@@ -29,6 +32,7 @@ import org.apache.webbeans.test.event.TypeArgumentEvent;
 import org.apache.webbeans.test.event.TypeArgumentInterfaceObserver;
 import org.apache.webbeans.test.event.TypeArgumentObserver;
 import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.util.ArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -55,8 +59,8 @@ public class EventTest extends TestContext
         {
         };
 
-        LoggedInObserver observer = new LoggedInObserver();
-        NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class, anns);
+        LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
+        NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class);
 
         getManager().fireEvent(new LoggedInEvent(), anns);
 
@@ -71,12 +75,12 @@ public class EventTest extends TestContext
         {
         };
 
-        TypeArgumentObserver observer = new TypeArgumentObserver();
+        TypeArgumentObserver observer = new TypeArgumentObserver(ArrayUtil.asSet(anns));
         TypeLiteral<TypeArgumentBaseEvent> tl = new TypeLiteral<TypeArgumentBaseEvent>()
         {
         };
 
-        NotificationManager.getInstance().addObserver(observer, tl, anns);
+        NotificationManager.getInstance().addObserver(observer, tl);
 
         getManager().fireEvent(new TypeArgumentEvent(), anns);
 
@@ -91,8 +95,8 @@ public class EventTest extends TestContext
         {
         };
 
-        TypeArgumentInterfaceObserver observer = new TypeArgumentInterfaceObserver();
-        NotificationManager.getInstance().addObserver(observer, ITypeArgumentEventInterface.class, anns);
+        TypeArgumentInterfaceObserver observer = new TypeArgumentInterfaceObserver(ArrayUtil.asSet(anns));
+        NotificationManager.getInstance().addObserver(observer, ITypeArgumentEventInterface.class);
 
         getManager().fireEvent(new TypeArgumentEvent(), anns);
         Assert.assertEquals("ok", observer.getResult());

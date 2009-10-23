@@ -1,15 +1,20 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements. See the NOTICE file distributed with this
- * work for additional information regarding copyright ownership. The ASF
- * licenses this file to You under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
- * or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.webbeans.event;
 
@@ -18,7 +23,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +31,7 @@ import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.ObserverMethod;
@@ -34,6 +39,7 @@ import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
@@ -51,7 +57,7 @@ public final class NotificationManager
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(NotificationManager.class);
 
-    private final Map<Type, Set<ObserverWrapper<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverWrapper<?>>>();
+    private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
 
     private final TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
 
@@ -67,25 +73,25 @@ public final class NotificationManager
         return manager.getNotificationManager();
     }
 
-    public <T> void addObserver(ObserverMethod<T> observer, Type eventType, Annotation... annotations)
+    public <T> void addObserver(ObserverMethod<T> observer, Type eventType)
     {
-        EventUtil.checkEventBindings(annotations);
+        EventUtil.checkEventBindings(observer.getObservedQualifiers());
 
-        Set<ObserverWrapper<?>> set = observers.get(eventType);
+        Set<ObserverMethod<?>> set = observers.get(eventType);
         if (set == null)
         {
-            set = new HashSet<ObserverWrapper<?>>();
+            set = new HashSet<ObserverMethod<?>>();
             observers.put(eventType, set);
         }
 
-        set.add(new ObserverWrapper<T>(observer, annotations));
+        set.add(observer);
     }
 
-    public <T> void addObserver(ObserverMethod<T> observer, TypeLiteral<T> typeLiteral, Annotation... annotations)
+    public <T> void addObserver(ObserverMethod<T> observer, TypeLiteral<T> typeLiteral)
     {
         EventUtil.checkEventType(typeLiteral.getRawType());
 
-        addObserver(observer, typeLiteral.getRawType(), annotations);
+        addObserver(observer, typeLiteral.getRawType());
     }
 
     public <T> void removeObserver(ObserverMethod<T> observer, Class<T> eventType, Annotation... annotations)
@@ -95,18 +101,16 @@ public final class NotificationManager
 
         if (observers.containsKey(eventType))
         {
-            Set<ObserverWrapper<?>> set = observers.get(eventType);
-            for (ObserverWrapper<?> s : set)
+            Set<ObserverMethod<?>> set = observers.get(eventType);
+            for (ObserverMethod<?> ob : set)
             {
-                ObserverMethod<T> ob = (ObserverMethod<T>) s.getObserver();
-
-                Set<Annotation> evenBindings = s.getQualifiers();
+                Set<Annotation> evenBindings = ob.getObservedQualifiers();
                 Annotation[] anns = new Annotation[evenBindings.size()];
                 anns = evenBindings.toArray(anns);
 
                 if (ob.equals(observer) && Arrays.equals(anns, annotations))
                 {
-                    set.remove(s);
+                    set.remove(ob);
                 }
             }
         }
@@ -121,19 +125,21 @@ public final class NotificationManager
     {
         EventUtil.checkEventBindings(eventQualifiers);
 
+        Set<Annotation> qualifiers = toQualiferSet(eventQualifiers);
+
         Class<T> eventType = (Class<T>) event.getClass();
         //EventUtil.checkEventType(eventType);
 
-        Set<ObserverWrapper<T>> wrappers = filterByType(eventType);
+        Set<ObserverMethod<T>> observers = filterByType(eventType);
 
-        wrappers = filterByQualifiers(wrappers, eventQualifiers);
+        observers = filterByQualifiers(observers, qualifiers);
 
-        return unwrap(wrappers);
+        return observers;
     }
 
-    private <T> Set<ObserverWrapper<T>> filterByType(Class<T> eventType)
+    private <T> Set<ObserverMethod<T>> filterByType(Class<T> eventType)
     {
-        Set<ObserverWrapper<T>> matching = new HashSet<ObserverWrapper<T>>();
+        Set<ObserverMethod<T>> matching = new HashSet<ObserverMethod<T>>();
 
         Set<Type> types = new HashSet<Type>();
         ClassUtil.setTypeHierarchy(types, eventType);
@@ -146,11 +152,11 @@ public final class NotificationManager
             {
                 if (ClassUtil.isAssignable(check, type))
                 {
-                    Set<ObserverWrapper<?>> wrappers = this.observers.get(type);
+                    Set<ObserverMethod<?>> wrappers = this.observers.get(type);
 
-                    for (ObserverWrapper<?> wrapper : wrappers)
+                    for (ObserverMethod<?> wrapper : wrappers)
                     {
-                        matching.add((ObserverWrapper<T>) wrapper);
+                        matching.add((ObserverMethod<T>) wrapper);
                     }
                     break;
                 }
@@ -159,15 +165,22 @@ public final class NotificationManager
         return matching;
     }
 
-    private <T> Set<ObserverWrapper<T>> filterByQualifiers(Set<ObserverWrapper<T>> wrappers, Annotation... annotations)
+    /**
+     * filter out all {@code ObserverMethod}s which do not fit the given qualifiers.
+     */
+    private <T> Set<ObserverMethod<T>> filterByQualifiers(Set<ObserverMethod<T>> observers, Set<Annotation> eventQualifiers)
     {
-        Set<Annotation> eventQualifiers = toQualiferSet(annotations);
-
-        Set<ObserverWrapper<T>> matching = new HashSet<ObserverWrapper<T>>();
-
-        search: for (ObserverWrapper<T> wrapper : wrappers)
+        if (eventQualifiers.size() == 1 && eventQualifiers.iterator().next() instanceof Any)
         {
-            Set<Annotation> qualifiers = wrapper.getQualifiers();
+            return observers;
+        }
+        
+        Set<ObserverMethod<T>> matching = new HashSet<ObserverMethod<T>>();
+        
+        search: 
+        for (ObserverMethod<T> ob : observers)
+        {
+            Set<Annotation> qualifiers = ob.getObservedQualifiers();
 
             if (qualifiers.size() > eventQualifiers.size())
             {
@@ -182,22 +195,10 @@ public final class NotificationManager
                 }
             }
 
-            matching.add(wrapper);
+            matching.add(ob);
         }
         
         return matching;
-    }
-
-    private <T> Set<ObserverMethod<T>> unwrap(Set<ObserverWrapper<T>> wrappers)
-    {
-        Set<ObserverMethod<T>> observers = new HashSet<ObserverMethod<T>>();
-
-        for (ObserverWrapper<T> wrapper : wrappers)
-        {
-            observers.add(wrapper.getObserver());
-        }
-
-        return observers;
     }
     
     public void fireEvent(Object event, Annotation... qualifiers)
@@ -272,8 +273,6 @@ public final class NotificationManager
         {
             Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observableMethod, Observes.class);
 
-            Annotation[] qualifiers = AnnotationUtil.getMethodFirstParameterQualifierWithGivenAnnotation(observableMethod, Observes.class);
-
             boolean ifExist = false;
 
             if (observes.notifyObserver().equals(Reception.IF_EXISTS))
@@ -281,66 +280,31 @@ public final class NotificationManager
                 ifExist = true;
             }
 
-            //X TODO TransactionPhase phase = EventUtil.getObserverMethodTransactionType(observableMethod);
-
-            BeanObserverImpl<T> observer = new BeanObserverImpl(component, observableMethod, ifExist);
+            ObserverMethodImpl<T> observer = new ObserverMethodImpl(component, observableMethod, ifExist);
 
             Class<T> clazz = (Class<T>) AnnotationUtil.getMethodFirstParameterTypeClazzWithAnnotation(observableMethod, Observes.class);
 
-            addObserver(observer, clazz, qualifiers);
+            addObserver(observer, clazz);
         }
 
     }
 
+    /**
+     * Converts the given qualifiers array to a Set.
+     * This function additionally fixes @Default and @Any conditions.
+     */
     private static Set<Annotation> toQualiferSet(Annotation... qualifiers)
     {
         Set<Annotation> set = ArrayUtil.asSet(qualifiers);
 
-        return pruneDefault(set);
-    }
-    
-    private static Set<Annotation> pruneDefault(Set<Annotation> set) {
-        Iterator<Annotation> iterator = set.iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next() instanceof Default)
-            {
-                iterator.remove();
-            }
+        if (qualifiers.length == 0)
+        {
+            set.add(new DefaultLiteral());
         }
+        
         return set;
     }
-
-    /**
-     * Wrapper around the {@link javax.enterprise.event.Observer} instance.
-     *
-     * @param <T> generic event type
-     */
-    private static class ObserverWrapper<T>
-    {
-        /** Event qualifiers appearing on the parameter */
-        private final Set<Annotation> qualifiers;
-
-        /**Wrapped observer instance*/
-        private final ObserverMethod<T> observer;
-
-        public ObserverWrapper(ObserverMethod<T> observer, Annotation... qualifiers)
-        {
-            this.qualifiers = toQualiferSet(qualifiers);
-            this.qualifiers.remove(Default.class);
-            this.observer = observer;
-        }
-
-        public Set<Annotation> getQualifiers()
-        {
-            return this.qualifiers;
-        }
-
-        public ObserverMethod<T> getObserver()
-        {
-            return observer;
-        }
-    }
-
+    
     private static class AbstractSynchronization<T> implements Synchronization {
 
         private final ObserverMethod<T> observer;
@@ -354,10 +318,12 @@ public final class NotificationManager
 
         public void beforeCompletion()
         {
+            // TODO
         }
 
         public void afterCompletion(int i)
         {
+            // TODO
         }
 
         public void notifyObserver() {

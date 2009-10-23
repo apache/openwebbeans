@@ -625,7 +625,6 @@ public abstract class TestContext implements ITestContext
      */
     public void startTests(ServletContext ctx)
     {
-
     }
 
 }

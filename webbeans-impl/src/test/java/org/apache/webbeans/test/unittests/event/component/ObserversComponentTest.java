@@ -119,6 +119,28 @@ public class ObserversComponentTest extends TestContext
     }
 
     @Test
+    public void testFireWithAtAnyQualifier()
+    {
+        clear();
+
+        AbstractBean<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
+        ContextFactory.initRequestContext(null);
+
+        LoggedInEvent event = new LoggedInEvent("Mark");
+
+        Annotation[] anns = new Annotation[1];
+        anns[0] = new AnyLiteral();
+
+        getManager().fireEvent(event, anns);
+
+        ComponentWithObserves1 instance = getManager().getInstance(component);
+
+        Assert.assertEquals("Mark", instance.getUserName());
+        Assert.assertEquals("Mark", instance.getUserNameWithMember());
+    }
+
+
+    @Test
     public void testObservesWithBindingMember2()
     {
         clear();

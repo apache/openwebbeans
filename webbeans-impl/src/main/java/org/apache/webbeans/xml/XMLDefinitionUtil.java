@@ -700,6 +700,9 @@ public final class XMLDefinitionUtil
         }
     }
 
+    /**
+     * TODO review the logic of this function. It is a bit unintuitive why the childElement loop exists 
+     */
     public static <T, K> void defineXMLObservesMethod(XMLManagedBean<T> component, Method observesMethod, Element observesMethodElement, String errorMessage)
     {
         component.addObservableMethod(observesMethod);
@@ -709,8 +712,8 @@ public final class XMLDefinitionUtil
 
         /* Other parameter elements other than @Observes */
         List<Element> otherParameterElements = new ArrayList<Element>();
-
-        BeanObserverXMLImpl<K> beanObserver = new BeanObserverXMLImpl<K>(component, observesMethod, false);
+        
+        BeanObserverXMLImpl<K> beanObserver = null;
 
         Class<K> eventType = null;
 
@@ -732,9 +735,12 @@ public final class XMLDefinitionUtil
                 Annotation[] bindingAnns = new Annotation[bindingTypes.size()];
                 bindingAnns = bindingTypes.toArray(bindingAnns);
 
+                beanObserver = new BeanObserverXMLImpl<K>(component, observesMethod, false, 
+                                                                                 bindingAnns, null /** TODO Type! */);
+
                 beanObserver.addXMLInjectionObservesParameter(model);
 
-                NotificationManager.getInstance().addObserver(beanObserver, eventType, bindingAnns);
+                NotificationManager.getInstance().addObserver(beanObserver, eventType);
 
             }
             /* Disposal method parameter other than @Disposes */
@@ -745,10 +751,13 @@ public final class XMLDefinitionUtil
         }// end of for childs
 
         /* Add other params injection point models */
-        for (Element otherElement : otherParameterElements)
+        if (beanObserver != null)
         {
-            XMLInjectionPointModel injectionPointParamModel = XMLUtil.getInjectionPointModel(otherElement, errorMessage);
-            beanObserver.addXMLInjectionObservesParameter(injectionPointParamModel);
+            for (Element otherElement : otherParameterElements)
+            {
+                XMLInjectionPointModel injectionPointParamModel = XMLUtil.getInjectionPointModel(otherElement, errorMessage);
+                beanObserver.addXMLInjectionObservesParameter(injectionPointParamModel);
+            }
         }
     }
     

@@ -146,9 +146,9 @@ public class PluginLoader
     }
     
     /**
-     * Gets ejb plugin
+     * Gets the JMS plugin
      * 
-     * @return ejb plugin
+     * @return jms plugin
      */
     public OpenWebBeansJmsPlugin getJmsPlugin()
     {
@@ -164,7 +164,7 @@ public class PluginLoader
     }
     
     /**
-     * Gets ejb plugin
+     * Gets the EE resource plugin
      * 
      * @return ejb plugin
      */

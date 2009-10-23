@@ -1334,6 +1334,7 @@ public final class WebBeansXMLConfigurator
          * <Initializes> = 0; <Produces> = 1; <Disposes> = 2; <Observes> = 3;
          * <Destructor> = 4; InterceptorBindingType annotation on method = 5;
          */
+        //X TODO replace this with an enum or constants for better readability!
         int type = 0;
 
         /* Method parameters classes */
