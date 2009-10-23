@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
@@ -32,7 +33,6 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.transaction.Status;
@@ -68,8 +68,8 @@ public final class NotificationManager
 
     public static NotificationManager getInstance()
     {
-        BeanManagerImpl manager =  ActivityManager.getInstance().getCurrentActivity();
-        
+        BeanManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
+
         return manager.getNotificationManager();
     }
 
@@ -128,7 +128,7 @@ public final class NotificationManager
         Set<Annotation> qualifiers = toQualiferSet(eventQualifiers);
 
         Class<T> eventType = (Class<T>) event.getClass();
-        //EventUtil.checkEventType(eventType);
+        // EventUtil.checkEventType(eventType);
 
         Set<ObserverMethod<T>> observers = filterByType(eventType);
 
@@ -166,7 +166,8 @@ public final class NotificationManager
     }
 
     /**
-     * filter out all {@code ObserverMethod}s which do not fit the given qualifiers.
+     * filter out all {@code ObserverMethod}s which do not fit the given
+     * qualifiers.
      */
     private <T> Set<ObserverMethod<T>> filterByQualifiers(Set<ObserverMethod<T>> observers, Set<Annotation> eventQualifiers)
     {
@@ -174,11 +175,10 @@ public final class NotificationManager
         {
             return observers;
         }
-        
+
         Set<ObserverMethod<T>> matching = new HashSet<ObserverMethod<T>>();
-        
-        search: 
-        for (ObserverMethod<T> ob : observers)
+
+        search: for (ObserverMethod<T> ob : observers)
         {
             Set<Annotation> qualifiers = ob.getObservedQualifiers();
 
@@ -197,17 +197,17 @@ public final class NotificationManager
 
             matching.add(ob);
         }
-        
+
         return matching;
     }
-    
+
     public void fireEvent(Object event, Annotation... qualifiers)
     {
         Transaction transaction = transactionService.getTransaction();
 
         Set<ObserverMethod<Object>> observers = resolveObservers(event, qualifiers);
 
-        for (ObserverMethod<Object> observer: observers)
+        for (ObserverMethod<Object> observer : observers)
         {
             try
             {
@@ -230,7 +230,7 @@ public final class NotificationManager
                     {
                         transaction.registerSynchronization(new BeforeCompletion(observer, event));
                     }
-                    else 
+                    else
                     {
                         throw new IllegalStateException("TransactionPhase not supported: " + phase);
                     }
@@ -248,16 +248,16 @@ public final class NotificationManager
                 }
                 else
                 {
-                    RuntimeException rte = (RuntimeException)e.getCause();
+                    RuntimeException rte = (RuntimeException) e.getCause();
                     throw rte;
                 }
             }
-            catch(RuntimeException e)
+            catch (RuntimeException e)
             {
                 throw e;
             }
-            
-            catch(Exception e)
+
+            catch (Exception e)
             {
                 throw new WebBeansException(e);
             }
@@ -290,8 +290,8 @@ public final class NotificationManager
     }
 
     /**
-     * Converts the given qualifiers array to a Set.
-     * This function additionally fixes @Default and @Any conditions.
+     * Converts the given qualifiers array to a Set. This function additionally
+     * fixes @Default and @Any conditions.
      */
     private static Set<Annotation> toQualiferSet(Annotation... qualifiers)
     {
@@ -301,11 +301,12 @@ public final class NotificationManager
         {
             set.add(new DefaultLiteral());
         }
-        
+
         return set;
     }
-    
-    private static class AbstractSynchronization<T> implements Synchronization {
+
+    private static class AbstractSynchronization<T> implements Synchronization
+    {
 
         private final ObserverMethod<T> observer;
         private final T event;
@@ -318,15 +319,16 @@ public final class NotificationManager
 
         public void beforeCompletion()
         {
-            // TODO
+            // Do nothing
         }
 
         public void afterCompletion(int i)
         {
-            // TODO
+            //Do nothing
         }
 
-        public void notifyObserver() {
+        public void notifyObserver()
+        {
             try
             {
                 observer.notify(event);
@@ -338,7 +340,8 @@ public final class NotificationManager
         }
     }
 
-    private static class BeforeCompletion extends AbstractSynchronization {
+    private static class BeforeCompletion extends AbstractSynchronization
+    {
         private BeforeCompletion(ObserverMethod observer, Object event)
         {
             super(observer, event);
@@ -351,7 +354,8 @@ public final class NotificationManager
         }
     }
 
-    private static class AfterCompletion extends AbstractSynchronization {
+    private static class AfterCompletion extends AbstractSynchronization
+    {
         private AfterCompletion(ObserverMethod observer, Object event)
         {
             super(observer, event);
@@ -364,7 +368,8 @@ public final class NotificationManager
         }
     }
 
-    private static class AfterCompletionSuccess extends AbstractSynchronization {
+    private static class AfterCompletionSuccess extends AbstractSynchronization
+    {
         private AfterCompletionSuccess(ObserverMethod observer, Object event)
         {
             super(observer, event);
@@ -380,7 +385,8 @@ public final class NotificationManager
         }
     }
 
-    private static class AfterCompletionFailure extends AbstractSynchronization {
+    private static class AfterCompletionFailure extends AbstractSynchronization
+    {
         private AfterCompletionFailure(ObserverMethod observer, Object event)
         {
             super(observer, event);

@@ -21,7 +21,7 @@ import java.lang.annotation.Inherited;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.stereotype.Stereotype;
+import javax.enterprise.inject.Stereotype;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;

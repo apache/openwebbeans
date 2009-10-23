@@ -149,6 +149,8 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     public void notify(T event)
     {
+        logger.trace("Notifiying with event payload : " + event.toString());
+        
         AbstractBean<Object> baseComponent = (AbstractBean<Object>) bean;
         AbstractBean<Object> specializedComponent = null;
         Object object = null;
@@ -297,18 +299,21 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     /** 
      * {@inheritDoc}
      */
-    public Type getObservedType() {
+    public Type getObservedType() 
+    {
         return observedEventType;
     }
 
     /** 
      * {@inheritDoc}
      */
-    public Reception getReception() {
+    public Reception getReception() 
+    {
         return ifExist ? Reception.IF_EXISTS : Reception.ALWAYS;
     }
 
-    public TransactionPhase getTransactionPhase() {
+    public TransactionPhase getTransactionPhase()
+    {
         return phase;
     }
 

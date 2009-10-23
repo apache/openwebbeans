@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -33,7 +34,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
-import javax.enterprise.inject.stereotype.Model;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
