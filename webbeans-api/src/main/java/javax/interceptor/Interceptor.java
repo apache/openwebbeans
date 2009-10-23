@@ -28,7 +28,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.enterprise.inject.stereotype.Stereotype;
+import javax.enterprise.inject.Stereotype;
 
 /**
  * Annotation for used defining the interceptors.
