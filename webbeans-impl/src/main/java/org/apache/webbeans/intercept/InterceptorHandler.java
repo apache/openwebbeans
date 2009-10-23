@@ -175,12 +175,9 @@ public class InterceptorHandler implements MethodHandler, Serializable
             
             List<InterceptorData> temp = new ArrayList<InterceptorData>(stack);
             
-            //EJB specific interceptor stack
-            filterEJBInterceptorStackList(temp, method);
+            //Filter both EJB and WebBeans interceptors
+            filterCommonInterceptorStackList(temp, method);
             
-            //WebBeans specific interceptor stack
-            filterWebBeansInterceptorStackList(temp, method);
-
             //Call Around Invokes
             if (WebBeansUtil.isContainsInterceptorMethod(temp, InterceptorType.AROUND_INVOKE))
             {
@@ -301,121 +298,76 @@ public class InterceptorHandler implements MethodHandler, Serializable
 
     }
 
-    private void filterEJBInterceptorStackList(final List<InterceptorData> stack, Method method)
+    private boolean shouldRemoveInterceptorCommon(InterceptorData id, Method method)
     {
         boolean isMethodAnnotatedWithInterceptorClass = false;
+        
         boolean isMethodAnnotatedWithExcludeInterceptorClass = false;
 
-        if (AnnotationUtil.hasMethodAnnotation(method, Interceptors.class))
-            isMethodAnnotatedWithInterceptorClass = true;
-
-        if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
-            isMethodAnnotatedWithExcludeInterceptorClass = true;
-
-        Iterator<InterceptorData> it = stack.iterator();
-        while (it.hasNext())
+        if (id.isDefinedWithWebBeansInterceptor())
         {
-            InterceptorData data = it.next();
-            
-            if(!data.isDefinedWithWebBeansInterceptor())
+            if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(method.getDeclaredAnnotations()))
             {
-                if (isMethodAnnotatedWithInterceptorClass)
-                {
-                    if (isMethodAnnotatedWithExcludeInterceptorClass)
-                    {
-                        if (!data.isDefinedInMethod() && data.isDefinedInInterceptorClass())
-                        {
-                            it.remove();
-                        }
-                        else if (data.isDefinedInMethod())
-                        {
-                            if (!data.getAnnotatedMethod().equals(method))
-                            {
-                                it.remove();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (data.isDefinedInMethod())
-                        {
-                            if (!data.getAnnotatedMethod().equals(method))
-                            {
-                                it.remove();
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (data.isDefinedInMethod())
-                    {
-                        it.remove();
-                    }
-                }
-                
+                isMethodAnnotatedWithInterceptorClass = true;
             }
-            
+
+            if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
+            {
+                isMethodAnnotatedWithExcludeInterceptorClass = true;
+            }
+        }
+        else
+        {
+            if (AnnotationUtil.hasMethodAnnotation(method, Interceptors.class))
+            {
+                isMethodAnnotatedWithInterceptorClass = true;   
+            }
+
+            if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
+            {
+                isMethodAnnotatedWithExcludeInterceptorClass = true;   
+            }
         }
 
+        if (isMethodAnnotatedWithInterceptorClass)
+        {
+
+            if (isMethodAnnotatedWithExcludeInterceptorClass)
+            {
+                // If the interceptor is defined at the class level it should be
+                // removed due to ExcludeClassInterceptors method annotation
+                if (!id.isDefinedInMethod() && id.isDefinedInInterceptorClass())
+                {
+                    return true;
+                }
+            }
+            // If the interceptor is defined in a different method, remove it
+            if (id.isDefinedInMethod() && !id.getAnnotatedMethod().equals(method))
+            {
+                return true;
+            }
+        }
+        else if (id.isDefinedInMethod())
+        {
+            return true;
+        }
+
+        return false;
     }
 
-    private void filterWebBeansInterceptorStackList(final List<InterceptorData> stack, Method method)
+    private void filterCommonInterceptorStackList(final List<InterceptorData> stack, Method method)
     {
-        boolean isMethodAnnotatedWithInterceptorClass = false;
-        boolean isMethodAnnotatedWithExcludeInterceptorClass = false;
-
-        if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(method.getDeclaredAnnotations()))
-        {
-            isMethodAnnotatedWithInterceptorClass = true;
-        }
-
-        if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
-        {
-            isMethodAnnotatedWithExcludeInterceptorClass = true;
-        }
-
         Iterator<InterceptorData> it = stack.iterator();
         while (it.hasNext())
         {
             InterceptorData data = it.next();
-            if (isMethodAnnotatedWithInterceptorClass)
+
+            if (shouldRemoveInterceptorCommon(data, method))
             {
-                if (isMethodAnnotatedWithExcludeInterceptorClass)
-                {
-                    if (!data.isDefinedInMethod() && data.isDefinedInInterceptorClass() && data.isDefinedWithWebBeansInterceptor())
-                    {
-                        it.remove();
-                    }
-                    else if (data.isDefinedInMethod() && data.isDefinedWithWebBeansInterceptor())
-                    {
-                        if (!data.getAnnotatedMethod().equals(method))
-                        {
-                            it.remove();
-                        }
-                    }
-                }
-                else
-                {
-                    if (data.isDefinedInMethod() && data.isDefinedWithWebBeansInterceptor())
-                    {
-                        if (!data.getAnnotatedMethod().equals(method))
-                        {
-                            it.remove();
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (data.isDefinedInMethod() && data.isDefinedWithWebBeansInterceptor())
-                {
-                    it.remove();
-                }
+                it.remove();
             }
 
         }
-
     }
 
 }
