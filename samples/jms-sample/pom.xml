@@ -54,14 +54,7 @@
 			<artifactId>openwebbeans-api</artifactId>
 			<version>1.0.0-incubating-SNAPSHOT</version>
 		</dependency>
-		
-		<!-- OWB implementation -->
-		<dependency>
-			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>openwebbeans-api</artifactId>
-			<version>1.0.0-incubating-SNAPSHOT</version>
-		</dependency>		
-		
+				
 		<!-- JSF Plugin -->
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>

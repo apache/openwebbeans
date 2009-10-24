@@ -347,107 +347,155 @@
   </modules>
     
 	<repositories>
-		<repository>
-			<id>java.net</id>
-			<url>http://download.java.net/maven/1</url>
-			<layout>legacy</layout>
-		</repository>
+
+    	   <repository>
+		<id>java.net</id>
+		<url>http://download.java.net/maven/1</url>
+		<layout>legacy</layout>
+	   </repository>
+
+           <repository>
+             <releases />
+             <id>repository.jboss.org</id>
+             <name>JBoss Repository</name>
+             <url>http://repository.jboss.org/maven2</url>
+           </repository>
+
+           <repository>
+             <id>snapshots.jboss.org</id>
+             <name>JBoss Snapshots Repository</name>
+             <url>http://snapshots.jboss.org/maven2</url>
+             <releases>
+               <enabled>false</enabled>
+             </releases>
+             <snapshots>
+               <enabled>true</enabled>
+               <updatePolicy>always</updatePolicy>
+             </snapshots>
+           </repository>
+
+           <repository>
+             <id>repo1.maven.org</id>
+             <name>Maven repository (for cdi-api)</name>
+             <url>http://repo1.maven.org/maven2</url>
+           </repository>
+
 	</repositories>
 
 	<dependencyManagement>
+
 		<dependencies>
+
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>1.2.14</version>
 			</dependency>
+
 			<dependency>
 			    <groupId>org.apache.geronimo.specs</groupId>
 			    <artifactId>geronimo-jaxws_2.1_spec</artifactId>
 			    <version>1.0</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-servlet_2.5_spec</artifactId>
 				<version>1.2</version>
 			</dependency>
+
 			<dependency>
 				<groupId>dom4j</groupId>
 				<artifactId>dom4j</artifactId>
 				<version>1.6.1</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.geronimo.specs 
 				</groupId>
 				<artifactId>geronimo-ejb_3.0_spec</artifactId>
 				<version>1.0-M1</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-el_1.0_spec</artifactId>
 				<version>1.0-M1</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.myfaces.core</groupId>
 				<artifactId>myfaces-api</artifactId>
 				<version>1.2.6</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.myfaces.core</groupId>
 				<artifactId>myfaces-impl</artifactId>
 				<version>1.2.6</version>
 			</dependency>
+
 			<dependency>
 				<groupId>javassist</groupId>
 				<artifactId>javassist</artifactId>
 				<version>3.8.0.GA</version>
 			</dependency>
+
 			<dependency>
 				<groupId>net.sf.scannotation</groupId>
 				<artifactId>scannotation</artifactId>
 				<version>1.0.2</version>
 			</dependency>
+
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.5</version>
 				<scope>test</scope>
 			</dependency>
+
 			<dependency>
 				<groupId>javax.annotation</groupId>
 				<artifactId>jsr250-api</artifactId>
 				<version>1.0</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-jpa_3.0_spec</artifactId>
 				<version>1.1.1</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-interceptor_3.0_spec</artifactId>
 				<version>1.0.1</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-jta_1.1_spec</artifactId>
 				<version>1.1.1</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-jsp_2.1_spec</artifactId>
 				<version>1.0.1</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>atinject-api</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>openwebbeans-api</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
+
 			<!--  this is used for TCK tests        -->
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
@@ -464,24 +512,22 @@
 
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
-				<artifactId>atinject-api</artifactId>
-				<version>${openwebbeans.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>openwebbeans-jsf</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>openwebbeans-jpa</artifactId>
 				<version>${openwebbeans.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.openejb</groupId>
 				<artifactId>openejb-core</artifactId>
 				<version>3.1.1</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.openejb</groupId>
 				<artifactId>openejb-tomcat-catalina</artifactId>
