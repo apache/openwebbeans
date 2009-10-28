@@ -656,7 +656,7 @@ public final class WebBeansUtil
         List<InterceptorData> interceptorList = component.getInterceptorStack();
         if(!interceptorList.isEmpty())
         {
-            component.getInterceptorStack().addAll(interceptorList);   
+            comp.getInterceptorStack().addAll(interceptorList);   
         }
         
         
