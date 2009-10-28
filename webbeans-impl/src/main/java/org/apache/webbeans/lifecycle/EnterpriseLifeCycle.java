@@ -43,7 +43,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.events.ExtensionLoader;
-import org.apache.webbeans.portable.events.discovery.BeforeShutDownImpl;
+import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.servlet.WebBeansConfigurationListener;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.Lifecycle;
@@ -212,7 +212,7 @@ public final class EnterpriseLifeCycle implements Lifecycle
         ServletContextEvent event = (ServletContextEvent)endObject;
         
         //Fire shut down
-        this.rootManager.fireEvent(new BeforeShutDownImpl(), new Annotation[0]);
+        this.rootManager.fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
                 
         service.shutdownNow();
 
