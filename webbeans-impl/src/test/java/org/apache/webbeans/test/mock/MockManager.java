@@ -36,8 +36,10 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
+import org.apache.webbeans.util.WebBeansUtil;
 
 public class MockManager implements BeanManager
 {
@@ -49,6 +51,7 @@ public class MockManager implements BeanManager
     {
         this.manager = new BeanManagerImpl();
         ActivityManager.getInstance().setRootActivity(this.manager);
+        manager.addBean(WebBeansUtil.getManagerBean());
     }
 
 

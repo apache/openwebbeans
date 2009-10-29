@@ -14,10 +14,12 @@
 package org.apache.webbeans.test.component.library;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Observes;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.annotation.deployment.Production;
+import org.apache.webbeans.test.event.LoggedInEvent;
 
 @Production
 @RequestScoped
@@ -33,6 +35,11 @@ public class BookShop extends Business implements Shop<Book>
     public Object intercept(InvocationContext context) throws Exception
     {
         return context.proceed();
+    }
+    
+    public void observeSomething(@Observes LoggedInEvent lie)
+    {
+        // this is purely for checking if the Extension mechanism works
     }
 
 }
