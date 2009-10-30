@@ -35,5 +35,10 @@ import javax.inject.Qualifier;
 @Qualifier
 public @interface New
 {
-	
+    /**
+     * May be used to declare which type should be used for injection.
+     * This defaults to the type which is defined at the injection point.
+     * @return the class of the bean which should be injected 
+     */
+	Class<?> value() default New.class;
 }

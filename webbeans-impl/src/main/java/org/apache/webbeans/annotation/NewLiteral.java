@@ -28,13 +28,19 @@ public class NewLiteral extends AnnotationLiteral<New> implements New
 	
 	public NewLiteral()
 	{
-		
+		this.clazz = New.class;
 	}
 	
 	public NewLiteral(Class<?> clazz)
 	{
 		this.clazz = clazz;
 	}
+
+	/** {@inheritDoc} */
+    @Override
+    public Class<?> value() {
+        return clazz;
+    }
 
 
 }
