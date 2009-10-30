@@ -53,7 +53,7 @@ public class ConversationBean extends AbstractBean<Conversation>
     @Override
     protected void destroyInstance(Conversation instance)
     {
-        if (!instance.isLongRunning())
+        if (instance.isTransient())
         {
             instance = null;
         }

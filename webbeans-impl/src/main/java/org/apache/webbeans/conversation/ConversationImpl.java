@@ -25,7 +25,7 @@ public class ConversationImpl implements Conversation
 {
     private String id;
 
-    private boolean longRunning = false;
+    private boolean isTransient = true;
 
     private long timeout;
 
@@ -47,7 +47,7 @@ public class ConversationImpl implements Conversation
 
     public void begin()
     {
-        this.longRunning = true;
+        this.isTransient = false;
         this.id = StringUtil.generateUUIDStringWithoutDash();
 
         ConversationManager.getInstance().addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));
@@ -55,7 +55,7 @@ public class ConversationImpl implements Conversation
 
     public void begin(String id)
     {
-        this.longRunning = true;
+        this.isTransient = false;
         this.id = id;
 
         ConversationManager.getInstance().addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));
@@ -63,7 +63,7 @@ public class ConversationImpl implements Conversation
 
     public void end()
     {
-        this.longRunning = false;
+        this.isTransient = true;
         
         ConversationManager.getInstance().removeConversation(this);
     }
@@ -78,9 +78,9 @@ public class ConversationImpl implements Conversation
         return this.timeout;
     }
 
-    public boolean isLongRunning()
+    public boolean isTransient()
     {
-        return this.longRunning;
+        return isTransient;
     }
 
     public void setTimeout(long milliseconds)

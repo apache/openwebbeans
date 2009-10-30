@@ -61,7 +61,7 @@ public class WebBeansJSFFilter implements Filter
                 if (conversation != null)
                 {
 
-                    if (conversation.isLongRunning())
+                    if (!conversation.isTransient())
                     {
                         // Find JSFish view od of the redirection
                         path = JSFUtil.getRedirectViewId(location);

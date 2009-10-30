@@ -117,7 +117,7 @@ public class WebBeansPhaseListener implements PhaseListener
             ConversationContext context = (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class);
 
             // if long running, saves it
-            if (conversation.isLongRunning())
+            if (!conversation.isTransient())
             {
                 logger.info("Conversation with id : " + conversation.getId() + " is marked as long running conversation");
                 
@@ -167,7 +167,7 @@ public class WebBeansPhaseListener implements PhaseListener
                 conversation.updateTimeOut();
             }
 
-            if (conversation.isLongRunning())
+            if (!conversation.isTransient())
             {
                 UIViewRoot viewRoot = JSFUtil.getViewRoot();
                 

@@ -48,11 +48,10 @@ public interface Conversation
     public void end();
 
     /**
-     * Returns true if conversation is marked as a long running false otherwise.
-     * 
-     * @return true if conversation is marked as a long running false otherwise
+     * @return <code>true</code> if conversation is transient, 
+     *         <code>false</code> if it is a long running conversation.
      */
-    public boolean isLongRunning();
+    public boolean isTransient();
 
     /**
      * Gets conversation id.

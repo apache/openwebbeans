@@ -89,7 +89,7 @@ public class UserReservationBean implements Serializable
             return null;
         }
         
-        if(!conversation.isLongRunning())
+        if(conversation.isTransient())
         {
             conversation.begin();
             
@@ -158,7 +158,7 @@ public class UserReservationBean implements Serializable
     
     public String checkout()
     {
-        if(!conversation.isLongRunning())
+        if(conversation.isTransient())
         {
             JSFUtility.addErrorMessage("Conversation is not running! Please add hotel for reservation", "");
             this.reservations.clear();
@@ -196,7 +196,7 @@ public class UserReservationBean implements Serializable
                 
         this.reservationDate = null;
         
-        if(conversation.isLongRunning())
+        if(!conversation.isTransient())
         {
             this.conversation.end();
             JSFUtility.addInfoMessage("Reservation are deleted succesfully. Conversation with id "+conversation.getId() + "is ended ", "");
