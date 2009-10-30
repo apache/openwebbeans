@@ -25,7 +25,7 @@ import javax.enterprise.inject.spi.SessionBeanType;
  *
  * @param <X> ejb class info
  */
-public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implements ProcessSessionBean<X>
+public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<X> implements ProcessSessionBean<X>
 {
     /**Session bean annotated type*/
     private final AnnotatedType<X> annotatedBeanClass;
@@ -36,7 +36,7 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     /**Session bean type*/
     private final SessionBeanType type;
 
-    public ProcessSessionBeanImpl(Bean<Object> bean, AnnotatedType<X> annotatedType, String name, SessionBeanType type)
+    public ProcessSessionBeanImpl(Bean<X> bean, AnnotatedType<X> annotatedType, String name, SessionBeanType type)
     {
         super(bean, annotatedType);
         this.annotatedBeanClass = annotatedType;
@@ -44,14 +44,6 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
         this.type = type;
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public AnnotatedType<X> getAnnotatedBeanClass()
-    {
-        return this.annotatedBeanClass;
-    }
 
     /**
      * {@inheritDoc}
@@ -70,5 +62,13 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     {
         return this.type;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AnnotatedType<X> getAnnotatedBeanClass() {
+        return annotatedBeanClass;
+    }
+
 }

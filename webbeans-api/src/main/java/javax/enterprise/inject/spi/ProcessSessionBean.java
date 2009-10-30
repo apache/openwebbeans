@@ -25,15 +25,8 @@ package javax.enterprise.inject.spi;
  *
  * @param <X> bean class
  */
-public interface ProcessSessionBean<X> extends ProcessBean<Object>
+public interface ProcessSessionBean<X> extends ProcessManagedBean<X>
 {
-    /**
-     * Returns annotated type.
-     * 
-     * @return annotated bean class
-     */
-    public AnnotatedType<X> getAnnotatedBeanClass();
-    
     /**
      * Returns ejb name.
      * 
