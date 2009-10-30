@@ -195,7 +195,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     }
 
     @Override
-    public Set<Annotation> getDelegateBindings()
+    public Set<Annotation> getDelegateQualifiers()
     {
         return delegateBindings;
     }
