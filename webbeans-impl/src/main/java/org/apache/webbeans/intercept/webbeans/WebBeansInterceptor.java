@@ -113,12 +113,12 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     }
 
     /**
-     * Checks whether this interceptor has given binding types with
+     * Checks whether all of this interceptors binding types are present on the bean, with 
      * {@link NonBinding} member values.
      * 
-     * @param bindingTypes binding types
-     * @param annots binding types annots.
-     * @return true if binding types exist ow false
+     * @param bindingTypes binding types of bean
+     * @param annots binding types annots of bean
+     * @return true if all binding types of this interceptor exist ow false
      */
     public boolean hasBinding(List<Class<? extends Annotation>> bindingTypes, List<Annotation> annots)
     {
@@ -135,24 +135,22 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
             return false;
         }
 
-        int i = 0;
-        for (Class<? extends Annotation> bindingType : bindingTypes)
+        /* This interceptor is enabled if all of its interceptor bindings are present on the bean */
+        for (Class<? extends Annotation> bindingType : this.interceptorBindingSet.keySet())
         {
-            Annotation target = this.interceptorBindingSet.get(bindingType);
-
-            if (target == null)
-            {
-                return false;
-            }
-
-            if (!AnnotationUtil.hasAnnotationMember(bindingType, annots.get(i), target))
-            {
-                return false;
-            }
-
-            i++;
+        	int index = bindingTypes.indexOf(bindingType);
+        	if (index < 0) 
+        	{
+        	    return false; /* at least one of this interceptors types is not in the beans bindingTypes */	
+        	}
+        	
+        	if (!AnnotationUtil.hasAnnotationMember(bindingTypes.get(index), annots.get(index), this.interceptorBindingSet.get(bindingType)))
+        	
+        	{
+        		return false;
+        	}
         }
-
+        
         return true;
     }
 

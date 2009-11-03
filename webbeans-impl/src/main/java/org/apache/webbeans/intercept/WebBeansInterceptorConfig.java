@@ -86,6 +86,7 @@ public final class WebBeansInterceptorConfig
     public static void configure(BaseBean<?> component, List<InterceptorData> stack)
     {
         Class<?> clazz = component.getReturnType();
+        Set<Interceptor<?>> componentInterceptors = null;
         
         if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
         {
@@ -127,14 +128,14 @@ public final class WebBeansInterceptorConfig
             anns = new Annotation[bindingTypeSet.size()];
             anns = bindingTypeSet.toArray(anns);
 
-            Set<Interceptor<?>> set = findDeployedWebBeansInterceptor(anns);
+            componentInterceptors = findDeployedWebBeansInterceptor(anns);
 
             // Adding class interceptors
-            addComponentInterceptors(set, stack);
+            addComponentInterceptors(componentInterceptors, stack);
         }
 
         // Method level interceptors.
-        addMethodInterceptors(clazz, stack);
+        addMethodInterceptors(clazz, stack, componentInterceptors);
 
     }
 
@@ -154,7 +155,7 @@ public final class WebBeansInterceptorConfig
 
     }
 
-    private static void addMethodInterceptors(Class<?> clazz, List<InterceptorData> stack)
+    private static void addMethodInterceptors(Class<?> clazz, List<InterceptorData> stack, Set<Interceptor<?>> componentInterceptors)
     {
         Method[] methods = clazz.getDeclaredMethods();
 
@@ -195,6 +196,12 @@ public final class WebBeansInterceptorConfig
                 result = set.toArray(result);
 
                 Set<Interceptor<?>> setInterceptors = findDeployedWebBeansInterceptor(result);
+                
+                if(componentInterceptors != null)
+                {
+                    setInterceptors.removeAll(componentInterceptors);   
+                }
+
                 Iterator<Interceptor<?>> it = setInterceptors.iterator();
 
                 while (it.hasNext())
@@ -242,14 +249,14 @@ public final class WebBeansInterceptorConfig
         while (it.hasNext())
         {
             interceptor = (WebBeansInterceptor<?>) it.next();
-
+      
             if (interceptor.hasBinding(bindingTypes, listAnnot))
             {
                 set.add(interceptor);
                 set.addAll(interceptor.getMetaInceptors());
             }
         }
-
+        
         return set;
     }
 }

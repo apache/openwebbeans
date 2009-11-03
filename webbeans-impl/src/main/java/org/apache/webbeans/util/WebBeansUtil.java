@@ -1789,7 +1789,8 @@ public final class WebBeansUtil
 
             if (component != null)
             {
-                WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component, clazz.getDeclaredAnnotations());
+                WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component, 
+                		AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations()));
             }
         }
 
