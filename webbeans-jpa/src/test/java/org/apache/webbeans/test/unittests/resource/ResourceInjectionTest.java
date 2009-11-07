@@ -46,7 +46,7 @@ public class ResourceInjectionTest extends TestContext
     @Test
     public void testPersistenceContextInjection() throws Exception
     {
-        AbstractBean<?> tstComponent = defineSimpleWebBean(TstResourcePersistenceBean.class);
+        AbstractBean<?> tstComponent = defineManagedBean(TstResourcePersistenceBean.class);
         Assert.assertNotNull(tstComponent);
         
         ContextFactory.initRequestContext(null);
