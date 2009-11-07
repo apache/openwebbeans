@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.el.ELResolver;
+import javax.el.ExpressionFactory;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -111,16 +112,7 @@ public interface BeanManager
      * @return set of beans with given name
      */
     public Set<Bean<?>> getBeans(String name);    
-    
-    /**
-     * Returns bean's most specialized bean object.
-     * 
-     * @param <X> bean class type info
-     * @param bean bean object
-     * @return bean's most specialized bean object
-     */
-    public <X> Bean<? extends X> getMostSpecializedBean(Bean<X> bean);
-    
+        
     /**
      * Returns passivation capable bean given id.
      * 
@@ -291,4 +283,11 @@ public interface BeanManager
      * @return injection target
      */
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type);
+    
+    /**
+     * Wrapped around given expression factory.
+     * @param expressionFactory expression factory
+     * @return wrapped expression factory
+     */
+    public ExpressionFactory wrapExpressionFactory(javax.el.ExpressionFactory expressionFactory);
 }
