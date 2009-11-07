@@ -52,10 +52,10 @@ public class LoggerSpecializationTest extends TestContext
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
         configurator.configureSpecSpecific(stream, "alternative.xml");
         
-        defineSimpleWebBean(SystemLogger.class);
-        defineSimpleWebBean(MockNotSpecializedLogger.class);        
+        defineManagedBean(SystemLogger.class);
+        defineManagedBean(MockNotSpecializedLogger.class);        
         
-        Bean<SpecializedInjector> bean = defineSimpleWebBean(SpecializedInjector.class);
+        Bean<SpecializedInjector> bean = defineManagedBean(SpecializedInjector.class);
         Object instance = getManager().getReference(bean, SpecializedInjector.class, null);
         
         Assert.assertTrue(instance instanceof SpecializedInjector);
@@ -88,12 +88,12 @@ public class LoggerSpecializationTest extends TestContext
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
         configurator.configureSpecSpecific(stream, "alternatives.xml");
         
-        defineSimpleWebBean(SystemLogger.class);
-        defineSimpleWebBean(MockSpecializedLogger.class);
+        defineManagedBean(SystemLogger.class);
+        defineManagedBean(MockSpecializedLogger.class);
         
         WebBeansUtil.configureSpecializations(MockSpecializedLogger.class);
         
-        Bean<SpecializedInjector> bean = defineSimpleWebBean(SpecializedInjector.class);
+        Bean<SpecializedInjector> bean = defineManagedBean(SpecializedInjector.class);
         Object instance = getManager().getReference(bean, SpecializedInjector.class, null);
         
         Assert.assertTrue(instance instanceof SpecializedInjector);

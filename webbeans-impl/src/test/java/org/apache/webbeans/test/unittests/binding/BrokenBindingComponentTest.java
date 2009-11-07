@@ -40,7 +40,7 @@ public class BrokenBindingComponentTest extends TestContext
     {
         try
         {
-            defineSimpleWebBean(BindingWithNonBindingArrayTypeComponent.class);
+            defineManagedBean(BindingWithNonBindingArrayTypeComponent.class);
         }
         catch (Exception e)
         {
@@ -55,7 +55,7 @@ public class BrokenBindingComponentTest extends TestContext
     {
         try
         {
-            defineSimpleWebBean(BindingWithNonBindingAnnotationTypeComponent.class);
+            defineManagedBean(BindingWithNonBindingAnnotationTypeComponent.class);
         }
         catch (Exception e)
         {

@@ -21,8 +21,8 @@ import java.lang.reflect.ParameterizedType;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.inject.instance.InstanceFactory;
 

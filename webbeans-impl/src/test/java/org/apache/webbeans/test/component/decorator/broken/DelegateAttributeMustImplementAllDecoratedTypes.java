@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.decorator.broken;
 
-import javax.decorator.Decorates;
+import javax.decorator.Delegate;
 import javax.decorator.Decorator;
 
 import org.apache.webbeans.test.component.IPayment;
@@ -22,7 +22,7 @@ import org.apache.webbeans.test.component.service.IService;
 @Decorator
 public class DelegateAttributeMustImplementAllDecoratedTypes implements IPayment, IService
 {
-    @Decorates
+    @Delegate
     IPayment delegate;
 
     public String pay()

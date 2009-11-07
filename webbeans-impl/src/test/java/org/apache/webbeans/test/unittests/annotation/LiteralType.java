@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.unittests.annotation;
 
-import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.util.AnnotationLiteral;
 
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
 

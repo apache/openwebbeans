@@ -44,7 +44,7 @@ public class BrokenProducerTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(BrokenProducerComponent1.class);
+            defineManagedBean(BrokenProducerComponent1.class);
         }
         catch (Exception e)
         {
@@ -60,7 +60,7 @@ public class BrokenProducerTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(BrokenProducerComponent2.class);
+            defineManagedBean(BrokenProducerComponent2.class);
         }
         catch (Exception e)
         {
@@ -76,7 +76,7 @@ public class BrokenProducerTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(BrokenProducerComponent3.class);
+            defineManagedBean(BrokenProducerComponent3.class);
         }
         catch (Exception e)
         {
@@ -92,7 +92,7 @@ public class BrokenProducerTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(BrokenProducerComponent4.class);
+            defineManagedBean(BrokenProducerComponent4.class);
         }
         catch (Exception e)
         {
@@ -108,7 +108,7 @@ public class BrokenProducerTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(BrokenProducerComponent5.class);
+            defineManagedBean(BrokenProducerComponent5.class);
         }
         catch (Exception e)
         {
@@ -124,7 +124,7 @@ public class BrokenProducerTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(BrokenProducerComponent6.class);
+            defineManagedBean(BrokenProducerComponent6.class);
         }
         catch (Exception e)
         {

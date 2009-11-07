@@ -80,7 +80,7 @@ public class ExceptionComponentTest extends TestContext
         {
             OpenWebBeansConfiguration.getInstance().setProperty(OpenWebBeansConfiguration.USE_INJECTION_RESOLVER_VIA_ALTERNATIVE, "false");
             clear();
-            defineSimpleWebBean(ComponentTypeExceptionComponent.class);
+            defineManagedBean(ComponentTypeExceptionComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -102,7 +102,7 @@ public class ExceptionComponentTest extends TestContext
         {
             OpenWebBeansConfiguration.getInstance().setProperty(OpenWebBeansConfiguration.USE_INJECTION_RESOLVER_VIA_ALTERNATIVE, "false");
             clear();
-            defineSimpleWebBean(ProducerTypeExceptionComponent.class);
+            defineManagedBean(ProducerTypeExceptionComponent.class);
 
         }
         catch (WebBeansConfigurationException e)
@@ -121,7 +121,7 @@ public class ExceptionComponentTest extends TestContext
     public void testFinal()
     {
         clear();
-        defineSimpleWebBean(FinalComponent.class);
+        defineManagedBean(FinalComponent.class);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(AbstractBean.class);
+            defineManagedBean(AbstractBean.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -146,7 +146,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(InnerInnerComponent.class);
+            defineManagedBean(InnerInnerComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -162,7 +162,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(HasFinalMethodComponent.class);
+            defineManagedBean(HasFinalMethodComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -178,7 +178,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(MoreThanOneConstructureComponent.class);
+            defineManagedBean(MoreThanOneConstructureComponent.class);
             Assert.fail("expecting an exception!");
         }
         catch (WebBeansConfigurationException e)
@@ -190,7 +190,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(MoreThanOneConstructureComponent2.class);
+            defineManagedBean(MoreThanOneConstructureComponent2.class);
             // all ok
         }
         catch (WebBeansConfigurationException e)
@@ -199,14 +199,14 @@ public class ExceptionComponentTest extends TestContext
         }
 
         clear();
-        defineSimpleWebBean(NoConstructureComponent.class);
+        defineManagedBean(NoConstructureComponent.class);
     }
 
     @Test
     public void testStaticProducerMethod()
     {
         clear();
-        defineSimpleWebBean(ProducerTypeStaticComponent.class);
+        defineManagedBean(ProducerTypeStaticComponent.class);
     }
 
     @Test
@@ -215,7 +215,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(MultipleDisposalMethodComponent.class);
+            defineManagedBean(MultipleDisposalMethodComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -231,7 +231,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(NewComponentInterfaceComponent.class);
+            defineManagedBean(NewComponentInterfaceComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -247,7 +247,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(NewComponentBindingComponent.class);
+            defineManagedBean(NewComponentBindingComponent.class);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -264,7 +264,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            defineSimpleWebBean(NewMethodComponentBindingComponent.class);
+            defineManagedBean(NewMethodComponentBindingComponent.class);
 
         }
         catch (WebBeansConfigurationException e)
@@ -283,7 +283,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<MoreThanOnePostConstructComponent> component = defineSimpleWebBean(MoreThanOnePostConstructComponent.class);
+            AbstractBean<MoreThanOnePostConstructComponent> component = defineManagedBean(MoreThanOnePostConstructComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -300,7 +300,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<PostContructMethodHasParameterComponent> component = defineSimpleWebBean(PostContructMethodHasParameterComponent.class);
+            AbstractBean<PostContructMethodHasParameterComponent> component = defineManagedBean(PostContructMethodHasParameterComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -317,7 +317,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(PostContructMethodHasReturnTypeComponent.class);
+            AbstractBean<?> component = defineManagedBean(PostContructMethodHasReturnTypeComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -334,7 +334,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(PostContructMethodHasCheckedExceptionComponent.class);
+            AbstractBean<?> component = defineManagedBean(PostContructMethodHasCheckedExceptionComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -351,7 +351,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(PostContructMethodHasStaticComponent.class);
+            AbstractBean<?> component = defineManagedBean(PostContructMethodHasStaticComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -368,7 +368,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(MoreThanOneAroundInvokeComponent.class);
+            AbstractBean<?> component = defineManagedBean(MoreThanOneAroundInvokeComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -383,7 +383,7 @@ public class ExceptionComponentTest extends TestContext
     public void testAroundInvokeWithSameMethodName()
     {
         clear();
-        defineSimpleWebBean(AroundInvokeWithSameMethodNameComponent.class);
+        defineManagedBean(AroundInvokeWithSameMethodNameComponent.class);
         Bean<?> comp = getComponents().get(0);
 
         Assert.assertEquals(0, ((AbstractBean<?>) comp).getInterceptorStack().size());
@@ -395,7 +395,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(AroundInvokeWithoutParameterComponent.class);
+            AbstractBean<?> component = defineManagedBean(AroundInvokeWithoutParameterComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -412,7 +412,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(AroundInvokeWithoutReturnTypeComponent.class);
+            AbstractBean<?> component = defineManagedBean(AroundInvokeWithoutReturnTypeComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -429,7 +429,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(AroundInvokeWithWrongReturnTypeComponent.class);
+            AbstractBean<?> component = defineManagedBean(AroundInvokeWithWrongReturnTypeComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -446,7 +446,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(AroundInvokeWithoutExceptionComponent.class);
+            AbstractBean<?> component = defineManagedBean(AroundInvokeWithoutExceptionComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -463,7 +463,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(AroundInvokeWithStaticMethodComponent.class);
+            AbstractBean<?> component = defineManagedBean(AroundInvokeWithStaticMethodComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -480,7 +480,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(AroundInvokeWithFinalMethodComponent.class);
+            AbstractBean<?> component = defineManagedBean(AroundInvokeWithFinalMethodComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
@@ -497,7 +497,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            AbstractBean<?> component = defineSimpleWebBean(NoArgConstructorInterceptorComponent.class);
+            AbstractBean<?> component = defineManagedBean(NoArgConstructorInterceptorComponent.class);
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)

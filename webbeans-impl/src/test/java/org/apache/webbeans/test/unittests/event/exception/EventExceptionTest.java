@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.servlet.ServletContext;
 
 import org.apache.webbeans.event.NotificationManager;

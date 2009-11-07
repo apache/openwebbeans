@@ -45,7 +45,7 @@ public class BrokenInitializerTest extends TestContext
         
         try
         {
-            defineSimpleWebBean(BrokenInitializer1.class);
+            defineManagedBean(BrokenInitializer1.class);
             
         }catch(Exception e1)
         {
@@ -63,7 +63,7 @@ public class BrokenInitializerTest extends TestContext
         
         try
         {
-            defineSimpleWebBean(BrokenInitializer2.class);
+            defineManagedBean(BrokenInitializer2.class);
             
         }catch(Exception e1)
         {
@@ -81,7 +81,7 @@ public class BrokenInitializerTest extends TestContext
         
         try
         {
-            defineSimpleWebBean(BrokenInitializer3.class);
+            defineManagedBean(BrokenInitializer3.class);
             
         }catch(Exception e1)
         {
@@ -99,7 +99,7 @@ public class BrokenInitializerTest extends TestContext
         
         try
         {
-            defineSimpleWebBean(BrokenInitializer4.class);
+            defineManagedBean(BrokenInitializer4.class);
             
         }catch(Exception e1)
         {

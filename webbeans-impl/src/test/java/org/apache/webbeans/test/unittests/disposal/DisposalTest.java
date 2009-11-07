@@ -45,7 +45,7 @@ public class DisposalTest extends TestContext
         ContextFactory.initRequestContext(null);
         ContextFactory.initSessionContext(new MockHttpSession());
 
-        defineSimpleWebBean(Disposal1.class);
+        defineManagedBean(Disposal1.class);
 
         @SuppressWarnings("unchecked")
         List<Integer> list = (List<Integer>) getManager().getInstanceByName("createBinding1");

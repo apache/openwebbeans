@@ -52,8 +52,8 @@ public class SingletonComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(Typed2.class);
-        defineSimpleWebBean(Singleton.class);
+        defineManagedBean(Typed2.class);
+        defineManagedBean(Singleton.class);
         List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();

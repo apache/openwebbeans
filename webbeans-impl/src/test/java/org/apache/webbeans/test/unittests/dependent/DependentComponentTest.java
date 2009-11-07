@@ -44,8 +44,8 @@ public class DependentComponentTest extends TestContext
     public void testDependent()
     {
         clear();
-        defineSimpleWebBean(DependentComponent.class);
-        defineSimpleWebBean(DependentOwnerComponent.class);
+        defineManagedBean(DependentComponent.class);
+        defineManagedBean(DependentOwnerComponent.class);
 
         ContextFactory.initRequestContext(null);
 
@@ -69,8 +69,8 @@ public class DependentComponentTest extends TestContext
         
         ContextFactory.initRequestContext(null);
 
-        AbstractBean<DependentA> componentA = defineSimpleWebBean(DependentA.class);
-        AbstractBean<DependentB> componentB = defineSimpleWebBean(DependentB.class);
+        AbstractBean<DependentA> componentA = defineManagedBean(DependentA.class);
+        AbstractBean<DependentB> componentB = defineManagedBean(DependentB.class);
         
         Assert.assertNotNull(componentB);
         

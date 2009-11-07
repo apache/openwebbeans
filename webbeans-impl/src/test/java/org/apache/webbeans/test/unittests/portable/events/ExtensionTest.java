@@ -65,7 +65,7 @@ public class ExtensionTest extends TestContext
         
         System.out.println(ext.toString());
         
-        defineSimpleWebBean(BookShop.class);
+        defineManagedBean(BookShop.class);
         
         Assert.assertNotNull(MyExtension.processAnnotatedTypeEvent);
 

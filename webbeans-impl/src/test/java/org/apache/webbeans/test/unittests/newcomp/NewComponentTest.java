@@ -48,9 +48,9 @@ public class NewComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(DependentComponent.class);
-        defineSimpleWebBean(DependentOwnerComponent.class);
-        defineSimpleWebBean(NewComponent.class);
+        defineManagedBean(DependentComponent.class);
+        defineManagedBean(DependentOwnerComponent.class);
+        defineManagedBean(NewComponent.class);
 
         ContextFactory.initRequestContext(null);
 
@@ -71,8 +71,8 @@ public class NewComponentTest extends TestContext
     public void testDepedent2()
     {
         clear();
-        defineSimpleWebBean(CheckWithCheckPayment.class);
-        defineSimpleWebBean(ProducerNewComponent.class);
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(ProducerNewComponent.class);
 
         ContextFactory.initRequestContext(null);
         Assert.assertEquals(5, getDeployedComponents());

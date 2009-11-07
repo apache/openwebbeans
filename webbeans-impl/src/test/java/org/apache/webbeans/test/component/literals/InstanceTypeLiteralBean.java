@@ -11,29 +11,35 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.annotation;
+package org.apache.webbeans.test.component.literals;
 
-import javax.enterprise.util.AnnotationLiteral;
+import java.lang.annotation.Annotation;
+
+import javax.enterprise.inject.Instance;
+import javax.enterprise.util.TypeLiteral;
+import javax.inject.Inject;
 import javax.inject.Named;
 
-/**
- * Named literal.
- * 
- * @version $Rev$ $Date$
- *
- */
-public class NamedLiteral extends AnnotationLiteral<Named> implements Named
+@Named("literalBean")
+public class InstanceTypeLiteralBean
 {
-    private String value;
+    public static interface IOrder<T>{};
+    
+    public static class StringOrder implements IOrder<String>{};
+    
+    public static class IntegerOrder extends StringOrder{};
 
-    @Override
-    public String value()
+    private @Inject Instance<IOrder<String>> instance;
+    
+    public Instance<?> produce(int type)
     {
-        return value;
-    }
-
-    public void setValue(String value)
-    {
-        this.value = value;
+        if(type == 0)
+        {
+            return instance.select(new TypeLiteral<IntegerOrder>(){}, new Annotation[0]);
+        }
+        else 
+        {
+            return instance.select(new TypeLiteral<StringOrder>(){}, new Annotation[0]);
+        }
     }
 }

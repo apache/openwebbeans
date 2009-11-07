@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.decorator.broken;
 
-import javax.decorator.Decorates;
+import javax.decorator.Delegate;
 import javax.decorator.Decorator;
 
 import org.apache.webbeans.test.component.BindingComponent;
@@ -21,7 +21,7 @@ import org.apache.webbeans.test.component.BindingComponent;
 @Decorator
 public class DelegateAttributeIsnotInterface
 {
-    @Decorates
+    @Delegate
     BindingComponent decorates;
 
 }

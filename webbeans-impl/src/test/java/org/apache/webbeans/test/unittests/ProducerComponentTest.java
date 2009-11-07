@@ -16,7 +16,7 @@ package org.apache.webbeans.test.unittests;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.util.TypeLiteral;
 import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
@@ -63,7 +63,7 @@ public class ProducerComponentTest extends TestContext
     public void testProducerDeployment1()
     {
         clear();
-        defineSimpleWebBean(Producer1.class);
+        defineManagedBean(Producer1.class);
         Assert.assertEquals(3, getDeployedComponents());
 
     }
@@ -72,7 +72,7 @@ public class ProducerComponentTest extends TestContext
     public void testProducerDeployment2()
     {
         clear();
-        defineSimpleWebBean(Producer2.class);
+        defineManagedBean(Producer2.class);
         Assert.assertEquals(4, getDeployedComponents());
     }
 
@@ -80,7 +80,7 @@ public class ProducerComponentTest extends TestContext
     public void testProducerDeployment3()
     {
         clear();
-        defineSimpleWebBean(Producer3.class);
+        defineManagedBean(Producer3.class);
 
         Assert.assertEquals(6, getDeployedComponents());
     }
@@ -89,7 +89,7 @@ public class ProducerComponentTest extends TestContext
     public void testParametrizedProducer()
     {
         clear();
-        defineSimpleWebBean(ParametrizedProducer.class);
+        defineManagedBean(ParametrizedProducer.class);
 
         ContextFactory.initRequestContext(null);
         Assert.assertEquals(4, getDeployedComponents());
@@ -116,8 +116,8 @@ public class ProducerComponentTest extends TestContext
     @Test
     public void testProducer4()
     {
-        defineSimpleWebBean(Producer4.class);
-        AbstractBean<Producer4ConsumerComponent> component = defineSimpleWebBean(Producer4ConsumerComponent.class);
+        defineManagedBean(Producer4.class);
+        AbstractBean<Producer4ConsumerComponent> component = defineManagedBean(Producer4ConsumerComponent.class);
 
         ContextFactory.initSessionContext(new MockHttpSession());
 

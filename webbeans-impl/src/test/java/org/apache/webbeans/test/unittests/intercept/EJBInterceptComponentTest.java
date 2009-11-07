@@ -52,14 +52,14 @@ public class EJBInterceptComponentTest extends TestContext
     @Test
     public void testInterceptedComponent()
     {
-        defineSimpleWebBean(InterceptedComponent.class);
+        defineManagedBean(InterceptedComponent.class);
     }
 
     @Test
     public void testInterceptorCalls()
     {
         clear();
-        defineSimpleWebBean(InterceptedComponent.class);
+        defineManagedBean(InterceptedComponent.class);
 
         ContextFactory.initRequestContext(null);
         List<AbstractBean<?>> comps = getComponents();
@@ -80,7 +80,7 @@ public class EJBInterceptComponentTest extends TestContext
     public void testMultipleInterceptedComponent()
     {
         clear();
-        defineSimpleWebBean(MultipleInterceptedComponent.class);
+        defineManagedBean(MultipleInterceptedComponent.class);
 
         ContextFactory.initRequestContext(null);
         List<AbstractBean<?>> comps = getComponents();
@@ -105,7 +105,7 @@ public class EJBInterceptComponentTest extends TestContext
     public void testInterceptorWithSuperClassComponent()
     {
         clear();
-        defineSimpleWebBean(InterceptorWithSuperClassInterceptedComponent.class);
+        defineManagedBean(InterceptorWithSuperClassInterceptedComponent.class);
 
         ContextFactory.initRequestContext(null);
         List<AbstractBean<?>> comps = getComponents();
@@ -130,7 +130,7 @@ public class EJBInterceptComponentTest extends TestContext
     public void testMultipleListOfInterceptedComponent()
     {
         clear();
-        defineSimpleWebBean(MultipleListOfInterceptedComponent.class);
+        defineManagedBean(MultipleListOfInterceptedComponent.class);
 
         ContextFactory.initRequestContext(null);
         List<AbstractBean<?>> comps = getComponents();
@@ -153,7 +153,7 @@ public class EJBInterceptComponentTest extends TestContext
     public void testMultipleListOfInterceptedWithExcludeClassComponent()
     {
         clear();
-        defineSimpleWebBean(MultipleListOfInterceptedWithExcludeClassComponent.class);
+        defineManagedBean(MultipleListOfInterceptedWithExcludeClassComponent.class);
 
         ContextFactory.initRequestContext(null);
         List<AbstractBean<?>> comps = getComponents();

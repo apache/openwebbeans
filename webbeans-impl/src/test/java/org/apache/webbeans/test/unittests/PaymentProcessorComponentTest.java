@@ -49,9 +49,9 @@ public class PaymentProcessorComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(CheckWithCheckPayment.class);
-        defineSimpleWebBean(CheckWithMoneyPayment.class);
-        defineSimpleWebBean(PaymentProcessorComponent.class);
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(CheckWithMoneyPayment.class);
+        defineManagedBean(PaymentProcessorComponent.class);
 
         List<AbstractBean<?>> comps = getComponents();
 

@@ -99,7 +99,7 @@ public class DecoratorExceptionTest extends TestContext
         try
         {
             defineSimpleWebBeansDecorators(PaymentDecorator.class);
-            defineSimpleWebBean(CheckWithCheckPaymentDecoratorField.class);
+            defineManagedBean(CheckWithCheckPaymentDecoratorField.class);
         }
         catch (Exception e)
         {

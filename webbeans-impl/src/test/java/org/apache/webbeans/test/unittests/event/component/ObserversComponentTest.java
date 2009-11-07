@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests.event.component;
 
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.util.AnnotationLiteral;
 
 import junit.framework.Assert;
 
@@ -53,7 +53,7 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
-        AbstractBean<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
+        AbstractBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
         ContextFactory.initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("Gurkan");
@@ -73,8 +73,8 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
-        AbstractBean<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
-        AbstractBean<ComponentWithObservable1> componentObservable = defineSimpleWebBean(ComponentWithObservable1.class);
+        AbstractBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
+        AbstractBean<ComponentWithObservable1> componentObservable = defineManagedBean(ComponentWithObservable1.class);
 
         ContextFactory.initRequestContext(null);
 
@@ -91,7 +91,7 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
-        AbstractBean<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
+        AbstractBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
         ContextFactory.initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("Gurkan");
@@ -123,7 +123,7 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
-        AbstractBean<ComponentWithObserves1> component = defineSimpleWebBean(ComponentWithObserves1.class);
+        AbstractBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
         ContextFactory.initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("Mark");
@@ -145,10 +145,10 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(CheckWithCheckPayment.class);
-        defineSimpleWebBean(CheckWithMoneyPayment.class);
-        defineSimpleWebBean(PaymentProcessorComponent.class);
-        AbstractBean<ComponentWithObserves2> component = defineSimpleWebBean(ComponentWithObserves2.class);
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(CheckWithMoneyPayment.class);
+        defineManagedBean(PaymentProcessorComponent.class);
+        AbstractBean<ComponentWithObserves2> component = defineManagedBean(ComponentWithObserves2.class);
         ContextFactory.initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("USER");

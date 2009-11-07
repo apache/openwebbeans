@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests.producer.specializes;
 
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.util.AnnotationLiteral;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
@@ -50,8 +50,8 @@ public class SpecializesProducer1Test extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(SpecializesProducer1SuperClazz.class);
-        defineSimpleWebBean(SpecializesProducer1.class);
+        defineManagedBean(SpecializesProducer1SuperClazz.class);
+        defineManagedBean(SpecializesProducer1.class);
 
         Annotation binding1 = new AnnotationLiteral<Binding1>()
         {

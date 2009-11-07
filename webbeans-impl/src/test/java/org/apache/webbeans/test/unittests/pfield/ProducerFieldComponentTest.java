@@ -48,16 +48,16 @@ public class ProducerFieldComponentTest extends TestContext
     {
         ContextFactory.initRequestContext(null);
         
-        defineSimpleWebBean(CheckWithCheckPayment.class);
-        defineSimpleWebBean(CheckWithMoneyPayment.class);
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(CheckWithMoneyPayment.class);
         
-        Bean<PaymentProcessorComponent> pc = defineSimpleWebBean(PaymentProcessorComponent.class);
+        Bean<PaymentProcessorComponent> pc = defineManagedBean(PaymentProcessorComponent.class);
         Object obj = getManager().getInstance(pc);
         
         Assert.assertTrue(obj instanceof PaymentProcessorComponent);
         
-        Bean<ProducerFieldDefinitionComponent> beanDefine = defineSimpleWebBean(ProducerFieldDefinitionComponent.class);
-        Bean<ProducerFieldInjectedComponent> beanInjected = defineSimpleWebBean(ProducerFieldInjectedComponent.class);
+        Bean<ProducerFieldDefinitionComponent> beanDefine = defineManagedBean(ProducerFieldDefinitionComponent.class);
+        Bean<ProducerFieldInjectedComponent> beanInjected = defineManagedBean(ProducerFieldInjectedComponent.class);
         
         ProducerFieldDefinitionComponent defineComponentInstance = getManager().getInstance(beanDefine);
         

@@ -14,7 +14,7 @@
 package org.apache.webbeans.annotation;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.AnnotationLiteral;
+import javax.enterprise.util.AnnotationLiteral;
 
 /**
  * {@link Dependent} literal annotation.

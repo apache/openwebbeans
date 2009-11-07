@@ -44,7 +44,7 @@ public class StaticProducerTest extends TestContext
 
         ContextFactory.initRequestContext(null);
 
-        defineSimpleWebBean(StaticProducer1.class);
+        defineManagedBean(StaticProducer1.class);
 
         ProducerMethodBean<?> pc = (ProducerMethodBean<?>) getManager().resolveByName("weight").iterator().next();
 

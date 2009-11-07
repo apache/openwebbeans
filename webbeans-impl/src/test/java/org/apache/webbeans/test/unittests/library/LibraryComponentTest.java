@@ -44,7 +44,7 @@ public class LibraryComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(BookShop.class);
+        defineManagedBean(BookShop.class);
         List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);

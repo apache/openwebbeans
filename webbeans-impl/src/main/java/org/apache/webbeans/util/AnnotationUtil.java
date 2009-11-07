@@ -26,9 +26,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.util.NonBinding;
 import javax.inject.Qualifier;
 import javax.interceptor.InterceptorBinding;
 

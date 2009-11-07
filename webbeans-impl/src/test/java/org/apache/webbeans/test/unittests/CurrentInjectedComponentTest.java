@@ -48,9 +48,9 @@ public class CurrentInjectedComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(Typed2.class);
-        defineSimpleWebBean(CurrentBindingComponent.class);
-        defineSimpleWebBean(ContaintsCurrentComponent.class);
+        defineManagedBean(Typed2.class);
+        defineManagedBean(CurrentBindingComponent.class);
+        defineManagedBean(ContaintsCurrentComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();

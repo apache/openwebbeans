@@ -46,8 +46,8 @@ public class MultipleDependentTest extends TestContext
         clear();
         ContextFactory.initRequestContext(null);
         
-        defineSimpleWebBean(DependentComponent.class);
-        defineSimpleWebBean(MultipleDependentComponent.class);
+        defineManagedBean(DependentComponent.class);
+        defineManagedBean(MultipleDependentComponent.class);
         
         MultipleDependentComponent bean = (MultipleDependentComponent)getManager().getInstance(getComponents().get(1));
         

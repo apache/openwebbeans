@@ -20,8 +20,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;

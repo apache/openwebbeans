@@ -15,7 +15,7 @@ package org.apache.webbeans.test.component.decorator.clean;
 
 import java.math.BigDecimal;
 
-import javax.decorator.Decorates;
+import javax.decorator.Delegate;
 import javax.decorator.Decorator;
 import javax.enterprise.context.RequestScoped;
 
@@ -23,7 +23,7 @@ import javax.enterprise.context.RequestScoped;
 @RequestScoped
 public abstract class LargeTransactionDecorator implements Account
 {
-    @Decorates Account account;
+    @Delegate Account account;
 
     BigDecimal depositeAmount = null;
     BigDecimal withDrawAmount = null;

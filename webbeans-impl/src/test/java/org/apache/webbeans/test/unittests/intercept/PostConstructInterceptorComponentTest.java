@@ -46,8 +46,8 @@ public class PostConstructInterceptorComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(CheckWithCheckPayment.class);
-        defineSimpleWebBean(PostConstructInterceptorComponent.class);
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(PostConstructInterceptorComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);

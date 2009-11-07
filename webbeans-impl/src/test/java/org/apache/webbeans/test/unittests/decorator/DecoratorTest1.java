@@ -67,9 +67,9 @@ public class DecoratorTest1 extends TestContext
     @Test
     public void test1()
     {
-        defineSimpleWebBean(CheckWithCheckPayment.class);
+        defineManagedBean(CheckWithCheckPayment.class);
         defineSimpleWebBeansDecorators(ServiceDecorator.class);
-        AbstractBean<ServiceImpl1> component = defineSimpleWebBean(ServiceImpl1.class);
+        AbstractBean<ServiceImpl1> component = defineManagedBean(ServiceImpl1.class);
 
         ContextFactory.initRequestContext(null);
         ContextFactory.initApplicationContext(null);
@@ -93,7 +93,7 @@ public class DecoratorTest1 extends TestContext
     public void test2()
     {
         defineSimpleWebBeansDecorators(LargeTransactionDecorator.class);
-        AbstractBean<AccountComponent> component = defineSimpleWebBean(AccountComponent.class);
+        AbstractBean<AccountComponent> component = defineManagedBean(AccountComponent.class);
 
         ContextFactory.initRequestContext(null);
 

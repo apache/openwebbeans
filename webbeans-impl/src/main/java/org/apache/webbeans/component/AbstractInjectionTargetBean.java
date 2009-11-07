@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.decorator.Decorates;
+import javax.decorator.Delegate;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
@@ -302,7 +302,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         Set<Field> fields = getInjectedFields();
         for (Field field : fields)
         {
-            if (field.getAnnotation(Decorates.class) == null)
+            if (field.getAnnotation(Delegate.class) == null)
             {
                 injectField(field, instance);
             }
@@ -314,7 +314,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         Set<Field> fields = getInjectedFromSuperFields();
         for (Field field : fields)
         {
-            if (field.getAnnotation(Decorates.class) == null)
+            if (field.getAnnotation(Delegate.class) == null)
             {
                 injectField(field, instance);
             }

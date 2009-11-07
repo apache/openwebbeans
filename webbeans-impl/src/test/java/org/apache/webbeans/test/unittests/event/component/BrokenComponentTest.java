@@ -45,7 +45,7 @@ public class BrokenComponentTest extends TestContext
 
         try
         {
-            defineSimpleWebBean(BrokenObserverComponent1.class);
+            defineManagedBean(BrokenObserverComponent1.class);
 
         }
         catch (Exception e)
@@ -64,7 +64,7 @@ public class BrokenComponentTest extends TestContext
 
         try
         {
-            defineSimpleWebBean(BrokenObserverComponent2.class);
+            defineManagedBean(BrokenObserverComponent2.class);
 
         }
         catch (Exception e)
@@ -83,7 +83,7 @@ public class BrokenComponentTest extends TestContext
 
         try
         {
-            defineSimpleWebBean(BrokenObserverComponent3.class);
+            defineManagedBean(BrokenObserverComponent3.class);
 
         }
         catch (Exception e)
@@ -102,7 +102,7 @@ public class BrokenComponentTest extends TestContext
 
         try
         {
-            defineSimpleWebBean(BrokenObserverComponent4.class);
+            defineManagedBean(BrokenObserverComponent4.class);
 
         }
         catch (Exception e)
@@ -121,7 +121,7 @@ public class BrokenComponentTest extends TestContext
 
         try
         {
-            defineSimpleWebBean(BrokenObserverComponent5.class);
+            defineManagedBean(BrokenObserverComponent5.class);
 
         }
         catch (Exception e)
@@ -140,7 +140,7 @@ public class BrokenComponentTest extends TestContext
 
         try
         {
-            defineSimpleWebBean(BrokenObserverComponent6.class);
+            defineManagedBean(BrokenObserverComponent6.class);
 
         }
         catch (Exception e)

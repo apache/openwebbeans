@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.decorator.broken;
 
-import javax.decorator.Decorates;
+import javax.decorator.Delegate;
 import javax.decorator.Decorator;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
@@ -25,7 +25,7 @@ import org.apache.webbeans.test.component.IPayment;
 @RequestScoped
 public class PaymentDecorator implements IPayment
 {
-    @Decorates @Any @Check(type = "CHECK")
+    @Delegate @Any @Check(type = "CHECK")
     IPayment delegate;
 
     public String pay()

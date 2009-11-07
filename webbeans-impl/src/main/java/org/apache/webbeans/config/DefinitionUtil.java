@@ -25,13 +25,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.decorator.Decorates;
+import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.BeanTypes;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
@@ -40,6 +39,7 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.util.NonBinding;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Scope;
@@ -869,7 +869,7 @@ public final class DefinitionUtil
                 Annotation[] anns = field.getDeclaredAnnotations();
 
                 // Injected fields can not be @Decorates or @Produces
-                if (AnnotationUtil.hasAnnotation(anns, Produces.class) || AnnotationUtil.hasAnnotation(anns, Decorates.class))
+                if (AnnotationUtil.hasAnnotation(anns, Produces.class) || AnnotationUtil.hasAnnotation(anns, Delegate.class))
                 {
                     continue;
                 }

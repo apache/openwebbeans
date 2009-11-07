@@ -46,7 +46,7 @@ public class InjectedInstanceBrokenComponentTest extends TestContext
         
         try
         {
-            defineSimpleWebBean(InstanceInjectedBrokenComponent1.class);
+            defineManagedBean(InstanceInjectedBrokenComponent1.class);
             
         }catch(Exception e1)
         {
@@ -64,7 +64,7 @@ public class InjectedInstanceBrokenComponentTest extends TestContext
         
         try
         {
-            defineSimpleWebBean(InstanceInjectedBrokenComponent2.class);
+            defineManagedBean(InstanceInjectedBrokenComponent2.class);
             
         }catch(Exception e1)
         {
@@ -72,7 +72,7 @@ public class InjectedInstanceBrokenComponentTest extends TestContext
             System.out.println(e.getMessage());
         }
         
-        Assert.assertNotNull(e);
+        Assert.assertNull(e);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class InjectedInstanceBrokenComponentTest extends TestContext
         
         try
         {
-            defineSimpleWebBean(InstanceInjectedBrokenComponent3.class);
+            defineManagedBean(InstanceInjectedBrokenComponent3.class);
             
         }catch(Exception e1)
         {
@@ -100,7 +100,7 @@ public class InjectedInstanceBrokenComponentTest extends TestContext
         
         try
         {
-            defineSimpleWebBean(InstanceInjectedBrokenComponent4.class);
+            defineManagedBean(InstanceInjectedBrokenComponent4.class);
             
         }
         catch(Exception e1)

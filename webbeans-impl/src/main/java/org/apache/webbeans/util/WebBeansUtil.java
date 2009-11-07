@@ -53,7 +53,6 @@ import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.Stereotype;
-import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -62,6 +61,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
+import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -1729,24 +1729,10 @@ public final class WebBeansUtil
                 throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must have type javax.inject.Instance");
             }                
             else
-            {                                        
-                if(typeArgs.length == 1)
+            {                       
+                if(typeArgs.length != 1)
                 {
-                    Type actualArgument = typeArgs[0];
-                    
-                    if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument) || ClassUtil.isTypeVariable(actualArgument))
-                    {                            
-                        throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
-                    }
-                                            
-                    if(ClassUtil.isDefinitionConstainsTypeVariables((Class<?>)actualArgument))
-                    {
-                        throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
-                    }
-                }
-                else
-                {
-                    throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must not have more than one actual type argument");
+                    throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must not have more than one actual type argument");                    
                 }
             }                                
         }

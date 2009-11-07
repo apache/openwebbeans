@@ -44,7 +44,7 @@ public class BeanTypesTest extends TestContext
     {
         clear();
         
-        Bean<BeanTypesDefinedBean> bean = defineSimpleWebBean(BeanTypesDefinedBean.class);
+        Bean<BeanTypesDefinedBean> bean = defineManagedBean(BeanTypesDefinedBean.class);
         Set<Type> apiTypes = bean.getTypes();
         
         Assert.assertEquals(1, apiTypes.size());        

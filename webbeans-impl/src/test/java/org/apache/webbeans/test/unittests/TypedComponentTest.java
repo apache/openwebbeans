@@ -50,7 +50,7 @@ public class TypedComponentTest extends TestContext
     public void testTypedComponent() throws Throwable
     {
         clear();
-        defineSimpleWebBean(TypedComponent.class);
+        defineManagedBean(TypedComponent.class);
         List<AbstractBean<?>> list = getComponents();
 
         @SuppressWarnings("unused")

@@ -42,7 +42,7 @@ public class SecureInterceptorComponentTest extends TestContext
     public void testSecureInterceptor()
     {
         defineSimpleWebBeanInterceptor(SecureInterceptor.class);
-        AbstractBean<SecureComponent> component = defineSimpleWebBean(SecureComponent.class);
+        AbstractBean<SecureComponent> component = defineManagedBean(SecureComponent.class);
 
         ContextFactory.initRequestContext(null);
 

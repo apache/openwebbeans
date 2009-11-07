@@ -52,8 +52,8 @@ public class TypedInjectedComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(Typed2.class);
-        defineSimpleWebBean(TypedInjection.class);
+        defineManagedBean(Typed2.class);
+        defineManagedBean(TypedInjection.class);
         List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();
@@ -84,8 +84,8 @@ public class TypedInjectedComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(Typed2.class);
-        defineSimpleWebBean(TypedInjectionWithoutArguments.class);
+        defineManagedBean(Typed2.class);
+        defineManagedBean(TypedInjectionWithoutArguments.class);
         List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();

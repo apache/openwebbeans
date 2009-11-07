@@ -42,18 +42,18 @@ public class AnyBindingTest extends TestContext{
 	@Test
 	public void testAny()
 	{
-		AbstractBean<AnyBindingComponent> comp1 = defineSimpleWebBean(AnyBindingComponent.class);
+		AbstractBean<AnyBindingComponent> comp1 = defineManagedBean(AnyBindingComponent.class);
 		Set<Annotation> qualifiers = comp1.getQualifiers();
 		
 		Assert.assertEquals(2, qualifiers.size());
 		
-		AbstractBean<NonAnyBindingComponent> comp2 = defineSimpleWebBean(NonAnyBindingComponent.class);
+		AbstractBean<NonAnyBindingComponent> comp2 = defineManagedBean(NonAnyBindingComponent.class);
 		qualifiers = comp2.getQualifiers();
 		
 		Assert.assertEquals(4, qualifiers.size());
 		
 
-		AbstractBean<DefaultAnyBinding> comp3 = defineSimpleWebBean(DefaultAnyBinding.class);
+		AbstractBean<DefaultAnyBinding> comp3 = defineManagedBean(DefaultAnyBinding.class);
 		qualifiers = comp3.getQualifiers();
 		
 		Assert.assertEquals(2, qualifiers.size());

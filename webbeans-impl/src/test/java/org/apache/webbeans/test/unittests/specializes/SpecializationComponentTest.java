@@ -50,9 +50,9 @@ public class SpecializationComponentTest extends TestContext
         
         ContextFactory.initRequestContext(null);
         
-        Bean<MockSpecializesService> bean1 = defineSimpleWebBean(MockSpecializesService.class);
-        Bean<AsynhrounousSpecalizesService> bean2 = defineSimpleWebBean(AsynhrounousSpecalizesService.class);
-        Bean<SpecializesServiceInjectorComponent> bean3 = defineSimpleWebBean(SpecializesServiceInjectorComponent.class);
+        Bean<MockSpecializesService> bean1 = defineManagedBean(MockSpecializesService.class);
+        Bean<AsynhrounousSpecalizesService> bean2 = defineManagedBean(AsynhrounousSpecalizesService.class);
+        Bean<SpecializesServiceInjectorComponent> bean3 = defineManagedBean(SpecializesServiceInjectorComponent.class);
         
         WebBeansUtil.configureSpecializations(MockSpecializesService.class);
         

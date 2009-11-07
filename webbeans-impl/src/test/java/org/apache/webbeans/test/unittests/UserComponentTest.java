@@ -50,8 +50,8 @@ public class UserComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(UserComponent.class);
-        defineSimpleWebBean(ContainUserComponent.class);
+        defineManagedBean(UserComponent.class);
+        defineManagedBean(ContainUserComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();

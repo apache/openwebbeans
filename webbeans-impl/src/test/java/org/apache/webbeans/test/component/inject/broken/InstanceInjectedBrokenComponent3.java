@@ -23,5 +23,5 @@ import javax.inject.Inject;
 
 public class InstanceInjectedBrokenComponent3
 {
-    @Inject @Any Instance<?> instance;
+    @Inject @Any Instance instance;
 }

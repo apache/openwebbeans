@@ -50,8 +50,8 @@ public class DisposalInjectedComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(ServiceImpl1.class);
-        defineSimpleWebBean(DisposalMethodComponent.class);
+        defineManagedBean(ServiceImpl1.class);
+        defineManagedBean(DisposalMethodComponent.class);
 
         List<AbstractBean<?>> comps = getComponents();
 

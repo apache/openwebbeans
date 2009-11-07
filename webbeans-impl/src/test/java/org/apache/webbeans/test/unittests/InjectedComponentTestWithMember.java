@@ -49,8 +49,8 @@ public class InjectedComponentTestWithMember extends TestContext
     public void testTypedComponent() throws Throwable
     {
         clear();
-        defineSimpleWebBean(BindingComponent.class);
-        defineSimpleWebBean(NonBindingComponent.class);
+        defineManagedBean(BindingComponent.class);
+        defineManagedBean(NonBindingComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();

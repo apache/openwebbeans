@@ -52,7 +52,7 @@ public class NamedTests extends TestContext
     @Test
     public void testFieldWithNamedValue() throws Exception
     {
-        Bean<NamedFieldWithNamedValue> bean = defineSimpleWebBean(NamedFieldWithNamedValue.class);
+        Bean<NamedFieldWithNamedValue> bean = defineManagedBean(NamedFieldWithNamedValue.class);
         Field field = NamedFieldWithNamedValue.class.getDeclaredField("paymentProcessor");
         
         InjectionPoint point =InjectionPointFactory.getFieldInjectionPointData(bean, field);
@@ -67,7 +67,7 @@ public class NamedTests extends TestContext
     @Test
     public void testFieldWithoutNamedValue() throws Exception
     {
-        Bean<NamedFieldWithoutNamedValue> bean = defineSimpleWebBean(NamedFieldWithoutNamedValue.class);
+        Bean<NamedFieldWithoutNamedValue> bean = defineManagedBean(NamedFieldWithoutNamedValue.class);
         Field field = NamedFieldWithoutNamedValue.class.getDeclaredField("paymentProcessor");
         
         InjectionPoint point =InjectionPointFactory.getFieldInjectionPointData(bean, field);
@@ -83,7 +83,7 @@ public class NamedTests extends TestContext
     @Test
     public void testOtherWithNamedValue() throws Exception
     {
-        Bean<NamedOtherWithNamedValue> bean = defineSimpleWebBean(NamedOtherWithNamedValue.class);
+        Bean<NamedOtherWithNamedValue> bean = defineManagedBean(NamedOtherWithNamedValue.class);
         Constructor<?> constructor = NamedOtherWithNamedValue.class.getDeclaredConstructor(new Class<?>[]{IPayment.class});
         
         InjectionPoint point =InjectionPointFactory.getConstructorInjectionPointData(bean, constructor).get(0);
@@ -99,7 +99,7 @@ public class NamedTests extends TestContext
     @Test(expected=WebBeansConfigurationException.class)
     public void testOtherWithoutNamedValue() throws Exception
     {
-        Bean<NamedOtherWithoutNamedValue> bean = defineSimpleWebBean(NamedOtherWithoutNamedValue.class);
+        Bean<NamedOtherWithoutNamedValue> bean = defineManagedBean(NamedOtherWithoutNamedValue.class);
         Constructor<?> constructor = NamedOtherWithoutNamedValue.class.getDeclaredConstructor(new Class<?>[]{IPayment.class});
         
         InjectionPoint point =InjectionPointFactory.getConstructorInjectionPointData(bean, constructor).get(0);

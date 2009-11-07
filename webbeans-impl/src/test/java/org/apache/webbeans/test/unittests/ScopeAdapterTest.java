@@ -47,9 +47,9 @@ public class ScopeAdapterTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(CheckWithCheckPayment.class);
-        defineSimpleWebBean(ScopeAdaptorComponent.class);
-        defineSimpleWebBean(ScopeAdaptorInjectorComponent.class);
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(ScopeAdaptorComponent.class);
+        defineManagedBean(ScopeAdaptorInjectorComponent.class);
 
         HttpSession session = getSession();
         ContextFactory.initRequestContext(null);

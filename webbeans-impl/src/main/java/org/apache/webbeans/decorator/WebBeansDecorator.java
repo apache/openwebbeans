@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.decorator.Decorates;
+import javax.decorator.Delegate;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -96,7 +96,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
 
     protected void initDelegate()
     {
-        Field field = ClassUtil.getFieldWithAnnotation(this.clazz, Decorates.class);
+        Field field = ClassUtil.getFieldWithAnnotation(this.clazz, Delegate.class);
         
         if(field == null)
         {
@@ -113,7 +113,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
         Class<?> superClazz = delegateClazz.getSuperclass();
         if(!superClazz.equals(Object.class))
         {
-            Field field = ClassUtil.getFieldWithAnnotation(superClazz, Decorates.class);
+            Field field = ClassUtil.getFieldWithAnnotation(superClazz, Delegate.class);
             if(field != null)
             {
                 initDelegateInternal(field);
@@ -208,7 +208,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
 
     public void setDelegate(Object instance, Object delegate)
     {
-        Field field = ClassUtil.getFieldWithAnnotation(getClazz(), Decorates.class);
+        Field field = ClassUtil.getFieldWithAnnotation(getClazz(), Delegate.class);
         if (!field.isAccessible())
         {
             field.setAccessible(true);
@@ -252,7 +252,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
         Set<Field> injectedFields = delegate.getInjectedFromSuperFields();
         for (Field injectedField : injectedFields)
         {
-            boolean isDecorates = injectedField.isAnnotationPresent(Decorates.class);
+            boolean isDecorates = injectedField.isAnnotationPresent(Delegate.class);
 
             if (!isDecorates)
             {
@@ -269,7 +269,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
         injectedFields = delegate.getInjectedFields();
         for (Field injectedField : injectedFields)
         {
-            boolean isDecorates = injectedField.isAnnotationPresent(Decorates.class);
+            boolean isDecorates = injectedField.isAnnotationPresent(Delegate.class);
 
             if (!isDecorates)
             {

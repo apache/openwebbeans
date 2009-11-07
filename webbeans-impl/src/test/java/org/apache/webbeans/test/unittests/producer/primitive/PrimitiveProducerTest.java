@@ -44,8 +44,8 @@ public class PrimitiveProducerTest extends TestContext
     {
         ContextFactory.initRequestContext(null);
         
-        defineSimpleWebBean(PrimitiveProducer.class);
-        defineSimpleWebBean(PrimitiveConsumer.class);
+        defineManagedBean(PrimitiveProducer.class);
+        defineManagedBean(PrimitiveConsumer.class);
         
         PrimitiveConsumer consumer = (PrimitiveConsumer) getManager().getInstanceByName("primitiveConsumer");
         

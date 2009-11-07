@@ -44,8 +44,8 @@ public class InjectedComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(InjectedComponent.class);
-        defineSimpleWebBean(ServiceImpl1.class);
+        defineManagedBean(InjectedComponent.class);
+        defineManagedBean(ServiceImpl1.class);
         List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);

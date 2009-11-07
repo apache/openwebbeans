@@ -52,8 +52,8 @@ public class PreDestroyComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(CheckWithCheckPayment.class);
-        defineSimpleWebBean(PreDestroyComponent.class);
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(PreDestroyComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);

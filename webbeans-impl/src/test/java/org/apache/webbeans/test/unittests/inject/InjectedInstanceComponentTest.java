@@ -48,11 +48,11 @@ public class InjectedInstanceComponentTest extends TestContext
         getManager().addBean(WebBeansUtil.getInstanceBean());
         
         ContextFactory.initRequestContext(null);
-        Bean<PaymentProcessorComponent> bean =  defineSimpleWebBean(PaymentProcessorComponent.class);
+        Bean<PaymentProcessorComponent> bean =  defineManagedBean(PaymentProcessorComponent.class);
         
         getManager().getInstance(bean);
         
-        Bean<InstanceInjectedComponent> injectedBean = defineSimpleWebBean(InstanceInjectedComponent.class);
+        Bean<InstanceInjectedComponent> injectedBean = defineManagedBean(InstanceInjectedComponent.class);
                 
         InstanceInjectedComponent instance = getManager().getInstance(injectedBean);
         

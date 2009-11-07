@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.AnnotationUtil;

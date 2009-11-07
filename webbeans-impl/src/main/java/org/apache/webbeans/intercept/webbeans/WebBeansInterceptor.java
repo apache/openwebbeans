@@ -25,10 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.NonBinding;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
+import javax.enterprise.util.NonBinding;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.AbstractBean;

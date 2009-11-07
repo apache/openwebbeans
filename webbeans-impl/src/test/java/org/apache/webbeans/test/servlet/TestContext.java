@@ -313,7 +313,7 @@ public abstract class TestContext implements ITestContext
      * @param clazz simple webbeans class
      * @return simple webbean
      */
-    protected <T> AbstractBean<T> defineSimpleWebBean(Class<T> clazz)
+    protected <T> AbstractBean<T> defineManagedBean(Class<T> clazz)
     {
         ManagedBean<T> bean = null;
 

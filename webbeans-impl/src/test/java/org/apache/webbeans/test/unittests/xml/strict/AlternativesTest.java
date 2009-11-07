@@ -38,8 +38,8 @@ public class AlternativesTest extends TestContext
     @Test
     public void testAlternativeCorrect()
     {
-        Bean<Alternative1> alternative1 = defineSimpleWebBean(Alternative1.class);
-        Bean<Alternative2> alternative2 = defineSimpleWebBean(Alternative2.class);        
+        Bean<Alternative1> alternative1 = defineManagedBean(Alternative1.class);
+        Bean<Alternative2> alternative2 = defineManagedBean(Alternative2.class);        
         
         InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_correct.xml");
         Assert.assertNotNull(stream);

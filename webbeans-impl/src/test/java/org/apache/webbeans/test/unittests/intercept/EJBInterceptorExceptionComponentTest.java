@@ -42,7 +42,7 @@ public class EJBInterceptorExceptionComponentTest extends TestContext
     {
         try
         {
-            AbstractBean<MultpleInterceptor> component = defineSimpleWebBean(MultpleInterceptor.class);
+            AbstractBean<MultpleInterceptor> component = defineManagedBean(MultpleInterceptor.class);
 
             EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
         }

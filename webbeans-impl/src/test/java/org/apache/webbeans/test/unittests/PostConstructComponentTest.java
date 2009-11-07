@@ -50,8 +50,8 @@ public class PostConstructComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(CheckWithCheckPayment.class);
-        defineSimpleWebBean(PostConstructComponent.class);
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(PostConstructComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);

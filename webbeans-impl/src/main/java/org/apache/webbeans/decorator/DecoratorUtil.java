@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.decorator.Decorates;
+import javax.decorator.Delegate;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.component.ManagedBean;
@@ -97,7 +97,7 @@ public final class DecoratorUtil
         boolean found = false;
         for (Field field : fields)
         {
-            if (AnnotationUtil.hasAnnotation(field.getDeclaredAnnotations(), Decorates.class))
+            if (AnnotationUtil.hasAnnotation(field.getDeclaredAnnotations(), Delegate.class))
             {
                 if (found)
                 {

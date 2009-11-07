@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.test.component.decorator.broken;
 
-import javax.decorator.Decorates;
+import javax.decorator.Delegate;
 import javax.decorator.Decorator;
 
 import org.apache.webbeans.test.component.IPayment;
@@ -21,9 +21,9 @@ import org.apache.webbeans.test.component.IPayment;
 @Decorator
 public class MoreThanOneDelegateAttribute implements IPayment
 {
-    @Decorates
+    @Delegate
     IPayment payment;
-    @Decorates
+    @Delegate
     IPayment payment2;
 
     public String pay()

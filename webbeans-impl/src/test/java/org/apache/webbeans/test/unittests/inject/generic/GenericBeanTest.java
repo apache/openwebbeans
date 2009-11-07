@@ -38,8 +38,8 @@ public class GenericBeanTest extends TestContext
     @SuppressWarnings("unchecked")
     public void testGenericBeanInjection()
     {
-        defineSimpleWebBean(GenericComponent.class);
-        AbstractBean<GenericComponentInjector> bean2 = defineSimpleWebBean(GenericComponentInjector.class);
+        defineManagedBean(GenericComponent.class);
+        AbstractBean<GenericComponentInjector> bean2 = defineManagedBean(GenericComponentInjector.class);
         
         GenericComponentInjector<?> instance = getManager().getInstance(bean2);
         Assert.assertNotNull(instance.getInjection1());

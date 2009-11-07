@@ -51,9 +51,9 @@ public class Producer1ConsumerComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(ServiceImpl1.class);
-        defineSimpleWebBean(Producer1.class);
-        defineSimpleWebBean(Producer1ConsumerComponent.class);
+        defineManagedBean(ServiceImpl1.class);
+        defineManagedBean(Producer1.class);
+        defineManagedBean(Producer1ConsumerComponent.class);
 
         List<AbstractBean<?>> comps = getComponents();
 

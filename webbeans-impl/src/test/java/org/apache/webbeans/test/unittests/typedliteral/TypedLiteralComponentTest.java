@@ -16,10 +16,10 @@ package org.apache.webbeans.test.unittests.typedliteral;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import javax.enterprise.inject.AnnotationLiteral;
 import javax.enterprise.inject.Default;
-import javax.enterprise.inject.TypeLiteral;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.util.AnnotationLiteral;
+import javax.enterprise.util.TypeLiteral;
 
 import junit.framework.Assert;
 
@@ -51,8 +51,8 @@ public class TypedLiteralComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(TypeLiteralComponent.class);
-        defineSimpleWebBean(InjectedTypeLiteralComponent.class);
+        defineManagedBean(TypeLiteralComponent.class);
+        defineManagedBean(InjectedTypeLiteralComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
@@ -75,7 +75,7 @@ public class TypedLiteralComponentTest extends TestContext
     {
         clear();
 
-        defineSimpleWebBean(TypeLiteralComponent.class);
+        defineManagedBean(TypeLiteralComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);

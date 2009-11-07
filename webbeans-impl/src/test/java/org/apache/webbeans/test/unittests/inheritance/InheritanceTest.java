@@ -51,7 +51,7 @@ public class InheritanceTest extends TestContext
     @Test
     public void testInheritedComponentMetaData()
     {
-        AbstractBean<InheritFromParentComponent> component = defineSimpleWebBean(InheritFromParentComponent.class);
+        AbstractBean<InheritFromParentComponent> component = defineManagedBean(InheritFromParentComponent.class);
         
         BeanInheritedMetaData<InheritFromParentComponent> data = new BeanInheritedMetaData<InheritFromParentComponent>(component);
         
