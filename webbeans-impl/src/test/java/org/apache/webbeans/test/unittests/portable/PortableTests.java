@@ -33,6 +33,7 @@ import javax.interceptor.Interceptor;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
@@ -41,7 +42,6 @@ import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.inject.parametrized.Dao;
 import org.apache.webbeans.test.component.library.Book;
 import org.apache.webbeans.test.component.portable.PortableType1;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.test.xml.annot.BindingType1;
 import org.apache.webbeans.test.xml.annot.BindingType2;
 import org.junit.Test;

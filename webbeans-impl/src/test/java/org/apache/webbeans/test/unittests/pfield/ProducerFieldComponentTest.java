@@ -18,13 +18,13 @@ package org.apache.webbeans.test.unittests.pfield;
 
 import javax.enterprise.inject.spi.Bean;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.apache.webbeans.test.component.pfield.ProducerFieldDefinitionComponent;
 import org.apache.webbeans.test.component.pfield.ProducerFieldInjectedComponent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

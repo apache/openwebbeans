@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.unittests;
+package org.apache.webbeans.test.unittests.inject;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -23,10 +23,10 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.test.component.service.ITyped;
 import org.apache.webbeans.test.component.service.TypedComponent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -45,6 +46,8 @@ public class PluginLoader
     /** unmodifiable list with all found OWB plugins */
     private List<OpenWebBeansPlugin> plugins = null;
 
+    private AtomicBoolean started = new AtomicBoolean(false);
+    
     /**
      * @return singleton PluginLoader 
      */
@@ -64,20 +67,27 @@ public class PluginLoader
      */
     public void startUp() throws WebBeansConfigurationException
     {
-        logger.debug("PluginLoader startUp called");
-        ArrayList<OpenWebBeansPlugin> ps = new ArrayList<OpenWebBeansPlugin>();
-
-        ServiceLoader<OpenWebBeansPlugin> owbPluginsLoader = ServiceLoader.load(OpenWebBeansPlugin.class);
-        Iterator<OpenWebBeansPlugin> pluginIter = owbPluginsLoader.iterator();
-        while(pluginIter.hasNext()) 
+        if(this.started.compareAndSet(false, true))
         {
-          OpenWebBeansPlugin plugin = pluginIter.next();
-          logger.info("adding OpenWebBeansPlugin " + plugin.getClass().getSimpleName());
-          ps.add(plugin);
-        }   
-        
-        // just to make sure the plugins aren't modified afterwards
-        plugins = Collections.unmodifiableList(ps);
+            logger.debug("PluginLoader startUp called");
+            ArrayList<OpenWebBeansPlugin> ps = new ArrayList<OpenWebBeansPlugin>();
+
+            ServiceLoader<OpenWebBeansPlugin> owbPluginsLoader = ServiceLoader.load(OpenWebBeansPlugin.class);
+            Iterator<OpenWebBeansPlugin> pluginIter = owbPluginsLoader.iterator();
+            while(pluginIter.hasNext()) 
+            {
+              OpenWebBeansPlugin plugin = pluginIter.next();
+              logger.info("adding OpenWebBeansPlugin " + plugin.getClass().getSimpleName());
+              ps.add(plugin);
+            }   
+            
+            // just to make sure the plugins aren't modified afterwards
+            plugins = Collections.unmodifiableList(ps);            
+        }
+        else
+        {
+            logger.debug("PluginLoader is already started");
+        }
     }
     
     /**
@@ -87,35 +97,42 @@ public class PluginLoader
      */
     public void shutDown() throws WebBeansConfigurationException
     {
-        logger.debug("PluginLoader shutDown called");
-        
-        if (plugins == null)
+        if(this.started.compareAndSet(true, false))
         {
-            logger.warn("No plugins to shutDown!");
-            return;
-        }
-
-        ArrayList<String> failedShutdown = new ArrayList<String>();
-
-        for (OpenWebBeansPlugin plugin : plugins)
-        {
-            try 
+            logger.debug("PluginLoader shutDown called");
+            
+            if (plugins == null)
             {
-                plugin.shutDown();
+                logger.warn("No plugins to shutDown!");
+                return;
             }
-            catch (Exception e)
+
+            ArrayList<String> failedShutdown = new ArrayList<String>();
+
+            for (OpenWebBeansPlugin plugin : plugins)
             {
-                // we catch ALL exceptions, since we like to continue shutting down all other plugins!
-                String pluginName = plugin.getClass().getSimpleName();
-                logger.error("error while shutdown the pugin " + pluginName, e);
-                failedShutdown.add(pluginName);
+                try 
+                {
+                    plugin.shutDown();
+                }
+                catch (Exception e)
+                {
+                    // we catch ALL exceptions, since we like to continue shutting down all other plugins!
+                    String pluginName = plugin.getClass().getSimpleName();
+                    logger.error("error while shutdown the pugin " + pluginName, e);
+                    failedShutdown.add(pluginName);
+                }
             }
+            
+            if (!failedShutdown.isEmpty())
+            {
+                throw new WebBeansConfigurationException("got Exceptions while sending shutdown to the following plugins: "
+                                                         + failedShutdown.toString());
+            }            
         }
-        
-        if (!failedShutdown.isEmpty())
+        else
         {
-            throw new WebBeansConfigurationException("got Exceptions while sending shutdown to the following plugins: "
-                                                     + failedShutdown.toString());
+            logger.debug("PluginLoader is already shut down!");
         }
     }
     
@@ -181,4 +198,8 @@ public class PluginLoader
         return null;
     }
     
+    public boolean isShowDown()
+    {
+        return !this.started.get();
+    }
 }

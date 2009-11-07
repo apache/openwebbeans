@@ -17,11 +17,11 @@ package org.apache.webbeans.test.unittests.binding;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.test.component.binding.AnyBindingComponent;
 import org.apache.webbeans.test.component.binding.DefaultAnyBinding;
 import org.apache.webbeans.test.component.binding.NonAnyBindingComponent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

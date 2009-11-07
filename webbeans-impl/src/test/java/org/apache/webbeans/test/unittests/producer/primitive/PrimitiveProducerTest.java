@@ -18,10 +18,10 @@ package org.apache.webbeans.test.unittests.producer.primitive;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.producer.primitive.PrimitiveConsumer;
 import org.apache.webbeans.test.component.producer.primitive.PrimitiveProducer;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 

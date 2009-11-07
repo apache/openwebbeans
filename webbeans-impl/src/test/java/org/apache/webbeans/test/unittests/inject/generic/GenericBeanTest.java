@@ -13,10 +13,10 @@
  */
 package org.apache.webbeans.test.unittests.inject.generic;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.test.component.inject.generic.GenericComponent;
 import org.apache.webbeans.test.component.inject.generic.GenericComponentInjector;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

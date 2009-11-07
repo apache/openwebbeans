@@ -20,6 +20,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.AnyLiteral;
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.annotation.binding.Check;
@@ -31,7 +32,6 @@ import org.apache.webbeans.test.component.event.normal.ComponentWithObservable1;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObserves1;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObserves2;
 import org.apache.webbeans.test.event.LoggedInEvent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 

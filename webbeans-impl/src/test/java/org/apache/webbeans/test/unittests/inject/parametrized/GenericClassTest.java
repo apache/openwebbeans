@@ -15,10 +15,10 @@ package org.apache.webbeans.test.unittests.inject.parametrized;
 
 import java.lang.reflect.Field;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.test.component.inject.parametrized.Dao;
 import org.apache.webbeans.test.component.inject.parametrized.UserDao;
 import org.apache.webbeans.test.component.inject.parametrized.WithTypeVariable;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;
 import org.junit.Test;

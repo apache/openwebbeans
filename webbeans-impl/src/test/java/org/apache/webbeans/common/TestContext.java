@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.servlet;
+package org.apache.webbeans.common;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -66,6 +66,8 @@ import org.apache.webbeans.test.component.intercept.webbeans.WebBeanswithMetaInt
 import org.apache.webbeans.test.containertests.ComponentResolutionByTypeTest;
 import org.apache.webbeans.test.mock.MockHttpSession;
 import org.apache.webbeans.test.mock.MockManager;
+import org.apache.webbeans.test.servlet.ITestContext;
+import org.apache.webbeans.test.servlet.TestListener;
 import org.apache.webbeans.test.sterotype.StereoWithNonScope;
 import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
@@ -100,9 +102,6 @@ public abstract class TestContext implements ITestContext
     /** MockManager is the mock implementation of the {@link BeanManager} */
     private MockManager manager;
 
-    /** Tests initialization is already done or not */
-    private static boolean init;
-
     /** Use for XML tests */
     protected WebBeansXMLConfigurator xmlConfigurator = null;
 
@@ -118,6 +117,7 @@ public abstract class TestContext implements ITestContext
         this.manager = new MockManager();
         this.xmlConfigurator = new WebBeansXMLConfigurator();
     }
+    
 
     /**
      * Initialize the tests. NOTE : Actually this has to be defined for each
@@ -128,18 +128,13 @@ public abstract class TestContext implements ITestContext
      */
     public void init()
     {
-        if (!init)
-        {
-            initDefaultDeploymentTypes();
-            initInterceptors();
-            initDecorators();
-            initStereoTypes();
-            initDependentContext();            
+        initDefaultDeploymentTypes();
+        initInterceptors();
+        initDecorators();
+        initStereoTypes();
+        initDependentContext();            
 
-            PluginLoader.getInstance().startUp();
-            
-            init = true;
-        }
+        PluginLoader.getInstance().startUp();            
     }
 
     /**
@@ -627,6 +622,6 @@ public abstract class TestContext implements ITestContext
      */
     public void startTests(ServletContext ctx)
     {
-    }
+    }     
 
 }

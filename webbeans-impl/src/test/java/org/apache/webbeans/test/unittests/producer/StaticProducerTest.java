@@ -15,10 +15,10 @@ package org.apache.webbeans.test.unittests.producer;
 
 import java.lang.annotation.Annotation;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.producer.StaticProducer1;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

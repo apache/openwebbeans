@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.unittests;
+package org.apache.webbeans.test.unittests.inject;
 
 import java.util.List;
 
@@ -20,23 +20,22 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.component.Singleton;
-import org.apache.webbeans.test.component.service.ITyped2;
-import org.apache.webbeans.test.component.service.Typed2;
-import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.test.component.BindingComponent;
+import org.apache.webbeans.test.component.NonBindingComponent;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SingletonComponentTest extends TestContext
+public class InjectedComponentTestWithMember extends TestContext
 {
     BeanManager container = null;
 
-    public SingletonComponentTest()
+    public InjectedComponentTestWithMember()
     {
-        super(SingletonComponentTest.class.getSimpleName());
+        super(InjectedComponentTestWithMember.class.getSimpleName());
     }
 
     @Before
@@ -46,18 +45,15 @@ public class SingletonComponentTest extends TestContext
         this.container = BeanManagerImpl.getManager();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testTypedComponent() throws Throwable
     {
         clear();
-
-        defineManagedBean(Typed2.class);
-        defineManagedBean(Singleton.class);
+        defineManagedBean(BindingComponent.class);
+        defineManagedBean(NonBindingComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();
-
         ContextFactory.initSessionContext(session);
 
         Assert.assertEquals(2, comps.size());
@@ -65,16 +61,12 @@ public class SingletonComponentTest extends TestContext
         getManager().getInstance(comps.get(0));
         Object object = getManager().getInstance(comps.get(1));
 
-        Assert.assertTrue(object instanceof Singleton);
+        Assert.assertTrue(object instanceof NonBindingComponent);
 
-        Singleton single = (Singleton) object;
+        NonBindingComponent comp = (NonBindingComponent) object;
+        BindingComponent bc = comp.getComponent();
 
-        Assert.assertEquals("debug", single.logDebug());
-        Assert.assertEquals("info", single.logInfoo());
-
-        ITyped2 t = single.getType();
-
-        Assert.assertNotNull(t);
+        Assert.assertTrue(bc != null);
 
         ContextFactory.destroySessionContext(session);
     }

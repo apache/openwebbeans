@@ -18,12 +18,12 @@ package org.apache.webbeans.test.unittests.specializes;
 
 import javax.enterprise.inject.spi.Bean;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.annotation.binding.Mock;
 import org.apache.webbeans.test.component.specializes.AsynhrounousSpecalizesService;
 import org.apache.webbeans.test.component.specializes.MockSpecializesService;
 import org.apache.webbeans.test.component.specializes.SpecializesServiceInjectorComponent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
 import org.junit.Before;

@@ -23,7 +23,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Test;
 

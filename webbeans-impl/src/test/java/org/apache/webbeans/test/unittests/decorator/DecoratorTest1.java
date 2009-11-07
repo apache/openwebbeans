@@ -26,6 +26,7 @@ import javax.servlet.ServletContext;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.annotation.binding.Binding1Literal;
@@ -36,7 +37,6 @@ import org.apache.webbeans.test.component.decorator.clean.LargeTransactionDecora
 import org.apache.webbeans.test.component.decorator.clean.ServiceDecorator;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,11 +62,15 @@ public class DecoratorTest1 extends TestContext
     public void init()
     {
         super.init();
+        initializeDecoratorType(ServiceDecorator.class);
+        initializeDecoratorType(LargeTransactionDecorator.class);
     }
 
     @Test
     public void test1()
     {
+        clear();
+        
         defineManagedBean(CheckWithCheckPayment.class);
         defineSimpleWebBeansDecorators(ServiceDecorator.class);
         AbstractBean<ServiceImpl1> component = defineManagedBean(ServiceImpl1.class);
@@ -92,6 +96,8 @@ public class DecoratorTest1 extends TestContext
     @Test
     public void test2()
     {
+        clear();
+        
         defineSimpleWebBeansDecorators(LargeTransactionDecorator.class);
         AbstractBean<AccountComponent> component = defineManagedBean(AccountComponent.class);
 

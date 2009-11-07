@@ -45,7 +45,7 @@ public class StandaloneLifeCycle implements Lifecycle
     private final BeansDeployer beansDeployer;
         
     /**Root container.*/
-    private final BeanManagerImpl beanManager;
+    protected final BeanManagerImpl beanManager;
     
     private AtomicBoolean inited = new AtomicBoolean(false);
     
@@ -53,9 +53,9 @@ public class StandaloneLifeCycle implements Lifecycle
     
     private AtomicBoolean stopped = new AtomicBoolean(false);
     
-    private MetaDataDiscoveryService discoveryService = null;
+    protected MetaDataDiscoveryService discoveryService = null;
     
-    private final WebBeansXMLConfigurator xmlConfig;
+    protected final WebBeansXMLConfigurator xmlConfig;
     
     public StandaloneLifeCycle()
     {
@@ -73,13 +73,17 @@ public class StandaloneLifeCycle implements Lifecycle
         {
             discoveryService = ServiceLoader.getService(MetaDataDiscoveryService.class);
             
-            if(!(discoveryService instanceof MetaDataDiscoveryStandard))
+            if(discoveryService == null)
             {
-                String message = "Wrong discovery service implementation class. Continue with using MetaDataDiscoveryStandard as a default"; 
+                String message = "Discovery service not found!. Continue with using MetaDataDiscoveryStandard as a default"; 
                 logger.warn(message);
                 
                 this.discoveryService = new MetaDataDiscoveryStandard();
-            }      
+            }
+            else
+            {
+                logger.info("Using discovery service implementation class : " + discoveryService.getClass());
+            }
             
             beanManager.setXMLConfigurator(this.xmlConfig);        
             ActivityManager.getInstance().setRootActivity(this.beanManager);        
@@ -166,4 +170,8 @@ public class StandaloneLifeCycle implements Lifecycle
         return this.beanManager;
     }
 
+    public MetaDataDiscoveryService getDiscoveryService()
+    {
+        return this.discoveryService;
+    }
 }

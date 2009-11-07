@@ -30,6 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.el.ELResolver;
+import javax.el.ExpressionFactory;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
@@ -643,7 +644,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return set;
     }
 
-    @Override
+    @Deprecated
     public <X> Bean<? extends X> getMostSpecializedBean(Bean<X> bean)
     {
         Bean<? extends X> specialized = (Bean<? extends X>) WebBeansUtil.getMostSpecializedBean(this, bean);
@@ -927,6 +928,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods( T event, Annotation... qualifiers ) {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
+    {
         return null;
     }
 

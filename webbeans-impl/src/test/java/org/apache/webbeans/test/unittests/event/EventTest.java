@@ -22,6 +22,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.TypeLiteral;
 import javax.servlet.ServletContext;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.ITypeArgumentEventInterface;
@@ -31,7 +32,6 @@ import org.apache.webbeans.test.event.TypeArgumentBaseEvent;
 import org.apache.webbeans.test.event.TypeArgumentEvent;
 import org.apache.webbeans.test.event.TypeArgumentInterfaceObserver;
 import org.apache.webbeans.test.event.TypeArgumentObserver;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.util.ArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;

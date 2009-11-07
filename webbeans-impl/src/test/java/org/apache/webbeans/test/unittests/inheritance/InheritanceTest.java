@@ -21,13 +21,13 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.test.component.inheritance.InheritFromParentComponent;
 import org.apache.webbeans.test.component.inheritance.types.InhDeployment1;
 import org.apache.webbeans.test.component.inheritance.types.InhStereo1;
 import org.apache.webbeans.test.component.inheritance.types.InhStereo2;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 

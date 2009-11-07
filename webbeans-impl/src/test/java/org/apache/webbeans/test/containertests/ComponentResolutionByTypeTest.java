@@ -20,12 +20,12 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithNonBindingMember;
 import org.apache.webbeans.test.component.BindingComponent;
 import org.apache.webbeans.test.component.NonBindingComponent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 

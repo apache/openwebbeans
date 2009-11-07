@@ -19,6 +19,7 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.intercept.InterceptedComponent;
@@ -26,7 +27,6 @@ import org.apache.webbeans.test.component.intercept.InterceptorWithSuperClassInt
 import org.apache.webbeans.test.component.intercept.MultipleInterceptedComponent;
 import org.apache.webbeans.test.component.intercept.MultipleListOfInterceptedComponent;
 import org.apache.webbeans.test.component.intercept.MultipleListOfInterceptedWithExcludeClassComponent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 

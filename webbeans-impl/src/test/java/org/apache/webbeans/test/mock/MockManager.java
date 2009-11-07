@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.el.ELResolver;
+import javax.el.ExpressionFactory;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -36,7 +37,6 @@ import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.component.AbstractBean;
-import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -229,7 +229,7 @@ public class MockManager implements BeanManager
     }
 
 
-    @Override
+    @Deprecated
     public <X> Bean<? extends X> getMostSpecializedBean(Bean<X> bean)
     {
         return this.manager.getMostSpecializedBean(bean);
@@ -322,5 +322,13 @@ public class MockManager implements BeanManager
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods(T event, Annotation... bindings)
     {
         return this.manager.resolveObserverMethods(event, bindings);
+    }
+
+
+    @Override
+    public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

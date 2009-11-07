@@ -18,6 +18,7 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -49,7 +50,6 @@ import org.apache.webbeans.test.component.exception.ProducerTypeExceptionCompone
 import org.apache.webbeans.test.component.exception.ProducerTypeStaticComponent;
 import org.apache.webbeans.test.component.exception.InnerComponent.InnerInnerComponent;
 import org.apache.webbeans.test.component.intercept.NoArgConstructorInterceptorComponent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 

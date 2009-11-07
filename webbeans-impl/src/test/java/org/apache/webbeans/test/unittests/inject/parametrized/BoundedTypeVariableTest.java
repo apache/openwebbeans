@@ -17,8 +17,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.test.component.inject.parametrized.BoundedTypeVariableComponent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.util.ClassUtil;
 import org.junit.Assert;
 import org.junit.Test;

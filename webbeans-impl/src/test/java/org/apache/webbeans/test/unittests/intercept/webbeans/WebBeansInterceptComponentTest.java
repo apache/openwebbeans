@@ -19,6 +19,7 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -26,7 +27,6 @@ import org.apache.webbeans.test.component.intercept.webbeans.WInterceptorCompone
 import org.apache.webbeans.test.component.intercept.webbeans.WMetaInterceptorComponent;
 import org.apache.webbeans.test.component.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.test.component.intercept.webbeans.WebBeanswithMetaInterceptor;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,6 +48,8 @@ public class WebBeansInterceptComponentTest extends TestContext
     public void init()
     {
         super.init();
+        initializeInterceptorType(WebBeansInterceptor.class);
+        initializeInterceptorType(WebBeanswithMetaInterceptor.class);
     }
 
     public void startTests(ServletContext ctx)

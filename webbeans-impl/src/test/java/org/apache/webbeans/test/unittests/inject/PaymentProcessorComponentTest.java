@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.unittests;
+package org.apache.webbeans.test.unittests.inject;
 
 import java.util.List;
 
@@ -19,31 +19,29 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.component.producer.Producer1;
-import org.apache.webbeans.test.component.service.IService;
-import org.apache.webbeans.test.component.service.Producer1ConsumerComponent;
-import org.apache.webbeans.test.component.service.ServiceImpl1;
-import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.test.component.CheckWithCheckPayment;
+import org.apache.webbeans.test.component.CheckWithMoneyPayment;
+import org.apache.webbeans.test.component.IPayment;
+import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.junit.Before;
 import org.junit.Test;
 
-public class Producer1ConsumerComponentTest extends TestContext
+public class PaymentProcessorComponentTest extends TestContext
 {
     BeanManager container = null;
 
-    public Producer1ConsumerComponentTest()
+    public PaymentProcessorComponentTest()
     {
-        super(Producer1ConsumerComponentTest.class.getSimpleName());
+        super(PaymentProcessorComponentTest.class.getSimpleName());
     }
 
     @Before
     public void init()
     {
         super.init();
-        this.container = BeanManagerImpl.getManager();
     }
 
     @Test
@@ -51,36 +49,35 @@ public class Producer1ConsumerComponentTest extends TestContext
     {
         clear();
 
-        defineManagedBean(ServiceImpl1.class);
-        defineManagedBean(Producer1.class);
-        defineManagedBean(Producer1ConsumerComponent.class);
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(CheckWithMoneyPayment.class);
+        defineManagedBean(PaymentProcessorComponent.class);
 
         List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
-        ContextFactory.initApplicationContext(null);
 
-        Assert.assertEquals(7, getDeployedComponents());
+        Assert.assertEquals(3, comps.size());
 
-        Object obj = getManager().getInstance(comps.get(0));
-        
-        Assert.assertNotNull(obj);
-
-        getInstanceByName("service");
-
+        getManager().getInstance(comps.get(0));
         getManager().getInstance(comps.get(1));
 
         Object object = getManager().getInstance(comps.get(2));
+        Assert.assertNotNull(object);
+        Assert.assertTrue(object instanceof PaymentProcessorComponent);
 
-        Assert.assertTrue(object instanceof Producer1ConsumerComponent);
+        PaymentProcessorComponent uc = (PaymentProcessorComponent) object;
+        IPayment p = uc.getPaymentCheck();
 
-        Producer1ConsumerComponent single = (Producer1ConsumerComponent) object;
+        Assert.assertTrue(p instanceof CheckWithCheckPayment);
+        Assert.assertEquals("CHECK", p.pay());
 
-        IService service = single.getService();
+        p = uc.getPaymentMoney();
 
-        Assert.assertNotNull(service);
+        Assert.assertTrue(p instanceof CheckWithMoneyPayment);
 
-        ContextFactory.destroyApplicationContext(null);
+        Assert.assertEquals("MONEY", p.pay());
+
         ContextFactory.destroyRequestContext(null);
     }
 

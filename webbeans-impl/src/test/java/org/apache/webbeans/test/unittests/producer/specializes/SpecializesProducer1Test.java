@@ -17,13 +17,13 @@ import java.lang.annotation.Annotation;
 
 import javax.enterprise.util.AnnotationLiteral;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.annotation.deployment.DeploymentType1;
 import org.apache.webbeans.test.annotation.deployment.DeploymentType2;
 import org.apache.webbeans.test.component.producer.specializes.SpecializesProducer1;
 import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

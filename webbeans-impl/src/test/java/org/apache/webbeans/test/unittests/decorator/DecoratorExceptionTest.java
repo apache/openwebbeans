@@ -23,6 +23,7 @@ import javax.servlet.ServletContext;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.test.annotation.binding.DummyAnnotationLiteral;
 import org.apache.webbeans.test.component.CheckWithCheckPaymentDecoratorField;
 import org.apache.webbeans.test.component.IPayment;
@@ -30,7 +31,6 @@ import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsno
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMustImplementAllDecoratedTypes;
 import org.apache.webbeans.test.component.decorator.broken.MoreThanOneDelegateAttribute;
 import org.apache.webbeans.test.component.decorator.broken.PaymentDecorator;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -127,7 +127,6 @@ public class DecoratorExceptionTest extends TestContext
     @Test
     public void testResolveDuplicateBindingParameterType()
     {
-        Exception exc = null;
         try
         {
 

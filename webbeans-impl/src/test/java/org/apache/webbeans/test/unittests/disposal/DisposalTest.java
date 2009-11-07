@@ -15,10 +15,10 @@ package org.apache.webbeans.test.unittests.disposal;
 
 import java.util.List;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.component.disposal.Disposal1;
 import org.apache.webbeans.test.mock.MockHttpSession;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

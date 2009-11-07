@@ -13,51 +13,38 @@
  */
 package org.apache.webbeans.test.unittests.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.spi.ServiceLoader;
+import org.apache.webbeans.common.AbstractUnitTest;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
-import org.apache.webbeans.test.mock.MockServletContext;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.util.ArrayUtil;
-import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Test the {@link WebBeansScanner}.
- */
-public class WebBeansScannerTest extends TestContext
+public class WebBeansScannerTest extends AbstractUnitTest
 {
-
     public WebBeansScannerTest()
     {
-        super(WebBeansScannerTest.class.getName());
-    }
-
-    @Before
-    public void init()
-    {
-        super.init();
+        
     }
 
     @Test
     public void testWebBeansScanner() throws Exception
     {
-        MetaDataDiscoveryService scanner = ServiceLoader.getService(MetaDataDiscoveryService.class);
-
-        ServletContext servletContext = new MockServletContext();
-        scanner.init(servletContext);
-
-        // try to re-run the scan
-        scanner.scan();
-
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(ScannerTestBean.class);
+        
+        //Start test container
+        startContainer(classes);
+        
+        MetaDataDiscoveryService scanner = getLifecycle().getDiscoveryService();
         Map<String, Set<String>> classMap = scanner.getClassIndex();
         Assert.assertNotNull(classMap);
         Assert.assertFalse(classMap.isEmpty());
@@ -66,5 +53,8 @@ public class WebBeansScannerTest extends TestContext
         String[] expectedAnnotations = new String[] { RequestScoped.class.getName(), Named.class.getName() };
 
         Assert.assertTrue(ArrayUtil.equalsIgnorePosition(testBeanAnnotations.toArray(), expectedAnnotations));
+        
+        //Stop test container
+        shutDownContainer();
     }
 }

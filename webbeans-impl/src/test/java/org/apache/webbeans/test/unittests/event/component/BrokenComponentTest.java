@@ -15,13 +15,13 @@ package org.apache.webbeans.test.unittests.event.component;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent1;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent2;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent3;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent4;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent5;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent6;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 

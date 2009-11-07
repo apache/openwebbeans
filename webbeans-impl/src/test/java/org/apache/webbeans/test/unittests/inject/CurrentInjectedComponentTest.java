@@ -11,31 +11,29 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.unittests;
+package org.apache.webbeans.test.unittests.inject;
 
 import java.util.List;
 
-import javax.enterprise.inject.spi.BeanManager;
+import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.component.CheckWithCheckPayment;
-import org.apache.webbeans.test.component.CheckWithMoneyPayment;
-import org.apache.webbeans.test.component.IPayment;
-import org.apache.webbeans.test.component.PaymentProcessorComponent;
-import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.test.component.ContaintsCurrentComponent;
+import org.apache.webbeans.test.component.CurrentBindingComponent;
+import org.apache.webbeans.test.component.service.ITyped2;
+import org.apache.webbeans.test.component.service.Typed2;
 import org.junit.Before;
 import org.junit.Test;
 
-public class PaymentProcessorComponentTest extends TestContext
+public class CurrentInjectedComponentTest extends TestContext
 {
-    BeanManager container = null;
-
-    public PaymentProcessorComponentTest()
+    public CurrentInjectedComponentTest()
     {
-        super(PaymentProcessorComponentTest.class.getSimpleName());
+        super(CurrentInjectedComponentTest.class.getSimpleName());
     }
 
     @Before
@@ -44,18 +42,20 @@ public class PaymentProcessorComponentTest extends TestContext
         super.init();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testTypedComponent() throws Throwable
     {
         clear();
 
-        defineManagedBean(CheckWithCheckPayment.class);
-        defineManagedBean(CheckWithMoneyPayment.class);
-        defineManagedBean(PaymentProcessorComponent.class);
-
+        defineManagedBean(Typed2.class);
+        defineManagedBean(CurrentBindingComponent.class);
+        defineManagedBean(ContaintsCurrentComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
+        HttpSession session = getSession();
         ContextFactory.initRequestContext(null);
+        ContextFactory.initSessionContext(session);
 
         Assert.assertEquals(3, comps.size());
 
@@ -63,22 +63,24 @@ public class PaymentProcessorComponentTest extends TestContext
         getManager().getInstance(comps.get(1));
 
         Object object = getManager().getInstance(comps.get(2));
-        Assert.assertNotNull(object);
-        Assert.assertTrue(object instanceof PaymentProcessorComponent);
 
-        PaymentProcessorComponent uc = (PaymentProcessorComponent) object;
-        IPayment p = uc.getPaymentCheck();
+        Assert.assertTrue(object instanceof ContaintsCurrentComponent);
 
-        Assert.assertTrue(p instanceof CheckWithCheckPayment);
-        Assert.assertEquals("CHECK", p.pay());
+        ContaintsCurrentComponent i = (ContaintsCurrentComponent) object;
 
-        p = uc.getPaymentMoney();
+        Assert.assertTrue(i.getInstance() instanceof CurrentBindingComponent);
 
-        Assert.assertTrue(p instanceof CheckWithMoneyPayment);
+        Object obj2 = getManager().getInstance(comps.get(1));
 
-        Assert.assertEquals("MONEY", p.pay());
+        Assert.assertSame(i.getInstance(), obj2);
+
+        CurrentBindingComponent bc = (CurrentBindingComponent) obj2;
+        ITyped2 typed2 = bc.getTyped2();
+
+        Assert.assertNotNull(typed2);
 
         ContextFactory.destroyRequestContext(null);
+        ContextFactory.destroySessionContext(session);
     }
 
 }

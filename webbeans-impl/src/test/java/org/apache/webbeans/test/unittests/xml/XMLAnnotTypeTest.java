@@ -19,7 +19,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 import org.junit.Test;

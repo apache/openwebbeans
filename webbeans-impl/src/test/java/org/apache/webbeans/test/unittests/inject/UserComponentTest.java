@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.unittests;
+package org.apache.webbeans.test.unittests.inject;
 
 import java.util.List;
 
@@ -20,54 +20,62 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.component.BindingComponent;
-import org.apache.webbeans.test.component.NonBindingComponent;
-import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.test.component.ContainUserComponent;
+import org.apache.webbeans.test.component.UserComponent;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InjectedComponentTestWithMember extends TestContext
+public class UserComponentTest extends TestContext
 {
     BeanManager container = null;
 
-    public InjectedComponentTestWithMember()
+    public UserComponentTest()
     {
-        super(InjectedComponentTestWithMember.class.getSimpleName());
+        super(UserComponentTest.class.getSimpleName());
     }
 
     @Before
     public void init()
     {
-        super.init();
         this.container = BeanManagerImpl.getManager();
+        super.init();
     }
 
     @Test
     public void testTypedComponent() throws Throwable
     {
         clear();
-        defineManagedBean(BindingComponent.class);
-        defineManagedBean(NonBindingComponent.class);
+
+        defineManagedBean(UserComponent.class);
+        defineManagedBean(ContainUserComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         HttpSession session = getSession();
+        ContextFactory.initRequestContext(null);
         ContextFactory.initSessionContext(session);
 
         Assert.assertEquals(2, comps.size());
 
-        getManager().getInstance(comps.get(0));
+        UserComponent userComponent = (UserComponent) getManager().getInstance(comps.get(0));
+        userComponent.setName("Gurkan");
+        userComponent.setSurname("Erdogdu");
+
+        Assert.assertNotNull(userComponent);
+
         Object object = getManager().getInstance(comps.get(1));
+        Assert.assertNotNull(object);
+        Assert.assertTrue(object instanceof ContainUserComponent);
 
-        Assert.assertTrue(object instanceof NonBindingComponent);
+        ContainUserComponent uc = (ContainUserComponent) object;
 
-        NonBindingComponent comp = (NonBindingComponent) object;
-        BindingComponent bc = comp.getComponent();
+        Assert.assertNotNull(uc.echo());
+        Assert.assertEquals(uc.echo(), userComponent.getName() + " " + userComponent.getSurname());
 
-        Assert.assertTrue(bc != null);
-
+        ContextFactory.destroyRequestContext(null);
         ContextFactory.destroySessionContext(session);
     }
 

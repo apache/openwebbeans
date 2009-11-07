@@ -11,31 +11,31 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.unittests;
+package org.apache.webbeans.test.unittests.inject;
 
 import java.util.List;
 
 import javax.enterprise.inject.spi.BeanManager;
-import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.component.ContainUserComponent;
-import org.apache.webbeans.test.component.UserComponent;
-import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.test.component.DisposalMethodComponent;
+import org.apache.webbeans.test.component.service.IService;
+import org.apache.webbeans.test.component.service.ServiceImpl1;
 import org.junit.Before;
 import org.junit.Test;
 
-public class UserComponentTest extends TestContext
+public class DisposalInjectedComponentTest extends TestContext
 {
     BeanManager container = null;
 
-    public UserComponentTest()
+    public DisposalInjectedComponentTest()
     {
-        super(UserComponentTest.class.getSimpleName());
+        super(DisposalInjectedComponentTest.class.getSimpleName());
     }
 
     @Before
@@ -50,33 +50,37 @@ public class UserComponentTest extends TestContext
     {
         clear();
 
-        defineManagedBean(UserComponent.class);
-        defineManagedBean(ContainUserComponent.class);
+        defineManagedBean(ServiceImpl1.class);
+        defineManagedBean(DisposalMethodComponent.class);
+
         List<AbstractBean<?>> comps = getComponents();
 
-        HttpSession session = getSession();
         ContextFactory.initRequestContext(null);
-        ContextFactory.initSessionContext(session);
+        ContextFactory.initApplicationContext(null);
 
         Assert.assertEquals(2, comps.size());
 
-        UserComponent userComponent = (UserComponent) getManager().getInstance(comps.get(0));
-        userComponent.setName("Gurkan");
-        userComponent.setSurname("Erdogdu");
+        Object producerResult = getManager().getInstanceByName("service");
+        
+        IService producverService = (IService)producerResult;
+        
+        Assert.assertNotNull(producverService);
+        
+        Object disposalComp = getManager().getInstance(comps.get(1));
+        Object object = getManager().getInstance(comps.get(0));
 
-        Assert.assertNotNull(userComponent);
+        Assert.assertTrue(object instanceof ServiceImpl1);
+        Assert.assertTrue(disposalComp instanceof DisposalMethodComponent);
 
-        Object object = getManager().getInstance(comps.get(1));
-        Assert.assertNotNull(object);
-        Assert.assertTrue(object instanceof ContainUserComponent);
+        DisposalMethodComponent mc = (DisposalMethodComponent) disposalComp;
 
-        ContainUserComponent uc = (ContainUserComponent) object;
+        IService s = mc.service();
 
-        Assert.assertNotNull(uc.echo());
-        Assert.assertEquals(uc.echo(), userComponent.getName() + " " + userComponent.getSurname());
+        Assert.assertNotNull(s);
 
+        ContextFactory.destroyApplicationContext(null);
         ContextFactory.destroyRequestContext(null);
-        ContextFactory.destroySessionContext(session);
+
     }
 
 }

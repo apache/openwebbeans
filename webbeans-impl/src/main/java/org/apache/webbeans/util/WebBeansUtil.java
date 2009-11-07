@@ -807,15 +807,20 @@ public final class WebBeansUtil
                     if (ClassUtil.isMethodHasParameter(method))
                     {
                         if (!invocationContext)
-                            throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not take any formal arguments");
+                        {
+                            throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not take any formal arguments");   
+                        }
                         else
                         {
                             // Check method criterias
                             Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
                             if (params.length != 1 || !params[0].equals(InvocationContext.class))
                                 throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not take any formal arguments other than InvocationContext");
-
                         }
+                    }
+                    else if(invocationContext)
+                    {
+                        throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must take a parameter with class type javax.interceptor.InvocationContext.");                        
                     }
 
                     if (!ClassUtil.getReturnType(method).equals(Void.TYPE))

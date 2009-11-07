@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.unittests;
+package org.apache.webbeans.test.unittests.intercept;
 
 import java.util.List;
 
@@ -19,28 +19,30 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
-import org.apache.webbeans.test.component.PostConstructComponent;
-import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.test.component.PreDestroyComponent;
 import org.junit.Before;
 import org.junit.Test;
 
-public class PostConstructComponentTest extends TestContext
+public class PreDestroyComponentTest extends TestContext
 {
     BeanManager container = null;
 
-    public PostConstructComponentTest()
+    public PreDestroyComponentTest()
     {
-        super(PostConstructComponentTest.class.getSimpleName());
+        super(PreDestroyComponentTest.class.getSimpleName());
     }
 
     @Before
     public void init()
     {
+        this.container = BeanManagerImpl.getManager();
         super.init();
     }
 
@@ -51,7 +53,7 @@ public class PostConstructComponentTest extends TestContext
         clear();
 
         defineManagedBean(CheckWithCheckPayment.class);
-        defineManagedBean(PostConstructComponent.class);
+        defineManagedBean(PreDestroyComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
@@ -59,24 +61,23 @@ public class PostConstructComponentTest extends TestContext
         Assert.assertEquals(2, comps.size());
 
         Object object = getManager().getInstance(comps.get(0));
-        Object object2 = getManager().getInstance(comps.get(1));
+        PreDestroyComponent object2 = (PreDestroyComponent)getManager().getInstance(comps.get(1));
+        
+        object2.getP();
 
         Assert.assertTrue(object instanceof CheckWithCheckPayment);
-        Assert.assertTrue(object2 instanceof PostConstructComponent);
+        Assert.assertTrue(object2 instanceof PreDestroyComponent);
 
-        PostConstructComponent pcc = (PostConstructComponent) object2;
+        PreDestroyComponent pcc = (PreDestroyComponent) object2;
 
-        pcc.getP();
-
-        ManagedBean<PostConstructComponent> s = (ManagedBean<PostConstructComponent>) comps.get(1);
+        ManagedBean<PreDestroyComponent> s = (ManagedBean<PreDestroyComponent>) comps.get(1);
         List<InterceptorData> stack = s.getInterceptorStack();
 
-        Assert.assertEquals(1, stack.size());
+        Assert.assertEquals(2, stack.size());
 
         Assert.assertNotNull(pcc.getP());
         Assert.assertSame(object, pcc.getP());
 
-        ContextFactory.destroyRequestContext(null);
     }
 
 }

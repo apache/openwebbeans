@@ -15,9 +15,9 @@ package org.apache.webbeans.test.unittests.binding;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.test.component.binding.BindingWithNonBindingAnnotationTypeComponent;
 import org.apache.webbeans.test.component.binding.BindingWithNonBindingArrayTypeComponent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 

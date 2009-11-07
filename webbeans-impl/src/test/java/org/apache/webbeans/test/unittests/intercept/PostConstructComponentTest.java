@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.unittests;
+package org.apache.webbeans.test.unittests.intercept;
 
 import java.util.List;
 
@@ -19,68 +19,64 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.test.component.DisposalMethodComponent;
-import org.apache.webbeans.test.component.service.IService;
-import org.apache.webbeans.test.component.service.ServiceImpl1;
-import org.apache.webbeans.test.servlet.TestContext;
+import org.apache.webbeans.intercept.InterceptorData;
+import org.apache.webbeans.test.component.CheckWithCheckPayment;
+import org.apache.webbeans.test.component.PostConstructComponent;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DisposalInjectedComponentTest extends TestContext
+public class PostConstructComponentTest extends TestContext
 {
     BeanManager container = null;
 
-    public DisposalInjectedComponentTest()
+    public PostConstructComponentTest()
     {
-        super(DisposalInjectedComponentTest.class.getSimpleName());
+        super(PostConstructComponentTest.class.getSimpleName());
     }
 
     @Before
     public void init()
     {
-        this.container = BeanManagerImpl.getManager();
         super.init();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testTypedComponent() throws Throwable
     {
         clear();
 
-        defineManagedBean(ServiceImpl1.class);
-        defineManagedBean(DisposalMethodComponent.class);
-
+        defineManagedBean(CheckWithCheckPayment.class);
+        defineManagedBean(PostConstructComponent.class);
         List<AbstractBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
-        ContextFactory.initApplicationContext(null);
 
         Assert.assertEquals(2, comps.size());
 
-        Object producerResult = getManager().getInstanceByName("service");
-        
-        IService producverService = (IService)producerResult;
-        
-        Assert.assertNotNull(producverService);
-        
-        Object disposalComp = getManager().getInstance(comps.get(1));
         Object object = getManager().getInstance(comps.get(0));
+        Object object2 = getManager().getInstance(comps.get(1));
 
-        Assert.assertTrue(object instanceof ServiceImpl1);
-        Assert.assertTrue(disposalComp instanceof DisposalMethodComponent);
+        Assert.assertTrue(object instanceof CheckWithCheckPayment);
+        Assert.assertTrue(object2 instanceof PostConstructComponent);
 
-        DisposalMethodComponent mc = (DisposalMethodComponent) disposalComp;
+        PostConstructComponent pcc = (PostConstructComponent) object2;
 
-        IService s = mc.service();
+        pcc.getP();
 
-        Assert.assertNotNull(s);
+        ManagedBean<PostConstructComponent> s = (ManagedBean<PostConstructComponent>) comps.get(1);
+        List<InterceptorData> stack = s.getInterceptorStack();
 
-        ContextFactory.destroyApplicationContext(null);
+        Assert.assertEquals(1, stack.size());
+
+        Assert.assertNotNull(pcc.getP());
+        Assert.assertSame(object, pcc.getP());
+
         ContextFactory.destroyRequestContext(null);
-
     }
 
 }

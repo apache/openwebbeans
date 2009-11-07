@@ -13,13 +13,13 @@
  */
 package org.apache.webbeans.test.unittests.producer.broken;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent1;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent2;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent3;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent4;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent5;
 import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponent6;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

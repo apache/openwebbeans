@@ -19,13 +19,13 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.test.component.inject.alternative.AlternativeComponent;
 import org.apache.webbeans.test.component.inject.alternative.AlternativeInjector;
 import org.apache.webbeans.test.component.inject.alternative.IAlternative;
 import org.apache.webbeans.test.component.inject.alternative.NotAlternativeComponent;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.junit.Test;

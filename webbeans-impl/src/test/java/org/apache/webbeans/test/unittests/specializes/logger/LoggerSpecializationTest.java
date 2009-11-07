@@ -19,6 +19,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.test.component.specializes.logger.ISomeLogger;
@@ -26,7 +27,6 @@ import org.apache.webbeans.test.component.specializes.logger.MockNotSpecializedL
 import org.apache.webbeans.test.component.specializes.logger.MockSpecializedLogger;
 import org.apache.webbeans.test.component.specializes.logger.SpecializedInjector;
 import org.apache.webbeans.test.component.specializes.logger.SystemLogger;
-import org.apache.webbeans.test.servlet.TestContext;
 import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
