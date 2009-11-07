@@ -16,13 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package javax.enterprise.inject;
+package javax.enterprise.util;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-
+/**
+ * Type literal implementation.
+ * @version $Rev$ $Date$
+ *
+ * @param <T> wrapped type
+ */
 @SuppressWarnings("unchecked")
 public abstract class TypeLiteral<T>
 {
@@ -70,30 +75,28 @@ public abstract class TypeLiteral<T>
 
         if (clazz == null)
         {
-            throw new RuntimeException("Class parameter clazz can not be null");
+            throw new RuntimeException("Class parameter can not be null!");
         }
 
         Type superClazz = clazz.getGenericSuperclass();
 
         if (superClazz.equals(Object.class))
         {
-            throw new RuntimeException("Super class must be parametrized type");
+            throw new RuntimeException("Super class must be parametrized type!");
         }
         else if (superClazz instanceof ParameterizedType)
         {
-            ParameterizedType pt = (ParameterizedType) superClazz;
+            ParameterizedType pt = (ParameterizedType) superClazz;            
             Type[] actualArgs = pt.getActualTypeArguments();
 
             if (actualArgs.length == 1)
             {
                 type = actualArgs[0];
-
             }
             else
             {
-                throw new RuntimeException("More than one parametric type");
+                throw new RuntimeException("More than one parametric type!");
             }
-
         }
         else
         {
@@ -103,40 +106,48 @@ public abstract class TypeLiteral<T>
         return type;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode()
     {
         final int prime = 31;
         int result = 1;
+        
         result = prime * result + ((definedType == null) ? 0 : definedType.hashCode());
+        
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj)
     {
         if (this == obj)
-            return true;
+        {
+            return true;   
+        }
+        
         if (obj == null)
-            return false;
+        {
+            return false;   
+        }
+        
         if (getClass() != obj.getClass())
-            return false;
+        {
+            return false;   
+        }
+        
         TypeLiteral other = (TypeLiteral) obj;
         if (definedType == null)
         {
             if (other.definedType != null)
-                return false;
+            {
+                return false;   
+            }
         }
         else if (!definedType.equals(other.definedType))
-            return false;
+        {
+            return false;   
+        }
+        
         return true;
     }
 

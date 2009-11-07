@@ -16,10 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package javax.decorator;
+package javax.enterprise.util;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
@@ -27,15 +26,27 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotates delegate bean.
+ * Indicates that <code>Qualifier</code> annotation member
+ * is not contained in the type safe resolution algorithm.
  * 
- * @version $Rev$ $Date$
- *
+ * <p>
+ * Example:
+ * 
+ * <pre>
+ * @Qualifier
+ * public @interface Mock {
+ *   @NonBinding String name;
+ * }
+ * </pre>
+ * 
+ * <b>Mock</b> qualifier <i>name</i> member variable is excepted from the
+ * type safe resolution algorithm while comparing the qualifiers.
+ * 
+ * </p>
  */
-@Target({FIELD,PARAMETER})
 @Retention(RUNTIME)
+@Target(METHOD)
 @Documented
-public @interface Decorates
+public @interface NonBinding
 {
-
 }

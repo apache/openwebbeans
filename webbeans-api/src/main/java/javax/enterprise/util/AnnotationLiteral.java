@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package javax.enterprise.inject;
+package javax.enterprise.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -24,7 +24,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
- * 
+ * Annotation literal utility.
  *
  * @param <T> wrapped annotation class
  * @version $Rev$ $Date$
@@ -34,6 +34,8 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
 {
 
     private Class<T> annotationType;
+    
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     protected AnnotationLiteral()
     {
@@ -50,16 +52,24 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
     protected Class<T> getAnnotationType(Class<?> definedClazz)
     {
         Type superClazz = definedClazz.getGenericSuperclass();
+        
         Class<T> clazz = null;
-
-        if (superClazz instanceof ParameterizedType)
+        
+        if (superClazz.equals(Object.class))
+        {
+            throw new RuntimeException("Super class must be parametrized type!");
+        }
+        
+        else if (superClazz instanceof ParameterizedType)
         {
             ParameterizedType paramType = (ParameterizedType) superClazz;
             Type[] actualArgs = paramType.getActualTypeArguments();
 
             if (actualArgs.length == 1)
             {
+                //Actual annotation type
                 Type type = actualArgs[0];
+                
                 if (type instanceof Class)
                 {
                     clazz = (Class<T>) type;
@@ -67,19 +77,16 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
                 }
                 else
                 {
-                    throw new RuntimeException("Not class type");
+                    throw new RuntimeException("Not class type!");
                 }
-
             }
             else
             {
-                throw new RuntimeException("More than one parametric type");
+                throw new RuntimeException("More than one parametric type!");
             }
-
         }
         else
         {
-            // Look for super, maybe inner
             return getAnnotationType((Class<?>) superClazz);
         }
 
@@ -126,16 +133,12 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
 
         try
         {
-
             if (!method.isAccessible())
             {
                 method.setAccessible(true);
             }
 
-            return method.invoke(instance, new Object[]
-                    {
-                    });
-
+            return method.invoke(instance, EMPTY_OBJECT_ARRAY);
         }
         catch (Exception e)
         {

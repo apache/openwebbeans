@@ -20,6 +20,7 @@ package javax.enterprise.inject;
 
 import java.lang.annotation.Annotation;
 
+import javax.enterprise.util.TypeLiteral;
 import javax.inject.Provider;
 
 /**

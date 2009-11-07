@@ -20,7 +20,7 @@ package javax.enterprise.event;
 
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.inject.TypeLiteral;
+import javax.enterprise.util.TypeLiteral;
 
 /**
  * The event interface is used for firing events with specific classifiers and types.
