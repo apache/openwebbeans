@@ -24,7 +24,9 @@ import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.apache.webbeans.test.component.pfield.ProducerFieldDefinitionComponent;
+import org.apache.webbeans.test.component.pfield.ProducerFieldDefinitionParameterized;
 import org.apache.webbeans.test.component.pfield.ProducerFieldInjectedComponent;
+import org.apache.webbeans.test.component.pfield.ProducerFieldInjectedWrongType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,6 +71,30 @@ public class ProducerFieldComponentTest extends TestContext
         Assert.assertNotNull(injectedComponentInstance);
         
         Assert.assertNotNull(injectedComponentInstance.getPaymentProcessorName());
+    }
+    
+    @Test
+    public void testInjectedProducerFieldIncorrectType()
+    {
+        ContextFactory.initRequestContext(null);
+
+        defineManagedBean(ProducerFieldDefinitionParameterized.class);
+        Bean<ProducerFieldInjectedWrongType> beanInjected = defineManagedBean(ProducerFieldInjectedWrongType.class);
+
+        Exception expected = null;
+        ProducerFieldInjectedWrongType instance = null;
+        try
+        {
+            instance = getManager().getInstance(beanInjected);
+        }
+        catch (Exception caught)
+        {
+            System.out.println(caught.getMessage());
+            expected = caught;
+        }
+        Assert.assertNotNull(expected);
+        Assert.assertNull(instance);
+        Assert.assertTrue(expected instanceof javax.enterprise.inject.UnsatisfiedResolutionException);
     }
 
 }

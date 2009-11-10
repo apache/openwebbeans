@@ -739,7 +739,7 @@ public final class DefinitionUtil
         
         Annotation[] fieldAnns = field.getDeclaredAnnotations();
 
-        DefinitionUtil.defineProducerMethodApiTypes(component, returnType, fieldAnns);
+        DefinitionUtil.defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
         DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
         WebBeansUtil.checkProducerGenericType(component,field);
         DefinitionUtil.defineQualifiers(component, fieldAnns);
