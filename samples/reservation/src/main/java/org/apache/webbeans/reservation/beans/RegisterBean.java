@@ -21,6 +21,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.commons.logging.Log;
@@ -71,7 +72,9 @@ public class RegisterBean
     @PostConstruct
     public void init()
     {
-        logger = (Log)manager.getReference(manager.getBeans("logger").iterator().next(), null, null);
+        Bean<?> bean = manager.getBeans("logger").iterator().next();
+        
+        logger = (Log)manager.getReference(bean, null, manager.createCreationalContext(bean));
     }
     
     
