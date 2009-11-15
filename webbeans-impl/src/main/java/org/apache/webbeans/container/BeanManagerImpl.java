@@ -695,14 +695,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Scope is normal
         if (WebBeansUtil.isScopeTypeNormal(bean.getScope()))
         {
-            instance = context.get(beanInstance);
-            
-            //Instance has already exist
-            if(instance != null)
-            {
-                return instance;
-            }          
-                        
             instance = getEjbOrJmsProxyReference(beanInstance, beanType);
             
             if(instance != null)

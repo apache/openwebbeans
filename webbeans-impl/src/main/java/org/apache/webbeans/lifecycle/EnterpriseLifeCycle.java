@@ -14,8 +14,6 @@
 package org.apache.webbeans.lifecycle;
 
 import java.lang.annotation.Annotation;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -194,24 +192,8 @@ public final class EnterpriseLifeCycle implements Lifecycle
 
         ServletContext context = event.getServletContext();
 
-        try
-        {
-            // check this application is JSF application,this must be extended.
-        	//In JSF 2.0, faces-config.xml may not be necessary!
-            URL url = context.getResource("/WEB-INF/faces-config.xml");
-            URL urlWeb = context.getResource("/WEB-INF/web.xml");
-            if (url == null && urlWeb != null)
-            {
-                JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext(context);
-                applicationCtx.addELResolver(new WebBeansELResolver());
-            }
-
-        }
-        catch (MalformedURLException e)
-        {
-            logger.error(e);
-            throw new WebBeansException(e);
-        }
+        JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext(context);
+        applicationCtx.addELResolver(new WebBeansELResolver());
         
         long end = System.currentTimeMillis();
         
