@@ -44,6 +44,15 @@ under the License.
     		<to-view-id>/home.xhtml</to-view-id>
     	</navigation-case>
     </navigation-rule>
+
+   <navigation-rule>
+    	<from-view-id>/conversation.xhtml</from-view-id>
+    	<navigation-case>
+    		<from-outcome>toRedirect</from-outcome>
+    		<redirect/>
+    		<to-view-id>/redirect.jsf?book=alis</to-view-id>
+    	</navigation-case>
+    </navigation-rule>
 	
 	
 </faces-config>

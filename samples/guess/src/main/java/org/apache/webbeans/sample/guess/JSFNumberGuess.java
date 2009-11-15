@@ -68,11 +68,13 @@ public class JSFNumberGuess implements Serializable
         };
 
         Set<Bean<?>> beans = manager.getBeans(Integer.class, anns);
-        this.no = (Integer)manager.getReference(beans.iterator().next(), null, null);
+        Bean<?> bean = beans.iterator().next();
+        this.no = (Integer)manager.getReference(bean, null, manager.createCreationalContext(bean));
         //this.no = manager.getInstanceByType(Integer.class, anns);
         setSmallRange(1);
         beans = manager.getBeans(Integer.class, anns2);
-        setMaxRange((Integer)manager.getReference(beans.iterator().next(), null, null));
+        bean = beans.iterator().next();
+        setMaxRange((Integer)manager.getReference(bean, null, manager.createCreationalContext(bean)));
         //setMaxRange(manager.getInstanceByType(Integer.class, anns2));
         setRemainder(10);
         setGuess(1);

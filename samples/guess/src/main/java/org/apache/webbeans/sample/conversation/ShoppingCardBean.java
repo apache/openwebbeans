@@ -68,6 +68,19 @@ public class ShoppingCardBean implements Serializable
         return null;
     }
     
+    public String getBooks()
+    {
+        StringBuffer buffer = new StringBuffer("Your shopping card contents : [");
+        
+        for(String b : model.getList())
+        {
+            buffer.append("," + b);
+        }
+        
+        return buffer.toString();
+        
+    }
+    
     public String endConversation()
     {
         messageUtil.addMessage(FacesMessage.SEVERITY_INFO, "Conversation with id : " + conversation.getId() + " is ended", null);
