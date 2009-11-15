@@ -27,6 +27,7 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.openejb.DeploymentInfo;
@@ -37,6 +38,7 @@ import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.component.creation.EjbBeanCreatorImpl;
+import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -89,7 +91,7 @@ public final class EjbUtility
         ejbBeanCreator.defineDisposalMethods();
         ejbBeanCreator.defineInjectedFields();
         ejbBeanCreator.defineInjectedMethods();
-        ejbBeanCreator.defineObserverMethods();        
+        Set<ObserverMethod<?>> observerMethods = ejbBeanCreator.defineObserverMethods();        
         
         //Fires ProcessInjectionTarget
         ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(ejbBean);            
@@ -129,6 +131,15 @@ public final class EjbUtility
             
             producerEvent.setProducerSet(false);
         }
+        
+        Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap = new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>(); 
+        for(ObserverMethod<?> observerMethod : observerMethods)
+        {
+            ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
+            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(impl.getObserverMethod(), impl.getBeanClass());
+            
+            observerMethodsMap.put(observerMethod, method);
+        }        
 
         //Fires ProcessManagedBean
         ProcessSessionBeanImpl<T> processBeanEvent = new GProcessSessionBean((Bean<Object>)ejbBean,annotatedType,ejbBean.getEjbName(),ejbBean.getEjbType());            
@@ -140,6 +151,10 @@ public final class EjbUtility
         
         //Fires ProcessProducerField
         WebBeansUtil.fireProcessProducerFieldBeanEvent(annotatedFields);
+        
+        //Fire ObservableMethods
+        WebBeansUtil.fireProcessObservableMethodBeanEvent(observerMethodsMap);
+
                 
         //Set InjectionTarget that is used by the container to inject dependencies!
         if(ejbBeanCreator.isInjectionTargetSet())
