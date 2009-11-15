@@ -16,6 +16,8 @@
  */
 package org.apache.webbeans.spi.conversation.jsf;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.webbeans.spi.conversation.ConversationService;
 import org.apache.webbeans.util.JSFUtil;
 
@@ -29,7 +31,13 @@ public class JSFConversationServiceImpl implements ConversationService
 
     public String getConversationSessionId()
     {
-        return JSFUtil.getSession().getId();
+        HttpSession session = JSFUtil.getSession();
+        if(session != null)
+        {
+            return session.getId();
+        }
+        
+        return null;
     }
 
 }

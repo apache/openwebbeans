@@ -63,18 +63,18 @@ public class WebBeansJSFFilter implements Filter
 
                     if (!conversation.isTransient())
                     {
-                        // Find JSFish view od of the redirection
-                        path = JSFUtil.getRedirectViewId(location);
-                        path = JSFUtil.getViewHandler().getActionURL(JSFUtil.getCurrentFacesContext(), path);
-                        path = JSFUtil.getExternalContext().encodeActionURL(path + "?cid=" + conversation.getId());
+                        WebBeansPhaseListener.fromRedirect.set(Boolean.TRUE);
+                        
+                        path = JSFUtil.getRedirectViewIdWithCid(location, conversation.getId());
                     }
                 }
-
-                super.sendRedirect(path);
+                                
+                super.sendRedirect(path);                
 
             }
 
         };
+                
 
         chain.doFilter(request, responseWrapper);
     }

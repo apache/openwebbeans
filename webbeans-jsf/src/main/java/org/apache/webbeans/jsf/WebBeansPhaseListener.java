@@ -13,73 +13,94 @@
  */
 package org.apache.webbeans.jsf;
 
-import javax.enterprise.context.ConversationScoped;
 import javax.faces.component.UIViewRoot;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.JSFUtil;
 
+/**
+ * Conversation related phase listener.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
 public class WebBeansPhaseListener implements PhaseListener
 {
-    private static final long serialVersionUID = -8131516076829979596L;
+    /**Logger instance*/
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansPhaseListener.class);
 
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansPhaseListener.class);
-
-    private static ConversationManager conversationManager = ConversationManager.getInstance();
+    /**Conversation manager*/
+    private static final ConversationManager conversationManager = ConversationManager.getInstance();
     
+    /**Attribute id that conversation id is saved under*/
     public static final String CONVERSATION_ATTR_ID = "javax_webbeans_ConversationId";
 
+    /**current conversation if exist*/
     private ConversationImpl conversation = null;
+    
+    public static ThreadLocal<Boolean> fromRedirect = new ThreadLocal<Boolean>();
 
+    static
+    {
+        fromRedirect.set(Boolean.FALSE);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
     public void afterPhase(PhaseEvent phaseEvent)
     {
         if (phaseEvent.getPhaseId().equals(PhaseId.RESTORE_VIEW))
         {
+            //Get request
             if (!JSFUtil.isPostBack())
             {
                 String cid = JSFUtil.getExternalContext().getRequestParameterMap().get("cid");
 
-                // non-faces get request
                 if (cid == null || cid.equals(""))
                 {
                     logger.info("Create new transitional conversation for non-faces request with view id : " + JSFUtil.getViewId());
                     
-                    conversation = (ConversationImpl) conversationManager.createNewConversation();
+                    conversation = (ConversationImpl) conversationManager.createNewConversationInstance();                    
 
                     ContextFactory.initConversationContext(null);
 
                 }
                 else
                 {
-                    logger.info("Propogation of the conversation with id : " + cid + " for view : " + JSFUtil.getViewId());
-                    conversation = (ConversationImpl) conversationManager.getConversation(cid);
+                    logger.info("Propogation of the conversation for non-faces request with cid=" + cid + " for view : " + JSFUtil.getViewId());
+                    
+                    conversation = (ConversationImpl) conversationManager.getConversation(cid, JSFUtil.getSession().getId());
 
                     // can not restore conversation, create new transitional
                     if (conversation == null)
                     {
-                        logger.info("Propogated conversation can not be restored for view id : " + JSFUtil.getViewId() + ". Creates new transitional conversation");
-                        conversation = (ConversationImpl) conversationManager.createNewConversation();
+                        logger.info("Propogated conversation for non-faces request can not be restored for view id : " + JSFUtil.getViewId() + ". Creates new transitional conversation");
+                        conversation = (ConversationImpl) conversationManager.createNewConversationInstance();
 
-                        ContextFactory.initConversationContext(null);
+                        ContextFactory.initConversationContext(null);                        
                     }
                     else
                     {
+                        logger.info("Conversation is restored for non-faces request with cid=" + cid + " for view id : " + JSFUtil.getViewId());
+                        
                         ContextFactory.initConversationContext(conversationManager.getConversationContext(conversation));
                     }
                 }
+                
+                if(fromRedirect.get() != null && fromRedirect.get() && conversation.getId() != null)
+                {
+                    this.conversation.setTransient(false);  
+                }                
             }
             else
             {
-                logger.info("Postback JSF Request for view id : " + JSFUtil.getViewId());
-
                 UIViewRoot viewRoot = JSFUtil.getViewRoot();
                 
                 Object attr = viewRoot.getAttributes().get(CONVERSATION_ATTR_ID);
@@ -91,21 +112,35 @@ public class WebBeansPhaseListener implements PhaseListener
                     conversationId = attr.toString();
                 }
                 
+                boolean createNew = false;
+                
                 if (conversationId != null)
                 {
                     // look long running conversation if exist
-                    conversation = (ConversationImpl) conversationManager.getConversation(conversationId);
+                    conversation = (ConversationImpl) conversationManager.getConversation(conversationId, JSFUtil.getSession().getId());
                     
-                    ContextFactory.initConversationContext(conversationManager.getConversationContext(conversation));
+                    if(conversation != null)
+                    {
+                        logger.info("Conversation is restored for JSF postback with cid=" + conversationId + " for view id : " + JSFUtil.getViewId());
+                        
+                        ContextFactory.initConversationContext(conversationManager.getConversationContext(conversation));   
+                    }
+                    else
+                    {
+                        createNew = true;
+                    }
 
                 }
-
-                // no long running conversation, create one transitional
                 else
+                {
+                    createNew = true;
+                }
+
+                if(createNew)
                 {
                     logger.info("Create new transient conversation for JSF postback view id : " + JSFUtil.getViewId());
                     
-                    conversation = (ConversationImpl) conversationManager.createNewConversation();
+                    conversation = (ConversationImpl) conversationManager.createNewConversationInstance();
 
                     ContextFactory.initConversationContext(null);
                 }
@@ -114,29 +149,24 @@ public class WebBeansPhaseListener implements PhaseListener
 
         else if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE))
         {
-            ConversationContext context = (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class);
-
-            // if long running, saves it
-            if (!conversation.isTransient())
+            if (conversation.isTransient())
             {
-                logger.info("Conversation with id : " + conversation.getId() + " is marked as long running conversation");
+                logger.info("Destroying the conversation context with cid="+ conversation.getId() + " for view id : " + JSFUtil.getViewId());
                 
-                context.setActive(false);
+                this.conversation.end();
                 
+                ContextFactory.destroyConversationContext();                                                    
             }
-
-            // else destroy conversation context
             else
             {
-                logger.info("Destroying the conversation context for view id : " + JSFUtil.getViewId());
-                
-                ContextFactory.destroyConversationContext();                                    
+                conversation.updateTimeOut();
             }
-
         }
-
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void beforePhase(PhaseEvent phaseEvent)
     {
         if (phaseEvent.getPhaseId().equals(PhaseId.RESTORE_VIEW))
@@ -144,31 +174,12 @@ public class WebBeansPhaseListener implements PhaseListener
             ContextFactory.initConversationContext(null);            
         }
         
-        else if(phaseEvent.getPhaseId().equals(PhaseId.APPLY_REQUEST_VALUES))
-        {
-
-            if (JSFUtil.isPostBack())
-            {
-                logger.info("Activating the conversation context for view id : " + JSFUtil.getViewId());                
-
-                conversation.updateTimeOut();
-            }            
-        }
-
         else if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE))
         {
-            ConversationContext context = (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class);
-
-            if (!JSFUtil.isPostBack())
-            {
-                logger.info("Activating the conversation context for view id : " + JSFUtil.getViewId());
-                context.setActive(true);
-
-                conversation.updateTimeOut();
-            }
-
             if (!conversation.isTransient())
             {
+                logger.info("Saving conversation with cid=" + this.conversation.getId() + " for view " + JSFUtil.getViewId());
+                
                 UIViewRoot viewRoot = JSFUtil.getViewRoot();
                 
                 viewRoot.getAttributes().put(CONVERSATION_ATTR_ID, conversation.getId());

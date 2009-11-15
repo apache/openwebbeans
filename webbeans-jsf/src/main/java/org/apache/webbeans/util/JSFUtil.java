@@ -37,12 +37,26 @@ public final class JSFUtil
 
     public static ExternalContext getExternalContext()
     {
-        return getCurrentFacesContext().getExternalContext();
+        FacesContext context = getCurrentFacesContext();
+        
+        if(context != null)
+        {
+            return context.getExternalContext();
+        }
+        
+        return null;
     }
 
     public static HttpSession getSession()
     {
-        return (HttpSession) getExternalContext().getSession(true);
+        ExternalContext externalContext = getExternalContext();
+        
+        if(externalContext != null)
+        {
+            return (HttpSession) externalContext.getSession(true);
+        }
+        
+        return null; 
     }
 
     public static boolean isPostBack()
@@ -71,19 +85,67 @@ public final class JSFUtil
         getCurrentFacesContext().addMessage(null, fm);
     }
 
-    public static String getRedirectViewId(String redirectId)
+    public static String getRedirectViewIdWithCid(String redirectId, String cid)
     {
-        Asserts.assertNotNull(redirectId, "redirectId parameter can not be null");
-        String path = getExternalContext().getRequestContextPath();
+        Asserts.assertNotNull(redirectId, "redirectId parameter can not be null");        
 
-        int index = redirectId.indexOf(path);
-
-        return redirectId.substring(index + path.length(), redirectId.length());
+        StringBuffer buffer = new StringBuffer(redirectId);
+        int index = buffer.lastIndexOf("/");        
+        
+        String remainder = buffer.substring(index+1, buffer.length());
+        int indexOfQuery = remainder.indexOf('?');
+        
+        StringBuffer result = new StringBuffer();
+        if(indexOfQuery != -1)
+        {
+            result.append(buffer.substring(0,index+1));
+            result.append(remainder.substring(0,indexOfQuery+1));
+            result.append("cid");
+            result.append("=");
+            result.append(cid);
+            result.append("&");
+            result.append(remainder.substring(indexOfQuery+1, remainder.length()));            
+        }
+        else
+        {
+            int pathIndex = remainder.indexOf("#");
+            
+            if(pathIndex == -1)
+            {
+                result.append(buffer.substring(0,index+1));
+                result.append(remainder.substring(0));
+                result.append("?");
+                result.append("cid");
+                result.append("=");
+                result.append(cid);
+            }
+            else
+            {
+                result.append(buffer.substring(0,index+1));
+                result.append(remainder.substring(0,pathIndex));
+                result.append("?");
+                result.append("cid");
+                result.append("=");
+                result.append(cid);
+                result.append(remainder.substring(pathIndex,remainder.length()));
+            }            
+        }
+        
+        
+        return result.toString();
+            
     }
 
     public static UIViewRoot getViewRoot()
     {
-        return getCurrentFacesContext().getViewRoot();
+        FacesContext context = getCurrentFacesContext();
+        
+        if(context != null)
+        {
+            return context.getViewRoot();
+        }
+        
+        return null;
     }
 
     public static String getConversationId()
