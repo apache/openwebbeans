@@ -18,11 +18,14 @@ import javax.enterprise.context.ConversationScoped;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ConversationContext;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.StringUtil;
 
 public class ConversationImpl implements Conversation
 {
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ConversationImpl.class);
+    
     private String id;
 
     private boolean isTransient = true;
@@ -47,25 +50,53 @@ public class ConversationImpl implements Conversation
 
     public void begin()
     {
-        this.isTransient = false;
-        this.id = StringUtil.generateUUIDStringWithoutDash();
-
-        ConversationManager.getInstance().addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));
+        if(this.isTransient)
+        {
+            this.isTransient = false;
+            this.id = StringUtil.generateUUIDStringWithoutDash();
+            
+            ConversationManager manager = ConversationManager.getInstance();
+            
+            try
+            {
+                manager.addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));
+                
+            }catch(Exception e)
+            {
+                //TCK tests
+                manager.addConversationContext(this, new ConversationContext());
+            }            
+        }
+        else
+        {
+            logger.warn("Conversation with cid=" + id + " is already began!");
+        }
     }
 
     public void begin(String id)
     {
-        this.isTransient = false;
-        this.id = id;
+        if(this.isTransient)
+        {
+            this.isTransient = false;
+            this.id = id;
 
-        ConversationManager.getInstance().addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));
+            ConversationManager.getInstance().addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));            
+        }
     }
 
     public void end()
     {
-        this.isTransient = true;
-        
-        ConversationManager.getInstance().removeConversation(this);
+        if(!this.isTransient)
+        {
+            this.isTransient = true;
+            
+            ConversationManager.getInstance().removeConversation(this);            
+        }
+    }
+    
+    public void setTransient(boolean value)
+    {
+        this.isTransient = value;
     }
 
     public String getId()

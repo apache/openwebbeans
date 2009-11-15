@@ -13,10 +13,16 @@
  */
 package org.apache.webbeans.portable.events.discovery;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ObserverMethod;
+
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.activity.ActivityManager;
 
 /**
  * Event that is fired by the container after it discovers beans.
@@ -26,15 +32,22 @@ import javax.enterprise.inject.spi.ObserverMethod;
  */
 public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
 {
-
+    private BeanManagerImpl beanManager = null;
+    
+    private List<Throwable> errors = new ArrayList<Throwable>();
+    
+    public AfterBeanDiscoveryImpl()
+    {
+        this.beanManager = ActivityManager.getInstance().getCurrentActivity();
+    }
+    
     /**
      * {@inheritDoc}
      */
     @Override
     public void addBean(Bean<?> bean)
     {
-        // TODO Auto-generated method stub
-        
+        this.beanManager.addBean(bean);
     }
 
     /**
@@ -43,7 +56,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addContext(Context context)
     {
-        // TODO Auto-generated method stub
+        this.beanManager.addContext(context);
         
     }
 
@@ -53,8 +66,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addDefinitionError(Throwable t)
     {
-        // TODO Auto-generated method stub
-        
+        this.errors.add(t);
     }
 
     /**
@@ -63,8 +75,8 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
-        // TODO Auto-generated method stub
-        
+        //TODO 
+        System.out.println("Not implemented Yet!");
     }
 
 }

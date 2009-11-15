@@ -73,6 +73,16 @@ public final class ContextFactory
     {
         throw new UnsupportedOperationException();
     }
+    
+    public static void initializeThreadLocals()
+    {
+        requestContext.remove();
+        sessionContext.remove();
+        applicationContext.remove();
+        conversationContext.remove();
+        dependentContext.remove();
+        singletonContext.remove();
+    }
 
     /**
      * Initialize requext context with the given request object.

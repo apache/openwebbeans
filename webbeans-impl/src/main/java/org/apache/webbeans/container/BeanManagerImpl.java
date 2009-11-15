@@ -304,6 +304,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         this.notificationManager.fireEvent(event, bindings);
     }
     
+    @Deprecated
     public Object getInstanceByName(String name)
     {
         AbstractBean<?> component = null;
@@ -328,17 +329,20 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
     
     
+    @Deprecated
     public <T> T getInstanceToInject(InjectionPoint injectionPoint, CreationalContext<?> context)
     {
         return (T)getInjectableReference(injectionPoint, context);
     }
     
+    @Deprecated
     public Object getInstanceToInject(InjectionPoint injectionPoint)
     {        
         return getInstanceToInject(injectionPoint, null);
     }
 
     
+    @Deprecated
     public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes)
     {
         ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
@@ -349,7 +353,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return (T)getInstance(set.iterator().next());
     }
 
-    
+    @Deprecated
     public <T> T getInstanceByType(TypeLiteral<T> type, Annotation... bindingTypes)
     {
         ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
@@ -360,13 +364,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return (T)getInstance(set.iterator().next());
     }
 
-    
+    @Deprecated
     public Set<Bean<?>> resolveByName(String name)
     {
         return this.injectionResolver.implResolveByName(name);
     }
 
-    
+    @Deprecated
     public Set<Bean<?>> resolveByType(Class<?> apiType, Annotation... bindingTypes)
     {
         ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
@@ -374,7 +378,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return this.injectionResolver.implResolveByType(apiType, bindingTypes);
     }
 
-    
+    @Deprecated
     public Set<Bean<?>> resolveByType(TypeLiteral<?> apiType, Annotation... bindingTypes)
     {
         ParameterizedType ptype = (ParameterizedType) apiType.getType();
@@ -406,9 +410,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     
+    @Deprecated
     public <T> T getInstance(Bean<T> bean)
     {
-        return (T)getReference(bean, null, null);
+        return (T)getReference(bean, null, createCreationalContext(bean));
     }
     
     /**
@@ -681,12 +686,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         AbstractBean<Object> beanInstance = (AbstractBean<Object>)bean;
         CreationalContext<Object> creationalContext = (CreationalContext<Object>)ctx;
         
-        //Always create reference if not exist
-        if(creationalContext == null)
-        {
-            creationalContext = createCreationalContext(beanInstance);
-        }
-        
         //Set creational context
         beanInstance.setCreationalContext(creationalContext);
         
@@ -926,9 +925,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     @Override
-    public <T> Set<ObserverMethod<? super T>> resolveObserverMethods( T event, Annotation... qualifiers ) {
-        // TODO Auto-generated method stub
-        return null;
+    public <T> Set<ObserverMethod<? super T>> resolveObserverMethods( T event, Annotation... qualifiers ) 
+    {
+        return this.notificationManager.resolveObservers(event, qualifiers);
     }
 
     @Override

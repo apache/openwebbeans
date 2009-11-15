@@ -27,9 +27,9 @@ public class InstanceTypeLiteralBean
     
     public static class StringOrder implements IOrder<String>{};
     
-    public static class IntegerOrder extends StringOrder{};
+    public static class IntegerOrder implements IOrder<Integer>{};
 
-    private @Inject Instance<IOrder<String>> instance;
+    private @Inject Instance<IOrder<?>> instance;
     
     public Instance<?> produce(int type)
     {

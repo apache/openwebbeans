@@ -121,7 +121,7 @@ public final class NotificationManager
         removeObserver(observer, typeLiteral.getRawType(), annotations);
     }
 
-    public <T> Set<ObserverMethod<T>> resolveObservers(T event, Annotation... eventQualifiers)
+    public <T> Set<ObserverMethod<? super T>> resolveObservers(T event, Annotation... eventQualifiers)
     {
         EventUtil.checkEventBindings(eventQualifiers);
 
@@ -130,16 +130,16 @@ public final class NotificationManager
         Class<T> eventType = (Class<T>) event.getClass();
         // EventUtil.checkEventType(eventType);
 
-        Set<ObserverMethod<T>> observers = filterByType(eventType);
+        Set<ObserverMethod<? super T>> observers = filterByType(eventType);
 
         observers = filterByQualifiers(observers, qualifiers);
 
         return observers;
     }
 
-    private <T> Set<ObserverMethod<T>> filterByType(Class<T> eventType)
+    private <T> Set<ObserverMethod<? super T>> filterByType(Class<T> eventType)
     {
-        Set<ObserverMethod<T>> matching = new HashSet<ObserverMethod<T>>();
+        Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();
 
         Set<Type> types = new HashSet<Type>();
         ClassUtil.setTypeHierarchy(types, eventType);
@@ -169,16 +169,16 @@ public final class NotificationManager
      * filter out all {@code ObserverMethod}s which do not fit the given
      * qualifiers.
      */
-    private <T> Set<ObserverMethod<T>> filterByQualifiers(Set<ObserverMethod<T>> observers, Set<Annotation> eventQualifiers)
+    private <T> Set<ObserverMethod<? super T>> filterByQualifiers(Set<ObserverMethod<? super T>> observers, Set<Annotation> eventQualifiers)
     {
         if (eventQualifiers.size() == 1 && eventQualifiers.iterator().next() instanceof Any)
         {
             return observers;
         }
 
-        Set<ObserverMethod<T>> matching = new HashSet<ObserverMethod<T>>();
+        Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();
 
-        search: for (ObserverMethod<T> ob : observers)
+        search: for (ObserverMethod<? super T> ob : observers)
         {
             Set<Annotation> qualifiers = ob.getObservedQualifiers();
 
@@ -205,9 +205,9 @@ public final class NotificationManager
     {
         Transaction transaction = transactionService.getTransaction();
 
-        Set<ObserverMethod<Object>> observers = resolveObservers(event, qualifiers);
+        Set<ObserverMethod<? super Object>> observers = resolveObservers(event, qualifiers);
 
-        for (ObserverMethod<Object> observer : observers)
+        for (ObserverMethod<? super Object> observer : observers)
         {
             try
             {
@@ -264,10 +264,11 @@ public final class NotificationManager
         }
     }
 
-    public <T> void addObservableComponentMethods(InjectionTargetBean<?> component)
+    public <T> Set<ObserverMethod<?>> addObservableComponentMethods(InjectionTargetBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         Set<Method> observableMethods = component.getObservableMethods();
+        Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
 
         for (Method observableMethod : observableMethods)
         {
@@ -285,8 +286,11 @@ public final class NotificationManager
             Class<T> clazz = (Class<T>) AnnotationUtil.getMethodFirstParameterTypeClazzWithAnnotation(observableMethod, Observes.class);
 
             addObserver(observer, clazz);
+            
+            observerMethods.add(observer);
         }
 
+        return observerMethods;
     }
 
     /**

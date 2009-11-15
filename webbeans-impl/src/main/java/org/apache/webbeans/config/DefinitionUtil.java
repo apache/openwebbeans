@@ -39,6 +39,7 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.NonBinding;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -1063,7 +1064,7 @@ public final class DefinitionUtil
         WebBeansDecoratorConfig.configureDecarotors(bean, object);
     }
 
-    public static <T> void defineObserverMethods(InjectionTargetBean<T> component, Class<T> clazz)
+    public static <T> Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> component, Class<T> clazz)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         Asserts.nullCheckForClass(clazz);
@@ -1075,7 +1076,7 @@ public final class DefinitionUtil
         // From normal
         createObserverMethods(component, clazz, candidateMethods);
 
-        manager.addObservableComponentMethods(component);
+        return manager.addObservableComponentMethods(component);
 
     }
 

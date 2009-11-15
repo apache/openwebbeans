@@ -316,5 +316,10 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     {
         return phase;
     }
+    
+    public Method getObserverMethod()
+    {
+        return this.observerMethod;
+    }
 
 }

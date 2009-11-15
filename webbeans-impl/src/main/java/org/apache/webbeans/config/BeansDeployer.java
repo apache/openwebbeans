@@ -33,6 +33,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.Producer;
 import javax.interceptor.Interceptor;
 
@@ -48,6 +49,7 @@ import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
+import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
@@ -654,7 +656,8 @@ public class BeansDeployer
             Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();           
             managedBeanCreator.defineInjectedFields();
             managedBeanCreator.defineInjectedMethods();
-            managedBeanCreator.defineObserverMethods();
+            
+            Set<ObserverMethod<?>> observerMethods = managedBeanCreator.defineObserverMethods();
                                     
             //Fires ProcessInjectionTarget
             ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);            
@@ -695,6 +698,15 @@ public class BeansDeployer
                 producerEvent.setProducerSet(false);
             }
 
+            Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap = new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>(); 
+            for(ObserverMethod<?> observerMethod : observerMethods)
+            {
+                ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
+                AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(impl.getObserverMethod(), impl.getBeanClass());
+                
+                observerMethodsMap.put(observerMethod, method);
+            }
+            
             //Fires ProcessManagedBean
             ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean,annotatedType);            
             BeanManagerImpl.getManager().fireEvent(processBeanEvent, new Annotation[0]);
@@ -704,6 +716,9 @@ public class BeansDeployer
             
             //Fires ProcessProducerField
             WebBeansUtil.fireProcessProducerFieldBeanEvent(annotatedFields);
+            
+            //Fire ObservableMethods
+            WebBeansUtil.fireProcessObservableMethodBeanEvent(observerMethodsMap);
             
             //Set InjectionTarget that is used by the container to inject dependencies!
             if(managedBeanCreator.isInjectionTargetSet())

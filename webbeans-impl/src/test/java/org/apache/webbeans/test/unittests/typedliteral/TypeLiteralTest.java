@@ -25,13 +25,13 @@ import junit.framework.Assert;
 import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean;
-import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean.IOrder;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean.IntegerOrder;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean.StringOrder;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class TypeLiteralTest extends TestContext
 {
     public TypeLiteralTest()
@@ -72,7 +72,7 @@ public class TypeLiteralTest extends TestContext
         defineManagedBean(IntegerOrder.class);
         Bean<InstanceTypeLiteralBean> bean =  defineManagedBean(InstanceTypeLiteralBean.class);
         
-        Object object = getManager().getReference(bean, InstanceTypeLiteralBean.class,null );        
+        Object object = getManager().getReference(bean, InstanceTypeLiteralBean.class,getManager().createCreationalContext(bean) );        
         Assert.assertTrue(object instanceof InstanceTypeLiteralBean);
         InstanceTypeLiteralBean beaninstance = (InstanceTypeLiteralBean)object;
         Object produce = beaninstance.produce(0);
@@ -85,6 +85,6 @@ public class TypeLiteralTest extends TestContext
         Assert.assertTrue(produce instanceof Instance);
 
         Instance<StringOrder> order2 = (Instance<StringOrder>)produce;
-        Assert.assertTrue(order.get() instanceof StringOrder);
+        Assert.assertTrue(order2.get() instanceof StringOrder);
     }
 }

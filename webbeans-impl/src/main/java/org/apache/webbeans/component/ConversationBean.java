@@ -36,15 +36,26 @@ public class ConversationBean extends AbstractBean<Conversation>
         
         String conversationId = conversationService.getConversationId();
         
+        String sessionId = conversationService.getConversationSessionId();
+        
         Conversation conversation = null;
 
         if (conversationId != null)
         {
-            conversation = ConversationManager.getInstance().getConversation(conversationId);
+            conversation = ConversationManager.getInstance().getConversation(conversationId,sessionId);
         }
         else
         {
-            conversation = new ConversationImpl(conversationService.getConversationSessionId());
+            if(sessionId != null)
+            {
+                conversation = new ConversationImpl(conversationService.getConversationSessionId());    
+            }
+            else
+            {
+                //Used in Tests
+                conversation = new ConversationImpl();
+            }
+            
         }
 
         return conversation;

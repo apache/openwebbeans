@@ -16,6 +16,7 @@ package org.apache.webbeans.component.creation;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -66,7 +67,7 @@ public interface InjectedTargetBeanCreator<T> extends InjectionTarget<T>
     /**
      * Define observer methods, a.k.a method parameter with <code>@Observes</code>
      */
-    public void defineObserverMethods();    
+    public Set<ObserverMethod<?>> defineObserverMethods();    
     
     /**
      * Gets injection target.

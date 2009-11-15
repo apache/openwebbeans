@@ -56,7 +56,7 @@ public class LoggerSpecializationTest extends TestContext
         defineManagedBean(MockNotSpecializedLogger.class);        
         
         Bean<SpecializedInjector> bean = defineManagedBean(SpecializedInjector.class);
-        Object instance = getManager().getReference(bean, SpecializedInjector.class, null);
+        Object instance = getManager().getReference(bean, SpecializedInjector.class, getManager().createCreationalContext(bean));
         
         Assert.assertTrue(instance instanceof SpecializedInjector);
         SpecializedInjector injector = (SpecializedInjector)instance;
@@ -94,7 +94,7 @@ public class LoggerSpecializationTest extends TestContext
         WebBeansUtil.configureSpecializations(MockSpecializedLogger.class);
         
         Bean<SpecializedInjector> bean = defineManagedBean(SpecializedInjector.class);
-        Object instance = getManager().getReference(bean, SpecializedInjector.class, null);
+        Object instance = getManager().getReference(bean, SpecializedInjector.class, getManager().createCreationalContext(bean));
         
         Assert.assertTrue(instance instanceof SpecializedInjector);
         SpecializedInjector injector = (SpecializedInjector)instance;

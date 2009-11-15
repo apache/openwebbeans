@@ -133,6 +133,12 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         }
 
         afterConstructor(instance, creationalContext);
+        
+        if(this.creationalContext instanceof CreationalContextImpl)
+        {
+            CreationalContextImpl<T> impl = (CreationalContextImpl<T>)this.creationalContext;
+            impl.remove();
+        }
 
         return instance;
     }

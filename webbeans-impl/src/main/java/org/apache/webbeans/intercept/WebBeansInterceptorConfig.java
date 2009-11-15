@@ -63,7 +63,7 @@ public final class WebBeansInterceptorConfig
      */
     public static <T> void configureInterceptorClass(AbstractBean<T> delegate, Annotation[] interceptorBindingTypes)
     {
-        logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType().getName() + " started");
+        logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType() + " started");
 
         WebBeansInterceptor<T> interceptor = new WebBeansInterceptor<T>(delegate);
 

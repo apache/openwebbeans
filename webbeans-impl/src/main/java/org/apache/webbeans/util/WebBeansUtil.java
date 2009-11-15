@@ -61,6 +61,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -124,6 +125,7 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
+import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
 import org.apache.webbeans.portable.events.generics.GProcessProducer;
 import org.apache.webbeans.portable.events.generics.GProcessProducerField;
 import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
@@ -706,6 +708,7 @@ public final class WebBeansUtil
         managerComponent.setImplScopeType(new DependentScopeLiteral());
         managerComponent.setType(new StandardLiteral());
         managerComponent.addQualifier(new DefaultLiteral());
+        managerComponent.addQualifier(new AnyLiteral());
         managerComponent.addApiType(BeanManager.class);
         managerComponent.addApiType(Object.class);
 
@@ -751,6 +754,7 @@ public final class WebBeansUtil
         conversationComp.setImplScopeType(new RequestedScopeLiteral());
         conversationComp.setType(new StandardLiteral());
         conversationComp.addQualifier(new DefaultLiteral());
+        conversationComp.addQualifier(new AnyLiteral());
         conversationComp.setName("javax.context.conversation");
 
         return conversationComp;
@@ -2032,6 +2036,20 @@ public final class WebBeansUtil
             BeanManagerImpl.getManager().fireEvent(processProducerMethodEvent, new Annotation[0]);
         }                
     }
+    
+    public static void fireProcessObservableMethodBeanEvent(Map<ObserverMethod<?>,AnnotatedMethod<?>> annotatedMethods)
+    {
+        for(ObserverMethod<?> observableMethod : annotatedMethods.keySet())
+        {
+            AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(observableMethod);                
+            
+            GProcessObservableMethod event = new GProcessObservableMethod(annotatedMethod, observableMethod);
+
+            //Fires ProcessProducer
+            BeanManagerImpl.getManager().fireEvent(event, new Annotation[0]);
+        }                
+    }
+    
     
     public static void fireProcessProducerFieldBeanEvent(Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields)
     {

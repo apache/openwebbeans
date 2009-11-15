@@ -150,11 +150,11 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
 
         if (specialize != null)
         {
-            parentInstance = getManager().getReference(specialize, null, null);
+            parentInstance = getManager().getReference(specialize, null, getManager().createCreationalContext(specialize));
         }
         else
         {
-            parentInstance = getManager().getReference(this.ownerComponent, null, null);
+            parentInstance = getManager().getReference(this.ownerComponent, null, getManager().createCreationalContext(this.ownerComponent));
         }
 
         return parentInstance;

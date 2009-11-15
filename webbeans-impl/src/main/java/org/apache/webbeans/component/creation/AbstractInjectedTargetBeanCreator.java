@@ -17,6 +17,7 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -108,15 +109,15 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
      * {@inheritDoc}
      */
     @Override
-    public void defineObserverMethods()
+    public Set<ObserverMethod<?>> defineObserverMethods()
     {   
         if(isDefaultMetaDataProvider())
         {
-            DefinitionUtil.defineObserverMethods(getBean(), getBean().getReturnType());
+            return DefinitionUtil.defineObserverMethods(getBean(), getBean().getReturnType());
         }
         else
         {
-            //TODO
+            return null;
         }
     }
 

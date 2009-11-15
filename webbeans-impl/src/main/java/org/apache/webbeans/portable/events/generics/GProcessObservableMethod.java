@@ -11,32 +11,22 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.context;
+package org.apache.webbeans.portable.events.generics;
 
-import java.util.concurrent.ConcurrentHashMap;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.ObserverMethod;
 
-import javax.enterprise.context.spi.Contextual;
+import org.apache.webbeans.portable.events.ProcessObserverMethodImpl;
 
-import org.apache.webbeans.context.type.ContextTypes;
-
-/**
- * Conversation context implementation. 
- */
-public class ConversationContext extends AbstractContext
+@SuppressWarnings("unchecked")
+public class GProcessObservableMethod extends ProcessObserverMethodImpl
 {
-    /*
-     * Constructor
-     */
-    public ConversationContext()
+
+    public GProcessObservableMethod(AnnotatedMethod<?> annotatedMethod, ObserverMethod<?> observerMethod)
     {
-        super(ContextTypes.CONVERSATION);
+        super(annotatedMethod, observerMethod);
     }
 
-    @Override
-    public void setComponentInstanceMap()
-    {
-        this.componentInstanceMap = new ConcurrentHashMap<Contextual<?>, Object>();
-
-    }
-
+    
+    
 }

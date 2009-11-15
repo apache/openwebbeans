@@ -25,6 +25,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.jsp.JspApplicationContext;
 import javax.servlet.jsp.JspFactory;
@@ -110,7 +111,24 @@ public final class EnterpriseLifeCycle implements Lifecycle
     public void requestStarted(ServletRequestEvent event)
     {
         logger.debug("Starting a new request : " + event.getServletRequest().getRemoteAddr());
+        
+        ContextFactory.initializeThreadLocals();
+        
+        //Init Request Context
         ContextFactory.initRequestContext(event);
+        
+        //Session Conext Must be Active
+        Object request = event.getServletRequest();
+        if(request instanceof HttpServletRequest)
+        {
+            HttpServletRequest httpRequest = (HttpServletRequest)request;
+            HttpSession currentSession = httpRequest.getSession(false);
+            if(currentSession == null)
+            {
+                //To activate session context
+                httpRequest.getSession();
+            }
+        }
     }
 
     public void requestEnded(ServletRequestEvent event)

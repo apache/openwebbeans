@@ -27,18 +27,30 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.util.Asserts;
 
+/**
+ * Manager for the conversations.
+ * Each conversation is related with conversation id and session id.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
 public class ConversationManager
 {
-    private Map<Conversation, ConversationContext> conversations = null;
+    /**Current conversations*/
+    private Map<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
 
+    /**
+     * Creates new conversation maanger
+     */
     public ConversationManager()
     {
-        if(conversations == null)
-        {
-            conversations = new ConcurrentHashMap<Conversation, ConversationContext>();   
-        }
+        
     }
 
+    /**
+     * Gets conversation manager instance.
+     * @return conversation manager
+     */
     public static ConversationManager getInstance()
     {
         ConversationManager manager = (ConversationManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_CONVERSATION_MANAGER);
@@ -46,11 +58,21 @@ public class ConversationManager
         return manager;
     }
 
+    /**
+     * Adds new conversation context.
+     * @param conversation new conversation
+     * @param context new context
+     */
     public void addConversationContext(Conversation conversation, ConversationContext context)
     {
         conversations.put(conversation, context);
     }
 
+    /**
+     * Remove given conversation.
+     * @param conversation conversation instance
+     * @return context
+     */
     public ConversationContext removeConversation(Conversation conversation)
     {
         Asserts.assertNotNull(conversation, "conversation can not be null");
@@ -58,6 +80,11 @@ public class ConversationManager
         return conversations.remove(conversation);
     }
 
+    /**
+     * Gets conversation's context instance.
+     * @param conversation conversation instance
+     * @return conversation related context
+     */
     public ConversationContext getConversationContext(Conversation conversation)
     {
         Asserts.assertNotNull(conversation, "conversation can not be null");
@@ -65,9 +92,16 @@ public class ConversationManager
         return conversations.get(conversation);
     }
 
-    public Conversation getConversation(String conversationId)
+    /**
+     * Gets conversation with id and session id.
+     * @param conversationId conversation id
+     * @param sessionId session id
+     * @return conversation
+     */
+    public Conversation getConversation(String conversationId, String sessionId)
     {
         Asserts.assertNotNull(conversationId, "conversationId parameter can not be null");
+        Asserts.assertNotNull(sessionId,"sessionId parameter can not be null");
 
         ConversationImpl conv = null;
         Set<Conversation> set = conversations.keySet();
@@ -76,7 +110,7 @@ public class ConversationManager
         while (it.hasNext())
         {
             conv = (ConversationImpl) it.next();
-            if (conv.getId().equals(conversationId))
+            if (conv.getId().equals(conversationId) && conv.getSessionId().equals(sessionId))
             {
                 return conv;
             }
@@ -86,6 +120,10 @@ public class ConversationManager
 
     }
 
+    /**
+     * Destroy conversations with given session id.
+     * @param sessionId session id
+     */
     public void destroyConversationContextWithSessionId(String sessionId)
     {
         Asserts.assertNotNull(sessionId, "sessionId parameter can not be null");
@@ -104,16 +142,24 @@ public class ConversationManager
         }
     }
 
-    public Conversation createNewConversation()
+    /**
+     * Creates new conversation instance.
+     * @return new conversation instance
+     */
+    public Conversation createNewConversationInstance()
     {
-        Conversation conversation = getCurrentConversation();
+        Conversation conversation = getConversationInstance();
 
         return conversation;
 
     }
 
+    /**
+     * Gets conversation instance from conversation bean.
+     * @return conversation instance
+     */
     @SuppressWarnings("unchecked")
-    public Conversation getCurrentConversation()
+    public Conversation getConversationInstance()
     {
 
         Bean<Conversation> bean = (Bean<Conversation>)BeanManagerImpl.getManager().resolveByType(Conversation.class, new DefaultLiteral()).iterator().next();
@@ -122,6 +168,9 @@ public class ConversationManager
         return conversation;
     }
 
+    /**
+     * Destroy unactive conversations.
+     */
     public void destroyWithRespectToTimout()
     {
         ConversationImpl conv = null;
@@ -143,6 +192,9 @@ public class ConversationManager
         }
     }
 
+    /**
+     * Destroys all conversations
+     */
     public void destroyAllConversations()
     {
         if (conversations != null)
