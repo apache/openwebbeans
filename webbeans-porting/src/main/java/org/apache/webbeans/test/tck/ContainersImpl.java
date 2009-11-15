@@ -18,14 +18,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.jboss.testharness.api.DeploymentException;
 import org.jboss.testharness.spi.Containers;
 
-
 public class ContainersImpl implements Containers
 {
+    public static final String TOMCAT_LOCATION = "catalina.home";
 
-  //  private Logger logger = Logger.getLogger(ContainersImpl.class);
+    private WebBeansLogger logger = WebBeansLogger.getLogger(ContainersImpl.class);
 
     public void cleanup() throws IOException
     {
@@ -34,21 +35,26 @@ public class ContainersImpl implements Containers
 
     public boolean deploy(InputStream archive, String name)
     {
+        logger.info("Deploying artifact with name : " + name + " to container");
+        
         try
         {
-            if(archive.available() > 0)
+            if (archive.available() > 0)
             {
                 File file = new File("target/container/" + name);
-                FileOutputStream os = new FileOutputStream(file);            
+                FileOutputStream os = new FileOutputStream(file);
                 byte temp[] = new byte[512];
-                
-                while(archive.read(temp) != -1)
+
+                while (archive.read(temp) != -1)
                 {
                     os.write(temp);
-                }            
-   
+                }
+                
+                os.close();
+                
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new RuntimeException(e);
         }
