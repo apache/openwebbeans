@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ejb.EJB;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.SessionBeanType;
 
@@ -172,9 +173,9 @@ public class EjbPlugin extends AbstractOpenWebBeansPlugin implements OpenWebBean
     }
 
     @Override
-    public Object getSessionBeanProxy(Bean<?> bean, Class<?> type)
+    public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext)
     {
-        return EjbDefinitionUtility.defineEjbBeanProxy((EjbBean<?>)bean,type);
+        return EjbDefinitionUtility.defineEjbBeanProxy((EjbBean<?>)bean,iface, creationalContext);
     }
 
     @Override

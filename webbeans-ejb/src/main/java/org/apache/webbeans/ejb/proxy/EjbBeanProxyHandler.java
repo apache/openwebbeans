@@ -42,13 +42,16 @@ public class EjbBeanProxyHandler implements MethodHandler
     /**Proxy ejb bean instance*/
     private EjbBean<?> ejbBean;
     
+    private CreationalContext<?> creationalContext;
+    
     /**
      * Creates a new instance.
      * @param ejbBean ejb bean instance
      */
-    public EjbBeanProxyHandler(EjbBean<?> ejbBean)
+    public EjbBeanProxyHandler(EjbBean<?> ejbBean, CreationalContext<?> creationalContext)
     {
         this.ejbBean = ejbBean;
+        this.creationalContext = creationalContext;
     }
     
     /**
@@ -66,13 +69,13 @@ public class EjbBeanProxyHandler implements MethodHandler
             }
         }
         
-        OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean);
+        OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean, this.creationalContext);
         
         //Context of the bean
         Context webbeansContext = BeanManagerImpl.getManager().getContext(ejbBean.getScope());
         
         //Get bean instance from context
-        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, (CreationalContext<Object>)this.ejbBean.getCreationalContext());
+        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, (CreationalContext<Object>)this.creationalContext);
         
         Object result = method.invoke(webbeansInstance, arguments);
         

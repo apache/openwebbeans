@@ -16,6 +16,8 @@
  */
 package org.apache.webbeans.ejb.util;
 
+import javax.enterprise.context.spi.CreationalContext;
+
 import javassist.util.proxy.ProxyFactory;
 
 import org.apache.webbeans.ejb.component.EjbBean;
@@ -41,14 +43,14 @@ public final class EjbDefinitionUtility
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> T defineEjbBeanProxy(EjbBean<T> bean, Class<?> iface)
+    public static <T> T defineEjbBeanProxy(EjbBean<T> bean, Class<?> iface, CreationalContext<?> creationalContext)
     {
         try
         {
             bean.setIface(iface);
             ProxyFactory factory = new ProxyFactory();
             
-            EjbBeanProxyHandler handler = new EjbBeanProxyHandler(bean);
+            EjbBeanProxyHandler handler = new EjbBeanProxyHandler(bean,creationalContext);
             
             factory.setHandler(handler);
             
