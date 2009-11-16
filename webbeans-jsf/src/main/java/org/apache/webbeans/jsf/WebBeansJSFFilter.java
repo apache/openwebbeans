@@ -54,7 +54,7 @@ public class WebBeansJSFFilter implements Filter
             public void sendRedirect(String location) throws IOException
             {
                 Bean<?> bean = BeanManagerImpl.getManager().resolveByType(Conversation.class, new DefaultLiteral()).iterator().next();
-                Conversation conversation = (Conversation)BeanManagerImpl.getManager().getInstance(bean);
+                Conversation conversation = (Conversation)BeanManagerImpl.getManager().getInstance(bean,null);
 
                 String path = location;
 
