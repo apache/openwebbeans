@@ -236,9 +236,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     @SuppressWarnings("unchecked")    
     protected  T createInstance(CreationalContext<T> creationalContext)
     {
-        T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this);
-        
-        this.wrappedBean.setCreationalContext(creationalContext);
+        T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this, creationalContext);
 
         return proxy;
         

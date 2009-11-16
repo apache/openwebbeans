@@ -56,6 +56,7 @@ public class InvocationContextImpl implements InvocationContext
     /** Used for numbering interceptors */
     private int currentMethod = 1;
     
+    private CreationalContext<?> creationalContext;
     
     /**
      * Initializes the context.
@@ -82,6 +83,11 @@ public class InvocationContextImpl implements InvocationContext
             this.target = instance;
         }
     }
+    
+    public void setCreationalContext(CreationalContext<?> creationalContext)
+    {
+        this.creationalContext = creationalContext;
+    }
 
     
     @SuppressWarnings("unchecked")
@@ -89,7 +95,7 @@ public class InvocationContextImpl implements InvocationContext
     {
         Context webbeansContext = BeanManagerImpl.getManager().getContext(bean.getScope());
         
-        this.target = webbeansContext.get((Contextual<Object>)bean, (CreationalContext<Object>)bean.getCreationalContext());        
+        this.target = webbeansContext.get((Contextual<Object>)bean, (CreationalContext<Object>)this.creationalContext);        
         
     }
     

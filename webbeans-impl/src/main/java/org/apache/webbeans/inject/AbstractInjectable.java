@@ -139,7 +139,7 @@ public abstract class AbstractInjectable implements Injectable
     private Object injectForDependent(Bean<?> bean, InjectionPoint injectionPoint)
     {
         Object object = null;
-        object = this.injectionOwnerComponent.getDependent(bean,injectionPoint);
+        object = this.injectionOwnerComponent.getDependent(bean,injectionPoint, this.creationalContext);
 
         return object;
     }

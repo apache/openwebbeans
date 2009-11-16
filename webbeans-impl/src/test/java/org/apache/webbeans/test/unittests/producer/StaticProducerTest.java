@@ -34,7 +34,7 @@ public class StaticProducerTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
+        super.init();
     }
 
     @Test

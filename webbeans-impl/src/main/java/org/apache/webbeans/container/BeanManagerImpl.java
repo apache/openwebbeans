@@ -305,7 +305,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
     
     @Deprecated
-    public Object getInstanceByName(String name)
+    public Object getInstanceByName(String name, CreationalContext<?> creationalContext)
     {
         AbstractBean<?> component = null;
         Object object = null;
@@ -323,7 +323,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         component = (AbstractBean<?>) set.iterator().next();
 
-        object = getInstance(component);
+        object = getInstance(component, creationalContext);
 
         return object;
     }
@@ -350,7 +350,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         ResolutionUtil.checkResolvedBeans(set, type, bindingTypes);
 
-        return (T)getInstance(set.iterator().next());
+        Bean<?> bean = set.iterator().next();
+        
+        return (T)getInstance(bean, createCreationalContext(bean));
     }
 
     @Deprecated
@@ -361,7 +363,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         ResolutionUtil.checkResolvedBeans(set, type.getRawType(),bindingTypes);
 
-        return (T)getInstance(set.iterator().next());
+        Bean<?> bean = set.iterator().next();
+        
+        return (T)getInstance(bean, createCreationalContext(bean));
     }
 
     @Deprecated
@@ -411,9 +415,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     
     @Deprecated
-    public <T> T getInstance(Bean<T> bean)
+    public <T> T getInstance(Bean<T> bean, CreationalContext<?> creationalContext)
     {
-        return (T)getReference(bean, null, createCreationalContext(bean));
+        if(creationalContext == null)
+        {
+            creationalContext = createCreationalContext(bean);
+        }
+        return (T)getReference(bean, null, creationalContext);
     }
     
     /**
@@ -599,7 +607,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     @Override
-    public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> context)
+    public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> creationalContext)
     {
         Object instance = null;
         
@@ -614,18 +622,21 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Find the injection point Bean
         Bean<?> bean = injectionResolver.getInjectionPointBean(injectionPoint);
         
-        if(context != null && (context instanceof CreationalContextImpl))
+        if(creationalContext != null && (creationalContext instanceof CreationalContextImpl))
         {
-            CreationalContextImpl<?> creationalContext = (CreationalContextImpl<?>)context;
+            CreationalContextImpl<?> creationalContextImpl = (CreationalContextImpl<?>)creationalContext;
             
-            instance = creationalContext.get(bean);
+            if(creationalContextImpl.getBean().equals(bean))
+            {
+                instance = creationalContextImpl.get();   
+            }            
             
         }
                 
         if(instance == null)
         {
             //Creating a new creational context for target bean instance
-            instance = getReference(bean, injectionPoint.getType(), createCreationalContext(bean));
+            instance = getReference(bean, injectionPoint.getType(), creationalContext);
         }
         
         return instance;
@@ -667,7 +678,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     @Override
-    public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> ctx)
+    public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> creationalContext)
     {
         Context context = null;
         Object instance = null;
@@ -682,20 +693,20 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             
         }
         
-        //Some casts for generic!
-        AbstractBean<Object> beanInstance = (AbstractBean<Object>)bean;
-        CreationalContext<Object> creationalContext = (CreationalContext<Object>)ctx;
-        
-        //Set creational context
-        beanInstance.setCreationalContext(creationalContext);
-        
         //Get bean context
-        context = getContext(beanInstance.getScope());
+        context = getContext(bean.getScope());
         
         //Scope is normal
         if (WebBeansUtil.isScopeTypeNormal(bean.getScope()))
         {
-            instance = getEjbOrJmsProxyReference(beanInstance, beanType);
+            instance = context.get(bean);
+            
+            if(instance != null)
+            {
+                return instance;
+            }
+            
+            instance = getEjbOrJmsProxyReference(bean, beanType,creationalContext);
             
             if(instance != null)
             {
@@ -710,7 +721,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 }
                 else
                 {
-                    instance = JavassistProxyFactory.createNewProxyInstance(bean);
+                    instance = JavassistProxyFactory.createNewProxyInstance(bean,creationalContext);
                     this.proxyMap.put(bean, instance);
                 }
             }            
@@ -718,21 +729,21 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Create Pseudo-Scope Bean Instance
         else
         {
-            instance = getEjbOrJmsProxyReference(beanInstance, beanType);
+            instance = getEjbOrJmsProxyReference(bean, beanType, creationalContext);
             
             if(instance != null)
             {
                 return instance;
             }
             
-            context = getContext(bean.getScope());
-            instance = context.get((Bean<Object>)bean, creationalContext);                                
+            
+            instance = context.get((Bean<Object>)bean, (CreationalContext<Object>)creationalContext);                                
         }
         
         return instance;
     }
     
-    private Object getEjbOrJmsProxyReference(Bean<?> bean,Type beanType)
+    private Object getEjbOrJmsProxyReference(Bean<?> bean,Type beanType, CreationalContext<?> creationalContext)
     {
         //Create session bean proxy
         if(bean instanceof EnterpriseBeanMarker)
@@ -743,7 +754,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 throw new IllegalStateException("There is no EJB plugin provider. Injection is failed for bean : " + bean);
             }
             
-            return ejbPlugin.getSessionBeanProxy(bean,ClassUtil.getClazz(beanType));
+            return ejbPlugin.getSessionBeanProxy(bean,ClassUtil.getClazz(beanType), creationalContext);
         }
         
         //Create JMS Proxy

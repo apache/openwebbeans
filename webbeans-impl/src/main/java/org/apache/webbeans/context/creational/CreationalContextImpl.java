@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -30,39 +29,69 @@ import org.apache.webbeans.util.Asserts;
 /** {@inheritDoc} */
 public class CreationalContextImpl<T> implements CreationalContext<T>
 {
-    /**Map of bean with its incomplete instance*/
-    private Map<Contextual<?>,Object> incompleteInstancesMap = new ConcurrentHashMap<Contextual<?>, Object>();
-
-    /**Contextual bean*/
-    private Contextual<T> incompleteBean = null;
+    private Object incompleteInstance = null;
     
     /**Contextual bean dependent instances*/
-    private Map<Object, Contextual<?>> dependentObjects = new WeakHashMap<Object, Contextual<?>>();
+    private Map<Object, DependentCreationalContext<?>> dependentObjects = new WeakHashMap<Object, DependentCreationalContext<?>>();
+     
+    private Contextual<T> contextual = null;
+    
+    private static class DependentCreationalContext<S>
+    {
+        private CreationalContext<S> creationalContext;
+        
+        private Contextual<S> contextual;
+        
+        /**
+         * @return the creationalContext
+         */
+        public CreationalContext<S> getCreationalContext()
+        {
+            return creationalContext;
+        }
+
+        /**
+         * @param creationalContext the creationalContext to set
+         */
+        public void setCreationalContext(CreationalContext<S> creationalContext)
+        {
+            this.creationalContext = creationalContext;
+        }
+
+        /**
+         * @return the contextual
+         */
+        public Contextual<S> getContextual()
+        {
+            return contextual;
+        }
+
+        /**
+         * @param contextual the contextual to set
+         */
+        public void setContextual(Contextual<S> contextual)
+        {
+            this.contextual = contextual;
+        }
+
+        public DependentCreationalContext(CreationalContext<S> cc, Contextual<S> contextual)
+        {
+            this.contextual = contextual;
+            this.creationalContext = cc;
+        }
+        
+        
+    }
+    
     
     /**
      * Package private
      */
-    CreationalContextImpl()
+    CreationalContextImpl(Contextual<T> contextual)
     {
-        //Empty
+        this.contextual = contextual;
     }
     
-    /**
-     * Returns new creational context.
-     * 
-     * @param incompleteBean incomplete instance owner
-     * @return new creational context
-     */
-    protected CreationalContextImpl<T> getCreationalContextImpl(Contextual<T> incompleteBean)
-    {
-        CreationalContextImpl<T> impl = new CreationalContextImpl<T>();        
-        
-        impl.incompleteBean = incompleteBean;
-        impl.incompleteInstancesMap = this.incompleteInstancesMap;
-        
-        return impl;
-        
-    }
     
     /**
      * Save this incomplete instance.
@@ -71,7 +100,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
      */
     public void push(T incompleteInstance)
     {
-        this.incompleteInstancesMap.put(this.incompleteBean, incompleteInstance);
+        this.incompleteInstance = incompleteInstance;
         
     }
     
@@ -82,16 +111,13 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
      * @param dependent dependent contextual
      * @param instance dependent instance
      */
-    public <K> void addDependent(Contextual<K> dependent, Object instance)
+    public <K> void addDependent(Contextual<K> dependent, Object instance, CreationalContext<K> cc)
     {
         Asserts.assertNotNull(dependent,"dependent parameter cannot be null");
         
         if(instance != null)
         {
-            synchronized (this.dependentObjects)
-            {
-                this.dependentObjects.put(instance, dependent);   
-            }            
+           this.dependentObjects.put(instance, new DependentCreationalContext<K>(cc,dependent));   
         }
     }
     
@@ -101,9 +127,9 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
      * @param incompleteBean instance owner
      * @return incomplete instance
      */
-    public Object get(Contextual<?> incompleteBean)
+    public Object get()
     {
-        return incompleteInstancesMap.get(incompleteBean);
+        return this.incompleteInstance;
     }
     
     
@@ -114,10 +140,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
      */
     public void  remove()
     {
-        if(this.incompleteInstancesMap.containsKey(this.incompleteBean))
-        {
-            this.incompleteInstancesMap.remove(this.incompleteBean);
-        }        
+        this.incompleteInstance = null;
     }
     
     /**
@@ -126,32 +149,19 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
     @SuppressWarnings("unchecked")
     private void  removeDependents()
     {
-        //Clear its dependence objects
-        synchronized (this.dependentObjects)
+        Collection<?> values = this.dependentObjects.keySet();
+        Iterator<?> iterator = values.iterator();
+        
+        while(iterator.hasNext())
         {
-            Collection<?> values = this.dependentObjects.keySet();
-            Iterator<?> iterator = values.iterator();
-            
-            while(iterator.hasNext())
-            {
-                T instance = (T)iterator.next();
-                Contextual<T> dependent = (Contextual<T>)this.dependentObjects.get(instance);
-                dependent.destroy(instance, (CreationalContext<T>)this);                
-            }
-            
-            this.dependentObjects.clear();
+            T instance = (T)iterator.next();
+            DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)this.dependentObjects.get(instance);
+            dependent.getContextual().destroy(instance, (CreationalContext<T>)dependent.getCreationalContext());                
         }
         
+        this.dependentObjects.clear();
     }
     
-    /**
-     * Clear registry.
-     */
-    public void clear()
-    {
-        this.incompleteInstancesMap.clear();
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -160,6 +170,12 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
     {
         removeDependents();        
         
+    }
+    
+    
+    public Contextual<T> getBean()
+    {
+        return this.contextual;
     }
 
 }

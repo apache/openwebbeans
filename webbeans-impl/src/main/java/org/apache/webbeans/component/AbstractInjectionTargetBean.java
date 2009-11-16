@@ -129,14 +129,14 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         //Push instance into the creational context
         if(WebBeansUtil.isScopeTypeNormal(getScope()))
         {
-            this.creationalContext.push(instance);
+            creationalContext.push(instance);
         }
 
         afterConstructor(instance, creationalContext);
         
-        if(this.creationalContext instanceof CreationalContextImpl)
+        if(creationalContext instanceof CreationalContextImpl)
         {
-            CreationalContextImpl<T> impl = (CreationalContextImpl<T>)this.creationalContext;
+            CreationalContextImpl<T> impl = (CreationalContextImpl<T>)creationalContext;
             impl.remove();
         }
 
@@ -146,7 +146,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     /**
      * {@inheritDoc}
      */
-    protected void destroyInstance(T instance)
+    protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
         destroyComponentInstance(instance);
     }
@@ -167,10 +167,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     protected void destroyComponentInstance(T instance)
     {
         preDestroy(instance);
-
-        // Remove it from creational context, if any
-        CreationalContextImpl<T> cc = (CreationalContextImpl<T>) this.creationalContext;
-        cc.remove();
     }
 
     /**
@@ -308,7 +304,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         {
             if (field.getAnnotation(Delegate.class) == null)
             {
-                injectField(field, instance);
+                injectField(field, instance, creationalContext);
             }
         }                
     }
@@ -320,7 +316,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         {
             if (field.getAnnotation(Delegate.class) == null)
             {
-                injectField(field, instance);
+                injectField(field, instance, creationalContext);
             }
         }                        
     }
@@ -331,12 +327,12 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
 
         for (Method method : methods)
         {
-            injectMethod(method, instance);
+            injectMethod(method, instance, creationalContext);
         }        
     }
     
     
-    private void injectField(Field field, Object instance)
+    private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
         InjectableField f = new InjectableField(field, instance, this, creationalContext);
         f.doInjection();        
@@ -354,12 +350,12 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
 
         for (Method method : methods)
         {
-            injectMethod(method, instance);
+            injectMethod(method, instance, creationalContext);
         }
     }
     
     @SuppressWarnings("unchecked")
-    private void injectMethod(Method method, Object instance)
+    private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
         InjectableMethods m = new InjectableMethods(method, instance, this, creationalContext);
         m.doInjection();        

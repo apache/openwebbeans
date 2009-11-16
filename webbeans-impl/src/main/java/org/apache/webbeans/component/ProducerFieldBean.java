@@ -92,7 +92,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
             }
             else
             {
-                parentInstance = getParentInstance();
+                parentInstance = getParentInstance(creationalContext);
                 instance = (T) producerField.get(parentInstance);
             }
         }catch(Exception e)
@@ -103,7 +103,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
         {
             if (this.ownerComponent.getScope().equals(Dependent.class))
             {
-                destroyBean(this.ownerComponent, parentInstance);
+                destroyBean(this.ownerComponent, parentInstance, creationalContext);
             }
         }
 

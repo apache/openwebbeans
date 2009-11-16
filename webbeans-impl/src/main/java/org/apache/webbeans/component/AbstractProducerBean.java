@@ -69,7 +69,7 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
     /**
      * {@inheritDoc}
      */
-    public void dispose(T instance)
+    public void dispose(T instance, CreationalContext<T> creationalContext)
     {
         // Do nothing
     }
@@ -121,12 +121,12 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
      * @param instance bean instance
      */
     @SuppressWarnings("unchecked")
-    protected <K> void destroyBean(Bean<?> bean, Object instance)
+    protected <K> void destroyBean(Bean<?> bean, Object instance, CreationalContext<?> creationalContext)
     {
         Bean<K> destroy = (Bean<K>) bean;
         K inst = (K) instance;
 
-        CreationalContext<K> cc = (CreationalContext<K>) this.creationalContext;
+        CreationalContext<K> cc = (CreationalContext<K>) creationalContext;
         destroy.destroy(inst, cc);
     }
 
@@ -136,7 +136,7 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
      * @return owner bean instance
      */
     @SuppressWarnings("unchecked")
-    protected Object getParentInstance()
+    protected Object getParentInstance(CreationalContext<?> creationalContext)
     {
         // return getManager().getInstance(this.ownerComponent);
 
@@ -150,11 +150,11 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
 
         if (specialize != null)
         {
-            parentInstance = getManager().getReference(specialize, null, getManager().createCreationalContext(specialize));
+            parentInstance = getManager().getReference(specialize, null, creationalContext);
         }
         else
         {
-            parentInstance = getManager().getReference(this.ownerComponent, null, getManager().createCreationalContext(this.ownerComponent));
+            parentInstance = getManager().getReference(this.ownerComponent, null, creationalContext);
         }
 
         return parentInstance;
@@ -165,7 +165,7 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
      * {@inheritDoc}
      */
     @Override
-    protected void destroyInstance(T instance)
+    protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
 
     }

@@ -179,7 +179,7 @@ public abstract class BaseBean<T> implements Bean<T>
      * @param injectionPoint injection point of dependent bean
      * @return dependent bean
      */
-    public abstract Object getDependent(Bean<?> dependentBean,InjectionPoint injectionPoint);
+    public abstract Object getDependent(Bean<?> dependentBean,InjectionPoint injectionPoint, CreationalContext<?> creational);
 
     /**
      * Gets interceptor stack of bean instance.
@@ -229,15 +229,4 @@ public abstract class BaseBean<T> implements Bean<T>
      */    
     public abstract boolean isEnabled();
     
-    /**
-     * Returns creational context of bean instance
-     * @return creational context of bean instance.
-     */
-    public abstract CreationalContext<T> getCreationalContext();
-    
-    /**
-     * Set creational context
-     * @param creationalContext creational context
-     */
-    public abstract void setCreationalContext(CreationalContext<T> creationalContext);
 }

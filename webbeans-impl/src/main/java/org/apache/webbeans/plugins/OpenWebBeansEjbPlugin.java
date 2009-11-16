@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.plugins;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
 /**
@@ -68,5 +69,5 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * @param proxy interface
      * @return session bean proxy
      */
-    public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface);
+    public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext);
 }

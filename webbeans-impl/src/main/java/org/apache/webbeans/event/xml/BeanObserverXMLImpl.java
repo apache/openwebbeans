@@ -57,7 +57,7 @@ public class BeanObserverXMLImpl<T> extends ObserverMethodImpl<T>
             Set<Annotation> setBindingTypes = model.getBindingTypes();
             Annotation[] anns = new Annotation[setBindingTypes.size()];
             anns = setBindingTypes.toArray(anns);
-            params.add(manager.getInstance(InjectionResolver.getInstance().implResolveByType(model.getInjectionGenericType(), anns).iterator().next()));
+            params.add(manager.getInstance(InjectionResolver.getInstance().implResolveByType(model.getInjectionGenericType(), anns).iterator().next(),null));
         }
 
         return params;

@@ -144,10 +144,13 @@ public class InterceptorHandler implements MethodHandler, Serializable
     private transient boolean isSameDecMethod = false;
     
     private transient boolean isInDecoratorCall = false;
+    
+    private CreationalContext<?> creationalContext = null;
 
-    public InterceptorHandler(AbstractBean<?> component)
+    public InterceptorHandler(AbstractBean<?> component, CreationalContext<?> creationalContext)
     {
         this.component = component;
+        this.creationalContext = creationalContext;
     }
 
     @SuppressWarnings("unchecked")
@@ -161,7 +164,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
         Context webbeansContext = BeanManagerImpl.getManager().getContext(component.getScope());
         
         //Get bean instance from context
-        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)this.component.getCreationalContext());
+        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)this.creationalContext);
         
         //toString is supported but no other object method names!!!
         if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) && InterceptorUtil.isWebBeansBusinessMethod(method))
@@ -386,7 +389,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
                 {
                     if (intData.isDefinedWithWebBeansInterceptor())
                     {
-                        Object interceptorProxy = BeanManagerImpl.getManager().getInstance(intData.getWebBeansInterceptor());
+                        Object interceptorProxy = BeanManagerImpl.getManager().getInstance(intData.getWebBeansInterceptor(),null);
                         WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) intData.getWebBeansInterceptor();
                         interceptor.setInjections(interceptorProxy);
 

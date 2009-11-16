@@ -254,9 +254,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     @SuppressWarnings("unchecked")
     protected T createInstance(CreationalContext<T> creationalContext)
     {
-        T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this);
-        
-        this.delegateComponent.setCreationalContext(creationalContext);
+        T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this,creationalContext);
 
         return proxy;
         

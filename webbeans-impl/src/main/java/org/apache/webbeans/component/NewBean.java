@@ -41,9 +41,9 @@ public class NewBean<T> extends ManagedBean<T>
     }
 
     @Override
-    protected void destroyInstance(T instance)
+    protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
-        super.destroyInstance(instance);
+        super.destroyInstance(instance, creationalContext);
     }
 
     /**

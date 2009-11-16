@@ -29,9 +29,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
  * 
  */
 public class ServiceLoader
-{
-    private static OpenWebBeansConfiguration config = OpenWebBeansConfiguration.getInstance();
-    
+{   
     /**
      * Get a new service singleton instance for the given interface.
      * 
@@ -41,7 +39,7 @@ public class ServiceLoader
     @SuppressWarnings("unchecked")
     public static <T> T getService(Class<T> serviceInterface)
     {
-        String implName = config.getProperty(serviceInterface.getName());
+        String implName = OpenWebBeansConfiguration.getInstance().getProperty(serviceInterface.getName());
         if (implName == null)
         {
             throw new WebBeansConfigurationException("Cannot find Service configuration for " + 

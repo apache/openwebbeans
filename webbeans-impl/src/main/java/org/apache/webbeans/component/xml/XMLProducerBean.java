@@ -76,7 +76,7 @@ public class XMLProducerBean<T> extends ProducerMethodBean<T>
         if (disposalMethod != null)
         {
 
-            Object object = getParentInstance();
+            Object object = getParentInstance(null);
 
             XMLInjectableMethods<T> methods = new XMLInjectableMethods<T>(creatorMethod, object, this, this.disposalMethodParameters,this.creationalContext);
             methods.doInjection();
@@ -89,7 +89,7 @@ public class XMLProducerBean<T> extends ProducerMethodBean<T>
         this.creationalContext = creationalContext;
         
         T instance = null;
-        Object parentInstance = getParentInstance();
+        Object parentInstance = getParentInstance(creationalContext);
 
         try
         {
@@ -100,7 +100,7 @@ public class XMLProducerBean<T> extends ProducerMethodBean<T>
         {
             if (getParent().getScope().equals(Dependent.class))
             {
-                destroyBean(getParent(), parentInstance);
+                destroyBean(getParent(), parentInstance,creationalContext);
             }
         }
 

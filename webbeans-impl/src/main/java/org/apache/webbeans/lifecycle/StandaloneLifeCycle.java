@@ -24,7 +24,6 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -147,9 +146,6 @@ public class StandaloneLifeCycle implements Lifecycle
             
             //Clear extensions
             ExtensionLoader.getInstance().clear();
-            
-            //Clear CreationalContext
-            CreationalContextFactory.getInstance().clear();
 
             //Clear singleton list
             WebBeansFinder.clearInstances();

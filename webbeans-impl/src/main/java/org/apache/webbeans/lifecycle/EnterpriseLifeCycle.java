@@ -35,7 +35,6 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.exception.WebBeansException;
@@ -228,9 +227,6 @@ public final class EnterpriseLifeCycle implements Lifecycle
         //Clear extensions
         ExtensionLoader.getInstance().clear();
         
-        //Clear CreationalContext
-        CreationalContextFactory.getInstance().clear();
-
         //Clear singleton list
         WebBeansFinder.clearInstances();
                 

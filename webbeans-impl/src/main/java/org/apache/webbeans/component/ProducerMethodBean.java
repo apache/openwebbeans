@@ -160,10 +160,10 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         {
             if (!Modifier.isStatic(creatorMethod.getModifiers()))
             {
-                parentInstance = getParentInstance();
+                parentInstance = getParentInstance(creationalContext);
             }
 
-            InjectableMethods<T> m = new InjectableMethods<T>(creatorMethod, parentInstance, this, null);
+            InjectableMethods<T> m = new InjectableMethods<T>(creatorMethod, parentInstance, this, creationalContext);
 
             instance = m.doInjection();
 
@@ -172,7 +172,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         {
             if (getParent().getScope().equals(Dependent.class))
             {
-                destroyBean(getParent(), parentInstance);
+                destroyBean(getParent(), parentInstance, creationalContext);
             }
         }
 
@@ -184,15 +184,15 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      * {@inheritDoc}
      */
     @Override
-    protected void destroyInstance(T instance)
+    protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
-        dispose(instance);
+        dispose(instance,creationalContext);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void dispose(T instance)
+    public void dispose(T instance, CreationalContext<T> creationalContext)
     {
         if (isProducerSet())
         {
@@ -200,7 +200,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         }
         else
         {
-            disposeDefault(instance);
+            disposeDefault(instance, creationalContext);
         }
     }
 
@@ -209,7 +209,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      * 
      * @param instance bean instance
      */
-    protected void disposeDefault(T instance)
+    protected void disposeDefault(T instance, CreationalContext<T> creationalContext)
     {
         if (disposalMethod != null)
         {
@@ -219,7 +219,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             {
                 if (!Modifier.isStatic(disposalMethod.getModifiers()))
                 {
-                    parentInstance = getParentInstance();
+                    parentInstance = getParentInstance(creationalContext);
                 }
 
                 InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, this.ownerComponent, null);
@@ -231,7 +231,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             {
                 if (getParent().getScope().equals(Dependent.class))
                 {
-                    destroyBean(getParent(), parentInstance);
+                    destroyBean(getParent(), parentInstance, creationalContext);
 
                 }
             }

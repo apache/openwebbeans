@@ -62,7 +62,7 @@ public class ConversationBean extends AbstractBean<Conversation>
     }
 
     @Override
-    protected void destroyInstance(Conversation instance)
+    protected void destroyInstance(Conversation instance, CreationalContext<Conversation> creationalContext)
     {
         if (instance.isTransient())
         {

@@ -11,37 +11,38 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.component;
+package org.apache.webbeans.proxy;
 
+import java.lang.reflect.Method;
+
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 
-public class BeanManagerBean extends AbstractBean<BeanManager>
+import javassist.util.proxy.MethodHandler;
+
+public class ProvidedBeansProxyHandler implements MethodHandler
 {
-    private BeanManager manager = null;
-
-    public BeanManagerBean()
+    private Bean<?> bean  = null;
+    
+    public ProvidedBeansProxyHandler(Bean<?> bean)
     {
-        super(WebBeansType.MANAGER, BeanManager.class);
+        this.bean = bean;
     }
 
     @Override
-    protected BeanManager createInstance(CreationalContext<BeanManager> creationalContext)
+    @SuppressWarnings("unchecked")
+    public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable
     {
-        if (this.manager == null)
-        {
-            manager = BeanManagerImpl.getManager();
-        }
-
-        return manager;
-    }
-
-    @Override
-    protected void destroyInstance(BeanManager instance,CreationalContext<BeanManager> creationalContext)
-    {
-        this.manager = null;
+        BeanManager beanManager = BeanManagerImpl.getManager();
+        
+        Context context = beanManager.getContext(bean.getScope());
+        
+        return context.get((Bean<Object>)bean, (CreationalContext<Object>)beanManager.createCreationalContext(bean));
+        
     }
 
 }

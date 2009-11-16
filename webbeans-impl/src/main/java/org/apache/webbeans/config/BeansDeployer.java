@@ -120,19 +120,7 @@ public class BeansDeployer
         try
         {
             if (!deployed)
-            {
-                // Register Manager built-in component
-                BeanManagerImpl.getManager().addBean(WebBeansUtil.getManagerBean());
-
-                // Register Conversation built-in component
-                BeanManagerImpl.getManager().addBean(WebBeansUtil.getConversationBean());
-                
-                // Register InjectionPoint bean
-                BeanManagerImpl.getManager().addBean(WebBeansUtil.getInjectionPointBean());
-                
-                //Register Instance Bean
-                BeanManagerImpl.getManager().addBean(WebBeansUtil.getInstanceBean());
-                
+            {                
                 //Load Extensions
                 ExtensionLoader.getInstance().loadExtensionServices();
 
@@ -154,6 +142,9 @@ public class BeansDeployer
                 
                 //Configure Decorators
                 configureDecorators(scanner);
+                
+                //Configure Default Beans
+                configureDefaultBeans();
                                 
                 //Discover classpath classes
                 deployFromClassPath(scanner);
@@ -192,6 +183,21 @@ public class BeansDeployer
                 throw new WebBeansDeploymentException(e);
             }
         }
+    }
+    
+    private void configureDefaultBeans()
+    {
+        // Register Manager built-in component
+        BeanManagerImpl.getManager().addBean(WebBeansUtil.getManagerBean());
+
+        // Register Conversation built-in component
+        BeanManagerImpl.getManager().addBean(WebBeansUtil.getConversationBean());
+        
+        // Register InjectionPoint bean
+        BeanManagerImpl.getManager().addBean(WebBeansUtil.getInjectionPointBean());
+        
+        //Register Instance Bean
+        BeanManagerImpl.getManager().addBean(WebBeansUtil.getInstanceBean());        
     }
     
     /**

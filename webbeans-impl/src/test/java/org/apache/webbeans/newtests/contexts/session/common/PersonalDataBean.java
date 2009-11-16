@@ -11,37 +11,39 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.component;
+package org.apache.webbeans.newtests.contexts.session.common;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.BeanManager;
+import java.io.Serializable;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 
-public class BeanManagerBean extends AbstractBean<BeanManager>
+@Named("org.apache.webbeans.newtests.contexts.session.common.PersonalDataBean")
+@SessionScoped
+public class PersonalDataBean implements Serializable
 {
-    private BeanManager manager = null;
-
-    public BeanManagerBean()
+    public static boolean POST_CONSTRUCT = false;
+    
+    public static boolean PRE_DESTROY = false;
+    
+    public PersonalDataBean()
     {
-        super(WebBeansType.MANAGER, BeanManager.class);
+        
+    }
+    
+    public void business(){}
+    
+    @PostConstruct
+    public void postConstruct()
+    {
+        POST_CONSTRUCT = true;
     }
 
-    @Override
-    protected BeanManager createInstance(CreationalContext<BeanManager> creationalContext)
+    @PreDestroy
+    public void preDestroy()
     {
-        if (this.manager == null)
-        {
-            manager = BeanManagerImpl.getManager();
-        }
-
-        return manager;
+        PRE_DESTROY = true;
     }
-
-    @Override
-    protected void destroyInstance(BeanManager instance,CreationalContext<BeanManager> creationalContext)
-    {
-        this.manager = null;
-    }
-
 }

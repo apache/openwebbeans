@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansFinder;
@@ -161,9 +162,9 @@ public class ConversationManager
     @SuppressWarnings("unchecked")
     public Conversation getConversationInstance()
     {
-
-        Bean<Conversation> bean = (Bean<Conversation>)BeanManagerImpl.getManager().resolveByType(Conversation.class, new DefaultLiteral()).iterator().next();
-        Conversation conversation = BeanManagerImpl.getManager().getInstance(bean);
+        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
+        Bean<Conversation> bean = (Bean<Conversation>)beanManager.resolveByType(Conversation.class, new DefaultLiteral()).iterator().next();
+        Conversation conversation = BeanManagerImpl.getManager().getInstance(bean, beanManager.createCreationalContext(bean));
 
         return conversation;
     }

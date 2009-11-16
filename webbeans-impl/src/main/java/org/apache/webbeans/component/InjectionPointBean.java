@@ -47,7 +47,7 @@ public class InjectionPointBean extends AbstractBean<InjectionPoint>
     }
 
     @Override
-    protected void destroyInstance(InjectionPoint instance)
+    protected void destroyInstance(InjectionPoint instance, CreationalContext<InjectionPoint> creationalContext)
     {
         this.injectionPoint = null;
     }

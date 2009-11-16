@@ -15,6 +15,7 @@ package org.apache.webbeans.el;
 
 import java.beans.FeatureDescriptor;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.el.ELContext;
 import javax.el.ELException;
@@ -22,6 +23,7 @@ import javax.el.ELResolver;
 import javax.el.PropertyNotFoundException;
 import javax.el.PropertyNotWritableException;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.servlet.jsp.JspApplicationContext;
 
@@ -78,31 +80,39 @@ public class WebBeansELResolver extends ELResolver
      * {@inheritDoc}
      */    
     @Override
+    @SuppressWarnings("unchecked")
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
 
         Object object = null;
-        Bean<?> bean = null;
+        Bean<Object> bean = null;
 
         boolean isResolution = false;
+        CreationalContext<Object> creationalContext = null;
         try
-        {
+        {            
             if (obj == null)
             {
-                String name = (String) property;
-                object = manager.getInstanceByName(name);
+                String name = (String) property;            
+                Set<Bean<?>> beans = manager.getBeans(name);
+                
+                if(beans != null && !beans.isEmpty())
+                {
+                    bean = (Bean<Object>)beans.iterator().next();
+                    creationalContext = manager.createCreationalContext(bean);                    
+   
+                }
+                
+                object = manager.getInstanceByName(name,creationalContext);
                 
                 if (object != null)
                 {
                     isResolution = true;
                     context.setPropertyResolved(true);
-                    //It is used for destroying
-                    bean = manager.resolveByName(name).iterator().next();
                 }
-
             }
-
+            
         }
         finally
         {
@@ -110,7 +120,7 @@ public class WebBeansELResolver extends ELResolver
             {
                 if (bean != null)
                 {
-                    destroyBean(bean, object);
+                    destroyBean(bean, object, creationalContext);
                 }                
             }
         }
@@ -126,14 +136,13 @@ public class WebBeansELResolver extends ELResolver
      * @param instance bean instance
      */
     @SuppressWarnings("unchecked")
-    private <T> void destroyBean(Bean<T> bean, Object instance)
+    private <T> void destroyBean(Bean<T> bean, Object instance, CreationalContext<T> creationalContext)
     {
         if (bean.getScope().equals(Dependent.class))
         {
             T inst = (T) instance;
 
-            //TODO Creational Context
-            bean.destroy(inst,null);
+            bean.destroy(inst,creationalContext);
         }
     }
 

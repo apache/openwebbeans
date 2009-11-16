@@ -106,9 +106,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     /**Tracks dependent injection point owner, can be null*/
     protected InjectionPoint dependentOwnerInjectionPoint;
     
-    /**Creational context*/
-    protected CreationalContext<T> creationalContext = null;
-
     /**
      * Constructor definiton. Each subclass redefines its own constructor with
      * calling this.
@@ -158,10 +155,8 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     {
         T instance = null;
         try
-        {
-            this.creationalContext = creationalContext;
-            instance = createInstance(this.creationalContext);
-
+        {            
+            instance = createInstance(creationalContext);
         }
         catch (Exception re)
         {
@@ -200,10 +195,10 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         try
         {
             //Destory dependent instances
-            this.creationalContext.release();
+            creationalContext.release();
             
             //Destroy instance, call @PreDestroy
-            destroyInstance(instance);
+            destroyInstance(instance,creationalContext);
                         
             //Reset it
             this.dependentOwnerInjectionPoint = null;  
@@ -221,7 +216,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
      * 
      * @param instance instance of the bean that is being destroyed
      */
-    protected void destroyInstance(T instance)
+    protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
         
     }
@@ -428,25 +423,30 @@ public abstract class AbstractBean<T> extends BaseBean<T>
      * @param dependentComponent dependent web beans bean
      * @return the dependent bean instance
      */
-    public Object getDependent(Bean<?> dependentComponent, InjectionPoint injectionPoint)
+    public Object getDependent(Bean<?> dependentComponent, InjectionPoint injectionPoint, CreationalContext<?> creational)
     {
         Object object = null;
         
         //Setting injection point owner
-        AbstractBean<?> dependent = (AbstractBean<?>)dependentComponent;
+        @SuppressWarnings("unchecked")
+        AbstractBean<Object> dependent = (AbstractBean<Object>)dependentComponent;
         dependent.setDependentOwnerInjectionPoint(injectionPoint);        
         
         @SuppressWarnings("unchecked")
-        CreationalContext<?> dependentCreational = CreationalContextFactory.getInstance().getCreationalContext(dependentComponent);
+        CreationalContext<Object> dependentCreational = CreationalContextFactory.getInstance().getCreationalContext(dependentComponent);
         
         //Get dependent instance
         object = BeanManagerImpl.getManager().getReference(dependentComponent, injectionPoint.getType(), dependentCreational);
         
-        CreationalContextImpl<T> cc = (CreationalContextImpl<T>)this.creationalContext;
+        if(creational instanceof CreationalContextImpl)
+        {
+            CreationalContextImpl<?> cc = (CreationalContextImpl<?>)creational;
+            
+            //Put this into the dependent map
+            cc.addDependent(dependent, object, dependentCreational);
+    
+        }
         
-        //Put this into the dependent map
-        cc.addDependent(dependentComponent, object);
-
         return object;
     }
     
@@ -585,23 +585,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         return set;
     }
     
-    /**
-     * {@inheritDoc}
-     */    
-    public CreationalContext<T> getCreationalContext()
-    {
-        return this.creationalContext;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public  void setCreationalContext(CreationalContext<T> creationalContext)
-    {
-        this.creationalContext = creationalContext;
-    }
-    
-    /**
+     /**
      * {@inheritDoc}
      */    
     public boolean isAlternative()

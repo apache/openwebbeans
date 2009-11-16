@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javassist.util.proxy.ProxyFactory;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
@@ -39,7 +40,7 @@ public final class JavassistProxyFactory
 
     }
 
-    public static <T> Object createNewProxyInstance(Bean<T> bean)
+    public static Object createNewProxyInstance(Bean<?> bean, CreationalContext<?> creationalContext)
     {
         Object result = null;
         try
@@ -76,7 +77,7 @@ public final class JavassistProxyFactory
 
             if (!(bean instanceof WebBeansDecorator) && !(bean instanceof WebBeansInterceptor))
             {
-                fact.setHandler(new InterceptorHandler((AbstractBean<?>) bean));
+                fact.setHandler(new InterceptorHandler((AbstractBean<?>) bean, creationalContext));
             }
 
             result = fact.createClass().newInstance();

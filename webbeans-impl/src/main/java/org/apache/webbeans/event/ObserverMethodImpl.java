@@ -29,9 +29,11 @@ import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -154,12 +156,16 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         AbstractBean<Object> baseComponent = (AbstractBean<Object>) bean;
         AbstractBean<Object> specializedComponent = null;
         Object object = null;
-
+        
+        CreationalContext<?> creationalContext = null;
+        
         try
         {
             BeanManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
             specializedComponent = (AbstractBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
             Context context = manager.getContext(specializedComponent.getScope());
+            
+            creationalContext = manager.createCreationalContext(specializedComponent);
             
             if(this.ifExist)
             {
@@ -167,7 +173,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             }
             else
             {
-                object = manager.getInstance(specializedComponent);    
+                object = manager.getInstance(specializedComponent, creationalContext);    
             }
             
 
@@ -207,7 +213,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         {
             if (baseComponent.getScope().equals(Dependent.class))
             {
-                baseComponent.destroy(object,baseComponent.getCreationalContext());
+                baseComponent.destroy(object,(CreationalContext<Object>)creationalContext);
             }
         }
 
@@ -263,7 +269,8 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
 
                     if (bindingTypes.length > 0)
                     {
-                        list.add(manager.getInstance(InjectionResolver.getInstance().implResolveByType(type, bindingTypes).iterator().next()));
+                        Bean<?> bean = InjectionResolver.getInstance().implResolveByType(type, bindingTypes).iterator().next();
+                        list.add(manager.getInstance(bean, manager.createCreationalContext(bean)));
                     }
                     else
                     {

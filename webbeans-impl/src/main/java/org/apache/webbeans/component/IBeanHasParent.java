@@ -16,9 +16,11 @@
  */
 package org.apache.webbeans.component;
 
+import javax.enterprise.context.spi.CreationalContext;
+
 public interface IBeanHasParent<T>
 {
     public AbstractBean<?> getParent();
     
-    public void dispose(T instance);
+    public void dispose(T instance, CreationalContext<T> creationalContext);
 }

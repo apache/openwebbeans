@@ -119,7 +119,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractBean<T>
 
 
     @Override
-    protected void destroyInstance(T instance)
+    protected void destroyInstance(T instance,CreationalContext<T> creationalContext)
     {
         throw new UnsupportedOperationException();
         

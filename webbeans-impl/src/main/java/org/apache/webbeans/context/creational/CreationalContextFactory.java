@@ -30,15 +30,11 @@ import org.apache.webbeans.config.WebBeansFinder;
  */
 public final class CreationalContextFactory<T>
 {
-    /**Ceational context that is used for generating other creational contexts*/
-    private CreationalContextImpl<T> impl;
-    
     /**
      * Creates a new <code>CreationalContextFactory</code> instance.
      */
     public CreationalContextFactory()
     {
-        impl = new CreationalContextImpl<T>();
     }
     
     /**
@@ -60,15 +56,6 @@ public final class CreationalContextFactory<T>
      */
     public CreationalContext<T> getCreationalContext(Contextual<T> contextual)
     {        
-        return impl.getCreationalContextImpl(contextual);   
-    }
-        
-    /**
-     * Clear all incomplete instance cache.
-     */
-    public void clear()
-    {
-        impl.clear();
-        impl = null;
-    }
+        return new CreationalContextImpl<T>(contextual);   
+    }        
 }
