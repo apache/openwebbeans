@@ -11,26 +11,23 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.component.creation;
+package org.apache.webbeans.newtests.interceptors.annotation;
 
-import org.apache.webbeans.component.ManagedBean;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * Contract for {@link ManagedBean}.
- * 
- * @version $Rev$ $Date$
- *
- * @param <T> bean class
- */
-public interface ManagedBeanCreator<T> extends InjectedTargetBeanCreator<T>
+import javax.enterprise.inject.Stereotype;
+
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
+
+@Stereotype
+@Secure
+@LoggingStereoType
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SecureStereoType
 {
-    /**
-     * Define managed bean constructor.
-     */
-    public void defineConstructor();
-    
-    public void defineInterceptorStack();    
-    
-    public void defineDecoratorStack();    
-    
+
 }

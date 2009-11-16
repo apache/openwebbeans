@@ -118,7 +118,6 @@ import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -971,16 +970,7 @@ public final class WebBeansUtil
             {
                 try
                 {
-                    if (isDefinedWithWebBeans)
-                    {
-                        Object interceptorProxy = BeanManagerImpl.getManager().getInstance(webBeansInterceptor);
-                        WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) webBeansInterceptor;
-                        interceptor.setInjections(interceptorProxy);
-
-                        //Setting interceptor proxy instance
-                        intData.setInterceptorInstance(interceptorProxy);
-                    }
-                    else
+                    if (!isDefinedWithWebBeans)
                     {
                         if (ClassUtil.isContaintNoArgConstructor(clazz) == null)
                         {
@@ -989,7 +979,6 @@ public final class WebBeansUtil
 
                         intData.setInterceptorInstance(clazz.newInstance());
                     }
-
                 }
                 catch (WebBeansConfigurationException e1)
                 {

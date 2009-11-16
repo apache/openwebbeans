@@ -87,52 +87,57 @@ public final class WebBeansInterceptorConfig
     {
         Class<?> clazz = component.getReturnType();
         Set<Interceptor<?>> componentInterceptors = null;
+
+        Set<Annotation> bindingTypeSet = new HashSet<Annotation>();
+        Annotation[] anns = new Annotation[0];
         
         if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
         {
-
-            Set<Annotation> bindingTypeSet = new HashSet<Annotation>();
-
-            Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
+            anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
 
             for (Annotation ann : anns)
             {
                 bindingTypeSet.add(ann);
             }
-
-            Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
-            for (Annotation stero : stereoTypes)
+        }
+        
+        //check for stereotypes
+        Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
+        for (Annotation stero : stereoTypes)
+        {
+            if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
             {
-                if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
-                {
-                    Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
+                Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
 
-                    for (Annotation ann : steroInterceptorBindings)
-                    {
-                        bindingTypeSet.add(ann);
-                    }
+                for (Annotation ann : steroInterceptorBindings)
+                {
+                    bindingTypeSet.add(ann);
                 }
             }
-            
-            //Look for inherited binding types
-            IBeanInheritedMetaData metadata = component.getInheritedMetaData();
-            if(metadata != null)
+        }
+        
+        //Look for inherited binding types
+        IBeanInheritedMetaData metadata = component.getInheritedMetaData();
+        if(metadata != null)
+        {
+            Set<Annotation> inheritedBindingTypes = metadata.getInheritedInterceptorBindings();
+            if(!inheritedBindingTypes.isEmpty())
             {
-                Set<Annotation> inheritedBindingTypes = metadata.getInheritedInterceptorBindings();
-                if(!inheritedBindingTypes.isEmpty())
-                {
-                    bindingTypeSet.addAll(inheritedBindingTypes);   
-                }
+                bindingTypeSet.addAll(inheritedBindingTypes);   
             }
+        }
 
-            anns = new Annotation[bindingTypeSet.size()];
-            anns = bindingTypeSet.toArray(anns);
-
+        anns = new Annotation[bindingTypeSet.size()];
+        anns = bindingTypeSet.toArray(anns);
+        
+        if(anns.length > 0)
+        {
             componentInterceptors = findDeployedWebBeansInterceptor(anns);
 
             // Adding class interceptors
-            addComponentInterceptors(componentInterceptors, stack);
+            addComponentInterceptors(componentInterceptors, stack);            
         }
+                
 
         // Method level interceptors.
         addMethodInterceptors(clazz, stack, componentInterceptors);
@@ -158,6 +163,7 @@ public final class WebBeansInterceptorConfig
     private static void addMethodInterceptors(Class<?> clazz, List<InterceptorData> stack, Set<Interceptor<?>> componentInterceptors)
     {
         Method[] methods = clazz.getDeclaredMethods();
+        Set<Annotation> set = new HashSet<Annotation>();
 
         for (Method method : methods)
         {
@@ -165,8 +171,6 @@ public final class WebBeansInterceptorConfig
             {
                 Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(method.getDeclaredAnnotations());
                 Annotation[] annsClazz = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
-
-                Set<Annotation> set = new HashSet<Annotation>();
 
                 for (Annotation ann : anns)
                 {
@@ -177,42 +181,41 @@ public final class WebBeansInterceptorConfig
                 {
                     set.add(ann);
                 }
+            }
 
-                Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
-                for (Annotation stero : stereoTypes)
+            Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
+            for (Annotation stero : stereoTypes)
+            {
+                if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
                 {
-                    if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
-                    {
-                        Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
+                    Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
 
-                        for (Annotation ann : steroInterceptorBindings)
-                        {
-                            set.add(ann);
-                        }
+                    for (Annotation ann : steroInterceptorBindings)
+                    {
+                        set.add(ann);
                     }
                 }
+            }
 
-                Annotation[] result = new Annotation[set.size()];
-                result = set.toArray(result);
+            Annotation[] result = new Annotation[set.size()];
+            result = set.toArray(result);
 
-                Set<Interceptor<?>> setInterceptors = findDeployedWebBeansInterceptor(result);
-                
-                if(componentInterceptors != null)
-                {
-                    setInterceptors.removeAll(componentInterceptors);   
-                }
+            Set<Interceptor<?>> setInterceptors = findDeployedWebBeansInterceptor(result);
+            
+            if(componentInterceptors != null)
+            {
+                setInterceptors.removeAll(componentInterceptors);   
+            }
 
-                Iterator<Interceptor<?>> it = setInterceptors.iterator();
+            Iterator<Interceptor<?>> it = setInterceptors.iterator();
 
-                while (it.hasNext())
-                {
-                    WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
+            while (it.hasNext())
+            {
+                WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
 
-                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), AroundInvoke.class, true, true, stack, method, true);
-                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PostConstruct.class, true, true, stack, method, true);
-                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PreDestroy.class, true, true, stack, method, true);
-                }
-
+                WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), AroundInvoke.class, true, true, stack, method, true);
+                WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PostConstruct.class, true, true, stack, method, true);
+                WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PreDestroy.class, true, true, stack, method, true);
             }
         }
 

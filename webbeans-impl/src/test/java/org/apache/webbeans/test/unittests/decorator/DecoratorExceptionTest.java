@@ -62,7 +62,7 @@ public class DecoratorExceptionTest extends TestContext
     {
         try
         {
-            defineSimpleWebBeansDecorators(DelegateAttributeIsnotInterface.class);
+            defineDecorator(DelegateAttributeIsnotInterface.class);
         }
         catch (Exception e)
         {
@@ -77,7 +77,7 @@ public class DecoratorExceptionTest extends TestContext
     {
         try
         {
-            defineSimpleWebBeansDecorators(MoreThanOneDelegateAttribute.class);
+            defineDecorator(MoreThanOneDelegateAttribute.class);
         }
         catch (Exception e)
         {
@@ -98,7 +98,7 @@ public class DecoratorExceptionTest extends TestContext
     {
         try
         {
-            defineSimpleWebBeansDecorators(PaymentDecorator.class);
+            defineDecorator(PaymentDecorator.class);
             defineManagedBean(CheckWithCheckPaymentDecoratorField.class);
         }
         catch (Exception e)
@@ -114,7 +114,7 @@ public class DecoratorExceptionTest extends TestContext
     {
         try
         {
-            defineSimpleWebBeansDecorators(DelegateAttributeMustImplementAllDecoratedTypes.class);
+            defineDecorator(DelegateAttributeMustImplementAllDecoratedTypes.class);
         }
         catch (Exception e)
         {

@@ -40,6 +40,7 @@ import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.xml.XMLManagedBean;
+import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.DependentContext;
@@ -317,7 +318,8 @@ public abstract class TestContext implements ITestContext
         {
             manager.addBean(WebBeansUtil.createNewBean(bean));
             DecoratorUtil.checkManagedBeanDecoratorConditions(bean);
-            // DefinitionUtil.defineSimpleWebBeanInterceptorStack(bean);
+            WebBeansDecoratorConfig.configureDecarotors(bean);
+            DefinitionUtil.defineBeanInterceptorStack(bean);
 
             getComponents().add((AbstractBean<?>) bean);
             manager.addBean(bean);
@@ -415,7 +417,7 @@ public abstract class TestContext implements ITestContext
      * @return the new interceptor
      */
     @SuppressWarnings("unchecked")
-    protected <T> AbstractBean<T> defineSimpleWebBeanInterceptor(Class<T> clazz)
+    protected <T> AbstractBean<T> defineInterceptor(Class<T> clazz)
     {
         ManagedBean<T> component = null;
 
@@ -442,7 +444,7 @@ public abstract class TestContext implements ITestContext
      * @return the new decorator
      */
     @SuppressWarnings("unchecked")
-    protected <T> AbstractBean<T> defineSimpleWebBeansDecorators(Class<T> clazz)
+    protected <T> AbstractBean<T> defineDecorator(Class<T> clazz)
     {
         ManagedBean<T> component = null;
 

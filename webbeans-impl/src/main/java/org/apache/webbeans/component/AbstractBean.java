@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
@@ -87,8 +88,8 @@ public abstract class AbstractBean<T> extends BaseBean<T>
      */
     protected List<InterceptorData> interceptorStack = new ArrayList<InterceptorData>();
 
-    /** Holds decorator stack */
-    protected List<Object> decoratorStack = new ArrayList<Object>();
+    /**Decorators*/
+    protected List<Decorator<?>> decorators = new ArrayList<Decorator<?>>();
 
     /** The bean is serializable or not */
     protected boolean serializable;
@@ -204,10 +205,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
             //Destroy instance, call @PreDestroy
             destroyInstance(instance);
                         
-            //Clear Decorator and Interceptor Stack
-            this.decoratorStack.clear();
-            this.interceptorStack.clear();
-            
             //Reset it
             this.dependentOwnerInjectionPoint = null;  
             
@@ -460,14 +457,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     {
         return this.interceptorStack;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Object> getDecoratorStack()
-    {
-        return this.decoratorStack;
-    }
     
     /**
      * {@inheritDoc}
@@ -626,6 +615,12 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     public boolean isEnabled()
     {
         return this.enabled;
+    }
+    
+    
+    public List<Decorator<?>> getDecorators()
+    {
+        return this.decorators;
     }
     
     /**

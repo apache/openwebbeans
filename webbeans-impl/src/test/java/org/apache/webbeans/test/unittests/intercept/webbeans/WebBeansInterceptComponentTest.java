@@ -64,7 +64,7 @@ public class WebBeansInterceptComponentTest extends TestContext
 
         try
         {
-            defineSimpleWebBeanInterceptor(WebBeansInterceptor.class);
+            defineInterceptor(WebBeansInterceptor.class);
             defineManagedBean(WInterceptorComponent.class);
 
         }
@@ -83,7 +83,7 @@ public class WebBeansInterceptComponentTest extends TestContext
     {
         getComponents().clear();
 
-        defineSimpleWebBeanInterceptor(WebBeansInterceptor.class);
+        defineInterceptor(WebBeansInterceptor.class);
         defineManagedBean(WInterceptorComponent.class);
 
         ContextFactory.initRequestContext(null);
@@ -106,8 +106,8 @@ public class WebBeansInterceptComponentTest extends TestContext
     {
         getComponents().clear();
 
-        defineSimpleWebBeanInterceptor(WebBeansInterceptor.class);
-        defineSimpleWebBeanInterceptor(WebBeanswithMetaInterceptor.class);
+        defineInterceptor(WebBeansInterceptor.class);
+        defineInterceptor(WebBeanswithMetaInterceptor.class);
         defineManagedBean(WMetaInterceptorComponent.class);
 
         ContextFactory.initRequestContext(null);

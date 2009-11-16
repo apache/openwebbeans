@@ -34,6 +34,7 @@ import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
@@ -168,7 +169,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
             checkDecoratorStackForSameDecorator(method);
 
             //Gets component decorator stack
-            List<Object> decorators = component.getDecoratorStack();
+            List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(component, webbeansInstance);
                         
             // Run around invoke chain
             List<InterceptorData> stack = component.getInterceptorStack();
@@ -181,7 +182,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
             //Call Around Invokes
             if (WebBeansUtil.isContainsInterceptorMethod(temp, InterceptorType.AROUND_INVOKE))
             {
-                result = callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(stack, InterceptorType.AROUND_INVOKE));
+                result = callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(temp, InterceptorType.AROUND_INVOKE));
                 interceptorRun = true;
             }
             
@@ -366,8 +367,46 @@ public class InterceptorHandler implements MethodHandler, Serializable
             {
                 it.remove();
             }
-
         }
+        
+        injectInterceptorFields(stack);
+    }
+    
+    
+    public static void injectInterceptorFields(final List<InterceptorData> stack)
+    {
+        Iterator<InterceptorData> it = stack.iterator();
+        while (it.hasNext())
+        {
+            InterceptorData intData = it.next();
+            
+            if (intData.isDefinedInInterceptorClass())
+            {
+                try
+                {
+                    if (intData.isDefinedWithWebBeansInterceptor())
+                    {
+                        Object interceptorProxy = BeanManagerImpl.getManager().getInstance(intData.getWebBeansInterceptor());
+                        WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) intData.getWebBeansInterceptor();
+                        interceptor.setInjections(interceptorProxy);
+
+                        //Setting interceptor proxy instance
+                        intData.setInterceptorInstance(interceptorProxy);
+                    }
+
+                }
+                catch (WebBeansConfigurationException e1)
+                {
+                    throw e1;
+                }
+                catch (Exception e)
+                {
+                    throw new WebBeansException(e);
+                }
+            }
+            
+        }
+        
     }
 
 }

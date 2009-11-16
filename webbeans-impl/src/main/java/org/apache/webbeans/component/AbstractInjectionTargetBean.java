@@ -23,11 +23,11 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -197,14 +197,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
 
         // Inject methods
         injectMethods(instance, creationalContext);
-
-        // Interceptor and decorator stack
-        if (getWebBeansType().equals(WebBeansType.MANAGED))
-        {
-            DefinitionUtil.defineBeanInterceptorStack(this);
-            DefinitionUtil.defineBeanDecoratorStack(this, instance);
-        }
-
+        
+        //Post construct
         postConstruct(instance);
     }
 
@@ -242,6 +236,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
             // Call Post Construct
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
             {
+                InterceptorHandler.injectInterceptorFields(getInterceptorStack());
+                
                 InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
                 try
                 {
@@ -283,6 +279,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         {
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
             {
+                InterceptorHandler.injectInterceptorFields(getInterceptorStack());
+                
                 InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
                 try
                 {

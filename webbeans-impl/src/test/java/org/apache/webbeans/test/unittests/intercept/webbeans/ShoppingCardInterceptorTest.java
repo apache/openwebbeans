@@ -50,7 +50,7 @@ public class ShoppingCardInterceptorTest extends TestContext
     public void testTransactionalInterceptor()
     {
         ContextFactory.initSessionContext(new MockHttpSession());
-        defineSimpleWebBeanInterceptor(TransactionalInterceptor.class);
+        defineInterceptor(TransactionalInterceptor.class);
         
         Bean<ShoppingCard> bean = defineManagedBean(ShoppingCard.class);
         ShoppingCard card = getManager().getInstance(bean);

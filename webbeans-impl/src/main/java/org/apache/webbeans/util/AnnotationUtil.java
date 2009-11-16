@@ -938,6 +938,15 @@ public final class AnnotationUtil
             if (isInterceptorBindingAnnotation(ann.annotationType()))
             {
                 interAnns.add(ann);
+                
+                //check for transitive
+                Annotation[] transitives = getTransitiveInterceptorBindings(ann.annotationType().getDeclaredAnnotations());
+                
+                for(Annotation transitive : transitives)
+                {
+                    interAnns.add(transitive);
+                }
+                
             }
         }
 
@@ -946,7 +955,12 @@ public final class AnnotationUtil
 
         return ret;
     }
-
+    
+    private static Annotation[] getTransitiveInterceptorBindings(Annotation[] anns)
+    {
+        return getInterceptorBindingMetaAnnotations(anns);
+    }
+ 
     public static Annotation[] getStereotypeMetaAnnotations(Annotation[] anns)
     {
         Asserts.assertNotNull(anns, "anns parameter can not be null");
@@ -957,6 +971,14 @@ public final class AnnotationUtil
             if (isStereoTypeAnnotation(ann.annotationType()))
             {
                 interAnns.add(ann);
+                
+                //check for transitive
+                Annotation[] transitives = getTransitiveStereoTypes(ann.annotationType().getDeclaredAnnotations());
+                
+                for(Annotation transitive : transitives)
+                {
+                    interAnns.add(transitive);
+                }                
             }
         }
 
@@ -965,6 +987,12 @@ public final class AnnotationUtil
 
         return ret;
     }
+    
+    private static Annotation[] getTransitiveStereoTypes(Annotation[] anns)
+    {
+        return getStereotypeMetaAnnotations(anns);
+    }
+    
 
     public static boolean hasStereoTypeMetaAnnotation(Annotation[] anns)
     {

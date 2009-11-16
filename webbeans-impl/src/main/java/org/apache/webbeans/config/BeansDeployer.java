@@ -656,6 +656,8 @@ public class BeansDeployer
             Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();           
             managedBeanCreator.defineInjectedFields();
             managedBeanCreator.defineInjectedMethods();
+            managedBeanCreator.defineDecoratorStack();
+            managedBeanCreator.defineInterceptorStack();
             
             Set<ObserverMethod<?>> observerMethods = managedBeanCreator.defineObserverMethods();
                                     

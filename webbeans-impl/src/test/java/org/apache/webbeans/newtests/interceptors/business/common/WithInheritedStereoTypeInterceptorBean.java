@@ -11,26 +11,20 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.component.creation;
+package org.apache.webbeans.newtests.interceptors.business.common;
 
-import org.apache.webbeans.component.ManagedBean;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
 
-/**
- * Contract for {@link ManagedBean}.
- * 
- * @version $Rev$ $Date$
- *
- * @param <T> bean class
- */
-public interface ManagedBeanCreator<T> extends InjectedTargetBeanCreator<T>
+import org.apache.webbeans.newtests.interceptors.annotation.SecureStereoType;
+
+@SecureStereoType
+@RequestScoped
+@Named("org.apache.webbeans.newtests.interceptors.business.common.WithInheritedStereoTypeInterceptorBean")
+public class WithInheritedStereoTypeInterceptorBean
 {
-    /**
-     * Define managed bean constructor.
-     */
-    public void defineConstructor();
-    
-    public void defineInterceptorStack();    
-    
-    public void defineDecoratorStack();    
-    
+    public void businessMethod()
+    {
+        
+    }
 }

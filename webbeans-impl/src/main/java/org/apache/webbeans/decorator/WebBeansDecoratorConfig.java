@@ -62,7 +62,7 @@ public final class WebBeansDecoratorConfig
         BeanManagerImpl.getManager().addDecorator(decorator);
     }
 
-    public static void configureDecarotors(AbstractBean<?> component, Object instance)
+    public static void configureDecarotors(AbstractBean<?> component)
     {
         Set<Annotation> qualifiers = component.getQualifiers();
         Annotation[] anns = new Annotation[qualifiers.size()];
@@ -73,15 +73,30 @@ public final class WebBeansDecoratorConfig
 
         while (itList.hasNext())
         {
-            WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();
+            WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();            
+            component.getDecorators().add(decorator);            
+        }
+    }
+    
+    public static List<Object> getDecoratorStack(AbstractBean<?> component, Object instance)
+    {
+        List<Object> decoratorStack = new ArrayList<Object>();
+        List<Decorator<?>> decoratorList = component.getDecorators();        
+        Iterator<Decorator<?>> itList = decoratorList.iterator();
 
+        while (itList.hasNext())
+        {
+            WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();
+            
             Object decoratorInstance = BeanManagerImpl.getManager().getInstance(decorator);
 
             decorator.setInjections(decoratorInstance);
             decorator.setDelegate(decoratorInstance, instance);
-
-            component.getDecoratorStack().add(decoratorInstance);
+            
+            decoratorStack.add(decoratorInstance);
         }
+
+        return decoratorStack;
     }
 
     private static Set<Decorator<?>> getWebBeansDecorators()

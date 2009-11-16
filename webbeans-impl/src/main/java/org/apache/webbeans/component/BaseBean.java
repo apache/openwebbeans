@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
@@ -190,7 +191,7 @@ public abstract class BaseBean<T> implements Bean<T>
      * Gets decorator stack of bean instance.
      * @return decorator stack
      */
-    public abstract List<Object> getDecoratorStack();
+    public abstract List<Decorator<?>> getDecorators();
 
     /**
      * Sets serializable flag.

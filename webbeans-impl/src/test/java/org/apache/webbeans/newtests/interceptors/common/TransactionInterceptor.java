@@ -11,26 +11,27 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.component.creation;
+package org.apache.webbeans.newtests.interceptors.common;
 
-import org.apache.webbeans.component.ManagedBean;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InvocationContext;
 
-/**
- * Contract for {@link ManagedBean}.
- * 
- * @version $Rev$ $Date$
- *
- * @param <T> bean class
- */
-public interface ManagedBeanCreator<T> extends InjectedTargetBeanCreator<T>
+import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
+
+@Interceptor
+@Transactional
+public class TransactionInterceptor
 {
-    /**
-     * Define managed bean constructor.
-     */
-    public void defineConstructor();
+    public static boolean ECHO = false;
     
-    public void defineInterceptorStack();    
+    public static int coount = 0;
     
-    public void defineDecoratorStack();    
-    
+    @AroundInvoke
+    public Object invoke(InvocationContext context) throws Exception
+    {
+        ECHO = true;
+        coount++;
+        return context.proceed();
+    }
 }

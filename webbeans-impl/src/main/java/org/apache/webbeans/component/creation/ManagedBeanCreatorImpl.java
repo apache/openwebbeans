@@ -16,8 +16,10 @@ package org.apache.webbeans.component.creation;
 import java.lang.reflect.Constructor;
 
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
+import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -77,5 +79,25 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
     public ManagedBean<T> getBean()
     {
         return (ManagedBean<T>)super.getBean();
+    }
+
+
+    @Override
+    public void defineDecoratorStack()
+    {
+        if(getBean().getWebBeansType().equals(WebBeansType.MANAGED))
+        {
+            WebBeansDecoratorConfig.configureDecarotors(getBean());   
+        }
+    }
+
+
+    @Override
+    public void defineInterceptorStack()
+    {
+        if(getBean().getWebBeansType().equals(WebBeansType.MANAGED))
+        {
+            DefinitionUtil.defineBeanInterceptorStack(getBean());            
+        }                
     }
 }

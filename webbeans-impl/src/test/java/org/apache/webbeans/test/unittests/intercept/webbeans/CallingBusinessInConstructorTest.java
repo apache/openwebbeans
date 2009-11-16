@@ -56,7 +56,7 @@ public class CallingBusinessInConstructorTest extends TestContext
         
         clear();        
         
-        defineSimpleWebBeanInterceptor(SecureInterceptor.class);
+        defineInterceptor(SecureInterceptor.class);
         Bean<CallBusinessInConstructorBean> bean = defineManagedBean(CallBusinessInConstructorBean.class);
         CallBusinessInConstructorBean instance = (CallBusinessInConstructorBean) getInstanceByName("callBusinessInConstructorBean");
         

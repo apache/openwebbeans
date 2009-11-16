@@ -47,7 +47,7 @@ public class SecureAndTransactionalInterceptorTest extends TestContext
     public void testSecureAndTransactionalInterceptor()
     {
         ContextFactory.initSessionContext(new MockHttpSession());
-        defineSimpleWebBeanInterceptor(SecureAndTransactionalInterceptor.class);
+        defineInterceptor(SecureAndTransactionalInterceptor.class);
         
         Bean<SecureAndTransactionalComponent> bean = defineManagedBean(SecureAndTransactionalComponent.class);
         SecureAndTransactionalComponent payment = getManager().getInstance(bean);
