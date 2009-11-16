@@ -22,7 +22,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.util.Closable;
 
@@ -30,12 +29,10 @@ public class JmsBean<T> extends AbstractBean<T> implements JmsBeanMarker
 {
     private JMSModel jmsModel = null;
     
-    @SuppressWarnings("unchecked")
     JmsBean(JMSModel jmsModel)
     {
         super(WebBeansType.JMS);        
         this.jmsModel = jmsModel;
-        this.creationalContext = CreationalContextFactory.getInstance().getCreationalContext(this);
     }
 
     @Override
@@ -45,7 +42,7 @@ public class JmsBean<T> extends AbstractBean<T> implements JmsBeanMarker
     }
 
     @Override
-    protected void destroyInstance(T instance)
+    protected void destroyInstance(T instance,CreationalContext<T> creationalContext)
     {        
         try
         {
