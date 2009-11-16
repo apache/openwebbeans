@@ -117,6 +117,7 @@ public abstract class TestContext implements ITestContext
         TestContext.testContexts.add(this);
         this.manager = new MockManager();
         this.xmlConfigurator = new WebBeansXMLConfigurator();
+        PluginLoader.getInstance().startUp();            
     }
     
 
@@ -134,8 +135,6 @@ public abstract class TestContext implements ITestContext
         initDecorators();
         initStereoTypes();
         initDependentContext();            
-
-        PluginLoader.getInstance().startUp();            
     }
 
     /**
