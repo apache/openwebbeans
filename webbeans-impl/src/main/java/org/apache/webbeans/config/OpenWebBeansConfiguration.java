@@ -59,6 +59,8 @@ public class OpenWebBeansConfiguration
     
     public static final String CONTAINER_LIFECYCLE = "org.apache.webbeans.spi.lifecycle";
     
+    public static final String APPLICATION_IS_JSP = "org.apache.webbeans.application.jspf";
+    
     public static OpenWebBeansConfiguration getInstance() {
         return (OpenWebBeansConfiguration) WebBeansFinder.getSingletonInstance(OpenWebBeansConfiguration.class.getName());
     }
@@ -144,6 +146,14 @@ public class OpenWebBeansConfiguration
     public boolean isOwbSpecificFieldInjection()
     {
         String value = getProperty(USE_OWB_SPECIFIC_FIELD_INJECTION);
+        
+        return Boolean.valueOf(value);
+    }
+    
+    
+    public boolean isJspApplication()
+    {
+        String value = getProperty(APPLICATION_IS_JSP);
         
         return Boolean.valueOf(value);
     }

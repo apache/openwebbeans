@@ -188,11 +188,17 @@ public final class EnterpriseLifeCycle implements Lifecycle
         logger.info("Deploying scanned beans");
 
         deployer.deploy(this.discovery);
+        
+        //Application is configured as JSP
+        if(OpenWebBeansConfiguration.getInstance().isJspApplication())
+        {
+            logger.debug("Application is configured as JSP. Adding EL Resolver");
+            
+            ServletContext context = event.getServletContext();
 
-        ServletContext context = event.getServletContext();
-
-        JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext(context);
-        applicationCtx.addELResolver(new WebBeansELResolver());
+            JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext(context);
+            applicationCtx.addELResolver(new WebBeansELResolver());            
+        }
         
         long end = System.currentTimeMillis();
         
