@@ -175,7 +175,7 @@ public class InjectionPointFactory
         
         for(AnnotatedParameter<?> parameter : parameters)
         {
-            point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[0]), parameter.getBaseType(), member , parameter);
+            point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]), parameter.getBaseType(), member , parameter);
             lists.add(point);
         }
         
@@ -226,7 +226,7 @@ public class InjectionPointFactory
         
         for(AnnotatedParameter<?> parameter : parameters)
         {
-            point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[0]), parameter.getBaseType(), member , parameter);
+            point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]), parameter.getBaseType(), member , parameter);
             lists.add(point);
         }
         
