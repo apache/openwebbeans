@@ -26,9 +26,8 @@ public class ConversationDecorator implements Conversation
 
     @Override
     public void begin()
-    {
+    {        
         CALLED = true;
-        conversation.begin();
     }
 
     @Override

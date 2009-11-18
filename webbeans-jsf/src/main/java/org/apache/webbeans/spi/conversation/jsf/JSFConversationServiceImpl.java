@@ -26,7 +26,16 @@ public class JSFConversationServiceImpl implements ConversationService
 
     public String getConversationId()
     {
-        return JSFUtil.getConversationId();
+        //For postback conversation
+        String cid = JSFUtil.getConversationId();
+        
+        if(cid == null)
+        {
+            //For GET conversation
+            cid = JSFUtil.getJSFRequestParameter("cid");
+        }
+        
+        return cid;
     }
 
     public String getConversationSessionId()

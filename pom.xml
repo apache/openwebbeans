@@ -521,6 +521,26 @@
 				<version>${openwebbeans.version}</version>
 			</dependency>
 
+                        <dependency>
+                                <groupId>org.apache.openwebbeans</groupId>
+                                <artifactId>openwebbeans-resource</artifactId>
+                                <version>${openwebbeans.version}</version>
+                        </dependency>
+
+                        <dependency>
+                                <groupId>org.apache.openwebbeans</groupId>
+                                <artifactId>openwebbeans-geronimo</artifactId>
+                                <version>${openwebbeans.version}</version>
+                        </dependency>
+
+
+                        <dependency>
+                                <groupId>org.apache.openwebbeans</groupId>
+                                <artifactId>openwebbeans-ejb</artifactId>
+                                <version>${openwebbeans.version}</version>
+                        </dependency>
+
+
 			<dependency>
 				<groupId>org.apache.openwebbeans</groupId>
 				<artifactId>openwebbeans-jpa</artifactId>

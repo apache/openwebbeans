@@ -25,14 +25,6 @@ under the License.
   <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
   <param-value>.xhtml</param-value>
  </context-param>
- <filter>
-  <filter-name>webbeans</filter-name>
-  <filter-class>org.apache.webbeans.jsf.WebBeansJSFFilter</filter-class>
- </filter>
- <filter-mapping>
-  <filter-name>webbeans</filter-name>
-  <servlet-name>Faces Servlet</servlet-name>
- </filter-mapping>
  <listener>
   <listener-class>org.apache.webbeans.servlet.WebBeansConfigurationListener</listener-class>
  </listener>

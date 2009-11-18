@@ -147,6 +147,18 @@ public final class JSFUtil
         
         return null;
     }
+    
+    
+    public static String getJSFRequestParameter(String parameterName)
+    {   
+        ExternalContext ec = getExternalContext();
+        if(ec != null)
+        {
+            return ec.getRequestParameterMap().get(parameterName);
+        }
+        
+        return null;
+    }
 
     public static String getConversationId()
     {

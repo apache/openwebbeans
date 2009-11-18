@@ -70,6 +70,7 @@ public class ConversationImpl implements Conversation
         else
         {
             logger.warn("Conversation with cid=" + id + " is already began!");
+            throw new IllegalStateException();
         }
     }
 

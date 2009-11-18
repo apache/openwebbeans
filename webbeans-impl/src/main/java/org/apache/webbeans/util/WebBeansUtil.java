@@ -754,7 +754,7 @@ public final class WebBeansUtil
         conversationComp.setType(new StandardLiteral());
         conversationComp.addQualifier(new DefaultLiteral());
         conversationComp.addQualifier(new AnyLiteral());
-        conversationComp.setName("javax.context.conversation");
+        conversationComp.setName("javax.enterprise.context.conversation");
         
         WebBeansDecoratorConfig.configureDecarotors(conversationComp);
         

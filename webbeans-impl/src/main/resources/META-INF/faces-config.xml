@@ -17,19 +17,14 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<faces-config
-    xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd"
-    version="1.2">
-
-	<application>
-		<el-resolver>org.apache.webbeans.el.WebBeansELResolver</el-resolver>
-	</application>
-
-  <lifecycle>
-      <phase-listener>org.apache.webbeans.jsf.WebBeansPhaseListener</phase-listener>
-   </lifecycle>
-
-
+<faces-config version="1.2" xmlns="http://java.sun.com/xml/ns/javaee"
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
+ <application>
+  <view-handler>org.apache.webbeans.jsf.ConversationAwareViewHandler</view-handler>
+  <el-resolver>org.apache.webbeans.el.WebBeansELResolver</el-resolver>
+ </application>
+ <lifecycle>
+  <phase-listener>org.apache.webbeans.jsf.WebBeansPhaseListener</phase-listener>
+ </lifecycle>
 </faces-config>
