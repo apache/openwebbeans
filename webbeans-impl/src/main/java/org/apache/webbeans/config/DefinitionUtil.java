@@ -227,7 +227,7 @@ public final class DefinitionUtil
             
             Class<?> clazz  = ClassUtil.getClazz(type);
             
-            if (clazz.isPrimitive() || clazz.isArray())
+            if (clazz != null && (clazz.isPrimitive() || clazz.isArray()))
             {
                 types.add(clazz);
 

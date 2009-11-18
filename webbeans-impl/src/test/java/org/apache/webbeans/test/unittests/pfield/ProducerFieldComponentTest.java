@@ -27,6 +27,7 @@ import org.apache.webbeans.test.component.pfield.ProducerFieldDefinitionComponen
 import org.apache.webbeans.test.component.pfield.ProducerFieldDefinitionParameterized;
 import org.apache.webbeans.test.component.pfield.ProducerFieldInjectedComponent;
 import org.apache.webbeans.test.component.pfield.ProducerFieldInjectedWrongType;
+import org.apache.webbeans.test.component.pfield.broken.TypeVariableProducerField;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,6 +96,24 @@ public class ProducerFieldComponentTest extends TestContext
         Assert.assertNotNull(expected);
         Assert.assertNull(instance);
         Assert.assertTrue(expected instanceof javax.enterprise.inject.UnsatisfiedResolutionException);
+    }
+    
+    @Test
+    public void testProducerFieldTypeVariable()
+    {
+        ContextFactory.initRequestContext(null);
+        
+        Exception expected = null;
+        try
+        {
+            defineManagedBean(TypeVariableProducerField.class);
+        }
+        catch(Exception caught){
+            System.out.println(caught.getMessage());
+            expected = caught;
+        }
+        Assert.assertNotNull(expected);
+        Assert.assertTrue(expected instanceof org.apache.webbeans.exception.WebBeansConfigurationException);
     }
 
 }
