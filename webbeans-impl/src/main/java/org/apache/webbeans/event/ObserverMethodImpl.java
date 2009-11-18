@@ -116,7 +116,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             observedQualifiers.add(qualifier);
         }
 
-        this.observedEventType = null; //X TODO
+        this.observedEventType = AnnotationUtil.getTypeOfParameterWithGivenAnnotation(observerMethod, Observes.class);
         
         this.phase = EventUtil.getObserverMethodTransactionType(observerMethod);
     }
@@ -140,7 +140,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         {
             observedQualifiers.add(qualifier);
         }
-        this.observedEventType = null; //X TODO
+        this.observedEventType = observedEventType;
         this.phase = EventUtil.getObserverMethodTransactionType(observerMethod); //X TODO might be overriden via XML?
 
     }

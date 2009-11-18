@@ -275,7 +275,7 @@ public final class AnnotationUtil
             return (Class<?>) type;
         }
     }
-
+    
     /**
      * Gets the method first found parameter qualifiers.
      * 
@@ -325,7 +325,47 @@ public final class AnnotationUtil
         result = new Annotation[0];
         return result;
     }
-    
+
+    /**
+     * Get the Type of the method parameter which has the given annotation
+     * @param method which need to be scanned
+     * @param clazz the annotation to scan the method parameters for
+     * @return the Type of the method parameter which has the given annotation, or <code>null</code> if not found.
+     */
+    public static Type getTypeOfParameterWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
+    {
+        Asserts.assertNotNull(method, "Method argument can not be null");
+        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+
+        Annotation[][] parameterAnns = method.getParameterAnnotations();
+        Type result = null;
+
+        int index = 0;
+        for (Annotation[] parameters : parameterAnns)
+        {
+            boolean found = false;
+            for (Annotation param : parameters)
+            {
+                Class<? extends Annotation> btype = param.annotationType();
+                if (btype.equals(clazz))
+                {
+                    found = true;
+                    continue;
+                }
+            }
+
+            if (found)
+            {
+                result = method.getParameterTypes()[index];
+                break;
+            }
+
+            index++;
+
+        }
+        return result;
+    }
+
     /**
      * Gets the method first found parameter annotation with given type.
      * 
