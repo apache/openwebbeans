@@ -54,6 +54,8 @@ public final class ContextFactory
     private static ThreadLocal<DependentContext> dependentContext = null;
 
     private static Map<ServletContext, ApplicationContext> currentApplicationContexts = new ConcurrentHashMap<ServletContext, ApplicationContext>();
+    
+    private static Map<ServletContext, SingletonContext> currentSingletonContexts = new ConcurrentHashMap<ServletContext, SingletonContext>();
 
     private static SessionContextManager sessionCtxManager = SessionContextManager.getInstance();
 
@@ -108,8 +110,8 @@ public final class ContextFactory
                     initSessionContext(session);    
                 }
                             
-                //Re-initialize thread local for application
-                initApplicationContext(event.getServletContext());
+                initApplicationContext(event.getServletContext());                
+                initSingletonContext(event.getServletContext());
             }            
         }
     }
@@ -245,15 +247,31 @@ public final class ContextFactory
         conversationManager.destroyAllConversations();
     }
     
-    public static void initSingletonContext()
+    public static void initSingletonContext(ServletContext servletContext)
     {
-        SingletonContext context = new SingletonContext();
-        context.setActive(true);
+        if(servletContext != null && currentSingletonContexts.containsKey(servletContext))
+        {
+            singletonContext.set(currentSingletonContexts.get(servletContext));
+        }
         
-        singletonContext.set(context);
+        else
+        {
+            SingletonContext context = new SingletonContext();
+            context.setActive(true);
+            
+            if(servletContext != null)
+            {
+                currentSingletonContexts.put(servletContext, context);
+                
+            }
+            
+            singletonContext.set(context);
+   
+        }
+                        
     }
     
-    public static void destroySingletonContext()
+    public static void destroySingletonContext(ServletContext servletContext)
     {
         if (singletonContext != null)
         {
@@ -265,8 +283,13 @@ public final class ContextFactory
             }
             
             singletonContext.remove();            
+
         }
         
+        if(servletContext != null)
+        {
+            currentSingletonContexts.remove(servletContext);   
+        }                
     }
 
     public static void initConversationContext(ConversationContext context)

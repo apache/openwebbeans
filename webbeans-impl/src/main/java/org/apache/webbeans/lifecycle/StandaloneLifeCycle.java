@@ -99,7 +99,7 @@ public class StandaloneLifeCycle implements Lifecycle
             long begin = System.currentTimeMillis();
             
             //Singleton context
-            ContextFactory.initSingletonContext();
+            ContextFactory.initSingletonContext(null);
 
             // load all optional plugins
             PluginLoader.getInstance().startUp();
@@ -139,7 +139,7 @@ public class StandaloneLifeCycle implements Lifecycle
             
             jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
                     
-            ContextFactory.destroySingletonContext();
+            ContextFactory.destroySingletonContext(null);
 
             // finally free all plugin resources
             PluginLoader.getInstance().shutDown();

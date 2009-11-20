@@ -167,7 +167,7 @@ public final class EnterpriseLifeCycle implements Lifecycle
         ContextFactory.initApplicationContext(event.getServletContext());
         
         //Singleton context
-        ContextFactory.initSingletonContext();
+        ContextFactory.initSingletonContext(event.getServletContext());
 
         this.discovery = ServiceLoader.getService(MetaDataDiscoveryService.class);
         this.discovery.init(event.getServletContext());
@@ -223,7 +223,7 @@ public final class EnterpriseLifeCycle implements Lifecycle
 
         ContextFactory.destroyApplicationContext(event.getServletContext());
         
-        ContextFactory.destroySingletonContext();
+        ContextFactory.destroySingletonContext(event.getServletContext());
 
         jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
 
