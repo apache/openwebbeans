@@ -22,9 +22,9 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.inject.named.NamedFieldWithNamedValue;
 import org.apache.webbeans.test.component.inject.named.NamedFieldWithoutNamedValue;

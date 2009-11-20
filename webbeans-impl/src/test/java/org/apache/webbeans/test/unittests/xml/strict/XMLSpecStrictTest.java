@@ -17,9 +17,9 @@ import java.io.InputStream;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.test.xml.strict.DummyDecorator;
 import org.apache.webbeans.test.xml.strict.DummyInterceptor;

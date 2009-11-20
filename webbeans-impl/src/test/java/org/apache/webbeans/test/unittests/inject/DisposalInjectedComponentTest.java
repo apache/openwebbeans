@@ -19,10 +19,10 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.DisposalMethodComponent;
 import org.apache.webbeans.test.component.service.IService;
 import org.apache.webbeans.test.component.service.ServiceImpl1;

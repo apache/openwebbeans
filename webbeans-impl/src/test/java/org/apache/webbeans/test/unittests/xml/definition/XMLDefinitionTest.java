@@ -15,12 +15,12 @@ package org.apache.webbeans.test.unittests.xml.definition;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Mock;
 import org.apache.webbeans.test.xml.definition.Definition1;
 import org.apache.webbeans.test.xml.definition.Definition2;

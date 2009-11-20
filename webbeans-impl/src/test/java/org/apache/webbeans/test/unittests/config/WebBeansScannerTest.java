@@ -23,8 +23,8 @@ import javax.inject.Named;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.AbstractUnitTest;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.util.ArrayUtil;
 import org.junit.Test;
 

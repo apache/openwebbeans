@@ -11,15 +11,13 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.common;
+package org.apache.webbeans.test;
 
 import java.net.URL;
 import java.util.Collection;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import org.apache.webbeans.util.OpenWebBeansTestLifecycle;
-import org.apache.webbeans.util.OpenWebBeansTestMetaDataDiscoveryService;
 
 
 public abstract class AbstractUnitTest

@@ -20,8 +20,8 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.AbstractUnitTest;
 import org.apache.webbeans.newtests.contexts.session.common.PersonalDataBean;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
 public class SessionContextTest extends AbstractUnitTest

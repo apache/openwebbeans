@@ -20,9 +20,9 @@ import javax.enterprise.util.AnnotationLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.annotation.binding.Role;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;

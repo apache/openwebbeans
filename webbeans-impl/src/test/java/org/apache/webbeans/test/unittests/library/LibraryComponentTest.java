@@ -17,9 +17,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.library.Book;
 import org.apache.webbeans.test.component.library.BookShop;
 import org.apache.webbeans.test.component.library.Shop;

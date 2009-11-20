@@ -18,8 +18,8 @@ package org.apache.webbeans.test.unittests.pfield;
 
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;

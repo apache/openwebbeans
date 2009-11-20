@@ -20,8 +20,8 @@ package org.apache.webbeans.test.unittests.inject;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.apache.webbeans.test.component.inject.InstanceInjectedComponent;
 import org.apache.webbeans.util.WebBeansUtil;

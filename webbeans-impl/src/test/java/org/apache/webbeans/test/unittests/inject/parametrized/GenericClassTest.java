@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests.inject.parametrized;
 
 import java.lang.reflect.Field;
 
-import org.apache.webbeans.common.TestContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.inject.parametrized.Dao;
 import org.apache.webbeans.test.component.inject.parametrized.UserDao;
 import org.apache.webbeans.test.component.inject.parametrized.WithTypeVariable;

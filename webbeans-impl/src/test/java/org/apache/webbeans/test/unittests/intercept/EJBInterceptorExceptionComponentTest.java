@@ -15,10 +15,10 @@ package org.apache.webbeans.test.unittests.intercept;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.MultpleInterceptor;
 import org.junit.Before;
 import org.junit.Test;

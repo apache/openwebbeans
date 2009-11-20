@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.common;
+package org.apache.webbeans.test;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;

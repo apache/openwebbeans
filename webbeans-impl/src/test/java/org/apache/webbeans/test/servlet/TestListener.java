@@ -17,7 +17,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
-import org.apache.webbeans.common.TestContext;
+import org.apache.webbeans.test.TestContext;
 import org.junit.Test;
 
 /**

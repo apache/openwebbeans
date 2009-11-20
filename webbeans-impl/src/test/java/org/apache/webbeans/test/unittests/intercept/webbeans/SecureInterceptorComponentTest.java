@@ -15,9 +15,9 @@ package org.apache.webbeans.test.unittests.intercept.webbeans;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureComponent;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor;
 import org.junit.Before;

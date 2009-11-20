@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.test.unittests.exception.initializer;
 
-import org.apache.webbeans.common.TestContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.exception.initializer.BrokenInitializer1;
 import org.apache.webbeans.test.component.exception.initializer.BrokenInitializer2;
 import org.apache.webbeans.test.component.exception.initializer.BrokenInitializer3;

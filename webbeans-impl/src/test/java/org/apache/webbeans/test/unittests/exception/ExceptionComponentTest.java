@@ -18,11 +18,11 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithFinalMethodComponent;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithSameMethodNameComponent;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithStaticMethodComponent;

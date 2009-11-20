@@ -20,10 +20,10 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.ContainUserComponent;
 import org.apache.webbeans.test.component.UserComponent;
 import org.junit.Before;

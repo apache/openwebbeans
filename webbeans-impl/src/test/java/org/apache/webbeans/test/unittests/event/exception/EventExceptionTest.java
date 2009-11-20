@@ -21,8 +21,8 @@ import javax.enterprise.context.NormalScope;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.servlet.ServletContext;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.event.NotificationManager;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.LoggedInEvent;
 import org.apache.webbeans.test.event.LoggedInObserver;

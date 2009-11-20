@@ -16,8 +16,8 @@ package org.apache.webbeans.test.unittests.annotation;
 import java.lang.annotation.Annotation;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
 import org.junit.Assert;
 import org.junit.Test;

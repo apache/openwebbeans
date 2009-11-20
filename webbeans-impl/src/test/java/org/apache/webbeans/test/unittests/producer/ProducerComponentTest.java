@@ -21,9 +21,9 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.producer.ParametrizedModel1;
 import org.apache.webbeans.test.component.producer.ParametrizedModel2;
 import org.apache.webbeans.test.component.producer.ParametrizedProducer;

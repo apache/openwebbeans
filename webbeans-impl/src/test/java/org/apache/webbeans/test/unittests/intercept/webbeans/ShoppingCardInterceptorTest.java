@@ -20,8 +20,8 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.webbeans.ShoppingCard;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
 import org.apache.webbeans.test.mock.MockHttpSession;

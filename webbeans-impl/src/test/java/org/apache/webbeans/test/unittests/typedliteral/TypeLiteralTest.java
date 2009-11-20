@@ -22,8 +22,8 @@ import javax.enterprise.util.TypeLiteral;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean.IntegerOrder;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean.StringOrder;

@@ -17,7 +17,7 @@ import java.lang.annotation.Annotation;
 
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.apache.webbeans.common.TestContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.annotation.deployment.DeploymentType1;

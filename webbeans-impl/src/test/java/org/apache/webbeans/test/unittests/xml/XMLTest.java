@@ -19,7 +19,7 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.xml.XMLUtil;
 import org.dom4j.Element;
 import org.junit.Before;

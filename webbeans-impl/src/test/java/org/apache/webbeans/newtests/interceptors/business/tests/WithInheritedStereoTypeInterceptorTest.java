@@ -23,11 +23,11 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.business.common.WithInheritedStereoTypeInterceptorBean;
 import org.apache.webbeans.newtests.interceptors.business.common.WithStereoTypeInterceptorBean;
 import org.apache.webbeans.newtests.interceptors.common.SecureInterceptor;
 import org.apache.webbeans.newtests.interceptors.common.TransactionInterceptor;
+import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
 public class WithInheritedStereoTypeInterceptorTest extends AbstractUnitTest

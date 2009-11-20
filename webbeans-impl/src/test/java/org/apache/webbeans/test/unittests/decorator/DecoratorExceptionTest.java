@@ -23,7 +23,7 @@ import javax.servlet.ServletContext;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
-import org.apache.webbeans.common.TestContext;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.DummyAnnotationLiteral;
 import org.apache.webbeans.test.component.CheckWithCheckPaymentDecoratorField;
 import org.apache.webbeans.test.component.IPayment;

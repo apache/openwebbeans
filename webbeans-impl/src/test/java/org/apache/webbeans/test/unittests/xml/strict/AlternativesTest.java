@@ -19,9 +19,9 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AlternativesManager;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.test.xml.strict.Alternative1;
 import org.apache.webbeans.test.xml.strict.Alternative2;

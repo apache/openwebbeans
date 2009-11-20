@@ -22,8 +22,8 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.TypeLiteral;
 import javax.servlet.ServletContext;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.event.NotificationManager;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.ITypeArgumentEventInterface;
 import org.apache.webbeans.test.event.LoggedInEvent;

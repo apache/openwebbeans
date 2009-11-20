@@ -26,9 +26,9 @@ import javax.servlet.ServletContext;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1Literal;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.decorator.clean.Account;

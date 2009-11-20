@@ -21,8 +21,8 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.exception.stero.ComponentDefaultScopeWithDifferentScopeSteros;
 import org.apache.webbeans.test.component.exception.stero.ComponentDefaultScopeWithNonScopeStero;
 import org.apache.webbeans.test.component.exception.stero.ComponentNonDefaultScopeWithDifferentScopeSteros;

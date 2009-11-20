@@ -33,8 +33,8 @@ import javax.interceptor.Interceptor;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.TestContext;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
