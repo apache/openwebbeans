@@ -62,9 +62,7 @@ public class WebBeansJSFFilter implements Filter
                 {
 
                     if (!conversation.isTransient())
-                    {
-                        WebBeansPhaseListener.fromRedirect.set(Boolean.TRUE);
-                        
+                    {                        
                         path = JSFUtil.getRedirectViewIdWithCid(location, conversation.getId());
                     }
                 }
