@@ -18,7 +18,6 @@ package org.apache.webbeans.ejb;
 
 import org.apache.openejb.OpenEJB;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.plugins.PluginLoader;
 
@@ -27,7 +26,7 @@ public abstract class EjbTestContext
     
     protected EjbTestContext(String name)
     {
-        ActivityManager.getInstance().setRootActivity(new BeanManagerImpl());
+        BeanManagerImpl.getManager();
     }
  
     

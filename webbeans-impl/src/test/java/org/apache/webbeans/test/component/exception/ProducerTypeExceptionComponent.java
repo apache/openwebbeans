@@ -19,6 +19,7 @@ import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.annotation.deployment.Standard;
 
 @Production
+@Deprecated //X DeploymentTypes got dropped from the spec!
 public class ProducerTypeExceptionComponent
 {
     @Produces

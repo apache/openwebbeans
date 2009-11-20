@@ -31,7 +31,6 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
@@ -76,7 +75,7 @@ public class InjectionResolver
      */
     public static InjectionResolver getInstance()
     {
-        InjectionResolver instance = ActivityManager.getInstance().getCurrentActivity().getInjectionResolver();
+        InjectionResolver instance = BeanManagerImpl.getManager().getInjectionResolver();
         
         return instance;
     }

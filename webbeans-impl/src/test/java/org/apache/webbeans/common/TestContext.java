@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test;
+package org.apache.webbeans.common;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -132,7 +132,6 @@ public abstract class TestContext implements ITestContext
     {
         manager.clear();
         PluginLoader.getInstance().startUp();            
-        
         initDefaultDeploymentTypes();
         initInterceptors();
         initDecorators();

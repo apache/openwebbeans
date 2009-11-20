@@ -18,6 +18,8 @@ import org.apache.webbeans.annotation.deployment.Standard;
 
 @Production
 @Standard
+@Deprecated
+/** DeploymentTypes have been removed from the spec*/
 public class ComponentTypeExceptionComponent
 {
 

@@ -33,7 +33,6 @@ import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.WebBeansELResolver;
@@ -91,7 +90,7 @@ public final class EnterpriseLifeCycle implements Lifecycle
      */
     public EnterpriseLifeCycle()
     {
-        this.rootManager = new BeanManagerImpl();
+        this.rootManager = (BeanManagerImpl) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_MANAGER);
         this.xmlDeployer = new WebBeansXMLConfigurator();
         this.deployer = new BeansDeployer(xmlDeployer);
         this.jndiService = ServiceLoader.getService(JNDIService.class);
@@ -102,7 +101,6 @@ public final class EnterpriseLifeCycle implements Lifecycle
     public void init()
     {
         rootManager.setXMLConfigurator(this.xmlDeployer);        
-        ActivityManager.getInstance().setRootActivity(this.rootManager);        
     }
     
     public void requestStarted(ServletRequestEvent event)

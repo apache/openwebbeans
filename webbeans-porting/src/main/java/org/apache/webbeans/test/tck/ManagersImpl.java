@@ -16,7 +16,6 @@ package org.apache.webbeans.test.tck;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.jboss.jsr299.tck.spi.Managers;
 import org.jboss.testharness.api.DeploymentException;
@@ -26,13 +25,7 @@ public class ManagersImpl implements Managers
 
     public BeanManager getManager()
     {
-        BeanManagerImpl impl = ActivityManager.getInstance().getRootActivity();
-        
-        if(impl == null)
-        {
-            impl = new BeanManagerImpl();
-            ActivityManager.getInstance().setRootActivity(impl);
-        }
+        BeanManagerImpl impl = BeanManagerImpl.getManager();
         
         return impl;
     }

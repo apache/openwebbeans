@@ -41,7 +41,6 @@ import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -161,7 +160,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         
         try
         {
-            BeanManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
+            BeanManagerImpl manager = BeanManagerImpl.getManager();
             specializedComponent = (AbstractBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
             Context context = manager.getContext(specializedComponent.getScope());
             
@@ -233,7 +232,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
 
         List<Object> list = new ArrayList<Object>();
 
-        BeanManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
 
         if (types.length > 0)
         {

@@ -66,7 +66,7 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
-import org.apache.webbeans.container.activity.ActivityManager;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -183,9 +183,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public static BeanManagerImpl getManager()
     {
-        ActivityManager activityManager = ActivityManager.getInstance();
-        
-        BeanManagerImpl currentManager = activityManager.getCurrentActivity();
+        BeanManagerImpl currentManager = (BeanManagerImpl) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_MANAGER);
         
         return currentManager;
     }
@@ -532,28 +530,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         return this;
     }
-
-    /**
-     * Set the activity for the given scope type.
-     * 
-     * @param scopeType scope type for the context
-     */
     
-    public BeanManager setCurrent(Class<? extends Annotation> scopeType)
-    {
-        if(!WebBeansUtil.isScopeTypeNormal(scopeType))
-        {
-            throw new IllegalArgumentException("Scope type : " + scopeType.getSimpleName() + " must be normal scope type");
-            
-        }        
-        
-        Context context = getContext(scopeType);
-        
-        ActivityManager.getInstance().addCurrentActivity(context, this);
-        
-        return this;
-    }
-
     /**
      * {@inheritDoc}
      */

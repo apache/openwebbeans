@@ -19,7 +19,7 @@ import java.util.Iterator;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import org.apache.webbeans.container.activity.ActivityManager;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.lifecycle.EnterpriseLifeCycle;
 import org.apache.webbeans.spi.ServiceLoader;
@@ -140,7 +140,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
     protected BeanManager getBeanManager()
     {
-        return ActivityManager.getInstance().getRootActivity();
+        return BeanManagerImpl.getManager();
     }
 
 

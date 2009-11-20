@@ -22,7 +22,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.activity.ActivityManager;
 
 /**
  * Event that is fired by the container after it discovers beans.
@@ -38,7 +37,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     
     public AfterBeanDiscoveryImpl()
     {
-        this.beanManager = ActivityManager.getInstance().getCurrentActivity();
+        this.beanManager = BeanManagerImpl.getManager();
     }
     
     /**

@@ -28,6 +28,7 @@ import org.apache.webbeans.test.component.inject.alternative.IAlternative;
 import org.apache.webbeans.test.component.inject.alternative.NotAlternativeComponent;
 import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
+import org.junit.Before;
 import org.junit.Test;
 
 public class AlternativeTest extends TestContext
@@ -37,11 +38,15 @@ public class AlternativeTest extends TestContext
         super(AlternativeTest.class.getName());
     }
     
+    @Before
+    public void setUp()
+    {
+        super.init();
+    }
+    
     @Test
     public void testInjectAlternative()
     {
-        PluginLoader.getInstance().startUp();
-        
         InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/alternative/alternatives.xml");
         Assert.assertNotNull(stream);
 
@@ -67,8 +72,6 @@ public class AlternativeTest extends TestContext
     @Test
     public void testInjectNotAlternative()
     {
-        PluginLoader.getInstance().startUp();
-        
         AlternativesManager.getInstance().clear();
         
         defineManagedBean(AlternativeComponent.class);

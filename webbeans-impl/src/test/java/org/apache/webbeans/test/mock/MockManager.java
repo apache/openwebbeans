@@ -37,8 +37,8 @@ import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.util.WebBeansUtil;
 
 public class MockManager implements BeanManager
@@ -49,8 +49,8 @@ public class MockManager implements BeanManager
 
     public MockManager()
     {
-        this.manager = new BeanManagerImpl();
-        ActivityManager.getInstance().setRootActivity(this.manager);
+        WebBeansFinder.clearInstances();
+        this.manager = BeanManagerImpl.getManager();
         manager.addBean(WebBeansUtil.getManagerBean());
     }
 
@@ -59,9 +59,9 @@ public class MockManager implements BeanManager
     {
         componentList.clear();        
         
-        this.manager = new BeanManagerImpl();        
-     
-        ActivityManager.getInstance().setRootActivity(this.manager);        
+        WebBeansFinder.clearInstances();
+        
+        this.manager = BeanManagerImpl.getManager();        
     }
 
     public List<AbstractBean<?>> getComponents()
@@ -173,12 +173,6 @@ public class MockManager implements BeanManager
         manager.parse(xmlStream);
         return manager;
     }
-
-    public BeanManager setCurrent(Class<? extends Annotation> scopeType)
-    {
-        return manager.setCurrent(scopeType);
-    }
-
 
     @Override
     public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)

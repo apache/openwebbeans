@@ -73,7 +73,8 @@ public class ExceptionComponentTest extends TestContext
 
     }
 
-    @Test
+    //X @Test DeploymentTypes have been removed from the spec
+    @Deprecated
     public void testComponentTypeException()
     {
         try
@@ -94,7 +95,8 @@ public class ExceptionComponentTest extends TestContext
         Assert.fail("expecting an exception!");
     }
 
-    @Test
+    //X @Test 
+    @Deprecated /** DeploymentTypes got dropped from the spec! */ 
     public void testProducerMethodComponentTypeException()
     {
         WebBeansConfigurationException exc = null;

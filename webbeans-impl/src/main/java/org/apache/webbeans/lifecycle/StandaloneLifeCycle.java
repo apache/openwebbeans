@@ -22,7 +22,6 @@ import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -58,7 +57,7 @@ public class StandaloneLifeCycle implements Lifecycle
     
     public StandaloneLifeCycle()
     {
-        this.beanManager = new BeanManagerImpl();
+        this.beanManager = BeanManagerImpl.getManager();
         this.xmlConfig = new WebBeansXMLConfigurator();
         this.beansDeployer = new BeansDeployer(this.xmlConfig);
         
@@ -85,7 +84,6 @@ public class StandaloneLifeCycle implements Lifecycle
             }
             
             beanManager.setXMLConfigurator(this.xmlConfig);        
-            ActivityManager.getInstance().setRootActivity(this.beanManager);        
 
         }
     }

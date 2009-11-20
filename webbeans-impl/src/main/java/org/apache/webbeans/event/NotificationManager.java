@@ -42,7 +42,6 @@ import javax.transaction.Transaction;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.activity.ActivityManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ServiceLoader;
@@ -68,7 +67,7 @@ public final class NotificationManager
 
     public static NotificationManager getInstance()
     {
-        BeanManagerImpl manager = ActivityManager.getInstance().getCurrentActivity();
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
 
         return manager.getNotificationManager();
     }
