@@ -62,14 +62,16 @@ public class DecoratorTest1 extends TestContext
     public void init()
     {
         super.init();
-        initializeDecoratorType(ServiceDecorator.class);
-        initializeDecoratorType(LargeTransactionDecorator.class);
+        
     }
 
     @Test
     public void test1()
     {
         clear();
+        
+        initializeDecoratorType(ServiceDecorator.class);
+        initializeDecoratorType(LargeTransactionDecorator.class);        
         
         defineManagedBean(CheckWithCheckPayment.class);
         defineDecorator(ServiceDecorator.class);
@@ -97,6 +99,7 @@ public class DecoratorTest1 extends TestContext
     public void test2()
     {
         clear();
+        initializeDecoratorType(LargeTransactionDecorator.class);
         
         defineDecorator(LargeTransactionDecorator.class);
         AbstractBean<AccountComponent> component = defineManagedBean(AccountComponent.class);

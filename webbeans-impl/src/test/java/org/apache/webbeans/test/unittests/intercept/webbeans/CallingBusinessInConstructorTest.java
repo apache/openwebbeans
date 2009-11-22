@@ -13,34 +13,31 @@
  */
 package org.apache.webbeans.test.unittests.intercept.webbeans;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.common.AbstractUnitTest;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.RequestContext;
-import org.apache.webbeans.intercept.InterceptorsManager;
+import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.webbeans.CallBusinessInConstructorBean;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CallingBusinessInConstructorTest extends AbstractUnitTest
+public class CallingBusinessInConstructorTest extends TestContext
 {
     public CallingBusinessInConstructorTest()
     {
-        super();
+        super(CallingBusinessInConstructorTest.class.getName());
     }
     
     @Before
     public void init()
     {
-        SecureInterceptor.CALL = false;
+        super.init();        
     }
     
     @After
@@ -54,16 +51,14 @@ public class CallingBusinessInConstructorTest extends AbstractUnitTest
     {
         ContextFactory.initRequestContext(null);
         
-        // interceptors must be enabled via XML. We fake this by adding our interceptor manually.
-        InterceptorsManager.getInstance().addNewInterceptor(SecureInterceptor.class);
-
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.add(SecureInterceptor.class);
-        classes.add(CallBusinessInConstructorBean.class);
-        startContainer(classes);
-
-        CallBusinessInConstructorBean instance = (CallBusinessInConstructorBean) getInstance(CallBusinessInConstructorBean.class);
-        //getingetInstanceByName("callBusinessInConstructorBean");
+        clear();      
+        
+        SecureInterceptor.CALL = false;
+        initializeInterceptorType(SecureInterceptor.class);
+        
+        defineInterceptor(SecureInterceptor.class);
+        Bean<CallBusinessInConstructorBean> bean = defineManagedBean(CallBusinessInConstructorBean.class);
+        CallBusinessInConstructorBean instance = (CallBusinessInConstructorBean) getInstanceByName("callBusinessInConstructorBean");
         
         Assert.assertNotNull(instance);
         
@@ -77,7 +72,9 @@ public class CallingBusinessInConstructorTest extends AbstractUnitTest
         
         RequestContext ctx = (RequestContext) ContextFactory.getStandardContext(RequestScoped.class);
                 
-        instance = getInstanceByName(CallBusinessInConstructorBean.class, "callBusinessInConstructorBean");
+        Assert.assertNull(ctx.get(bean));
+                
+        instance = (CallBusinessInConstructorBean) getInstanceByName("callBusinessInConstructorBean");
         
         Assert.assertNotNull(instance);
         
