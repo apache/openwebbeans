@@ -20,8 +20,6 @@ import javax.enterprise.util.AnnotationLiteral;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
-import org.apache.webbeans.test.annotation.deployment.DeploymentType1;
-import org.apache.webbeans.test.annotation.deployment.DeploymentType2;
 import org.apache.webbeans.test.component.producer.specializes.SpecializesProducer1;
 import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;
 import org.junit.Assert;
@@ -39,10 +37,6 @@ public class SpecializesProducer1Test extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
-        initializeDeploymentType(DeploymentType1.class, 2);
-        initializeDeploymentType(DeploymentType2.class, 3);
-
     }
 
     @Test

@@ -17,11 +17,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Check;
 
 @RequestScoped
-@Production
 @Default
 public class PaymentProcessorComponent
 {

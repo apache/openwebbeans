@@ -13,10 +13,8 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 
-@Production
 @Transactional
 public class HasFinalMethodComponent
 {

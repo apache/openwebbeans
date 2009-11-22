@@ -45,9 +45,6 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
     /**Inherited scope type*/
     protected Annotation inheritedScopeType = null;
     
-    /**Inherited deployment type*/
-    protected Annotation inheritedDeploymentType = null;
-
     /**
      * Create a new bean inherited data.
      * 
@@ -60,7 +57,6 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
         this.inheritedClazz = inheritedClazz;
         
         setInheritedQualifiers();
-        setInheritedDeploymentType();
         setInheritedInterceptorBindings();
         setInheritedScopeType();
         setInheritedStereoTypes();
@@ -85,11 +81,6 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
     public Annotation getInheritedScopeType()
     {
         return this.inheritedScopeType;
-    }
-    
-    public Annotation getInheritedDeploymentType()
-    {
-        return this.inheritedDeploymentType;
     }
     
     protected AbstractBean<T> getComponent()
@@ -122,11 +113,4 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
      * @param inheritedScopeType the inheritedScopeType to set
      */
     abstract protected void setInheritedScopeType();
-
-    /**
-     * @param inheritedDeploymentType the inheritedDeploymentType to set
-     */
-    abstract protected void setInheritedDeploymentType();
-
-
 }

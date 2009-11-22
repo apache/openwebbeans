@@ -16,9 +16,7 @@ package org.apache.webbeans.test.component.exception;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 public class AroundInvokeWithWrongReturnTypeComponent
 {
     @AroundInvoke

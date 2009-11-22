@@ -18,9 +18,7 @@ import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 @RequestScoped
 @Interceptors(value = { Interceptor1.class })
 public class MethodInterceptedWithoutClassInterceptorsComponent

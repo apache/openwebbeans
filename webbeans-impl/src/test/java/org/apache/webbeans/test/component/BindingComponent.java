@@ -17,10 +17,8 @@ import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
 
-@Production
 @AnnotationWithBindingMember(value = "B", number = 3)
 @SessionScoped
 public class BindingComponent implements Serializable

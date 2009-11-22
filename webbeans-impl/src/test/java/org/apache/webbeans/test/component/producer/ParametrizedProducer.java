@@ -18,9 +18,7 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 @RequestScoped
 public class ParametrizedProducer
 {

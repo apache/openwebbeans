@@ -29,6 +29,4 @@ public interface IBeanInheritedMetaData
     public Set<Annotation> getInheritedInterceptorBindings();
     
     public Annotation getInheritedScopeType();
-    
-    public Annotation getInheritedDeploymentType();
 }

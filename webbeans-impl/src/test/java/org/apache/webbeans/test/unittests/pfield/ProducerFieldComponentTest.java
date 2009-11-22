@@ -42,7 +42,6 @@ public class ProducerFieldComponentTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
     }
     
     

@@ -19,12 +19,10 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.component.IPayment;
 
-@Production
 @SessionScoped
 @Named
 public class ScopeAdaptorComponent implements Serializable

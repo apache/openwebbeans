@@ -13,10 +13,8 @@
  */
 package org.apache.webbeans.test.component.exception.stero;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
 
-@Production
 @StereoWithRequestScope
 public class ComponentWithDefaultScopeStero
 {

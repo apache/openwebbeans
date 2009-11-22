@@ -25,7 +25,6 @@ under the License.
 	<myapp:Definition1>
 		<RequestScoped/>
 		<Default/>
-		<Production/>
 	</myapp:Definition1>	
 	
 </WebBeans>

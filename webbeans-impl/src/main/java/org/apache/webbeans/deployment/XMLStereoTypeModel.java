@@ -24,7 +24,6 @@ import javax.enterprise.context.NormalScope;
 import javax.inject.Named;
 import javax.inject.Scope;
 
-import org.apache.webbeans.annotation.deployment.DeploymentType;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
@@ -93,15 +92,6 @@ public class XMLStereoTypeModel implements IStereoTypeModel
                     defaultScopeType = defaultAnn;
                     scopeTypeFound = true;
                 }                
-                else if (clazz.isAnnotationPresent(DeploymentType.class))
-                {
-                    if (deploymentTypeFound)
-                    {
-                        throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not contain more than one @DeploymentType annotation");
-                    }
-                    defaultDeploymentType = defaultAnn;
-                    deploymentTypeFound = true;
-                }
                 else if (AnnotationUtil.isInterceptorBindingAnnotation(annClazz))
                 {
                     Target target = clazz.getAnnotation(Target.class);

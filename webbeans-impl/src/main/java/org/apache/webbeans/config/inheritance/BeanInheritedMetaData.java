@@ -26,7 +26,6 @@ import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
 
-import org.apache.webbeans.annotation.deployment.DeploymentType;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.util.AnnotationUtil;
 
@@ -45,17 +44,6 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
             setInheritedTypes(getInheritedQualifiers(), this.inheritedClazz, Qualifier.class);
         }        
     }
-
-     
-    protected void setInheritedDeploymentType()
-    {
-        if(this.inheritedClazz != Object.class)
-        {
-            setInheritedType(this.inheritedClazz, DeploymentType.class);
-        }
-        
-    }
-
     
     protected void setInheritedInterceptorBindings()
     {
@@ -101,10 +89,6 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
                 {
                     this.inheritedScopeType = annotation;
                 }
-                else if(annotationType.equals(DeploymentType.class))
-                {
-                    this.inheritedDeploymentType = annotation;
-                }                
             }
         }
         else

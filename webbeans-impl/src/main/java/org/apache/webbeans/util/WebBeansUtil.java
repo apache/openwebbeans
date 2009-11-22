@@ -75,10 +75,7 @@ import org.apache.webbeans.annotation.ApplicationScopeLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.NewLiteral;
-import org.apache.webbeans.annotation.ProductionLiteral;
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
-import org.apache.webbeans.annotation.StandardLiteral;
-import org.apache.webbeans.annotation.deployment.DeploymentType;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.BaseBean;
@@ -103,7 +100,6 @@ import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
-import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -595,7 +591,6 @@ public final class WebBeansUtil
         comp.setName(null);
         comp.addApiType(clazz);
         comp.addApiType(Object.class);
-        comp.setType(new ProductionLiteral());
 
         return comp;
     }
@@ -618,7 +613,6 @@ public final class WebBeansUtil
         
         comp.setImplScopeType(new ApplicationScopeLiteral());
         comp.addQualifier(new DefaultLiteral());
-        comp.setType(new ProductionLiteral());
         
         DefinitionUtil.defineObserverMethods(comp, clazz);
 
@@ -663,7 +657,6 @@ public final class WebBeansUtil
         
         comp.setImplScopeType(new DependentScopeLiteral());
         comp.addQualifier(new NewLiteral());
-        comp.setType(new StandardLiteral());
         comp.setName(null);
         
         Set<InjectionPoint> injectionPoints = component.getInjectionPoints();
@@ -690,7 +683,6 @@ public final class WebBeansUtil
         DefinitionUtil.defineApiTypes(component, returnType);
         DefinitionUtil.defineQualifiers(component, annotations);
 
-        component.setType(new StandardLiteral());
         component.setImplScopeType(new DependentScopeLiteral());                      
 
         return component;
@@ -705,7 +697,6 @@ public final class WebBeansUtil
         BeanManagerBean managerComponent = new BeanManagerBean();
 
         managerComponent.setImplScopeType(new DependentScopeLiteral());
-        managerComponent.setType(new StandardLiteral());
         managerComponent.addQualifier(new DefaultLiteral());
         managerComponent.addQualifier(new AnyLiteral());
         managerComponent.addApiType(BeanManager.class);
@@ -733,7 +724,6 @@ public final class WebBeansUtil
         
         instanceComponent.addQualifier(new AnyLiteral());
         instanceComponent.setImplScopeType(new DependentScopeLiteral());
-        instanceComponent.setType(new StandardLiteral());
         instanceComponent.setName(null);
                 
         return instanceComponent;
@@ -751,7 +741,6 @@ public final class WebBeansUtil
         conversationComp.addApiType(ConversationImpl.class);
         conversationComp.addApiType(Object.class);
         conversationComp.setImplScopeType(new RequestedScopeLiteral());
-        conversationComp.setType(new StandardLiteral());
         conversationComp.addQualifier(new DefaultLiteral());
         conversationComp.addQualifier(new AnyLiteral());
         conversationComp.setName("javax.enterprise.context.conversation");
@@ -1167,42 +1156,6 @@ public final class WebBeansUtil
         return false;
     }
 
-    public static Annotation getMaxPrecedenceSteroTypeDeploymentType(BaseBean<?> component)
-    {
-        Annotation[] deploymentTypes = getComponentStereoTypes(component);
-        Class<? extends Annotation> maxPrecedDeploymentType = null;
-        Annotation result = null;
-        if (deploymentTypes.length > 0)
-        {
-            for (Annotation dt : deploymentTypes)
-            {
-                if (AnnotationUtil.hasMetaAnnotation(dt.annotationType().getDeclaredAnnotations(), DeploymentType.class))
-                {
-                    Annotation result2[] = AnnotationUtil.getMetaAnnotations(dt.annotationType().getDeclaredAnnotations(), DeploymentType.class);
-
-                    Class<? extends Annotation> dtAnnot = result2[0].annotationType();
-                    if (maxPrecedDeploymentType == null)
-                    {
-                        maxPrecedDeploymentType = dtAnnot;
-                        result = result2[0];
-                    }
-                    else
-                    {
-                        if (DeploymentTypeManager.getInstance().comparePrecedences(maxPrecedDeploymentType, dtAnnot) < 0)
-                        {
-                            maxPrecedDeploymentType = dtAnnot;
-                            result = result2[0];
-                        }
-                    }
-                }
-
-            }
-        }
-
- 
-        return result;
-    }
-
     public static String getSimpleWebBeanDefaultName(String clazzName)
     {
         Asserts.assertNotNull(clazzName);
@@ -1260,24 +1213,12 @@ public final class WebBeansUtil
 
         Annotation[] annotations = clazz.getDeclaredAnnotations();
 
-        boolean deploymentTypeFound = false;
         boolean scopeTypeFound = false;
         for (Annotation annotation : annotations)
         {
             Class<? extends Annotation> annotType = annotation.annotationType();
 
-            if (annotType.isAnnotationPresent(DeploymentType.class))
-            {
-                if (deploymentTypeFound == true)
-                {
-                    throw new WebBeansConfigurationException("@StereoType annotation can not contain more than one @DeploymentType annotation");
-                }
-                else
-                {
-                    deploymentTypeFound = true;
-                }
-            }
-            else if (annotType.isAnnotationPresent(NormalScope.class) || annotType.isAnnotationPresent(Scope.class))
+            if (annotType.isAnnotationPresent(NormalScope.class) || annotType.isAnnotationPresent(Scope.class))
             {
                 if (scopeTypeFound == true)
                 {
@@ -1900,18 +1841,6 @@ public final class WebBeansUtil
         
         return component;
     }      
-    
-    public static boolean isDeploymentTypeEnabled(Class<? extends Annotation> deploymentType)
-    {
-        Asserts.assertNotNull(deploymentType, "deplymentType parameter can not be null");
-        
-        if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
-        {
-            return false;
-        }
-        
-        return true;        
-    }
     
     /**
      * Returns <code>ProcessAnnotatedType</code> event. 

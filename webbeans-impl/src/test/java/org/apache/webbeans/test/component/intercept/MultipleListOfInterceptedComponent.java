@@ -16,9 +16,7 @@ package org.apache.webbeans.test.component.intercept;
 import javax.enterprise.context.RequestScoped;
 import javax.interceptor.Interceptors;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 @RequestScoped
 @Interceptors(value = { Interceptor1.class })
 public class MultipleListOfInterceptedComponent

@@ -17,10 +17,8 @@ import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.sterotype.StereoWithNonScope;
 
-@Production
 @StereoWithNonScope
 @SessionScoped
 public class ComponentDefaultScopeWithNonScopeStero implements Serializable

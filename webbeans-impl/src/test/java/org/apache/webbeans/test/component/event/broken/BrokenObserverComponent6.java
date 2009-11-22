@@ -17,10 +17,8 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 
 import org.apache.log4j.spi.LoggingEvent;
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.component.CurrentBindingComponent;
 
-@Production
 public class BrokenObserverComponent6
 {
 

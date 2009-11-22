@@ -18,9 +18,7 @@ import java.math.BigDecimal;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 @RequestScoped
 @Default
 public class AccountComponent implements Account

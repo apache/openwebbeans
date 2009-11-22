@@ -16,10 +16,8 @@ package org.apache.webbeans.test.component.exception;
 import javax.enterprise.inject.New;
 import javax.inject.Inject;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 
-@Production
 public class NewComponentBindingComponent
 {
     @Inject @New @Binding1 String src;

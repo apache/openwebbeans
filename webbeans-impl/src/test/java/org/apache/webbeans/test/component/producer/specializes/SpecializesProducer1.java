@@ -17,7 +17,6 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.inject.Named;
 
-import org.apache.webbeans.test.annotation.deployment.DeploymentType2;
 import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;
 
 public class SpecializesProducer1 extends SpecializesProducer1SuperClazz
@@ -32,7 +31,6 @@ public class SpecializesProducer1 extends SpecializesProducer1SuperClazz
     @Override
     @Specializes
     @Named("specializedNumber")
-    @DeploymentType2
     public int createMaxNumber()
     {
         return 10000;

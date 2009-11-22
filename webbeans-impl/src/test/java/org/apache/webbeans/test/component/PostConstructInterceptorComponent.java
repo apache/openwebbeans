@@ -18,11 +18,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.component.intercept.PostConstructInterceptor;
 
-@Production
 @RequestScoped
 @Interceptors(value = { PostConstructInterceptor.class })
 public class PostConstructInterceptorComponent

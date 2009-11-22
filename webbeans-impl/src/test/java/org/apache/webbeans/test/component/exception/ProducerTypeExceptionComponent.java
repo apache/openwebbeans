@@ -15,16 +15,9 @@ package org.apache.webbeans.test.component.exception;
 
 import javax.enterprise.inject.Produces;
 
-import org.apache.webbeans.annotation.deployment.Production;
-import org.apache.webbeans.annotation.deployment.Standard;
-
-@Production
-@Deprecated //X DeploymentTypes got dropped from the spec!
 public class ProducerTypeExceptionComponent
 {
     @Produces
-    @Standard
-    @Production
     public void produce()
     {
 

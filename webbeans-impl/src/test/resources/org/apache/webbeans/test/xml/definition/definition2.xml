@@ -35,7 +35,6 @@ under the License.
 					<binding:Binding1/>
 				</Array>
 				<RequestScoped/>
-				<Production/>
 			</Produces>
 
 			<comp:CheckWithCheckPayment>

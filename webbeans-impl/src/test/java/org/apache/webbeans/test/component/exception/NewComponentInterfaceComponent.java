@@ -16,10 +16,8 @@ package org.apache.webbeans.test.component.exception;
 import javax.enterprise.inject.New;
 import javax.inject.Inject;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.component.service.IService;
 
-@Production
 public class NewComponentInterfaceComponent
 {
     @Inject @New IService src;

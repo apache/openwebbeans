@@ -15,10 +15,8 @@ package org.apache.webbeans.test.component.service;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 
-@Production
 @ApplicationScoped
 public class InjectedComponent
 {

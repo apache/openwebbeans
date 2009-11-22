@@ -36,7 +36,6 @@ public class MultipleDependentTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
         initDependentContext();
     }
     

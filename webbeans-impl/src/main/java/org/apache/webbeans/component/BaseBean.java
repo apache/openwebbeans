@@ -68,20 +68,6 @@ public abstract class BaseBean<T> implements Bean<T>
     public abstract IBeanInheritedMetaData getInheritedMetaData();
     
     /**
-     * Returna deployment type as annotation.
-     * 
-     * @return deployment type as annotation
-     */
-    public abstract Annotation getType();
-
-    /**
-     * Sets bean deployment type annotation.
-     * 
-     * @param type bean deployment type annotation
-     */
-    public abstract void setType(Annotation type);
-
-    /**
      * Returns scope type annotation.
      * 
      * @return scope type annotation

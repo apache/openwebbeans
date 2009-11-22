@@ -15,9 +15,7 @@ package org.apache.webbeans.test.component.exception;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 public class PostContructMethodHasReturnTypeComponent
 {
     @PostConstruct

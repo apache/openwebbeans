@@ -25,7 +25,6 @@ import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.inheritance.InheritFromParentComponent;
-import org.apache.webbeans.test.component.inheritance.types.InhDeployment1;
 import org.apache.webbeans.test.component.inheritance.types.InhStereo1;
 import org.apache.webbeans.test.component.inheritance.types.InhStereo2;
 import org.junit.Before;
@@ -42,8 +41,6 @@ public class InheritanceTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
-        initializeDeploymentType(InhDeployment1.class,2);
         initializeStereoType(InhStereo1.class);
         initializeStereoType(InhStereo2.class);
     }
@@ -57,15 +54,9 @@ public class InheritanceTest extends TestContext
         
         Set<Annotation> btypes = data.getInheritedQualifiers();
         Assert.assertEquals(2, btypes.size());
-        
-        Annotation annot = data.getInheritedDeploymentType();
-        Assert.assertNotNull(annot);
-        
+                
         btypes = data.getInheritedInterceptorBindings();
         Assert.assertEquals(2, btypes.size());
-        
-        annot = data.getInheritedScopeType();
-        Assert.assertNotNull(annot);
         
         btypes = data.getInheritedStereoTypes();
         Assert.assertEquals(2, btypes.size());

@@ -45,9 +45,6 @@ import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.annotation.ProductionLiteral;
-import org.apache.webbeans.annotation.deployment.DeploymentType;
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.component.xml.XMLProducerBean;
@@ -56,7 +53,6 @@ import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DecoratorsManager;
-import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.NonexistentConstructorException;
 import org.apache.webbeans.exception.definition.NonexistentFieldException;
@@ -92,9 +88,6 @@ public final class WebBeansXMLConfigurator
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansXMLConfigurator.class);
     
-    /** Enabled Deploy element check */
-    private boolean DEPLOY_IS_DEFINED = false;
-
     /** Enabled Interceptors element check */
     private boolean INTERCEPTORS_IS_DEFINED = false;
 
@@ -262,27 +255,6 @@ public final class WebBeansXMLConfigurator
                 webBeanDeclerationList.add(child);
 
             }
-            /* <Deploy> element decleration */
-            else if (XMLUtil.isElementDeployDeclaration(child))
-            {
-                if (DEPLOY_IS_DEFINED)
-                {
-                    throw new DeploymentException("There can not be more than one web-beans.xml file that declares <Deploy> element");
-                }
-                else
-                {
-                    if (!XMLUtil.hasChildElement(child, WebBeansConstants.WEB_BEANS_XML_STANDART_ELEMENT))
-                    {
-                        throw new DeploymentException("<Deploy> element must have <Standard/> deployment type in the web-beans.xml");
-                    }
-                    
-                    DeploymentTypeManager.getInstance().removeProduction();
-                    
-                    configureDeploymentTypes(child);
-                    DEPLOY_IS_DEFINED = true;
-
-                }
-            }
             /* <Interceptors> element decleration */
             else if (XMLUtil.isElementInterceptorsDeclaration(child))
             {
@@ -339,15 +311,6 @@ public final class WebBeansXMLConfigurator
             
         }
 
-        /*
-         * If no <Deploy> element is defined in any webbeans.xml in the current
-         * application
-         */
-        if (!DEPLOY_IS_DEFINED)
-        {
-            DeploymentTypeManager.getInstance().addNewDeploymentType(Production.class, 1);
-        }
-
         // Configures the WebBeans components
         configureWebBeansComponents(webBeanDeclerationList);
 
@@ -368,29 +331,8 @@ public final class WebBeansXMLConfigurator
         {
             child = it.next();
 
-            /* <Deploy> element decleration */
-            if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_DEPLOY_ELEMENT))
-            {
-                if (DEPLOY_IS_DEFINED)
-                {
-                    throw new DeploymentException("There can not be more than one web-beans.xml file that declares <deploy> element");
-                }
-                else
-                {
-                    if (!XMLUtil.hasChildElement(child, WebBeansConstants.WEB_BEANS_XML_STANDART_ELEMENT))
-                    {
-                        throw new DeploymentException("<Deploy> element must have <Standard/> deployment type in the web-beans.xml");
-                    }
-                    
-                    DeploymentTypeManager.getInstance().removeProduction();
-                    
-                    configureDeploymentTypes(child);
-                    DEPLOY_IS_DEFINED = true;
-
-                }
-            }
             /* <Interceptors> element decleration */
-            else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT))
+            if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT))
             {
                 if (INTERCEPTORS_IS_DEFINED)
                 {
@@ -421,15 +363,6 @@ public final class WebBeansXMLConfigurator
             {
                 configureAlternativesElement(child);
             }
-        }
-
-        /*
-         * If no <Deploy> element is defined in any webbeans.xml in the current
-         * application
-         */
-        if (!DEPLOY_IS_DEFINED)
-        {
-            DeploymentTypeManager.getInstance().addNewDeploymentType(Production.class, 1);
         }
 
     }
@@ -727,56 +660,6 @@ public final class WebBeansXMLConfigurator
         }        
     }
     
-
-    /**
-     * Configures enablements of the deployment types.
-     * 
-     * @param deployElement deploy element
-     */
-    private void configureDeploymentTypes(Element deployElement)
-    {
-        List<Element> childs = deployElement.elements();
-        Iterator<Element> itChilds = childs.iterator();
-
-        int j = 1;
-        while (itChilds.hasNext())
-        {
-            Element child = itChilds.next();
-            Class<?> clazz = null;
-            
-            if(this.owbSpecificConfiguration)
-            {
-                clazz = XMLUtil.getElementJavaType(child);
-            }
-            else
-            {
-                clazz = ClassUtil.getClassFromName(child.getTextTrim());
-            }
-
-            if (clazz == null)
-            {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "@DeploymentType annotation with name : " + XMLUtil.getName(child) + " not found");
-            }
-            else
-            {
-                if (!clazz.isAnnotation())
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "@DeploymentType annotation with name : " + XMLUtil.getName(child) + " is not annotation type");
-                else
-                {
-                    Annotation ann = clazz.getAnnotation(DeploymentType.class);
-                    if (ann == null)
-                    {
-                        throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "@DeploymentType annotation with name : " + XMLUtil.getName(child) + " is not deployment type annotation");
-                    }
-                    else
-                    {
-                        DeploymentTypeManager.getInstance().addNewDeploymentType((Class<? extends Annotation>) clazz, j++);
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Configures new webbeans component from the given webbeans element.
      * 
@@ -1021,9 +904,6 @@ public final class WebBeansXMLConfigurator
         // StereoType
         configureStereoType(component, annotationSet, annotationElementList);
 
-        // Deployment Type
-        configureDeploymentType(component, annotationSet, annotationElementList);
-
         // Scope Type
         configureScopeType(component, annotationSet, annotationElementList);
 
@@ -1068,9 +948,6 @@ public final class WebBeansXMLConfigurator
 
         // StereoType
         configureStereoType(component, annotationSet, annotationElementList);
-
-        // Deployment Type
-        configureDeploymentType(component, annotationSet, annotationElementList);
 
         // Scope Type
         configureScopeType(component, annotationSet, annotationElementList);
@@ -1589,38 +1466,6 @@ public final class WebBeansXMLConfigurator
 //            }
         }
 
-    }
-
-    /**
-     * Configures the deployment type of the XML component.
-     * 
-     * @param component xml defined web beans component
-     * @param annotationSet all annotation defined in XML
-     */
-    private <T> void configureDeploymentType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
-    {
-        Class<? extends Annotation> deploymentType = XMLDefinitionUtil.defineXMLTypeMetaData(component, annotationSet, DeploymentType.class, createConfigurationFailedMessage() + "@DeploymentType annotation is not configured correctly for class : " + component.getReturnType().getName());
-
-        if (deploymentType == null)
-        {
-            // Check from stereotype
-            Annotation stereoTypeDeploymentType = WebBeansUtil.getMaxPrecedenceSteroTypeDeploymentType(component);
-            
-            if(stereoTypeDeploymentType == null)
-            {
-                // Default deployment type
-                component.setType(new ProductionLiteral());                
-            }
-            else
-            {
-                component.setType(stereoTypeDeploymentType);
-            }
-            
-        }
-        else
-        {
-            component.setType(JavassistProxyFactory.createNewAnnotationProxy(deploymentType));
-        }
     }
 
     /**

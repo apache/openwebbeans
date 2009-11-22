@@ -21,7 +21,6 @@ import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.test.TestContext;
-import org.apache.webbeans.test.annotation.binding.Mock;
 import org.apache.webbeans.test.xml.definition.Definition1;
 import org.apache.webbeans.test.xml.definition.Definition2;
 import org.apache.webbeans.test.xml.definition.TstBeanConstructor;
@@ -41,8 +40,6 @@ public class XMLDefinitionTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
-        initializeDeploymentType(Mock.class, 2);
         initDependentContext();
 
         // initialize the plugin. There are no plugins, but we should not get any NPEs

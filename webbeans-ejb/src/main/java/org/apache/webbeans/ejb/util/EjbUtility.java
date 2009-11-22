@@ -161,7 +161,6 @@ public final class EjbUtility
             ejbBean.setInjectionTarget(ejbBeanCreator.getInjectedTarget());   
         }
         
-        boolean addBeans = true;        
         BeanManagerImpl.getManager().addBean(ejbBean);
         BeanManagerImpl.getManager().getBeans().addAll(producerMethodBeans);
         BeanManagerImpl.getManager().getBeans().addAll(producerFieldBeans);

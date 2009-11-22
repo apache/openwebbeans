@@ -18,12 +18,10 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.component.intercept.Interceptor1;
 import org.apache.webbeans.test.component.intercept.Interceptor2;
 
-@Production
 @RequestScoped
 @Interceptors(value = { Interceptor1.class, Interceptor2.class })
 public class PostConstructDoubleInterceptorComponent

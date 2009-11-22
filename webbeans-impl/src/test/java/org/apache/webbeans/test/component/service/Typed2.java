@@ -17,11 +17,9 @@ import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 
-@Production
 @SessionScoped
 @Binding1
 @Binding2

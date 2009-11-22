@@ -22,7 +22,6 @@ import java.util.Set;
 import javax.enterprise.context.NormalScope;
 import javax.inject.Scope;
 
-import org.apache.webbeans.annotation.deployment.DeploymentType;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -58,11 +57,6 @@ public class StereoTypeModel implements IStereoTypeModel
     public StereoTypeModel(Class<?> clazz)
     {
         this.name = clazz.getName();
-
-        if (AnnotationUtil.hasMetaAnnotation(clazz.getDeclaredAnnotations(), DeploymentType.class))
-        {
-            this.defaultDeploymentType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), DeploymentType.class)[0];
-        }
 
         if (AnnotationUtil.hasMetaAnnotation(clazz.getDeclaredAnnotations(), NormalScope.class))
         {

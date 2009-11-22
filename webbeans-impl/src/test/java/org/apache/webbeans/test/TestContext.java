@@ -35,7 +35,6 @@ import javax.servlet.http.HttpSession;
 import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -47,7 +46,6 @@ import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
-import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.intercept.InterceptorUtil;
@@ -140,22 +138,12 @@ public abstract class TestContext implements ITestContext
         manager.clear();
         PluginLoader.getInstance().startUp();            
         
-        initDefaultDeploymentTypes();
         initInterceptors();
         initDecorators();
         initStereoTypes();
         initDependentContext();            
     }
 
-    /**
-     * Initialize deployment types.
-     */
-    protected void initDefaultDeploymentTypes()
-    {
-        initializeDeploymentType(Production.class, 1);
-
-    }
-    
     protected void initDependentContext()
     {
         DependentContext dependentContext = (DependentContext)ContextFactory.getStandardContext(Dependent.class);
@@ -562,18 +550,6 @@ public abstract class TestContext implements ITestContext
     protected void configureFromXML(InputStream file, String fileName)
     {
         this.xmlConfigurator.configure(file, fileName);
-    }
-
-    /**
-     * Add new deployment type with given precedence.
-     * 
-     * @param deploymentType deployment type
-     * @param precedence precedence
-     */
-    protected void initializeDeploymentType(Class<? extends Annotation> deploymentType, int precedence)
-    {
-        DeploymentTypeManager.getInstance().addNewDeploymentType(deploymentType, precedence);
-
     }
 
     /**

@@ -25,7 +25,6 @@ under the License.
 	<myapp:TstBeanUnnamed>
 		<RequestScoped/>
 		<Default/>
-		<Production/>
 	</myapp:TstBeanUnnamed>	
 	
 </WebBeans>

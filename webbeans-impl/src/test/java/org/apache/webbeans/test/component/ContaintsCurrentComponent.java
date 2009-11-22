@@ -17,10 +17,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
 @RequestScoped
-@Production
 public class ContaintsCurrentComponent
 {
     @Inject @Default CurrentBindingComponent comp;

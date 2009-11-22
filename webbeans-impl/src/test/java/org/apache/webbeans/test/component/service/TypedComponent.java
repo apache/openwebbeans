@@ -13,9 +13,7 @@
  */
 package org.apache.webbeans.test.component.service;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 public class TypedComponent implements ITyped<String>
 {
 

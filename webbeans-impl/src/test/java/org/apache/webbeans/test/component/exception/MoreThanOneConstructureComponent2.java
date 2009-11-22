@@ -15,11 +15,9 @@ package org.apache.webbeans.test.component.exception;
 
 import javax.inject.Inject;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.service.ServiceImpl1;
 
-@Production
 public class MoreThanOneConstructureComponent2
 {
     @Inject

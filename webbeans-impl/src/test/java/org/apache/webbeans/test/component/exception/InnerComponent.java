@@ -13,12 +13,10 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
 public class InnerComponent
 {
-    @Production
-    public class InnerInnerComponent
+        public class InnerInnerComponent
     {
 
     }

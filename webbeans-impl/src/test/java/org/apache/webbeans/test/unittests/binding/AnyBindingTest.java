@@ -36,7 +36,6 @@ public class AnyBindingTest extends TestContext{
 	@Before
 	public void init()
 	{
-		initDefaultDeploymentTypes();
 	}
 	
 	@Test

@@ -18,9 +18,7 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 @RequestScoped
 public class TypeLiteralComponent implements ITypeLiteralComponent<List<String>>
 {

@@ -18,11 +18,9 @@ import java.io.Serializable;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithNonBindingMember;
 
-@Production
 @AnnotationWithNonBindingMember(value = "B", arg1 = "arg1", arg2 = "arg2")
 @SessionScoped
 public class NonBindingComponent implements Serializable

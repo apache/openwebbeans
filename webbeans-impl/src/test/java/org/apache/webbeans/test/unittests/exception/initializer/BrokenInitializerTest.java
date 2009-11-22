@@ -35,7 +35,6 @@ public class BrokenInitializerTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
     }
     
     @Test

@@ -13,9 +13,7 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 public final class FinalComponent
 {
 

@@ -30,7 +30,6 @@ import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.annotation.StandardLiteral;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.util.Asserts;
@@ -73,7 +72,6 @@ public final class JmsComponentFactory
         }
         
         component.setImplScopeType(new DependentScopeLiteral());
-        component.setType(new StandardLiteral());
         
         Annotation[] anns = model.getBindings();
         

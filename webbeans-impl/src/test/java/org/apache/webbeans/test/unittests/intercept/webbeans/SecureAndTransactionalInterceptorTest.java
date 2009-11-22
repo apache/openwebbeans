@@ -38,7 +38,6 @@ public class SecureAndTransactionalInterceptorTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
         initDefaultStereoTypes();
         initializeInterceptorType(SecureAndTransactionalInterceptor.class);
     }

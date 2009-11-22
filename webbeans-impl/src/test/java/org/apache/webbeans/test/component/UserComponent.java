@@ -18,9 +18,7 @@ import java.io.Serializable;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 @SessionScoped
 @Named("userComponent")
 public class UserComponent implements Serializable

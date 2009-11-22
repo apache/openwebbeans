@@ -15,9 +15,6 @@ package org.apache.webbeans.test.component.dependent;
 
 import javax.enterprise.context.Dependent;
 
-import org.apache.webbeans.annotation.deployment.Production;
-
-@Production
 @Dependent
 public class DependentComponent
 {

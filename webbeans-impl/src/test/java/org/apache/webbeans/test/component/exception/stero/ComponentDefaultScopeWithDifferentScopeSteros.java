@@ -17,11 +17,9 @@ import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 
-@Production
 @SessionScoped
 @StereoWithSessionScope
 @StereoWithRequestScope

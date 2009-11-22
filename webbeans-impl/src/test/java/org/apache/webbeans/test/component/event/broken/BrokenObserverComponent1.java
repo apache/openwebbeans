@@ -15,10 +15,8 @@ package org.apache.webbeans.test.component.event.broken;
 
 import javax.enterprise.event.Observes;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.event.broke.BrokenEvent;
 
-@Production
 public class BrokenObserverComponent1
 {
 

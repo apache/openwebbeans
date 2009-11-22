@@ -18,12 +18,10 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.ProducerBinding1;
 import org.apache.webbeans.test.component.service.IService;
 
-@Production
 @RequestScoped
 @Named("producer")
 public class Producer1

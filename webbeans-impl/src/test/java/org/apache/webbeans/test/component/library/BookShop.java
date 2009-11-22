@@ -18,10 +18,8 @@ import javax.enterprise.event.Observes;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.event.LoggedInEvent;
 
-@Production
 @RequestScoped
 public class BookShop extends Business implements Shop<Book>
 {

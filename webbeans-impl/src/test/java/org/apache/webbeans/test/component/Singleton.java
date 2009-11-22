@@ -19,7 +19,6 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.SingletonBinding;
 import org.apache.webbeans.test.component.service.ITyped2;
@@ -27,7 +26,6 @@ import org.apache.webbeans.test.component.service.ITyped2;
 @SessionScoped
 @SingletonBinding
 @Named("singletonInstance")
-@Production
 public class Singleton implements Serializable
 {
     private ITyped2<String, Object> typed2 = null;

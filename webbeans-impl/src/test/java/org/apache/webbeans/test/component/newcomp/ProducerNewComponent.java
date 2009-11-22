@@ -19,11 +19,9 @@ import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.IPayment;
 
-@Production
 @RequestScoped
 @Named
 public class ProducerNewComponent

@@ -17,11 +17,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.ProducerBinding1;
 
 @RequestScoped
-@Production
 @Named
 public class Producer1ConsumerComponent
 {

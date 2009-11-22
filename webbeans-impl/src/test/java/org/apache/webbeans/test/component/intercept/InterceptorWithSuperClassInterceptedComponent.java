@@ -24,9 +24,7 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 @RequestScoped
 @Interceptors(value = { InterceptorWithSuperClass.class })
 public class InterceptorWithSuperClassInterceptedComponent

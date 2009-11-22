@@ -21,7 +21,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.annotation.StandardLiteral;
 
 
 public class InjectionPointBean extends AbstractBean<InjectionPoint>
@@ -35,7 +34,6 @@ public class InjectionPointBean extends AbstractBean<InjectionPoint>
         
         addQualifier(new DefaultLiteral());
         setImplScopeType(new DependentScopeLiteral());
-        setType(new StandardLiteral());
         addApiType(InjectionPoint.class);
         addApiType(Object.class);
     }

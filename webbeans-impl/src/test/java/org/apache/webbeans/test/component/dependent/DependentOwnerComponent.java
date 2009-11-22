@@ -17,9 +17,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
-import org.apache.webbeans.annotation.deployment.Production;
-
-@Production
 @RequestScoped
 public class DependentOwnerComponent
 {

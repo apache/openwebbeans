@@ -20,9 +20,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
-import org.apache.webbeans.test.annotation.binding.Mock;
 import org.apache.webbeans.test.component.specializes.AsynhrounousSpecalizesService;
-import org.apache.webbeans.test.component.specializes.MockSpecializesService;
 import org.apache.webbeans.test.component.specializes.SpecializesServiceInjectorComponent;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
@@ -39,8 +37,6 @@ public class SpecializationComponentTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
-        initializeDeploymentType(Mock.class, 3);
     }
     
     @Test
@@ -50,21 +46,13 @@ public class SpecializationComponentTest extends TestContext
         
         ContextFactory.initRequestContext(null);
         
-        Bean<MockSpecializesService> bean1 = defineManagedBean(MockSpecializesService.class);
         Bean<AsynhrounousSpecalizesService> bean2 = defineManagedBean(AsynhrounousSpecalizesService.class);
         Bean<SpecializesServiceInjectorComponent> bean3 = defineManagedBean(SpecializesServiceInjectorComponent.class);
         
-        WebBeansUtil.configureSpecializations(MockSpecializesService.class);
-        
-        MockSpecializesService instanceMock =getManager().getInstance(bean1);
         AsynhrounousSpecalizesService instanceOther = getManager().getInstance(bean2);
         
-        Assert.assertNotNull(instanceMock);
         Assert.assertNotNull(instanceOther);
         
         SpecializesServiceInjectorComponent instance = getManager().getInstance(bean3);
-        
-        Assert.assertTrue(instance.getService() instanceof MockSpecializesService);
-        
     }
 }

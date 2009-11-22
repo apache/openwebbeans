@@ -35,7 +35,6 @@ public class BrokenProducerTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
     }
 
     @Test

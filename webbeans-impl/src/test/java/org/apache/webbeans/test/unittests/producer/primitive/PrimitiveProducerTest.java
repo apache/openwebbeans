@@ -35,7 +35,6 @@ public class PrimitiveProducerTest extends TestContext
     @Before
     public void init()
     {
-        initDefaultDeploymentTypes();
     }
     
     

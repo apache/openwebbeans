@@ -24,9 +24,7 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.annotation.deployment.Production;
 
-@Production
 @RequestScoped
 @Interceptors(value = { Interceptor1.class, Interceptor2.class })
 public class MultipleInterceptedComponent

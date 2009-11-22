@@ -21,7 +21,6 @@ import org.apache.webbeans.context.SessionContextManager;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.decorator.DecoratorsManager;
-import org.apache.webbeans.deployment.DeploymentTypeManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorsManager;
@@ -36,8 +35,6 @@ public class WebBeansFinder
     public static final String SINGLETON_MANAGER = BeanManagerImpl.class.getName();
 
     public static final String SINGLETON_DECORATORS_MANAGER = DecoratorsManager.class.getName();
-
-    public static final String SINGLETON_DEPLOYMENT_TYPE_MANAGER = DeploymentTypeManager.class.getName();
 
     public static final String SINGLETON_STEREOTYPE_MANAGER = StereoTypeManager.class.getName();
 

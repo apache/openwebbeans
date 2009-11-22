@@ -18,7 +18,6 @@ package org.apache.webbeans.test.component.inheritance;
 
 import org.apache.webbeans.test.component.inheritance.types.InhBinding1;
 import org.apache.webbeans.test.component.inheritance.types.InhBinding2;
-import org.apache.webbeans.test.component.inheritance.types.InhDeployment1;
 import org.apache.webbeans.test.component.inheritance.types.InhIntBinding1;
 import org.apache.webbeans.test.component.inheritance.types.InhIntBinding2;
 import org.apache.webbeans.test.component.inheritance.types.InhScopeType1;
@@ -27,7 +26,6 @@ import org.apache.webbeans.test.component.inheritance.types.InhStereo2;
 
 @InhBinding1
 @InhBinding2
-@InhDeployment1
 @InhStereo1
 @InhStereo2
 @InhScopeType1

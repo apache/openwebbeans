@@ -15,11 +15,9 @@ package org.apache.webbeans.test.component.exception.stero;
 
 import java.io.Serializable;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
 
-@Production
 @StereoWithSessionScope
 @StereoWithSessionScope2
 public class ComponentWithSameScopeSteros implements Serializable

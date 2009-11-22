@@ -19,11 +19,9 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.event.LoggedInEvent;
 
 @RequestScoped
-@Production
 @Default
 public class ComponentWithObservable1
 {

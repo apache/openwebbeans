@@ -15,10 +15,8 @@ package org.apache.webbeans.test.component;
 
 import javax.enterprise.context.RequestScoped;
 
-import org.apache.webbeans.annotation.deployment.Production;
 import org.apache.webbeans.test.annotation.binding.Check;
 
-@Production
 @RequestScoped
 @Check(type = "CHECK")
 public class CheckWithCheckPaymentDecoratorField implements IPayment

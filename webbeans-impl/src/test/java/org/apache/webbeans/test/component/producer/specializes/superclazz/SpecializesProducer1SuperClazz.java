@@ -17,7 +17,6 @@ import javax.enterprise.inject.Produces;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
-import org.apache.webbeans.test.annotation.deployment.DeploymentType1;
 
 public class SpecializesProducer1SuperClazz
 {
@@ -30,7 +29,6 @@ public class SpecializesProducer1SuperClazz
     @Produces
     @Binding1
     @Binding2
-    @DeploymentType1
     public int createMaxNumber()
     {
         return Integer.MAX_VALUE;
