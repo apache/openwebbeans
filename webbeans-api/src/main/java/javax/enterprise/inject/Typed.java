@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 @Target(value={ElementType.METHOD, ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface BeanTypes
+public @interface Typed
 {
 
    Class<?>[] value() default {};
