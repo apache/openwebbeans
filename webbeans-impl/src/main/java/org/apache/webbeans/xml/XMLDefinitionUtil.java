@@ -31,7 +31,7 @@ import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.util.NonBinding;
+import javax.enterprise.util.Nonbinding;
 import javax.inject.Named;
 import javax.inject.Scope;
 import javax.interceptor.AroundInvoke;
@@ -200,7 +200,7 @@ public final class XMLDefinitionUtil
                     Class<?> clazz = method.getReturnType();
                     if (clazz.isArray() || clazz.isAnnotation())
                     {
-                        if (!AnnotationUtil.hasAnnotation(method.getAnnotations(), NonBinding.class))
+                        if (!AnnotationUtil.hasAnnotation(method.getAnnotations(), Nonbinding.class))
                         {
                             throw new WebBeansConfigurationException(errorMessage + "WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : " + temp.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                         }

@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.util.NonBinding;
+import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 import javax.interceptor.InterceptorBinding;
 
@@ -432,7 +432,7 @@ public final class AnnotationUtil
     }
 
     /**
-     * Returns true if the injection point binding type and {@link NonBinding}
+     * Returns true if the injection point binding type and {@link Nonbinding}
      * member values are equal to the given member annotation.
      * 
      * @param clazz annotation class
@@ -463,7 +463,7 @@ public final class AnnotationUtil
             {
                 for (Annotation annot : annots)
                 {
-                    if (!annot.annotationType().equals(NonBinding.class))
+                    if (!annot.annotationType().equals(Nonbinding.class))
                     {
                         list.add(method.getName());
                     }
@@ -485,7 +485,7 @@ public final class AnnotationUtil
      * 
      * @param src annotation toString method
      * @param member annotation toString method
-     * @param arguments annotation member values with {@link NonBinding}
+     * @param arguments annotation member values with {@link Nonbinding}
      *            annoations.
      * @return true or false
      */
@@ -800,7 +800,7 @@ public final class AnnotationUtil
             Class<?> clazz = method.getReturnType();
             if (clazz.isArray() || clazz.isAnnotation())
             {
-                if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), NonBinding.class))
+                if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), Nonbinding.class))
                 {
                     throw new WebBeansConfigurationException("@Qualifier : " + ann.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                 }

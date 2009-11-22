@@ -28,7 +28,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.util.NonBinding;
+import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.AbstractBean;
@@ -102,7 +102,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
             Class<?> clazz = method.getReturnType();
             if (clazz.isArray() || clazz.isAnnotation())
             {
-                if (!AnnotationUtil.hasAnnotation(method.getAnnotations(), NonBinding.class))
+                if (!AnnotationUtil.hasAnnotation(method.getAnnotations(), Nonbinding.class))
                 {
                     throw new WebBeansConfigurationException("Interceptor definition class : " + getClazz().getName() + " @InterceptorBinding : " + binding.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                 }
@@ -114,7 +114,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
 
     /**
      * Checks whether all of this interceptors binding types are present on the bean, with 
-     * {@link NonBinding} member values.
+     * {@link Nonbinding} member values.
      * 
      * @param bindingTypes binding types of bean
      * @param annots binding types annots of bean

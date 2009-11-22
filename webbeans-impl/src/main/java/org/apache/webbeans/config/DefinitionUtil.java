@@ -29,7 +29,7 @@ import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.BeanTypes;
+import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
@@ -40,7 +40,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.util.NonBinding;
+import javax.enterprise.util.Nonbinding;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Scope;
@@ -96,9 +96,9 @@ public final class DefinitionUtil
         Annotation[] annots = clazz.getDeclaredAnnotations();
         
         //Looking for bean types
-        if(AnnotationUtil.hasAnnotation(annots, BeanTypes.class))
+        if(AnnotationUtil.hasAnnotation(annots, Typed.class))
         {
-            BeanTypes beanTypes = (BeanTypes) AnnotationUtil.getAnnotation(annots, BeanTypes.class);
+            Typed beanTypes = (Typed) AnnotationUtil.getAnnotation(annots, Typed.class);
             defineUserDefinedBeanTypes(bean, beanTypes);
         }
         else
@@ -108,7 +108,7 @@ public final class DefinitionUtil
     }
      
     
-    private static <T> void defineUserDefinedBeanTypes(AbstractBean<T> bean, BeanTypes beanTypes)
+    private static <T> void defineUserDefinedBeanTypes(AbstractBean<T> bean, Typed beanTypes)
     {
         Class<?> beanClazz = bean.getReturnType();        
         Class<?>[] types = beanTypes.value();
@@ -139,9 +139,9 @@ public final class DefinitionUtil
     {
         
         //Looking for bean types
-        if(AnnotationUtil.hasAnnotation(annots, BeanTypes.class))
+        if(AnnotationUtil.hasAnnotation(annots, Typed.class))
         {
-            BeanTypes beanTypes = (BeanTypes) AnnotationUtil.getAnnotation(annots, BeanTypes.class);
+            Typed beanTypes = (Typed) AnnotationUtil.getAnnotation(annots, Typed.class);
             defineUserDefinedBeanTypes(producerBean, beanTypes);
         }
         
@@ -186,7 +186,7 @@ public final class DefinitionUtil
                     Class<?> clazz = method.getReturnType();
                     if (clazz.isArray() || clazz.isAnnotation())
                     {
-                        if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), NonBinding.class))
+                        if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), Nonbinding.class))
                         {
                             throw new WebBeansConfigurationException("WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : " + annotation.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
                         }

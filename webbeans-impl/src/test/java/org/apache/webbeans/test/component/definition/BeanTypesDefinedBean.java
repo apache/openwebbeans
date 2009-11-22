@@ -15,18 +15,18 @@ package org.apache.webbeans.test.component.definition;
 
 import java.io.Serializable;
 
-import javax.enterprise.inject.BeanTypes;
+import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 
-@BeanTypes(value={BeanTypesDefinedBean.class})
+@Typed(value={BeanTypesDefinedBean.class})
 public class BeanTypesDefinedBean implements Serializable
 {
-    private @Produces @Named("paymentField") @BeanTypes(value={CheckWithCheckPayment.class}) CheckWithCheckPayment payment;
+    private @Produces @Named("paymentField") @Typed(value={CheckWithCheckPayment.class}) CheckWithCheckPayment payment;
     
-    @Produces @Named("paymentMethod") @BeanTypes(value={CheckWithCheckPayment.class})
+    @Produces @Named("paymentMethod") @Typed(value={CheckWithCheckPayment.class})
     public CheckWithCheckPayment produce()
     {
         return null;
