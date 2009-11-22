@@ -24,10 +24,10 @@ import javax.enterprise.inject.spi.Bean;
 import junit.framework.Assert;
 
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.business.common.WithInheritedBindingTypeBean;
 import org.apache.webbeans.newtests.interceptors.common.SecureInterceptor;
 import org.apache.webbeans.newtests.interceptors.common.TransactionInterceptor;
-import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
 @SuppressWarnings("unchecked")

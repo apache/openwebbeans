@@ -28,8 +28,8 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
-import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.library.BookShop;
 import org.apache.webbeans.test.component.portable.events.MyExtension;
 import org.apache.webbeans.test.component.producer.primitive.PrimitiveProducer;
