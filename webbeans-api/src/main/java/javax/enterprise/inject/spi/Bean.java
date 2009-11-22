@@ -75,14 +75,6 @@ public interface Bean<T> extends Contextual<T>
     public abstract String getName();
 
     /**
-     * Returns true if bean is capable of
-     * serializable, false otherwise.
-     * 
-     * @return true if bean is serializable
-     */
-    public abstract boolean isSerializable();
-
-    /**
      * If bean is nullable return true, false
      * otherwise. 
      * 
