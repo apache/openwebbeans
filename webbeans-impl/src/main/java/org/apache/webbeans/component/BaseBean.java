@@ -109,6 +109,14 @@ public abstract class BaseBean<T> implements Bean<T>
      * @param qualifier bean qualifier
      */
     public abstract void addQualifier(Annotation qualifier);
+    
+    /**
+     * Returns true if bean is capable of
+     * serializable, false otherwise.
+     * 
+     * @return true if bean is serializable
+     */
+    public abstract boolean isSerializable();    
 
     /**
      * Adds new stereotype annotation.

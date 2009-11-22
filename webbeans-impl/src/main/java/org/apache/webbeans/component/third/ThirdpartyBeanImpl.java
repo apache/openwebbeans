@@ -89,13 +89,6 @@ public class ThirdpartyBeanImpl<T> extends AbstractBean<T>
         return bean.isNullable();
     }
 
-    @Override
-    public boolean isSerializable()
-    {
-        
-        return bean.isSerializable();
-    }
-
     public T create(CreationalContext<T> context)
     {
         
