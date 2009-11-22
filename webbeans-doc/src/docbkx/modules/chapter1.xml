@@ -32,35 +32,35 @@ under the License.
       <para>Currently OpenWebBeans implementation supports the following main features. </para>      
       <itemizedlist spacing="compact">
          <listitem>
-         	<para>JSR-330 Support: It supports the JSR-330 based injections.</para>
+         	<para><emphasis>JSR-330 Support:</emphasis> It supports the JSR-330 based injections.</para>
          </listitem>
          <listitem>
-            <para>Managed Beans Support: Supports the configuration and injection of Managed Beans</para>
+            <para><emphasis>Managed Beans Support:</emphasis> Supports the configuration and injection of Managed Beans</para>
          </listitem>
          <listitem>
-            <para>Session Beans Support in Embeddable OpenEJB in Tomcat 6.x: It supports Session Beans using in embeddable Apache OpenEJB.</para>
+            <para><emphasis>Session Beans Support in Embeddable OpenEJB in Tomcat 6.x:</emphasis> It supports Session Beans using in embeddable Apache OpenEJB.</para>
          </listitem>
          <listitem>
-            <para>Producer Field and Method Support: It supports producer based beans.</para>
+            <para><emphasis>Producer Field and Method Support:</emphasis> It supports producer based beans.</para>
          </listitem>
          <listitem>
-            <para>Injection of @Resource, @PersistenceUnit and @PersistenceContext: Currently it is able to inject these resource types.</para>
+            <para><emphasis>Injection of @Resource, @PersistenceUnit and @PersistenceContext:</emphasis> Currently it is able to inject these resource types.</para>
          </listitem>
          <listitem>
-            <para>Java Messaging Service (JMS) Injection Support: It supports injection of JMS Connection Factory, JMS Sessions etc.</para>
+            <para><emphasis>Java Messaging Service (JMS) Injection Support:</emphasis> It supports injection of JMS Connection Factory, JMS Sessions etc.</para>
 		</listitem>
         <listitem>
-        	<para>Event/Observer Support: It supports Event and Observers.</para>
+        	<para><emphasis>Event/Observer Support:</emphasis> It supports Event and Observers.</para>
         </listitem> 
         <listitem>
-            <para>Interceptor and Decrotator Support for Managed Beans: It supports interceptors and decorators for managed beans. Currently
+            <para><emphasis>Interceptor and Decrotator Support for Managed Beans:</emphasis> It supports interceptors and decorators for managed beans. Currently
             it does not support @InterceptorBinding style interceptors and decorators on Session beans.</para>
         </listitem>
         <listitem>
-            <para>Java SE Support: It can be used in Java SE environments like Java Swing applications.</para>
+            <para><emphasis>Java SE Support:</emphasis> It can be used in Java SE environments like Java Swing applications.</para>
         </listitem>
         <listitem>
-            <para>Java EE Web Application Support: It can be used in Java EE Web containers like Tomcat, Jetty etc.</para>
+            <para><emphasis>Java EE Web Application Support:</emphasis> It can be used in Java EE Web containers like Tomcat, Jetty etc.</para>
         </listitem>            
       </itemizedlist>
     </section>
@@ -148,10 +148,10 @@ under the License.
     		<code>org.apache.webbeans.spi.JNDIService</code> interface defines methods to interact with runtime JNDI provider. 
     		There are two different JNDIService implementation, one for example</para>
     		
-    		<programlisting>
+ <programlisting>
    	org.apache.webbeans.spi.JNDIService=org.apache.webbeans.spi.se.JNDIServiceStaticImpl
    	org.apache.webbeans.spi.JNDIService=org.apache.webbeans.spi.ee.JNDIServiceEnterpriseImpl
-    		</programlisting>
+ </programlisting>
     		
     		<para>First one is used in Java SE environment as a simple name-value <code>Map</code> implementation whereas 
     		the second one contains full blown container provided JNDI context implementation. You would look
