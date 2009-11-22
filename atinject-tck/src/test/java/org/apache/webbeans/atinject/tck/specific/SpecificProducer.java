@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.atinject.tck.specific;
 
-import javax.enterprise.inject.BeanTypes;
+import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
@@ -39,7 +39,7 @@ public class SpecificProducer
     }
     
     
-    @Produces @DriverBinding @BeanTypes(value={DriversSeat.class})
+    @Produces @DriverBinding @Typed(value={DriversSeat.class})
     public DriversSeat produceDriverSeat(@New DriversSeat seat)
     {
         return seat;
@@ -52,7 +52,7 @@ public class SpecificProducer
         return tire;
     }
     
-    @Produces @Default @BeanTypes(value={SpareTire.class})
+    @Produces @Default @Typed(value={SpareTire.class})
     public SpareTire produceSpareTire(@New SpareTire tire)
     {
         return tire;
