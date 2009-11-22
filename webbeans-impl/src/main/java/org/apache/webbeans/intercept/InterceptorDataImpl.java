@@ -252,5 +252,34 @@ public class InterceptorDataImpl implements InterceptorData
     {
         this.webBeansInterceptor = webBeansInterceptor;
     }
+    
+    public Method getInterceptor()
+    {
+        if(aroundInvoke != null)
+        {
+            return aroundInvoke;
+        }
+        else if(postConstruct != null)
+        {
+            return postConstruct;
+        }
+        else if(preDestroy != null)
+        {
+            return preDestroy;
+        }
+        
+        else return null;
+    }
+
+    @Override
+    public boolean isLifecycleInterceptor()
+    {
+        if(this.preDestroy != null || this.postConstruct != null)
+        {
+            return true;
+        }
+        
+        return false;
+    }
 
 }

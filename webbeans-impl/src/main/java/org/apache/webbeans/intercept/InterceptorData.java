@@ -65,6 +65,8 @@ public interface InterceptorData
      * @return the list of around invoke methods
      */
     public Method getAroundInvoke();
+    
+    public Method getInterceptor();
 
     /**
      * Sets the interceptor method.
@@ -142,4 +144,6 @@ public interface InterceptorData
     public void setWebBeansInterceptor(Interceptor<?> webBeansInterceptor);
 
     public Interceptor<?> getWebBeansInterceptor();
+    
+    public boolean isLifecycleInterceptor();
 }

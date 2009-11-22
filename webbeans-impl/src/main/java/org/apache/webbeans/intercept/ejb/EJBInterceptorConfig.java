@@ -15,6 +15,7 @@ package org.apache.webbeans.intercept.ejb;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -65,11 +66,130 @@ public final class EJBInterceptorConfig
 
         }
 
-        configureBeanAnnots(clazz, stack);
+        configureBeanAnnots(clazz, stack);        
+        checkInheritedButOverridenMethod(clazz, stack);        
     }
-
-    /*
-     * Configure interceptor class
+    
+    /**
+     * Return true if given candidate is listed in interceptors list. 
+     * @param mainClass bean class
+     * @param candidateClass interceptor candidate class
+     * @return true if given candidate is listed in interceptors list
+     */
+    private static boolean checkGivenClassIsInInterceptorList(Class<?> mainClass, Class<?> candidateClass)
+    {
+        if (AnnotationUtil.hasClassAnnotation(mainClass, Interceptors.class))
+        {
+            Interceptors incs = mainClass.getAnnotation(Interceptors.class);
+            Class<?>[] intClasses = incs.value();
+            
+            for (Class<?> intClass : intClasses)
+            {
+                if(intClass.equals(candidateClass))
+                {
+                    return true;
+                }
+                else
+                {
+                    if(checkInInterceptorHierarchy(intClass, candidateClass))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Return true if candidate class is a super class of given interceptor class.
+     * @param interceptorClass interceptor class
+     * @param candidateClass candaite class
+     * @return true if candidate class is a super class of given interceptor class
+     */
+    private static boolean checkInInterceptorHierarchy(Class<?> interceptorClass, Class<?> candidateClass)
+    {
+        Class<?> superClassInterceptor = interceptorClass.getSuperclass();
+        if(superClassInterceptor != null && !superClassInterceptor.equals(Object.class))
+        {
+            if(superClassInterceptor.equals(candidateClass))
+            {
+                return true;
+            }
+            
+            else
+            {
+                return checkInInterceptorHierarchy(superClassInterceptor, candidateClass);
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Remove bean inherited but overriden lifecycle interceptor method from
+     * its stack list.
+     * @param clazz bean class
+     * @param stack bean interceptor stack
+     */
+    private static void checkInheritedButOverridenMethod(Class<?> clazz,List<InterceptorData> stack)
+    {
+        Iterator<InterceptorData> it = stack.iterator();
+        while(it.hasNext())
+        {
+            InterceptorData interceptorData = it.next();
+            
+            if(interceptorData.isLifecycleInterceptor())
+            {
+                if(removeInheritedButOverridenInterceptor(clazz, interceptorData))
+                {
+                    it.remove();
+                }                
+            }
+        }
+    }
+    
+    /**
+     * @see EJBInterceptorConfig#checkInheritedButOverridenMethod(Class, List)  
+     */
+    private static boolean removeInheritedButOverridenInterceptor(Class<?> clazz, InterceptorData interceptorData)
+    {    
+        Method interceptor = interceptorData.getInterceptor();
+        Class<?> declaringClass = interceptor.getDeclaringClass();
+        
+        //Not look for Interceptor classes
+        if(checkGivenClassIsInInterceptorList(clazz, declaringClass))
+        {
+            return false;
+        }
+        
+        if(!declaringClass.equals(clazz))
+        {
+            Method found = ClassUtil.getDeclaredMethod(clazz,interceptor.getName(), interceptor.getParameterTypes());                
+            if(found != null)
+            {
+                return true;
+            }
+            else
+            {
+                Class<?> superClass = clazz.getSuperclass();
+                if(superClass != null && !superClass.equals(Object.class))
+                {
+                    return removeInheritedButOverridenInterceptor(superClass, interceptorData);   
+                }            
+            }            
+        }
+                
+        return false;
+    }
+    
+    /**
+     * Configure {@link Interceptors} on bean class.
+     * @param clazz bean class
+     * @param stack interceptor stack of bean
+     * @param isMethod if interceptor definition is on the bean
+     * @param m if isMethod true, then it is intercepted method
      */
     private static void configureInterceptorAnnots(Class<?> clazz, List<InterceptorData> stack, boolean isMethod, Method m)
     {
@@ -86,9 +206,11 @@ public final class EJBInterceptorConfig
         WebBeansUtil.configureInterceptorMethods(null, clazz, PreDestroy.class, true, isMethod, stack, m, false);
 
     }
-
-    /*
-     * Configure bean class
+    
+    /**
+     * Configure bean class defined interceptors.
+     * @param clazz bean class
+     * @param stack interceptor stack
      */
     private static void configureBeanAnnots(Class<?> clazz, List<InterceptorData> stack)
     {
@@ -124,9 +246,11 @@ public final class EJBInterceptorConfig
         WebBeansUtil.configureInterceptorMethods(null, clazz, PreDestroy.class, false, false, stack, null, false);
 
     }
-
-    /*
-     * Super class annots.
+    
+    /**
+     * Configures super classes interceptors.
+     * @param list super classes
+     * @param stack interceptor stack
      */
     private static void configureBeanSuperClassAnnots(List<Class<?>> list, List<InterceptorData> stack)
     {

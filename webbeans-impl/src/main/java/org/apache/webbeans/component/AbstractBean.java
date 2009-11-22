@@ -612,38 +612,50 @@ public abstract class AbstractBean<T> extends BaseBean<T>
      */    
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{\n");        
-        builder.append("\tName : "+ getName() +", WebBeans Type: "+ getWebBeansType() + "\n");
-        builder.append("\tAPI Types:\n");
-        builder.append("\t[\n");
+        StringBuilder builder = new StringBuilder();        
+        builder.append("Name:"+ getName() +",WebBeans Type:"+ getWebBeansType());
+        builder.append(",API Types:[");
         
+        int size = getTypes().size();
+        int index = 1;
         for(Type clazz : getTypes())
         {
             if(clazz instanceof Class)
             {
-                builder.append("\t\t\t"+((Class<?>)clazz).getName()+ "\n");    
+                builder.append(((Class<?>)clazz).getName());    
             }
             else
             {
                 Class<?> rawType = (Class<?>)((ParameterizedType)clazz).getRawType();
-                builder.append("\t\t\t"+rawType.getName()+ "\n");
+                builder.append(rawType.getName());
             }
-                        
+            
+            if(index < size)
+            {
+                builder.append(",");
+            }
+            
+            index++;                        
         }
         
-        builder.append("\t]\n");
-        builder.append("\t,\n");
-        builder.append("\tQualifiers:\n");
-        builder.append("\t[\n");
+        builder.append("],");
+        builder.append("Qualifiers:[");
         
+        size = getQualifiers().size();
+        index = 1;
         for(Annotation ann : getQualifiers())
         {
-            builder.append("\t\t\t"+ann.annotationType().getName()+"\n");
+            builder.append(ann.annotationType().getName());
+            
+            if(index < size)
+            {
+                builder.append(",");
+            }
+            
+            index++;
         }
         
-        builder.append("\t]\n");
-        builder.append("}\n");
+        builder.append("]");
         
         return builder.toString();
     }

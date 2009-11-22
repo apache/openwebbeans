@@ -228,12 +228,17 @@ public class InvocationContextImpl implements InvocationContext
 
             Object t = intc.getInterceptorInstance();
             
+            //In bean class
             if (t == null)
             {
-                t = target;
-                
+                t = target;                
                 result = method.invoke(t, new Object[] {});
+                
+                //Continue to call others
+                proceedCommonAnnots(datas, type);                
+                
             }
+            //In interceptor class
             else
             {
                 result = method.invoke(t, new Object[] { this });

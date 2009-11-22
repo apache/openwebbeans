@@ -928,7 +928,9 @@ public final class WebBeansUtil
      * @param isDefinedWithWebBeans if interceptor is defined with WebBeans
      *            spec, not EJB spec
      */
-    public static void configureInterceptorMethods(Interceptor<?> webBeansInterceptor, Class<?> clazz, Class<? extends Annotation> annotation, boolean definedInInterceptorClass, boolean definedInMethod, List<InterceptorData> stack, Method annotatedInterceptorClassMethod, boolean isDefinedWithWebBeans)
+    public static void configureInterceptorMethods(Interceptor<?> webBeansInterceptor, Class<?> clazz, Class<? extends Annotation> annotation, 
+                                                    boolean definedInInterceptorClass, boolean definedInMethod, List<InterceptorData> stack, 
+                                                    Method annotatedInterceptorClassMethod, boolean isDefinedWithWebBeans)
     {
         InterceptorData intData = null;
         Method method = null;

@@ -13,17 +13,15 @@
  */
 package org.apache.webbeans.newtests.interceptors.lifecycle.inheritance;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
 
 @RequestScoped
-public class SubClassBean extends SuperClassBean
+public class SubClassInheritedBean extends SubClassBean
 {
     public static boolean POST_CONSTRUCT = false;
     public static boolean PRE_DESTOY = false;
     
-    public SubClassBean()
+    public SubClassInheritedBean()
     {
         
     }
@@ -33,15 +31,14 @@ public class SubClassBean extends SuperClassBean
         
     }
     
-    @PostConstruct
-    public void postConstruct1()
+    public void postConstruct()
     {
         POST_CONSTRUCT = true;
     }
     
-    @PreDestroy
-    public void preDestroy1()
+    public void preDestroy()
     {
         PRE_DESTOY = true;
     }
+ 
 }

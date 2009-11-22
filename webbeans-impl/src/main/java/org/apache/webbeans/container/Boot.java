@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.container;
 
+import javax.enterprise.inject.spi.BeanManager;
+
 /**
  * Container boot process.
  * 
@@ -21,5 +23,8 @@ package org.apache.webbeans.container;
  */
 public class Boot
 {
+    /**BeanManager instance unique to deployment*/
+    private BeanManager beanManager;
 
+    
 }

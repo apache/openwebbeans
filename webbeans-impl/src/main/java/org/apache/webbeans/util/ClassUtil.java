@@ -1847,4 +1847,16 @@ public final class ClassUtil
         
         return false;
     }
+    
+    public static Method getDeclaredMethod(Class<?> clazz, String methodName, Class<?>[] parameters)
+    {
+        try
+        {
+            return clazz.getDeclaredMethod(methodName, parameters);
+            
+        }catch(NoSuchMethodException e)
+        {
+            return null;
+        }
+    }
 }

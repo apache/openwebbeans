@@ -23,35 +23,59 @@ import javax.enterprise.inject.spi.BeanManager;
 import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.junit.Before;
 import org.junit.Test;
 
-public class LifecycleInheritanceTest extends AbstractUnitTest
+public class LifecycleInheritedOverridenTest extends AbstractUnitTest
 {
+    @Before
+    public void before()
+    {
+        SubClassBean.POST_CONSTRUCT = false;
+        SubClassBean.PRE_DESTOY = false;
+        
+        SuperClassBean.POST_CONSTRUCT = false;
+        SuperClassBean.PRE_DESTOY = false;        
+    }
     
     @Test
-    public void testLifecycle()
+    public void testInheritedOverridenMethods()
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(SubClassBean.class);
-        classes.add(SuperClassBean.class);
+        classes.add(SubClassInheritedBean.class);
         
         startContainer(classes);
         
         BeanManager manager = getBeanManager();
-        Bean<?> subClassBean = manager.getBeans(SubClassBean.class, new Annotation[0]).iterator().next();
+        Bean<?> subClassBean = manager.getBeans(SubClassInheritedBean.class, new Annotation[0]).iterator().next();
         
-        Object subClassInstance = manager.getReference(subClassBean, SubClassBean.class, manager.createCreationalContext(subClassBean));
+        Object subClassInstance = manager.getReference(subClassBean, SubClassInheritedBean.class, manager.createCreationalContext(subClassBean));
         
-        Assert.assertTrue(subClassInstance instanceof SubClassBean);
-        SubClassBean beanInstance = (SubClassBean)subClassInstance;
+        Assert.assertTrue(subClassInstance instanceof SubClassInheritedBean);
+        SubClassInheritedBean beanInstance = (SubClassInheritedBean)subClassInstance;
         beanInstance.business();
+                
+        Assert.assertFalse(SubClassInheritedBean.POST_CONSTRUCT);
+        Assert.assertFalse(SubClassInheritedBean.POST_CONSTRUCT);
         
         Assert.assertTrue(SubClassBean.POST_CONSTRUCT);
-        Assert.assertTrue(SuperClassBean.POST_CONSTRUCT);
+        Assert.assertTrue(SubClassBean.POST_CONSTRUCT);
+        
+        Assert.assertFalse(SuperClassBean.POST_CONSTRUCT);
+        Assert.assertFalse(SuperClassBean.POST_CONSTRUCT);
         
         shutDownContainer();
         
+        Assert.assertFalse(SubClassInheritedBean.PRE_DESTOY);
+        Assert.assertFalse(SubClassInheritedBean.PRE_DESTOY);
+        
         Assert.assertTrue(SubClassBean.PRE_DESTOY);
-        Assert.assertTrue(SuperClassBean.PRE_DESTOY);
+        Assert.assertTrue(SubClassBean.PRE_DESTOY);
+        
+        Assert.assertFalse(SuperClassBean.PRE_DESTOY);
+        Assert.assertFalse(SuperClassBean.PRE_DESTOY);
+        
     }
+
 }
