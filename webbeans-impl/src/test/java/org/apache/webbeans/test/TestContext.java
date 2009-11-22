@@ -53,6 +53,7 @@ import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
@@ -86,6 +87,12 @@ import org.dom4j.Element;
  * 
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
+ * @deprecated
+ * Please do not use this class anymore while writing tests. Instead
+ * use {@link AbstractUnitTest} class. Also do not add new tests into 
+ * the package org.apache.webbeans.test folder. Add your new tests into
+ * the org.apache.webbeans.newtests folder.
+ * 
  */
 public abstract class TestContext implements ITestContext
 {
