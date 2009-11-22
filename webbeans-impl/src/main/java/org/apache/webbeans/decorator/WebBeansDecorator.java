@@ -308,12 +308,6 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     }
 
     @Override
-    public Class<? extends Annotation> getDeploymentType()
-    {
-        return wrappedBean.getDeploymentType();
-    }
-
-    @Override
     public String getName()
     {
         return wrappedBean.getName();

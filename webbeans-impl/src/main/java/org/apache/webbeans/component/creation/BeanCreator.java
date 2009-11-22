@@ -60,14 +60,6 @@ public interface BeanCreator<T> extends Producer<T>
     public void defineStereoTypes();
     
     /**
-     * Defines deployment type.
-     * 
-     * @param errorMessage error messahe
-     * @return deployment type
-     */
-    public Class<? extends Annotation> defineDeploymentType(String errorMessage);
-    
-    /**
      * Define api type.
      */
     public void defineApiType();

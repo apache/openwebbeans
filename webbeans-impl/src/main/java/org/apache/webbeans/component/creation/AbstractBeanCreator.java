@@ -61,11 +61,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         this.bean = bean;
         this.beanAnnotations = beanAnnotations;
         
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        if(useAlternative)
-        {
-            WebBeansUtil.setBeanEnableFlag(bean);   
-        }
+        WebBeansUtil.setBeanEnableFlag(bean);   
     }
 
     /**
@@ -119,30 +115,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Class<? extends Annotation> defineDeploymentType(String errorMessage)
-    {
-        Class<? extends Annotation> deploymentType = null;
-        
-        if(isDefaultMetaDataProvider())
-        {
-            boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-            if(!useAlternative)
-            {
-                deploymentType = DefinitionUtil.defineDeploymentType(this.bean, this.beanAnnotations, errorMessage);   
-            }
-        }
-        else
-        {
-            //TODO Define deployment type
-        }
-        
-        return deploymentType;
-    }
-
     /**
      * {@inheritDoc}
      */

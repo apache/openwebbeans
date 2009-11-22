@@ -47,18 +47,7 @@ public interface Bean<T> extends Contextual<T>
      * 
      * @return qualifiers of a bean
      */
-    public abstract Set<Annotation> getQualifiers();
-
-
-    /**
-     * Returns bean deployment type.
-     * 
-     * @return bean's deployment type.
-     * @deprecated this has been dropped from the spec in favor to 'Alternatives'
-     */
-    @Deprecated
-    public abstract Class<? extends Annotation> getDeploymentType();
-    
+    public abstract Set<Annotation> getQualifiers();    
     
     /**
      * Returns scope of a bean.

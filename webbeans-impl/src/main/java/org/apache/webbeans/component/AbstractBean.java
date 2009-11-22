@@ -361,16 +361,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
             throw new UnsupportedOperationException("Component name is not null, is " + this.name);
     }
 
-    /**
-     * Gets predecence of the bean.
-     * 
-     * @return precedence
-     */
-    public int getPrecedence()
-    {
-        return DeploymentTypeManager.getInstance().getPrecedence(getDeploymentType());
-    }
-
     /*
      * (non-Javadoc)
      * @see javax.webbeans.manager.Bean#getQualifiers()
@@ -379,16 +369,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     public Set<Annotation> getQualifiers()
     {
         return this.implQualifiers;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see javax.webbeans.manager.Bean#getDeploymentType()
-     */
-    @Override
-    public Class<? extends Annotation> getDeploymentType()
-    {
-        return this.type.annotationType();
     }
 
     /*

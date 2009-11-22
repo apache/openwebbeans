@@ -858,17 +858,7 @@ public final class WebBeansXMLConfigurator
         /* Configures child elements of this webbeans decleration element */
         configureWebBeanDeclerationChilds(component, webBeanDecleration);
 
-        /* Check if the deployment type is enabled. */
-        if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(component.getDeploymentType())) // Maybe
-        {
-            component = null;
-
-        }
-        /* Add to the manager */
-        else
-        {
-            BeanManagerImpl.getManager().addBean(component);
-        }
+        BeanManagerImpl.getManager().addBean(component);
 
         return component;
     }

@@ -170,12 +170,6 @@ public abstract class BaseBean<T> implements Bean<T>
     public abstract List<InjectionPoint> getInjectionPoint(Member member);
 
     /**
-     * Gets precedence
-     * @return precedence
-     */
-    public abstract int getPrecedence();
-
-    /**
      * Returns bean class type
      * @return bean class type
      */

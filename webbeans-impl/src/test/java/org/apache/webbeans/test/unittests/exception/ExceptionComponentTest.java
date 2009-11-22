@@ -30,7 +30,6 @@ import org.apache.webbeans.test.component.exception.AroundInvokeWithWrongReturnT
 import org.apache.webbeans.test.component.exception.AroundInvokeWithoutExceptionComponent;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithoutParameterComponent;
 import org.apache.webbeans.test.component.exception.AroundInvokeWithoutReturnTypeComponent;
-import org.apache.webbeans.test.component.exception.ComponentTypeExceptionComponent;
 import org.apache.webbeans.test.component.exception.FinalComponent;
 import org.apache.webbeans.test.component.exception.HasFinalMethodComponent;
 import org.apache.webbeans.test.component.exception.MoreThanOneAroundInvokeComponent;
@@ -71,52 +70,6 @@ public class ExceptionComponentTest extends TestContext
     {
         super.init();
 
-    }
-
-    //X @Test DeploymentTypes have been removed from the spec
-    @Deprecated
-    public void testComponentTypeException()
-    {
-        try
-        {
-            OpenWebBeansConfiguration.getInstance().setProperty(OpenWebBeansConfiguration.USE_INJECTION_RESOLVER_VIA_ALTERNATIVE, "false");
-            clear();
-            defineManagedBean(ComponentTypeExceptionComponent.class);
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println(e.getMessage());
-            return; // all ok!
-        }
-        finally
-        {
-            OpenWebBeansConfiguration.getInstance().setProperty(OpenWebBeansConfiguration.USE_INJECTION_RESOLVER_VIA_ALTERNATIVE, "true");
-        }
-        Assert.fail("expecting an exception!");
-    }
-
-    //X @Test 
-    @Deprecated /** DeploymentTypes got dropped from the spec! */ 
-    public void testProducerMethodComponentTypeException()
-    {
-        WebBeansConfigurationException exc = null;
-        try
-        {
-            OpenWebBeansConfiguration.getInstance().setProperty(OpenWebBeansConfiguration.USE_INJECTION_RESOLVER_VIA_ALTERNATIVE, "false");
-            clear();
-            defineManagedBean(ProducerTypeExceptionComponent.class);
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
-        }
-        finally
-        {
-            OpenWebBeansConfiguration.getInstance().setProperty(OpenWebBeansConfiguration.USE_INJECTION_RESOLVER_VIA_ALTERNATIVE, "true");
-        }
-        Assert.fail("expecting an exception!");
     }
 
     @Test

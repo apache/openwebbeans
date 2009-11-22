@@ -48,13 +48,6 @@ public class ThirdpartyBeanImpl<T> extends AbstractBean<T>
     }
 
     @Override
-    public Class<? extends Annotation> getDeploymentType()
-    {
-        
-        return bean.getDeploymentType();
-    }
-
-    @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
         

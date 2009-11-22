@@ -92,6 +92,7 @@ public final class InterceptorUtil
 //        {
 //            return PrePassivate.class;
 //        }
+        //X TODO also add handling of AROUND_TIMEOUT somewhere
         else
         {
             throw new WebBeansException("Undefined interceotion type");

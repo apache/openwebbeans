@@ -315,13 +315,6 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     {
         return delegateComponent.getQualifiers();
     }
-    
-
-    @Override
-    public Class<? extends Annotation> getDeploymentType()
-    {
-        return delegateComponent.getDeploymentType();
-    }
 
     @Override
     public String getName()

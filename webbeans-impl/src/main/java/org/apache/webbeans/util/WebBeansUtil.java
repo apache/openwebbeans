@@ -1370,21 +1370,7 @@ public final class WebBeansUtil
                         
             if (superBean != null)
             {
-                //check for alternative
-                boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-                
-                if(!useAlternative)
-                {
-                    int res = DeploymentTypeManager.getInstance().comparePrecedences(specialized.getDeploymentType(), superBean.getDeploymentType());
-                    if (res <= 0)
-                    {
-                        throw new InconsistentSpecializationException("@Specializes exception. Class : " + specializedClass.getName() + " must have higher deployment type precedence from the class : " + superClass.getName());
-                    }    
-                }
-                else
-                {
-                    ((AbstractBean<?>)superBean).setEnabled(false);
-                }
+                ((AbstractBean<?>)superBean).setEnabled(false);
                                 
                 AbstractBean<?> comp = (AbstractBean<?>)specialized;
 
@@ -1419,8 +1405,6 @@ public final class WebBeansUtil
         Set<Bean<?>> components = BeanManagerImpl.getManager().getComponents();
         Iterator<Bean<?>> it = components.iterator();
         
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
         while (it.hasNext())
         {
             AbstractBean<?> bean = (AbstractBean<?>)it.next();
@@ -1433,34 +1417,13 @@ public final class WebBeansUtil
                     {
                         if(!(bean instanceof NewBean))
                         {
-                            if(!useAlternative)
-                            {
-                                if(DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(bean.getDeploymentType()))
-                                {
-                                    beans.add(bean);    
-                                }                                                            
-                            }
-                            
-                            else
-                            {
-                                beans.add(bean);
-                            }
+                            beans.add(bean);
                         }                           
                     }                                    
                 }
                 else
                 {
-                    if(!useAlternative)
-                    {
-                        if(DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(bean.getDeploymentType()))
-                        {
-                            beans.add(bean);   
-                        }                        
-                    }
-                    else
-                    {
-                        beans.add(bean);
-                    }
+                    beans.add(bean);
                 }
             }
         }

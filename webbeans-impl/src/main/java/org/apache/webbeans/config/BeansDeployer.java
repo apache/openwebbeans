@@ -652,7 +652,6 @@ public class BeansDeployer
             //Define meta-data
             managedBeanCreator.defineSerializable();
             managedBeanCreator.defineStereoTypes();
-            Class<? extends Annotation> deploymentType = managedBeanCreator.defineDeploymentType("There are more than one @DeploymentType annotation in ManagedBean implementation class : " + managedBean.getReturnType().getName());
             managedBeanCreator.defineApiType();
             managedBeanCreator.defineScopeType("ManagedBean implementation class : " + clazz.getName() + " stereotypes must declare same @Scope annotations");
             managedBeanCreator.defineQualifier();
@@ -734,27 +733,12 @@ public class BeansDeployer
                 managedBean.setInjectionTarget(managedBeanCreator.getInjectedTarget());   
             }
             
-            boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-            boolean addBeans = true;
-            if(!useAlternative)
-            {
-                // Check if the deployment type is enabled.
-                if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
-                {
-                    addBeans = false;
-                }
-                
-            }
-            
-            if (addBeans)
-            {                
-                BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewBean(managedBean));                
-                DecoratorUtil.checkManagedBeanDecoratorConditions(managedBean);
-                BeanManagerImpl.getManager().addBean(managedBean);
-                BeanManagerImpl.getManager().getBeans().addAll(producerMethods);
-                managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
-                BeanManagerImpl.getManager().getBeans().addAll(producerFields);
-            }
+            BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewBean(managedBean));                
+            DecoratorUtil.checkManagedBeanDecoratorConditions(managedBean);
+            BeanManagerImpl.getManager().addBean(managedBean);
+            BeanManagerImpl.getManager().getBeans().addAll(producerMethods);
+            managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
+            BeanManagerImpl.getManager().getBeans().addAll(producerFields);
         }
     }
 

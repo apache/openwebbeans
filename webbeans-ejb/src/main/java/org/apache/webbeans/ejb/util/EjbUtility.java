@@ -80,7 +80,6 @@ public final class EjbUtility
         //Define meta-data
         ejbBeanCreator.defineSerializable();
         ejbBeanCreator.defineStereoTypes();
-        Class<? extends Annotation> deploymentType = ejbBeanCreator.defineDeploymentType("There are more than one @DeploymentType annotation in Session Bean implementation class : " + ejbBean.getReturnType().getName());
         ejbBeanCreator.defineApiType();
         ejbBeanCreator.defineScopeType("Session Bean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
         ejbBeanCreator.defineQualifier();
@@ -163,22 +162,9 @@ public final class EjbUtility
         }
         
         boolean addBeans = true;        
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
-        if(!useAlternative)
-        {
-            if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
-            {
-                addBeans = false;
-            }
-        }
-        
-        if (addBeans)
-        {                                
-            BeanManagerImpl.getManager().addBean(ejbBean);
-            BeanManagerImpl.getManager().getBeans().addAll(producerMethodBeans);
-            BeanManagerImpl.getManager().getBeans().addAll(producerFieldBeans);
-        }        
+        BeanManagerImpl.getManager().addBean(ejbBean);
+        BeanManagerImpl.getManager().getBeans().addAll(producerMethodBeans);
+        BeanManagerImpl.getManager().getBeans().addAll(producerFieldBeans);
     }
     
     private static void checkProducerMethods(Set<ProducerMethodBean<?>> producerMethodBeans, EjbBean<?> bean)

@@ -84,81 +84,6 @@ public final class DefinitionUtil
 
     }
     
-    public static <T> Class<? extends Annotation> defineDeploymentType(AbstractBean<T> component, Annotation[] beanAnnotations, String errorMessage)
-    {
-        boolean found = false;
-        for (Annotation annotation : beanAnnotations)
-        {
-            // Component Type annotation is not null, if Component
-            Annotation ct = annotation.annotationType().getAnnotation(DeploymentType.class);
-
-            if (ct != null)
-            {
-                // Already found component type, too many component type ,throw
-                // exception
-                if (found == true)
-                {
-                    throw new WebBeansConfigurationException(errorMessage);
-                }
-                else
-                {
-                    component.setType(annotation);// component type
-                    found = true;
-                }
-            }
-        }
-
-        if (!found)
-        {
-            // Look inherited meta-data deployment type
-            IBeanInheritedMetaData metadata = component.getInheritedMetaData();
-            if (metadata != null)
-            {
-                if (metadata.getInheritedDeploymentType() != null)
-                {
-                    component.setType(metadata.getInheritedDeploymentType());
-                    found = true;
-                }
-            }
-        }
-
-        // Still not set
-        if (!found)
-        {
-            // Look stereotype
-            Annotation result = WebBeansUtil.getMaxPrecedenceSteroTypeDeploymentType(component);
-
-            if (result == null)
-            {
-                //From parent
-                if (!found && (component instanceof IBeanHasParent))
-                {
-                    IBeanHasParent<T> child = (IBeanHasParent<T>) component;
-                    component.setType(child.getParent().getType());
-                }
-                
-                else
-                {
-                    component.setType(new ProductionLiteral());
-                    found = true;    
-                }
-                
-            }
-            else
-            {
-                component.setType(result);
-                found = true;
-            }
-        }
-                
-        if(component.getDeploymentType().equals(Standard.class))
-        {
-            throw new WebBeansConfigurationException("WebBeans " + component + " may not declare deployment type @Standard");
-        }
-        
-        return component.getDeploymentType();
-    }
-
     /**
      * Configures the web bean api types.
      * 
@@ -665,19 +590,6 @@ public final class DefinitionUtil
         defineSerializable(component);
         defineStereoTypes(component, method.getDeclaredAnnotations());
 
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
-        if(!useAlternative)
-        {
-            Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, method.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
-
-            // Check if the deployment type is enabled.
-            if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
-            {
-                return null;
-            }            
-        }
-
         Annotation[] methodAnns = method.getDeclaredAnnotations();
 
         DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
@@ -724,19 +636,6 @@ public final class DefinitionUtil
         defineSerializable(component);
         defineStereoTypes(component, field.getDeclaredAnnotations());
 
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
-        if(!useAlternative)
-        {
-            Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, field.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in the component class : " + component.getReturnType().getName());
-
-            // Check if the deployment type is enabled.
-            if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
-            {
-                return null;
-            }            
-        }
-        
         Annotation[] fieldAnns = field.getDeclaredAnnotations();
 
         DefinitionUtil.defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
@@ -1203,19 +1102,6 @@ public final class DefinitionUtil
         
         defineSerializable(bean);
         defineStereoTypes(bean, anns);
-
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
-        if(!useAlternative)
-        {
-            Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(bean, anns, "There are more than one @DeploymentType annotation in the bean class : " + bean.getReturnType().getName());
-
-            // Check if the deployment type is enabled.
-            if (!DeploymentTypeManager.getInstance().isDeploymentTypeEnabled(deploymentType))
-            {
-                return null;
-            }            
-        }
 
         DefinitionUtil.defineProducerMethodApiTypes(bean, method.getBaseType(), anns);
         DefinitionUtil.defineScopeType(bean, anns, "Bean producer method : " + method.getJavaMember().getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");

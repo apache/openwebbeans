@@ -51,9 +51,6 @@ public class OpenWebBeansConfiguration
     /**Use OWB Specific Field Injection*/
     public static final String USE_OWB_SPECIFIC_FIELD_INJECTION = "org.apache.webbeans.fieldInjection.useOwbSpecificInjection";    
     
-    /**Use Alternative or DeploymentType*/
-    public static final String USE_INJECTION_RESOLVER_VIA_ALTERNATIVE = "org.apache.webbeans.resolver.useAlternative";
-    
     /**Use EJB Discovery or not*/
     public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.UseEjbMetaDataDiscoveryService";
     
@@ -157,13 +154,5 @@ public class OpenWebBeansConfiguration
         
         return Boolean.valueOf(value);
     }
-    
-    public boolean useAlternativeOrDeploymentType()
-    {
-        String value = getProperty(USE_INJECTION_RESOLVER_VIA_ALTERNATIVE);
         
-        return Boolean.valueOf(value);
-    }
-    
-    
 }

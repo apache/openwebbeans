@@ -831,16 +831,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             set.add(obj);
         }
         
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
-        if(useAlternative)
-        {
-            set = this.injectionResolver.findByAlternatives(set);
-        }        
-        else
-        {
-            set = this.injectionResolver.findByPrecedence(set);   
-        }
+        set = this.injectionResolver.findByAlternatives(set);
         
         if(set.size() > 1)
         {

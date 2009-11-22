@@ -50,12 +50,7 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
         super(type, returnType);
         this.ownerComponent = ownerComponent;
         
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
-        if(useAlternative)
-        {
-            setEnabled(ownerComponent.isEnabled());   
-        }
+        setEnabled(ownerComponent.isEnabled());   
     }
 
     /**

@@ -243,21 +243,9 @@ public class InjectionResolver
             }
         }
         
-        //check for alternative
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
-        //Check for enable/disable status of bean
-        if(useAlternative)
-        {
-            //Look for enable/disable
-            resolvedComponents = findByEnabled(resolvedComponents);
-        }
-        else
-        {
-            //Look for precedence
-            resolvedComponents = findByPrecedence(resolvedComponents);   
-        }                
-        
+        //Look for enable/disable
+        resolvedComponents = findByEnabled(resolvedComponents);
+
         //Still Ambigious, check for specialization
         if(resolvedComponents.size() > 1)
         {
@@ -382,18 +370,8 @@ public class InjectionResolver
         //Look for qualifiers
         results = findByQualifier(results, qualifier);
         
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
-        if(useAlternative)
-        {
-            //Look for alternative
-            results = findByAlternatives(results);
-        }
-        else
-        {
-            //Look for precedence
-            results = findByPrecedence(results);   
-        }        
+        //Look for alternative
+        results = findByAlternatives(results);
 
         //Ambigious resulotion, check for specialization
         if(results.size() > 1)
@@ -433,54 +411,7 @@ public class InjectionResolver
         
         return result;
     }
-    
-    /**
-     * Return filtered beans according to the deployment type precedence.
-     * 
-     * @param <T> bean class
-     * @param result resulted beans
-     * @return filtered beans according to the deployment type precedence
-     */
-    public Set<Bean<?>> findByPrecedence(Set<Bean<?>> result)
-    {
-        Bean<?> resolvedComponent = null;
-        Iterator<Bean<?>> it = result.iterator();
-        Set<Bean<?>> res = new HashSet<Bean<?>>();
-
-        while (it.hasNext())
-        {
-            Bean<?> component = it.next();
-
-            if (resolvedComponent == null)
-            {
-                resolvedComponent = component;
-                res.add(resolvedComponent);
-            }
-            else
-            {
-                DeploymentTypeManager typeManager = DeploymentTypeManager.getInstance();
-
-                if (typeManager.comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) < 0)
-                {
-                    continue;
-                }
-                else if (typeManager.comparePrecedences(component.getDeploymentType(), resolvedComponent.getDeploymentType()) > 0)
-                {
-                    res.clear();
-                    resolvedComponent = component;
-                    res.add(resolvedComponent);
-
-                }
-                else
-                {
-                    res.add(component);
-                }
-            }
-        }
-
-        return res;
-    }
-    
+        
     /**
      * Gets alternatives from set.
      * @param result resolved set

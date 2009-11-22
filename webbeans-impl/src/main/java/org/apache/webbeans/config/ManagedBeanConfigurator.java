@@ -112,28 +112,11 @@ public final class ManagedBeanConfigurator
 
         ManagedBean<T> component = new ManagedBean<T>(clazz, type);
         
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
-        if(useAlternative)
-        {
-            WebBeansUtil.setBeanEnableFlag(component);   
-        }
+        WebBeansUtil.setBeanEnableFlag(component);   
         
         DefinitionUtil.defineSerializable(component);
         DefinitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
-        
-        //Use @DeploymentType instead of using @Alternative
-        if(!useAlternative)
-        {
-            Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, clazz.getDeclaredAnnotations(), "There are more than one @DeploymentType annotation in Simple WebBean Component implementation class : " + component.getReturnType().getName());
-
-            // Check if the deployment type is enabled.
-            if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
-            {
-                return null;
-            }            
-        }
-        
+                
         Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
 
         DefinitionUtil.defineApiTypes(component, clazz);
@@ -171,31 +154,13 @@ public final class ManagedBeanConfigurator
         Class<T> javaClazz = annotatedType.getJavaClass();
         ManagedBean<T> component = new ManagedBean<T>(javaClazz, WebBeansType.MANAGED);
         
-        boolean useAlternative = OpenWebBeansConfiguration.getInstance().useAlternativeOrDeploymentType();
-        
-        if(useAlternative)
-        {
-            WebBeansUtil.setBeanEnableFlag(component);   
-        }
+        WebBeansUtil.setBeanEnableFlag(component);   
         
         Annotation[] clazzAnns = annotatedType.getAnnotations().toArray(new Annotation[0]);
         
         DefinitionUtil.defineSerializable(component);
         DefinitionUtil.defineStereoTypes(component, clazzAnns);
         
-        //Use @DeploymentType instead of using @Alternative
-        if(!useAlternative)
-        {
-            Class<? extends Annotation> deploymentType = DefinitionUtil.defineDeploymentType(component, clazzAnns, "There are more than one @DeploymentType annotation in Simple WebBean Component implementation class : " + component.getReturnType().getName());
-
-            // Check if the deployment type is enabled.
-            if (!WebBeansUtil.isDeploymentTypeEnabled(deploymentType))
-            {
-                return null;
-            }            
-        }
-        
-
         DefinitionUtil.defineApiTypes(component, javaClazz);
         DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + javaClazz.getName() + " stereotypes must declare same @Scope annotations");
         
