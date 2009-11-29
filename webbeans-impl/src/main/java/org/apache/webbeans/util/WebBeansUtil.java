@@ -18,6 +18,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -94,7 +95,6 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
@@ -965,12 +965,7 @@ public final class WebBeansUtil
                 {
                     if (!isDefinedWithWebBeans)
                     {
-                        if (ClassUtil.isContaintNoArgConstructor(clazz) == null)
-                        {
-                            throw new WebBeansConfigurationException("Interceptor class : " + clazz.getName() + " must have no-arg constructor");
-                        }
-
-                        intData.setInterceptorInstance(clazz.newInstance());
+                        intData.setInterceptorInstance(newInstanceForced(clazz));
                     }
                 }
                 catch (WebBeansConfigurationException e1)
@@ -986,6 +981,52 @@ public final class WebBeansUtil
             intData.setInterceptor(method, annotation);
 
             stack.add(intData);
+        }
+    }
+
+    /**
+     * Create a new instance of the given class using it's default constructor
+     * regardless if the constructor is visible or not.
+     * This is needed to construct some package scope classes in the TCK.
+     * 
+     * @param <T>
+     * @param clazz
+     * @return
+     * @throws WebBeansConfigurationException
+     */
+    public static <T> T newInstanceForced(Class<T> clazz) 
+    throws WebBeansConfigurationException 
+    {
+        Constructor<T> ct = ClassUtil.isContaintNoArgConstructor(clazz);
+        if (ct == null)
+        {
+            throw new WebBeansConfigurationException("class : " + clazz.getName() + " must have no-arg constructor");
+        }
+
+        if (!ct.isAccessible())
+        {
+            ct.setAccessible(true);
+        }
+        
+        try 
+        {
+            return ct.newInstance();
+        } 
+        catch( IllegalArgumentException e )
+        {
+            throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
+        } 
+        catch( IllegalAccessException e ) 
+        {
+            throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
+        } 
+        catch( InvocationTargetException e ) 
+        {
+            throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
+        } 
+        catch( InstantiationException e ) 
+        {
+            throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
         }
     }
 
