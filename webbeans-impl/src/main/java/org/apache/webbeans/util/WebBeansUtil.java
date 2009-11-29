@@ -941,14 +941,7 @@ public final class WebBeansUtil
         }
         else if (annotation.equals(PreDestroy.class))
         {
-            if (definedInInterceptorClass)
-            {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PreDestroy.class, true);
-            }
-            else
-            {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PreDestroy.class, false);
-            }
+            method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PreDestroy.class, false);
         }
 
         if (method != null)
