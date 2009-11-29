@@ -78,6 +78,7 @@ public class PluginLoader
             {
               OpenWebBeansPlugin plugin = pluginIter.next();
               logger.info("adding OpenWebBeansPlugin " + plugin.getClass().getSimpleName());
+              plugin.startUp();
               ps.add(plugin);
             }   
             
