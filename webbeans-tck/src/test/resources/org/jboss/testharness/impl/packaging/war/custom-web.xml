@@ -71,22 +71,16 @@
       <url-pattern>/*</url-pattern>
    </servlet-mapping>
 
-	 <filter>
-  <filter-name>webbeans</filter-name>
-  <filter-class>org.apache.webbeans.jsf.WebBeansJSFFilter</filter-class>
- </filter>
- <filter-mapping>
-  <filter-name>webbeans</filter-name>
-  <servlet-name>Faces Servlet</servlet-name>
- </filter-mapping>
  <listener>
   <listener-class>org.apache.webbeans.servlet.WebBeansConfigurationListener</listener-class>
  </listener>
+
  <servlet>
   <servlet-name>Faces Servlet</servlet-name>
   <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
   <load-on-startup>1</load-on-startup>
  </servlet>
+
  <servlet-mapping>
   <servlet-name>Faces Servlet</servlet-name>
   <url-pattern>*.jsf</url-pattern>

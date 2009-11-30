@@ -236,6 +236,16 @@
                                     <version>1.7.0</version>
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
+                                
+                              <!-- commons-discovery -->
+                                <artifactItem>
+									<groupId>commons-discovery</groupId>
+									<artifactId>commons-discovery</artifactId>
+                                    <overWrite>true</overWrite>
+                                    <version>0.4</version>
+                                    <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
+                                </artifactItem>
+                                
 
                               <!-- xml-apis -->
                                 <artifactItem>
