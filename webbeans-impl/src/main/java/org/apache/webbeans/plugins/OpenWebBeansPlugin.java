@@ -16,7 +16,10 @@ package org.apache.webbeans.plugins;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.enterprise.inject.spi.Bean;
+
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansPassivationException;
 
 /**
  * <p>Interface which all OpenWebBeans plugins has to implement to 
@@ -78,6 +81,21 @@ public interface OpenWebBeansPlugin
     public boolean isResourceAnnotation(Class<? extends Annotation> annotationClass);
 
     /**
+     * Check whether the given beans passivation capabilities are enough.
+     * This function will be called if a bean has a lifecycle (scope) which
+     * requires that the bean must be passivation capable.
+     * 
+     * Usually beans of such scopes have to be {@link java.io.Serializable}.
+     * For specific beans, like e.g. EJB Beans, there might be other criterias.
+     * 
+     * @param annotationClass which should be ckecked
+     * @return <code>true</code> if this plugin handles the bean and all is ok, <code>false</code>
+     *         if the plugin doesn't handle this type of component
+     * @throws WebBeansPassivationException if the component should be able to be passivated  
+     */
+    public boolean isPassivationCapable(Bean<?> component) throws WebBeansPassivationException;
+
+    /**
      * Check conditions for the resources.
      * 
      * @param type
@@ -100,6 +118,5 @@ public interface OpenWebBeansPlugin
      * @return the bean to inject or <code>null</code> if non found.  
      */
     public Object injectResource(Type type, Annotation[] annotations);
-
 
 }

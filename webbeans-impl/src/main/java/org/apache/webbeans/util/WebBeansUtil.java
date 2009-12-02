@@ -1702,10 +1702,24 @@ public final class WebBeansUtil
 
             if (passivating)
             {
+                List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+                for (OpenWebBeansPlugin plugin : plugins)
+                {
+                    if (plugin.isPassivationCapable(component))
+                    {
+                        // passivation capabilities are ok.
+                        return;
+                    }
+                }
+
+                // if no plugin did check some special conditions, the bean must be Serializable
                 if (!component.isSerializable())
                 {
                     throw new WebBeansPassivationException("WebBeans component implementation class : " + clazz.getName() + " with passivating scope @" + scope.annotationType().getName() + " must be Serializable");
                 }
+
+                //X TODO we might check the non-transient childs of the bean for serializability?
+                
             }            
         }        
     }

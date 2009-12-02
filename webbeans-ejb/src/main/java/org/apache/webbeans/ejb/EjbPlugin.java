@@ -18,10 +18,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ejb.EJB;
+import javax.ejb.Stateful;
+import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.SessionBeanType;
 
+import org.apache.commons.lang.Validate;
 import org.apache.openejb.Container;
 import org.apache.openejb.DeploymentInfo;
 import org.apache.openejb.core.singleton.SingletonContainer;
@@ -33,8 +37,10 @@ import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.util.EjbDefinitionUtility;
 import org.apache.webbeans.ejb.util.EjbUtility;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansPassivationException;
 import org.apache.webbeans.plugins.AbstractOpenWebBeansPlugin;
 import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
+import org.apache.webbeans.util.AnnotationUtil;
 
 /**
  * EJB related stuff.
@@ -58,6 +64,31 @@ public class EjbPlugin extends AbstractOpenWebBeansPlugin implements OpenWebBean
     {
         
     }
+    
+    /** @{inheritDoc} */
+    @Override
+    public boolean isPassivationCapable(Bean<?> component) throws WebBeansPassivationException
+    {
+        Validate.notNull(component);
+        
+        if (AnnotationUtil.hasAnnotation(component.getBeanClass().getAnnotations(), Stateful.class ))
+        {
+            // stateful session beans are passivation capable by default
+            //X TODO we might check the non-transient childs of the session bean?
+            return true;
+        }
+
+        if (AnnotationUtil.hasAnnotation(component.getBeanClass().getAnnotations(), Stateless.class ) ||
+            AnnotationUtil.hasAnnotation(component.getBeanClass().getAnnotations(), Singleton.class )   )
+        {
+            throw new WebBeansPassivationException("WebBeans component: " + component.getName() + 
+                          " is not passivation capable and thus must not be used in a passivation scope!");
+        }        
+        
+        // means this component is not handled by this EjbPlugin
+        return false;
+    }
+
     
     @Override
     public <T> Bean<T> defineSessionBean(Class<T> clazz)

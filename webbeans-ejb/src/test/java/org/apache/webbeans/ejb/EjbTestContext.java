@@ -39,9 +39,7 @@ public abstract class EjbTestContext
             System.out.println("INIT EJB");
             
             OpenEJB.init(System.getProperties());
-
-            
-        }catch(Exception e)
+        } catch(Exception e)
         {
             e.printStackTrace();
         }
@@ -55,9 +53,9 @@ public abstract class EjbTestContext
             
             OpenEJB.destroy();
             
-        }catch(Exception e)
+        } catch(Exception e)
         {
-            
+            e.printStackTrace();
         }
     }
     

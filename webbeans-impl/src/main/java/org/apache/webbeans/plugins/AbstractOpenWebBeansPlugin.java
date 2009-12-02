@@ -19,7 +19,10 @@ package org.apache.webbeans.plugins;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.enterprise.inject.spi.Bean;
+
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansPassivationException;
 
 /**
  * Abstract imlpementation of the {@link OpenWebBeansPlugin} interface
@@ -38,58 +41,48 @@ public abstract class AbstractOpenWebBeansPlugin implements OpenWebBeansPlugin
         
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.plugins.OpenWebBeansPlugin#checkForValidResources(java.lang.reflect.Type, java.lang.Class, java.lang.String, java.lang.annotation.Annotation[])
-     */
+    /** @{inheritDoc} */
     public void checkForValidResources(Type type, Class<?> clazz, String name, Annotation[] annotations)
     {
         
         
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.plugins.OpenWebBeansPlugin#injectResource(java.lang.reflect.Type, java.lang.annotation.Annotation[])
-     */
+    /** @{inheritDoc} */
     public Object injectResource(Type type, Annotation[] annotations)
     {
-        
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.plugins.OpenWebBeansPlugin#isResourceAnnotation(java.lang.Class)
-     */
+    /** @{inheritDoc} */
     public boolean isResourceAnnotation(Class<? extends Annotation> annotationClass)
     {
-        
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.plugins.OpenWebBeansPlugin#isSimpleBeanClass(java.lang.Class)
-     */
+    /** @{inheritDoc} */
+    public boolean isPassivationCapable(Bean<?> component) throws WebBeansPassivationException
+    {
+        return false;
+    }
+    
+    /** @{inheritDoc} */
     public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
     {
         
-        
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.plugins.OpenWebBeansPlugin#shutDown()
-     */
+    /** @{inheritDoc} */
     public void shutDown() throws WebBeansConfigurationException
     {
         
-        
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.plugins.OpenWebBeansPlugin#startUp()
-     */
+    /** @{inheritDoc} */
     public void startUp() throws WebBeansConfigurationException
     {
         
-        
     }
+
 
 }
