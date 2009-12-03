@@ -113,7 +113,7 @@ public final class DecoratorUtil
 
                     for (Type decType : decoratorSet)
                     {
-                        if (!fieldType.isAssignableFrom((Class<?>)decType))
+                        if (!(ClassUtil.getClass(decType)).isAssignableFrom(fieldType))
                         {
                             throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz.getName() + " delegate attribute must implement all of the decorator decorated types.");
                         }
