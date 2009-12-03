@@ -84,7 +84,6 @@ public class StandaloneLifeCycle implements Lifecycle
             }
             
             beanManager.setXMLConfigurator(this.xmlConfig);        
-
         }
     }
 

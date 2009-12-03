@@ -27,7 +27,6 @@ import junit.framework.Assert;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.decorators.common.ConversationDecorator;
-import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.conversation.ConversationService;
 import org.junit.Test;
 

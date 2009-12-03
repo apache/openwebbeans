@@ -128,6 +128,9 @@ public class BeansDeployer
                 JNDIService service = ServiceLoader.getService(JNDIService.class);
                 service.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, BeanManagerImpl.getManager());
 
+                // Register Manager built-in component
+                BeanManagerImpl.getManager().addBean(WebBeansUtil.getManagerBean());
+
                 //Fire Event
                 fireBeforeBeanDiscoveryEvent();
                 
@@ -187,9 +190,6 @@ public class BeansDeployer
     
     private void configureDefaultBeans()
     {
-        // Register Manager built-in component
-        BeanManagerImpl.getManager().addBean(WebBeansUtil.getManagerBean());
-
         // Register Conversation built-in component
         BeanManagerImpl.getManager().addBean(WebBeansUtil.getConversationBean());
         
