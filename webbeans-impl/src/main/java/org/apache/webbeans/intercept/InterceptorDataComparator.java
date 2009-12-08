@@ -20,13 +20,6 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 
-/**
- * Uses {@link InterceptorComparator}.
- * 
- * @see InterceptorComparator
- * @see BeanManager#resolveInterceptors(javax.inject.manager.InterceptionType, java.lang.annotation.Annotation...)
- */
-@Deprecated
 public class InterceptorDataComparator implements Comparator<InterceptorData>, Serializable
 {
 

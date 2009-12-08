@@ -141,6 +141,7 @@ public final class WebBeansInterceptorConfig
 
         // Method level interceptors.
         addMethodInterceptors(clazz, stack, componentInterceptors);
+        Collections.sort(stack, new InterceptorDataComparator());
 
     }
 
