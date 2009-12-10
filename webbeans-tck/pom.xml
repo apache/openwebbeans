@@ -33,51 +33,81 @@
 	<description>All TCK tests for the  OpenWebBeans Implementation</description>
 
     <properties>
-        <webbeans.tck.version>1.0.0</webbeans.tck.version>
+        <webbeans.tck.version>1.1.0-SNAPSHOT</webbeans.tck.version>
     </properties>
-    
+
     <dependencies>
-		
-	 <dependency>
-           <groupId>org.apache.openwebbeans</groupId>
-           <artifactId>openwebbeans-porting</artifactId>
-      </dependency>
+
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-porting</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-jsf</artifactId>
+        </dependency>
         
-      <dependency>
-         <groupId>org.jboss.test-harness</groupId>
-         <artifactId>jboss-test-harness-tomcat</artifactId>         
-         <version>1.1.0-CR3</version>
-      </dependency>
-        		                            
-       <dependency>
-           <groupId>org.jboss.jsr299.tck</groupId>
-           <artifactId>jsr299-tck-impl</artifactId>
-           <version>${webbeans.tck.version}</version>
-           <scope>test</scope>
-           <exclusions>
-           	<exclusion>
-           		<artifactId>jsr299-api</artifactId>
-           		<groupId>org.jboss.webbeans</groupId>
-           	</exclusion>
-           </exclusions>
-       </dependency>
-     
-       <dependency>
-           <groupId>org.testng</groupId>
-           <artifactId>testng</artifactId>
-           <version>5.8</version>
-           <scope>test</scope>
-           <classifier>jdk15</classifier>
-       </dependency>
-       
-       <dependency>
-           <groupId>log4j</groupId>
-           <artifactId>log4j</artifactId>
-           <scope>test</scope>
-       </dependency>
-      
-        
-	</dependencies>
+        <dependency>
+            <groupId>org.apache.myfaces.core</groupId>
+            <artifactId>myfaces-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.myfaces.core</groupId>
+            <artifactId>myfaces-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-ejb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openejb</groupId>
+            <artifactId>openejb-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-resource</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-geronimo</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.test-harness</groupId>
+            <artifactId>jboss-test-harness-tomcat</artifactId>
+            <version>1.1.0-CR3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.jsr299.tck</groupId>
+            <artifactId>jsr299-tck-impl</artifactId>
+            <version>${webbeans.tck.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsr299-api</artifactId>
+                    <groupId>org.jboss.webbeans</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>5.8</version>
+            <scope>test</scope>
+            <classifier>jdk15</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
 
 
     <build>
@@ -103,72 +133,8 @@
                                     <classifier>suite</classifier>
                                     <overWrite>true</overWrite>
                                 </artifactItem>
-								
-								<!-- OWB Porting Package -->
-                                <artifactItem>
-                                    <groupId>org.apache.openwebbeans</groupId>
-                                    <artifactId>openwebbeans-porting</artifactId>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
-                                </artifactItem>
-                                
-                                <!-- OWB Implementation Package -->
-                                <artifactItem>
-                                    <groupId>org.apache.openwebbeans</groupId>
-                                    <artifactId>openwebbeans-impl</artifactId>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
-                                </artifactItem>
-                                
-                                <!-- OWB JSF Plugin Package -->
-                                <artifactItem>
-                                    <groupId>org.apache.openwebbeans</groupId>
-                                    <artifactId>openwebbeans-jsf</artifactId>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
-                                </artifactItem>
-                                
-                                <!-- MyFaces API Package -->
-                                <artifactItem>
-									<groupId>org.apache.myfaces.core</groupId>
-									<artifactId>myfaces-api</artifactId>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
-                                </artifactItem>
-                                
-                                <!-- MyFaces Impl Package -->
-                                <artifactItem>
-									<groupId>org.apache.myfaces.core</groupId>
-									<artifactId>myfaces-impl</artifactId>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
-                                </artifactItem>
-                                
-                               <!-- OWB EJB Plugin Package -->
-                                <artifactItem>
-                                    <groupId>org.apache.openwebbeans</groupId>
-                                    <artifactId>openwebbeans-ejb</artifactId>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
-                                </artifactItem>
-                                
-                              <!-- OWB Resource Plugin Package -->
-                                <artifactItem>
-                                    <groupId>org.apache.openwebbeans</groupId>
-                                    <artifactId>openwebbeans-resource</artifactId>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
-                                </artifactItem>
 
-                              <!-- OWB Geronimo Plugin Package -->
-                                <artifactItem>
-                                    <groupId>org.apache.openwebbeans</groupId>
-                                    <artifactId>openwebbeans-geronimo</artifactId>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
-                                </artifactItem>
-
-                              <!-- Dom4j -->
+<!--  most probably of no use								
                                 <artifactItem>
 									<groupId>dom4j</groupId>
 									<artifactId>dom4j</artifactId>
@@ -176,7 +142,6 @@
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
                                 
-                              <!-- javassist -->
                                 <artifactItem>
 									<groupId>javassist</groupId>
 									<artifactId>javassist</artifactId>
@@ -184,7 +149,6 @@
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
 
-                              <!-- scannotation -->
                                 <artifactItem>
 									<groupId>net.sf.scannotation</groupId>
 									<artifactId>scannotation</artifactId>
@@ -192,7 +156,6 @@
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
                                 
-                              <!-- commons-logging -->
                                 <artifactItem>
 									<groupId>commons-logging</groupId>
 									<artifactId>commons-logging</artifactId>
@@ -201,7 +164,6 @@
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
 
-                              <!-- commons-digester -->
                                 <artifactItem>
 									<groupId>commons-digester</groupId>
 									<artifactId>commons-digester</artifactId>
@@ -210,7 +172,6 @@
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
 
-                              <!-- commons-validator -->
                                 <artifactItem>
 									<groupId>commons-validator</groupId>
 									<artifactId>commons-validator</artifactId>
@@ -219,7 +180,6 @@
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
 
-                              <!-- commons-collections -->
                                 <artifactItem>
 									<groupId>commons-collections</groupId>
 									<artifactId>commons-collections</artifactId>
@@ -228,7 +188,6 @@
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
 
-                              <!-- commons-beanutils -->
                                 <artifactItem>
 									<groupId>commons-beanutils</groupId>
 									<artifactId>commons-beanutils</artifactId>
@@ -247,7 +206,6 @@
                                 </artifactItem>
                                 
 
-                              <!-- xml-apis -->
                                 <artifactItem>
 									<groupId>xml-apis</groupId>
 									<artifactId>xml-apis</artifactId>
@@ -256,14 +214,13 @@
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
                                 
-                              <!-- log4j -->
                                 <artifactItem>
 									<groupId>log4j</groupId>
 									<artifactId>log4j</artifactId>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
-                                                                                                
+ -->                                                                                                
                             </artifactItems>
                         </configuration>
                     </execution>
