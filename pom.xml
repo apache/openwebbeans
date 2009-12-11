@@ -335,7 +335,7 @@
         <module>atinject-api</module>
         <module>webbeans-api</module>
         <module>webbeans-impl</module>
-        <module>webbeans-ejb</module>
+        <module>webbeans-openejb</module>
         <module>webbeans-jms</module>
         <module>webbeans-jsf</module>
         <module>webbeans-resource</module>
