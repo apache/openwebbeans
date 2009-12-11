@@ -196,7 +196,6 @@
                                     <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>                                    
                                 </artifactItem>
                                 
-                              <!-- commons-discovery -->
                                 <artifactItem>
 									<groupId>commons-discovery</groupId>
 									<artifactId>commons-discovery</artifactId>
