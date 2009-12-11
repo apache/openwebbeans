@@ -136,11 +136,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>openwebbeans-jpa</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>openwebbeans-ejb</artifactId>
             <version>${project.version}</version>
         </dependency>

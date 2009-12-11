@@ -18,25 +18,29 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.enterprise.inject.CreationException;
 import javax.naming.Context;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.xml.ws.WebServiceRef;
 
-import org.apache.webbeans.spi.ee.openejb.jpa.JPAServiceOpenEJBImpl;
+import org.apache.openejb.loader.SystemInstance;
+import org.apache.openejb.persistence.JtaEntityManager;
+import org.apache.openejb.persistence.JtaEntityManagerRegistry;
 
 
 class ResourceInjectionProcessor
 {
     private Context context = null;
 
-    private JPAServiceOpenEJBImpl jpaService = null;
-    
     ResourceInjectionProcessor(Context context)
     {
         this.context = context;
-        this.jpaService = new JPAServiceOpenEJBImpl(this.context);
     }
 
     public Object getResourceObject(Field field) throws IllegalAccessException, InvocationTargetException, NamingException
@@ -73,7 +77,7 @@ class ResourceInjectionProcessor
         {
             PersistenceContext annotation = field.getAnnotation(PersistenceContext.class);
             
-            return this.jpaService.getPersistenceContext(annotation.unitName());
+            return this.getPersistenceContext(context, annotation.unitName());
             
         }
         
@@ -81,7 +85,7 @@ class ResourceInjectionProcessor
         {
             PersistenceUnit annotation = field.getAnnotation(PersistenceUnit.class);
             
-            return this.jpaService.getPersistenceUnit(annotation.unitName());
+            return this.getPersistenceUnit(context, annotation.unitName());
         }
         
         return null;
@@ -101,4 +105,59 @@ class ResourceInjectionProcessor
         
         return lookedupResource;
     }    
+    
+    private  EntityManager getPersistenceContext(Context context, String unitName) {
+        // get JtaEntityManagerRegistry
+        JtaEntityManagerRegistry jtaEntityManagerRegistry = SystemInstance.get().getComponent(JtaEntityManagerRegistry.class);
+
+        EntityManagerFactory factory = getPersistenceUnit(context, unitName);
+
+        JtaEntityManager jtaEntityManager = new JtaEntityManager(jtaEntityManagerRegistry, factory, null, false);
+
+        return jtaEntityManager;
+    }
+
+    private  EntityManagerFactory getPersistenceUnit(Context context, String unitName) {
+        EntityManagerFactory factory;
+        try {
+
+            NamingEnumeration<NameClassPair> persUnits = context.list("java:openejb/PersistenceUnit");
+            
+            if (persUnits == null)
+            {
+                throw new CreationException("No PersistenceUnit found in java:openejb/PersistenceUnit!");
+            }
+
+            String shortestMatch = null;
+            
+            while (persUnits.hasMore())
+            {
+                NameClassPair puNc = persUnits.next();
+                
+                if (puNc.getName().startsWith(unitName))
+                {
+                    if (shortestMatch == null || shortestMatch.length() > puNc.getName().length())
+                    {
+                        shortestMatch = puNc.getName();
+                    }
+                }
+                
+            }
+            
+            if (shortestMatch == null)
+            {
+                throw new CreationException("PersistenceUnit '" + unitName + "' not found");
+            }
+            
+            factory = (EntityManagerFactory) context.lookup("java:openejb/PersistenceUnit/" + shortestMatch);
+            
+            
+        } catch (NamingException e) {
+            throw new CreationException("PersistenceUnit '" + unitName + "' not found", e );
+        }
+        return factory;
+    }
+
+
+
 }

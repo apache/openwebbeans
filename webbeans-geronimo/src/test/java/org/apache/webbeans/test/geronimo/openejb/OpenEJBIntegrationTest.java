@@ -19,10 +19,12 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.spi.ee.openejb.jpa.JPAServiceOpenEJBImpl;
+import org.apache.webbeans.spi.ee.openejb.ResourceFactory;
 import org.junit.Test;
 
 
@@ -45,14 +47,19 @@ public class OpenEJBIntegrationTest {
         
         Context context = new InitialContext(p);
 
-        //X Movies movies = (Movies) context.lookup("MoviesLocal");
-        JPAServiceOpenEJBImpl jpaService = new JPAServiceOpenEJBImpl(context); 
+        ResourceFactory rf = ResourceFactory.getInstance();
         
-        EntityManagerFactory emf = jpaService.getPersistenceUnit( "TestUnit" );
+        Class<TestBean> c = TestBean.class;
+        EntityManagerFactory emf = (EntityManagerFactory) rf.getResourceObject(c.getField("emf"));
         Assert.assertNotNull( emf );
         
-        EntityManager em = jpaService.getPersistenceContext("TestUnit");
+        EntityManager em = (EntityManager) rf.getResourceObject(c.getField("em"));
         Assert.assertNotNull( em );
     }
 
+    public class TestBean 
+    {
+    	public @PersistenceUnit(unitName="TestUnit") EntityManagerFactory emf;
+    	public @PersistenceContext(unitName="TestUnit") EntityManager em;
+    }
 }

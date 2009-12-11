@@ -14,9 +14,14 @@
 package org.apache.webbeans.resource.spi.se;
 
 import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 import javax.naming.InitialContext;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
@@ -47,19 +52,17 @@ public class ResourceServiceImpl implements ResourceService
     {
         Object obj = null;
         
-        JPAServicePersistenceImpl impl = new JPAServicePersistenceImpl();
-                
         if (field.isAnnotationPresent(PersistenceContext.class))
         {
             PersistenceContext context = field.getAnnotation(PersistenceContext.class);            
-            obj = impl.getPersistenceContext(context.unitName());
+            obj = getPersistenceContext(context.unitName());
         }
         
         else if (field.isAnnotationPresent(PersistenceUnit.class))
         {
             PersistenceUnit annotation = field.getAnnotation(PersistenceUnit.class);
             
-            obj = impl.getPersistenceUnit(annotation.unitName());
+            obj = getPersistenceUnit(annotation.unitName());
         }
         else if(field.isAnnotationPresent(Resource.class))
         {
@@ -75,6 +78,43 @@ public class ResourceServiceImpl implements ResourceService
         }        
         
         return obj;
+    }
+
+    /**
+     *  A cache for EntityManagerFactories.
+     */
+    private Map<String, EntityManagerFactory> factoryCache = new ConcurrentHashMap<String, EntityManagerFactory>();
+
+    /**
+     * {@inheritDoc}
+     * 
+     */
+    private EntityManagerFactory getPersistenceUnit(String unitName)
+    {
+        if(factoryCache.get(unitName) != null)
+        {
+            return factoryCache.get(unitName);
+        }
+        
+        //X TODO this currently ignores JNDI
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(unitName);
+        
+        factoryCache.put(unitName, emf);
+            
+        return emf;
+    }
+
+    /** 
+     * TODO: currently this returns an extended EntityManager, so we have to wrap it
+     * We have to create a Proxy for injecting entity managers. So, whenever method is called
+     * on the entity managers, look at current Transaction, if exist call joinTransaction();
+     */
+    private EntityManager getPersistenceContext(String unitName)
+    {
+        EntityManagerFactory emf = getPersistenceUnit(unitName);        
+        EntityManager em = emf.createEntityManager();
+        
+        return em;
     }
 
 }

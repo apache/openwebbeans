@@ -58,7 +58,7 @@ public class ResourceFactory
         {
             return this.processor.getResourceObject(field);   
             
-        }catch(Exception e)
+        } catch(Exception e)
         {
             throw new RuntimeException(e);
         }

@@ -338,7 +338,6 @@
         <module>webbeans-ejb</module>
         <module>webbeans-jms</module>
         <module>webbeans-jsf</module>
-        <module>webbeans-jpa</module>
         <module>webbeans-resource</module>
         <module>webbeans-geronimo</module>
         <module>webbeans-porting</module>
@@ -541,12 +540,6 @@
                                 <version>${openwebbeans.version}</version>
                         </dependency>
 
-
-			<dependency>
-				<groupId>org.apache.openwebbeans</groupId>
-				<artifactId>openwebbeans-jpa</artifactId>
-				<version>${openwebbeans.version}</version>
-			</dependency>
 
 			<dependency>
 				<groupId>org.apache.openejb</groupId>
