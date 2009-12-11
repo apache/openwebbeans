@@ -21,10 +21,19 @@ import javax.enterprise.inject.spi.BeanManager;
  * @version $Rev$ $Date$
  *
  */
-public class Boot
+public class Boot implements Main
 {
     /**BeanManager instance unique to deployment*/
     private BeanManager beanManager;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void main(String[] args)
+    {
+        
+    }
 
     
 }
