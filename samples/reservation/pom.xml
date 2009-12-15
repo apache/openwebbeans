@@ -32,6 +32,11 @@
 		<finalName>reservation</finalName>
 	</build>
 
+    <properties>
+    	<geronimo_cdi.version>1.0-SNAPSHOT</geronimo_cdi.version>
+    	<geronimo_atinject.version>1.0-SNAPSHOT</geronimo_atinject.version>
+    </properties>
+
 	<dependencies>
 		
 		<!-- JUnit Test -->
@@ -48,13 +53,19 @@
 			<version>1.1.14</version>
 		</dependency>
 		
-		<!-- JSR 299 API -->
-		<dependency>
-			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>openwebbeans-api</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
+         <dependency>
+                 <groupId>org.apache.geronimo.specs</groupId>
+                 <artifactId>geronimo-cdi_1.0_spec</artifactId>
+                 <version>${geronimo_cdi.version}</version>
+                 <scope>provided</scope>
+         </dependency>
+
+         <dependency>
+                 <groupId>org.apache.geronimo.specs</groupId>
+                 <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                 <version>${geronimo_atinject.version}</version>
+                 <scope>provided</scope>
+         </dependency>
 		
 		<!-- JSF Plugin -->
 		<dependency>
@@ -127,12 +138,17 @@
 			<id>jetty</id>
 			<dependencies>
 				
-				<!-- OWB API -->
-				<dependency>
-					<groupId>org.apache.openwebbeans</groupId>
-					<artifactId>openwebbeans-api</artifactId>
-					<version>${project.version}</version>
-				</dependency>
+		         <dependency>
+		                 <groupId>org.apache.geronimo.specs</groupId>
+		                 <artifactId>geronimo-cdi_1.0_spec</artifactId>
+		                 <version>${geronimo_cdi.version}</version>
+		         </dependency>
+		
+		         <dependency>
+		                 <groupId>org.apache.geronimo.specs</groupId>
+		                 <artifactId>geronimo-atinject_1.0_spec</artifactId>
+		                 <version>${geronimo_atinject.version}</version>
+		         </dependency>
 				
 				<!-- OWB Impl -->
 				<dependency>

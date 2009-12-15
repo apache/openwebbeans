@@ -76,13 +76,18 @@
 		    <optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>openwebbeans-api</artifactId>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-cdi_1.0_spec</artifactId>
 		</dependency>
+                <dependency>
+                        <groupId>org.apache.geronimo.specs</groupId>
+                        <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                </dependency>
+
 		<dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            	    <groupId>junit</groupId>
+	            <artifactId>junit</artifactId>
+       		    <scope>test</scope>
         </dependency>
 
         <!-- the following dependencies are needed for tests only -->      

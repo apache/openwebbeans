@@ -332,8 +332,6 @@
     </reporting>
 	
     <modules>
-        <module>atinject-api</module>
-        <module>webbeans-api</module>
         <module>webbeans-impl</module>
         <module>webbeans-openejb</module>
         <module>webbeans-jms</module>
@@ -384,6 +382,15 @@
              <name>Maven repository (for cdi-api)</name>
              <url>http://repo1.maven.org/maven2</url>
            </repository>
+
+          <repository>
+            <id>geronimo-snapshots</id>
+            <name>Apache Nexus Snapshots</name>
+            <url>https://repository.apache.org/content/groups/snapshots-group</url>
+            <snapshots>
+              <enabled>true</enabled>
+            </snapshots>
+         </repository>
 
 	</repositories>
 
@@ -490,15 +497,15 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.apache.openwebbeans</groupId>
-				<artifactId>atinject-api</artifactId>
-				<version>${openwebbeans.version}</version>
+				<groupId>org.apache.geronimo.specs</groupId>
+				<artifactId>geronimo-cdi_1.0_spec</artifactId>
+				<version>${geronimo_cdi.version}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>org.apache.openwebbeans</groupId>
-				<artifactId>openwebbeans-api</artifactId>
-				<version>${openwebbeans.version}</version>
+				<groupId>org.apache.geronimo.specs</groupId>
+				<artifactId>geronimo-atinject_1.0_spec</artifactId>
+				<version>${geronimo_atinject.version}</version>
 			</dependency>
 
 			<!--  this is used for TCK tests        -->
@@ -578,6 +585,8 @@
       
 	<properties>
           <openwebbeans.version>1.0.0-incubating-SNAPSHOT</openwebbeans.version>
+          <geronimo_cdi.version>1.0-SNAPSHOT</geronimo_cdi.version>
+          <geronimo_atinject.version>1.0-SNAPSHOT</geronimo_atinject.version>
 	  <siteId>/OWB/1.0.0-incubating-M3-rc2/plugins</siteId>
 	</properties>
 

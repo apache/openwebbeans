@@ -41,6 +41,12 @@
 		</plugins>
 		
 	</build>
+	
+    <properties>
+    	<geronimo_cdi.version>1.0-SNAPSHOT</geronimo_cdi.version>
+    	<geronimo_atinject.version>1.0-SNAPSHOT</geronimo_atinject.version>
+    </properties>
+	
 
 	<dependencies>
 
@@ -51,13 +57,20 @@
 			<version>1.1.14</version>
 		</dependency>
 
-		<!-- JSR-299 API, provided -->
-		<dependency>
-			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>openwebbeans-api</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
+         <dependency>
+                 <groupId>org.apache.geronimo.specs</groupId>
+                 <artifactId>geronimo-cdi_1.0_spec</artifactId>
+                 <version>${geronimo_cdi.version}</version>
+                 <scope>provided</scope>
+         </dependency>
+
+         <dependency>
+                 <groupId>org.apache.geronimo.specs</groupId>
+                 <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                 <version>${geronimo_atinject.version}</version>
+                 <scope>provided</scope>
+         </dependency>
+
 		
 		<!-- JSR-299 Implementation -->
 		<dependency>

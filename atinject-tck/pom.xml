@@ -61,12 +61,13 @@
          <scope>test</scope>
       </dependency>
 
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>atinject-api</artifactId>
-            <scope>test</scope>            
-        </dependency>
-        
+         <dependency>
+                 <groupId>org.apache.geronimo.specs</groupId>
+                 <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                 <version>${geronimo_atinject.version}</version>
+                 <scope>test</scope>
+         </dependency>
+
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-porting</artifactId>
