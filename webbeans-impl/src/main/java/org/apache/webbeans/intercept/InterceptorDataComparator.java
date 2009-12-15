@@ -46,14 +46,14 @@ public class InterceptorDataComparator implements Comparator<InterceptorData>, S
                 return 0;
             }
 
+            /* If either is an EJB-style interceptor (@Interceptors or ejb-jar.xml), it is higher priority */
             if (interceptorFirst == null)
             {
-
-                return 1;
+                return -1;
             }
             else if (interceptorSecond == null)
             {
-                return -1;
+                return 1;
             }
             else
             {
