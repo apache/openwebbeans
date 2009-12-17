@@ -770,7 +770,20 @@ public final class ClassUtil
         }
         else if (beanType instanceof Class && requiredType instanceof Class)
         {
-            return requiredType.equals(beanType);
+            Class<?> clzBeanType = (Class<?>)beanType;
+            Class<?> clzReqType = (Class<?>)requiredType;
+            
+            if(clzBeanType.isPrimitive())
+            {
+                clzBeanType = getPrimitiveWrapper(clzBeanType);
+            }
+            
+            if(clzReqType.isPrimitive())
+            {
+                clzReqType = getPrimitiveWrapper(clzReqType);
+            }
+            
+            return clzReqType.equals(clzBeanType);
         }
         else if(beanType instanceof ParameterizedType && requiredType instanceof Class)
         {
