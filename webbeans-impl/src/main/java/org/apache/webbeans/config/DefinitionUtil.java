@@ -94,10 +94,11 @@ public final class DefinitionUtil
         if(AnnotationUtil.hasAnnotation(annots, Typed.class))
         {
             Typed beanTypes = (Typed) AnnotationUtil.getAnnotation(annots, Typed.class);
-            defineUserDefinedBeanTypes(bean, beanTypes);
+            defineUserDefinedBeanTypes(bean, beanTypes);            
         }
         else
         {
+            bean.getTypes().add(Object.class);
             ClassUtil.setTypeHierarchy(bean.getTypes(), clazz);   
         }        
     }
@@ -119,6 +120,7 @@ public final class DefinitionUtil
             apiTypes.add(type);
         }
         
+        apiTypes.add(Object.class);
     }
     
     

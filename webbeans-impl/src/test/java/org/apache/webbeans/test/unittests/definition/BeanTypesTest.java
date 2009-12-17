@@ -47,8 +47,8 @@ public class BeanTypesTest extends TestContext
         Bean<BeanTypesDefinedBean> bean = defineManagedBean(BeanTypesDefinedBean.class);
         Set<Type> apiTypes = bean.getTypes();
         
-        Assert.assertEquals(1, apiTypes.size());        
-        Assert.assertTrue(apiTypes.iterator().next().equals(BeanTypesDefinedBean.class));
+        Assert.assertEquals(2, apiTypes.size());        
+        Assert.assertTrue(apiTypes.contains(BeanTypesDefinedBean.class));
         
         Set<Bean<?>> beans = getManager().getBeans("paymentField");
         Assert.assertEquals(1, beans.size());
@@ -56,8 +56,8 @@ public class BeanTypesTest extends TestContext
         Bean<?> pbean = beans.iterator().next();
         apiTypes = pbean.getTypes();
         
-        Assert.assertEquals(1, apiTypes.size());        
-        Assert.assertTrue(apiTypes.iterator().next().equals(CheckWithCheckPayment.class));
+        Assert.assertEquals(2, apiTypes.size());        
+        Assert.assertTrue(apiTypes.contains(CheckWithCheckPayment.class));
         
         beans = getManager().getBeans("paymentMethod");
         Assert.assertEquals(1, beans.size());
@@ -65,8 +65,8 @@ public class BeanTypesTest extends TestContext
         pbean = beans.iterator().next();
         apiTypes = pbean.getTypes();
         
-        Assert.assertEquals(1, apiTypes.size());        
-        Assert.assertTrue(apiTypes.iterator().next().equals(CheckWithCheckPayment.class));
+        Assert.assertEquals(2, apiTypes.size());        
+        Assert.assertTrue(apiTypes.contains(CheckWithCheckPayment.class));
         
         
         
