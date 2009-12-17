@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
 
@@ -84,7 +85,7 @@ public class OpenWebBeansConfiguration
         }
         catch (IOException ioEx)
         {
-            throw new WebBeansConfigurationException("problem while loading OpenWebBeans default configuration", ioEx);
+            throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EDCONF_FAIL), ioEx);
         }
         
         // and now overload those settings with the ones from the more specialized version (if available)
@@ -92,13 +93,13 @@ public class OpenWebBeansConfiguration
         URL configUrl = loader.getResource(CONFIG_PROPERTIES_NAME);
         if (configUrl == null)
         {
-            logger.info("No config properties " + CONFIG_PROPERTIES_NAME + " found. Using default settings.");
+            logger.info(logger.getTokenString(OWBLogConst.TEXT_CONFIG_PROP) + CONFIG_PROPERTIES_NAME + logger.getTokenString(OWBLogConst.TEXT_CONFIG_NOT_FOUND));
         }
         else
         {
-            logger.info("Config properties " + CONFIG_PROPERTIES_NAME + " found at location "
+            logger.info(logger.getTokenString(OWBLogConst.TEXT_CONFIG_PROP) + CONFIG_PROPERTIES_NAME + logger.getTokenString(OWBLogConst.TEXT_CONFIG_FOUND)
                         + configUrl.toString()
-                        + ". Overriding default settings.");
+                        + logger.getTokenString(OWBLogConst.TEXT_OVERRIDING));
 
             is = loader.getResourceAsStream(CONFIG_PROPERTIES_NAME);
             try
@@ -107,7 +108,7 @@ public class OpenWebBeansConfiguration
             }
             catch (IOException ioEx)
             {
-                throw new WebBeansConfigurationException("problem while loading OpenWebBeans specialized configuration", ioEx);
+                throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.ESCONF_FAIL), ioEx);
             }
             
         }

@@ -31,6 +31,7 @@ import javax.interceptor.Interceptors;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.BeansDeployer;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -268,7 +269,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
             }
             catch (SecurityException e)
             {
-                logger.error("Method security access violation for method " + method.getName() + " for  decorator class : " + decorator.getClass().getName());
+                logger.error(OWBLogConst.ERROR_0011, new Object[]{method.getName(), decorator.getClass().getName()});
                 throw new WebBeansException(e);
 
             }
@@ -278,12 +279,13 @@ public class InterceptorHandler implements MethodHandler, Serializable
             }
             catch (InvocationTargetException e)
             {
-                logger.error("Exception in calling method " + method.getName() + " for  decorator class : " + decorator.getClass().getName() + ". Look log for target checked exception.", e.getTargetException());
+                logger.error(OWBLogConst.ERROR_0012, new Object[]{method.getName(), decorator.getClass().getName()}, e.getTargetException());
+
                 throw new WebBeansException(e);
             }
             catch (IllegalAccessException e)
             {
-                logger.error("Method illegal access for method " + method.getName() + " for  decorator class : " + decorator.getClass().getName());
+                logger.error(OWBLogConst.ERROR_0014, new Object[]{method.getName(), decorator.getClass().getName()});
                 throw new WebBeansException(e);
             }
             finally

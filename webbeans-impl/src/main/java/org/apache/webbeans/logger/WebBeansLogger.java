@@ -14,6 +14,12 @@
 package org.apache.webbeans.logger;
 
 import org.apache.log4j.Logger;
+import org.apache.webbeans.config.OWBLogConst;
+
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * Wrapper class around the log4j logger class to include some checks before the
@@ -28,11 +34,12 @@ public final class WebBeansLogger
 {
     /** Inner logger object to log actual log messages */
     private Logger logger = null;
+    private ResourceBundle wbBundle = null;
 
     /** Private constructor */
     private WebBeansLogger()
     {
-
+    	wbBundle = ResourceBundle.getBundle("META-INF.Messages");
     }
 
     /**
@@ -51,16 +58,22 @@ public final class WebBeansLogger
         return wbLogger;
     }
 
-    public void fatal(String message)
+    public void fatal(String messageKey)
     {
         checkNullLogger();
-        logger.fatal(message);
+        logger.fatal(getTokenString(messageKey));
     }
 
-    public void fatal(String message, Throwable e)
+    public void fatal(String messageKey, Object args[])
     {
         checkNullLogger();
-        logger.fatal(message, e);
+        logger.fatal(constructMessage(messageKey, args));
+    }
+
+    public void fatal(String messageKey, Throwable e)
+    {
+        checkNullLogger();
+        logger.fatal(getTokenString(messageKey), e);
 
     }
 
@@ -70,71 +83,166 @@ public final class WebBeansLogger
         logger.error(e);
     }
 
-    public void error(String message)
+    public void error(String messageKey)
     {
         checkNullLogger();
-        logger.error(message);
+        logger.error(getTokenString(messageKey));
     }
 
-    public void error(String message, Throwable e)
+    public void error(String messageKey, Object args[])
     {
         checkNullLogger();
-        logger.error(message, e);
-
+        logger.error(constructMessage(messageKey, args));
     }
-
-    public void warn(String message)
+    
+    public void error(String messageKey, Throwable e)
     {
         checkNullLogger();
-        logger.warn(message);
+        logger.error(getTokenString(messageKey), e);
+
     }
 
-    public void warn(String message, Throwable e)
+    public void error(String messageKey, Object args[], Throwable e)
     {
         checkNullLogger();
-        logger.warn(message, e);
+        logger.error(constructMessage(messageKey, args), e);
+
     }
 
-    public void info(String message)
+    public void warn(String messageKey)
+    {
+        checkNullLogger();
+        logger.warn(getTokenString(messageKey));
+    }
+
+    public void warn(String messageKey, Object args[])
+    {
+        checkNullLogger();
+        logger.warn(constructMessage(messageKey, args));
+    }
+
+    public void warn(String messageKey, Throwable e)
+    {
+        checkNullLogger();
+        logger.warn(getTokenString(messageKey), e);
+    }
+
+    public void info(String messageKey)
     {
         checkNullLogger();
         if (logger.isInfoEnabled())
-            logger.info(message);
+        {
+            logger.info(getTokenString(messageKey));   
+        }
     }
 
-    public void info(String message, Throwable e)
+    public void info(String messageKey, Object args[])
     {
         checkNullLogger();
         if (logger.isInfoEnabled())
-            logger.info(message, e);
+        {
+            logger.info(constructMessage(messageKey, args));   
+        }
+    }
+    
+    public void info(String messageKey, Throwable e)
+    {
+        checkNullLogger();
+        if (logger.isInfoEnabled())
+        {
+            logger.info(getTokenString(messageKey), e);   
+        }
     }
 
-    public void debug(String message)
+    public void debug(String messageKey)
     {
         checkNullLogger();
         if (logger.isDebugEnabled())
-            logger.debug(message);
+        {
+            logger.debug(getTokenString(messageKey));   
+        }
     }
 
-    public void debug(String message, Throwable e)
+    public void debug(String messageKey, Object args[])
     {
         checkNullLogger();
         if (logger.isDebugEnabled())
-            logger.debug(message, e);
+        {
+            logger.debug(constructMessage(messageKey, args));   
+        }
     }
 
-    public void trace(String message)
+    public void debug(String messageKey, Throwable e)
+    {
+        checkNullLogger();
+        if (logger.isDebugEnabled())
+        {
+            logger.debug(getTokenString(messageKey), e);   
+        }
+    }
+
+    public void trace(String messageKey)
     {
         checkNullLogger();
         if (logger.isTraceEnabled())
-            logger.trace(message);
+        {
+            logger.trace(getTokenString(messageKey));   
+        }
     }
 
-    public void trace(String message, Throwable e)
+    public void trace(String messageKey, Object args[])
     {
         checkNullLogger();
         if (logger.isTraceEnabled())
-            logger.trace(message, e);
+        {
+            logger.trace(constructMessage(messageKey, args));   
+        }
+    }
+
+    public void trace(String messageKey, Throwable e)
+    {
+        checkNullLogger();
+        if (logger.isTraceEnabled())
+        {
+            logger.trace(getTokenString(messageKey), e);   
+        }
+    }
+
+    private String constructMessage(String messageKey, Object args[])
+    {
+    	MessageFormat msgFrmt;
+    	String formattedString;
+    	
+    	msgFrmt = new MessageFormat(getTokenString(messageKey), Locale.getDefault());
+    	formattedString = msgFrmt.format(args);
+    	
+    	return formattedString;
+    }
+
+    public String getTokenString(String messageKey)
+    {
+        String strVal = null;
+
+        if (this.wbBundle == null)
+        {
+        	throw new NullPointerException("ResourceBundle can not be null");
+        }
+        try
+        {
+            strVal = wbBundle.getString(messageKey);
+        }
+        catch (MissingResourceException mre)
+        {
+        	strVal = null;
+        }
+        if (strVal == null)
+        {
+            return messageKey;
+        }
+        else
+        {
+            return strVal;
+        }
     }
 
     /**
@@ -153,5 +261,5 @@ public final class WebBeansLogger
         {
             throw new NullPointerException("Logger can not be null");
         }
-    }
+    }        
 }

@@ -18,6 +18,7 @@ import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 
@@ -40,7 +41,7 @@ public final class JNDIUtil
         }
         catch (Exception e)
         {
-            LOGGER.error("Unable to initialize InitialContext object", e);
+            LOGGER.error(OWBLogConst.ERROR_0004, e);
             throw new ExceptionInInitializerError(e);
         }
     }
@@ -83,7 +84,7 @@ public final class JNDIUtil
         }
         catch (NamingException e)
         {
-            LOGGER.error("Unable to bind object with name : " + name, e);
+            LOGGER.error(OWBLogConst.ERROR_0005, new Object[]{name}, e);
         }
     }
 
@@ -99,7 +100,7 @@ public final class JNDIUtil
         catch (NamingException e)
         {
             LOGGER.error(e);
-            throw new WebBeansException("Unable to unbind object with name : " + name, e);
+            throw new WebBeansException(LOGGER.getTokenString(OWBLogConst.EXCEPT_0009) + name, e);
         }
     }
     
@@ -114,7 +115,7 @@ public final class JNDIUtil
         } catch (NamingException e)
         {
             LOGGER.error(e);
-            throw new WebBeansException("Unable to lookup object with name : " + name, e);
+            throw new WebBeansException(LOGGER.getTokenString(OWBLogConst.EXCEPT_0010) + name, e);
         }
     }
 

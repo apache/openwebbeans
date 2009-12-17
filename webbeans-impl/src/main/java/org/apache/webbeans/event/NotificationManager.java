@@ -41,6 +41,7 @@ import javax.transaction.Transaction;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -231,7 +232,7 @@ public final class NotificationManager
                     }
                     else
                     {
-                        throw new IllegalStateException("TransactionPhase not supported: " + phase);
+                        throw new IllegalStateException(logger.getTokenString(OWBLogConst.EXCEPT_0007) + phase);
                     }
                 }
                 else
@@ -243,7 +244,7 @@ public final class NotificationManager
             {
                 if (!RuntimeException.class.isAssignableFrom(e.getCause().getClass()))
                 {
-                    throw new ObserverException("Exception is thrown while handling event object with type : " + event.getClass().getName(), e);
+                    throw new ObserverException(logger.getTokenString(OWBLogConst.EXCEPT_0008) + event.getClass().getName(), e);
                 }
                 else
                 {
@@ -338,7 +339,7 @@ public final class NotificationManager
             }
             catch (Exception e)
             {
-                logger.error("Exception is occured in the transactional observer ", e);
+                logger.error(OWBLogConst.ERROR_0003, e);
             }
         }
     }

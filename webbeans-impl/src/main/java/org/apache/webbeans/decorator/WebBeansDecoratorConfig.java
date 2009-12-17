@@ -26,6 +26,7 @@ import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
@@ -42,22 +43,22 @@ public final class WebBeansDecoratorConfig
 
     public static <T> void configureDecoratorClass(AbstractBean<T> delegate)
     {
-        logger.info("Configuring the Web Beans Annoatated Decorator Class : " + delegate.getReturnType().getName() + " started");
+        logger.info(OWBLogConst.INFO_0011, new Object[]{logger.getTokenString(OWBLogConst.TEXT_ANNO_CLASS), delegate.getReturnType().getName()});
 
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
 
-        logger.info("Configuring the Web Beans Annotated Decorator Class : " + delegate.getReturnType() + " ended");
+        logger.info(OWBLogConst.INFO_0012, new Object[]{logger.getTokenString(OWBLogConst.TEXT_ANNO_CLASS), delegate.getReturnType()});
 
         BeanManagerImpl.getManager().addDecorator(decorator);
     }
 
     public static <T> void configureXMLDecoratorClass(AbstractBean<T> delegate, XMLInjectionPointModel model)
     {
-        logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType().getName() + " started");
+        logger.info(OWBLogConst.INFO_0011, new Object[]{logger.getTokenString(OWBLogConst.TEXT_XML_CLASS), delegate.getReturnType().getName()});
 
         WebBeansXMLDecorator<T> decorator = new WebBeansXMLDecorator<T>(delegate, model);
 
-        logger.info("Configuring the Web Beans XML based Decorator Class : " + delegate.getReturnType() + " ended");
+        logger.info(OWBLogConst.INFO_0012, new Object[]{logger.getTokenString(OWBLogConst.TEXT_XML_CLASS), delegate.getReturnType()});
 
         BeanManagerImpl.getManager().addDecorator(decorator);
     }

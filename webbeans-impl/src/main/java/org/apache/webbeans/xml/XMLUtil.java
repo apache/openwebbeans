@@ -31,11 +31,13 @@ import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.xml.XMLProducerBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -63,7 +65,7 @@ public final class XMLUtil
     {
     }
 
-    private static final Logger log = LogManager.getLogger(XMLUtil.class);
+    private static WebBeansLogger log = WebBeansLogger.getLogger(XMLUtil.class);
 
     /**
      * Gets new {@link SAXReader} instance.
@@ -104,7 +106,7 @@ public final class XMLUtil
                     Element element = path.getCurrent();
                     if (element.getNamespaceURI() == null || element.getNamespaceURI().equals(""))
                     {
-                        throw new WebBeansConfigurationException("All elements in the beans.xml file have to declare name space.");
+                        throw new WebBeansConfigurationException(log.getTokenString(OWBLogConst.EXCEPT_0012));
                     }
                     else
                     {
@@ -133,8 +135,8 @@ public final class XMLUtil
         }
         catch (DocumentException e)
         {
-            log.fatal("Unable to read root element of the given input stream", e);
-            throw new WebBeansException("Unable to read root element of the given input stream", e);
+            log.fatal(OWBLogConst.FATAL_0002, e);
+            throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
         }
     }
     
@@ -162,8 +164,8 @@ public final class XMLUtil
         }
         catch (DocumentException e)
         {
-            log.fatal("Unable to read root element of the given input stream", e);
-            throw new WebBeansException("Unable to read root element of the given input stream", e);
+            log.fatal(OWBLogConst.FATAL_0002, e);
+            throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
         }
     }
     
@@ -489,7 +491,7 @@ public final class XMLUtil
                 {
                    if(found)
                    {
-                       throw new DefinitionException("Multiple class with name : " + clazz.getName());
+                       throw new DefinitionException(log.getTokenString(OWBLogConst.EXCEPT_0014) + clazz.getName());
                    }
                    else
                    {
@@ -592,12 +594,12 @@ public final class XMLUtil
         Class<?> clazz = getElementJavaType(typeElement);
         if (clazz == null)
         {
-            throw new NonexistentTypeException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is not found in the deployment");
+            throw new NonexistentTypeException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not found in the deployment");
         }
 
         else if (clazz.isAnnotation() || clazz.isArray() || clazz.isEnum())
         {
-            throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " must be class or interface type");
+            throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " must be class or interface type");
         }
 
         else
@@ -614,18 +616,18 @@ public final class XMLUtil
                 Type actualType = getElementJavaType(childElement);
                 if (actualType == null)
                 {
-                    throw new NonexistentTypeException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is not found in the deployment");
+                    throw new NonexistentTypeException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not found in the deployment");
                 }
                 else if (((Class) actualType).isArray() || ((Class) actualType).isEnum())
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " must be class or interface type");
+                    throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " must be class or interface type");
                 }
                 else if (((Class) actualType).isAnnotation())
                 {
                     Class<? extends Annotation> annotClazz = (Class<? extends Annotation>) actualType;
                     if (!AnnotationUtil.isQualifierAnnotation(annotClazz))
                     {
-                        throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is not a @Qualifier");
+                        throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not a @Qualifier");
                     }
 
                     if (definedBindingType == null)
@@ -636,7 +638,7 @@ public final class XMLUtil
                     {
                         if (definedBindingType.equals(annotClazz))
                         {
-                            throw new IllegalArgumentException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " is duplicated");
+                            throw new IllegalArgumentException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is duplicated");
                         }
                     }
 
@@ -650,7 +652,7 @@ public final class XMLUtil
 
             if (actualTypeArgument != typeArguments.size())
             {
-                throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " actual type parameters size are not equals defined in the xml");
+                throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " actual type parameters size are not equals defined in the xml");
             }
 
             int i = 0;
@@ -663,7 +665,7 @@ public final class XMLUtil
 
                 if (!clazzBound.isAssignableFrom((Class<?>) type))
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "Java type with name : " + getElementJavaClassName(typeElement) + " actual type parameter bounded exception");
+                    throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " actual type parameter bounded exception");
                 }
 
             }

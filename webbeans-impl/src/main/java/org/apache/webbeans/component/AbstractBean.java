@@ -30,6 +30,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -204,7 +205,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
             
         }catch(Exception e)
         {
-            logger.fatal("Exception is thrown while destroying bean instance : " + toString());
+            logger.fatal(OWBLogConst.FATAL_0001, new Object[]{toString()});
             e.printStackTrace();
         }
     }

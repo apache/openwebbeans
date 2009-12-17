@@ -19,6 +19,7 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.deployer.AbstractMetaDataDiscovery;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -64,7 +65,7 @@ public class WarMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
         }
         catch (Exception e)
         {
-            logger.error("Initializing of the WebBeans container is failed.", e);
+            logger.error(OWBLogConst.ERROR_0002, e);
             throw e;
         }
 

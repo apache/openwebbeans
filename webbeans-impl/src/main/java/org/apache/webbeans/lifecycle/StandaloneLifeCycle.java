@@ -20,6 +20,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.config.BeansDeployer;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
@@ -73,14 +74,13 @@ public class StandaloneLifeCycle implements Lifecycle
             
             if(discoveryService == null)
             {
-                String message = "Discovery service not found!. Continue with using MetaDataDiscoveryStandard as a default"; 
-                logger.warn(message);
+                logger.warn(OWBLogConst.WARN_0003);
                 
                 this.discoveryService = new MetaDataDiscoveryStandard();
             }
             else
             {
-                logger.info("Using discovery service implementation class : " + discoveryService.getClass());
+                logger.info(OWBLogConst.INFO_0001, new Object[]{discoveryService.getClass().toString()});
             }
             
             beanManager.setXMLConfigurator(this.xmlConfig);        
@@ -92,7 +92,7 @@ public class StandaloneLifeCycle implements Lifecycle
     {
         if(this.started.compareAndSet(false, true))
         {            
-            logger.info("OpenWebBeans Container is starting");
+            logger.info(OWBLogConst.INFO_0002);
             long begin = System.currentTimeMillis();
             
             //Singleton context
@@ -101,22 +101,22 @@ public class StandaloneLifeCycle implements Lifecycle
             // load all optional plugins
             PluginLoader.getInstance().startUp();
 
-            logger.info("Scanning classpaths for beans artifacts");
+            logger.info(OWBLogConst.INFO_0003);
 
             this.discoveryService.scan();
 
-            logger.info("Deploying scanned beans");
+            logger.info(OWBLogConst.INFO_0004);
 
             this.beansDeployer.deploy(this.discoveryService);
                         
             long end = System.currentTimeMillis();
             
-            logger.info("OpenWebBeans Container is started, it takes " + Long.toString(end - begin) + " ms.");            
+            logger.info(OWBLogConst.INFO_0005, new Object[]{Long.toString(end - begin)});            
             
         }
         else
         {
-            logger.warn("OpenWebBeans Container is already started");
+            logger.warn(OWBLogConst.WARN_0004);
         }
         
     }
@@ -126,7 +126,7 @@ public class StandaloneLifeCycle implements Lifecycle
     {
         if(this.stopped.compareAndSet(false, true))
         {
-            logger.info("OpenWebBeans Container is stopping");
+            logger.info(OWBLogConst.INFO_0006);
             
 
             //Fire shut down
@@ -147,12 +147,12 @@ public class StandaloneLifeCycle implements Lifecycle
             //Clear singleton list
             WebBeansFinder.clearInstances();
                     
-            logger.info("OpenWebBeans Container is stopped");        
+            logger.info(OWBLogConst.INFO_0007);        
             
         }
         else
         {
-            logger.warn("OpenWebBeans Container is already stopped");
+            logger.warn(OWBLogConst.WARN_0005);
         }        
         
     }

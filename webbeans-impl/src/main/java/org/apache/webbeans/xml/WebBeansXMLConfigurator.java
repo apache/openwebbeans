@@ -51,6 +51,7 @@ import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -624,7 +625,7 @@ public final class WebBeansXMLConfigurator
             }
             else
             {
-                logger.warn("Alternative XML content is wrong. Child of <alternatives> must be <class>,<stereotype> but found " + XMLUtil.getName(child));
+                logger.warn(OWBLogConst.WARN_0002, new Object[]{XMLUtil.getName(child)});
             }            
         }
     }

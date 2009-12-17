@@ -25,6 +25,7 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.resource.spi.ResourceService;
@@ -73,7 +74,7 @@ public class ResourceServiceImpl implements ResourceService
             }
             catch(Exception e)
             {
-                logger.error("Unable to inject resource for :  " + resource );
+                logger.error(OWBLogConst.ERROR_0001, new Object[] {resource.toString()});
             }             
         }        
         

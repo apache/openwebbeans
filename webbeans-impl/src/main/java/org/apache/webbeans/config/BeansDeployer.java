@@ -44,6 +44,7 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -233,7 +234,7 @@ public class BeansDeployer
      */
     private void validateInjectionPoints()
     {
-        logger.info("Validation of injection points are started");
+        logger.info(OWBLogConst.INFO_0013);
 
         BeanManagerImpl manager = BeanManagerImpl.getManager();        
         Set<Bean<?>> beans = new HashSet<Bean<?>>();
@@ -247,7 +248,7 @@ public class BeansDeployer
         }
         
         
-        logger.info("Validation of the decorator's injection points are started");
+        logger.info(OWBLogConst.INFO_0014);
         
         //Validate Decorators
         validate(beans);
@@ -262,7 +263,7 @@ public class BeansDeployer
             beans.add(wbInt.getDelegate());
         }
         
-        logger.info("Validation of the interceptor's injection points are started");
+        logger.info(OWBLogConst.INFO_0015);
         
         //Validate Interceptors
         validate(beans);
@@ -273,7 +274,7 @@ public class BeansDeployer
         validate(beans);
                 
 
-        logger.info("All injection points are validated succesfully");
+        logger.info(OWBLogConst.INFO_0016);
     }
     
     /**
@@ -309,7 +310,7 @@ public class BeansDeployer
      */
     protected void deployFromClassPath(MetaDataDiscoveryService scanner) throws ClassNotFoundException
     {
-        logger.info("Deploying configurations from class files is started");
+        logger.info(OWBLogConst.INFO_0017);
 
         // Start from the class
         Map<String, Set<String>> classIndex = scanner.getClassIndex();
@@ -333,14 +334,14 @@ public class BeansDeployer
                 
                 if (ManagedBeanConfigurator.isManagedBean(implClass))
                 {
-                    logger.info("Managed Bean with class name : " + componentClassName + " is found");
+                    logger.info(OWBLogConst.INFO_0018, new Object[]{componentClassName});
                     defineManagedBean(implClass);
                 }
                 else if(this.discoverEjb)
                 {                    
                     if(EJBWebBeansConfigurator.isSessionBean(implClass))
                     {
-                        logger.info("Enterprise Bean with class name : " + componentClassName + " is found");
+                        logger.info(OWBLogConst.INFO_0019, new Object[]{componentClassName});
                         defineEnterpriseWebBean(implClass);
                         
                     }
@@ -348,7 +349,7 @@ public class BeansDeployer
             }
         }
 
-        logger.info("Deploying configurations from class files is ended");
+        logger.info(OWBLogConst.INFO_0020);
 
     }
     
@@ -362,7 +363,7 @@ public class BeansDeployer
      */
     protected void deployFromXML(MetaDataDiscoveryService scanner) throws WebBeansDeploymentException
     {
-        logger.info("Deploying configurations from XML files is started");
+        logger.info(OWBLogConst.INFO_0021);
 
         Set<URL> xmlLocations = scanner.getWebBeansXmlLocations();
         Iterator<URL> it = xmlLocations.iterator();
@@ -397,7 +398,7 @@ public class BeansDeployer
             }
         }
 
-        logger.info("Deploying configurations from XML is ended succesfully");
+        logger.info(OWBLogConst.INFO_0022);
     }
     
     /**
@@ -408,7 +409,7 @@ public class BeansDeployer
      */
     protected void configureInterceptors(MetaDataDiscoveryService scanner) throws ClassNotFoundException
     {
-        logger.info("Configuring the Interceptors is started");
+        logger.info(OWBLogConst.INFO_0023);
 
         // Interceptors Set
         Map<String, Set<String>> annotIndex = scanner.getAnnotationIndex();
@@ -420,13 +421,13 @@ public class BeansDeployer
             {
                 Class<?> implClass = ClassUtil.getClassFromName(interceptorClazz);
 
-                logger.info("Managed Bean Interceptor with class name : " + interceptorClazz + " is found");
+                logger.info(OWBLogConst.INFO_0024, new Object[]{interceptorClazz});
 
                 defineInterceptor(implClass);
             }
         }
 
-        logger.info("Configuring the Interceptors is ended");
+        logger.info(OWBLogConst.INFO_0025);
 
     }
 
@@ -438,7 +439,7 @@ public class BeansDeployer
      */
     protected void configureDecorators(MetaDataDiscoveryService scanner) throws ClassNotFoundException
     {
-        logger.info("Configuring the Decorators is started");
+        logger.info(OWBLogConst.INFO_0026);
 
         Map<String, Set<String>> annotIndex = scanner.getAnnotationIndex();
         Set<String> classes = annotIndex.get(javax.decorator.Decorator.class.getName());
@@ -448,19 +449,19 @@ public class BeansDeployer
             for (String decoratorClazz : classes)
             {
                 Class<?> implClass = ClassUtil.getClassFromName(decoratorClazz);
-                logger.info("Managed Bean Decorator with class name : " + decoratorClazz + " is found");
+                logger.info(OWBLogConst.INFO_0027, new Object[]{decoratorClazz});
 
                 defineDecorator(implClass);
             }
         }
 
-        logger.info("Configuring the Decorators is ended");
+        logger.info(OWBLogConst.INFO_0028);
 
     }
 
     protected void checkSpecializations(MetaDataDiscoveryService scanner)
     {
-        logger.info("Checking Specialization constraints is started");
+        logger.info(OWBLogConst.INFO_0029);
         
         try
         {
@@ -484,14 +485,15 @@ public class BeansDeployer
                             
                             if(superClass.equals(Object.class))
                             {
-                                throw new WebBeansConfigurationException("Specalized class : " + specialClassName + " must extend another class");
+                                throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EXCEPT_0003) + specialClassName
+                                                                         + logger.getTokenString(OWBLogConst.EXCEPT_0004));
                             }
                         }
                         else
                         {
                             if (superClass.equals(specialClass.getSuperclass()))
                             {
-                                throw new InconsistentSpecializationException("More than one class that specialized the same super class : " + superClass.getName());
+                                throw new InconsistentSpecializationException(logger.getTokenString(OWBLogConst.EXCEPT_0005) + superClass.getName());
                             }
                         }
                         
@@ -509,7 +511,7 @@ public class BeansDeployer
         }
         
 
-        logger.info("Checking Specialization constraints is ended");
+        logger.info(OWBLogConst.INFO_0030);
     }
 
     private void checkXMLSpecializations()
@@ -531,7 +533,8 @@ public class BeansDeployer
             {
                 if (superClass.equals(specialClass.getSuperclass()))
                 {
-                    throw new InconsistentSpecializationException("XML Specialization Error : More than one class that specialized the same super class : " + superClass.getName());
+                    throw new InconsistentSpecializationException(logger.getTokenString(OWBLogConst.EXCEPT_XML) + logger.getTokenString(OWBLogConst.EXCEPT_0005)
+                                                                 + superClass.getName());
                 }
             }
 
@@ -574,7 +577,7 @@ public class BeansDeployer
 
     protected void checkStereoTypes(MetaDataDiscoveryService scanner)
     {
-        logger.info("Checking StereoTypes constraints is started");
+        logger.info(OWBLogConst.INFO_0031);
 
         addDefaultStereoTypes();
         
@@ -601,7 +604,7 @@ public class BeansDeployer
             }
         }
 
-        logger.info("Checking StereoTypes constraints is ended");
+        logger.info(OWBLogConst.INFO_0032);
     }
 
     protected void addDefaultStereoTypes()
@@ -653,7 +656,7 @@ public class BeansDeployer
             managedBeanCreator.defineSerializable();
             managedBeanCreator.defineStereoTypes();
             managedBeanCreator.defineApiType();
-            managedBeanCreator.defineScopeType("ManagedBean implementation class : " + clazz.getName() + " stereotypes must declare same @Scope annotations");
+            managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
             managedBeanCreator.defineQualifier();
             managedBeanCreator.defineName(WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
             managedBeanCreator.defineConstructor();            

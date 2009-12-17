@@ -19,6 +19,7 @@ import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
@@ -59,7 +60,7 @@ public class WebBeansPhaseListener implements PhaseListener
 
                 if (cid == null || cid.equals(""))
                 {
-                    logger.info("Create new transitional conversation for non-faces request with view id : " + JSFUtil.getViewId());
+                    logger.info(OWBLogConst.INFO_0034, new Object[]{JSFUtil.getViewId()});
                     
                     setConversation((ConversationImpl) conversationManager.createNewConversationInstance());                    
 
@@ -68,21 +69,21 @@ public class WebBeansPhaseListener implements PhaseListener
                 }
                 else
                 {
-                    logger.info("Propogation of the conversation for non-faces request with cid=" + cid + " for view : " + JSFUtil.getViewId());
+                    logger.info(OWBLogConst.INFO_0035, new Object[]{cid, JSFUtil.getViewId()});
                     
                     setConversation((ConversationImpl) conversationManager.getConversation(cid, JSFUtil.getSession().getId()));
 
                     // can not restore conversation, create new transitional
                     if (getConversation() == null)
                     {
-                        logger.info("Propogated conversation for non-faces request can not be restored for view id : " + JSFUtil.getViewId() + ". Creates new transitional conversation");
+                        logger.info(OWBLogConst.INFO_0036, new Object[]{JSFUtil.getViewId()});
                         setConversation((ConversationImpl) conversationManager.createNewConversationInstance());
 
                         ContextFactory.initConversationContext(null);                        
                     }
                     else
                     {
-                        logger.info("Conversation is restored for non-faces request with cid=" + cid + " for view id : " + JSFUtil.getViewId());
+                        logger.info(OWBLogConst.INFO_0038, new Object[]{cid, JSFUtil.getViewId()});
                         
                         ContextFactory.initConversationContext(conversationManager.getConversationContext(getConversation()));
                     }
@@ -110,7 +111,7 @@ public class WebBeansPhaseListener implements PhaseListener
                     
                     if(getConversation() != null)
                     {
-                        logger.info("Conversation is restored for JSF postback with cid=" + conversationId + " for view id : " + JSFUtil.getViewId());
+                        logger.info(OWBLogConst.INFO_0039, new Object[]{conversationId, JSFUtil.getViewId()});
                         
                         ContextFactory.initConversationContext(conversationManager.getConversationContext(getConversation()));   
                     }
@@ -127,7 +128,7 @@ public class WebBeansPhaseListener implements PhaseListener
 
                 if(createNew)
                 {
-                    logger.info("Create new transient conversation for JSF postback view id : " + JSFUtil.getViewId());
+                    logger.info(OWBLogConst.INFO_0040, new Object[]{JSFUtil.getViewId()});
                     
                     setConversation((ConversationImpl) conversationManager.createNewConversationInstance());
 
@@ -140,7 +141,7 @@ public class WebBeansPhaseListener implements PhaseListener
         {
             if (getConversation().isTransient())
             {
-                logger.info("Destroying the conversation context with cid="+ getConversation().getId() + " for view id : " + JSFUtil.getViewId());
+                logger.info(OWBLogConst.INFO_0041, new Object[]{getConversation().getId(), JSFUtil.getViewId()});
                 
                 getConversation().end();
                 
@@ -169,7 +170,7 @@ public class WebBeansPhaseListener implements PhaseListener
         {
             if (!getConversation().isTransient())
             {
-                logger.info("Saving conversation with cid=" + getConversation().getId() + " for view " + JSFUtil.getViewId());
+                logger.info(OWBLogConst.INFO_0042, new Object[]{getConversation().getId(), JSFUtil.getViewId()});
                 
                 UIViewRoot viewRoot = JSFUtil.getViewRoot();
                 

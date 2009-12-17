@@ -29,6 +29,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
@@ -221,13 +222,13 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
         }
         catch (IllegalArgumentException e)
         {
-            logger.error("Delegate field is not found on the given decorator class : " + instance.getClass().getName(), e);
+            logger.error(OWBLogConst.ERROR_0007, new Object[]{instance.getClass().getName()}, e);
             throw new WebBeansException(e);
 
         }
         catch (IllegalAccessException e)
         {
-            logger.error("Illegal access exception for field " + field.getName() + " in decorator class : " + instance.getClass().getName(), e);
+            logger.error(OWBLogConst.ERROR_0015, new Object[]{field.getName(), instance.getClass().getName()}, e);
         }
 
     }

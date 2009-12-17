@@ -16,6 +16,7 @@ package org.apache.webbeans.conversation;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -69,7 +70,7 @@ public class ConversationImpl implements Conversation
         }
         else
         {
-            logger.warn("Conversation with cid=" + id + " is already began!");
+            logger.warn(OWBLogConst.WARN_0006, new Object[]{id});
             throw new IllegalStateException();
         }
     }

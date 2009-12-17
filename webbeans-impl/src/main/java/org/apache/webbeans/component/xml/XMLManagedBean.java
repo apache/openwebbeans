@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
 import org.apache.webbeans.inject.xml.XMLInjectableField;
@@ -130,13 +131,13 @@ public class XMLManagedBean<T> extends ManagedBean<T>
             }
             catch (IllegalArgumentException e)
             {
-                logger.error("IllegalArgumentException is occured while calling the field : " + field.getName() + " on class " + instance.getClass().getName());
+                logger.error(OWBLogConst.ERROR_0016, new Object[]{field.getName(), instance.getClass().getName()});
                 throw new WebBeansException(e);
 
             }
             catch (IllegalAccessException e)
             {
-                logger.error("IllegalAccessException is occured while calling the field : " + field.getName() + " on class " + instance.getClass().getName());
+                logger.error(OWBLogConst.ERROR_0017, new Object[]{field.getName(), instance.getClass().getName()});
                 throw new WebBeansException(e);
             }
         }

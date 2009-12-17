@@ -32,6 +32,7 @@ import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
@@ -105,7 +106,7 @@ public final class EnterpriseLifeCycle implements Lifecycle
     
     public void requestStarted(ServletRequestEvent event)
     {
-        logger.debug("Starting a new request : " + event.getServletRequest().getRemoteAddr());
+        logger.debug(OWBLogConst.DEBUG_0005, new Object[]{event.getServletRequest().getRemoteAddr()});
         
         ContextFactory.initializeThreadLocals();
         
@@ -128,19 +129,19 @@ public final class EnterpriseLifeCycle implements Lifecycle
 
     public void requestEnded(ServletRequestEvent event)
     {
-    	logger.debug("Destroying a request : " + event.getServletRequest().getRemoteAddr());
+    	logger.debug(OWBLogConst.DEBUG_0006, new Object[]{event.getServletRequest().getRemoteAddr()});
         ContextFactory.destroyRequestContext((HttpServletRequest) event.getServletRequest());
     }
 
     public void sessionStarted(HttpSessionEvent event)
     {
-        logger.debug("Starting a session with session id : " + event.getSession().getId());
+        logger.debug(OWBLogConst.DEBUG_0007, new Object[]{event.getSession().getId()});
         ContextFactory.initSessionContext(event.getSession());
     }
 
     public void sessionEnded(HttpSessionEvent event)
     {
-    	logger.debug("Destroying a session with session id : " + event.getSession().getId());
+    	logger.debug(OWBLogConst.DEBUG_0008, new Object[]{event.getSession().getId()});
         ContextFactory.destroySessionContext(event.getSession());
 
         ConversationManager conversationManager = ConversationManager.getInstance();
@@ -151,13 +152,13 @@ public final class EnterpriseLifeCycle implements Lifecycle
     {
         if(startupObject != null && !(ServletContextEvent.class.isAssignableFrom(startupObject.getClass())))
         {
-            throw new WebBeansException("Wrong initialization object");
+            throw new WebBeansException(logger.getTokenString(OWBLogConst.EXCEPT_0001));
         }
         
         ServletContextEvent event = (ServletContextEvent)startupObject; 
         
         // Initalize Application Context
-        logger.info("OpenWebBeans Container is starting");
+        logger.info(OWBLogConst.INFO_0002);
         
         long begin = System.currentTimeMillis();
 
@@ -179,18 +180,18 @@ public final class EnterpriseLifeCycle implements Lifecycle
         service = Executors.newScheduledThreadPool(1);
         service.scheduleWithFixedDelay(new ConversationCleaner(), delay, delay, TimeUnit.MILLISECONDS);
 
-        logger.info("Scanning classpaths for beans artifacts");
+        logger.info(OWBLogConst.INFO_0003);
 
         this.discovery.scan();
 
-        logger.info("Deploying scanned beans");
+        logger.info(OWBLogConst.INFO_0004);
 
         deployer.deploy(this.discovery);
         
         //Application is configured as JSP
         if(OpenWebBeansConfiguration.getInstance().isJspApplication())
         {
-            logger.debug("Application is configured as JSP. Adding EL Resolver");
+            logger.debug(OWBLogConst.DEBUG_0001);
             
             ServletContext context = event.getServletContext();
 
@@ -200,16 +201,16 @@ public final class EnterpriseLifeCycle implements Lifecycle
         
         long end = System.currentTimeMillis();
         
-        logger.info("OpenWebBeans Container is started, it takes " + Long.toString(end - begin) + " ms.");
+        logger.info(OWBLogConst.INFO_0005, new Object[]{Long.toString(end - begin)});
     }
 
     public void applicationEnded(Object endObject)
     {
-        logger.info("OpenWebBeans Container is stopping");
+        logger.info(OWBLogConst.INFO_0006);
         
         if(endObject != null && !(ServletContextEvent.class.isAssignableFrom(endObject.getClass())))
         {
-            throw new WebBeansException("Wrong ended object");
+            throw new WebBeansException(logger.getTokenString(OWBLogConst.EXCEPT_0002));
         }
         
         ServletContextEvent event = (ServletContextEvent)endObject;
@@ -234,17 +235,17 @@ public final class EnterpriseLifeCycle implements Lifecycle
         //Clear singleton list
         WebBeansFinder.clearInstances();
                 
-        logger.info("OpenWebBeans Container is stopped for context path, " + event.getServletContext().getContextPath());        
+        logger.info(OWBLogConst.INFO_0008, new Object[]{event.getServletContext().getContextPath()});        
     }
     
     public void sessionPassivated(HttpSessionEvent event)
     {
-    	logger.info("Session is passivated. Session id : [ " + event.getSession().getId()+" ]");
+    	logger.info(OWBLogConst.INFO_0009, new Object[]{event.getSession().getId()});
     }
     
     public void sessionActivated(HttpSessionEvent event)
     {
-    	logger.info("Session is activated. Session id : [ " + event.getSession().getId()+" ]");
+    	logger.info(OWBLogConst.INFO_0010, new Object[]{event.getSession().getId()});
     }
     
     private static class ConversationCleaner implements Runnable

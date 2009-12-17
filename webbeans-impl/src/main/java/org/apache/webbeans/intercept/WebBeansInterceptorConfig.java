@@ -30,6 +30,7 @@ import javax.interceptor.AroundInvoke;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.BaseBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -63,7 +64,7 @@ public final class WebBeansInterceptorConfig
      */
     public static <T> void configureInterceptorClass(AbstractBean<T> delegate, Annotation[] interceptorBindingTypes)
     {
-        logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType() + " started");
+        logger.info(OWBLogConst.INFO_0011, new Object[]{logger.getTokenString(OWBLogConst.TEXT_INTERCEPT_CLASS), delegate.getReturnType()});
 
         WebBeansInterceptor<T> interceptor = new WebBeansInterceptor<T>(delegate);
 
@@ -72,7 +73,7 @@ public final class WebBeansInterceptorConfig
             interceptor.addInterceptorBinding(ann.annotationType(), ann);
         }
 
-        logger.info("Configuring the Web Beans Interceptor Class : " + delegate.getReturnType() + " ended");
+        logger.info(OWBLogConst.INFO_0012, new Object[]{logger.getTokenString(OWBLogConst.TEXT_INTERCEPT_CLASS), delegate.getReturnType()});
 
         BeanManagerImpl.getManager().addInterceptor(interceptor);
 

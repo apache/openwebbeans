@@ -21,6 +21,7 @@ import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
 
@@ -69,7 +70,7 @@ public class PluginLoader
     {
         if(this.started.compareAndSet(false, true))
         {
-            logger.debug("PluginLoader startUp called");
+            logger.debug(OWBLogConst.DEBUG_0009);
             ArrayList<OpenWebBeansPlugin> ps = new ArrayList<OpenWebBeansPlugin>();
 
             ServiceLoader<OpenWebBeansPlugin> owbPluginsLoader = ServiceLoader.load(OpenWebBeansPlugin.class);
@@ -77,7 +78,7 @@ public class PluginLoader
             while(pluginIter.hasNext()) 
             {
               OpenWebBeansPlugin plugin = pluginIter.next();
-              logger.info("adding OpenWebBeansPlugin " + plugin.getClass().getSimpleName());
+              logger.info(OWBLogConst.INFO_0033, new Object[]{plugin.getClass().getSimpleName()});
               plugin.startUp();
               ps.add(plugin);
             }   
@@ -87,7 +88,7 @@ public class PluginLoader
         }
         else
         {
-            logger.debug("PluginLoader is already started");
+            logger.debug(OWBLogConst.DEBUG_0010);
         }
     }
     
@@ -100,11 +101,11 @@ public class PluginLoader
     {
         if(this.started.compareAndSet(true, false))
         {
-            logger.debug("PluginLoader shutDown called");
+            logger.debug(OWBLogConst.DEBUG_0011);
             
             if (plugins == null)
             {
-                logger.warn("No plugins to shutDown!");
+                logger.warn(OWBLogConst.WARN_0001);
                 return;
             }
 
@@ -120,20 +121,19 @@ public class PluginLoader
                 {
                     // we catch ALL exceptions, since we like to continue shutting down all other plugins!
                     String pluginName = plugin.getClass().getSimpleName();
-                    logger.error("error while shutdown the pugin " + pluginName, e);
+                    logger.error(OWBLogConst.ERROR_0009, new Object[]{pluginName}, e);
                     failedShutdown.add(pluginName);
                 }
             }
             
             if (!failedShutdown.isEmpty())
             {
-                throw new WebBeansConfigurationException("got Exceptions while sending shutdown to the following plugins: "
-                                                         + failedShutdown.toString());
+                throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EXCEPT_0006) + failedShutdown.toString());
             }            
         }
         else
         {
-            logger.debug("PluginLoader is already shut down!");
+            logger.debug(OWBLogConst.DEBUG_0012);
         }
     }
     

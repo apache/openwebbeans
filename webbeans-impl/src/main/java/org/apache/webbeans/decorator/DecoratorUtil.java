@@ -26,6 +26,7 @@ import javax.decorator.Delegate;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -67,7 +68,7 @@ public final class DecoratorUtil
            
            if(!found)
            {
-               throw new WebBeansConfigurationException("Decorator delegate attribute for decorator class : " + decoratorClazz.getName() + " can not be found!");
+               throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EXCEPT_0011) + decoratorClazz.getName());
            }
         }
     }
@@ -169,7 +170,7 @@ public final class DecoratorUtil
                         }
                         catch (SecurityException e)
                         {
-                            logger.error("Security exception, can not access decorator class : " + decClazz.getName() + " method : " + method.getName(), e);
+                            logger.error(OWBLogConst.ERROR_0006, new Object[]{decClazz.getName(),method.getName()}, e);
                             throw new WebBeansException(e);
 
                         }

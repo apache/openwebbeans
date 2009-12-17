@@ -23,6 +23,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
@@ -242,7 +243,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
 
                 catch (Exception e)
                 {
-                    logger.error("Error is occured while executing @PostConstruct", e);
+                    logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PostConstruct."}, e);
                     throw new WebBeansException(e);
                 }
             }            
@@ -284,7 +285,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
                 }
                 catch (Exception e)
                 {
-                    getLogger().error("Error is occıred while executing @PreDestroy method", e);
+                    getLogger().error(OWBLogConst.ERROR_0008, new Object[]{"@PreDestroy."}, e);
                     throw new WebBeansException(e);
                 }
             }            
