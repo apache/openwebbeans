@@ -94,31 +94,62 @@ public final class DefinitionUtil
         if(AnnotationUtil.hasAnnotation(annots, Typed.class))
         {
             Typed beanTypes = (Typed) AnnotationUtil.getAnnotation(annots, Typed.class);
-            defineUserDefinedBeanTypes(bean, beanTypes);            
+            defineUserDefinedBeanTypes(bean, null, beanTypes);            
         }
         else
         {
-            bean.getTypes().add(Object.class);
-            ClassUtil.setTypeHierarchy(bean.getTypes(), clazz);   
+            defineNormalApiTypes(bean, clazz);
         }        
     }
      
     
-    private static <T> void defineUserDefinedBeanTypes(AbstractBean<T> bean, Typed beanTypes)
+    private static <T> void defineNormalApiTypes(AbstractBean<T> bean, Class<T> clazz)
     {
-        Class<?> beanClazz = bean.getReturnType();        
-        Class<?>[] types = beanTypes.value();
+        bean.getTypes().add(Object.class);
+        ClassUtil.setTypeHierarchy(bean.getTypes(), clazz);           
+    }
+    
+    private static <T> void defineUserDefinedBeanTypes(AbstractBean<T> bean, Type producerGenericReturnType, Typed beanTypes)
+    {
+        if(producerGenericReturnType != null)
+        {
+            defineNormalProducerMethodApi((AbstractProducerBean<T>)bean, producerGenericReturnType);
+        }
+        else
+        {
+            defineNormalApiTypes(bean, bean.getReturnType());
+        }
         
+        //@Type values
+        Class<?>[] types = beanTypes.value();        
+        
+        //Normal api types
         Set<Type> apiTypes = bean.getTypes();
+        //New api types
+        Set<Type> newTypes = new HashSet<Type>();
         for(Class<?> type : types)
         {
-            if(!type.isAssignableFrom(beanClazz))
+            Type foundType = null;
+            
+            for(Type apiType : apiTypes)
             {
-                throw new WebBeansConfigurationException("@BeanType values must be assignable. Bean type : " + beanClazz.getName() + " @BeanType value is : " + type.getName());
+                if(ClassUtil.getClazz(apiType).equals(type))
+                {
+                    foundType = apiType;
+                    break;
+                }
             }
             
-            apiTypes.add(type);
+            if(foundType == null)
+            {
+                throw new WebBeansConfigurationException("@Type values must be in bean api types : " + bean.getTypes());
+            }
+            
+            newTypes.add(foundType);
         }
+        
+        apiTypes.clear();
+        apiTypes.addAll(newTypes);
         
         apiTypes.add(Object.class);
     }
@@ -139,26 +170,31 @@ public final class DefinitionUtil
         if(AnnotationUtil.hasAnnotation(annots, Typed.class))
         {
             Typed beanTypes = (Typed) AnnotationUtil.getAnnotation(annots, Typed.class);
-            defineUserDefinedBeanTypes(producerBean, beanTypes);
+            defineUserDefinedBeanTypes(producerBean, type, beanTypes);
         }
         
         else
         {
-            Set<Type> types = producerBean.getTypes();
-            types.add(Object.class);
-            
-            Class<?> clazz  = ClassUtil.getClazz(type);
-            
-            if (clazz != null && (clazz.isPrimitive() || clazz.isArray()))
-            {
-                types.add(clazz);
-
-            }
-            else
-            {
-                ClassUtil.setTypeHierarchy(producerBean.getTypes(), type);
-            }            
+            defineNormalProducerMethodApi(producerBean, type);
         }        
+    }
+    
+    private static <T> void defineNormalProducerMethodApi(AbstractProducerBean<T> producerBean, Type type)
+    {
+        Set<Type> types = producerBean.getTypes();
+        types.add(Object.class);
+        
+        Class<?> clazz  = ClassUtil.getClazz(type);
+        
+        if (clazz != null && (clazz.isPrimitive() || clazz.isArray()))
+        {
+            types.add(clazz);
+
+        }
+        else
+        {
+            ClassUtil.setTypeHierarchy(producerBean.getTypes(), type);
+        }                    
     }
 
     /**
