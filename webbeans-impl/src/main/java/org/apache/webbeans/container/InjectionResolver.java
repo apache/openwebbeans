@@ -25,6 +25,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Qualifier;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -138,7 +139,17 @@ public class InjectionResolver
         {
             if(qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
             {
-                beanSet.add(WebBeansUtil.createNewComponent(clazz));
+                New newQualifier =  (New)qualifiers[0];
+                
+                if(newQualifier.value() == New.class)
+                {
+                    beanSet.add(WebBeansUtil.createNewComponent(clazz));    
+                }
+                else
+                {
+                    beanSet.add(WebBeansUtil.createNewComponent(newQualifier.value()));
+                }
+                
             }
         }
         
@@ -203,7 +214,17 @@ public class InjectionResolver
         {
             if(qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
             {
-                beanSet.add(WebBeansUtil.createNewComponent(clazz));
+                New newQualifier =  (New)qualifiers[0];
+                
+                if(newQualifier.value() == New.class)
+                {
+                    beanSet.add(WebBeansUtil.createNewComponent(clazz));    
+                }
+                else
+                {
+                    beanSet.add(WebBeansUtil.createNewComponent(newQualifier.value()));
+                }
+
             }
         }
         

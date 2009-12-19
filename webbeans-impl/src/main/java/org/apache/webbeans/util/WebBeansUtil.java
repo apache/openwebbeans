@@ -587,7 +587,7 @@ public final class WebBeansUtil
         }
 
         comp.setImplScopeType(new DependentScopeLiteral());
-        comp.addQualifier(new NewLiteral());
+        comp.addQualifier(new NewLiteral(clazz));
         comp.setName(null);
         comp.addApiType(clazz);
         comp.addApiType(Object.class);
@@ -656,7 +656,7 @@ public final class WebBeansUtil
         
         
         comp.setImplScopeType(new DependentScopeLiteral());
-        comp.addQualifier(new NewLiteral());
+        comp.addQualifier(new NewLiteral(component.getBeanClass()));
         comp.setName(null);
         
         Set<InjectionPoint> injectionPoints = component.getInjectionPoints();
