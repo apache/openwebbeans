@@ -18,11 +18,14 @@ import java.util.Collection;
 
 import javax.enterprise.inject.spi.BeanManager;
 
+import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
+import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
+
 
 
 public abstract class AbstractUnitTest
 {
-    private OpenWebBeansTestLifecycle testLifecycle;
+    private OpenWebBeansTestLifeCycle testLifecycle;
 
     protected AbstractUnitTest()
     {
@@ -32,7 +35,7 @@ public abstract class AbstractUnitTest
     protected void startContainer(Collection<Class<?>> beanClasses)
     {
         //Creates a new container
-        testLifecycle = new OpenWebBeansTestLifecycle();
+        testLifecycle = new OpenWebBeansTestLifeCycle();
         
         //Deploy bean classes
         OpenWebBeansTestMetaDataDiscoveryService discoveyService = (OpenWebBeansTestMetaDataDiscoveryService)testLifecycle.getDiscoveryService();
@@ -45,7 +48,7 @@ public abstract class AbstractUnitTest
     protected void startContainer(Collection<Class<?>> beanClasses, Collection<URL> beanXmls)
     {
         //Creates a new container
-        testLifecycle = new OpenWebBeansTestLifecycle();
+        testLifecycle = new OpenWebBeansTestLifeCycle();
         
         //Deploy bean classes
         OpenWebBeansTestMetaDataDiscoveryService discoveyService = (OpenWebBeansTestMetaDataDiscoveryService)testLifecycle.getDiscoveryService();
@@ -67,7 +70,7 @@ public abstract class AbstractUnitTest
         }        
     }
     
-    protected OpenWebBeansTestLifecycle getLifecycle()
+    protected OpenWebBeansTestLifeCycle getLifecycle()
     {
         return this.testLifecycle;
     }

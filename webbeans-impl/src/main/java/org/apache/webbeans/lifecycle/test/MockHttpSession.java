@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.mock;
+package org.apache.webbeans.lifecycle.test;
 
 import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicInteger;

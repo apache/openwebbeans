@@ -122,7 +122,13 @@ public final class EnterpriseLifeCycle implements Lifecycle
             if(currentSession == null)
             {
                 //To activate session context
-                httpRequest.getSession();
+            	try 
+            	{
+            		httpRequest.getSession();
+            	}
+            	catch(Exception e) {
+            		logger.error("Got an Exception while starting a fresh session! ", e);
+            	}
             }
         }
     }

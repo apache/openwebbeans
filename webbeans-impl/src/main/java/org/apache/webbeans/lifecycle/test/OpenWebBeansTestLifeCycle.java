@@ -11,31 +11,32 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.newtests;
+package org.apache.webbeans.lifecycle.test;
 
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
-import org.apache.webbeans.test.mock.MockHttpSession;
-import org.apache.webbeans.test.mock.MockServletContextEvent;
 
 /**
  * Ease the writing of the tests. Simulates container
- * startup and stop functionality.
+ * startup and stop functionality and allow injection of
+ * classes which should be scanned by using the
+ * {@link OpenWebBeansTestMetaDataDiscoveryService}. 
  * @version $Rev$ $Date$
  *
  */
-public class OpenWebBeansTestLifecycle extends StandaloneLifeCycle
+public class OpenWebBeansTestLifeCycle extends StandaloneLifeCycle
 {
     private MockServletContextEvent servletContextEvent;
     
     private MockHttpSession mockHttpSession;
 
-    public OpenWebBeansTestLifecycle()
+    public OpenWebBeansTestLifeCycle()
     {
-        super();        
+        super();
     }
     
+    @Override
     public void init()
     {
         this.mockHttpSession = new MockHttpSession();
