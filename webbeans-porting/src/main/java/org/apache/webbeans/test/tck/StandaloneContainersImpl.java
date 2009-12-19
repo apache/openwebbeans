@@ -19,13 +19,18 @@ import java.util.Iterator;
 
 import javax.enterprise.inject.spi.BeanManager;
 
+import org.apache.openejb.OpenEJB;
+import org.apache.openejb.OpenEJBException;
+import org.apache.openejb.loader.SystemInstance;
+import org.apache.openejb.spi.ContainerSystem;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.lifecycle.EnterpriseLifeCycle;
+import org.apache.webbeans.lifecycle.test.MockHttpSession;
+import org.apache.webbeans.lifecycle.test.MockServletContextEvent;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
-import org.apache.webbeans.test.mock.MockHttpSession;
-import org.apache.webbeans.test.mock.MockServletContextEvent;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
 import org.jboss.testharness.api.DeploymentException;
 import org.jboss.testharness.spi.StandaloneContainers;
@@ -115,22 +120,36 @@ public class StandaloneContainersImpl implements StandaloneContainers
     
     public void setup()
     {
+    	if ( SystemInstance.get().getComponent(ContainerSystem.class) == null )
+    	{
+    		// which means OpenEJB is not yet started!
+    		// this happens if you start the TCK in 'standalone mode'
+    		// which means we have to bootstrap OpenEJB now:
+	        try 
+	        {
+	            OpenEJB.init(System.getProperties());
+	        } 
+	        catch( OpenEJBException e ) 
+	        {
+	            throw new RuntimeException("failure in OpenWebBeans ejb-plugin while starting OpenEJB!", e);
+	        }
+    	}
         
     }
     
     public void cleanup()
     {
-        
+        OpenEJB.destroy();
     }
     
 
     public void undeploy()
     {
+        this.lifeCycle.applicationEnded(this.servletContextEvent);
+
         ContextFactory.destroyRequestContext(null);
         ContextFactory.destroySessionContext(this.mockHttpSession);
         ContextFactory.destroyConversationContext();
-        
-        this.lifeCycle.applicationEnded(this.servletContextEvent);
     }
 
     public DeploymentException getDeploymentException()
