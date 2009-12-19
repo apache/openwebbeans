@@ -57,6 +57,9 @@ public class ResourceServiceImpl implements ResourceService
         {
             PersistenceContext context = field.getAnnotation(PersistenceContext.class);            
             obj = getPersistenceContext(context.unitName());
+            if (obj == null) {
+            	logger.info("Could not find @PersistenceContext with unit name " + context.unitName());
+            }
         }
         
         else if (field.isAnnotationPresent(PersistenceUnit.class))
@@ -64,6 +67,9 @@ public class ResourceServiceImpl implements ResourceService
             PersistenceUnit annotation = field.getAnnotation(PersistenceUnit.class);
             
             obj = getPersistenceUnit(annotation.unitName());
+            if (obj == null) {
+            	logger.info("Could not find @PersistenceUnit with unit name " + annotation.unitName());
+            }
         }
         else if(field.isAnnotationPresent(Resource.class))
         {
@@ -71,6 +77,10 @@ public class ResourceServiceImpl implements ResourceService
             try
             {
                 obj = context.lookup("java:/comp/env/"+ resource.name()); 
+                if (obj == null) {
+                	logger.info("Could not find @Resource with name " + resource.name());
+                }
+
             }
             catch(Exception e)
             {
