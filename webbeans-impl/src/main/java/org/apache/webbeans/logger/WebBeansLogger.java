@@ -14,7 +14,6 @@
 package org.apache.webbeans.logger;
 
 import org.apache.log4j.Logger;
-import org.apache.webbeans.config.OWBLogConst;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -39,7 +38,7 @@ public final class WebBeansLogger
     /** Private constructor */
     private WebBeansLogger()
     {
-    	wbBundle = ResourceBundle.getBundle("META-INF.Messages");
+    	wbBundle = ResourceBundle.getBundle("openwebbeans/Messages");
     }
 
     /**
