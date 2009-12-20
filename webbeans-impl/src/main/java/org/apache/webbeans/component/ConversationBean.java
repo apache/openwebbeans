@@ -44,7 +44,8 @@ public class ConversationBean extends AbstractBean<Conversation>
         {
             conversation = ConversationManager.getInstance().getConversation(conversationId,sessionId);
         }
-        else
+        
+        if (conversation == null)
         {
             if(sessionId != null)
             {

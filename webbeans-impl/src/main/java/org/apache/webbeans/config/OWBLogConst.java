@@ -87,8 +87,9 @@ public class OWBLogConst
     public final static String INFO_0038 = "INFO_0038"; // Conversation is restored for non-faces request with cid: [{1}] for view id: [{2}]
     public final static String INFO_0039 = "INFO_0039"; // Conversation is restored for JSF postback with cid: [{1}] for view id: [{2}]
     public final static String INFO_0040 = "INFO_0040"; // Create new transient conversation for JSF postback view id : [{1}]
-    public final static String INFO_0041 = "INFO_0041"; // Destroying the conversation context with cid: [{1}] for view id: [{2}]
-    public final static String INFO_0042 = "INFO_0042"; // Saving conversation with cid: [{1}] for view id: [{2}]
+    public final static String INFO_0041 = "INFO_0041"; // Destroying the conversation context with cid: [{0}] for view: [{1}]
+    public final static String INFO_0042 = "INFO_0042"; // Restoring conversation with cid: [{0}] for view: [{1}]
+    public final static String INFO_0043 = "INFO_0043"; // Creating a new transitional conversation for view: [{0}]
 
     public final static String WARN_0001 = "WARN_0001"; // No plugins to shutDown.
     public final static String WARN_0002 = "WARN_0002"; // Alternative XML content is wrong. Child of <alternatives> must be <class>,<stereotype> but found : 

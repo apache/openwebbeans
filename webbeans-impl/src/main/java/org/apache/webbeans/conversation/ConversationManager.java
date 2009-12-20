@@ -144,27 +144,15 @@ public class ConversationManager
     }
 
     /**
-     * Creates new conversation instance.
-     * @return new conversation instance
-     */
-    public Conversation createNewConversationInstance()
-    {
-        Conversation conversation = getConversationInstance();
-
-        return conversation;
-
-    }
-
-    /**
      * Gets conversation instance from conversation bean.
      * @return conversation instance
      */
     @SuppressWarnings("unchecked")
     public Conversation getConversationInstance()
     {
-        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
-        Bean<Conversation> bean = (Bean<Conversation>)beanManager.resolveByType(Conversation.class, new DefaultLiteral()).iterator().next();
-        Conversation conversation = BeanManagerImpl.getManager().getInstance(bean, beanManager.createCreationalContext(bean));
+    	BeanManager beanManager = BeanManagerImpl.getManager();
+        Bean<Conversation> bean = (Bean<Conversation>)beanManager.getBeans(Conversation.class, new DefaultLiteral()).iterator().next();
+        Conversation conversation =(Conversation) beanManager.getReference(bean, Conversation.class, beanManager.createCreationalContext(bean));
 
         return conversation;
     }
