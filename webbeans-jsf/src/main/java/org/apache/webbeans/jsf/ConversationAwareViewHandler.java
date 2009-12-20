@@ -13,23 +13,19 @@
  */
 package org.apache.webbeans.jsf;
 
-import java.util.Set;
-
 import javax.enterprise.context.Conversation;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.AnnotationLiteral;
 import javax.faces.application.ViewHandler;
 import javax.faces.application.ViewHandlerWrapper;
 import javax.faces.context.FacesContext;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.util.JSFUtil;
 
 public class ConversationAwareViewHandler extends ViewHandlerWrapper
 {
+	/** Conversation manager */
+	private static final ConversationManager conversationManager = ConversationManager.getInstance();
+	
     private final ViewHandler delegate;
 
     public ConversationAwareViewHandler(ViewHandler delegate)
@@ -45,7 +41,7 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
     {
         String url = delegate.getActionURL(context, viewId);
 
-        Conversation conversation = lookupConversation();
+        Conversation conversation = conversationManager.getConversationInstance();
         if (conversation != null && !conversation.isTransient())
         {
             url = JSFUtil.getRedirectViewIdWithCid(url, conversation.getId());
@@ -61,28 +57,5 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
     public ViewHandler getWrapped()
     {
         return delegate;
-    }
-
-    private Conversation lookupConversation()
-    {
-        BeanManager beanManager = BeanManagerImpl.getManager();
-        if (beanManager == null)
-        {
-            return null;
-        }
-
-        Set<Bean<?>> beans = beanManager.getBeans(Conversation.class, new AnnotationLiteral<Default>() {});
-        if (beans.isEmpty())
-        {
-            return null;
-        }
-
-        @SuppressWarnings("unchecked")
-        Bean<Conversation> conversationBean = (Bean<Conversation>) beans.iterator().next();
-        CreationalContext<Conversation> creationalContext = beanManager.createCreationalContext(conversationBean);
-        Conversation conversation =
-            (Conversation) beanManager.getReference(conversationBean, Conversation.class, creationalContext);
-
-        return conversation;
     }
 }

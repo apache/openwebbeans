@@ -162,18 +162,7 @@ public final class JSFUtil
 
     public static String getConversationId()
     {
-        UIViewRoot viewRoot = JSFUtil.getViewRoot();
-        
-        if(viewRoot != null)
-        {
-            Object conversationId = viewRoot.getAttributes().get(WebBeansPhaseListener.CONVERSATION_ATTR_ID);
-
-            if (conversationId != null)
-            {
-                return conversationId.toString();
-            }            
-        }
-        
-        return null;
+    	String cid = getJSFRequestParameter("cid");
+    	return cid;
     }
 }
