@@ -97,7 +97,7 @@
 		<dependency>
 			<groupId>org.apache.myfaces.core</groupId>
 			<artifactId>myfaces-api</artifactId>
-			<version>1.2.7</version>
+			<version>1.2.8</version>
 		</dependency>
 		
 		<!-- Servlet API -->
@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>org.apache.myfaces.core</groupId>
 			<artifactId>myfaces-impl</artifactId>
-			<version>1.2.7</version>
+			<version>1.2.8</version>
 		</dependency>
 		
 		<!-- EJB API -->
