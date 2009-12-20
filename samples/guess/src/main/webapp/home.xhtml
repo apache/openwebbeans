@@ -56,7 +56,7 @@
                 <f:validateLongRange maximum="#{game.maxRange}" minimum="#{game.smallRange}"/>
              </h:inputText>
             <h:commandButton id="GuessButton" value="Guess Number" action="#{game.checkNumber}"/>
-            <h:commandButton id="Restart" value="Restart" action="#{game.clear}"/>
+            <h:commandButton id="Restart" value="Restart" action="#{game.clear}" immediate="true"/>
           </div>
    
           <div>

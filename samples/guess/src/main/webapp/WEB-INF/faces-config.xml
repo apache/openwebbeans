@@ -18,17 +18,12 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<faces-config
-    xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd"
-    version="1.2">
-    
-    <application>
-        <view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
-    </application>
-    
-    
+<faces-config version="2.0"
+ 	xmlns="http://java.sun.com/xml/ns/javaee"
+ 	xmlns:xi="http://www.w3.org/2001/XInclude"
+ 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+ 	
     <navigation-rule>
     	<from-view-id>/home.xhtml</from-view-id>
     	<navigation-case>
