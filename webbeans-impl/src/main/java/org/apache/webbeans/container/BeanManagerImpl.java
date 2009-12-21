@@ -68,6 +68,7 @@ import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
@@ -676,13 +677,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Scope is normal
         if (WebBeansUtil.isScopeTypeNormal(bean.getScope()))
         {
-            instance = context.get(bean);
-            
-            if(instance != null)
-            {
-                return instance;
-            }
-            
             instance = getEjbOrJmsProxyReference(bean, beanType,creationalContext);
             
             if(instance != null)
@@ -699,7 +693,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 else
                 {
                     instance = JavassistProxyFactory.createNewProxyInstance(bean,creationalContext);
-                    this.proxyMap.put(bean, instance);
+                    this.proxyMap.put(bean, instance);                    
                 }
             }            
         }
