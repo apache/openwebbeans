@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.apache.openwebbeans</groupId>
 		<artifactId>openwebbeans</artifactId>
-		<version>1.0.0-incubating-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>openwebbeans-ejb</artifactId>
 	<name>Apache OpenWebBeans :: OpenEJB integration</name>

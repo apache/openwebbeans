@@ -20,13 +20,12 @@
 	<parent>
 		<groupId>org.apache.openwebbeans</groupId>
 		<artifactId>openwebbeans</artifactId>
-		<version>1.0.0-incubating-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
     
 	<artifactId>openwebbeans-geronimo</artifactId>
 	<name>Apache OpenWebBeans :: Geronimo integration</name>
 	<packaging>jar</packaging>
-	<version>1.0.0-incubating-SNAPSHOT</version>
 	<description>Geronimo intetration SPI implementations for the  OpenWebBeans Implementation</description>
 
     <dependencies>
@@ -38,7 +37,6 @@
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-resource</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -51,7 +49,6 @@
             <groupId>org.apache.openejb</groupId>
             <artifactId>openejb-core</artifactId>
             <scope>provided</scope>
-<!--            <version>3.1.1-SNAPSHOT</version>-->
         </dependency>
 
         <dependency>

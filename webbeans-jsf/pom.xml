@@ -20,13 +20,12 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.0.0-incubating-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>openwebbeans-jsf</artifactId>
     <name>Apache OpenWebBeans :: JSF integration</name>
     <packaging>jar</packaging>
-    <version>1.0.0-incubating-SNAPSHOT</version>
     <description>JSF integration for the  OpenWebBeans Implementation</description>
 
     <dependencies>

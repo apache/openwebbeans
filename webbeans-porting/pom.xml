@@ -23,13 +23,12 @@
 	<parent>
 		<groupId>org.apache.openwebbeans</groupId>
 		<artifactId>openwebbeans</artifactId>
-		<version>1.0.0-incubating-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
     
 	<artifactId>openwebbeans-porting</artifactId>
 	<name>Apache OpenWebBeans :: TCK Porting Package</name>
 	<packaging>jar</packaging>
-	<version>1.0.0-incubating-SNAPSHOT</version>
 	<description>TCK Porting Package OpenWebBeans Implementation</description>
 
     <dependencies>
