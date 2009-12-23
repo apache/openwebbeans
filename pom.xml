@@ -193,7 +193,6 @@
                                     <include>LICENCE.txt</include>
                                     <include>NOTICE.txt</include>
 				    <include>licences/*</include>
-                                    <include>DISCLAIMER</include>
                                 </includes>
                             </resource>
                         </webResources>

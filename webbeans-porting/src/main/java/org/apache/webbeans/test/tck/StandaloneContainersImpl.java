@@ -120,26 +120,26 @@ public class StandaloneContainersImpl implements StandaloneContainers
     
     public void setup()
     {
-    	if ( SystemInstance.get().getComponent(ContainerSystem.class) == null )
-    	{
-    		// which means OpenEJB is not yet started!
-    		// this happens if you start the TCK in 'standalone mode'
-    		// which means we have to bootstrap OpenEJB now:
-	        try 
-	        {
-	            OpenEJB.init(System.getProperties());
-	        } 
-	        catch( OpenEJBException e ) 
-	        {
-	            throw new RuntimeException("failure in OpenWebBeans ejb-plugin while starting OpenEJB!", e);
-	        }
-    	}
+//    	if ( SystemInstance.get().getComponent(ContainerSystem.class) == null )
+//    	{
+//    		// which means OpenEJB is not yet started!
+//    		// this happens if you start the TCK in 'standalone mode'
+//    		// which means we have to bootstrap OpenEJB now:
+//	        try 
+//	        {
+//	            OpenEJB.init(System.getProperties());
+//	        } 
+//	        catch( OpenEJBException e ) 
+//	        {
+//	            throw new RuntimeException("failure in OpenWebBeans ejb-plugin while starting OpenEJB!", e);
+//	        }
+//    	}
         
     }
     
     public void cleanup()
     {
-        OpenEJB.destroy();
+     //   OpenEJB.destroy();
     }
     
 

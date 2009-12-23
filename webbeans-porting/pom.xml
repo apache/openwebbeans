@@ -33,13 +33,6 @@
 	<description>TCK Porting Package OpenWebBeans Implementation</description>
 
     <dependencies>
-        <!-- we need some test classes like e.g. MockMangager from webbeans-impl -->
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-impl</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-        </dependency>
         
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
