@@ -52,30 +52,30 @@
     <mailingLists>
        <mailingList>
           <name>OpenWebBeans Developer List</name>
-          <subscribe>openwebbeans-dev-subscribe@incubator.apache.org</subscribe>
-          <unsubscribe>openwebbeans-dev-unsubscribe@incubator.apache.org</unsubscribe>
-          <post>openwebbeans-dev@incubator.apache.org</post>
-          <archive>http://mail-archives.apache.org/mod_mbox/incubator-openwebbeans-dev/</archive>
+          <subscribe>dev-subscribe@openwebbeans.apache.org</subscribe>
+          <unsubscribe>dev-unsubscribe@openwebbeans.apache.org</unsubscribe>
+          <post>dev@openwebbeans.apache.org</post>
+          <archive>http://mail-archives.apache.org/mod_mbox/openwebbeans-dev/</archive>
        </mailingList>
        <mailingList>
           <name>OpenWebBeans User List</name>
-          <subscribe>openwebbeans-user-subscribe@incubator.apache.org</subscribe>
-          <unsubscribe>openwebbeans-user-unsubscribe@incubator.apache.org</unsubscribe>
-          <post>openwebbeans-user@incubator.apache.org</post>
-          <archive>http://mail-archives.apache.org/mod_mbox/incubator-openwebbeans-user/</archive>
+          <subscribe>user-subscribe@openwebbeans.apache.org</subscribe>
+          <unsubscribe>user-unsubscribe@openwebbeans.apache.org</unsubscribe>
+          <post>user@openwebbeans.apache.org</post>
+          <archive>http://mail-archives.apache.org/mod_mbox/openwebbeans-user/</archive>
        </mailingList>
        <mailingList>
           <name>OpenWebBeans Commits List</name>
-          <subscribe>openwebbeans-commits-subscribe@incubator.apache.org</subscribe>
-          <unsubscribe>openwebbeans-commits-unsubscribe@incubator.apache.org</unsubscribe>
-          <post>openwebbeans-commits@incubator.apache.org</post>
-          <archive>http://mail-archives.apache.org/mod_mbox/incubator-openwebbeans-commits/</archive>
+          <subscribe>commits-subscribe@openwebbeans.apache.org</subscribe>
+          <unsubscribe>commits-unsubscribe@openwebbeans.apache.org</unsubscribe>
+          <post>commits@openwebbeans.apache.org</post>
+          <archive>http://mail-archives.apache.org/mod_mbox/openwebbeans-commits/</archive>
        </mailingList>
        <mailingList>
           <name>OpenWebBeans Private List</name>
-          <subscribe>openwebbeans-private-subscribe@incubator.apache.org</subscribe>
-          <unsubscribe>openwebbeans-private-unsubscribe@incubator.apache.org</unsubscribe>
-          <post>openwebbeans-private@incubator.apache.org</post>
+          <subscribe>private-subscribe@openwebbeans.apache.org</subscribe>
+          <unsubscribe>private-unsubscribe@openwebbeans.apache.org</unsubscribe>
+          <post>private@openwebbeans.apache.org</post>
        </mailingList>
     </mailingLists>
 
@@ -86,18 +86,15 @@
             <email>gerdogdu at apache dot org</email>
             <roles>
                 <role>PMC</role>
-                <role>Project Lead</role>
+                <role>Chair</role>
             </roles>
         </developer>
         <developer>
-            <id>matzew</id>
-            <name>Matthias Wessendorf</name>
-            <email>matzew at apache dot org</email>
-            <organization>Oracle, Germany</organization>
-            <organizationUrl>http://www.oracle.com/</organizationUrl>
+            <id>bergmark</id>
+            <name>Joe Bergmark</name>
+            <email>bergmark at gmail dot com</email>
             <roles>
                 <role>PMC</role>
-                <role>Mentor</role>
             </roles>
         </developer>
         <developer>
@@ -106,29 +103,28 @@
             <email>kevan dot miller at gmail dot com</email>
             <roles>
                 <role>PMC</role>
-                <role>Mentor</role>
             </roles>
         </developer>
         <developer>
-            <id>mnour</id>
-            <name>Mohammad Nour El-Din</name>
-            <email>nour dot mohammad at gmail dot com</email>
+            <id>covener</id>
+            <name>Eric Covener</name>
+            <email>covener at gmail dot com</email>
             <roles>
               <role>PMC</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>conny</id>
-            <name>Conny Lundgren</name>
-            <email>conny dot lundgren at gmail dot com</email>
-            <roles>
-              <role>committer</role>
             </roles>
         </developer>
         <developer>
             <id>struberg</id>
             <name>Mark Struberg</name>
             <email>struberg at yahoo dot de</email>
+            <roles>
+              <role>PMC</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>dblevins</id>
+            <name>David Blevins</name>
+            <email>david dot blevins at visi dot com</email>
             <roles>
               <role>PMC</role>
             </roles>
