@@ -106,6 +106,32 @@
             </roles>
         </developer>
         <developer>
+            <id>matzew</id>
+            <name>Matthias Wessendorf</name>
+            <email>matzew at apache dot org</email>
+            <organization>Oracle, Germany</organization>
+            <organizationUrl>http://www.oracle.com/</organizationUrl>
+            <roles>
+                <role>PMC</role>
+            </roles>
+        </developer>        
+        <developer>
+            <id>mnour</id>
+            <name>Mohammad Nour El-Din</name>
+            <email>nour dot mohammad at gmail dot com</email>
+            <roles>
+              <role>PMC</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>conny</id>
+            <name>Conny Lundgren</name>
+            <email>conny dot lundgren at gmail dot com</email>
+            <roles>
+              <role>committer</role>
+            </roles>
+        </developer>
+        <developer>
             <id>covener</id>
             <name>Eric Covener</name>
             <email>covener at gmail dot com</email>
