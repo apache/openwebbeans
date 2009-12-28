@@ -21,7 +21,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import org.apache.webbeans.jsf.WebBeansPhaseListener;
 
 public final class JSFUtil
 {
@@ -66,7 +65,12 @@ public final class JSFUtil
 
     public static String getViewId()
     {
-        return getCurrentFacesContext().getViewRoot().getViewId();
+        UIViewRoot viewRoot = getCurrentFacesContext().getViewRoot();
+        if (viewRoot == null)
+        {
+            return null;
+        }
+        return viewRoot.getViewId();
     }
 
     public static ViewHandler getViewHandler()
