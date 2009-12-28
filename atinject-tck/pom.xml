@@ -59,6 +59,12 @@
          <artifactId>inject-tck</artifactId>
          <version>1.0.0-PFD-3</version>
          <scope>test</scope>
+         <exclusions>
+             <exclusion>
+	            <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+         	</exclusion>
+         </exclusions>
       </dependency>
 
          <dependency>
