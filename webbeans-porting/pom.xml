@@ -72,6 +72,16 @@
             <groupId>org.jboss.jsr299.tck</groupId>
             <artifactId>jsr299-tck-api</artifactId>
             <version>1.0.0-CR2</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>javax.enterprise</groupId>
+            		<artifactId>cdi-api</artifactId>
+            	</exclusion>
+            	<exclusion>
+            		<groupId>javax.el</groupId>
+            		<artifactId>el-api</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
