@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -704,6 +705,11 @@ public final class DefinitionUtil
 
 
             Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
+            if (set.isEmpty()) {
+                throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + 
+                              " in class : " + clazz.getName() + ". Cannot find bean " + type + " with qualifier " + Arrays.toString(annot));
+            }
+            
             Bean<?> bean = set.iterator().next();
             ProducerMethodBean<?> pr = null;
 
