@@ -292,4 +292,11 @@ public class InvocationContextImpl implements InvocationContext
         }
     }
 
+    @Override
+    public Object getTimer()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

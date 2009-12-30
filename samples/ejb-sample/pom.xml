@@ -146,7 +146,7 @@
 		<!-- Interceptor API -->	
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-interceptor_3.0_spec</artifactId>
+			<artifactId>geronimo-interceptor_1.1_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		

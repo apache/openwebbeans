@@ -46,6 +46,13 @@
             <artifactId>openejb-core</artifactId>
             <optional>true</optional>
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-interceptor_1.1_spec</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
 				
 		<dependency>
 			<groupId>junit</groupId>
