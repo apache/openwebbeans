@@ -157,56 +157,71 @@ public class InterceptorHandler implements MethodHandler, Serializable
     @SuppressWarnings("unchecked")
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
-        Object result = null;
-        
+        Object result = null;        
         boolean interceptorRun = false;
         
-        //Context of the bean
-        Context webbeansContext = BeanManagerImpl.getManager().getContext(component.getScope());
-        
-        //Get bean instance from context
-        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)this.creationalContext);
-        
-        //toString is supported but no other object method names!!!
-        if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) && InterceptorUtil.isWebBeansBusinessMethod(method))
+        try
         {
-            checkDecoratorStackForSameDecorator(method);
-
-            //Gets component decorator stack
-            List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(component, webbeansInstance);
-                        
-            // Run around invoke chain
-            List<InterceptorData> stack = component.getInterceptorStack();
+            //Context of the bean
+            Context webbeansContext = BeanManagerImpl.getManager().getContext(component.getScope());
             
-            List<InterceptorData> temp = new ArrayList<InterceptorData>(stack);
+            //Get bean instance from context
+            Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)this.creationalContext);
             
-            //Filter both EJB and WebBeans interceptors
-            filterCommonInterceptorStackList(temp, method);
-            
-            //Call Around Invokes
-            if (WebBeansUtil.isContainsInterceptorMethod(temp, InterceptorType.AROUND_INVOKE))
+            //toString is supported but no other object method names!!!
+            if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) && InterceptorUtil.isWebBeansBusinessMethod(method))
             {
-                result = callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(temp, InterceptorType.AROUND_INVOKE));
-                interceptorRun = true;
+                checkDecoratorStackForSameDecorator(method);
+
+                //Gets component decorator stack
+                List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(component, webbeansInstance);
+                            
+                // Run around invoke chain
+                List<InterceptorData> stack = component.getInterceptorStack();
+                
+                List<InterceptorData> temp = new ArrayList<InterceptorData>(stack);
+                
+                //Filter both EJB and WebBeans interceptors
+                filterCommonInterceptorStackList(temp, method);
+                
+                //Call Around Invokes
+                if (WebBeansUtil.isContainsInterceptorMethod(temp, InterceptorType.AROUND_INVOKE))
+                {
+                    result = callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(temp, InterceptorType.AROUND_INVOKE));
+                    interceptorRun = true;
+                }
+                
+                //Call decarators
+                callDecorators(decorators, method, arguments);            
+                
+
+            }
+
+            if(interceptorRun)
+            {
+                return result;
             }
             
-            //Call decarators
-            callDecorators(decorators, method, arguments);            
+            if (!method.isAccessible())
+            {
+                method.setAccessible(true);
+            }
+
+            return method.invoke(webbeansInstance, arguments);
             
-
-        }
-
-        if(interceptorRun)
+        }catch(InvocationTargetException e)
         {
-            return result;
+            Throwable target = e.getTargetException();
+            if(Exception.class.isAssignableFrom(target.getClass()))
+            {
+                throw (Exception)target;
+            }
+            else
+            {
+                throw e;
+            }
         }
         
-        if (!method.isAccessible())
-        {
-            method.setAccessible(true);
-        }
-
-        return method.invoke(webbeansInstance, arguments);
     }
     
     private void checkDecoratorStackForSameDecorator(Method method)

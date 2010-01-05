@@ -31,7 +31,7 @@ public class ConversationImpl implements Conversation
 
     private boolean isTransient = true;
 
-    private long timeout;
+    private long timeout = 30 * 60 * 1000 ;
 
     private String sessionId;
 
@@ -93,6 +93,11 @@ public class ConversationImpl implements Conversation
             this.isTransient = true;
             
             ConversationManager.getInstance().removeConversation(this);            
+        }
+        else
+        {
+            logger.warn(OWBLogConst.WARN_0007, new Object[]{id});
+            throw new IllegalStateException();
         }
     }
     
