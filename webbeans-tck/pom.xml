@@ -58,15 +58,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-ejb</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openejb</groupId>
-            <artifactId>openejb-core</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-resource</artifactId>
         </dependency>
         <dependency>
@@ -306,7 +297,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>${project.build.directory}/dependency/jsr299-tck-impl-${webbeans.tck.version}-suite.xml</suiteXmlFile>
+                        <suiteXmlFile>jsr299-tck-impl-1.0.0-SNAPSHOT-suite.xml</suiteXmlFile>
                     </suiteXmlFiles>
                     
                     <systemProperties>
