@@ -587,7 +587,7 @@
     <distributionManagement>
         <site>
             <id>apache.openwebbeans.site</id>
-            <url>scp://people.apache.org/www/incubator.apache.org/openwebbeans/${project.version}</url>
+            <url>scp://minotaur.apache.org/www/openwebbeans.apache.org/${project.version}</url>
         </site>
 <!--
 	<repository>
