@@ -39,9 +39,9 @@
     <inceptionYear>2008</inceptionYear>
 
 	<scm>
-	    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</connection>
-	    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</developerConnection>
-	    <url>https://svn.apache.org/repos/asf/incubator/openwebbeans/trunk</url>
+	    <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/trunk</connection>
+	    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/trunk</developerConnection>
+	    <url>https://svn.apache.org/repos/asf/openwebbeans/trunk</url>
     </scm>
 
     <issueManagement>
