@@ -90,6 +90,26 @@ public class AlternativesManager
         }
     }
     
+    public boolean isClassAlternative(Class<?> clazz)
+    {
+        if(this.alternatives.contains(clazz))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+
+    public boolean isStereoAlternative(Class<? extends Annotation> stereo)
+    {
+        if(this.stereoAlternatives.contains(stereo))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+
     public boolean isBeanHasAlternative(Bean<?> bean)
     {
         Class<?> returnType = bean.getBeanClass();

@@ -625,6 +625,8 @@ public final class DefinitionUtil
         defineStereoTypes(component, method.getDeclaredAnnotations());
 
         Annotation[] methodAnns = method.getDeclaredAnnotations();
+        
+        WebBeansUtil.setBeanEnableFlagForProducerBean(parent, component, methodAnns);
 
         DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
         DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
@@ -671,6 +673,8 @@ public final class DefinitionUtil
         defineStereoTypes(component, field.getDeclaredAnnotations());
 
         Annotation[] fieldAnns = field.getDeclaredAnnotations();
+        
+        WebBeansUtil.setBeanEnableFlagForProducerBean(parent, component, fieldAnns);
 
         DefinitionUtil.defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
         DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");

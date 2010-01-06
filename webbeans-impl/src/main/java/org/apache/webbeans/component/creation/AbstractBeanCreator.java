@@ -23,7 +23,6 @@ import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -59,9 +58,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     public AbstractBeanCreator(AbstractBean<T> bean, Annotation[] beanAnnotations)
     {
         this.bean = bean;
-        this.beanAnnotations = beanAnnotations;
-        
-        WebBeansUtil.setBeanEnableFlag(bean);   
+        this.beanAnnotations = beanAnnotations;           
     }
 
     /**

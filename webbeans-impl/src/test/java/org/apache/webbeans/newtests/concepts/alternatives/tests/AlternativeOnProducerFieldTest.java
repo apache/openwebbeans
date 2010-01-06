@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,46 +16,48 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.webbeans.newtests.managed;
+package org.apache.webbeans.newtests.concepts.alternatives.tests;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.util.AnnotationLiteral;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.managed.multipleinterfaces.MyEntityServiceImpl;
+import org.apache.webbeans.newtests.concepts.alternatives.common.Pen;
+import org.apache.webbeans.newtests.concepts.alternatives.common.Pencil;
+import org.apache.webbeans.newtests.concepts.alternatives.common.PencilProducerBean;
 import org.junit.Test;
 
-public class ProxyFactoryTest extends AbstractUnitTest {
-
-    @SuppressWarnings("unchecked")
+public class AlternativeOnProducerFieldTest extends AbstractUnitTest
+{
+   private static final String PACKAGE_NAME = AlternativeOnProducerFieldTest.class.getPackage().getName(); 
+    
+    public AlternativeOnProducerFieldTest()
+    {
+        
+    }
+    
     @Test
-    public void testProxyFactoryWithMultipleInterfaces() {
+    public void testProducerFieldAlternativeNotEnabled()
+    {
         Collection<URL> beanXmls = new ArrayList<URL>();
 
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(MyEntityServiceImpl.class);
-
-        startContainer(beanClasses, beanXmls);
-
-        Set<Bean<?>> beans = getBeanManager().getBeans(MyEntityServiceImpl.class);
-        Assert.assertNotNull(beans);
-
-        Bean<MyEntityServiceImpl> bean = (Bean<MyEntityServiceImpl>) beans.iterator().next();
-        Assert.assertNotNull(bean);
+        beanClasses.add(PencilProducerBean.class);
+        beanClasses.add(Pencil.class);
         
-        CreationalContext<MyEntityServiceImpl> ctx = getBeanManager().createCreationalContext(bean);
+        startContainer(beanClasses, beanXmls);        
         
-        Object reference = getBeanManager().getReference(bean, MyEntityServiceImpl.class, ctx);
-        Assert.assertNotNull(reference);
+        Set<Bean<?>> beans = getBeanManager().getBeans(Pencil.class, new AnnotationLiteral<Pen>(){});
+        Assert.assertEquals(1, beans.size());
         
         shutDownContainer();
     }
+    
 }

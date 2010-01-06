@@ -38,6 +38,7 @@ import javax.enterprise.inject.spi.Producer;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
+import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -655,6 +656,10 @@ public class BeansDeployer
             //Define meta-data
             managedBeanCreator.defineSerializable();
             managedBeanCreator.defineStereoTypes();
+            
+            //Check for Enabled via Alternative
+            WebBeansUtil.setBeanEnableFlag(managedBean);
+            
             managedBeanCreator.defineApiType();
             managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
             managedBeanCreator.defineQualifier();
@@ -767,6 +772,7 @@ public class BeansDeployer
      */
     protected <T> void defineEnterpriseWebBean(Class<T> clazz)
     {
-        EJBWebBeansConfigurator.defineEjbBean(clazz);
+        AbstractBean<T> bean = (AbstractBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz);
+        WebBeansUtil.setBeanEnableFlag(bean);
     }
 }

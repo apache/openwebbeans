@@ -79,6 +79,7 @@ import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.BaseBean;
 import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.component.ConversationBean;
@@ -2051,16 +2052,72 @@ public final class WebBeansUtil
         
     }
     
+    /**
+     * Sets bean enabled flag.
+     * @param bean bean instance
+     */
     public static void setBeanEnableFlag(AbstractBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean can not be null");
         
+        boolean alternative = false;
+        
         if(AnnotationUtil.hasClassAnnotation(bean.getBeanClass(), Alternative.class))
+        {
+           alternative = true; 
+        }
+        
+        if(!alternative)
+        {
+            Set<Class<? extends Annotation>> stereotypes = bean.getStereotypes();
+            for(Class<? extends Annotation> stereoType : stereotypes)
+            {
+                if(AnnotationUtil.hasClassAnnotation(stereoType, Alternative.class))
+                {
+                    alternative = true;
+                    break;
+                }
+            }
+            
+        }
+        
+        if(alternative)
         {
             if(!AlternativesManager.getInstance().isBeanHasAlternative(bean))
             {
                 bean.setEnabled(false);
             }
+        }
+    }
+    
+    public static void setBeanEnableFlagForProducerBean(AbstractBean<?> parent,AbstractProducerBean<?> producer, Annotation[] annotations)
+    {
+        Asserts.assertNotNull(parent, "parent can not be null");
+        Asserts.assertNotNull(producer, "producer can not be null");
+        
+        boolean alternative = false;
+        
+        if(AnnotationUtil.hasAnnotation(annotations, Alternative.class))
+        {
+           alternative = true; 
+        }
+        
+        if(!alternative)
+        {
+            Set<Class<? extends Annotation>> stereotypes = producer.getStereotypes();
+            for(Class<? extends Annotation> stereoType : stereotypes)
+            {
+                if(AnnotationUtil.hasClassAnnotation(stereoType, Alternative.class))
+                {
+                    alternative = true;
+                    break;
+                }
+            }            
+        }
+        
+        if(alternative)
+        {
+            producer.setEnabled(parent.isEnabled());            
         }
     }
 }

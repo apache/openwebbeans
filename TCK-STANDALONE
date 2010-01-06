@@ -70,4 +70,7 @@ Section 2.5 - Bean EL Names (PASSED)
 Section 2.5.1 - Declaring the bean EL name (PASSED)
 Section 2.5.2 - Default bean EL names (PASSED)
 Section 2.5.3 - Beans with no EL name (PASSED)
+Section 2.6 - Alternatives (PASSED)
+Section 2.6.1 - Declaring an alternative (PASSED But it seems some errors in TCK)
+  # CDITCK JIRA --> https://jira.jboss.org/jira/browse/CDITCK-89
 
