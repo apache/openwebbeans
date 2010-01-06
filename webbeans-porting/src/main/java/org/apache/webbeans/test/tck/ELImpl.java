@@ -13,107 +13,92 @@
  */
 package org.apache.webbeans.test.tck;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
+import javax.el.ArrayELResolver;
+import javax.el.BeanELResolver;
+import javax.el.CompositeELResolver;
 import javax.el.ELContext;
 import javax.el.ELResolver;
+import javax.el.ExpressionFactory;
 import javax.el.FunctionMapper;
+import javax.el.ListELResolver;
+import javax.el.MapELResolver;
+import javax.el.ResourceBundleELResolver;
 import javax.el.VariableMapper;
 
+import org.apache.el.ExpressionFactoryImpl;
+import org.apache.el.lang.FunctionMapperImpl;
+import org.apache.el.lang.VariableMapperImpl;
 import org.apache.webbeans.el.WebBeansELResolver;
 import org.jboss.jsr299.tck.spi.EL;
 
 public class ELImpl implements EL
 {
-    private WebBeansELResolver resolver = new WebBeansELResolver();
+    private static ExpressionFactory EXPRESSION_FACTORY = new ExpressionFactoryImpl();
+    
+    public ELImpl()
+    {
+    }
+    
+    public static ELResolver getELResolver()
+    {
+        CompositeELResolver composite = new CompositeELResolver();
+        composite.add(new BeanELResolver());
+        composite.add(new ArrayELResolver());
+        composite.add(new MapELResolver());
+        composite.add(new ListELResolver());
+        composite.add(new ResourceBundleELResolver());
+        composite.add(new WebBeansELResolver());
+        
+        return composite;
+    }
     
     public static class ELContextImpl extends ELContext
-    {
+    {        
 
         @Override
         public ELResolver getELResolver()
         {
-            // TODO Auto-generated method stub
-            return null;
+            return ELImpl.getELResolver();
         }
 
         @Override
         public FunctionMapper getFunctionMapper()
         {
-            // TODO Auto-generated method stub
-            return null;
+            return new FunctionMapperImpl();
         }
 
         @Override
         public VariableMapper getVariableMapper()
         {
-            // TODO Auto-generated method stub
-            return null;
+            return new VariableMapperImpl();
         }
         
     }
     
     @SuppressWarnings("unchecked")
     public <T> T evaluateMethodExpression(String expression, Class<T> expectedType, Class<?>[] expectedParamTypes, Object[] expectedParams)
-    {
-        int firstDot = expression.indexOf('.');
-        String property = expression.substring(expression.indexOf("#"),firstDot) + "}"; //object name
-        String methodName = expression.substring(firstDot+1,expression.length()-1);
+    {   
+        ELContext context = createELContext();
         
-        Object object = evaluateValueExpression(property, expectedType);
+        Object object = EXPRESSION_FACTORY.createMethodExpression(context, expression, expectedType, expectedParamTypes).invoke(context, expectedParams);
         
-        try
-        {
-            Method method = object.getClass().getMethod(methodName, expectedParamTypes);
-            return (T)method.invoke(object, expectedParams);
-        }
-        catch (SecurityException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (NoSuchMethodException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (IllegalArgumentException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (IllegalAccessException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (InvocationTargetException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
-        return null;
+        return (T)object;
     }
 
     @SuppressWarnings("unchecked")
     public <T> T evaluateValueExpression(String expression, Class<T> expectedType)
     {
-        String property = expression.substring(expression.indexOf("#")+2,expression.length()-1);
+        ELContext context = createELContext();
         
-        T object = (T) resolver.getValue(new ELContextImpl() , null, property);
+        Object object = EXPRESSION_FACTORY.createValueExpression(context, expression, expectedType).getValue(context);
         
-        return object;
+        return (T)object;
     }
 
     @Override
     public ELContext createELContext()
-    {
-        // TODO Auto-generated method stub
-        return null;
+    {        
+        return new ELContextImpl();
     }
-
-
-
 }

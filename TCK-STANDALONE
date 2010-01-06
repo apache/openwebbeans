@@ -66,4 +66,8 @@ Section 2.4.1 - Built-in scope types (This is INTEGRATION TESTS, NOT INCLUDED)
 Section 2.4.2 - Defining new scope types (PASSED)
 Section 2.4.3 - Declaring the bean scope (PASSED)
 Section 2.4.4 - Default scope (PASSED)
+Section 2.5 - Bean EL Names (PASSED)
+Section 2.5.1 - Declaring the bean EL name (PASSED)
+Section 2.5.2 - Default bean EL names (PASSED)
+Section 2.5.3 - Beans with no EL name (PASSED)
 

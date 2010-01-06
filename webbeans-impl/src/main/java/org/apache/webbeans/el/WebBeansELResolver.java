@@ -49,6 +49,8 @@ import org.apache.webbeans.container.BeanManagerImpl;
 public class WebBeansELResolver extends ELResolver
 {    
 
+    public static ThreadLocal<ELContextStore> LOCAL_CONTEXT = new ThreadLocal<ELContextStore>();
+    
     /**
      * {@inheritDoc}
      */
@@ -84,66 +86,67 @@ public class WebBeansELResolver extends ELResolver
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
-
         Object object = null;
         Bean<Object> bean = null;
-
-        boolean isResolution = false;
-        CreationalContext<Object> creationalContext = null;
-        try
-        {            
-            if (obj == null)
+        CreationalContext<Object> creationalContext = null;        
+        ELContextStore store = null;
+        boolean canBe = false;
+        
+        if (obj == null)
+        {
+            if((store = LOCAL_CONTEXT.get()) != null)
             {
-                String name = (String) property;            
-                Set<Bean<?>> beans = manager.getBeans(name);
-                
-                if(beans != null && !beans.isEmpty())
+                ELContext oldContext = store.getELContext();
+                if(!oldContext.equals(context))
                 {
-                    bean = (Bean<Object>)beans.iterator().next();
-                    creationalContext = manager.createCreationalContext(bean);                    
-   
+                    store.destroy();
+                    LOCAL_CONTEXT.remove();
                 }
+                else
+                {
+                    canBe = true;
+                }
+            }
+                        
+            String name = (String) property;            
+            Set<Bean<?>> beans = manager.getBeans(name);
+            
+            if(beans != null && !beans.isEmpty())
+            {
+                bean = (Bean<Object>)beans.iterator().next();
+                creationalContext = manager.createCreationalContext(bean);                    
                 
+                if(bean.getScope().equals(Dependent.class))
+                {
+                    if(canBe)
+                    {
+                       object = store.getDependent(bean);
+                    }
+                }                    
+            }
+            
+            
+            if(object == null)
+            {
                 object = manager.getInstanceByName(name,creationalContext);
                 
                 if (object != null)
-                {
-                    isResolution = true;
+                {                    
                     context.setPropertyResolved(true);
-                }
+                    
+                    store = new ELContextStore(context);
+                    store.addDependent(bean, object, creationalContext);
+                    LOCAL_CONTEXT.set(store);
+                }                    
+            }
+            else
+            {
+                context.setPropertyResolved(true);                    
             }
             
         }
-        finally
-        {
-            if (isResolution)
-            {
-                if (bean != null)
-                {
-                    destroyBean(bean, object, creationalContext);
-                }                
-            }
-        }
 
         return object;
-    }
-
-    /**
-     * Destroys the bean.
-     * 
-     * @param <T> bean type info
-     * @param bean dependent context scoped bean
-     * @param instance bean instance
-     */
-    @SuppressWarnings("unchecked")
-    private <T> void destroyBean(Bean<T> bean, Object instance, CreationalContext<T> creationalContext)
-    {
-        if (bean.getScope().equals(Dependent.class))
-        {
-            T inst = (T) instance;
-
-            bean.destroy(inst,creationalContext);
-        }
     }
 
     /**
