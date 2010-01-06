@@ -18,14 +18,14 @@
 <project name="OpenWebBeans">
     <bannerLeft>
         <name>Apache OpenWebBeans</name>
-        <src>http://incubator.apache.org/openwebbeans/images/openwebbeans.png</src>
-        <href>http://incubator.apache.org/openwebbeans</href>
+        <src>http://openwebbeans.apache.org/1.0.0-SNAPSHOT/images/openwebbeans.png</src>
+        <href>http://openwebbeans.apache.org</href>
     </bannerLeft>
     
     <bannerRight>
         <name>Apache Banner</name>
-        <src>http://incubator.apache.org/openwebbeans/images/apache-incubator-logo.png</src>
-        <href>http://incubator.apache.org/openwebbeans</href>
+        <src>http://www.apache.org/images/asf-logo.gif</src>
+        <href>http://www.apache.org</href>
     </bannerRight>
     
     <publishDate format="dd MMM yyyy" />
@@ -33,8 +33,8 @@
     
     <body>
         <breadcrumbs>
-        <item name="Incubator" href="http://incubator.apache.org"/>
-        <item name="OpenWebBeans" href="http://incubator.apache.org/openwebbeans"/>
+        <item name="Apache" href="http://www.apache.org"/>
+        <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
         </breadcrumbs>
 
         <menu name="Overview">
