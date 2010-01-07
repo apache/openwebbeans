@@ -25,6 +25,8 @@
 	<name>Apache OpenWebBeans</name>
 	<packaging>pom</packaging>
 	<version>1.0.0-SNAPSHOT</version>
+	
+	<url>openwebbeans.apache.org</url>
     
 	<description> 
         Apache OpenWebBeans is an open source implementation of
