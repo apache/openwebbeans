@@ -2115,6 +2115,7 @@ public final class WebBeansUtil
             }            
         }
         
+        //TODO, https://jira.jboss.org/jira/browse/CDITCK-89
         if(alternative)
         {
             producer.setEnabled(parent.isEnabled());            

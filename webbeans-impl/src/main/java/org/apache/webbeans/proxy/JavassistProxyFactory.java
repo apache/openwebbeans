@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javassist.util.proxy.ProxyFactory;
@@ -28,7 +29,9 @@ import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.intercept.InterceptorHandler;
+import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandler;
+import org.apache.webbeans.intercept.InterceptorData;
+import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -39,48 +42,19 @@ public final class JavassistProxyFactory
 
     }
 
-    public static Object createNewProxyInstance(Bean<?> bean, CreationalContext<?> creationalContext)
+    public static Object createNormalScopedBeanProxy(Bean<?> bean, CreationalContext<?> creationalContext)
     {
         Object result = null;
         try
         {
-            Set<Type> types = bean.getTypes();
-            Set<Class<?>> interfaceList = new HashSet<Class<?>>();
-            Class<?> superClass = null;
-            for (Type generic : types)
-            {
-                Class<?> type = (Class<?>)ClassUtil.getClazz(generic);
-                
-                if (type.isInterface())
-                {
-                    interfaceList.add(type);
-                }
-                
-                else if ((superClass == null) || (superClass.isAssignableFrom(type) && type != Object.class))
-                {
-                    superClass = type;
-                }
-
-            }
-            if (!interfaceList.contains(Serializable.class))
-            {
-                interfaceList.add(Serializable.class);
-            }
-
-            Class<?>[] interfaceArray = new Class<?>[interfaceList.size()];
-            interfaceArray = interfaceList.toArray(interfaceArray);
-
-            ProxyFactory fact = new ProxyFactory();
-            fact.setInterfaces(interfaceArray);
-            fact.setSuperclass(superClass);
+            ProxyFactory fact = createProxyFactory(bean);
 
             if (!(bean instanceof WebBeansDecorator) && !(bean instanceof WebBeansInterceptor))
             {
-                fact.setHandler(new InterceptorHandler((AbstractBean<?>) bean, creationalContext));
+                fact.setHandler(new NormalScopedBeanInterceptorHandler((AbstractBean<?>) bean, creationalContext));
             }
 
             result = fact.createClass().newInstance();
-
         }
         catch (Exception e)
         {
@@ -89,7 +63,73 @@ public final class JavassistProxyFactory
 
         return result;
     }
+    
+    public static Object createDependentScopedBeanProxy(Bean<?> bean, Object actualInstance)
+    {
+        Object result = null;
+        
+        List<InterceptorData> interceptors = ((AbstractBean<?>) bean).getInterceptorStack();
+        if(interceptors.isEmpty())
+        {
+            return actualInstance;
+        }
+        
+        try
+        {
+            ProxyFactory fact = createProxyFactory(bean);
 
+            if (!(bean instanceof WebBeansDecorator) && !(bean instanceof WebBeansInterceptor))
+            {
+                fact.setHandler(new DependentScopedBeanInterceptorHandler((AbstractBean<?>) bean, actualInstance));
+            }
+
+            result = fact.createClass().newInstance();
+        }
+        catch (Exception e)
+        {
+            throw new WebBeansException(e);
+        }
+
+        return result;
+    }
+    
+
+    public static ProxyFactory createProxyFactory(Bean<?> bean) throws Exception
+    {
+        Set<Type> types = bean.getTypes();
+        Set<Class<?>> interfaceList = new HashSet<Class<?>>();
+        Class<?> superClass = null;
+        for (Type generic : types)
+        {
+            Class<?> type = (Class<?>)ClassUtil.getClazz(generic);
+            
+            if (type.isInterface())
+            {
+                interfaceList.add(type);
+            }
+            
+            else if ((superClass == null) || (superClass.isAssignableFrom(type) && type != Object.class))
+            {
+                superClass = type;
+            }
+
+        }
+        if (!interfaceList.contains(Serializable.class))
+        {
+            interfaceList.add(Serializable.class);
+        }
+
+        Class<?>[] interfaceArray = new Class<?>[interfaceList.size()];
+        interfaceArray = interfaceList.toArray(interfaceArray);
+
+        ProxyFactory fact = new ProxyFactory();
+        fact.setInterfaces(interfaceArray);
+        fact.setSuperclass(superClass);
+
+        return fact;
+        
+    }
+    
     public static WebBeansAnnotation createNewAnnotationProxy(Class<? extends Annotation> annotationType)
     {
         WebBeansAnnotation result = null;

@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
@@ -34,6 +36,7 @@ import javax.interceptor.InvocationContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
@@ -68,23 +71,23 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     /** Interceptor class */
     private Class<?> clazz;
 
-    /** Simple Web Beans component */
-    private AbstractBean<T> delegateComponent;
+    /**Delegate Bean*/
+    private AbstractBean<T> delegateBean;
     
     private CreationalContext<T> creationalContext;
 
-    public WebBeansInterceptor(AbstractBean<T> delegateComponent)
+    public WebBeansInterceptor(AbstractBean<T> delegateBean)
     {
-        super(WebBeansType.INTERCEPTOR,delegateComponent.getReturnType());
+        super(WebBeansType.INTERCEPTOR,delegateBean.getReturnType());
         
-        this.delegateComponent = delegateComponent;
+        this.delegateBean = delegateBean;
         this.clazz = getDelegate().getReturnType();
 
     }
 
     public AbstractBean<T> getDelegate()
     {
-        return this.delegateComponent;
+        return this.delegateBean;
     }
 
     /**
@@ -244,9 +247,23 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
 
     public Method getMethod(InterceptionType type)
     {
-        Class<? extends Annotation> interceptorTypeAnnotationClazz = InterceptorUtil.getInterceptorAnnotationClazz(type);
-        Method method = WebBeansUtil.checkCommonAnnotationCriterias(getClazz(), interceptorTypeAnnotationClazz, true);
-
+        Method method = null;
+        
+        if(type.equals(InterceptionType.AROUND_INVOKE))
+        {
+            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(getClazz());
+        }
+        
+        else if(type.equals(InterceptionType.POST_ACTIVATE) || type.equals(InterceptionType.PRE_PASSIVATE))
+        {
+            return null;
+        }
+        else
+        {
+            Class<? extends Annotation> interceptorTypeAnnotationClazz = InterceptorUtil.getInterceptorAnnotationClazz(type);                
+            method = WebBeansUtil.checkCommonAnnotationCriterias(getClazz(), interceptorTypeAnnotationClazz, true);            
+        }
+        
         return method;
     }
 
@@ -254,16 +271,17 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     @SuppressWarnings("unchecked")
     protected T createInstance(CreationalContext<T> creationalContext)
     {
-        T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this,creationalContext);
-
-        return proxy;
+        Context context = BeanManagerImpl.getManager().getContext(getScope());
+        Object actualInstance = context.get((Bean<Object>)this.delegateBean, (CreationalContext<Object>)creationalContext);
+        T proxy = (T)JavassistProxyFactory.createDependentScopedBeanProxy(this.delegateBean, actualInstance);
         
+        return proxy;
     }
 
     public void setInjections(Object proxy)
     {
         // Set injected fields
-        ManagedBean<T> delegate = (ManagedBean<T>) this.delegateComponent;
+        ManagedBean<T> delegate = (ManagedBean<T>) this.delegateBean;
 
         Set<Field> injectedFields = delegate.getInjectedFromSuperFields();
         for (Field injectedField : injectedFields)
@@ -293,49 +311,49 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     
     private void injectField(Field field, Object instance)
     {
-        InjectableField f = new InjectableField(field, instance, this.delegateComponent, this.creationalContext);
+        InjectableField f = new InjectableField(field, instance, this.delegateBean, this.creationalContext);
         f.doInjection();        
     }
 
     @SuppressWarnings("unchecked")
     private void injectMethod(Method method, Object instance)
     {
-        InjectableMethods m = new InjectableMethods(method, instance, this.delegateComponent, this.creationalContext);
+        InjectableMethods m = new InjectableMethods(method, instance, this.delegateBean, this.creationalContext);
         m.doInjection();        
     }
     
 
     public void destroy(T instance,CreationalContext<T> context)
     {
-        delegateComponent.destroy(instance,context);
+        delegateBean.destroy(instance,context);
     }
 
     @Override
     public Set<Annotation> getQualifiers()
     {
-        return delegateComponent.getQualifiers();
+        return delegateBean.getQualifiers();
     }
 
     @Override
     public String getName()
     {
-        return delegateComponent.getName();
+        return delegateBean.getName();
     }
 
     @Override
     public Class<? extends Annotation> getScope()
     {
-        return delegateComponent.getScope();
+        return delegateBean.getScope();
     }
 
     public Set<Type> getTypes()
     {
-        return delegateComponent.getTypes();
+        return delegateBean.getTypes();
     }
     
     public Set<InjectionPoint> getInjectionPoints()
     {
-        return delegateComponent.getInjectionPoints();
+        return delegateBean.getInjectionPoints();
     }
 
     /*
@@ -387,25 +405,25 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     @Override
     public boolean isNullable()
     {
-        return delegateComponent.isNullable();
+        return delegateBean.isNullable();
     }
 
     @Override
     public boolean isSerializable()
     {
-        return delegateComponent.isSerializable();
+        return delegateBean.isSerializable();
     }
 
     @Override
     public Class<?> getBeanClass()
     {
-        return this.delegateComponent.getBeanClass();
+        return this.delegateBean.getBeanClass();
     }
 
 	@Override
 	public Set<Class<? extends Annotation>> getStereotypes() 
 	{ 
-		return this.delegateComponent.getStereotypes();
+		return this.delegateBean.getStereotypes();
 	}
 
 	@Override
@@ -436,6 +454,6 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     @Override
     public boolean isAlternative()
     {
-        return this.delegateComponent.isAlternative();
+        return this.delegateBean.isAlternative();
     }
 }

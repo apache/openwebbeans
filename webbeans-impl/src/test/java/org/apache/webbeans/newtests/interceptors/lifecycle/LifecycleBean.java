@@ -23,6 +23,11 @@ public class LifecycleBean
 {
     public static String CONSTRUCTOR_INJECTED = null; 
     
+    public LifecycleBean()
+    {
+        
+    }
+    
     @Inject
     public LifecycleBean(@New String string)
     {

@@ -22,7 +22,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.decorator.Delegate;
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 
@@ -30,6 +32,7 @@ import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
@@ -237,10 +240,11 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     @SuppressWarnings("unchecked")    
     protected  T createInstance(CreationalContext<T> creationalContext)
     {
-        T proxy = (T)JavassistProxyFactory.createNewProxyInstance(this, creationalContext);
-
-        return proxy;
+        Context context = BeanManagerImpl.getManager().getContext(getScope());
+        Object actualInstance = context.get((Bean<Object>)this.wrappedBean, (CreationalContext<Object>)creationalContext);
+        T proxy = (T)JavassistProxyFactory.createDependentScopedBeanProxy(this.wrappedBean, actualInstance);
         
+        return proxy;        
     }
 
     public void setInjections(Object proxy)

@@ -22,9 +22,6 @@ import java.util.List;
 
 import javassist.util.proxy.MethodHandler;
 
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 
@@ -132,29 +129,25 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @see WebBeansDecorator
  * @see EJBInterceptorConfig
  */
-public class InterceptorHandler implements MethodHandler, Serializable
+public abstract class InterceptorHandler implements MethodHandler, Serializable
 {
     private static final long serialVersionUID = 1657109769733323541L;
     
     private transient static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
 
-    private AbstractBean<?> component = null;
+    protected AbstractBean<?> bean = null;
 
     private transient Method calledMethod = null;
 
     private transient boolean isSameDecMethod = false;
     
     private transient boolean isInDecoratorCall = false;
-    
-    private CreationalContext<?> creationalContext = null;
 
-    public InterceptorHandler(AbstractBean<?> component, CreationalContext<?> creationalContext)
+    protected InterceptorHandler(AbstractBean<?> bean)
     {
-        this.component = component;
-        this.creationalContext = creationalContext;
+        this.bean = bean;
     }
 
-    @SuppressWarnings("unchecked")
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         Object result = null;        
@@ -162,22 +155,16 @@ public class InterceptorHandler implements MethodHandler, Serializable
         
         try
         {
-            //Context of the bean
-            Context webbeansContext = BeanManagerImpl.getManager().getContext(component.getScope());
-            
-            //Get bean instance from context
-            Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.component, (CreationalContext<Object>)this.creationalContext);
-            
             //toString is supported but no other object method names!!!
             if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) && InterceptorUtil.isWebBeansBusinessMethod(method))
             {
                 checkDecoratorStackForSameDecorator(method);
 
                 //Gets component decorator stack
-                List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(component, webbeansInstance);
+                List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(bean, instance);
                             
                 // Run around invoke chain
-                List<InterceptorData> stack = component.getInterceptorStack();
+                List<InterceptorData> stack = bean.getInterceptorStack();
                 
                 List<InterceptorData> temp = new ArrayList<InterceptorData>(stack);
                 
@@ -194,7 +181,6 @@ public class InterceptorHandler implements MethodHandler, Serializable
                 //Call decarators
                 callDecorators(decorators, method, arguments);            
                 
-
             }
 
             if(interceptorRun)
@@ -207,7 +193,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
                 method.setAccessible(true);
             }
 
-            return method.invoke(webbeansInstance, arguments);
+            return method.invoke(instance, arguments);
             
         }catch(InvocationTargetException e)
         {
@@ -313,7 +299,7 @@ public class InterceptorHandler implements MethodHandler, Serializable
 
     private <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
-        InvocationContextImpl impl = new InvocationContextImpl(this.component, null,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+        InvocationContextImpl impl = new InvocationContextImpl(this.bean, null,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
 
         return impl.proceed();
 
