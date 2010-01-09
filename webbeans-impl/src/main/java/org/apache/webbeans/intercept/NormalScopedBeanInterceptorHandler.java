@@ -19,6 +19,7 @@
 package org.apache.webbeans.intercept;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
@@ -53,5 +54,14 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         // TODO Auto-generated method stub
         return super.invoke(webbeansInstance, method, proceed, arguments);
     }
+    
+    protected <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
+    {
+        InvocationContextImpl impl = new InvocationContextImpl(this.bean, null,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+
+        return impl.proceed();
+
+    }
+    
     
 }

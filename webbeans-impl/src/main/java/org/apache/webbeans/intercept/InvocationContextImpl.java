@@ -173,12 +173,13 @@ public class InvocationContextImpl implements InvocationContext
             InterceptorData intc = datas.get(currentMethod - 1);
 
             Method method = intc.getAroundInvoke();
-
+            boolean accessible = method.isAccessible();
+            
             if (!method.isAccessible())
             {
                 method.setAccessible(true);
             }
-
+            
             Object t = intc.getInterceptorInstance();
             
             if (t == null)
@@ -189,10 +190,27 @@ public class InvocationContextImpl implements InvocationContext
             currentMethod++;
             
             result = method.invoke(t, new Object[] { this });
+            
+            if(!accessible)
+            {
+                method.setAccessible(false);
+            }
+
         }
         else
         {
+            boolean accessible = this.method.isAccessible();
+            if(!accessible)
+            {                
+                this.method.setAccessible(true);
+            }
+            
             result = this.method.invoke(target, parameters);
+            
+            if(!accessible)
+            {
+                this.method.setAccessible(false);   
+            }
         }
 
         return result;

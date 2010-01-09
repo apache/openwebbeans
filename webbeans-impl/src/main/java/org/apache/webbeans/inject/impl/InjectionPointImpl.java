@@ -103,18 +103,18 @@ class InjectionPointImpl implements InjectionPoint
         if(injectionMember instanceof Constructor)
         {
             Constructor<?> constructor = (Constructor<?>) this.injectionMember;
-            buffer.append("Constructor Injection with name :  " + constructor.getName() + ownerBean.toString());
+            buffer.append("Constructor Injection with name :  " + constructor.getName() + "."+ ownerBean.toString());
         }
         else if(injectionMember instanceof Method)
         {
             Method method = (Method)this.injectionMember;
-            buffer.append("Method Injection with name :  " + method.getName() + ownerBean.toString());
+            buffer.append("Method Injection with name :  " + method.getName()  + "."+ ownerBean.toString());
             
         }
         else if(injectionMember instanceof Field)
         {
             Field field = (Field) this.injectionMember;
-            buffer.append("Field Injection with name :  " + field.getName() + ownerBean.toString());            
+            buffer.append("Field Injection with name :  " + field.getName() + "." + ownerBean.toString());            
         }
         
         return buffer.toString();

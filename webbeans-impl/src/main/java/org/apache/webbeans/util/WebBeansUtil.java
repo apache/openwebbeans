@@ -1583,6 +1583,11 @@ public final class WebBeansUtil
         Annotation old = null;
         for (Annotation interceptorBinding : interceptorBindings)
         {
+            if (!AnnotationUtil.isInterceptorBindingAnnotation(interceptorBinding.annotationType()))
+            {
+                throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings array can not contain other annotation that is not @InterceptorBinding");
+            }
+            
             if (old == null)
             {
                 old = interceptorBinding;
@@ -1592,11 +1597,6 @@ public final class WebBeansUtil
                 if (old.equals(interceptorBinding))
                 {
                     throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings array argument can not define duplicate binding annotation with name : @" + old.getClass().getName());
-                }
-
-                if (!AnnotationUtil.isInterceptorBindingAnnotation(interceptorBinding.annotationType()))
-                {
-                    throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings array can not contain other annotation that is not @InterceptorBinding");
                 }
 
                 old = interceptorBinding;

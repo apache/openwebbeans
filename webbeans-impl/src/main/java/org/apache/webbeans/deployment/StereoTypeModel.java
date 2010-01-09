@@ -95,13 +95,13 @@ public class StereoTypeModel implements IStereoTypeModel
                     {
                         for (ElementType outerValue : outerValues)
                         {
-                            if (outerValue.equals(ElementType.TYPE))
+                            if (outerValue.equals(ElementType.TYPE) && outerValues.length == 1)
                             {
                                 throw new WebBeansConfigurationException("Inherited StereoType with class name : " + clazz.getName() + " must have compatible @Target annotation with Stereotype class name : " + clazz.getName());
                             }
                         }
                     }
-                    else if (innerValue.equals(ElementType.TYPE))
+                    else if (innerValue.equals(ElementType.TYPE) && innerValues.length == 1)
                     {
                         for (ElementType outerValue : outerValues)
                         {

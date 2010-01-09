@@ -297,13 +297,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         }
     }
 
-    private <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
-    {
-        InvocationContextImpl impl = new InvocationContextImpl(this.bean, null,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
-
-        return impl.proceed();
-
-    }
+    protected abstract <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception;
 
     private boolean shouldRemoveInterceptorCommon(InterceptorData id, Method method)
     {

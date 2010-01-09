@@ -25,7 +25,6 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Qualifier;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -114,14 +113,14 @@ public class InjectionResolver
         Type type = injectionPoint.getType();        
         Class<?> clazz = null;
         
+        if(ClassUtil.isTypeVariable(type))
+        {
+           throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " type can not be defined as Typevariable or Wildcard type!");
+        }
+        
         if (type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType) type;
-
-            if (!ClassUtil.checkParametrizedType(pt))
-            {
-                throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " type can not be defined as Typevariable or Wildcard type!");
-            }
             
             clazz = (Class<?>) pt.getRawType();
         }

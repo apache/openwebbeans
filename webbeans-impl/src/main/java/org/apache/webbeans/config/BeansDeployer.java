@@ -271,6 +271,8 @@ public class BeansDeployer
         
         beans.clear();
         
+        beans = manager.getBeans();
+        
         //Validate Others
         validate(beans);
                 

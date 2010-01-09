@@ -19,6 +19,7 @@
 package org.apache.webbeans.intercept;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.apache.webbeans.component.AbstractBean;
 
@@ -39,6 +40,13 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         return super.invoke(this.actualInstance, method, proceed, arguments);
+    }
+    
+    protected <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
+    {
+        InvocationContextImpl impl = new InvocationContextImpl(this.bean, this.actualInstance ,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+
+        return impl.proceed();
     }
     
 }

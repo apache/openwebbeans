@@ -58,10 +58,13 @@ public class StandaloneLifeCycle implements Lifecycle
     
     public StandaloneLifeCycle()
     {
+        //Clear singletons
+        WebBeansFinder.clearInstances();
+
         this.beanManager = BeanManagerImpl.getManager();
         this.xmlConfig = new WebBeansXMLConfigurator();
-        this.beansDeployer = new BeansDeployer(this.xmlConfig);
-        
+        this.beansDeployer = new BeansDeployer(this.xmlConfig);        
+
         init();
     }
     
