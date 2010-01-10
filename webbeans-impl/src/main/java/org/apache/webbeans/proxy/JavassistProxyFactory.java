@@ -24,6 +24,7 @@ import javassist.util.proxy.ProxyFactory;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.AbstractBean;
@@ -69,7 +70,8 @@ public final class JavassistProxyFactory
         Object result = null;
         
         List<InterceptorData> interceptors = ((AbstractBean<?>) bean).getInterceptorStack();
-        if(interceptors.isEmpty())
+        List<Decorator<?>> decorators = ((AbstractBean<?>) bean).getDecorators();
+        if(interceptors.isEmpty() && decorators.isEmpty())
         {
             return actualInstance;
         }

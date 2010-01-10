@@ -41,7 +41,7 @@ public class BeansImpl implements Beans
     {
         ManagedBean<T> bean = null;
 
-        ManagedBeanConfigurator.checkSimpleWebBeanCondition(clazz);
+        ManagedBeanConfigurator.checkManagedBeanCondition(clazz);
         
         bean = ManagedBeanConfigurator.define(clazz, WebBeansType.MANAGED);
 

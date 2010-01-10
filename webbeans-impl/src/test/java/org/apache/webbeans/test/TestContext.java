@@ -418,7 +418,7 @@ public abstract class TestContext implements ITestContext
     {
         ManagedBean<T> component = null;
 
-        ManagedBeanConfigurator.checkSimpleWebBeanCondition(clazz);
+        ManagedBeanConfigurator.checkManagedBeanCondition(clazz);
         {
             // This is the interceptor class
             if (InterceptorsManager.getInstance().isInterceptorEnabled(clazz))

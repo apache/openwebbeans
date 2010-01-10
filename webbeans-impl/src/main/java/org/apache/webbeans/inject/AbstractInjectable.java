@@ -29,6 +29,7 @@ import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -71,8 +72,11 @@ public abstract class AbstractInjectable implements Injectable
      * @param injectionPoint injection point definition  
      * @return current bean instance in the resolved bean scope
      */
+    @SuppressWarnings("unchecked")
     public <T> Object inject(InjectionPoint injectionPoint)
     {
+        Object injected = null;
+        
         if(injectionPoint.getType().equals(InjectionPoint.class))
         {
             //Try to inject dependent owner injection point
@@ -87,19 +91,37 @@ public abstract class AbstractInjectable implements Injectable
         }
         
         //Get injection point Bean to look for @Dependent
-        Bean<?> component = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
+        Bean<?> injectedBean = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
+        
+        boolean dependent = false;
         
         //Managed @Dependence instances
-        if (component.getScope().equals(Dependent.class))
+        if (injectedBean.getScope().equals(Dependent.class))
         {
-            if(WebBeansUtil.isManagedBean(this.injectionOwnerComponent) || 
-                    WebBeansUtil.isEnterpriseBean(this.injectionOwnerComponent))
-            {
-                return injectForDependent(component,injectionPoint);   
-            }                
+            dependent = true;
         }
+        
+        if(dependent && (WebBeansUtil.isManagedBean(this.injectionOwnerComponent) || 
+                WebBeansUtil.isEnterpriseBean(this.injectionOwnerComponent)))
+        {
+            injected = injectForBeanDependent(injectedBean,injectionPoint);   
+        }                 
+        else
+        {
+            injected = injectForComponent(injectionPoint);
+            
+            if(dependent && WebBeansUtil.isProducerBean(this.injectionOwnerComponent))
+            {
+                if(this.creationalContext instanceof CreationalContext)
+                {
+                    CreationalContextImpl<?> cc = (CreationalContextImpl<?>)this.creationalContext;
+                    cc.addDependent((Bean<Object>)injectedBean, injected, BeanManagerImpl.getManager().createCreationalContext((Bean<Object>)injectedBean));                    
+                }
+            }
+        }
+         
 
-        return injectForComponent(injectionPoint);
+        return injected;
     }
     
     /**
@@ -136,7 +158,7 @@ public abstract class AbstractInjectable implements Injectable
      * @param injectionPoint injection point
      * @return injection point instance
      */
-    private Object injectForDependent(Bean<?> bean, InjectionPoint injectionPoint)
+    private Object injectForBeanDependent(Bean<?> bean, InjectionPoint injectionPoint)
     {
         Object object = null;
         object = this.injectionOwnerComponent.getDependent(bean,injectionPoint, this.creationalContext);

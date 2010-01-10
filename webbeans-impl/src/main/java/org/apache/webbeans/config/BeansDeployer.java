@@ -655,15 +655,20 @@ public class BeansDeployer
                 managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
             }
             
-            //Define meta-data
             managedBeanCreator.defineSerializable();
+
+            //Scope type
+            managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
+            managedBeanCreator.checkCreateConditions();
+            
+            
+            //Define meta-data
             managedBeanCreator.defineStereoTypes();
             
             //Check for Enabled via Alternative
             WebBeansUtil.setBeanEnableFlag(managedBean);
             
             managedBeanCreator.defineApiType();
-            managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
             managedBeanCreator.defineQualifier();
             managedBeanCreator.defineName(WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
             managedBeanCreator.defineConstructor();            

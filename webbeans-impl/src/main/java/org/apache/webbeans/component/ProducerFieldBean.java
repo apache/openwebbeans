@@ -79,8 +79,11 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
     {
         T instance = null;
         Object parentInstance = null;
+        CreationalContext<?> parentCreational = null;
         try
         {
+            parentCreational = getManager().createCreationalContext(this.ownerComponent);
+            
             if (!producerField.isAccessible())
             {
                 producerField.setAccessible(true);
@@ -91,8 +94,9 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
                 instance = (T) producerField.get(null);
             }
             else
-            {
-                parentInstance = getParentInstance(creationalContext);
+            { 
+                parentInstance = getParentInstance(parentCreational);
+                
                 instance = (T) producerField.get(parentInstance);
             }
         }catch(Exception e)
@@ -103,7 +107,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
         {
             if (this.ownerComponent.getScope().equals(Dependent.class))
             {
-                destroyBean(this.ownerComponent, parentInstance, creationalContext);
+                destroyBean(this.ownerComponent, parentInstance, parentCreational);
             }
         }
 

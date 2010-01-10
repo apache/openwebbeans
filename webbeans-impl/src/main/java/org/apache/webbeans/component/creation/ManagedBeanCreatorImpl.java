@@ -49,7 +49,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
     @Override
     public void checkCreateConditions()
     {
-        ManagedBeanConfigurator.checkSimpleWebBeanCondition(getBean().getReturnType());
+        ManagedBeanConfigurator.checkManagedBeanCondition(getBean().getReturnType());
         WebBeansUtil.checkGenericType(getBean());
         
     }

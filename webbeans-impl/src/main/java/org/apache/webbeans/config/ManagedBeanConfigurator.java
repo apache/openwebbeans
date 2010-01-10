@@ -54,13 +54,13 @@ public final class ManagedBeanConfigurator
      * @param clazz implementation class
      * @throws WebBeansConfigurationException if any configuration exception occurs
      */
-    public static void checkSimpleWebBeanCondition(Class<?> clazz) throws WebBeansConfigurationException
+    public static void checkManagedBeanCondition(Class<?> clazz) throws WebBeansConfigurationException
     {
         int modifier = clazz.getModifiers();
 
         if (AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
         {
-            throw new WebBeansConfigurationException("Simple WebBean Component implementation class : " + clazz.getName() + " may not annotated with both @Interceptor and @Decorator annotation");
+            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not annotated with both @Interceptor and @Decorator annotation");
         }
 
         if (!AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && !AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
@@ -70,7 +70,7 @@ public final class ManagedBeanConfigurator
 
         if (ClassUtil.isInterface(modifier))
         {
-            throw new WebBeansConfigurationException("Simple WebBean Component implementation class : " + clazz.getName() + " may not defined as interface");
+            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not defined as interface");
         }
     }
 
@@ -108,7 +108,7 @@ public final class ManagedBeanConfigurator
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
 
-        checkSimpleWebBeanCondition(clazz);
+        checkManagedBeanCondition(clazz);
 
         ManagedBean<T> component = new ManagedBean<T>(clazz, type);
         

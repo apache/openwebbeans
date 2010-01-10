@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.InjectionPoint;
 
@@ -32,6 +33,10 @@ public class InjectableMethods<T> extends AbstractInjectable
 
     /** Component instance that owns the method */
     protected Object instance;
+    
+    private boolean disposable;
+    
+    private Object producerMethodInstance = null;
 
     /**
      * Constructs new instance.
@@ -64,7 +69,15 @@ public class InjectableMethods<T> extends AbstractInjectable
                 AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)point.getAnnotated();
                 if(parameter.getPosition() == i)
                 {
-                    list.add(inject(point));
+                    if(isDisposable() && parameter.getAnnotation(Disposes.class) != null)
+                    {
+                        list.add(this.producerMethodInstance);
+                    }
+                    else
+                    {
+                        list.add(inject(point));    
+                    }
+                    
                     break;
                 }
             }
@@ -84,5 +97,26 @@ public class InjectableMethods<T> extends AbstractInjectable
         {
             throw new WebBeansException(e);
         }
+    }
+
+    /**
+     * @return the disposable
+     */
+    private boolean isDisposable()
+    {
+        return disposable;
+    }
+
+    /**
+     * @param disposable the disposable to set
+     */
+    public void setDisposable(boolean disposable)
+    {
+        this.disposable = disposable;
+    }
+    
+    public void setProducerMethodInstance(Object instance)
+    {
+        this.producerMethodInstance = instance;
     }
 }

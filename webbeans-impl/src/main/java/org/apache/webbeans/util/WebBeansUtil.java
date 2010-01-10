@@ -60,6 +60,7 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
@@ -188,7 +189,7 @@ public final class WebBeansUtil
         {
             if(!bean.getScope().equals(Dependent.class))
             {
-                throw new WebBeansConfigurationException("Generic type may only defined with scope @Dependent for bean class : " + clazz.getName());
+                throw new WebBeansConfigurationException("Generic type may only defined with scope @Dependent for ManagedBean class : " + clazz.getName());
             }
         }
     }
@@ -293,6 +294,11 @@ public final class WebBeansUtil
         if (!isConstructureOk(clazz))
         {
             throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() + " must define at least one Constructor");   
+        }
+        
+        if(Extension.class.isAssignableFrom(clazz))
+        {
+            throw new WebBeansConfigurationException("Bean implementation class can not implement javax.enterprise.inject.spi.Extension.!");
         }
             
         // and finally call all checks which are defined in plugins like JSF, JPA, etc
@@ -1812,6 +1818,17 @@ public final class WebBeansUtil
         if(component.getWebBeansType().equals(WebBeansType.MANAGED) ||
                 component.getWebBeansType().equals(WebBeansType.INTERCEPTOR) ||
                 component.getWebBeansType().equals(WebBeansType.DECORATOR))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public static boolean isProducerBean(AbstractBean<?> bean)
+    {
+        if(bean.getWebBeansType().equals(WebBeansType.PRODUCERFIELD) ||
+                bean.getWebBeansType().equals(WebBeansType.PRODUCERMETHOD))
         {
             return true;
         }
