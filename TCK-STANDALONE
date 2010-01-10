@@ -105,4 +105,13 @@ Section 3.3.5 - Disposed parameter of a disposer method (PASSED)
 Section 3.3.6 - Declaring a disposer method (PASSED with following)
   # ITEM fa) This is an INTEGRATION TEST
 Section 3.3.7 - Disposer method resolution (PASSED)
-Section 3.3.8 - Default name for a producer method (PASSED) 
+Section 3.3.8 - Default name for a producer method (PASSED)
+Section 3.4 - Producer fields (PASSED with followings)
+  # ITEM ab) This is an INTEGRATION TEST
+  # ITEM ca) This is an INTEGRATION TEST
+Section 3.4.1 - Bean types of a producer field (PASSED)
+Section 3.4.2 - Declaring a producer field (PASSED)
+Section 3.4.3 - Default name for a producer field (PASSED)
+Section 3.5 - Resources (INTEGRATION TEST) 
+Section 3.6 - Additional Builtin Beans (INTEGRATION TEST)
+
