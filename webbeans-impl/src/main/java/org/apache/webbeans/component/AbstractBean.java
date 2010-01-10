@@ -193,12 +193,12 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     public void destroy(T instance, CreationalContext<T> creationalContext)
     {
         try
-        {
-            //Destory dependent instances
-            creationalContext.release();
-            
+        {            
             //Destroy instance, call @PreDestroy
             destroyInstance(instance,creationalContext);
+            
+            //Destory dependent instances
+            creationalContext.release();
                         
             //Reset it
             this.dependentOwnerInjectionPoint = null;  

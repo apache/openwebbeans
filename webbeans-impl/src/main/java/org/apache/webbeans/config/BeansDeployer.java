@@ -657,14 +657,13 @@ public class BeansDeployer
             
             managedBeanCreator.defineSerializable();
 
+            //Define meta-data
+            managedBeanCreator.defineStereoTypes();
+
             //Scope type
             managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
             managedBeanCreator.checkCreateConditions();
-            
-            
-            //Define meta-data
-            managedBeanCreator.defineStereoTypes();
-            
+                                    
             //Check for Enabled via Alternative
             WebBeansUtil.setBeanEnableFlag(managedBean);
             

@@ -89,7 +89,7 @@ Section 3.1.1 - Which Java classes are managed beans? (PASSED)
 Section 3.1.2 - Bean types of a managed bean(PASSED)
 Section 3.1.3 - Declaring a managed bean (PASSED)
 Section 3.1.4 - Specializing a managed bean (PASSED with followings)
-  # ITEM ac) FAILED
+  # ITEM ac) FAILED (Error in TCK, http://jira.jboss.org/jira/browse/CDITCK-91)
   # ITEM dc) This is an INTEGRATION TEST
 Section 3.1.5 - Default name for a managed bean (PASSED)
 Section 3.2 - Session Beans (INTEGRATION TEST)
@@ -114,4 +114,16 @@ Section 3.4.2 - Declaring a producer field (PASSED)
 Section 3.4.3 - Default name for a producer field (PASSED)
 Section 3.5 - Resources (INTEGRATION TEST) 
 Section 3.6 - Additional Builtin Beans (INTEGRATION TEST)
-
+Section 3.7 - Bean constructors (PASSED)
+Section 3.7.1 - Declaring a bean constructor (PASSED with followings)
+  # ITEM ab) This is an INTEGRATION TEST
+  # ITEM f) Failed
+  # ITEM g) SimpleBeanLifecycleTest.testInjectionOfParametersIntoBeanConstructor() 
+Section 3.8 - Injected fields (PASSED)
+Section 3.9 - Initializer methods (PASSED with following)
+  # ITEM e) This is an INTEGRATION TEST
+Section 3.9.1 - Declaring an initializer method (PASSED with following)
+  # ITEM f) EnterpriseBeanLifecycleTest.testInitializerMethodsCalledWithCurrentParameterValues() INTEGRATION TEST
+Section 3.10 - The default qualifier at injection points (PASSED)
+Section 3.11 - The qualifier @Named at injection points (PASSED)
+Section 3.12 - @New qualified beans (PASSED)

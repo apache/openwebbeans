@@ -183,17 +183,7 @@ public class ExceptionComponentTest extends TestContext
     @Test
     public void testNewInterface()
     {
-        try
-        {
-            clear();
-            defineManagedBean(NewComponentInterfaceComponent.class);
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
-        }
-        Assert.fail("expecting an exception!");
+        Assert.assertTrue(true); //No more exist
     }
 
     @Test
@@ -215,21 +205,7 @@ public class ExceptionComponentTest extends TestContext
     @Test
     public void testNewMethod()
     {
-        WebBeansConfigurationException exc = null;
-        try
-        {
-            clear();
-            defineManagedBean(NewMethodComponentBindingComponent.class);
-
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println(e.getMessage());
-            exc = e;
-        }
-
-        Assert.assertNotNull(exc);
-
+        Assert.assertTrue(true); //No more test in spec
     }
 
     @Test

@@ -351,41 +351,33 @@ public final class WebBeansUtil
             }
         }
         
-        if (result != null)
-        {
-            Annotation[][] parameterAnns = result.getParameterAnnotations();
-            for (Annotation[] parameters : parameterAnns)
-            {
-                for (Annotation param : parameters)
-                {
-                    Annotation btype = param.annotationType().getAnnotation(Disposes.class);
-                    if (btype != null)
-                    {
-                        throw new WebBeansConfigurationException("Constructor parameter qualifier annotation can not be @Disposes annotation in class " + clazz.getName());
-                    }
-                    else
-                    {
-                        btype = param.annotationType().getAnnotation(Observes.class);
-                        if (btype != null)
-                        {
-                            throw new WebBeansConfigurationException("Constructor parameter qualifier annotation can not be @Observes annotation in class " + clazz.getName());
-                        }
-                    }
-                }
-
-            }
-        }
-
         if (result == null)
         {
-            if ((result = ClassUtil.isContaintNoArgConstructor(clazz)) != null)
-            {
-                return result;
-            }
-            else
+            result = ClassUtil.isContaintNoArgConstructor(clazz);
+            
+            if(result == null)
             {
                 throw new WebBeansConfigurationException("No constructor is found for the class : " + clazz.getName());
             }
+        }
+        
+        
+        Annotation[][] parameterAnns = result.getParameterAnnotations();
+        for (Annotation[] parameters : parameterAnns)
+        {
+            for (Annotation param : parameters)
+            {
+                if (param.annotationType().equals(Disposes.class))
+                {
+                    throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Disposes annotation in class : " + clazz.getName());
+                }
+                
+                if(param.annotationType().equals(Observes.class))
+                {
+                    throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Observes annotation in class : " + clazz.getName());
+                }
+            }
+
         }
 
         return result;        
@@ -481,10 +473,10 @@ public final class WebBeansUtil
                     throw new WebBeansConfigurationException("@New binding annotation can not have any binding annotation in class : " + clazz.getName() + " in field/method : " + name);
                 }
 
-                if (ClassUtil.isAbstract(ClassUtil.getClass(type).getModifiers()) || ClassUtil.isInterface(ClassUtil.getClass(type).getModifiers()))
-                {
-                    throw new WebBeansConfigurationException("@New binding annotation field can not have interface or abstract type in class : " + clazz.getName() + " in field/method : " + name);
-                }
+//                if (ClassUtil.isAbstract(ClassUtil.getClass(type).getModifiers()) || ClassUtil.isInterface(ClassUtil.getClass(type).getModifiers()))
+//                {
+//                    throw new WebBeansConfigurationException("@New binding annotation field can not have interface or abstract type in class : " + clazz.getName() + " in field/method : " + name);
+//                }
             }
         }
         

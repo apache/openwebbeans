@@ -127,12 +127,11 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
 
         T instance = createComponentInstance(creationalContext);
         
-        //Push instance into the creational context
-        if(WebBeansUtil.isScopeTypeNormal(getScope()))
+        if(creationalContext != null)
         {
-            creationalContext.push(instance);
+            creationalContext.push(instance);   
         }
-
+        
         afterConstructor(instance, creationalContext);
         
         if(creationalContext instanceof CreationalContextImpl)

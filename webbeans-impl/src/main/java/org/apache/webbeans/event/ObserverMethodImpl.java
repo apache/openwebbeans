@@ -34,6 +34,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -43,6 +44,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -269,7 +271,9 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
 
                     if (bindingTypes.length > 0)
                     {
-                        Bean<?> bean = InjectionResolver.getInstance().implResolveByType(type, bindingTypes).iterator().next();
+                        InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(null, type, null, null, bindingTypes);
+                        Bean<?> bean = InjectionResolver.getInstance().getInjectionPointBean(point);
+                        
                         list.add(manager.getInstance(bean, manager.createCreationalContext(bean)));
                     }
                     else
