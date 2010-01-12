@@ -14,18 +14,23 @@
 package org.apache.webbeans.newtests;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
+import org.apache.webbeans.portable.events.ExtensionLoader;
 
 
 
 public abstract class AbstractUnitTest
 {
     private OpenWebBeansTestLifeCycle testLifecycle;
+    private List<Extension>  extensions = new ArrayList<Extension>();
 
     protected AbstractUnitTest()
     {
@@ -36,6 +41,11 @@ public abstract class AbstractUnitTest
     {
         //Creates a new container
         testLifecycle = new OpenWebBeansTestLifeCycle();
+        
+        for (Extension ext : extensions)
+        {
+            ExtensionLoader.getInstance().addExtension(ext);
+        }
         
         //Deploy bean classes
         OpenWebBeansTestMetaDataDiscoveryService discoveyService = (OpenWebBeansTestMetaDataDiscoveryService)testLifecycle.getDiscoveryService();
@@ -91,4 +101,14 @@ public abstract class AbstractUnitTest
         return loader.getResource(prefix.toString());
     }
     
+    /**
+     * Add a CDI Extension which should get used in the test case.
+     * Use this function instead of defining test Extensions via the usual
+     * META-INF/services/javax.enterprise.inject.spi.Extension file!
+     * 
+     * @param ext the {@link Extension} which should get loaded
+     */
+    public void addExtension(Extension ext) {
+        this.extensions.add(ext);
+    }
 }
