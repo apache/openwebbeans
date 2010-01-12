@@ -28,7 +28,7 @@ public class OpenWebBeansJsfPlugin extends AbstractOpenWebBeansPlugin
     /** {@inheritDoc} */
     public void startUp() throws WebBeansConfigurationException 
     {
-        // nothing to do 
+        // nothing to do
     }
 
     /** {@inheritDoc} */

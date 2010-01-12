@@ -34,6 +34,8 @@ import org.apache.webbeans.util.JSFUtil;
  */
 public class WebBeansPhaseListener implements PhaseListener
 {
+    private static final long serialVersionUID = 1L;
+
     /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansPhaseListener.class);
 

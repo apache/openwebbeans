@@ -63,6 +63,9 @@ public final class JSFUtil
         return getCurrentFacesContext().getRenderKit().getResponseStateManager().isPostback(getCurrentFacesContext());
     }
 
+    /**
+     * @return the viewId of the viewRoot, e.g. '/user/menu.xhtml'
+     */
     public static String getViewId()
     {
         UIViewRoot viewRoot = getCurrentFacesContext().getViewRoot();
