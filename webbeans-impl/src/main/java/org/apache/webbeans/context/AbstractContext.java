@@ -220,7 +220,6 @@ public abstract class AbstractContext implements WebBeansContext
 
             //Destroy instance
             destroyInstance((Contextual<Object>) component, instance, cc);
-
         }
         
         //Clear cache

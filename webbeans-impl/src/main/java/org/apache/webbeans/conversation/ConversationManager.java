@@ -41,7 +41,7 @@ public class ConversationManager
     private Map<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
 
     /**
-     * Creates new conversation maanger
+     * Creates new conversation manager
      */
     public ConversationManager()
     {
@@ -118,7 +118,6 @@ public class ConversationManager
         }
 
         return null;
-
     }
 
     /**
@@ -138,6 +137,10 @@ public class ConversationManager
             conv = (ConversationImpl) it.next();
             if (conv.getSessionId().equals(sessionId))
             {
+                ConversationContext ctx = getConversationContext(conv);
+                if (ctx != null) {
+                    ctx.destroy();
+                }
                 it.remove();
             }
         }
@@ -175,6 +178,10 @@ public class ConversationManager
             {
                 if ((System.currentTimeMillis() - conv.getActiveTime()) > timeout)
                 {
+                    ConversationContext ctx = getConversationContext(conv);
+                    if (ctx != null) {
+                        ctx.destroy();
+                    }
                     it.remove();
                 }
             }
@@ -186,9 +193,18 @@ public class ConversationManager
      */
     public void destroyAllConversations()
     {
-        if (conversations != null)
+        synchronized(conversations)
         {
-            conversations.clear();
+            if (conversations != null)
+            {
+                Map<Conversation, ConversationContext> oldConversations = conversations;
+                conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
+                
+                for (ConversationContext ctx : oldConversations.values()) {
+                    ctx.destroy();
+                }
+                conversations.clear();
+            }
         }
     }
 }
