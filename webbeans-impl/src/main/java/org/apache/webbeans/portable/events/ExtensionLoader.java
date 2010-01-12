@@ -72,10 +72,7 @@ public class ExtensionLoader
             Extension ext = iterator.next();
             try
             {
-                Bean<?> bean = WebBeansUtil.createExtensionComponent(ext.getClass());                
-                this.extensions.put(bean, ext);
-                
-                BeanManagerImpl.getManager().addBean(bean);
+                addExtension(ext);
             }
             catch (Exception e)
             {
@@ -102,7 +99,20 @@ public class ExtensionLoader
         
         return null;
     }
-    
+
+
+    /**
+     * Add a CDI Extension to our internal list.
+     * @param ext
+     */
+    public void addExtension(Extension ext)
+    {
+        Bean<?> bean = WebBeansUtil.createExtensionComponent(ext.getClass());                
+        this.extensions.put(bean, ext);
+        
+        BeanManagerImpl.getManager().addBean(bean);
+    }
+
     /**
      * Clear service list.
      */
