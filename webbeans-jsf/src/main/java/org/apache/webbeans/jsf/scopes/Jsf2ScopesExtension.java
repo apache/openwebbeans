@@ -18,26 +18,34 @@
  */
 package org.apache.webbeans.jsf.scopes;
 
+import java.lang.annotation.Annotation;
+
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
-import javax.faces.bean.ViewScoped;
 
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.util.ClassUtil;
 
 /**
  * This small extension adds support for various JSF 2 scopes
  * TODO: this should be moved to an own module because this will
  * currently hinder webbeans-jsf to run in a JSF-1 application!
  */
-public class Jsf2ScopesExtension implements Extension {
-
+public class Jsf2ScopesExtension implements Extension 
+{
+    public WebBeansLogger logger = WebBeansLogger.getLogger(Jsf2ScopesExtension.class); 
+    
     public void addViewScoped(@Observes BeforeBeanDiscovery beforeBeanDiscovery)
     {
         if(OpenWebBeansConfiguration.getInstance().isUseJSF2Extensions())
         {
-            beforeBeanDiscovery.addScope(ViewScoped.class, true, true);   
+            @SuppressWarnings("unchecked")
+            Class<? extends Annotation> clazz = (Class<? extends Annotation>)ClassUtil.getClassFromName("javax.faces.bean.ViewScoped");
+            beforeBeanDiscovery.addScope(clazz, true, true);   
         }        
     }
     
@@ -45,7 +53,16 @@ public class Jsf2ScopesExtension implements Extension {
     {
         if(OpenWebBeansConfiguration.getInstance().isUseJSF2Extensions())
         {
-            afterBeanDiscovery.addContext(new ViewScopedContext());   
+            try
+            {
+                Context context = (Context)ClassUtil.getClassFromName("org.apache.webbeans.jsf.scopes.ViewScopedContext").newInstance();
+                afterBeanDiscovery.addContext(context);   
+                
+            }
+            catch(Exception e)
+            {
+                logger.error(e);
+            }
         }
     }
 }
