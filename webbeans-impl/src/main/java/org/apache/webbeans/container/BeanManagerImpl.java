@@ -45,6 +45,7 @@ import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
@@ -127,6 +128,19 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     /**XML configurator instance*/
     private WebBeansXMLConfigurator xmlConfigurator = null;
+    
+    /**
+     * This list contains additional qualifiers which got set via the {@link BeforeBeanDiscovery#addQualifier(Class)} 
+     * event function.
+     */
+    private List<Class<? extends Annotation>> additionalQualifiers = Collections.synchronizedList(new ArrayList<Class<? extends Annotation>>());
+    
+    /**
+     * This list contains additional scopes which got set via the 
+     * {@link BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
+     */
+    private List<ExternalScope> additionalScopes =  Collections.synchronizedList(new ArrayList<ExternalScope>());
+    
     
     /**
      * The parent Manager this child is depending from.
@@ -900,5 +914,29 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return null;
     }
 
+    public void addAdditionalQualifier(Class<? extends Annotation> qualifier)
+    {
+        if (!additionalQualifiers.contains(qualifier))
+        {
+            additionalQualifiers.add(qualifier);
+        }
+    }
 
+    public List<Class<? extends Annotation>> getAdditionalQualifiers()
+    {
+        return additionalQualifiers;
+    }
+    
+    public void addAdditionalScope(ExternalScope additionalScope)
+    {
+        if (!additionalScopes.contains(additionalScope))
+        {
+            additionalScopes.add(additionalScope);
+        }
+    }
+
+    public List<ExternalScope> getAdditionalScopes()
+    {
+        return additionalScopes;
+    }
 }

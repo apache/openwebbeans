@@ -18,6 +18,9 @@ import java.lang.annotation.Annotation;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.ExternalScope;
+
 /**
  * Events that is fired before container starts to discover beans.
  * 
@@ -26,6 +29,13 @@ import javax.enterprise.inject.spi.BeforeBeanDiscovery;
  */
 public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
 {
+    
+    private BeanManagerImpl beanManager = null;
+
+    public BeforeBeanDiscoveryImpl()
+    {
+        beanManager = BeanManagerImpl.getManager();
+    }
     
     /**
      * {@inheritDoc}
@@ -43,7 +53,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addQualifier(Class<? extends Annotation> qualifier)
     {
-        // TODO Auto-generated method stub
+        beanManager.addAdditionalQualifier(qualifier);
         
     }
 
@@ -63,8 +73,8 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addScope(Class<? extends Annotation> scope, boolean normal, boolean passivating)
     {
-        // TODO Auto-generated method stub
-        
+        ExternalScope additionalScope = new ExternalScope(scope, normal, passivating); 
+        beanManager.addAdditionalScope(additionalScope);
     }
 
     /**

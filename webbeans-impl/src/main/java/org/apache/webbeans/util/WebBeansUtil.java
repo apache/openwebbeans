@@ -98,6 +98,7 @@ import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
@@ -1767,14 +1768,23 @@ public final class WebBeansUtil
         {
             return true;
         }
-        else if(scopeType.isAnnotationPresent(Scope.class))
+        
+        if(scopeType.isAnnotationPresent(Scope.class))
         {
             return false;
         }
-        else
+
+        List<ExternalScope> additionalScopes = BeanManagerImpl.getManager().getAdditionalScopes();
+        for (ExternalScope additionalScope : additionalScopes)
         {
-            throw new IllegalArgumentException("scopeType argument must be annotated with @Scope or @NormalScope");
+            if (additionalScope.getScope().equals(scopeType))
+            {
+                return additionalScope.isNormal();
+            }
         }
+        
+        // no scopetype found so far -> kawumms
+        throw new IllegalArgumentException("scopeType argument must be annotated with @Scope or @NormalScope");
     }
     
     public static void checkNullInstance(Object instance,Class<?> scopeType, String errorMessage)

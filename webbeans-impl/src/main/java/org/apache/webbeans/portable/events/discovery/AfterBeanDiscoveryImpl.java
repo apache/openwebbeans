@@ -65,6 +65,8 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addDefinitionError(Throwable t)
     {
+        // TODO and where do we evaluate and log those errors? ;)
+        // -> OWB-227
         this.errors.add(t);
     }
 

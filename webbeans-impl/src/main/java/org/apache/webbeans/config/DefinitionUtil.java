@@ -57,6 +57,8 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.event.NotificationManager;
@@ -211,7 +213,8 @@ public final class DefinitionUtil
         {
             Class<? extends Annotation> type = annotation.annotationType();
 
-            if (AnnotationUtil.isQualifierAnnotation(type))
+            if (AnnotationUtil.isQualifierAnnotation(type) || 
+                BeanManagerImpl.getManager().getAdditionalQualifiers().contains(type))
             {
                 Method[] methods = type.getDeclaredMethods();
 
@@ -294,12 +297,38 @@ public final class DefinitionUtil
     {
         boolean found = false;
 
+        List<ExternalScope> additionalScopes = BeanManagerImpl.getManager().getAdditionalScopes();
+        
         for (Annotation annotation : annotations)
         {   
+            Class<? extends Annotation> annotationType = annotation.annotationType();
+            
             /*Normal scope*/
-            Annotation var = annotation.annotationType().getAnnotation(NormalScope.class);
+            Annotation var = annotationType.getAnnotation(NormalScope.class);
             /*Pseudo scope*/
-            Annotation pseudo = annotation.annotationType().getAnnotation(Scope.class);
+            Annotation pseudo = annotationType.getAnnotation(Scope.class);
+        
+            if (var == null && pseudo == null)
+            {
+                // check for additional scopes registered via a CDI Extension
+                for (ExternalScope additionalScope : additionalScopes)
+                {
+                    if (annotationType.equals(additionalScope.getScope()))
+                    {
+                        // create a proxy which implements the given annotation
+                        Annotation scopeAnnotation = additionalScope.getScopeAnnotation();
+    
+                        if (additionalScope.isNormal())
+                        {
+                            var = scopeAnnotation;
+                        }
+                        else
+                        {
+                            pseudo = scopeAnnotation;
+                        }
+                    }
+                }
+            }
             
             if (var != null)
             {
