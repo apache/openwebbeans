@@ -138,7 +138,8 @@ public class ConversationManager
             if (conv.getSessionId().equals(sessionId))
             {
                 ConversationContext ctx = getConversationContext(conv);
-                if (ctx != null) {
+                if (ctx != null) 
+                {
                     ctx.destroy();
                 }
                 it.remove();
@@ -179,7 +180,8 @@ public class ConversationManager
                 if ((System.currentTimeMillis() - conv.getActiveTime()) > timeout)
                 {
                     ConversationContext ctx = getConversationContext(conv);
-                    if (ctx != null) {
+                    if (ctx != null) 
+                    {
                         ctx.destroy();
                     }
                     it.remove();
@@ -200,7 +202,8 @@ public class ConversationManager
                 Map<Conversation, ConversationContext> oldConversations = conversations;
                 conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
                 
-                for (ConversationContext ctx : oldConversations.values()) {
+                for (ConversationContext ctx : oldConversations.values()) 
+                {
                     ctx.destroy();
                 }
                 conversations.clear();

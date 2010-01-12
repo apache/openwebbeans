@@ -213,8 +213,7 @@ public final class DefinitionUtil
         {
             Class<? extends Annotation> type = annotation.annotationType();
 
-            if (AnnotationUtil.isQualifierAnnotation(type) || 
-                BeanManagerImpl.getManager().getAdditionalQualifiers().contains(type))
+            if (AnnotationUtil.isQualifierAnnotation(type))
             {
                 Method[] methods = type.getDeclaredMethods();
 

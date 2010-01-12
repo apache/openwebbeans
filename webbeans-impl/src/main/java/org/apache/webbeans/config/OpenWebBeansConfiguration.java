@@ -59,6 +59,8 @@ public class OpenWebBeansConfiguration
     
     public static final String APPLICATION_IS_JSP = "org.apache.webbeans.application.jspf";
     
+    public static final String USE_JSF2_EXTENSIONS = "org.apache.webbeans.application.useJSF2Extensions";
+    
     public static OpenWebBeansConfiguration getInstance() {
         return (OpenWebBeansConfiguration) WebBeansFinder.getSingletonInstance(OpenWebBeansConfiguration.class.getName());
     }
@@ -148,6 +150,13 @@ public class OpenWebBeansConfiguration
         return Boolean.valueOf(value);
     }
     
+    public boolean isUseJSF2Extensions()
+    {
+        String value = getProperty(USE_JSF2_EXTENSIONS);
+        
+        return Boolean.valueOf(value);
+        
+    }
     
     public boolean isJspApplication()
     {

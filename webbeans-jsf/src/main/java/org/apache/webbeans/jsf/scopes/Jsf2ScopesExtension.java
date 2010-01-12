@@ -24,6 +24,8 @@ import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.faces.bean.ViewScoped;
 
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
+
 /**
  * This small extension adds support for various JSF 2 scopes
  * TODO: this should be moved to an own module because this will
@@ -33,11 +35,17 @@ public class Jsf2ScopesExtension implements Extension {
 
     public void addViewScoped(@Observes BeforeBeanDiscovery beforeBeanDiscovery)
     {
-        beforeBeanDiscovery.addScope(ViewScoped.class, true, true);
+        if(OpenWebBeansConfiguration.getInstance().isUseJSF2Extensions())
+        {
+            beforeBeanDiscovery.addScope(ViewScoped.class, true, true);   
+        }        
     }
     
     public void registerViewContext(@Observes AfterBeanDiscovery afterBeanDiscovery)
     {
-        afterBeanDiscovery.addContext(new ViewScopedContext());
+        if(OpenWebBeansConfiguration.getInstance().isUseJSF2Extensions())
+        {
+            afterBeanDiscovery.addContext(new ViewScopedContext());   
+        }
     }
 }

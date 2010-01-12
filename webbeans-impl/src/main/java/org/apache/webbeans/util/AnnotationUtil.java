@@ -33,6 +33,7 @@ import javax.inject.Qualifier;
 import javax.interceptor.InterceptorBinding;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -831,6 +832,10 @@ public final class AnnotationUtil
             return true;
         }
         else if (clazz.isAnnotationPresent(Qualifier.class))
+        {
+            return true;
+        }
+        else if(BeanManagerImpl.getManager().getAdditionalQualifiers().contains(clazz))
         {
             return true;
         }
