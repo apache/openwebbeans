@@ -172,12 +172,12 @@ public class BeansDeployer
         }
         catch (WebBeansConfigurationException e)
         {
-            e.printStackTrace();
+            logger.error(e);
             throw e;
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            logger.error(e);
             
             if(e instanceof WebBeansDeploymentException)
             {
