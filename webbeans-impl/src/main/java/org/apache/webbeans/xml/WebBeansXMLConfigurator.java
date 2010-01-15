@@ -534,18 +534,21 @@ public final class WebBeansXMLConfigurator
 
             if (clazz == null)
             {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + XMLUtil.getName(child) + " not found");
+                throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + 
+                		(this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextTrim()) + " not found");
             }
             else
             {
                 if (!AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
                 {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + XMLUtil.getName(child) + " must have at least one @InterceptorBindingType");
+                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + 
+                    		(this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextTrim()) + " must have at least one @InterceptorBindingType");
                 }
 
                 if (manager.isInterceptorEnabled(clazz))
                 {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + XMLUtil.getName(child) + " is already defined");
+                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " +
+                    		(this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextTrim()) + " is already defined");
                 }
 
                 manager.addNewInterceptor(clazz);
@@ -582,14 +585,16 @@ public final class WebBeansXMLConfigurator
 
             if (clazz == null)
             {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Decorator class : " + XMLUtil.getName(child) + " not found");
+                   throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Decorator class : " +  
+                		   (this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextTrim()) +  " not found");
             }
             else
             {
 
                 if (manager.isDecoratorEnabled(clazz))
                 {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Decorator class : " + XMLUtil.getName(child) + " is already defined");
+                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Decorator class : " +
+                    		(this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextTrim()) + " is already defined");
                 }
 
                 manager.addNewDecorator(clazz);
