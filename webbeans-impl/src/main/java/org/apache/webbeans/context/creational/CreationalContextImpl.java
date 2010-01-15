@@ -31,10 +31,14 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
 {
     private Object incompleteInstance = null;
     
+    private Object proxyInstance = null;
+    
     /**Contextual bean dependent instances*/
     private Map<Object, DependentCreationalContext<?>> dependentObjects = new WeakHashMap<Object, DependentCreationalContext<?>>();
      
     private Contextual<T> contextual = null;
+    
+    private CreationalContextImpl<?> ownerCreational = null;
     
     private static class DependentCreationalContext<S>
     {
@@ -104,6 +108,15 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
         
     }
     
+    public void setProxyInstance(Object proxyInstance)
+    {
+        this.proxyInstance = proxyInstance;
+    }
+    
+    public Object getProxyInstance()
+    {
+        return this.proxyInstance;
+    }
     
     /**
      * Adds given dependent instance to the map.
@@ -176,6 +189,24 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
     public Contextual<T> getBean()
     {
         return this.contextual;
+    }
+
+
+    /**
+     * @return the ownerCreational
+     */
+    public CreationalContextImpl<?> getOwnerCreational()
+    {
+        return ownerCreational;
+    }
+
+
+    /**
+     * @param ownerCreational the ownerCreational to set
+     */
+    public void setOwnerCreational(CreationalContextImpl<?> ownerCreational)
+    {
+        this.ownerCreational = ownerCreational;
     }
 
 }

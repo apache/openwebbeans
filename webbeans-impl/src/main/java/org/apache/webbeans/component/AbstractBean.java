@@ -413,18 +413,22 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         dependent.setDependentOwnerInjectionPoint(injectionPoint);        
         
         @SuppressWarnings("unchecked")
-        CreationalContext<Object> dependentCreational = CreationalContextFactory.getInstance().getCreationalContext(dependentComponent);
+        CreationalContextImpl<Object> dependentCreational = (CreationalContextImpl<Object>)CreationalContextFactory.getInstance().getCreationalContext(dependentComponent);
+        
+        if(creational instanceof CreationalContextImpl)
+        {
+            dependentCreational.setOwnerCreational((CreationalContextImpl<?>)creational);   
+        }
         
         //Get dependent instance
-        object = BeanManagerImpl.getManager().getReference(dependentComponent, injectionPoint.getType(), dependentCreational);
+        object = BeanManagerImpl.getManager().getReference(dependent, injectionPoint.getType(), dependentCreational);
         
         if(creational instanceof CreationalContextImpl)
         {
             CreationalContextImpl<?> cc = (CreationalContextImpl<?>)creational;
             
             //Put this into the dependent map
-            cc.addDependent(dependent, object, dependentCreational);
-    
+            cc.addDependent(dependent, object, dependentCreational);    
         }
         
         return object;

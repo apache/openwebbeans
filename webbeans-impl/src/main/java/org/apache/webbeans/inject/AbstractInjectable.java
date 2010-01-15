@@ -23,6 +23,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractBean;
@@ -115,7 +116,10 @@ public abstract class AbstractInjectable implements Injectable
                 if(this.creationalContext instanceof CreationalContext)
                 {
                     CreationalContextImpl<?> cc = (CreationalContextImpl<?>)this.creationalContext;
-                    cc.addDependent((Bean<Object>)injectedBean, injected, BeanManagerImpl.getManager().createCreationalContext((Bean<Object>)injectedBean));                    
+                    CreationalContextImpl<Object> dependentCc = (CreationalContextImpl<Object>)BeanManagerImpl.getManager().createCreationalContext((Bean<Object>)injectedBean);
+                    dependentCc.setOwnerCreational(cc);
+                    
+                    cc.addDependent((Bean<Object>)injectedBean, injected, dependentCc);                    
                 }
             }
         }
@@ -173,7 +177,8 @@ public abstract class AbstractInjectable implements Injectable
      */
     private Object injectForComponent(InjectionPoint injectionPoint)
     {
-        Object object = BeanManagerImpl.getManager().getInstanceToInject(injectionPoint,this.creationalContext);
+        BeanManager manager = BeanManagerImpl.getManager();
+        Object object = manager.getInjectableReference(injectionPoint, this.creationalContext);
                 
         return object;
     }

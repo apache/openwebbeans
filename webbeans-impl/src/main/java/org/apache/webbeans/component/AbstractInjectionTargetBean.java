@@ -126,20 +126,29 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         beforeConstructor();
 
         T instance = createComponentInstance(creationalContext);
-        
-        if(creationalContext != null)
+                
+        //Push instance into creational context, this is necessary because
+        //Context objects look for instance in the interceptors. If we do not
+        //push instance into cretional context, circular exception occurs.
+        //Context instance first look into creational context object whether
+        //Or not it exist.
+        if(creationalContext instanceof CreationalContextImpl)
         {
-            creationalContext.push(instance);   
+            CreationalContextImpl<T> cc = (CreationalContextImpl<T>)creationalContext;
+            cc.push(instance);
         }
         
         afterConstructor(instance, creationalContext);
         
+        //Clear instance from creational context
         if(creationalContext instanceof CreationalContextImpl)
         {
-            CreationalContextImpl<T> impl = (CreationalContextImpl<T>)creationalContext;
-            impl.remove();
+            CreationalContextImpl<?> cc = (CreationalContextImpl<?>)creationalContext;
+            cc.remove();
+            
+            cc.setProxyInstance(null);
         }
-
+        
         return instance;
     }
 

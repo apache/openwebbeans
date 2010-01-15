@@ -19,18 +19,8 @@
          </run>
       </groups>
       
-     <classes>
-    <class name="org.jboss.jsr299.tck.tests.lookup.circular.CircularDependencyTest">
-      <methods>
-        <exclude name="testCircularInjectionOnOneDependentAndOneNormalBean"/>
-        <exclude name="testCircularInjectionOnTwoNormalBeans"/>
-        <exclude name="testCircularInjectionOnOneNormalAndOneDependentBean"/>
-      </methods>
-    </class>
-  </classes>
  
-      <packages>
-         
+      <packages>         
          <package name="org.jboss.jsr299.tck.tests.*"></package>
       </packages>
    </test>

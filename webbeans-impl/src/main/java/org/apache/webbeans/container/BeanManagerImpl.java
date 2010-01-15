@@ -612,21 +612,29 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Find the injection point Bean
         Bean<?> bean = injectionResolver.getInjectionPointBean(injectionPoint);
         
+        boolean isImpl = false;
         if(creationalContext != null && (creationalContext instanceof CreationalContextImpl))
         {
-            CreationalContextImpl<?> creationalContextImpl = (CreationalContextImpl<?>)creationalContext;
-            
-            if(creationalContextImpl.getBean().equals(bean))
-            {
-                instance = creationalContextImpl.get();   
-            }            
-            
+            CreationalContextImpl<?> creationalContextImpl = (CreationalContextImpl<?>)creationalContext;            
+            instance = WebBeansUtil.getObjectFromCreationalContext(bean, creationalContextImpl);
+            isImpl = true;
         }
                 
         if(instance == null)
         {
+            CreationalContextImpl<?> injectedCreational = (CreationalContextImpl<?>)createCreationalContext(bean);
+            
+            if(injectionPoint.getBean().getScope() != Dependent.class)
+            {
+                if(isImpl)
+                {
+                    injectedCreational.setOwnerCreational((CreationalContextImpl<?>)creationalContext);
+                }
+   
+            }
+            
             //Creating a new creational context for target bean instance
-            instance = getReference(bean, injectionPoint.getType(), creationalContext);
+            instance = getReference(bean, injectionPoint.getType(), injectedCreational);
         }
         
         return instance;
@@ -705,7 +713,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 else
                 {
                     instance = JavassistProxyFactory.createNormalScopedBeanProxy(bean,creationalContext);
-                    this.proxyMap.put(bean, instance);                    
+                    this.proxyMap.put(bean, instance);     
+                    
+                    //push this proxy instance into creational context
+                    if(creationalContext instanceof CreationalContextImpl)
+                    {
+                        CreationalContextImpl<Object> temp = (CreationalContextImpl<Object>)creationalContext;
+                        temp.setProxyInstance(instance);
+                    }
                 }
             }            
         }

@@ -99,6 +99,7 @@ import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
@@ -2139,5 +2140,27 @@ public final class WebBeansUtil
         {
             producer.setEnabled(parent.isEnabled());            
         }
+    }
+    
+    public static Object getObjectFromCreationalContext(Bean<?> bean,CreationalContextImpl<?> cc)
+    {
+        if(cc == null)
+        {
+            throw new IllegalArgumentException("Creational context is null");
+        }
+        
+        if(cc.getBean().equals(bean))
+        {
+            return cc.getProxyInstance();   
+        }            
+        else
+        {
+            if(cc.getOwnerCreational() != null)
+            {
+                return getObjectFromCreationalContext(bean, cc.getOwnerCreational());   
+            }
+        }
+        
+        return null;
     }
 }

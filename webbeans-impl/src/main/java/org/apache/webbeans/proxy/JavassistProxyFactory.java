@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -72,6 +73,31 @@ public final class JavassistProxyFactory
         List<InterceptorData> interceptors = ((AbstractBean<?>) bean).getInterceptorStack();
         List<Decorator<?>> decorators = ((AbstractBean<?>) bean).getDecorators();
         if(interceptors.isEmpty() && decorators.isEmpty())
+        {
+            return actualInstance;
+        }
+        
+        boolean notInInterceptorClassAndLifecycle = false;
+        if(!interceptors.isEmpty())
+        {
+            Iterator<InterceptorData> its = interceptors.iterator();
+            while(its.hasNext())
+            {
+                InterceptorData id = its.next();
+                if(!id.isDefinedInInterceptorClass() && id.isLifecycleInterceptor())
+                {
+                    continue;
+                }
+                else
+                {
+                    notInInterceptorClassAndLifecycle = true;
+                    break;
+                }
+            }
+        }
+        
+        //No need to return proxy
+        if(!notInInterceptorClassAndLifecycle && decorators.isEmpty())
         {
             return actualInstance;
         }
