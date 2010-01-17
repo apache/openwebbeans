@@ -14,12 +14,15 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.util.TypeLiteral;
 
+import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
@@ -27,9 +30,9 @@ import org.apache.webbeans.exception.WebBeansException;
  * 
  * @version $Rev$ $Date$
  */
-public class EventBean<T> extends AbstractBean<T>
+public class EventBean<T> extends AbstractBean<Event<T>>
 {
-    private Type eventType = null;
+    public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
 
     /**
      * Creates a new instance of event bean.
@@ -38,48 +41,52 @@ public class EventBean<T> extends AbstractBean<T>
      * @param eventType event type
      * @param definedType webbeans type
      */
-    public EventBean(Class<T> returnType, Type eventType, WebBeansType definedType)
+    public EventBean()
     {
-        super(definedType,returnType);
-        this.eventType = eventType;
+        super(WebBeansType.OBSERVABLE,new TypeLiteral<Event<T>>(){}.getRawType());
     }
     
     /**
      * {@inheritDoc}
      */
     @Override
-    protected T createInstance(CreationalContext<T> creationalContext)
+    protected Event<T> createInstance(CreationalContext<Event<T>> creationalContext)
     {
-        Set<Annotation> setQualifiers = getQualifiers();
-        Annotation[] qualifiers = new Annotation[setQualifiers.size()];
+        Event<T> instance = null;
 
-        qualifiers = setQualifiers.toArray(qualifiers);
-
-        T instance = null;
-
-        try
+        InjectionPoint injectionPoint = local.get();
+        Type eventType = null;
+        
+        if(injectionPoint != null)
         {
-            Constructor<T> constructor = null;
-            constructor = returnType.getConstructor(new Class<?>[] { Annotation[].class, Type.class });
+            Type[] eventActualTypeArgs = new Type[0];
+            Type type = injectionPoint.getType();                        
+            ParameterizedType pt = (ParameterizedType) type;
+            eventActualTypeArgs = pt.getActualTypeArguments();
 
-            instance = constructor.newInstance(new Object[] { qualifiers, eventType });
+            //First argument and sole argument is actual Event type
+            //Example : Event<MyEvent>
+            eventType = eventActualTypeArgs[0];
+            
+            //Event qualifiers
+            Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
+            qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
+            
+            try
+            {
+                instance = new EventImpl<T>(qualifiers, eventType);
+            }
+            catch (Exception e)
+            {
+                throw new WebBeansException("Exception in creating Event implicit component for event type : " + eventType);
+            }           
+            finally
+            {
+                local.set(null);
+            }
+            
         }
-        catch (Exception e)
-        {
-            throw new WebBeansException("Exception in creating Event implicit component for event type : " + eventType);
-        }
-
+                        
         return instance;
-
-    }
-
-    /**
-     * Returns the event type.
-     * 
-     * @return the eventType
-     */
-    public Type getEventType()
-    {
-        return eventType;
     }
 }

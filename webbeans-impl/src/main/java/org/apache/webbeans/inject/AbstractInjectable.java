@@ -21,12 +21,14 @@ import java.util.List;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
@@ -89,6 +91,11 @@ public abstract class AbstractInjectable implements Injectable
         if(isInstanceProviderInjection(injectionPoint))
         {
             InstanceBean.local.set(injectionPoint);
+        }
+        
+        else if(isEventProviderInjection(injectionPoint))
+        {
+            EventBean.local.set(injectionPoint);
         }
         
         //Get injection point Bean to look for @Dependent
@@ -213,6 +220,25 @@ public abstract class AbstractInjectable implements Injectable
         
         return false;
     }
+    
+    private boolean isEventProviderInjection(InjectionPoint injectionPoint)
+    {
+        Type type = injectionPoint.getType();
+        
+        if (type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType) type;            
+            Class<?> clazz = (Class<?>) pt.getRawType();
+            
+            if(clazz.isAssignableFrom(Event.class))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     
     
     /**

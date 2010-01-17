@@ -13,10 +13,12 @@
  */
 package org.apache.webbeans.event;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.util.TypeLiteral;
@@ -33,7 +35,7 @@ import org.apache.webbeans.util.ClassUtil;
  * @param <T> event type
  * @see Event
  */
-public class EventImpl<T> implements Event<T>
+public class EventImpl<T> implements Event<T>, Serializable
 {
     /**Event binding types*/
     private Annotation[] injectedBindings;
@@ -42,7 +44,7 @@ public class EventImpl<T> implements Event<T>
     private Type eventType;
 
     /**Bean manager*/
-    private BeanManagerImpl manager = null;
+    private transient BeanManagerImpl manager = null;
 
     /**
      * Creates a new event.
@@ -75,7 +77,13 @@ public class EventImpl<T> implements Event<T>
     {
         AnnotationUtil.checkQualifierConditions(annotations);
         
-        List<Annotation> eventBindings = new ArrayList<Annotation>();
+        Set<Annotation> eventBindings = new HashSet<Annotation>();
+        
+        for(Annotation ann : this.injectedBindings)
+        {
+            eventBindings.add(ann);
+        }
+        
         Annotation[] anns = null;
 
         for (Annotation binding : annotations)
@@ -131,5 +139,11 @@ public class EventImpl<T> implements Event<T>
     public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... bindings)
     {
         return select(subtype.getRawType(), bindings);
+    }
+    
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        this.manager = BeanManagerImpl.getManager();
     }
 }

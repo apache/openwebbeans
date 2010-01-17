@@ -39,6 +39,7 @@ import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -117,7 +118,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         {
             observedQualifiers.add(qualifier);
         }
-
+        
         this.observedEventType = AnnotationUtil.getTypeOfParameterWithGivenAnnotation(observerMethod, Observes.class);
         
         this.phase = EventUtil.getObserverMethodTransactionType(observerMethod);
@@ -163,49 +164,52 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         
         try
         {
-            BeanManagerImpl manager = BeanManagerImpl.getManager();
-            specializedComponent = (AbstractBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
-            Context context = manager.getContext(specializedComponent.getScope());
+            Object[] args = null;
             
-            creationalContext = manager.createCreationalContext(specializedComponent);
-            
-            if(this.ifExist)
+            List<Object> argsObjects = getMethodArguments(event);
+            args = new Object[argsObjects.size()];
+            args = argsObjects.toArray(args);
+
+            if (!this.observerMethod.isAccessible())
             {
-                object = context.get(specializedComponent);
-            }
-            else
-            {
-                object = manager.getInstance(specializedComponent, creationalContext);    
+                this.observerMethod.setAccessible(true);
             }
             
-
-            if (this.ifExist && object == null)
+            //Static or not
+            if (Modifier.isStatic(this.observerMethod.getModifiers()))
             {
-                return;
-            }
-
-            if (object != null)
-            {
-                Object[] args = null;
-                
-                List<Object> argsObjects = getMethodArguments(event);
-                args = new Object[argsObjects.size()];
-                args = argsObjects.toArray(args);
-
-                if (!this.observerMethod.isAccessible())
-                {
-                    this.observerMethod.setAccessible(true);
-                }
-
-                //Static or not
-                if (Modifier.isStatic(this.observerMethod.getModifiers()))
-                {
-                    object = null;
-                }
-
                 //Invoke Method
                 this.observerMethod.invoke(object, args);
             }
+            else
+            {
+                BeanManagerImpl manager = BeanManagerImpl.getManager();
+                specializedComponent = (AbstractBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
+                Context context = manager.getContext(specializedComponent.getScope());
+                
+                creationalContext = manager.createCreationalContext(specializedComponent);
+                
+                if(this.ifExist)
+                {
+                    object = context.get(specializedComponent);
+                }
+                else
+                {
+                    object = manager.getReference(specializedComponent, specializedComponent.getBeanClass(), creationalContext);
+                }
+                
+
+                if (this.ifExist && object == null)
+                {
+                    return;
+                }
+
+                if (object != null)
+                {
+                    //Invoke Method
+                    this.observerMethod.invoke(object, args);
+                }
+            }                        
         }
         catch (Exception e)
         {
@@ -294,9 +298,11 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      * 
      * @return the bean
      */
+    @SuppressWarnings("unchecked")
     public Class<?> getBeanClass()
     {
-        return bean.getClass();
+        AbstractInjectionTargetBean<T> abs = (AbstractInjectionTargetBean<T>)this.bean;
+        return abs.getBeanClass();
     }
 
     /** 

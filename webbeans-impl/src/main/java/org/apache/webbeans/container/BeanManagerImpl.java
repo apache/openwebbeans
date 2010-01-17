@@ -920,6 +920,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods( T event, Annotation... qualifiers ) 
     {
+        if(ClassUtil.isDefinitionConstainsTypeVariables(event.getClass()))
+        {
+            throw new IllegalArgumentException("Event type can not contain type variables. Event class is : " + event.getClass());
+        }
+        
         return this.notificationManager.resolveObservers(event, qualifiers);
     }
 

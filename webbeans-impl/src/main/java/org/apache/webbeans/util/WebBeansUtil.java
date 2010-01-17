@@ -45,6 +45,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Disposes;
@@ -55,11 +56,15 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.UnproxyableResolutionException;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
@@ -104,7 +109,6 @@ import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
-import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.WebBeansPassivationException;
@@ -124,10 +128,12 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
+import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
 import org.apache.webbeans.portable.events.generics.GProcessProducer;
 import org.apache.webbeans.portable.events.generics.GProcessProducerField;
 import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
+import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
 
 /**
  * Contains some utility methods used in the all project.
@@ -609,6 +615,7 @@ public final class WebBeansUtil
 
         ExtensionBean<T> comp = null;
         comp = new ExtensionBean<T>(clazz);
+        comp.setEnabled(true);
         
         DefinitionUtil.defineApiTypes(comp, clazz);
         
@@ -669,25 +676,25 @@ public final class WebBeansUtil
         return comp;
     }    
     
-    /**
-     * Creates a new event bean instance.
-     * @param <T> type info
-     * @param returnType bean api type
-     * @param eventType event type
-     * @param annotations event binding annotations
-     * @return new event bean instance
-     */
-    public static <T> EventBean<T> createObservableImplicitComponent(Class<T> returnType, Type eventType, Annotation... annotations)
-    {
-        EventBean<T> component = new EventBean<T>(returnType, eventType, WebBeansType.OBSERVABLE);
-
-        DefinitionUtil.defineApiTypes(component, returnType);
-        DefinitionUtil.defineQualifiers(component, annotations);
-
-        component.setImplScopeType(new DependentScopeLiteral());                      
-
-        return component;
-    }
+//    /**
+//     * Creates a new event bean instance.
+//     * @param <T> type info
+//     * @param returnType bean api type
+//     * @param eventType event type
+//     * @param annotations event binding annotations
+//     * @return new event bean instance
+//     */
+//    public static <T> EventBean<T> createObservableImplicitComponent(Class<T> returnType, Type eventType, Annotation... annotations)
+//    {
+//        EventBean<T> component = new EventBean<T>(returnType, eventType, WebBeansType.OBSERVABLE);
+//
+//        DefinitionUtil.defineApiTypes(component, returnType);
+//        DefinitionUtil.defineQualifiers(component, annotations);
+//
+//        component.setImplScopeType(new DependentScopeLiteral());                      
+//
+//        return component;
+//    }
 
     /**
      * Creates a new manager bean instance.
@@ -708,27 +715,41 @@ public final class WebBeansUtil
     
     /**
      * Creates a new instance bean.
-     * @param <T> type info
-     * @param instance Instance instance
-     * @param clazz Instance class
-     * @param injectedType injected type
-     * @param obtainsBindings instance bindings
      * @return new instance bean
      */
     public static <T> InstanceBean<T> getInstanceBean()
     {
-        InstanceBean<T> instanceComponent = new InstanceBean<T>();
+        InstanceBean<T> instanceBean = new InstanceBean<T>();
         
-        instanceComponent.getTypes().add(new TypeLiteral<Instance<?>>(){}.getRawType());
-        instanceComponent.getTypes().add(new TypeLiteral<Provider<?>>(){}.getRawType());
-        instanceComponent.addApiType(Object.class);
+        instanceBean.getTypes().add(new TypeLiteral<Instance<?>>(){}.getRawType());
+        instanceBean.getTypes().add(new TypeLiteral<Provider<?>>(){}.getRawType());
+        instanceBean.addApiType(Object.class);
         
-        instanceComponent.addQualifier(new AnyLiteral());
-        instanceComponent.setImplScopeType(new DependentScopeLiteral());
-        instanceComponent.setName(null);
+        instanceBean.addQualifier(new AnyLiteral());
+        instanceBean.setImplScopeType(new DependentScopeLiteral());
+        instanceBean.setName(null);
                 
-        return instanceComponent;
+        return instanceBean;
     }
+    
+    /**
+     * Creates a new event bean.
+     * @return new event bean
+     */
+    public static <T> EventBean<T> getEventBean()
+    {
+        EventBean<T> eventBean = new EventBean<T>();
+        
+        eventBean.getTypes().add(new TypeLiteral<Event<?>>(){}.getRawType());
+        eventBean.addApiType(Object.class);
+        
+        eventBean.addQualifier(new AnyLiteral());
+        eventBean.setImplScopeType(new DependentScopeLiteral());
+        eventBean.setName(null);
+                
+        return eventBean;
+    }
+    
 
     /**
      * Returns new conversation bean instance.
@@ -1856,32 +1877,32 @@ public final class WebBeansUtil
         return false;
     }
     
-    public static void addInjectedImplicitEventComponent(InjectionPoint injectionPoint)
-    {
-        Type type = injectionPoint.getType();
-        
-        if(!(type instanceof ParameterizedType))
-        {
-            return;
-        }
-        
-        Type[] args = new Type[0];
-        
-        Class<?> clazz = null;
-        if (type instanceof ParameterizedType)
-        {
-            ParameterizedType pt = (ParameterizedType) type;
-            args = pt.getActualTypeArguments();
-        }
-        
-        clazz = (Class<?>)args[0];
-        
-        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
-        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
-        
-        Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, qualifiers);
-        BeanManagerImpl.getManager().addBean(bean);                  
-    }
+//    public static void addInjectedImplicitEventComponent(InjectionPoint injectionPoint)
+//    {
+//        Type type = injectionPoint.getType();
+//        
+//        if(!(type instanceof ParameterizedType))
+//        {
+//            return;
+//        }
+//        
+//        Type[] args = new Type[0];
+//        
+//        Class<?> clazz = null;
+//        if (type instanceof ParameterizedType)
+//        {
+//            ParameterizedType pt = (ParameterizedType) type;
+//            args = pt.getActualTypeArguments();
+//        }
+//        
+//        clazz = (Class<?>)args[0];
+//        
+//        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
+//        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
+//        
+//        Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, qualifiers);
+//        BeanManagerImpl.getManager().addBean(bean);                  
+//    }
     
     
 //    public static <T> void addInjectedImplicitInstanceComponent(InjectionPoint injectionPoint)
@@ -2162,5 +2183,27 @@ public final class WebBeansUtil
         }
         
         return null;
+    }
+    
+    public static boolean isExtensionEventType(Class<?> clazz)
+    {
+        if(clazz.equals(BeforeBeanDiscovery.class) ||
+                clazz.equals(AfterBeanDiscovery.class) ||
+                clazz.equals(AfterDeploymentValidation.class) ||
+                clazz.equals(BeforeShutdown.class) ||
+                clazz.equals(GProcessAnnotatedType.class) ||
+                clazz.equals(GProcessInjectionTarget.class) ||
+                clazz.equals(GProcessProducer.class) ||
+                clazz.equals(GProcessProducerField.class) ||
+                clazz.equals(GProcessProducerMethod.class) ||
+                clazz.equals(GProcessManagedBean.class) ||
+                clazz.equals(GProcessSessionBean.class) ||
+                clazz.equals(GProcessObservableMethod.class)
+                )
+        {
+            return true;
+        }
+        
+        return false;
     }
 }

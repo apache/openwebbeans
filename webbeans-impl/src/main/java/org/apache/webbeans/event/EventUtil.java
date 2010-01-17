@@ -14,6 +14,8 @@
 package org.apache.webbeans.event;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -21,6 +23,7 @@ import java.util.Set;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
@@ -56,6 +59,18 @@ public final class EventUtil
 
     public static void checkEventBindings(Annotation... annotations)
     {
+        for(Annotation ann : annotations)
+        {
+            //This is added, because TCK Event tests for this.
+            Retention retention = ann.annotationType().getAnnotation(Retention.class);
+            RetentionPolicy policy = retention.value();
+            if(!policy.equals(RetentionPolicy.RUNTIME))
+            {
+                throw new IllegalArgumentException("Event qualifiere RetentionPolicy must be RUNTIME for qualifier : " + ann);
+            }
+            ///////////////////////////////////////////////////////
+
+        }        
         AnnotationUtil.checkQualifierConditions(annotations);
     }
 
@@ -89,25 +104,19 @@ public final class EventUtil
         if (AnnotationUtil.hasMethodParameterAnnotation(candidateObserverMethod, Disposes.class))
         {
             throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not annotated with annotation @Disposes");
+        }                
+    }
+    
+    public static boolean isReceptionIfExist(Method observerMethod)
+    {
+        Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observerMethod, Observes.class);
+        Reception reception = observes.notifyObserver();
+        if(reception.equals(Reception.IF_EXISTS))
+        {
+            return true;
         }
 
-//        Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(candidateObserverMethod, Observes.class);
-//        
-//        Class<?> eventType = null;
-//       
-//        if (type instanceof ParameterizedType)
-//        {
-//            eventType = (Class<?>) ((ParameterizedType) type).getRawType();
-//        }
-//        else
-//        {
-//            eventType = (Class<?>) type;
-//        }
-
-//        if (ClassUtil.isDefinitionConstainsTypeVariables(eventType))
-//        {
-//            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not defined as generic");
-//        }
+        return false;
     }
 
 
@@ -153,17 +162,18 @@ public final class EventUtil
                 {                                        
                     if(typeArgs.length == 1)
                     {
-                        Type actualArgument = typeArgs[0];
-                        
-                        if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument) || ClassUtil.isTypeVariable(actualArgument))
-                        {                            
-                            throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
-                        }
-                                                
-                        if(ClassUtil.isDefinitionConstainsTypeVariables((Class<?>)actualArgument))
-                        {
-                            throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
-                        }
+                        //TCK does not check those! Also specification not talk about them.
+//                        Type actualArgument = typeArgs[0];
+//                        
+//                        if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument) || ClassUtil.isTypeVariable(actualArgument))
+//                        {                            
+//                            throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
+//                        }
+//                                                
+//                        if(ClassUtil.isDefinitionConstainsTypeVariables((Class<?>)actualArgument))
+//                        {
+//                            throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
+//                        }
                     }
                     else
                     {

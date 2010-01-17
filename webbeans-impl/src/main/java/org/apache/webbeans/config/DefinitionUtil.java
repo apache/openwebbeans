@@ -1045,6 +1045,17 @@ public final class DefinitionUtil
         {
 
             EventUtil.checkObserverMethodConditions(candidateMethod, clazz);
+            AbstractBean<?> bean = (AbstractBean<?>) component;
+            if(bean.getScope().equals(Dependent.class))
+            {
+                //Check Reception
+                if(EventUtil.isReceptionIfExist(candidateMethod))
+                {
+                    throw new WebBeansConfigurationException("Dependent Bean : " + bean + " can not define observer method with @Receiver = IF_EXIST");
+                }
+            }
+            
+            
             component.addObservableMethod(candidateMethod);
 
             addMethodInjectionPointMetaData((AbstractBean<T>) component, candidateMethod);
@@ -1099,7 +1110,8 @@ public final class DefinitionUtil
         }        
         else if(EventUtil.checkObservableInjectionPointConditions(injectionPoint))
         {            
-            WebBeansUtil.addInjectedImplicitEventComponent(injectionPoint);
+            //Do nothing
+            //WebBeansUtil.addInjectedImplicitEventComponent(injectionPoint);
         }
     }
     

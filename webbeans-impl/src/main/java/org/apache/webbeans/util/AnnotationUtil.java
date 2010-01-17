@@ -276,6 +276,7 @@ public final class AnnotationUtil
             return (Class<?>) type;
         }
     }
+        
     
     /**
      * Gets the method first found parameter qualifiers.

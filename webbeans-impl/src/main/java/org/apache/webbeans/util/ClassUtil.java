@@ -846,7 +846,49 @@ public final class ClassUtil
         }
     }
 
-    
+    public static boolean checkEventTypeAssignability(Type eventType, Type observerType)
+    {
+        if(isTypeVariable(observerType))
+        {
+            Class<?> eventClass = getClass(eventType);
+                        
+            TypeVariable<?> tvBeanTypeArg = (TypeVariable<?>)observerType;
+            Type tvBound = tvBeanTypeArg.getBounds()[0];
+            
+            if(tvBound instanceof Class)
+            {
+                Class<?> clazzTvBound = (Class<?>)tvBound;
+                
+                if(clazzTvBound.isAssignableFrom(eventClass))
+                {
+                    return true;
+                }                    
+            }
+        }
+        else if(observerType instanceof ParameterizedType && eventType instanceof ParameterizedType)
+        {
+            return isAssignableForParametrized((ParameterizedType)eventType, (ParameterizedType)observerType);
+        }
+        else if(observerType instanceof Class && eventType instanceof ParameterizedType)
+        {
+            Class<?> clazzBeanType = (Class<?>)observerType;
+            ParameterizedType ptEvent = (ParameterizedType)eventType;
+            Class<?> eventClazz = (Class<?>)ptEvent.getRawType();
+            
+            if(isAssignable(clazzBeanType, eventClazz))
+            {
+                return true;
+            }
+            
+            return false;            
+        }
+        else if(observerType instanceof Class && eventType instanceof Class)
+        {
+            return isAssignable((Class<?>)observerType, (Class<?>) eventType);
+        }
+        
+        return false;
+    }
     
     
     /**

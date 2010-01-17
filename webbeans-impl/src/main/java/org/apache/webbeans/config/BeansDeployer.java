@@ -192,14 +192,19 @@ public class BeansDeployer
     
     private void configureDefaultBeans()
     {
+        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
+        
         // Register Conversation built-in component
-        BeanManagerImpl.getManager().addBean(WebBeansUtil.getConversationBean());
+        beanManager.addBean(WebBeansUtil.getConversationBean());
         
         // Register InjectionPoint bean
-        BeanManagerImpl.getManager().addBean(WebBeansUtil.getInjectionPointBean());
+        beanManager.addBean(WebBeansUtil.getInjectionPointBean());
         
         //Register Instance Bean
-        BeanManagerImpl.getManager().addBean(WebBeansUtil.getInstanceBean());        
+        beanManager.addBean(WebBeansUtil.getInstanceBean());
+        
+        //Register Event Bean
+        beanManager.addBean(WebBeansUtil.getEventBean());
     }
     
     /**
@@ -678,7 +683,11 @@ public class BeansDeployer
             managedBeanCreator.defineDecoratorStack();
             managedBeanCreator.defineInterceptorStack();
             
-            Set<ObserverMethod<?>> observerMethods = managedBeanCreator.defineObserverMethods();
+            Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
+            if(managedBean.isEnabled())
+            {
+                observerMethods = managedBeanCreator.defineObserverMethods();
+            }
                                     
             //Fires ProcessInjectionTarget
             ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);            

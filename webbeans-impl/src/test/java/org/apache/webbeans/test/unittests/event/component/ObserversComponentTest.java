@@ -32,6 +32,7 @@ import org.apache.webbeans.test.component.event.normal.ComponentWithObservable1;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObserves1;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObserves2;
 import org.apache.webbeans.test.event.LoggedInEvent;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -72,6 +73,8 @@ public class ObserversComponentTest extends TestContext
     public void testWithObservable()
     {
         clear();
+        
+        getManager().addBean(WebBeansUtil.getEventBean());
 
         AbstractBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
         AbstractBean<ComponentWithObservable1> componentObservable = defineManagedBean(ComponentWithObservable1.class);
@@ -91,6 +94,8 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
+        getManager().addBean(WebBeansUtil.getEventBean());
+        
         AbstractBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
         ContextFactory.initRequestContext(null);
 
@@ -113,7 +118,7 @@ public class ObserversComponentTest extends TestContext
 
         ComponentWithObserves1 instance = getManager().getInstance(component);
 
-        Assert.assertNull(instance.getUserName());
+        Assert.assertNotNull(instance.getUserName());
 
         Assert.assertEquals("Gurkan", instance.getUserNameWithMember());
     }
@@ -123,6 +128,8 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
+        getManager().addBean(WebBeansUtil.getEventBean());
+        
         AbstractBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
         ContextFactory.initRequestContext(null);
 
@@ -136,7 +143,7 @@ public class ObserversComponentTest extends TestContext
         ComponentWithObserves1 instance = getManager().getInstance(component);
 
         Assert.assertEquals("Mark", instance.getUserName());
-        Assert.assertEquals("Mark", instance.getUserNameWithMember());
+        Assert.assertNull(instance.getUserNameWithMember());
     }
 
 

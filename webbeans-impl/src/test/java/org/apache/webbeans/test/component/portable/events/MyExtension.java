@@ -88,7 +88,7 @@ public class MyExtension implements Extension
         beforeShutdownEvent = bs;
     }
 
-    public void observeProcessAnnotatedTypeEvent(@Observes @Default ProcessAnnotatedType<?> annotatedType)
+    public void observeProcessAnnotatedTypeEvent(@Observes ProcessAnnotatedType<?> annotatedType)
     {
         processAnnotatedTypeEvent = annotatedType;
     }
