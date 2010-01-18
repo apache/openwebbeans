@@ -21,7 +21,7 @@
       
  
       <packages>         
-         <package name="org.jboss.jsr299.tck.tests.decorators.*"></package>
+         <package name="org.jboss.jsr299.tck.tests.*"></package>
       </packages>
    </test>
    
