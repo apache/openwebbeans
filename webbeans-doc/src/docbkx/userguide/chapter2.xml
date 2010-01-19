@@ -33,14 +33,17 @@
 
     <section>
       <title>Simple JSP Application</title>
+      <para>TODO</para>
     </section>
     
     <section>
     	<title>Using with JSF</title>
+    	<para>TODO</para>
     </section>
     
     <section>
     	<title>Using with JPA</title>
+    	<para>TODO</para>
     </section>
     
 </section>

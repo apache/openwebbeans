@@ -257,7 +257,16 @@ org.apache.webbeans.spi.JNDIService=org.apache.webbeans.spi.ee.JNDIServiceEnterp
     		
     		<section>
     			<title>Default Configuration Values</title>
-                <para>TODO</para>
+                <para>OpenWebBeans comes with default configuration parameters are set. As explained above, those default parameter values
+                are defined in the provided jar file of the OpenWebBean. Default parameter values are the following</para>
+                
+                <itemizedlist>
+                	<listitem>
+						<programlisting><![CDATA[org.apache.webbeans.spi.JNDIService=org.apache.webbeans.spi.se.JNDIServiceStaticImpl]]></programlisting>                	
+                	</listitem>
+                	
+                </itemizedlist>
+                
     		</section>
     		
     	</section> <!-- End of Configuration Section -->

@@ -63,68 +63,8 @@
 	working with the catalog--looking up a name or accessing the object
 	bound to it. OpenEJB can run in two modes: Local (AKA IntraVM) Server
 	and Remote Server.
-
-	Apache OpenEJB 3.0, released in April 2008, adds OSGi support.
 				</para>
 			</glossdef>
 		</glossentry>
 	</glossdiv>
-	
-	<!-- ********************************************************************* -->
-	<!--                           S                                           -->
-	<!-- ********************************************************************* -->
-	<glossdiv id="glossary.s">
-		<title>S</title>
-		<glossentry id="glossary.slsb">
-			<glossterm>Stateless Session Bean</glossterm>
-			<glossdef>
-				<para>
-	Stateless Session Beans are distributed objects that do not have state
-	associated with them thus allowing concurrent access to the bean. The
-	contents of instance variables are not guaranteed to be preserved
-	across method calls. The lack of overhead to maintain a conversation
-	with the calling program makes them less resource-intensive than
-	stateful beans.
-				</para>
-			</glossdef>
-		</glossentry>
-		<glossentry id="glossary.sfsb">
-			<glossterm>Stateful Session Bean</glossterm>
-			<glossdef>
-				<para>
-	Stateful Session Beans are distributed objects having state: that is,
-	they keep track of which calling program they are dealing with
-	throughout a session. For example, checking out in a web store might be
-	handled by a stateful session bean, which would use its state to keep
-	track of where the customer is in the checkout process. On the other
-	hand, sending an e-mail to customer support might be handled by a
-	stateless bean, since this is a one-off operation and not part of a
-	multi-step process. Stateful session beans' state may be persisted, but
-	access to the bean instance is limited to only one client.
-				</para>
-			</glossdef>
-		</glossentry>
-	</glossdiv>
-
-	<!-- ********************************************************************* -->
-	<!--                           T                                           -->
-	<!-- ********************************************************************* -->
-	<glossdiv id="glossary.t">
-		<title>T</title>
-		<glossentry id="glossary.tapestry">
-			<glossterm>Apache Tapestry</glossterm>
-			<glossdef>
-				<para>
-	The presentation in the Apache Tapestry web site is:
-	[...]
-	Tapestry is an open-source framework for creating dynamic, robust, highly
-	scalable web applications in Java. Tapestry complements and builds upon
-	the standard Java Servlet API, and so it works in any servlet container
-	or application server.
-	[...]
-				</para>
-			</glossdef>
-		</glossentry>
-	</glossdiv>
-	
 </glossary>

@@ -37,7 +37,7 @@
 
     <epigraph>
         <para>
-            This chapter explains bla bla bla of &productname;.
+            This chapter explains what is &productname; and team.
         </para>
     </epigraph>
 
@@ -58,9 +58,7 @@
     <section>
         <title>The team</title>
 
-        <para>Gurkan Erdogdu acts as the lead for the OpenWebBeans project. He
-            can be reached at gurkanerdogdu (at) yahoo (dot) com.</para>
-        <para>Write Others....</para>
+        <para>The following team members have been developing the OpenWebBeans.</para>
 
         <table>
             <title>Team composition.</title>
@@ -87,61 +85,43 @@
                         <entry><code>gerdogdu</code></entry>
                         <entry>Gurkan Erdogdu</entry>
                         <entry><code>gerdogdu at apache dot org</code></entry>
-                        <entry>PMC, Project Lead</entry>
-                    </row>
-                    <row>
-                        <entry><code>matzew</code></entry>
-                        <entry>Matthias Wessendorf</entry>
-                        <entry><code>matzew at apache dot org</code></entry>
-                        <entry>PMC, Mentor</entry>
+                        <entry>PMC Chair</entry>
                     </row>
                     <row>
                         <entry><code>kevan</code></entry>
                         <entry>Kevan Miller</entry>
                         <entry><code>kevan dot miller at gmail dot com</code></entry>
-                        <entry>PMC, Mentor</entry>
-                    </row>
-                    <row>
-                        <entry><code>mnour</code></entry>
-                        <entry>Mohammad Nour El-Din</entry>
-                        <entry><code>nour dot mohammad at gmail dot com</code></entry>
-                        <entry>committer</entry>
-                    </row>
-                    <row>
-                        <entry><code>conny</code></entry>
-                        <entry>Conny Lundgren</entry>
-                        <entry><code>conny dot lundgren at gmail dot com</code></entry>
-                        <entry>committer</entry>
+                        <entry>PMC</entry>
                     </row>
                     <row>
                         <entry><code>struberg</code></entry>
                         <entry>Mark Struberg</entry>
                         <entry><code>struberg at yahoo dot de</code></entry>
-                        <entry>committer</entry>
+                        <entry>PMC</entry>
                     </row>
                     <row>
-                        <entry><code></code></entry>
-                        <entry>James Carman</entry>
-                        <entry><code></code></entry>
-                        <entry></entry>
-                    </row>
-                    <row>
-                        <entry><code></code></entry>
+                        <entry><code>dblevins</code></entry>
                         <entry>David Blevins</entry>
-                        <entry><code></code></entry>
-                        <entry></entry>
+                        <entry><code>david dot blevins at visi dot com</code></entry>
+                        <entry>PMC</entry>
                     </row>
                     <row>
-                        <entry><code></code></entry>
+                        <entry><code>bergmark</code></entry>
                         <entry>Joe Bergmark</entry>
-                        <entry><code></code></entry>
-                        <entry></entry>
+                        <entry><code>bergmark at gmail dot com</code></entry>
+                        <entry>PMC</entry>
                     </row>
                     <row>
-                        <entry><code></code></entry>
+                        <entry><code>covener</code></entry>
                         <entry>Eric Covener</entry>
-                        <entry><code></code></entry>
-                        <entry></entry>
+                        <entry><code>covener at gmail dot com</code></entry>
+                        <entry>PMC</entry>
+                    </row>
+                    <row>
+                        <entry><code>matzew</code></entry>
+                        <entry>Matthias Wessendorf</entry>
+                        <entry><code>matzew at apache dot org</code></entry>
+                        <entry>Committer</entry>
                     </row>
                 </tbody>
             </tgroup>

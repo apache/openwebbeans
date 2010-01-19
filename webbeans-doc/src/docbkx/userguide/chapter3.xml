@@ -23,25 +23,11 @@
 <chapter id="chapter3">
   <title>Using OpenWebBeans within OpenEJB</title>
    
-  <!-- What is OpenWebBeans -->	
   <section>
-    <title>OpenWebBeans in 5 Minute</title>
+    <title>OpenWebBeans within OpenEJB</title>
     <para>
-    	In this part of the user guide, we will look at how to configure and use OpenWebBeans in a <emphasis>Java EE
-    	Web</emphasis> projects.  
+    	TODO
     </para>
-
-    <section>
-      <title>Simple JSP Application</title>
-    </section>
-    
-    <section>
-    	<title>Using with JSF</title>
-    </section>
-    
-    <section>
-    	<title>Using with JPA</title>
-    </section>
     
 </section>
 <!-- End of SECTION What is OpenWebBeans -->
