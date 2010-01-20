@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.el.ELContext;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
@@ -70,7 +71,10 @@ public class ELContextStore
 
     public void addDependent(Bean<?> bean, Object dependent, CreationalContext<?> creationalContext)
     {
-        this.dependentObjects.put(bean, new CreationalStore(dependent,creationalContext));
+        if(bean.getScope().equals(Dependent.class))
+        {
+            this.dependentObjects.put(bean, new CreationalStore(dependent,creationalContext));   
+        }
     }
     
     public Object getDependent(Bean<?> bean)
@@ -96,7 +100,7 @@ public class ELContextStore
         {
             Bean<Object> o = (Bean<Object>)bean;
             CreationalStore store = this.dependentObjects.get(bean);
-            o.destroy(o, (CreationalContext<Object>)store.getCreational());
+            o.destroy(store.getObject(), (CreationalContext<Object>)store.getCreational());
         }
         
         this.dependentObjects.clear();
