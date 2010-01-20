@@ -89,12 +89,6 @@ public final class WebBeansXMLConfigurator
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansXMLConfigurator.class);
     
-    /** Enabled Interceptors element check */
-    private boolean INTERCEPTORS_IS_DEFINED = false;
-
-    /** Enabled Decorators element check */
-    private boolean DECORATORS_IS_DEFINED = false;    
-
     /** Current configuration file name */
     private String CURRENT_SCAN_FILE_NAME = null;
     
@@ -259,30 +253,12 @@ public final class WebBeansXMLConfigurator
             /* <Interceptors> element decleration */
             else if (XMLUtil.isElementInterceptorsDeclaration(child))
             {
-                if (INTERCEPTORS_IS_DEFINED)
-                {
-                    throw new WebBeansConfigurationException("There can not be more than one web-beans.xml file that declares <Interceptors> element");
-                }
-                else
-                {
-                    configureInterceptorsElement(child);
-                    INTERCEPTORS_IS_DEFINED = true;
-
-                }
+                configureInterceptorsElement(child);
             }
             /* <Decorators> element decleration */
             else if (XMLUtil.isElementDecoratosDeclaration(child))
             {
-                if (DECORATORS_IS_DEFINED)
-                {
-                    throw new WebBeansConfigurationException("There can not be more than one web-beans.xml file that declares <Decorators> element");
-                }
-                else
-                {
-                    configureDecoratorsElement(child);
-                    DECORATORS_IS_DEFINED = true;
-
-                }
+                configureDecoratorsElement(child);
             }
             /* <BindingType> annotation element decleration */
             else if (XMLUtil.isElementBindingTypeDecleration(child))
@@ -335,30 +311,12 @@ public final class WebBeansXMLConfigurator
             /* <Interceptors> element decleration */
             if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT))
             {
-                if (INTERCEPTORS_IS_DEFINED)
-                {
-                    throw new WebBeansConfigurationException("There can not be more than one web-beans.xml file that declares <interceptors> element");
-                }
-                else
-                {
-                    configureInterceptorsElement(child);
-                    INTERCEPTORS_IS_DEFINED = true;
-
-                }
+                configureInterceptorsElement(child);
             }
             /* <Decorators> element decleration */
             else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_DECORATORS_ELEMENT))
             {
-                if (DECORATORS_IS_DEFINED)
-                {
-                    throw new WebBeansConfigurationException("There can not be more than one web-beans.xml file that declares <decorators> element");
-                }
-                else
-                {
-                    configureDecoratorsElement(child);
-                    DECORATORS_IS_DEFINED = true;
-
-                }
+                configureDecoratorsElement(child);
             }
             else if(XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES))
             {
