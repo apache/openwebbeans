@@ -189,21 +189,15 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 
                 creationalContext = manager.createCreationalContext(specializedComponent);
                 
-                if(this.ifExist)
+                // lookup the contextual instance if one already exists
+                object = context.get(specializedComponent);
+                
+                if(object == null && !this.ifExist)
                 {
-                    object = context.get(specializedComponent);
-                }
-                else
-                {
+                    // on Reception.ALWAYS we must get a contextual reference if we didn't find the contextual instance
                     object = manager.getReference(specializedComponent, specializedComponent.getBeanClass(), creationalContext);
                 }
                 
-
-                if (this.ifExist && object == null)
-                {
-                    return;
-                }
-
                 if (object != null)
                 {
                     //Invoke Method
