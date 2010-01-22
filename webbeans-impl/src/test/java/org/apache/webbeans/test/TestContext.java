@@ -419,17 +419,13 @@ public abstract class TestContext implements ITestContext
         ManagedBean<T> component = null;
 
         ManagedBeanConfigurator.checkManagedBeanCondition(clazz);
-        {
-            // This is the interceptor class
-            if (InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
-            {
-                InterceptorUtil.checkInterceptorConditions(clazz);
-                component = ManagedBeanConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
-                WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component, 
-                        AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations()));
-            }
+        
+        InterceptorsManager.getInstance().addNewInterceptor(clazz);
+        InterceptorUtil.checkInterceptorConditions(clazz);
+        component = ManagedBeanConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
+        WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component, 
+                AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations()));
 
-        }
 
         return component;
     }

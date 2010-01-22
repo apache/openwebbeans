@@ -160,7 +160,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         AbstractBean<Object> specializedComponent = null;
         Object object = null;
         
-        CreationalContext<?> creationalContext = null;
+        CreationalContext<Object> creationalContext = null;
         
         try
         {
@@ -189,14 +189,14 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 
                 creationalContext = manager.createCreationalContext(specializedComponent);
                 
-                // lookup the contextual instance if one already exists
-                object = context.get(specializedComponent);
-                
-                if(object == null && !this.ifExist)
+                // on Reception.IF_EXISTS: ignore this bean if a the contextual instance doesn't already exist
+                if (ifExist && context.get(specializedComponent) == null) 
                 {
-                    // on Reception.ALWAYS we must get a contextual reference if we didn't find the contextual instance
-                    object = manager.getReference(specializedComponent, specializedComponent.getBeanClass(), creationalContext);
+                    return;
                 }
+                
+                // on Reception.ALWAYS we must get a contextual reference if we didn't find the contextual instance
+                object = manager.getReference(specializedComponent, specializedComponent.getBeanClass(), creationalContext);
                 
                 if (object != null)
                 {
