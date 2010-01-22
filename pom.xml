@@ -17,7 +17,7 @@
 	<parent>
 		<groupId>org.apache</groupId>
 		<artifactId>apache</artifactId>
-		<version>4</version>
+		<version>6</version>
 	</parent>
     
 	<groupId>org.apache.openwebbeans</groupId>
@@ -323,7 +323,7 @@
                     <links>
                         <link>http://java.sun.com/j2ee/1.4/docs/api</link>
                         <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                        <link>http://myfaces.apache.org/core12/myfaces-api/apidocs/</link>
+                        <link>http://myfaces.apache.org/core20/myfaces-api/apidocs/</link>
                     </links>
                 </configuration>
                 <reportSets>
