@@ -69,6 +69,15 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.ProcessBean;
+import javax.enterprise.inject.spi.ProcessInjectionTarget;
+import javax.enterprise.inject.spi.ProcessManagedBean;
+import javax.enterprise.inject.spi.ProcessObserverMethod;
+import javax.enterprise.inject.spi.ProcessProducer;
+import javax.enterprise.inject.spi.ProcessProducerField;
+import javax.enterprise.inject.spi.ProcessProducerMethod;
+import javax.enterprise.inject.spi.ProcessSessionBean;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -2206,4 +2215,63 @@ public final class WebBeansUtil
         
         return false;
     }
+    
+    public static boolean isExtensionBeanEventType(Class<?> clazz)
+    {
+        if(clazz.equals(GProcessAnnotatedType.class) ||
+                clazz.equals(GProcessInjectionTarget.class) ||
+                clazz.equals(GProcessManagedBean.class) ||
+                clazz.equals(GProcessSessionBean.class)
+                )
+        {
+            return true;
+        }
+        
+        return false;        
+    }
+    
+    public static boolean isDefaultExtensionBeanEventType(Class<?> clazz)
+    {
+        if(clazz.equals(ProcessAnnotatedType.class) ||
+                clazz.equals(ProcessInjectionTarget.class) ||
+                clazz.equals(ProcessManagedBean.class) ||
+                clazz.equals(ProcessBean.class) ||
+                clazz.equals(ProcessSessionBean.class)
+                )
+        {
+            return true;
+        }
+        
+        return false;        
+    }    
+    
+    public static boolean isExtensionProducerOrObserverEventType(Class<?> clazz)
+    {
+        if(clazz.equals(GProcessProducer.class) ||
+                clazz.equals(GProcessProducerField.class) ||
+                clazz.equals(GProcessProducerMethod.class) ||
+                clazz.equals(GProcessObservableMethod.class)
+                )
+        {
+            return true;
+        }
+        
+        return false;
+
+    }
+    
+    public static boolean isDefaultExtensionProducerOrObserverEventType(Class<?> clazz)
+    {
+        if(clazz.equals(ProcessProducer.class) ||
+                clazz.equals(ProcessProducerField.class) ||
+                clazz.equals(ProcessProducerMethod.class) ||
+                clazz.equals(ProcessObserverMethod.class)
+                )
+        {
+            return true;
+        }
+        
+        return false;
+
+    }    
 }

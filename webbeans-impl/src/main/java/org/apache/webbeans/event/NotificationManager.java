@@ -22,6 +22,7 @@ package org.apache.webbeans.event;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
@@ -46,6 +47,8 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
+import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -130,20 +133,18 @@ public final class NotificationManager
         Set<Annotation> qualifiers = ArrayUtil.asSet(eventQualifiers);
 
         Class<T> eventType = (Class<T>) event.getClass();
-        // EventUtil.checkEventType(eventType);
-
-        Set<ObserverMethod<? super T>> observers = filterByType(eventType);
+        Set<ObserverMethod<? super T>> observers = filterByType(event,eventType);
 
         observers = filterByQualifiers(observers, qualifiers);
 
         return observers;
     }
 
-    private <T> Set<ObserverMethod<? super T>> filterByType(Class<T> eventType)
+    private <T> Set<ObserverMethod<? super T>> filterByType(T event, Class<T> eventType)
     {
         if(WebBeansUtil.isExtensionEventType(eventType))
         {
-            return filterByExtensionEventType(eventType);
+            return filterByExtensionEventType(event, eventType);
         }
         
         Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();
@@ -188,44 +189,160 @@ public final class NotificationManager
         return matching;
     }
     
-    private <T> Set<ObserverMethod<? super T>> filterByExtensionEventType(Class<T> eventType)
+    private <T> Set<ObserverMethod<? super T>> filterByExtensionEventType(T event, Class<T> eventType)
     {
-        Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();
-        
+        Set<ObserverMethod<? super T>> matching = new HashSet<ObserverMethod<? super T>>();        
         Set<Type> keySet = this.observers.keySet();
-
         for (Type type : keySet)
         {
-            Class<?> clazz = null;
+            Class<?> beanClass = null;
+            Class<?> observerClass = ClassUtil.getClazz(type);
             
-            if(ClassUtil.isTypeVariable(type))
+            if(observerClass.isAssignableFrom(eventType))
             {
-                TypeVariable<?> tvBeanTypeArg = (TypeVariable<?>)type;
-                Type tvBound = tvBeanTypeArg.getBounds()[0];
-                
-                clazz = ClassUtil.getClass(tvBound);
-            }
-            
-            if(clazz == null)
-            {
-                clazz = ClassUtil.getClazz(type);    
-            }
-            
-            if(clazz.isAssignableFrom(eventType))
-            {
-                Set<ObserverMethod<?>> wrappers = this.observers.get(type);
-
-                for (ObserverMethod<?> wrapper : wrappers)
+                //ProcessBean,ProcessAnnotateType, ProcessInjectionTarget
+                if(WebBeansUtil.isExtensionBeanEventType(eventType))
                 {
-                    matching.add((ObserverMethod<T>) wrapper);
+                    if(WebBeansUtil.isDefaultExtensionBeanEventType(observerClass))
+                    {                
+                        GenericBeanEvent genericBeanEvent = (GenericBeanEvent)event;
+                        beanClass = genericBeanEvent.getBeanClass();
+                        
+                        if(ClassUtil.isParametrizedType(type))
+                        {
+                            addToMathingWithParametrizedForBeans(type,beanClass,matching);
+                        }
+                        else
+                        {
+                            addToMatching(type, matching);
+                        }
+                    }
                 }
-                break;                
+                //ProcessProducer, ProcessProducerMethod, ProcessProducerField,ProcessObserverMEthod
+                else if(WebBeansUtil.isExtensionProducerOrObserverEventType(eventType))
+                {
+                    if(WebBeansUtil.isDefaultExtensionProducerOrObserverEventType(observerClass))
+                    {
+
+                        GenericProducerObserverEvent genericBeanEvent = (GenericProducerObserverEvent)event;
+                        beanClass = genericBeanEvent.getBeanClass();
+                        Class<?> producerOrObserverReturnClass = genericBeanEvent.getProducerOrObserverType();
+        
+                        if(ClassUtil.isParametrizedType(type))
+                        {
+                            addToMathingWithParametrizedForProducers(type, beanClass, producerOrObserverReturnClass, matching);
+                        }
+                        else
+                        {
+                            addToMatching(type, matching);
+                        }
+                    }
+                }
+                //BeforeBeanDiscovery,AfterBeanDiscovery,AfterDeploymentValidation
+                //BeforeShutDown Events
+                else
+                {
+                    if(observerClass.isAssignableFrom(eventType))
+                    {                
+                        addToMatching(type, matching);
+                    }
+                }                
+            }            
+        }            
+        
+        return matching;        
+    }
+    
+    private boolean checkEventTypeParameterForExtensions(Class<?> beanClass, Type observerTypeActualArg)
+    {
+        if(ClassUtil.isTypeVariable(observerTypeActualArg))
+        {
+            TypeVariable<?> tv = (TypeVariable<?>)observerTypeActualArg;
+            Type tvBound = tv.getBounds()[0];
+            
+            if(tvBound instanceof Class)
+            {
+                Class<?> clazzTvBound = (Class<?>)tvBound;
+                
+                if(clazzTvBound.isAssignableFrom(beanClass))
+                {
+                    return true;
+                }                    
+            }            
+
+        }
+        else if(ClassUtil.isWildCardType(observerTypeActualArg))
+        {
+            return ClassUtil.checkRequiredTypeisWildCard(beanClass, observerTypeActualArg);
+        }
+        else if(observerTypeActualArg instanceof Class)
+        {
+            Class<?> observerClass = (Class<?>)observerTypeActualArg;
+            if(observerClass.isAssignableFrom(beanClass))
+            {
+                return true;
             }
         }
         
-        return matching;
+        return false;
+    }
+    
+    private <T> void addToMatching(Type type, Set<ObserverMethod<? super T>> matching)
+    {
+        Set<ObserverMethod<?>> wrappers = this.observers.get(type);
+
+        for (ObserverMethod<?> wrapper : wrappers)
+        {
+            matching.add((ObserverMethod<T>) wrapper);
+        }        
+    }
+    
+    private <T> void addToMathingWithParametrizedForBeans(Type type, Class<?> beanClass, Set<ObserverMethod<? super T>> matching )
+    {
+        ParameterizedType pt = (ParameterizedType)type;
+        Type[] actualArgs = pt.getActualTypeArguments();
+        
+        if(actualArgs.length == 0)
+        {
+            Class<?> rawType = (Class<?>)pt.getRawType();
+            if(rawType.isAssignableFrom(beanClass))
+            {
+                addToMatching(type, matching);
+            }
+        }
+        else
+        {
+            if(checkEventTypeParameterForExtensions(beanClass, actualArgs[0]))
+            {
+                addToMatching(type, matching);   
+            }
+        }
         
     }
+    
+    private <T> void addToMathingWithParametrizedForProducers(Type type, Class<?> beanClass, Class<?> producerOrObserverReturnClass, Set<ObserverMethod<? super T>> matching )
+    {
+        ParameterizedType pt = (ParameterizedType)type;
+        Type[] actualArgs = pt.getActualTypeArguments();
+        
+        if(actualArgs.length == 0)
+        {
+            Class<?> rawType = (Class<?>)pt.getRawType();
+            if(rawType.isAssignableFrom(beanClass))
+            {
+                addToMatching(type, matching);
+            }
+        }
+        else
+        {
+            if(checkEventTypeParameterForExtensions(beanClass, actualArgs[0]) && 
+                    checkEventTypeParameterForExtensions(producerOrObserverReturnClass, actualArgs[1]))
+            {
+                addToMatching(type, matching);   
+            }
+        }
+        
+    }    
 
     /**
      * filter out all {@code ObserverMethod}s which do not fit the given

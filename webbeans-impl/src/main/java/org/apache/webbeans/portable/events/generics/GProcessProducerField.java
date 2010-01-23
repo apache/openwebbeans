@@ -17,13 +17,26 @@ import javax.enterprise.inject.spi.AnnotatedField;
 
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.portable.events.ProcessProducerFieldImpl;
+import org.apache.webbeans.util.ClassUtil;
 
 @SuppressWarnings("unchecked")
-public class GProcessProducerField extends ProcessProducerFieldImpl
+public class GProcessProducerField extends ProcessProducerFieldImpl implements GenericProducerObserverEvent
 {
     public GProcessProducerField(ProducerFieldBean<?> bean,AnnotatedField<?> annotatedField)
     {
         super(bean, annotatedField);
+    }
+
+    @Override
+    public Class<?> getBeanClass()
+    {
+        return getBean().getBeanClass();
+    }
+
+    @Override
+    public Class<?> getProducerOrObserverType()
+    {
+        return ClassUtil.getClazz(getAnnotatedProducerField().getBaseType());
     }
 
 }

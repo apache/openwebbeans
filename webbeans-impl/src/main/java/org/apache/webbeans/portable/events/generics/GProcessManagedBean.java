@@ -19,10 +19,16 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.portable.events.ProcessManagedBeanImpl;
 
 @SuppressWarnings("unchecked")
-public class GProcessManagedBean extends ProcessManagedBeanImpl
+public class GProcessManagedBean extends ProcessManagedBeanImpl implements GenericBeanEvent
 {
     public GProcessManagedBean(ManagedBean<?> bean,AnnotatedType<?> annotated)
     {
         super(bean,annotated);
+    }
+
+    @Override
+    public Class<?> getBeanClass()
+    {
+        return getBean().getBeanClass();
     }
 }

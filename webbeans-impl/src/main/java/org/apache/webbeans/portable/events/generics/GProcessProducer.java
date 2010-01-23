@@ -16,13 +16,27 @@ package org.apache.webbeans.portable.events.generics;
 import javax.enterprise.inject.spi.AnnotatedMember;
 
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
+import org.apache.webbeans.util.ClassUtil;
 
 @SuppressWarnings("unchecked")
-public class GProcessProducer extends ProcessProducerImpl
+public class GProcessProducer extends ProcessProducerImpl implements GenericProducerObserverEvent
 {
     public GProcessProducer(AnnotatedMember<?> annotateMember)
     {
         super(annotateMember);
     }
+
+    @Override
+    public Class<?> getBeanClass()
+    {
+        return getAnnotatedMember().getDeclaringType().getJavaClass();
+    }
+
+    @Override
+    public Class<?> getProducerOrObserverType()
+    {
+        return ClassUtil.getClazz(getAnnotatedMember().getBaseType());
+    }
+
 
 }

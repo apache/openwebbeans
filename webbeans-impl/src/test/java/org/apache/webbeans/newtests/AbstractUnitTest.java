@@ -60,6 +60,11 @@ public abstract class AbstractUnitTest
         //Creates a new container
         testLifecycle = new OpenWebBeansTestLifeCycle();
         
+        for (Extension ext : extensions)
+        {
+            ExtensionLoader.getInstance().addExtension(ext);
+        }
+        
         //Deploy bean classes
         OpenWebBeansTestMetaDataDiscoveryService discoveyService = (OpenWebBeansTestMetaDataDiscoveryService)testLifecycle.getDiscoveryService();
         discoveyService.deployClasses(beanClasses);

@@ -352,13 +352,14 @@ public final class AnnotationUtil
                 if (btype.equals(clazz))
                 {
                     found = true;
-                    continue;
+                    //Adding Break instead of continue
+                    break;
                 }
             }
 
             if (found)
             {
-                result = method.getParameterTypes()[index];
+                result = method.getGenericParameterTypes()[index];
                 break;
             }
 

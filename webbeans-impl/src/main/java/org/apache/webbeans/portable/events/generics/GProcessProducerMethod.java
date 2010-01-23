@@ -18,13 +18,26 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.portable.events.ProcessProducerMethodImpl;
+import org.apache.webbeans.util.ClassUtil;
 
 @SuppressWarnings("unchecked")
-public class GProcessProducerMethod extends ProcessProducerMethodImpl
+public class GProcessProducerMethod extends ProcessProducerMethodImpl implements GenericProducerObserverEvent
 {
     public GProcessProducerMethod(ProducerMethodBean<?> bean,AnnotatedMethod<?> annotatedMethod, AnnotatedParameter dispose)
     {
         super(bean, annotatedMethod,dispose);
+    }
+
+    @Override
+    public Class<?> getBeanClass()
+    {
+        return getBean().getBeanClass();
+    }
+
+    @Override
+    public Class<?> getProducerOrObserverType()
+    {
+        return ClassUtil.getClazz(getAnnotatedProducerMethod().getBaseType());
     }
     
 

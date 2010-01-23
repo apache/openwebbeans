@@ -968,22 +968,22 @@ public final class ClassUtil
             //Required type is parametrized
             if(ClassUtil.isParametrizedType(requiredTypeArg) && ClassUtil.isParametrizedType(beanTypeArg))
             {
-                return check1(beanTypeArg, requiredTypeArg);
+                return checkBeanAndRequiredTypeisParametrized(beanTypeArg, requiredTypeArg);
             }
             //Required type is wildcard
             else if(ClassUtil.isWildCardType(requiredTypeArg))
             {
-                return check2(beanTypeArg, requiredTypeArg);
+                return checkRequiredTypeisWildCard(beanTypeArg, requiredTypeArg);
             }
             //Required type is actual type
             else if(requiredTypeArg instanceof Class && ClassUtil.isTypeVariable(beanTypeArg))
             {
-                return check3(beanTypeArg, requiredTypeArg);
+                return checkRequiredTypeIsClassAndBeanTypeIsVariable(beanTypeArg, requiredTypeArg);
             }
             //Required type is Type variable
             else if(ClassUtil.isTypeVariable(requiredTypeArg) && ClassUtil.isTypeVariable(beanTypeArg))
             {
-                return check4(beanTypeArg, requiredTypeArg);
+                return checkBeanTypeAndRequiredIsTypeVariable(beanTypeArg, requiredTypeArg);
             }      
             else if((beanTypeArg instanceof Class) && (requiredTypeArg instanceof Class))
             {
@@ -997,7 +997,7 @@ public final class ClassUtil
         return false;
     }
     
-    private static boolean check1(Type beanTypeArg, Type requiredTypeArg)
+    public static boolean checkBeanAndRequiredTypeisParametrized(Type beanTypeArg, Type requiredTypeArg)
     {
         ParameterizedType ptRequiredTypeArg = (ParameterizedType)requiredTypeArg;
         ParameterizedType ptBeanTypeArg = (ParameterizedType)beanTypeArg;
@@ -1022,7 +1022,7 @@ public final class ClassUtil
         return false;
     }
     
-    private static boolean check2(Type beanTypeArg, Type requiredTypeArg)
+    public static boolean checkRequiredTypeisWildCard(Type beanTypeArg, Type requiredTypeArg)
     {
         WildcardType wctRequiredTypeArg = (WildcardType)requiredTypeArg;
         Type upperBoundRequiredTypeArg =  wctRequiredTypeArg.getUpperBounds()[0];
@@ -1087,7 +1087,7 @@ public final class ClassUtil
         return false;
     }
     
-    private static boolean check3(Type beanTypeArg, Type requiredTypeArg)
+    public static boolean checkRequiredTypeIsClassAndBeanTypeIsVariable(Type beanTypeArg, Type requiredTypeArg)
     {
         Class<?> clazzRequiredType = (Class<?>)requiredTypeArg;
         
@@ -1107,7 +1107,7 @@ public final class ClassUtil
         return false;
     }
 
-    private static boolean check4(Type beanTypeArg, Type requiredTypeArg)
+    public static boolean checkBeanTypeAndRequiredIsTypeVariable(Type beanTypeArg, Type requiredTypeArg)
     {
         TypeVariable<?> tvBeanTypeArg = (TypeVariable<?>)beanTypeArg;
         Type tvBeanBound = tvBeanTypeArg.getBounds()[0];
