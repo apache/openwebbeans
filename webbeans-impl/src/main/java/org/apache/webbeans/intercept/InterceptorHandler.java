@@ -21,15 +21,17 @@ import java.util.Iterator;
 import java.util.List;
 
 import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
 
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.component.AbstractBean;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.BeansDeployer;
+import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -37,6 +39,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -137,12 +140,6 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
 
     protected AbstractBean<?> bean = null;
 
-    private transient Method calledMethod = null;
-
-    private transient boolean isSameDecMethod = false;
-    
-    private transient boolean isInDecoratorCall = false;
-
     protected InterceptorHandler(AbstractBean<?> bean)
     {
         this.bean = bean;
@@ -158,11 +155,23 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             //toString is supported but no other object method names!!!
             if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) && InterceptorUtil.isWebBeansBusinessMethod(method))
             {
-                checkDecoratorStackForSameDecorator(method);
-
-                //Gets component decorator stack
-                List<Object> decorators = WebBeansDecoratorConfig.getDecoratorStack(bean, instance);
-                            
+                
+                DelegateHandler delegateHandler = null;
+                List<Object> decorators = null;
+                
+                if(bean.getDecorators().size() > 0)
+                {
+                	ProxyFactory delegateFactory = JavassistProxyFactory.createProxyFactory(bean);
+                	delegateHandler = new DelegateHandler();
+                	delegateFactory.setHandler(delegateHandler);
+                	Object delegate = delegateFactory.createClass().newInstance();
+                		
+                    //Gets component decorator stack
+                    decorators = WebBeansDecoratorConfig.getDecoratorStack(bean, instance, delegate);
+                    
+                    delegateHandler.setDecorators(decorators);
+                }
+           
                 // Run around invoke chain
                 List<InterceptorData> stack = bean.getInterceptorStack();
                 
@@ -178,9 +187,12 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                     interceptorRun = true;
                 }
                 
-                //Call decarators
-                callDecorators(decorators, method, arguments);            
-                
+                //If there are Decorators, allow the delegate handler to manage the stack
+                if(decorators != null)
+                {
+                	return delegateHandler.invoke(instance, method, proceed, arguments);
+                }
+               
             }
 
             if(interceptorRun)
@@ -208,93 +220,6 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             }
         }
         
-    }
-    
-    private void checkDecoratorStackForSameDecorator(Method method)
-    {
-        if(this.isInDecoratorCall)
-        {
-            if (this.calledMethod == null)
-            {
-                this.calledMethod = method;
-            }
-            
-            else if (this.calledMethod.equals(method))
-            {
-                this.isSameDecMethod = true;
-            }
-            
-            else
-            {
-                this.calledMethod = method;
-                this.isSameDecMethod = false;
-            }            
-        }
-        else
-        {
-            this.calledMethod = null;
-        }
-    }
-
-    private void callDecorators(List<Object> decorators, Method method, Object[] arguments)
-    {
-
-        Iterator<Object> itDec = decorators.iterator();
-        
-        while (itDec.hasNext())
-        {
-            if(!this.isInDecoratorCall)
-            {
-                this.isInDecoratorCall = true;
-            }
-            
-            Object decorator = itDec.next();
-            
-            try
-            {
-                Method decMethod = decorator.getClass().getMethod(method.getName(), method.getParameterTypes());
-
-                if (decMethod != null)
-                {
-                    if (!this.isSameDecMethod)
-                    {
-                        if (!decMethod.isAccessible())
-                        {
-                            decMethod.setAccessible(true);
-                        }
-
-                        decMethod.invoke(decorator, arguments);
-                    }
-                }
-
-            }
-            catch (SecurityException e)
-            {
-                logger.error(OWBLogConst.ERROR_0011, new Object[]{method.getName(), decorator.getClass().getName()});
-                throw new WebBeansException(e);
-
-            }
-            catch (NoSuchMethodException e)
-            {
-                continue;
-            }
-            catch (InvocationTargetException e)
-            {
-                logger.error(OWBLogConst.ERROR_0012, new Object[]{method.getName(), decorator.getClass().getName()}, e.getTargetException());
-
-                throw new WebBeansException(e);
-            }
-            catch (IllegalAccessException e)
-            {
-                logger.error(OWBLogConst.ERROR_0014, new Object[]{method.getName(), decorator.getClass().getName()});
-                throw new WebBeansException(e);
-            }
-            finally
-            {
-                this.isInDecoratorCall = false;
-            }
-
-        }
     }
 
     protected abstract <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception;

@@ -79,7 +79,7 @@ public final class WebBeansDecoratorConfig
         }
     }
     
-    public static List<Object> getDecoratorStack(AbstractBean<?> component, Object instance)
+    public static List<Object> getDecoratorStack(AbstractBean<?> component, Object instance, Object delegate)
     {
         List<Object> decoratorStack = new ArrayList<Object>();
         List<Decorator<?>> decoratorList = component.getDecorators();        
@@ -90,10 +90,8 @@ public final class WebBeansDecoratorConfig
             WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();
             
             Object decoratorInstance = BeanManagerImpl.getManager().getInstance(decorator,null);
-
             decorator.setInjections(decoratorInstance);
-            decorator.setDelegate(decoratorInstance, instance);
-            
+            decorator.setDelegate(decoratorInstance, delegate);
             decoratorStack.add(decoratorInstance);
         }
 
