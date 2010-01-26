@@ -25,5 +25,23 @@ import org.apache.webbeans.test.annotation.binding.Binding2;
 @Binding2
 public class Typed2 implements ITyped2<String, Object>, Serializable
 {
+    private boolean value = false;
 
+    /**
+     * @return the value
+     */
+    public boolean isValue()
+    {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public void setValue(boolean value)
+    {
+        this.value = value;
+    }
+    
+    
 }

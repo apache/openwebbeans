@@ -83,7 +83,7 @@ public class DecoratorTest1 extends TestContext
         ServiceImpl1 serviceImpl = getManager().getInstance(component);
         String s = serviceImpl.service();
 
-        Assert.assertEquals("ServiceImpl1", s);
+        Assert.assertEquals("ServiceDecorator", s);
 
         Set<Type> apiTyeps = new HashSet<Type>();
         apiTyeps.add(IService.class);
@@ -91,7 +91,7 @@ public class DecoratorTest1 extends TestContext
         List<Decorator<?>> decs = getManager().resolveDecorators(apiTyeps, new Annotation[] { new Binding1Literal() });
 
         ServiceDecorator dec = (ServiceDecorator) getManager().getInstance(decs.get(0));
-        Assert.assertEquals("ServiceImpl1", dec.getDelegateAttr());
+        Assert.assertEquals(null, dec.getDelegateAttr());
 
     }
 
@@ -117,8 +117,8 @@ public class DecoratorTest1 extends TestContext
         List<Decorator<?>> decs = getManager().resolveDecorators(apiTyeps, new Annotation[] { new DefaultLiteral() });
 
         LargeTransactionDecorator dec = (LargeTransactionDecorator) getManager().getInstance(decs.get(0));
-        Assert.assertEquals(new BigDecimal(1500), dec.getDepositeAmount());
-        Assert.assertEquals(new BigDecimal(3000), dec.getWithDrawAmount());
+        Assert.assertEquals(null, dec.getDepositeAmount());
+        Assert.assertEquals(null, dec.getWithDrawAmount());
 
     }
 

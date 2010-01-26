@@ -23,10 +23,20 @@ import org.apache.webbeans.test.annotation.binding.Check;
 @Named
 public class CheckWithCheckPayment implements IPayment
 {
+    private boolean value = false;
 
     public String pay()
     {
         return "CHECK";
     }
 
+    public boolean getValue()
+    {
+        return this.value;
+    }
+    
+    public void setValue(boolean value)
+    {
+        this.value = value;
+    }
 }

@@ -69,12 +69,15 @@ public class TypedInjectedComponentTest extends TestContext
         Assert.assertTrue(object instanceof TypedInjection);
 
         TypedInjection i = (TypedInjection) object;
+        Typed2 typed2 = (Typed2)i.getV();
+        typed2.setValue(true);
+
 
         Assert.assertTrue(i.getV() instanceof ITyped2);
 
-        Object obj2 = getManager().getInstance(comps.get(0));
+        Typed2 obj2 = (Typed2)getManager().getInstance(comps.get(0));
 
-        Assert.assertSame(i.getV(), obj2);
+        Assert.assertSame(typed2.isValue(), obj2.isValue());
 
         ContextFactory.destroySessionContext(session);
     }
@@ -100,12 +103,14 @@ public class TypedInjectedComponentTest extends TestContext
         Assert.assertTrue(object instanceof TypedInjectionWithoutArguments);
 
         TypedInjectionWithoutArguments i = (TypedInjectionWithoutArguments) object;
+        Typed2 typed2 = (Typed2)i.getV();
+        typed2.setValue(true);
 
         Assert.assertTrue(i.getV() instanceof ITyped2);
 
-        Object obj2 = getManager().getInstance(comps.get(0));
+        Typed2 obj2 = (Typed2)getManager().getInstance(comps.get(0));
 
-        Assert.assertSame(i.getV(), obj2);
+        Assert.assertSame(typed2.isValue(), obj2.isValue());
 
         ContextFactory.destroySessionContext(session);
     }

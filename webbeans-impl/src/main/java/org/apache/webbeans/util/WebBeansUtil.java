@@ -2274,4 +2274,15 @@ public final class WebBeansUtil
         return false;
 
     }    
+    
+    public static boolean isProxyForScopeCachable(Class<? extends Annotation> scopeType)
+    {
+        Asserts.assertNotNull(scopeType, "Scope type is null");
+        if(scopeType.equals(ApplicationScoped.class))
+        {
+            return true;
+        }
+        
+        return false;
+    }
 }

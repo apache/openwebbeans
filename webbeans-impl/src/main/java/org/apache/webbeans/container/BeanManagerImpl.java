@@ -705,15 +705,21 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             }            
             //Create Managed Bean Proxy
             else
-            {                
-                if (this.proxyMap.containsKey(bean))
+            {   
+                boolean proxyCacheable = WebBeansUtil.isProxyForScopeCachable(bean.getScope());
+                
+                if (proxyCacheable && this.proxyMap.containsKey(bean))
                 {
                     instance = this.proxyMap.get(bean);
                 }
                 else
                 {
                     instance = JavassistProxyFactory.createNormalScopedBeanProxy(bean,creationalContext);
-                    this.proxyMap.put(bean, instance);     
+                    
+                    if(proxyCacheable)
+                    {
+                        this.proxyMap.put(bean, instance);   
+                    }     
                     
                     //push this proxy instance into creational context
                     if(creationalContext instanceof CreationalContextImpl)

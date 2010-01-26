@@ -72,7 +72,7 @@ public class CurrentInjectedComponentTest extends TestContext
 
         Object obj2 = getManager().getInstance(comps.get(1));
 
-        Assert.assertSame(i.getInstance(), obj2);
+        Assert.assertSame(i.getInstance().getTyped2(), ((CurrentBindingComponent) obj2).getTyped2());
 
         CurrentBindingComponent bc = (CurrentBindingComponent) obj2;
         ITyped2 typed2 = bc.getTyped2();

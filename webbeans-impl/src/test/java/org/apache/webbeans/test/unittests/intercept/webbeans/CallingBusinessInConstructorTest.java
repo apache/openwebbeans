@@ -78,7 +78,7 @@ public class CallingBusinessInConstructorTest extends TestContext
         
         Assert.assertNotNull(instance);
         
-        Assert.assertTrue(!SecureInterceptor.CALL);
+        Assert.assertTrue(SecureInterceptor.CALL);
         
         ContextFactory.destroyRequestContext(null);
         

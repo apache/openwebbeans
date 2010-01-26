@@ -20,8 +20,7 @@ import javax.decorator.Decorator;
 import javax.enterprise.context.RequestScoped;
 
 @Decorator
-@RequestScoped
-public abstract class LargeTransactionDecorator implements Account
+public class LargeTransactionDecorator implements Account
 {
     @Delegate Account account;
 
@@ -53,6 +52,13 @@ public abstract class LargeTransactionDecorator implements Account
     public BigDecimal getWithDrawAmount()
     {
         return withDrawAmount;
+    }
+
+    @Override
+    public BigDecimal getBalance()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

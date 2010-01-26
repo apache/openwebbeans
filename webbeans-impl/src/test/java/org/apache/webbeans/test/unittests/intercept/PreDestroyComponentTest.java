@@ -60,7 +60,7 @@ public class PreDestroyComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        Object object = getManager().getInstance(comps.get(0));
+        CheckWithCheckPayment object = (CheckWithCheckPayment)getManager().getInstance(comps.get(0));
         PreDestroyComponent object2 = (PreDestroyComponent)getManager().getInstance(comps.get(1));
         
         object2.getP();
@@ -69,6 +69,8 @@ public class PreDestroyComponentTest extends TestContext
         Assert.assertTrue(object2 instanceof PreDestroyComponent);
 
         PreDestroyComponent pcc = (PreDestroyComponent) object2;
+        CheckWithCheckPayment payment = (CheckWithCheckPayment) pcc.getP();
+        payment.setValue(true);
 
         ManagedBean<PreDestroyComponent> s = (ManagedBean<PreDestroyComponent>) comps.get(1);
         List<InterceptorData> stack = s.getInterceptorStack();
@@ -76,7 +78,7 @@ public class PreDestroyComponentTest extends TestContext
         Assert.assertEquals(2, stack.size());
 
         Assert.assertNotNull(pcc.getP());
-        Assert.assertSame(object, pcc.getP());
+        Assert.assertSame(object.getValue(), payment.getValue());
 
     }
 

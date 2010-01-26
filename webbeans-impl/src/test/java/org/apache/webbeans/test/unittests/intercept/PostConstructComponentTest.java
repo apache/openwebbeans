@@ -58,7 +58,7 @@ public class PostConstructComponentTest extends TestContext
 
         Assert.assertEquals(2, comps.size());
 
-        Object object = getManager().getInstance(comps.get(0));
+        CheckWithCheckPayment object =(CheckWithCheckPayment) getManager().getInstance(comps.get(0));
         Object object2 = getManager().getInstance(comps.get(1));
 
         Assert.assertTrue(object instanceof CheckWithCheckPayment);
@@ -66,7 +66,7 @@ public class PostConstructComponentTest extends TestContext
 
         PostConstructComponent pcc = (PostConstructComponent) object2;
 
-        pcc.getP();
+        CheckWithCheckPayment chk = (CheckWithCheckPayment) pcc.getP();
 
         ManagedBean<PostConstructComponent> s = (ManagedBean<PostConstructComponent>) comps.get(1);
         List<InterceptorData> stack = s.getInterceptorStack();
@@ -74,7 +74,7 @@ public class PostConstructComponentTest extends TestContext
         Assert.assertEquals(1, stack.size());
 
         Assert.assertNotNull(pcc.getP());
-        Assert.assertSame(object, pcc.getP());
+        Assert.assertSame(object.getValue(), chk.getValue());
 
         ContextFactory.destroyRequestContext(null);
     }
