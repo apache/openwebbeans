@@ -37,4 +37,12 @@ public class Decorator1 implements IOutputProvider
         return op.getOutput();
     }
 
+    public String trace() 
+    {
+        return "Decorator1/trace," + op.trace();
+    }
+    public String otherMethod() 
+    {
+        return "Decorator1/otherMethod," + op.otherMethod();
+    }
 }

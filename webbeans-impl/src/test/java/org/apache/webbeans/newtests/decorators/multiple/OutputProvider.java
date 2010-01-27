@@ -32,4 +32,12 @@ public class OutputProvider implements IOutputProvider
         return rsb.toString();
     }
 
+    public String trace() { 
+        return "delegate/trace";
+    }
+
+    @Override
+    public String otherMethod() {
+        return "delegate/otherMethod";
+    }
 }

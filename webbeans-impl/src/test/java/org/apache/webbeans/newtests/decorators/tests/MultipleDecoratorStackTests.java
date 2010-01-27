@@ -64,5 +64,11 @@ public class MultipleDecoratorStackTests extends AbstractUnitTest
         System.out.println(result);
         // Verify that the Decorators were called in order, and in a stack.
         Assert.assertTrue(result.equalsIgnoreCase("Decorator1\nDecorator2\nOutputProvider\n"));
+        
+        String hijackedStack = outputProvider.trace();
+        // Verify that the a method change in Decorator2 from trace->otherMethod results in the right stack
+        Assert.assertEquals("Decorator1/trace,Decorator2/trace,delegate/otherMethod", hijackedStack);
+        
+        
     }
 }

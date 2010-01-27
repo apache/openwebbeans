@@ -17,5 +17,7 @@ public interface IOutputProvider
 {
 
     public String getOutput();
+    public String trace();
+    public String otherMethod();
 
 }

@@ -39,5 +39,15 @@ public class Decorator2 implements IOutputProvider
         rsb.addOutput("Decorator2\n");
         return op.getOutput();
     }
+   
+    // change biz method 
+    public String trace() 
+    {
+        return "Decorator2/trace," + op.otherMethod();
+    }
 
+    public String otherMethod()
+    {
+        return "Decorator2/otherMethod," + op.otherMethod();
+    }
 }
