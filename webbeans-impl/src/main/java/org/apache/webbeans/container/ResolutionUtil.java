@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -67,7 +68,12 @@ public final class ResolutionUtil
         AnnotationUtil.checkQualifierConditions(qualifiers);
     }
 
-    public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers)
+    public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers) 
+    {
+        checkResolvedBeans(resolvedSet, type, qualifiers, null);
+    }
+    
+    public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers, InjectionPoint injectionPoint)
     {
         StringBuffer qualifierMessage = new StringBuffer("[");
         
@@ -89,6 +95,11 @@ public final class ResolutionUtil
         {
             StringBuffer message = new StringBuffer("Api type [" + type.getName() + "] is not found with the qualifiers ");            
             message.append(qualifierMessage);
+
+            if (injectionPoint != null) 
+            { 
+                message.append(" for injection into " + injectionPoint.toString());
+            }
             
             throw new UnsatisfiedResolutionException(message.toString());
         }

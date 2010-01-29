@@ -153,7 +153,7 @@ public class InjectionResolver
             }
         }
         
-        ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers);
+        ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers, injectionPoint);
         
         Bean<?> bean = beanSet.iterator().next();
         
@@ -220,7 +220,7 @@ public class InjectionResolver
         }
         
 
-        ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers);   
+        ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers, injectionPoint);   
 
         return beanSet.iterator().next();
         
