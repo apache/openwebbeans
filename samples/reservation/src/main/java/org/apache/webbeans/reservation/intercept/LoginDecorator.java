@@ -43,7 +43,7 @@ public class LoginDecorator implements ILoginController
     {
         logger.info("Login process is started. Use tries to login with user name : " + userName );
         
-        return null;
+        return decorator.checkLogin(userName, password);
     }
 
     
