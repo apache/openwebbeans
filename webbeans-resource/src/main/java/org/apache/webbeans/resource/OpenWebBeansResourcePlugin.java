@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
@@ -27,7 +28,7 @@ import javax.xml.ws.WebServiceRef;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.AbstractOpenWebBeansPlugin;
-import org.apache.webbeans.resource.spi.ResourceService;
+import org.apache.webbeans.spi.ResourceService;
 import org.apache.webbeans.spi.ServiceLoader;
 
 public class OpenWebBeansResourcePlugin extends AbstractOpenWebBeansPlugin implements org.apache.webbeans.plugins.OpenWebBeansResourcePlugin
@@ -39,7 +40,8 @@ public class OpenWebBeansResourcePlugin extends AbstractOpenWebBeansPlugin imple
         if (annotationClass.equals(Resource.class) || 
                 annotationClass.equals(WebServiceRef.class) || 
                 annotationClass.equals(PersistenceUnit.class) || 
-                annotationClass.equals(PersistenceContext.class))
+                annotationClass.equals(PersistenceContext.class) ||
+                annotationClass.equals(EJB.class))
         {
             return true;
         }

@@ -28,7 +28,7 @@ import javax.persistence.PersistenceUnit;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.resource.spi.ResourceService;
+import org.apache.webbeans.spi.ResourceService;
 
 public class ResourceServiceImpl implements ResourceService
 { 
