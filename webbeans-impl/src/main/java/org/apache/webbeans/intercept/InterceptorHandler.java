@@ -23,13 +23,14 @@ import java.util.List;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -134,10 +135,6 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class InterceptorHandler implements MethodHandler, Serializable
 {
-    private static final long serialVersionUID = 1657109769733323541L;
-    
-    private transient static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
-
     protected AbstractBean<?> bean = null;
 
     protected InterceptorHandler(AbstractBean<?> bean)
@@ -301,6 +298,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     public static void injectInterceptorFields(final List<InterceptorData> stack)
     {
         Iterator<InterceptorData> it = stack.iterator();
+        BeanManager manager = BeanManagerImpl.getManager();
         while (it.hasNext())
         {
             InterceptorData intData = it.next();
@@ -311,9 +309,11 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 {
                     if (intData.isDefinedWithWebBeansInterceptor())
                     {
-                        Object interceptorProxy = BeanManagerImpl.getManager().getInstance(intData.getWebBeansInterceptor(),null);
-                        WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) intData.getWebBeansInterceptor();
-                        interceptor.setInjections(interceptorProxy);
+                        WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>)intData.getWebBeansInterceptor();
+                        CreationalContext<?> creationalContext = manager.createCreationalContext(interceptor);
+                        Object interceptorProxy = manager.getReference(interceptor,interceptor.getBeanClass(), creationalContext);
+                        
+                        interceptor.setInjections(interceptorProxy, creationalContext);
 
                         //Setting interceptor proxy instance
                         intData.setInterceptorInstance(interceptorProxy);

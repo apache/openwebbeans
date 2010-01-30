@@ -69,9 +69,6 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     /** Wrapped bean*/
     private AbstractBean<T> wrappedBean;
     
-    /**Creational context*/
-    private CreationalContext<Object> creationalContext;
-
     /**
      * Creates a new decorator bean instance with the given wrapped bean.
      * @param delegateComponent delegate bean instance
@@ -247,7 +244,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
         return proxy;        
     }
 
-    public void setInjections(Object proxy)
+    public void setInjections(Object proxy, CreationalContext<?> cretionalContext)
     {
         // Set injected fields
         ManagedBean<T> delegate = (ManagedBean<T>) this.wrappedBean;
@@ -259,14 +256,14 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
 
             if (!isDecorates)
             {
-                injectField(injectedField, proxy);
+                injectField(injectedField, proxy, cretionalContext);
             }
         }
         
         Set<Method> injectedMethods = delegate.getInjectedFromSuperMethods();
         for (Method injectedMethod : injectedMethods)
         {
-            injectMethod(injectedMethod, proxy);
+            injectMethod(injectedMethod, proxy, cretionalContext);
         }        
 
         injectedFields = delegate.getInjectedFields();
@@ -276,27 +273,27 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
 
             if (!isDecorates)
             {
-                injectField(injectedField, proxy);
+                injectField(injectedField, proxy, cretionalContext);
             }
         }
         
         injectedMethods = delegate.getInjectedMethods();
         for (Method injectedMethod : injectedMethods)
         {
-            injectMethod(injectedMethod, proxy);
+            injectMethod(injectedMethod, proxy, cretionalContext);
         }        
     }
     
-    private void injectField(Field field, Object instance)
+    private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableField f = new InjectableField(field, instance, this.wrappedBean, this.creationalContext);
+        InjectableField f = new InjectableField(field, instance, this.wrappedBean, creationalContext);
         f.doInjection();        
     }
 
     @SuppressWarnings("unchecked")
-    private void injectMethod(Method method, Object instance)
+    private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethods m = new InjectableMethods(method, instance, this.wrappedBean, this.creationalContext);
+        InjectableMethods m = new InjectableMethods(method, instance, this.wrappedBean, creationalContext);
         m.doInjection();        
     }
     

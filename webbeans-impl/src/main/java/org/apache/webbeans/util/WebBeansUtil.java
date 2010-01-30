@@ -787,7 +787,7 @@ public final class WebBeansUtil
      */
     public static InjectionPointBean getInjectionPointBean()
     {
-        return new InjectionPointBean(null);
+        return new InjectionPointBean();
     }
 
     /**
@@ -2279,6 +2279,16 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(scopeType, "Scope type is null");
         if(scopeType.equals(ApplicationScoped.class))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public static boolean isDependent(Bean<?> bean)
+    {
+        if(bean.getScope().equals(Dependent.class))
         {
             return true;
         }

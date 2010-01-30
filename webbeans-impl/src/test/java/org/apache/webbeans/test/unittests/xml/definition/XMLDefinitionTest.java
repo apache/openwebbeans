@@ -74,7 +74,7 @@ public class XMLDefinitionTest extends TestContext
 
         XMLManagedBean<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition2.xml");
 
-        Object instance = compDef.create(null);
+        Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
 
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof Definition2);

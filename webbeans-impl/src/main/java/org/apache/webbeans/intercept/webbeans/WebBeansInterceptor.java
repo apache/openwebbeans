@@ -74,8 +74,6 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     /**Delegate Bean*/
     private AbstractBean<T> delegateBean;
     
-    private CreationalContext<T> creationalContext;
-
     public WebBeansInterceptor(AbstractBean<T> delegateBean)
     {
         super(WebBeansType.INTERCEPTOR,delegateBean.getReturnType());
@@ -278,7 +276,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
         return proxy;
     }
 
-    public void setInjections(Object proxy)
+    public void setInjections(Object proxy, CreationalContext<?> creationalContext)
     {
         // Set injected fields
         ManagedBean<T> delegate = (ManagedBean<T>) this.delegateBean;
@@ -286,39 +284,39 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
         Set<Field> injectedFields = delegate.getInjectedFromSuperFields();
         for (Field injectedField : injectedFields)
         {
-            injectField(injectedField, proxy);
+            injectField(injectedField, proxy, creationalContext);
         }
 
         Set<Method> injectedMethods = delegate.getInjectedFromSuperMethods();
         for (Method injectedMethod : injectedMethods)
         {
-            injectMethod(injectedMethod, proxy);
+            injectMethod(injectedMethod, proxy, creationalContext);
         }
         
         injectedFields = delegate.getInjectedFields();
         for (Field injectedField : injectedFields)
         {
-            injectField(injectedField, proxy);            
+            injectField(injectedField, proxy, creationalContext);            
         }
         
 
         injectedMethods = delegate.getInjectedMethods();
         for (Method injectedMethod : injectedMethods)
         {
-            injectMethod(injectedMethod, proxy);            
+            injectMethod(injectedMethod, proxy, creationalContext);            
         }        
     }
     
-    private void injectField(Field field, Object instance)
+    private void injectField(Field field, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableField f = new InjectableField(field, instance, this.delegateBean, this.creationalContext);
+        InjectableField f = new InjectableField(field, instance, this.delegateBean, creationalContext);
         f.doInjection();        
     }
 
     @SuppressWarnings("unchecked")
-    private void injectMethod(Method method, Object instance)
+    private void injectMethod(Method method, Object instance, CreationalContext<?> creationalContext)
     {
-        InjectableMethods m = new InjectableMethods(method, instance, this.delegateBean, this.creationalContext);
+        InjectableMethods m = new InjectableMethods(method, instance, this.delegateBean, creationalContext);
         m.doInjection();        
     }
     

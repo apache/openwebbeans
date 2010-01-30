@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -84,13 +86,14 @@ public final class WebBeansDecoratorConfig
         List<Object> decoratorStack = new ArrayList<Object>();
         List<Decorator<?>> decoratorList = component.getDecorators();        
         Iterator<Decorator<?>> itList = decoratorList.iterator();
-
+        BeanManager manager = BeanManagerImpl.getManager();
         while (itList.hasNext())
         {
             WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();
+            CreationalContext<?> creationalContext = manager.createCreationalContext(decorator);
+            Object decoratorInstance = manager.getReference(decorator, decorator.getBeanClass(), creationalContext);
             
-            Object decoratorInstance = BeanManagerImpl.getManager().getInstance(decorator,null);
-            decorator.setInjections(decoratorInstance);
+            decorator.setInjections(decoratorInstance, creationalContext);
             decorator.setDelegate(decoratorInstance, delegate);
             decoratorStack.add(decoratorInstance);
         }

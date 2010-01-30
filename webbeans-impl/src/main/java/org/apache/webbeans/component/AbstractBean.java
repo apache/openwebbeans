@@ -151,11 +151,17 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public T create(CreationalContext<T> creationalContext)
     {
         T instance = null;
         try
-        {            
+        {  
+            if(!(creationalContext instanceof CreationalContextImpl))
+            {                
+                creationalContext = CreationalContextFactory.getInstance().wrappedCreationalContext(creationalContext, this); 
+            }
+            
             instance = createInstance(creationalContext);
         }
         catch (Exception re)
@@ -397,42 +403,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         return returnType;
     }
 
-    /**
-     * Gets the dependent bean instance.
-     * 
-     * @param dependentComponent dependent web beans bean
-     * @return the dependent bean instance
-     */
-    public Object getDependent(Bean<?> dependentComponent, InjectionPoint injectionPoint, CreationalContext<?> creational)
-    {
-        Object object = null;
-        
-        //Setting injection point owner
-        @SuppressWarnings("unchecked")
-        AbstractBean<Object> dependent = (AbstractBean<Object>)dependentComponent;
-        dependent.setDependentOwnerInjectionPoint(injectionPoint);        
-        
-        @SuppressWarnings("unchecked")
-        CreationalContextImpl<Object> dependentCreational = (CreationalContextImpl<Object>)CreationalContextFactory.getInstance().getCreationalContext(dependentComponent);
-        
-        if(creational instanceof CreationalContextImpl)
-        {
-            dependentCreational.setOwnerCreational((CreationalContextImpl<?>)creational);   
-        }
-        
-        //Get dependent instance
-        object = BeanManagerImpl.getManager().getReference(dependent, injectionPoint.getType(), dependentCreational);
-        
-        if(creational instanceof CreationalContextImpl)
-        {
-            CreationalContextImpl<?> cc = (CreationalContextImpl<?>)creational;
-            
-            //Put this into the dependent map
-            cc.addDependent(dependent, object, dependentCreational);    
-        }
-        
-        return object;
-    }
     
     /**
      * {@inheritDoc}

@@ -25,12 +25,11 @@ import org.apache.webbeans.annotation.DependentScopeLiteral;
 
 public class InjectionPointBean extends AbstractBean<InjectionPoint>
 {
-    private InjectionPoint injectionPoint = null;
+    public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     
-    public InjectionPointBean(InjectionPoint injectionPoint)
+    public InjectionPointBean()
     {
         super(WebBeansType.INJECTIONPOINT,InjectionPoint.class);
-        this.injectionPoint = injectionPoint;
         
         addQualifier(new DefaultLiteral());
         setImplScopeType(new DependentScopeLiteral());
@@ -41,13 +40,20 @@ public class InjectionPointBean extends AbstractBean<InjectionPoint>
     @Override
     protected InjectionPoint createInstance(CreationalContext<InjectionPoint> creationalContext)
     {
-        return injectionPoint;
+        try
+        {
+            return local.get();
+            
+        }finally
+        {
+            local.remove();
+        }
     }
 
     @Override
     protected void destroyInstance(InjectionPoint instance, CreationalContext<InjectionPoint> creationalContext)
     {
-        this.injectionPoint = null;
+        local.remove();
     }
     
     

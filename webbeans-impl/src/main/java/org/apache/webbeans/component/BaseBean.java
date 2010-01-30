@@ -18,7 +18,6 @@ import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
@@ -160,14 +159,6 @@ public abstract class BaseBean<T> implements Bean<T>
      * @return bean class type
      */
     public abstract Class<T> getReturnType();
-
-    /**
-     * Gets dependent bean at given injection point.
-     * @param dependentBean dependent bean
-     * @param injectionPoint injection point of dependent bean
-     * @return dependent bean
-     */
-    public abstract Object getDependent(Bean<?> dependentBean,InjectionPoint injectionPoint, CreationalContext<?> creational);
 
     /**
      * Gets interceptor stack of bean instance.

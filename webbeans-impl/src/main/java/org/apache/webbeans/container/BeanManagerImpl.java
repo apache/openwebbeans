@@ -37,7 +37,6 @@ import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.event.Event;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Stereotype;
@@ -572,7 +571,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         if(ClassUtil.isTypeVariable(beanType))
         {
-            throw new WebBeansConfigurationException("Exception in getBeans method. Bean type can not be TypeVariable");
+            throw new IllegalArgumentException("Exception in getBeans method. Bean type can not be TypeVariable for bean type : " + beanType);
         }
         
         AnnotationUtil.checkQualifierConditions(bindings);
@@ -597,48 +596,45 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@inheritDoc}
      */
     @Override
-    public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> creationalContext)
+    public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> ownerCreationalContext)
     {
+        //Injected instance
         Object instance = null;
         
+        //Injection point is null
         if(injectionPoint == null)
         {
             return null;
         }
-                
-        Annotation[] bindings = new Annotation[injectionPoint.getQualifiers().size()];
-        bindings = injectionPoint.getQualifiers().toArray(bindings);
         
+        //Owner bean creational context
+        CreationalContextImpl<?> ownerCreationalContextImpl = (CreationalContextImpl<?>)ownerCreationalContext;
+                                
         //Find the injection point Bean
-        Bean<?> bean = injectionResolver.getInjectionPointBean(injectionPoint);
+        Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
+        CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);
         
-        boolean isImpl = false;
-        if(creationalContext != null && (creationalContext instanceof CreationalContextImpl))
-        {
-            CreationalContextImpl<?> creationalContextImpl = (CreationalContextImpl<?>)creationalContext;            
-            instance = WebBeansUtil.getObjectFromCreationalContext(bean, creationalContextImpl);
-            isImpl = true;
-        }
-                
-        if(instance == null)
-        {
-            CreationalContextImpl<?> injectedCreational = (CreationalContextImpl<?>)createCreationalContext(bean);
-            
-            if(injectionPoint.getBean().getScope() != Dependent.class)
-            {
-                if(isImpl)
-                {
-                    injectedCreational.setOwnerCreational((CreationalContextImpl<?>)creationalContext);
-                }
-   
-            }
-            
+        if(WebBeansUtil.isDependent(injectedBean))
+        {        
+            injectedCreational.setOwnerCreational((CreationalContextImpl<?>)ownerCreationalContext);            
             //Creating a new creational context for target bean instance
-            instance = getReference(bean, injectionPoint.getType(), injectedCreational);
+            instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
+            
+            //Add this dependent into bean dependent list
+            ownerCreationalContextImpl.addDependent(injectedBean, instance, injectedCreational);
         }
         
-        return instance;
+        else
+        {   //Look for creational stack
+            instance = WebBeansUtil.getObjectFromCreationalContext(injectedBean, ownerCreationalContextImpl);
+            //No in stack, create new
+            if(instance == null)
+            {
+                instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
+            }
+        }
 
+        return instance;
     }
 
     /**
@@ -885,15 +881,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         this.injectionResolver.checkInjectionPointType(injectionPoint);
         
         Class<?> rawType = ClassUtil.getRawTypeForInjectionPoint(injectionPoint);
-        
-        //Comment out while testing TCK Events Test --- WBTCK27 jira./////
-        //Hack for EntityManager --> Solve in M3!!!!
-        if(rawType.equals(Event.class) || rawType.getSimpleName().equals("EntityManager"))
-        {
-            return;
-        }
-        /////////////////////////////////////////////////////////////////
-        
+                
         // check for InjectionPoint injection
         if (rawType.equals(InjectionPoint.class))
         {
