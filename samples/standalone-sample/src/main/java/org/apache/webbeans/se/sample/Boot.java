@@ -23,11 +23,11 @@ import javax.swing.JFrame;
 
 import org.apache.webbeans.lifecycle.LifecycleFactory;
 import org.apache.webbeans.se.sample.gui.LoginWindow;
-import org.apache.webbeans.spi.Lifecycle;
+import org.apache.webbeans.spi.ContainerLifecycle;
 
 public class Boot
 {
-    private static Lifecycle lifecycle = null;
+    private static ContainerLifecycle lifecycle = null;
     
     private static JFrame frame = null;
     
@@ -36,7 +36,7 @@ public class Boot
         try
         {
             lifecycle = LifecycleFactory.getInstance().getLifecycle();
-            lifecycle.applicationStarted(startupObject);
+            lifecycle.start(startupObject);
             
         }catch(Exception e)
         {
@@ -49,7 +49,7 @@ public class Boot
         try
         {
             lifecycle = LifecycleFactory.getInstance().getLifecycle();
-            lifecycle.applicationEnded(endObject);
+            lifecycle.stop(endObject);
             
         }catch(Exception e)
         {
