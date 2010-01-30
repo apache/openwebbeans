@@ -26,18 +26,18 @@ import org.apache.openejb.spi.ContainerSystem;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.lifecycle.EnterpriseLifeCycle;
+import org.apache.webbeans.lifecycle.WebApplicationLifeCycle;
 import org.apache.webbeans.lifecycle.test.MockHttpSession;
 import org.apache.webbeans.lifecycle.test.MockServletContextEvent;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.ServiceLoader;
-import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
 import org.jboss.testharness.api.DeploymentException;
 import org.jboss.testharness.spi.StandaloneContainers;
 
 public class StandaloneContainersImpl implements StandaloneContainers
 {
-    private EnterpriseLifeCycle lifeCycle = null;
+    private WebApplicationLifeCycle lifeCycle = null;
     
     private MockServletContextEvent servletContextEvent;
     
@@ -49,9 +49,9 @@ public class StandaloneContainersImpl implements StandaloneContainers
     {
         initializeContexts();
         
-        TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(MetaDataDiscoveryService.class);
+        TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(ScannerService.class);
         
-        this.lifeCycle = new EnterpriseLifeCycle();
+        this.lifeCycle = new WebApplicationLifeCycle();
         
         try
         {
@@ -78,9 +78,9 @@ public class StandaloneContainersImpl implements StandaloneContainers
         {
             initializeContexts();
             
-            TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(MetaDataDiscoveryService.class);
+            TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(ScannerService.class);
             
-            this.lifeCycle = new EnterpriseLifeCycle();
+            this.lifeCycle = new WebApplicationLifeCycle();
             
             Iterator<Class<?>> it = classes.iterator();
             while(it.hasNext())
