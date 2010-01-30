@@ -60,10 +60,6 @@
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-resource</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-geronimo</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.jboss.test-harness</groupId>
