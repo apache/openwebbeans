@@ -18,7 +18,7 @@ package org.apache.webbeans.spi.conversation.jsf;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.webbeans.spi.conversation.ConversationService;
+import org.apache.webbeans.spi.ConversationService;
 import org.apache.webbeans.util.JSFUtil;
 
 public class JSFConversationServiceImpl implements ConversationService
