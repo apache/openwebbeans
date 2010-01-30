@@ -54,4 +54,10 @@ public final class JNDIServiceEnterpriseImpl implements JNDIService
     {
         return JNDIUtil.lookup(name, expectedClass);
     }
+
+    @Override
+    public <T> T lookup(String name, Class<? extends T> expectedClass)
+    {
+        return getObject(name, expectedClass);
+    }
 }

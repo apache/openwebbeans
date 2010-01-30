@@ -14,7 +14,7 @@
 package org.apache.webbeans.lifecycle;
 
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.spi.Lifecycle;
+import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.ServiceLoader;
 
 public final class LifecycleFactory
@@ -31,9 +31,9 @@ public final class LifecycleFactory
         return currentLifecycle;
     }
     
-    public Lifecycle getLifecycle()
+    public ContainerLifecycle getLifecycle()
     {
-        Lifecycle lifecycle = ServiceLoader.getService(Lifecycle.class);
+        ContainerLifecycle lifecycle = ServiceLoader.getService(ContainerLifecycle.class);
         
         return lifecycle;
     }

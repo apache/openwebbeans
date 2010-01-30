@@ -14,6 +14,7 @@
 package org.apache.webbeans.lifecycle;
 
 import java.lang.annotation.Annotation;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.enterprise.inject.spi.BeanManager;
@@ -29,14 +30,14 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
+import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.JNDIService;
-import org.apache.webbeans.spi.Lifecycle;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.ServiceLoader;
-import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.spi.se.deployer.MetaDataDiscoveryStandard;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
-public class StandaloneLifeCycle implements Lifecycle
+public class StandaloneLifeCycle implements ContainerLifecycle
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneLifeCycle.class);
     
@@ -52,7 +53,7 @@ public class StandaloneLifeCycle implements Lifecycle
     
     private AtomicBoolean stopped = new AtomicBoolean(false);
     
-    protected MetaDataDiscoveryService discoveryService = null;
+    protected ScannerService discoveryService = null;
     
     protected final WebBeansXMLConfigurator xmlConfig;
     
@@ -68,12 +69,11 @@ public class StandaloneLifeCycle implements Lifecycle
         init();
     }
     
-    @Override
     public void init()
     {
         if(inited.compareAndSet(false, true))
         {
-            discoveryService = ServiceLoader.getService(MetaDataDiscoveryService.class);
+            discoveryService = ServiceLoader.getService(ScannerService.class);
             
             if(discoveryService == null)
             {
@@ -90,7 +90,6 @@ public class StandaloneLifeCycle implements Lifecycle
         }
     }
 
-    @Override
     public void applicationStarted(Object startupObject) throws WebBeansException
     {
         if(this.started.compareAndSet(false, true))
@@ -124,7 +123,6 @@ public class StandaloneLifeCycle implements Lifecycle
         
     }
     
-    @Override
     public void applicationEnded(Object endObject)
     {
         if(this.stopped.compareAndSet(false, true))
@@ -166,8 +164,26 @@ public class StandaloneLifeCycle implements Lifecycle
         return this.beanManager;
     }
 
-    public MetaDataDiscoveryService getDiscoveryService()
+    public ScannerService getDiscoveryService()
     {
         return this.discoveryService;
+    }
+
+    @Override
+    public void init(Properties properties)
+    {
+        
+    }
+
+    @Override
+    public void start(Object startupObject) throws Exception
+    {
+        applicationStarted(startupObject);
+    }
+
+    @Override
+    public void stop(Object endObject)
+    {
+      applicationEnded(endObject);        
     }
 }

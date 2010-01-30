@@ -68,10 +68,9 @@ import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationIm
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.spi.JNDIService;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.ServiceLoader;
-import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
@@ -117,7 +116,7 @@ public class BeansDeployer
      * 
      * @throws WebBeansDeploymentException if any deployment exception occurs
      */
-    public void deploy(MetaDataDiscoveryService scanner)
+    public void deploy(ScannerService scanner)
     {
         try
         {
@@ -316,23 +315,17 @@ public class BeansDeployer
      * @param scanner discovery scanner
      * @throws ClassNotFoundException if class not found
      */
-    protected void deployFromClassPath(MetaDataDiscoveryService scanner) throws ClassNotFoundException
+    protected void deployFromClassPath(ScannerService scanner) throws ClassNotFoundException
     {
         logger.info(OWBLogConst.INFO_0017);
 
         // Start from the class
-        Map<String, Set<String>> classIndex = scanner.getClassIndex();
+        Set<Class<?>> classIndex = scanner.getBeanClasses();
         
         if (classIndex != null)
         {
-            Set<String> pathClasses = classIndex.keySet();
-            Iterator<String> itPathClasses = pathClasses.iterator();
-
-            while (itPathClasses.hasNext())
+            for(Class<?> implClass : classIndex)
             {
-                String componentClassName = itPathClasses.next();
-                Class<?> implClass = ClassUtil.getClassFromName(componentClassName);
-
                 //It must not be @Interceptor or @Decorator
                 if(AnnotationUtil.hasClassAnnotation(implClass, javax.decorator.Decorator.class) ||
                         AnnotationUtil.hasClassAnnotation(implClass, Interceptor.class))
@@ -342,14 +335,14 @@ public class BeansDeployer
                 
                 if (ManagedBeanConfigurator.isManagedBean(implClass))
                 {
-                    logger.info(OWBLogConst.INFO_0018, new Object[]{componentClassName});
+                    logger.info(OWBLogConst.INFO_0018, new Object[]{implClass.getName()});
                     defineManagedBean(implClass);
                 }
                 else if(this.discoverEjb)
                 {                    
                     if(EJBWebBeansConfigurator.isSessionBean(implClass))
                     {
-                        logger.info(OWBLogConst.INFO_0019, new Object[]{componentClassName});
+                        logger.info(OWBLogConst.INFO_0019, new Object[]{implClass.getName()});
                         defineEnterpriseWebBean(implClass);
                         
                     }
@@ -369,11 +362,11 @@ public class BeansDeployer
      * @param scanner discovery scanner
      * @throws WebBeansDeploymentException if exception
      */
-    protected void deployFromXML(MetaDataDiscoveryService scanner) throws WebBeansDeploymentException
+    protected void deployFromXML(ScannerService scanner) throws WebBeansDeploymentException
     {
         logger.info(OWBLogConst.INFO_0021);
 
-        Set<URL> xmlLocations = scanner.getWebBeansXmlLocations();
+        Set<URL> xmlLocations = scanner.getBeanXmls();
         Iterator<URL> it = xmlLocations.iterator();
 
         while (it.hasNext())
@@ -415,23 +408,19 @@ public class BeansDeployer
      * @param scanner discovery scanner
      * @throws ClassNotFoundException if class not found
      */
-    protected void configureInterceptors(MetaDataDiscoveryService scanner) throws ClassNotFoundException
+    protected void configureInterceptors(ScannerService scanner) throws ClassNotFoundException
     {
         logger.info(OWBLogConst.INFO_0023);
 
         // Interceptors Set
-        Map<String, Set<String>> annotIndex = scanner.getAnnotationIndex();
-        Set<String> classes = annotIndex.get(Interceptor.class.getName());
+        Set<Class<?>> beanClasses = scanner.getBeanClasses();
 
-        if (classes != null)
+        for (Class<?> interceptorClazz : beanClasses)
         {
-            for (String interceptorClazz : classes)
+            if(AnnotationUtil.hasClassAnnotation(interceptorClazz, Interceptor.class))
             {
-                Class<?> implClass = ClassUtil.getClassFromName(interceptorClazz);
-
                 logger.info(OWBLogConst.INFO_0024, new Object[]{interceptorClazz});
-
-                defineInterceptor(implClass);
+                defineInterceptor(interceptorClazz);                
             }
         }
 
@@ -445,21 +434,18 @@ public class BeansDeployer
      * @param scanner discovery scanner
      * @throws ClassNotFoundException if class not found
      */
-    protected void configureDecorators(MetaDataDiscoveryService scanner) throws ClassNotFoundException
+    protected void configureDecorators(ScannerService scanner) throws ClassNotFoundException
     {
         logger.info(OWBLogConst.INFO_0026);
 
-        Map<String, Set<String>> annotIndex = scanner.getAnnotationIndex();
-        Set<String> classes = annotIndex.get(javax.decorator.Decorator.class.getName());
+        Set<Class<?>> beanClasses = scanner.getBeanClasses();
 
-        if (classes != null)
+        for (Class<?> decoratorClazz : beanClasses)
         {
-            for (String decoratorClazz : classes)
+            if(AnnotationUtil.hasClassAnnotation(decoratorClazz, javax.decorator.Decorator.class))
             {
-                Class<?> implClass = ClassUtil.getClassFromName(decoratorClazz);
                 logger.info(OWBLogConst.INFO_0027, new Object[]{decoratorClazz});
-
-                defineDecorator(implClass);
+                defineDecorator(decoratorClazz);                
             }
         }
 
@@ -467,33 +453,27 @@ public class BeansDeployer
 
     }
 
-    protected void checkSpecializations(MetaDataDiscoveryService scanner)
+    protected void checkSpecializations(ScannerService scanner)
     {
         logger.info(OWBLogConst.INFO_0029);
         
         try
         {
-            Map<String, Set<String>> specialMap = scanner.getAnnotationIndex();
-            if (specialMap != null && specialMap.size() > 0)
+            Set<Class<?>> beanClasses = scanner.getBeanClasses();
+            if (beanClasses != null && beanClasses.size() > 0)
             {
-                if (specialMap.containsKey(Specializes.class.getName()))
+                Class<?> superClass = null;
+                for(Class<?> specialClass : beanClasses)
                 {
-                    Set<String> specialClassSet = specialMap.get(Specializes.class.getName());
-                    Iterator<String> specialIterator = specialClassSet.iterator();
-
-                    Class<?> superClass = null;
-                    while (specialIterator.hasNext())
+                    if(AnnotationUtil.hasClassAnnotation(specialClass, Specializes.class))
                     {
-                        String specialClassName = specialIterator.next();
-                        Class<?> specialClass = ClassUtil.getClassFromName(specialClassName);
-                        
                         if (superClass == null)
                         {
                             superClass = specialClass.getSuperclass();
                             
                             if(superClass.equals(Object.class))
                             {
-                                throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EXCEPT_0003) + specialClassName
+                                throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EXCEPT_0003) + specialClass.getName()
                                                                          + logger.getTokenString(OWBLogConst.EXCEPT_0004));
                             }
                         }
@@ -505,7 +485,7 @@ public class BeansDeployer
                             }
                         }
                         
-                        WebBeansUtil.configureSpecializations(specialClass);
+                        WebBeansUtil.configureSpecializations(specialClass);                        
                     }
                 }
             }
@@ -583,31 +563,29 @@ public class BeansDeployer
         }
     }
 
-    protected void checkStereoTypes(MetaDataDiscoveryService scanner)
+    protected void checkStereoTypes(ScannerService scanner)
     {
         logger.info(OWBLogConst.INFO_0031);
 
         addDefaultStereoTypes();
         
-        Map<String, Set<String>> stereotypeMap = scanner.getClassIndex();
-        if (stereotypeMap != null && stereotypeMap.size() > 0)
+        Set<Class<?>> beanClasses = scanner.getBeanClasses();
+        if (beanClasses != null && beanClasses.size() > 0)
         {
-            Set<String> stereoClassSet = stereotypeMap.keySet();
-            Iterator<String> steIterator = stereoClassSet.iterator();
-            while (steIterator.hasNext())
-            {
-                String steroClassName = steIterator.next();
-                
-                Class<? extends Annotation> stereoClass = (Class<? extends Annotation>) ClassUtil.getClassFromName(steroClassName);
-                
-                if (AnnotationUtil.isStereoTypeAnnotation(stereoClass))
+            for(Class<?> beanClass : beanClasses)
+            {                
+                if(beanClass.isAnnotation())
                 {
-                    if (!XMLAnnotationTypeManager.getInstance().hasStereoType(stereoClass))
+                    Class<? extends Annotation> stereoClass = (Class<? extends Annotation>) beanClass;                    
+                    if (AnnotationUtil.isStereoTypeAnnotation(stereoClass))
                     {
-                        WebBeansUtil.checkStereoTypeClass(stereoClass);
-                        StereoTypeModel model = new StereoTypeModel(stereoClass);
-                        StereoTypeManager.getInstance().addStereoTypeModel(model);
-                    }
+                        if (!XMLAnnotationTypeManager.getInstance().hasStereoType(stereoClass))
+                        {
+                            WebBeansUtil.checkStereoTypeClass(stereoClass);
+                            StereoTypeModel model = new StereoTypeModel(stereoClass);
+                            StereoTypeManager.getInstance().addStereoTypeModel(model);
+                        }
+                    }                    
                 }
             }
         }

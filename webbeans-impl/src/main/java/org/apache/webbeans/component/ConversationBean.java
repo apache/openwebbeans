@@ -18,8 +18,8 @@ import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.spi.ConversationService;
 import org.apache.webbeans.spi.ServiceLoader;
-import org.apache.webbeans.spi.conversation.ConversationService;
 
 public class ConversationBean extends AbstractBean<Conversation>
 {

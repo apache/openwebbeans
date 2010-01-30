@@ -15,17 +15,13 @@ package org.apache.webbeans.test.unittests.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
-import org.apache.webbeans.util.ArrayUtil;
+import org.apache.webbeans.spi.ScannerService;
+
 import org.junit.Test;
 
 public class WebBeansScannerTest extends AbstractUnitTest
@@ -44,15 +40,10 @@ public class WebBeansScannerTest extends AbstractUnitTest
         //Start test container
         startContainer(classes);
         
-        MetaDataDiscoveryService scanner = getLifecycle().getDiscoveryService();
-        Map<String, Set<String>> classMap = scanner.getClassIndex();
+        ScannerService scanner = getLifecycle().getDiscoveryService();
+        Set<Class<?>> classMap = scanner.getBeanClasses();
         Assert.assertNotNull(classMap);
         Assert.assertFalse(classMap.isEmpty());
-        Set<String> testBeanAnnotations = classMap.get(ScannerTestBean.class.getName());
-
-        String[] expectedAnnotations = new String[] { RequestScoped.class.getName(), Named.class.getName() };
-
-        Assert.assertTrue(ArrayUtil.equalsIgnorePosition(testBeanAnnotations.toArray(), expectedAnnotations));
         
         //Stop test container
         shutDownContainer();

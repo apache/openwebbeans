@@ -14,6 +14,7 @@
 package org.apache.webbeans.lifecycle;
 
 import java.lang.annotation.Annotation;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -43,10 +44,10 @@ import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.servlet.WebBeansConfigurationListener;
+import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.JNDIService;
-import org.apache.webbeans.spi.Lifecycle;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.ServiceLoader;
-import org.apache.webbeans.spi.deployer.MetaDataDiscoveryService;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 /**
@@ -60,16 +61,16 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
  * @version $Rev$ $Date$
  * @see WebBeansConfigurationListener
  */
-public final class EnterpriseLifeCycle implements Lifecycle
+public final class WebApplicationLifeCycle implements ContainerLifecycle
 {
 	//Logger instance
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(EnterpriseLifeCycle.class);
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebApplicationLifeCycle.class);
 
     /**Manages unused conversations*/
     private ScheduledExecutorService service = null;
 
     /**Discover bean classes*/
-    private MetaDataDiscoveryService discovery = null;
+    private ScannerService discovery = null;
 
     /**Deploy discovered beans*/
     private final BeansDeployer deployer;
@@ -89,7 +90,7 @@ public final class EnterpriseLifeCycle implements Lifecycle
      * Creates a new lifecycle instance and initializes
      * the instance variables.
      */
-    public EnterpriseLifeCycle()
+    public WebApplicationLifeCycle()
     {
         this.rootManager = (BeanManagerImpl) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_MANAGER);
         this.xmlDeployer = new WebBeansXMLConfigurator();
@@ -174,7 +175,7 @@ public final class EnterpriseLifeCycle implements Lifecycle
         //Singleton context
         ContextFactory.initSingletonContext(event.getServletContext());
 
-        this.discovery = ServiceLoader.getService(MetaDataDiscoveryService.class);
+        this.discovery = ServiceLoader.getService(ScannerService.class);
         this.discovery.init(event.getServletContext());
 
         // load all optional plugins
@@ -272,6 +273,24 @@ public final class EnterpriseLifeCycle implements Lifecycle
     public BeanManager getBeanManager()
     {
         return this.rootManager;
+    }
+
+    @Override
+    public void init(Properties properties)
+    {
+        
+    }
+
+    @Override
+    public void start(Object startupObject) throws Exception
+    {
+        applicationStarted(startupObject);
+    }
+
+    @Override
+    public void stop(Object endObject)
+    {
+        applicationEnded(endObject);
     }
 
 }

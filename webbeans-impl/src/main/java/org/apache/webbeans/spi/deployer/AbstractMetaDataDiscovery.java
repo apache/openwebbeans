@@ -25,9 +25,11 @@ import java.util.Set;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
+import org.apache.webbeans.spi.ScannerService;
+import org.apache.webbeans.util.ClassUtil;
 import org.scannotation.AnnotationDB;
 
-public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryService
+public abstract class AbstractMetaDataDiscovery implements ScannerService
 {
     /** Location of the beans.xml files. */
     private Set<URL> webBeansXmlLocations = new HashSet<URL>();
@@ -85,14 +87,6 @@ public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryServ
     }
     
     /**
-     * @return the wEBBEANS_XML_LOCATIONS
-     */
-    public Set<URL> getWebBeansXmlLocations()
-    {
-        return Collections.unmodifiableSet(webBeansXmlLocations);
-    }
-
-    /**
      * @return the aNNOTATION_DB
      */
     protected AnnotationDB getAnnotationDB()
@@ -100,16 +94,6 @@ public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryServ
         return annotationDB;
     }
     
-    public Map<String, Set<String>> getAnnotationIndex()
-    {
-        return annotationDB.getAnnotationIndex();
-    }
-
-    public Map<String, Set<String>> getClassIndex()
-    {
-        return annotationDB.getClassIndex();
-    }
-
     /**
      * add the given beans.xml path to the locations list 
      * @param file location path
@@ -117,6 +101,39 @@ public abstract class AbstractMetaDataDiscovery implements MetaDataDiscoveryServ
     protected void addWebBeansXmlLocation(URL file)
     {
         webBeansXmlLocations.add(file);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.spi.ScannerService#getBeanClasses()
+     */
+    @Override
+    public Set<Class<?>> getBeanClasses()
+    {
+        Set<Class<?>> classSet = new HashSet<Class<?>>();
+        Map<String,Set<String>> index = this.annotationDB.getClassIndex();
+        
+        if(index != null)
+        {
+            Set<String> strSet = index.keySet();
+            if(strSet != null)
+            {
+                for(String str : strSet)
+                {
+                    classSet.add(ClassUtil.getClassFromName(str));   
+                }
+            }   
+        }    
+        
+        return classSet;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.spi.ScannerService#getBeanXmls()
+     */
+    @Override
+    public Set<URL> getBeanXmls()
+    {
+        return Collections.unmodifiableSet(webBeansXmlLocations);
     }
 
 }

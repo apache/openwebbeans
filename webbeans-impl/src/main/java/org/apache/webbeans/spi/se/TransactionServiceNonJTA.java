@@ -15,6 +15,7 @@ package org.apache.webbeans.spi.se;
 
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 
 import org.apache.webbeans.spi.TransactionService;
 
@@ -38,6 +39,12 @@ public class TransactionServiceNonJTA implements TransactionService
      * {@inheritDoc} 
      */
     public TransactionManager getTransactionManager()
+    {
+        return null;
+    }
+
+    @Override
+    public UserTransaction getUserTransaction()
     {
         return null;
     }

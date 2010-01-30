@@ -152,6 +152,31 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
         return parentInstance;
 
     }
+    
+    @SuppressWarnings("unchecked")
+    protected Object getParentInstanceFromContext(CreationalContext<?> creationalContext)
+    {
+        Object parentInstance = null;
+
+        // Added for most specialized bean
+        Annotation[] anns = new Annotation[this.ownerComponent.getQualifiers().size()];
+        anns = this.ownerComponent.getQualifiers().toArray(anns);
+
+        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractBean<T>) this.ownerComponent);
+
+        if (specialize != null)
+        {
+            parentInstance = getManager().getContext(specialize.getScope()).get((Bean<Object>)specialize,(CreationalContext<Object>) creationalContext);
+        }
+        else
+        {
+            parentInstance = getManager().getContext(this.ownerComponent.getScope()).get((Bean<Object>)this.ownerComponent,(CreationalContext<Object>) creationalContext);
+        }
+
+        return parentInstance;
+
+    }
+    
 
     /**
      * {@inheritDoc}

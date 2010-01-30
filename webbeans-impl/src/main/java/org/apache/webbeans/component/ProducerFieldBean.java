@@ -95,7 +95,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
             }
             else
             { 
-                parentInstance = getParentInstance(parentCreational);
+                parentInstance = getParentInstanceFromContext(parentCreational);
                 
                 instance = (T) producerField.get(parentInstance);
             }

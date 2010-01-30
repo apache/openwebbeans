@@ -16,6 +16,7 @@ package org.apache.webbeans.spi.ee;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.spi.TransactionService;
@@ -59,5 +60,12 @@ public final class TransactionServiceJndiImpl implements TransactionService
         }
         
         return null;
+    }
+
+
+    @Override
+    public UserTransaction getUserTransaction()
+    {
+        return JNDIUtil.lookup("UserTransaction", UserTransaction.class);
     }
 }
