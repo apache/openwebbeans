@@ -143,7 +143,7 @@ public final class JmsUtil
             connectionFactoryJndiName = JNDIService.JMS_CONNECTION_FACTORY_JNDI_DEFAULT_VALUE;
         }
         
-        return getJNDIService().getObject(connectionFactoryJndiName, ConnectionFactory.class);
+        return getJNDIService().lookup(connectionFactoryJndiName, ConnectionFactory.class);
     }
     
     public static <T> T getInstanceFromJndi(JMSModel jmsModel, Class<T> jmsClass)
@@ -151,7 +151,7 @@ public final class JmsUtil
         String jndiName = jmsModel.isJndiNameDefined() ? jmsModel.getJndiName() : jmsModel.getMappedName();
         
          
-        T instance = getJNDIService().getObject(jndiName, jmsClass);
+        T instance = getJNDIService().lookup(jndiName, jmsClass);
         
         return instance;
         

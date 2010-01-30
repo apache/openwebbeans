@@ -339,12 +339,12 @@
     </reporting>
 	
     <modules>
+        <module>webbeans-spi</module>
         <module>webbeans-impl</module>
         <module>webbeans-openejb</module>
         <module>webbeans-jms</module>
         <module>webbeans-jsf</module>
         <module>webbeans-resource</module>
-        <module>webbeans-geronimo</module>
         <module>webbeans-porting</module>
         <module>samples</module>
         <!-- <module>webbeans-tck</module>-->
@@ -546,13 +546,6 @@
                                 <artifactId>openwebbeans-resource</artifactId>
                                 <version>${openwebbeans.version}</version>
                         </dependency>
-
-                        <dependency>
-                                <groupId>org.apache.openwebbeans</groupId>
-                                <artifactId>openwebbeans-geronimo</artifactId>
-                                <version>${openwebbeans.version}</version>
-                        </dependency>
-
 
                         <dependency>
                                 <groupId>org.apache.openwebbeans</groupId>
