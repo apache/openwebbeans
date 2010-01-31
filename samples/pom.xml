@@ -29,6 +29,7 @@ under the License.
 	<description>Contains samples project for openwebbeans.</description>
 	<modules>
            <module>guess</module>
+           <module>conversation-sample</module>
            <module>jsf2sample</module>
            <module>ejb-sample</module>
            <module>jms-sample</module>
