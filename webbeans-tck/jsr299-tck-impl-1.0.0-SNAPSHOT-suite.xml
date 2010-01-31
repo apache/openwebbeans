@@ -4,22 +4,20 @@
    <test name="JSR-299 TCK">
       <method-selectors> 
         
-        <!-- 
          <method-selector>
             <selector-class name="org.jboss.testharness.impl.testng.DisableIntegrationTestsMethodSelector" />
          </method-selector>
-		 -->
+		<!--  
 		<method-selector>
 			<selector-class name="org.jboss.jsr299.tck.impl.WebProfileMethodSelector" />
-		</method-selector>          
+		</method-selector>
 		
-		<!-- 
+		 -->          
+		
          <method-selector>
             <selector-class name="org.jboss.testharness.impl.testng.ExcludeIncontainerUnderInvestigationMethodSelector" />
          </method-selector>
-          -->
       </method-selectors>
-      <!-- 
       <groups>
          <run>
             <exclude name="ri-broken" />
@@ -28,7 +26,6 @@
             <exclude name="integration"></exclude>
          </run>
       </groups>
-       -->
      <classes>
          
          <!-- Issues in Weld (the RI) -->
