@@ -18,11 +18,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.decorator.Delegate;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
@@ -153,6 +155,16 @@ public class InjectionPointFactory
         
         
         injectionPoint = new InjectionPointImpl(owner, type, member, annotated);
+        
+        if(AnnotationUtil.hasAnnotation(annots, Delegate.class))
+        {
+            injectionPoint.setDelegate(true);
+        }
+        
+        if(Modifier.isTransient(member.getModifiers()))
+        {
+            injectionPoint.setTransient(true);
+        }
 
         addAnnotation(injectionPoint, qualifierAnnots, true);
 

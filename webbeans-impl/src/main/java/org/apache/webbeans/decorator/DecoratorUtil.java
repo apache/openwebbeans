@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Delegate;
+import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.component.ManagedBean;
@@ -58,6 +59,17 @@ public final class DecoratorUtil
      */
     public static void checkDecoratorConditions(Class<?> decoratorClazz)
     {       
+        Asserts.assertNotNull(decoratorClazz, "Decorator class is null");
+        
+        Method[] methods = decoratorClazz.getDeclaredMethods();
+        for(Method method : methods)
+        {
+            if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
+            {
+                throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz + " can not have producer methods but it has one with name : " + method.getName());
+            }
+        }
+        
         Set<Type> decoratorSet = new HashSet<Type>();
         ClassUtil.setInterfaceTypeHierarchy(decoratorSet, decoratorClazz);
         

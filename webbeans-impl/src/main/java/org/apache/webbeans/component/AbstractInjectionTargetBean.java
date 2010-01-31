@@ -20,9 +20,11 @@ import java.util.Set;
 
 import javax.decorator.Delegate;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
@@ -34,6 +36,7 @@ import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansResourcePlugin;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -313,7 +316,18 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
         {
             if (field.getAnnotation(Delegate.class) == null)
             {
-                injectField(field, instance, creationalContext);
+                if(!field.getType().equals(InjectionPoint.class))
+                {
+                    injectField(field, instance, creationalContext);   
+                }
+                //InjectionPoint.
+                else
+                {
+                    Bean<?> injectionPointBean = getManager().getBeans(InjectionPoint.class, new DefaultLiteral()).iterator().next();
+                    Object reference = getManager().getReference(injectionPointBean, InjectionPoint.class, getManager().createCreationalContext(injectionPointBean));
+                    
+                    ClassUtil.setField(instance, field, reference);
+                }
             }
         }                
     }

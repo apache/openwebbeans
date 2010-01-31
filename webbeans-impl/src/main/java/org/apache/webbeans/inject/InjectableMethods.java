@@ -20,9 +20,14 @@ import java.util.List;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 @SuppressWarnings("unchecked")
@@ -69,15 +74,34 @@ public class InjectableMethods<T> extends AbstractInjectable
                 AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)point.getAnnotated();
                 if(parameter.getPosition() == i)
                 {
-                    if(isDisposable() && parameter.getAnnotation(Disposes.class) != null)
+                    boolean injectionPoint = false;
+                    if(this.injectionOwnerBean instanceof ProducerMethodBean)
                     {
-                        list.add(this.producerMethodInstance);
-                    }
-                    else
-                    {
-                        list.add(inject(point));    
+                        if(parameter.getBaseType().equals(InjectionPoint.class))
+                        {
+                            BeanManager manager = BeanManagerImpl.getManager();
+                            Bean<?> injectionPointBean = manager.getBeans(InjectionPoint.class, new DefaultLiteral()).iterator().next();
+                            Object reference = manager.getReference(injectionPointBean, InjectionPoint.class, manager.createCreationalContext(injectionPointBean));
+                            
+                            list.add(reference);
+                            
+                            injectionPoint = true;
+                        }
+   
                     }
                     
+                    if(!injectionPoint)
+                    {
+                        if(isDisposable() && parameter.getAnnotation(Disposes.class) != null)
+                        {
+                            list.add(this.producerMethodInstance);
+                        }
+                        else
+                        {
+                            list.add(inject(point));    
+                        }                        
+                    }
+                                        
                     break;
                 }
             }

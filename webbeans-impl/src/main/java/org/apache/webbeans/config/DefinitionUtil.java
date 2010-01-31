@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -972,6 +973,12 @@ public final class DefinitionUtil
      */
     private static <T> void checkForInjectedInitializerMethod(AbstractInjectionTargetBean<T> component, Class<T> clazz, Method method)
     {
+        TypeVariable<?>[] args = method.getTypeParameters();
+        if(args.length > 0)
+        {
+            throw new WebBeansConfigurationException("Initializer methods must not be generic but method : " + method.getName() + " in bean class : " + clazz + " is defined as generic");
+        }
+        
         Annotation[][] anns = method.getParameterAnnotations();
         Type[] type = method.getGenericParameterTypes();
         for (int i = 0; i < anns.length; i++)

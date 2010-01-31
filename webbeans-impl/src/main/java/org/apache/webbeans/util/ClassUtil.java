@@ -1914,4 +1914,16 @@ public final class ClassUtil
             return null;
         }
     }
+    
+    public static Constructor<?> getConstructor(Class<?> clazz, Class<?>[] parameterTypes)
+    {
+        try
+        {
+            return clazz.getConstructor(parameterTypes);
+            
+        }catch(NoSuchMethodException e)
+        {
+            return null;
+        }
+    }    
 }

@@ -92,14 +92,14 @@ public abstract class AbstractInjectable implements Injectable
             EventBean.local.set(injectionPoint);
         }        
         
-        injected = BeanManagerImpl.getManager().getInjectableReference(injectionPoint, this.injectionOwnerCreationalContext);
-        
         //Injection for dependent instance InjectionPoint fields
         if(WebBeansUtil.isDependent(injectedBean))
         {
-            
-        }
+            InjectionPointBean.local.set(injectionPoint);
+        }        
         
+        injected = BeanManagerImpl.getManager().getInjectableReference(injectionPoint, this.injectionOwnerCreationalContext);
+                
 
         return injected;
     }
@@ -145,6 +145,7 @@ public abstract class AbstractInjectable implements Injectable
         return false;
     }
     
+    
     private boolean isEventProviderInjection(InjectionPoint injectionPoint)
     {
         Type type = injectionPoint.getType();
@@ -162,17 +163,6 @@ public abstract class AbstractInjectable implements Injectable
         
         return false;
     }
-    
-    private boolean isInjectionPointInjection(InjectionPoint injectionPoint)
-    {
-        if(injectionPoint.getType().equals(InjectionPoint.class))
-        {
-            return true;
-        }
-        
-        return false;
-    }
-    
     
     /**
      * Gets the component.

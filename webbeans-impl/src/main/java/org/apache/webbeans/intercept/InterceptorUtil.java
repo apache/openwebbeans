@@ -169,6 +169,16 @@ public final class InterceptorUtil
     public static void checkInterceptorConditions(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
+        
+        Method[] methods = clazz.getDeclaredMethods();
+        for(Method method : methods)
+        {
+            if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
+            {
+                throw new WebBeansConfigurationException("Interceptor class : " + clazz + " can not have producer methods but it has one with name : " + method.getName());
+            }
+        }
+        
         if (!AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
         {
             throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName() + " must have at least one @InterceptorBinding annotation");
