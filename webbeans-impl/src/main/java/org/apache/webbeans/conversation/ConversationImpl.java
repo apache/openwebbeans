@@ -51,7 +51,7 @@ public class ConversationImpl implements Conversation
     private long activeTime = 0L;
     
     /**Generating ids*/
-    private AtomicInteger conversationIdGenerator = new AtomicInteger(0);
+    private static AtomicInteger conversationIdGenerator = new AtomicInteger(0);
     
     /**This instance is under used*/
     private AtomicBoolean inUsed = new AtomicBoolean(false);
@@ -85,7 +85,7 @@ public class ConversationImpl implements Conversation
         if(this.isTransient)
         {
             this.isTransient = false;
-            this.id = Integer.toString(this.conversationIdGenerator.incrementAndGet());
+            this.id = Integer.toString(conversationIdGenerator.incrementAndGet());
             
             //Conversation manager
             ConversationManager manager = ConversationManager.getInstance();            
