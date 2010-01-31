@@ -21,28 +21,41 @@ import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.spi.ConversationService;
 import org.apache.webbeans.spi.ServiceLoader;
 
+/**
+ * Conversation bean implementation.
+ * @version $Rev$ $Date$
+ *
+ */
 public class ConversationBean extends AbstractBean<Conversation>
 {
-
+    /**
+     * Default constructor.
+     */
     public ConversationBean()
     {
         super(WebBeansType.CONVERSATION, Conversation.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Conversation createInstance(CreationalContext<Conversation> creationalContext)
     {
-        ConversationService conversationService = ServiceLoader.getService(ConversationService.class);
-        
-        String conversationId = conversationService.getConversationId();
-        
-        String sessionId = conversationService.getConversationSessionId();
-        
         Conversation conversation = null;
+        //Gets conversation service
+        ConversationService conversationService = ServiceLoader.getService(ConversationService.class);        
+        //Gets conversation id
+        String conversationId = conversationService.getConversationId();       
+        //Gets session id that conversation is created
+        String sessionId = conversationService.getConversationSessionId();
 
+        //If conversation id is not null, this means that
+        //conversation is propogated
         if (conversationId != null)
         {
-            conversation = ConversationManager.getInstance().getConversation(conversationId,sessionId);
+            //Gets propogated conversation
+            conversation = ConversationManager.getInstance().getPropogatedConversation(conversationId,sessionId);
         }
         
         if (conversation == null)

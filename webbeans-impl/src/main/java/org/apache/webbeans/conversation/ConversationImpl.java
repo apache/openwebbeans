@@ -13,6 +13,9 @@
  */
 package org.apache.webbeans.conversation;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 
@@ -21,45 +24,76 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.StringUtil;
 
+/**
+ * Implementation of the {@link Conversation} interface.
+ * @version $Rev$ $Date$
+ *
+ */
 public class ConversationImpl implements Conversation
 {
+    /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ConversationImpl.class);
     
+    /**Conversation id*/
     private String id;
 
+    /**Transient or not. Transient conversations are destroyed at the end of JSF request*/
     private boolean isTransient = true;
 
+    /**Default timeout is 3mins*/
     private long timeout = 30 * 60 * 1000 ;
 
+    /**Id of the session that this conversation is created*/
     private String sessionId;
 
+    /**Active duration of the conversation*/
     private long activeTime = 0L;
+    
+    /**Generating ids*/
+    private AtomicInteger conversationIdGenerator = new AtomicInteger(0);
+    
+    /**This instance is under used*/
+    private AtomicBoolean inUsed = new AtomicBoolean(false);
 
+    /**
+     * Default constructor. Used in tests.
+     */
     public ConversationImpl()
     {
-
     }
 
+    /**
+     * Creates a new conversation instance. Id is not
+     * set until conversation is begin.
+     * @param sessionId
+     */
     public ConversationImpl(String sessionId)
     {
         Asserts.assertNotNull(sessionId);
         this.sessionId = sessionId;
 
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void begin()
     {
+        //Transient state
         if(this.isTransient)
         {
             this.isTransient = false;
-            this.id = StringUtil.generateUUIDStringWithoutDash();
+            this.id = Integer.toString(this.conversationIdGenerator.incrementAndGet());
             
-            ConversationManager manager = ConversationManager.getInstance();
-            
+            //Conversation manager
+            ConversationManager manager = ConversationManager.getInstance();            
             try
             {
+                //Gets current converation context instance.
+                //Each conversation has its own conversation context instance.
+                //Sets at the beginning of each JSF request.
                 manager.addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));
                 
             }catch(Exception e)
@@ -68,15 +102,27 @@ public class ConversationImpl implements Conversation
                 manager.addConversationContext(this, new ConversationContext());
             }            
         }
+        //Already started conversation.
         else
         {
             logger.warn(OWBLogConst.WARN_0006, new Object[]{id});
             throw new IllegalStateException();
         }
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void begin(String id)
-    {
+    {   
+        //Look at other conversation, that may collate with this is
+        if(ConversationManager.getInstance().isConversationExistWithGivenId(id))
+        {
+            throw new IllegalArgumentException("Conversation with id=" + id + " is already exist!");
+        }
+        
+        //Transient state
         if(this.isTransient)
         {
             this.isTransient = false;
@@ -85,7 +131,11 @@ public class ConversationImpl implements Conversation
             ConversationManager.getInstance().addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));            
         }
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void end()
     {
         if(!this.isTransient)
@@ -101,31 +151,72 @@ public class ConversationImpl implements Conversation
         }
     }
     
+    
+    /**
+     * @return the inUsed
+     */
+    public AtomicBoolean getInUsed()
+    {
+        return inUsed;
+    }
+
+    /**
+     * @param inUsed the inUsed to set
+     */
+    public void setInUsed(boolean inUsed)
+    {
+        this.inUsed.set(inUsed);
+    }
+    
+    /**
+     * Sets transient.
+     * @param value transient value
+     */
     public void setTransient(boolean value)
     {
         this.isTransient = value;
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */    
+    @Override
     public String getId()
     {
         return this.id;
     }
 
+    /**
+     * {@inheritDoc}
+     */    
+    @Override
     public long getTimeout()
     {
         return this.timeout;
     }
 
+    /**
+     * {@inheritDoc}
+     */    
+    @Override
     public boolean isTransient()
     {
         return isTransient;
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setTimeout(long milliseconds)
     {
         this.timeout = milliseconds;
     }
 
+    /**
+     * Gets session id.
+     * @return conversation session id
+     */
     public String getSessionId()
     {
         return this.sessionId;
@@ -140,6 +231,9 @@ public class ConversationImpl implements Conversation
     }
 
 
+    /**
+     * Update conversation timeout value.
+     */
     public void updateTimeOut()
     {
         this.activeTime = System.currentTimeMillis();

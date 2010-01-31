@@ -13,10 +13,13 @@
  */
 package org.apache.webbeans.jsf;
 
+import javax.enterprise.context.BusyConversationException;
 import javax.enterprise.context.Conversation;
+import javax.enterprise.context.NonexistentConversationException;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.context.ContextFactory;
@@ -49,7 +52,7 @@ public class WebBeansPhaseListener implements PhaseListener
     {
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE))
         {
-        	Conversation conversation = conversationManager.getConversationInstance();
+        	Conversation conversation = conversationManager.getConversationBeanReference();
         	
             if (conversation.isTransient())
             {
@@ -58,7 +61,17 @@ public class WebBeansPhaseListener implements PhaseListener
             }
             else
             {
-            	((ConversationImpl) conversation).updateTimeOut();
+                //Conversation must be used by one thread at a time
+                ConversationImpl owbConversation = (ConversationImpl)conversation;
+                owbConversation.updateTimeOut();
+                //Other threads can now access propogated conversation.
+                owbConversation.setInUsed(false);                
+            }
+            
+            HttpServletRequest request = (HttpServletRequest)phaseEvent.getFacesContext().getExternalContext().getRequest();
+            if(request.getMethod().equals("POST"))
+            {
+                JSFUtil.getSession().removeAttribute("POST_CONVERSATION");
             }
         }
     }
@@ -68,20 +81,63 @@ public class WebBeansPhaseListener implements PhaseListener
      */
     public void beforePhase(PhaseEvent phaseEvent)
     {
+        HttpServletRequest request = (HttpServletRequest)phaseEvent.getFacesContext().getExternalContext().getRequest();
+        
         if (phaseEvent.getPhaseId().equals(PhaseId.RESTORE_VIEW))
         {
-        	Conversation conversation = conversationManager.getConversationInstance();
-
+            if(request.getMethod().equals("POST"))
+            {
+                JSFUtil.getSession().setAttribute("POST_CONVERSATION", true);
+            }
+            
+            //It looks for cid parameter in the JSF request.
+            //If request contains cid, then it must restore conversation
+            //Otherwise create NonexistentException
+        	Conversation conversation = conversationManager.getConversationBeanReference();
+        	String cid = JSFUtil.getConversationId();
+        	
 			if (conversation.isTransient())
 			{
 				logger.info(OWBLogConst.INFO_0043, new Object[]{conversation.getId(), JSFUtil.getViewId()});
 				ContextFactory.initConversationContext(null);
+				
+	            //Not restore, throw exception
+				if(cid != null && !cid.equals(""))
+				{
+				    throw new NonexistentConversationException("Propogated conversation with cid=" + cid + " is not restored. It creates a new transient conversation.");
+				}
 			}
 			else
 			{
 				logger.info(OWBLogConst.INFO_0042, new Object[]{conversation.getId(), JSFUtil.getViewId()});
-				ConversationContext conversationContext = conversationManager.getConversationContext(conversation);
-				ContextFactory.initConversationContext(conversationContext);
+				
+				//Conversation must be used by one thread at a time
+				ConversationImpl owbConversation = (ConversationImpl)conversation;
+				if(!owbConversation.getInUsed().compareAndSet(false, true))
+				{
+				    if(request.getMethod().equals("GET"))
+				    {
+				        //POST-Redirect-GET
+				        if(JSFUtil.getSession().getAttribute("POST_CONVERSATION") != null)
+				        {
+			                   ConversationContext conversationContext = conversationManager.getConversationContext(conversation);
+			                   ContextFactory.initConversationContext(conversationContext);
+			                   
+			                   JSFUtil.getSession().removeAttribute("POST_CONVERSATION");
+			                   
+			                   return;
+				        }
+				    }
+				    
+				    ContextFactory.initConversationContext(null);
+				    //Throw Busy exception
+				    throw new BusyConversationException("Propogated conversation with cid=" + cid + " is used by other request. It creates a new transient conversation");
+				}
+				else
+				{
+	               ConversationContext conversationContext = conversationManager.getConversationContext(conversation);
+	               ContextFactory.initConversationContext(conversationContext);
+				}				
 			}
         }
     }

@@ -41,7 +41,7 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
     {
         String url = delegate.getActionURL(context, viewId);
 
-        Conversation conversation = conversationManager.getConversationInstance();
+        Conversation conversation = conversationManager.getConversationBeanReference();
         if (conversation != null && !conversation.isTransient())
         {
             url = JSFUtil.getRedirectViewIdWithCid(url, conversation.getId());

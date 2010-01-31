@@ -38,7 +38,7 @@ import org.apache.webbeans.util.Asserts;
 public class ConversationManager
 {
     /**Current conversations*/
-    private Map<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
+    private ConcurrentHashMap<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
 
     /**
      * Creates new conversation manager
@@ -67,6 +67,32 @@ public class ConversationManager
     public void addConversationContext(Conversation conversation, ConversationContext context)
     {
         conversations.put(conversation, context);
+    }
+    
+    /**
+     * Check conversation id exists.
+     * @param conversationId conversation id
+     * @return true if this conversation exist
+     */
+    public boolean isConversationExistWithGivenId(String conversationId)
+    {
+        synchronized (conversations)
+        {
+            ConversationImpl conv = null;
+            Set<Conversation> set = conversations.keySet();
+            Iterator<Conversation> it = set.iterator();
+
+            while (it.hasNext())
+            {
+                conv = (ConversationImpl) it.next();
+                if (conv.getId().equals(conversationId))
+                {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
     /**
@@ -99,7 +125,7 @@ public class ConversationManager
      * @param sessionId session id
      * @return conversation
      */
-    public Conversation getConversation(String conversationId, String sessionId)
+    public Conversation getPropogatedConversation(String conversationId, String sessionId)
     {
         Asserts.assertNotNull(conversationId, "conversationId parameter can not be null");
         Asserts.assertNotNull(sessionId,"sessionId parameter can not be null");
@@ -152,7 +178,7 @@ public class ConversationManager
      * @return conversation instance
      */
     @SuppressWarnings("unchecked")
-    public Conversation getConversationInstance()
+    public Conversation getConversationBeanReference()
     {
     	BeanManager beanManager = BeanManagerImpl.getManager();
         Bean<Conversation> bean = (Bean<Conversation>)beanManager.getBeans(Conversation.class, new DefaultLiteral()).iterator().next();
