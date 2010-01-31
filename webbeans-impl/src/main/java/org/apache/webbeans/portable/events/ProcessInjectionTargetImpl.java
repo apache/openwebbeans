@@ -17,6 +17,8 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 
+import org.apache.webbeans.container.BeanManagerImpl;
+
 /**
  * Implementation of the {@link ProcessInjectionTarget}.
  * 
@@ -52,8 +54,7 @@ public class ProcessInjectionTargetImpl<X> implements ProcessInjectionTarget<X>
     @Override
     public void addDefinitionError(Throwable t)
     {
-        //TODO Definition Error Logic
-        
+        BeanManagerImpl.getManager().getErrorStack().pushError(t);
     }
 
     @Override

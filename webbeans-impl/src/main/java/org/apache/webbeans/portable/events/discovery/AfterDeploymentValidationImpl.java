@@ -15,6 +15,8 @@ package org.apache.webbeans.portable.events.discovery;
 
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 
+import org.apache.webbeans.container.BeanManagerImpl;
+
 /**
  * Event that is fired by the container after it validates
  * deployment.
@@ -24,15 +26,13 @@ import javax.enterprise.inject.spi.AfterDeploymentValidation;
  */
 public class AfterDeploymentValidationImpl implements AfterDeploymentValidation
 {
-
     /**
      * {@inheritDoc}
      */
     @Override
     public void addDeploymentProblem(Throwable t)
     {
-        // TODO Auto-generated method stub
-        
+        BeanManagerImpl.getManager().getErrorStack().pushError(t);
     }
 
 }

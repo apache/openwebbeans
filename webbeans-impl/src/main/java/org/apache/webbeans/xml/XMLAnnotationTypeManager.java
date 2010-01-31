@@ -114,6 +114,30 @@ public class XMLAnnotationTypeManager
             inherits.add(inherit);
         }
     }
+    
+    public void addInterceotorBindingTypeInheritAnnotation(Class<? extends Annotation> bindingType, Annotation... inheritsArray)
+    {
+        Set<Annotation> inherits = xmlInterceptorBindingTypes.get(bindingType);
+        if (inherits == null)
+        {
+            inherits = new HashSet<Annotation>();
+            
+            for(Annotation ann : inheritsArray)
+            {
+                inherits.add(ann);
+            }
+            
+            xmlInterceptorBindingTypes.put(bindingType, inherits);
+        }
+        else
+        {
+            for(Annotation ann : inheritsArray)
+            {
+                inherits.add(ann);
+            }
+
+        }
+    }    
 
     public boolean hasInterceptorBindingType(Class<? extends Annotation> bindingType)
     {

@@ -34,7 +34,6 @@ import org.apache.openejb.DeploymentInfo;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.component.creation.EjbBeanCreatorImpl;
@@ -93,7 +92,8 @@ public final class EjbUtility
         Set<ObserverMethod<?>> observerMethods = ejbBeanCreator.defineObserverMethods();        
         
         //Fires ProcessInjectionTarget
-        ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(ejbBean);            
+        ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(ejbBean);     
+        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
         if(processInjectionTargetEvent.isSet())
         {
             ejbBeanCreator.setInjectedTarget(processInjectionTargetEvent.getInjectionTarget());
@@ -104,6 +104,7 @@ public final class EjbUtility
         {
             AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), producerMethod.getParent().getReturnType());
             ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForMethod(producerMethod,method);
+            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerMethods. Look at logs for further details");
 
             annotatedMethods.put(producerMethod, method);
             
@@ -120,6 +121,7 @@ public final class EjbUtility
         {
             AnnotatedField<?> field = AnnotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), producerField.getParent().getReturnType());
             ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForField(producerField, field);
+            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerFields. Look at logs for further details");
             
             annotatedFields.put(producerField, field);
             
@@ -143,16 +145,20 @@ public final class EjbUtility
         //Fires ProcessManagedBean
         ProcessSessionBeanImpl<T> processBeanEvent = new GProcessSessionBean((Bean<Object>)ejbBean,annotatedType,ejbBean.getEjbName(),ejbBean.getEjbType());            
         BeanManagerImpl.getManager().fireEvent(processBeanEvent, new Annotation[0]);
+        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessSessionBean event observers for managed beans. Look at logs for further details");
         
         
         //Fires ProcessProducerMethod
         WebBeansUtil.fireProcessProducerMethodBeanEvent(annotatedMethods);
+        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerMethod event observers for producer method beans. Look at logs for further details");
         
         //Fires ProcessProducerField
         WebBeansUtil.fireProcessProducerFieldBeanEvent(annotatedFields);
+        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerField event observers for producer field beans. Look at logs for further details");
         
         //Fire ObservableMethods
         WebBeansUtil.fireProcessObservableMethodBeanEvent(observerMethodsMap);
+        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for observer methods. Look at logs for further details");
 
                 
         //Set InjectionTarget that is used by the container to inject dependencies!

@@ -17,6 +17,8 @@ import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.inject.spi.Producer;
 
+import org.apache.webbeans.container.BeanManagerImpl;
+
 /**
  * Implementation of {@link ProcessProducer}.
  * 
@@ -47,8 +49,7 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     @Override
     public void addDefinitionError(Throwable t)
     {
-        // TODO Definition Error
-        
+        BeanManagerImpl.getManager().getErrorStack().pushError(t);
     }
 
     /**

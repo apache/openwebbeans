@@ -17,6 +17,8 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
 
+import org.apache.webbeans.container.BeanManagerImpl;
+
 /**
  * Implementation of  {@link ProcessObserverMethod}.
  * 
@@ -45,8 +47,7 @@ public class ProcessObserverMethodImpl<X,T> implements ProcessObserverMethod<X, 
     @Override
     public void addDefinitionError(Throwable t)
     {
-        // TODO Definition Error
-        
+        BeanManagerImpl.getManager().getErrorStack().pushError(t);
     }
 
     /**

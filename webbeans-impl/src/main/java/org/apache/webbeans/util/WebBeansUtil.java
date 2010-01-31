@@ -135,6 +135,8 @@ import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
+import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
+import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
@@ -1279,11 +1281,19 @@ public final class WebBeansUtil
      * defined by the specification.
      * @param clazz stereotype class
      */
-    public static void checkStereoTypeClass(Class<?> clazz)
+    public static void checkStereoTypeClass(Class<? extends Annotation> clazz)
+    {
+        checkStereoTypeClass(clazz, clazz.getDeclaredAnnotations());
+    }
+    
+    /**
+     * Validates that given class obeys stereotype model
+     * defined by the specification.
+     * @param clazz stereotype class
+     */
+    public static void checkStereoTypeClass(Class<? extends Annotation> clazz, Annotation...annotations)
     {
         Asserts.nullCheckForClass(clazz);
-
-        Annotation[] annotations = clazz.getDeclaredAnnotations();
 
         boolean scopeTypeFound = false;
         for (Annotation annotation : annotations)
@@ -1326,6 +1336,7 @@ public final class WebBeansUtil
             }
         }
     }
+    
 
     /**
      * Configures the bean specializations.
@@ -2294,5 +2305,24 @@ public final class WebBeansUtil
         }
         
         return false;
+    }
+    
+    public static void inspectErrorStack(String logMessage)
+    {
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        //Looks for errors
+        ErrorStack stack = manager.getErrorStack();
+        try
+        {
+            if(stack.hasErrors())
+            {
+                stack.logErrors();
+                throw new WebBeansConfigurationException(logMessage);
+            }            
+        }finally
+        {
+            stack.clear();
+        }
+        
     }
 }

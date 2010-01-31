@@ -83,6 +83,7 @@ import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
+import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -140,6 +141,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     private List<ExternalScope> additionalScopes =  Collections.synchronizedList(new ArrayList<ExternalScope>());
     
+    private ErrorStack errorStack = new ErrorStack();
+    
+    private List<AnnotatedType<?>> additionalAnnotatedTypes = new CopyOnWriteArrayList<AnnotatedType<?>>();
     
     /**
      * The parent Manager this child is depending from.
@@ -156,6 +160,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         injectionResolver = new InjectionResolver(this);
         notificationManager = new NotificationManager();
     }    
+    
+    public ErrorStack getErrorStack()
+    {
+        return this.errorStack;
+    }
     
     public BeanManagerImpl getParent()
     {
@@ -934,6 +943,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             additionalQualifiers.add(qualifier);
         }
+    }
+    
+    public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType)
+    {
+        this.additionalAnnotatedTypes.add(annotatedType);
     }
 
     public List<Class<? extends Annotation>> getAdditionalQualifiers()

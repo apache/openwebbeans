@@ -54,32 +54,43 @@ public class StereoTypeModel implements IStereoTypeModel
      * given class.
      * @param clazz stereotype type
      */
-    public StereoTypeModel(Class<?> clazz)
+    public StereoTypeModel(Class<? extends Annotation> clazz)
+    {
+        this(clazz, clazz.getDeclaredAnnotations());
+    }
+    
+    public StereoTypeModel(Class<? extends Annotation> clazz, Annotation[] annotationDefs)
     {
         this.name = clazz.getName();
-
-        if (AnnotationUtil.hasMetaAnnotation(clazz.getDeclaredAnnotations(), NormalScope.class))
+        
+        configAnnotations(clazz, annotationDefs);
+        
+    }
+    
+    private void configAnnotations(Class<? extends Annotation> clazz, Annotation...annotations)
+    {
+        if (AnnotationUtil.hasMetaAnnotation(annotations, NormalScope.class))
         {
-            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), NormalScope.class)[0];
+            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(annotations, NormalScope.class)[0];
         }
 
-        if (AnnotationUtil.hasMetaAnnotation(clazz.getDeclaredAnnotations(), Scope.class))
+        if (AnnotationUtil.hasMetaAnnotation(annotations, Scope.class))
         {
-            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(clazz.getDeclaredAnnotations(), Scope.class)[0];
+            this.defaultScopeType = AnnotationUtil.getMetaAnnotations(annotations, Scope.class)[0];
         }
         
-        if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
+        if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(annotations))
         {
-            Annotation[] ibs = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
+            Annotation[] ibs = AnnotationUtil.getInterceptorBindingMetaAnnotations(annotations);
             for (Annotation ann : ibs)
             {
                 this.interceptorBindingTypes.add(ann);
             }
         }
 
-        if (AnnotationUtil.hasStereoTypeMetaAnnotation(clazz.getDeclaredAnnotations()))
+        if (AnnotationUtil.hasStereoTypeMetaAnnotation(annotations))
         {
-            Annotation[] isy = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
+            Annotation[] isy = AnnotationUtil.getStereotypeMetaAnnotations(annotations);
 
             Target outerStereo = clazz.getAnnotation(Target.class);
             for (Annotation is : isy)
@@ -114,11 +125,8 @@ public class StereoTypeModel implements IStereoTypeModel
                 }
 
                 this.inherits.add(is);
-
             }
-
         }
-
     }
     
     /**

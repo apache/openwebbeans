@@ -20,6 +20,10 @@ import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
+import org.apache.webbeans.deployment.StereoTypeManager;
+import org.apache.webbeans.deployment.StereoTypeModel;
+import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 /**
  * Events that is fired before container starts to discover beans.
@@ -43,8 +47,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addAnnotatedType(AnnotatedType<?> type)
     {
-        // TODO Auto-generated method stub
-        
+        beanManager.addAdditionalAnnotatedType(type);
     }
 
     /**
@@ -63,8 +66,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation... bindingDef)
     {
-        // TODO Auto-generated method stub
-        
+        XMLAnnotationTypeManager.getInstance().addInterceotorBindingTypeInheritAnnotation(binding, bindingDef);
     }
 
     /**
@@ -83,7 +85,12 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addStereotype(Class<? extends Annotation> stereotype, Annotation... stereotypeDef)
     {
-        // TODO Auto-generated method stub
+        if (!XMLAnnotationTypeManager.getInstance().hasStereoType(stereotype))
+        {
+            WebBeansUtil.checkStereoTypeClass(stereotype, stereotypeDef);
+            StereoTypeModel model = new StereoTypeModel(stereotype, stereotypeDef);
+            StereoTypeManager.getInstance().addStereoTypeModel(model);
+        }
         
     }
 

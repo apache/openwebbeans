@@ -13,15 +13,13 @@
  */
 package org.apache.webbeans.portable.events.discovery;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.event.NotificationManager;
 
 /**
  * Event that is fired by the container after it discovers beans.
@@ -32,8 +30,6 @@ import org.apache.webbeans.container.BeanManagerImpl;
 public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
 {
     private BeanManagerImpl beanManager = null;
-    
-    private List<Throwable> errors = new ArrayList<Throwable>();
     
     public AfterBeanDiscoveryImpl()
     {
@@ -65,9 +61,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addDefinitionError(Throwable t)
     {
-        // TODO and where do we evaluate and log those errors? ;)
-        // -> OWB-227
-        this.errors.add(t);
+        this.beanManager.getErrorStack().pushError(t);
     }
 
     /**
@@ -76,8 +70,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
-        //TODO 
-        System.out.println("Not implemented Yet!");
+        NotificationManager.getInstance().addObserver(observerMethod, observerMethod.getObservedType());
     }
 
 }

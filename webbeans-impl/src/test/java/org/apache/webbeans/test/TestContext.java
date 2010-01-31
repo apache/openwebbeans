@@ -553,7 +553,7 @@ public abstract class TestContext implements ITestContext
      * 
      * @param stereoClass stereotype class
      */
-    protected void initializeStereoType(Class<?> stereoClass)
+    protected void initializeStereoType(Class<? extends Annotation> stereoClass)
     {
         WebBeansUtil.checkStereoTypeClass(stereoClass);
         StereoTypeModel model = new StereoTypeModel(stereoClass);

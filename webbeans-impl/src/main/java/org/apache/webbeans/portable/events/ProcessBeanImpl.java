@@ -17,6 +17,8 @@ import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ProcessBean;
 
+import org.apache.webbeans.container.BeanManagerImpl;
+
 /**
  * Implementation of the {@link ProcessBean}.
  * 
@@ -44,7 +46,7 @@ public  abstract class ProcessBeanImpl<X> implements ProcessBean<X>
     @Override
     public void addDefinitionError(Throwable t)
     {
-        //TODO Definition Error
+        BeanManagerImpl.getManager().getErrorStack().pushError(t);
     }
 
     /**

@@ -220,9 +220,10 @@ public class BeansDeployer
      */
     private void fireAfterBeanDiscoveryEvent()
     {
-        BeanManager manager = BeanManagerImpl.getManager();
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
         manager.fireEvent(new AfterBeanDiscoveryImpl(),new Annotation[0]);
         
+        WebBeansUtil.inspectErrorStack("There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");
     }
     
     /**
@@ -230,8 +231,10 @@ public class BeansDeployer
      */
     private void fireAfterDeploymentValidationEvent()
     {
-        BeanManager manager = BeanManagerImpl.getManager();
-        manager.fireEvent(new AfterDeploymentValidationImpl(),new Annotation[0]);        
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        manager.fireEvent(new AfterDeploymentValidationImpl(),new Annotation[0]);
+        
+        WebBeansUtil.inspectErrorStack("There are errors that are added by AfterDeploymentValidation event observers. Look at logs for further details");
     }
     
     /**
@@ -624,7 +627,8 @@ public class BeansDeployer
             AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(clazz);
             
             //Fires ProcessAnnotatedType
-            ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);             
+            ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);      
+            
             ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);                  
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
             
@@ -668,7 +672,9 @@ public class BeansDeployer
             }
                                     
             //Fires ProcessInjectionTarget
-            ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);            
+            ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);    
+            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
+            
             if(processInjectionTargetEvent.isSet())
             {
                 managedBeanCreator.setInjectedTarget(processInjectionTargetEvent.getInjectionTarget());
@@ -678,7 +684,8 @@ public class BeansDeployer
             for(ProducerMethodBean<?> producerMethod : producerMethods)
             {
                 AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), producerMethod.getParent().getReturnType());
-                ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForMethod(producerMethod,method);
+                ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForMethod(producerMethod,method);                
+                WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerMethods. Look at logs for further details");
 
                 annotatedMethods.put(producerMethod, method);
                 
@@ -695,6 +702,7 @@ public class BeansDeployer
             {
                 AnnotatedField<?> field = AnnotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), producerField.getParent().getReturnType());
                 ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForField(producerField, field);
+                WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerFields. Look at logs for further details");
                 
                 annotatedFields.put(producerField, field);
                 
@@ -717,16 +725,20 @@ public class BeansDeployer
             
             //Fires ProcessManagedBean
             ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean,annotatedType);            
-            BeanManagerImpl.getManager().fireEvent(processBeanEvent, new Annotation[0]);
+            BeanManagerImpl.getManager().fireEvent(processBeanEvent, new Annotation[0]);            
+            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for managed beans. Look at logs for further details");
             
             //Fires ProcessProducerMethod
-            WebBeansUtil.fireProcessProducerMethodBeanEvent(annotatedMethods);
+            WebBeansUtil.fireProcessProducerMethodBeanEvent(annotatedMethods);            
+            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerMethod event observers for producer method beans. Look at logs for further details");            
             
             //Fires ProcessProducerField
             WebBeansUtil.fireProcessProducerFieldBeanEvent(annotatedFields);
+            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerField event observers for producer field beans. Look at logs for further details");            
             
             //Fire ObservableMethods
             WebBeansUtil.fireProcessObservableMethodBeanEvent(observerMethodsMap);
+            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for observer methods. Look at logs for further details");
             
             //Set InjectionTarget that is used by the container to inject dependencies!
             if(managedBeanCreator.isInjectionTargetSet())
