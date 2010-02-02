@@ -63,7 +63,6 @@ public final class TransactionServiceJndiImpl implements TransactionService
     }
 
 
-    @Override
     public UserTransaction getUserTransaction()
     {
         return JNDIUtil.lookup("UserTransaction", UserTransaction.class);

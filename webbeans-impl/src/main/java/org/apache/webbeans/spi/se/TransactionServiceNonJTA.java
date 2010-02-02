@@ -43,7 +43,6 @@ public class TransactionServiceNonJTA implements TransactionService
         return null;
     }
 
-    @Override
     public UserTransaction getUserTransaction()
     {
         return null;

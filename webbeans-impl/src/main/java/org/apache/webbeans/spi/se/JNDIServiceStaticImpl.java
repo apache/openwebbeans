@@ -59,7 +59,6 @@ public class JNDIServiceStaticImpl implements JNDIService
         jndiContent.remove(name);
     }
 
-    @Override
     public <T> T lookup(String name, Class<? extends T> expectedClass)
     {
         return getObject(name, expectedClass);
