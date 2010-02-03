@@ -71,7 +71,7 @@
         <dependency>
             <groupId>org.jboss.jsr299.tck</groupId>
             <artifactId>jsr299-tck-api</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1-CR1</version>
             <exclusions>
             	<exclusion>
             		<groupId>javax.enterprise</groupId>
