@@ -27,15 +27,15 @@ import org.apache.webbeans.container.BeanManagerImpl;
  * @param <X> declared bean class
  * @param <T> event type
  */
-public class ProcessObserverMethodImpl<X,T> implements ProcessObserverMethod<X, T>
+public class ProcessObserverMethodImpl<T,X> implements ProcessObserverMethod<T, X>
 {
     /**Observer annotated method*/
     private final AnnotatedMethod<X> annotatedMethod;
     
     /**ObserverMethod instance*/
-    private final ObserverMethod<X> observerMethod;
+    private final ObserverMethod<T> observerMethod;
 
-    public ProcessObserverMethodImpl(AnnotatedMethod<X> annotatedMethod,ObserverMethod<X> observerMethod)
+    public ProcessObserverMethodImpl(AnnotatedMethod<X> annotatedMethod,ObserverMethod<T> observerMethod)
     {
         this.annotatedMethod = annotatedMethod;
         this.observerMethod = observerMethod;
@@ -63,7 +63,7 @@ public class ProcessObserverMethodImpl<X,T> implements ProcessObserverMethod<X, 
      * {@inheritDoc}
      */
     @Override
-    public ObserverMethod<X> getObserverMethod()
+    public ObserverMethod<T> getObserverMethod()
     {
         return this.observerMethod;
     }
