@@ -69,6 +69,7 @@ import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -312,6 +313,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             PassivationCapable pc = (PassivationCapable) bean;
             String id = pc.getId();
+
             if (id != null)
             {
                 Bean<?> oldBean = passivationCapableBeans.put(id, bean);
@@ -856,6 +858,16 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
     {
+        if(additionalScopes.contains(annotationType))
+        {
+            for (ExternalScope extScope : additionalScopes)
+            {
+                if (extScope.equals(annotationType)) {
+                    return extScope.isPassivating();
+                }
+            }
+        }
+
         if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class))
         {
             NormalScope scope = annotationType.getAnnotation(NormalScope.class);            
