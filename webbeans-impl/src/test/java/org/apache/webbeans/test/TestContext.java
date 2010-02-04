@@ -339,12 +339,6 @@ public abstract class TestContext implements ITestContext
         XMLManagedBean<T> bean = null;
         bean = this.xmlConfigurator.configureSimpleWebBean(simpleClass, webBeanDecleration);
 
-        if (bean != null)
-        {
-            getComponents().add(bean);
-            manager.addBean(bean);
-        }
-
         return bean;
     }
 
@@ -382,7 +376,7 @@ public abstract class TestContext implements ITestContext
      * @return XMLComponentImpl<?> with the WebBean definition
      */
     @SuppressWarnings("unchecked")
-    protected AbstractBean<?> getWebBeanFromXml(String xmlResourcePath, Class<?> desiredClazz)
+    protected AbstractBean<?> getWebBeanFromXml(String xmlResourcePath, Class<?> desiredClazz, Annotation... bindings)
     {
         InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
         Assert.assertNotNull(stream);
@@ -396,14 +390,11 @@ public abstract class TestContext implements ITestContext
             defineXMLSimpleWebBeans(clazz, beanElement);
         }
 
-        for (AbstractBean<?> def : getComponents())
+        Set<Bean<?>> beans = getManager().getBeans(desiredClazz, bindings);
+        if (beans != null && beans.size() == 1)
         {
-            if (def.getReturnType().equals(desiredClazz))
-            {
-                return def;
-            }
+            return (AbstractBean<?>) beans.iterator().next();
         }
-
         return null;
     }
 

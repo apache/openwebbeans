@@ -13,15 +13,13 @@
  */
 package org.apache.webbeans.component;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.*;
 
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -34,9 +32,9 @@ import org.apache.webbeans.intercept.InterceptorData;
  * @version $Rev$ $Date$
  * <T> bean class
  */
-public abstract class BaseBean<T> implements Bean<T>
+public abstract class BaseBean<T> implements Bean<T>, PassivationCapable, Serializable
 {
-	/**Bean Manager*/
+    /**Bean Manager*/
     private final BeanManager manager;
 
     /**

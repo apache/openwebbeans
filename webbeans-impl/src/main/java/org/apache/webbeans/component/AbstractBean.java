@@ -110,7 +110,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
      * Constructor definiton. Each subclass redefines its own constructor with
      * calling this.
      * 
-     * @param name name of the bean
+     * @param returnType of the bean
      * @param webBeansType web beans type
      */
     protected AbstractBean(WebBeansType webBeansType, Class<T> returnType)
@@ -225,6 +225,29 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
         
+    }
+
+    /**
+     * This is needed for serialization
+     * @return the id uniquely identifying the bean.
+     * @see javax.enterprise.inject.spi.PassivationCapable#getId() 
+     */
+    public String getId()
+    {
+        if (!isEnabled()) {
+            return null;
+        }
+        
+        StringBuilder sb = new StringBuilder(webBeansType.toString()).append('#');
+        sb.append(returnType).append('#');
+        for (Annotation qualifier : implQualifiers)
+        {
+            sb.append(qualifier.toString()).append(',');
+        }
+
+        //X TODO there are most probably other infos which must get added to make the id unique! 
+
+        return sb.toString();
     }
 
     /**

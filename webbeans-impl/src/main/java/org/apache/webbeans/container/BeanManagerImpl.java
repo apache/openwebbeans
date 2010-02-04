@@ -40,17 +40,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Stereotype;
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.InterceptionType;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.*;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Scope;
 import javax.naming.NamingException;
@@ -75,6 +65,7 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
@@ -144,7 +135,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private ErrorStack errorStack = new ErrorStack();
     
     private List<AnnotatedType<?>> additionalAnnotatedTypes = new CopyOnWriteArrayList<AnnotatedType<?>>();
-    
+
+    /**
+     * This map stores all {@link PassivationCapable} beans along with their unique id.
+     * This is used for serialization.
+     */
+    private Map<String, Bean<?>> passivationCapableBeans = new ConcurrentHashMap<String, Bean<?>>(); 
+
     /**
      * The parent Manager this child is depending from.
      */
@@ -289,16 +286,41 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         if(component instanceof AbstractBean)
         {
-            this.components.add(component);    
+            this.components.add(component);
+            addPassivationCapableBean(component);
         }
         else
         {
             ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(component);
             this.components.add(bean);
+            addPassivationCapableBean(bean);
         }
         
 
         return this;
+    }
+
+    /**
+     * Check if the bean is PassivationCapable and add it to the id store.
+     *
+     * @param bean
+     * @throws DefinitionException if the id is not unique.
+     */
+    protected void addPassivationCapableBean(Bean<?> bean) throws DefinitionException
+    {
+        if (bean instanceof PassivationCapable)
+        {
+            PassivationCapable pc = (PassivationCapable) bean;
+            String id = pc.getId();
+            if (id != null)
+            {
+                Bean<?> oldBean = passivationCapableBeans.put(id, bean);
+                if (oldBean != null)
+                {
+                    throw new DefinitionException("PassivationCapable bean id is not unique: " + id);
+                }
+            }
+        }
     }
 
     
@@ -674,7 +696,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public Bean<?> getPassivationCapableBean(String id)
     {
-        throw new UnsupportedOperationException();
+        return passivationCapableBeans.get(id);
     }
 
     /**
