@@ -155,6 +155,10 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
         if (b == null) {
             throw new DeploymentException("cannot deserialize Bean with PassivationCapable id=" + id);
         }
+        if (b instanceof SerializableBean)
+        {
+            b = ((SerializableBean)b).getBean();
+        }
         bean = b;
     }
 
