@@ -102,10 +102,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     
     /**Bean inherited meta data*/
     protected IBeanInheritedMetaData inheritedMetaData;
-    
-    /**Tracks dependent injection point owner, can be null*/
-    protected InjectionPoint dependentOwnerInjectionPoint;
-    
+        
     /**
      * Constructor definiton. Each subclass redefines its own constructor with
      * calling this.
@@ -206,9 +203,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
             //Destory dependent instances
             creationalContext.release();
                         
-            //Reset it
-            this.dependentOwnerInjectionPoint = null;  
-            
         }catch(Exception e)
         {
             logger.fatal(OWBLogConst.FATAL_0001, new Object[]{toString()});
@@ -487,22 +481,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     public Set<InjectionPoint> getInjectionPoints()
     {
         return this.injectionPoints;
-    }
-    
-    /**
-     * @return the dependentOwnerInjectionPoint
-     */
-    public InjectionPoint getDependentOwnerInjectionPoint()
-    {
-        return dependentOwnerInjectionPoint;
-    }
-
-    /**
-     * @param dependentOwnerInjectionPoint the dependentOwnerInjectionPoint to set
-     */
-    public void setDependentOwnerInjectionPoint(InjectionPoint dependentOwnerInjectionPoint)
-    {
-        this.dependentOwnerInjectionPoint = dependentOwnerInjectionPoint;
     }
     
     /**

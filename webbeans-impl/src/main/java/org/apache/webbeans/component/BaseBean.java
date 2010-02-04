@@ -13,7 +13,6 @@
  */
 package org.apache.webbeans.component;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.util.List;

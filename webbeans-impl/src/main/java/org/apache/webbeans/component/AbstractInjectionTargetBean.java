@@ -409,24 +409,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     }
 
     /**
-     * @return the fromRealizes
-     * @deprecated
-     */
-    public boolean isFromRealizes()
-    {
-        return fromRealizes;
-    }
-
-    /**
-     * @param fromRealizes the fromRealizes to set
-     * @deprecated
-     */
-    public void setFromRealizes(boolean fromRealizes)
-    {
-        this.fromRealizes = fromRealizes;
-    }
-
-    /**
      * Gets injected fields.
      * 
      * @return injected fields

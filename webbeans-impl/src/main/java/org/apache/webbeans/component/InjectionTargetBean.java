@@ -95,22 +95,5 @@ public interface InjectionTargetBean<T>
      * 
      * @param instance bean instance
      */
-    public void preDestroy(T instance);
-        
-    
-    /**
-     * Returns true if coming from <pre>@Realization</pre>.
-     * 
-     * @return true if coming from <pre>@Realization</pre>
-     */
-    @Deprecated //Removed from specification
-    public boolean isFromRealizes();
-    
-    /**
-     * Set its realized.
-     * 
-     * @param realized is realized
-     */
-    @Deprecated //Removed from specification
-    public void setFromRealizes(boolean realized);
+    public void preDestroy(T instance);    
 }

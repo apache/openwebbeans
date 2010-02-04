@@ -38,7 +38,7 @@ import java.util.Set;
  * {@link javax.enterprise.inject.spi.BeanManager#getPassivationCapableBean(String)}
  * for serialisation and deserialisation.
  *
- * @author <a href="mailto:struberg@yahoo.de">Mark Struberg</a>
+ * @version $Rev$ $Date$
  */
 public final class SerializableBean<T> implements Bean<T>, PassivationCapable, Serializable {
 
