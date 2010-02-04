@@ -591,7 +591,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     @Override
     public <T> CreationalContext<T> createCreationalContext(Contextual<T> contextual)
-    {        
+    {
+        if (contextual instanceof SerializableBean)
+        {
+            contextual = ((SerializableBean)contextual).getBean();
+        }
+
         return CreationalContextFactory.getInstance().getCreationalContext(contextual);
     }
 
@@ -708,6 +713,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         Context context = null;
         Object instance = null;
+
+        if (bean instanceof SerializableBean)
+        {
+            bean = ((SerializableBean)bean).getBean();
+        }
         
         //Check type if bean type is given
         if(beanType != null)

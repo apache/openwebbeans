@@ -16,6 +16,7 @@
  */
 package org.apache.webbeans.context.creational;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,11 +28,11 @@ import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.util.Asserts;
 
 /** {@inheritDoc} */
-public class CreationalContextImpl<T> implements CreationalContext<T>
+public class CreationalContextImpl<T> implements CreationalContext<T>, Serializable
 {
-    private Object incompleteInstance = null;
+    private transient Object incompleteInstance = null;
     
-    private Object proxyInstance = null;
+    private transient Object proxyInstance = null;
     
     /**Contextual bean dependent instances*/
     private Map<Object, DependentCreationalContext<?>> dependentObjects = new WeakHashMap<Object, DependentCreationalContext<?>>();
@@ -40,7 +41,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
     
     private CreationalContextImpl<?> ownerCreational = null;
     
-    private static class DependentCreationalContext<S>
+    private static class DependentCreationalContext<S> implements Serializable
     {
         private CreationalContext<S> creationalContext;
         
@@ -83,8 +84,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>
             this.contextual = contextual;
             this.creationalContext = cc;
         }
-        
-        
     }
     
     

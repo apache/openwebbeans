@@ -17,12 +17,7 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.*;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Singleton;
 import javax.servlet.ServletContext;
@@ -30,6 +25,7 @@ import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.conversation.ConversationManager;
 
@@ -89,7 +85,7 @@ public final class ContextFactory
     /**
      * Initialize requext context with the given request object.
      * 
-     * @param request http servlet request object
+     * @param event http servlet request event
      */
     public static void initRequestContext(ServletRequestEvent event)
     {
@@ -118,6 +114,10 @@ public final class ContextFactory
 
     public static Context getCustomContext(Context context)
     {
+        if (BeanManagerImpl.getManager().isPassivatingScope(context.getScope()))
+        {
+            return new CustomPassivatingContextImpl(context);
+        }
         return new CustomContextImpl(context);
     }
     
