@@ -32,7 +32,7 @@ import org.apache.webbeans.intercept.InterceptorData;
  * @version $Rev$ $Date$
  * <T> bean class
  */
-public abstract class BaseBean<T> implements Bean<T>, PassivationCapable, Serializable
+public abstract class BaseBean<T> implements Bean<T>, PassivationCapable
 {
     /**Bean Manager*/
     private final BeanManager manager;

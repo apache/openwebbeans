@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.component;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -82,5 +84,6 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T>
     public void setConstructor(Constructor<T> constructor)
     {
         this.constructor = constructor;
-    }    
+    }
+
 }
