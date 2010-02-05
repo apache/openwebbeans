@@ -41,7 +41,6 @@ public interface ScannerService
     
     /**
      * Perform the actual class scanning.
-     * @throws WebBeansDeploymentException
      */
     public void scan();
 
