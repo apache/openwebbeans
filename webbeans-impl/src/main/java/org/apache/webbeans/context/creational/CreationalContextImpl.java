@@ -16,15 +16,15 @@
  */
 package org.apache.webbeans.context.creational;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.io.*;
+import java.util.*;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.PassivationCapable;
 
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.util.Asserts;
 
 /** {@inheritDoc} */
@@ -32,7 +32,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 {
     private transient Object incompleteInstance = null;
     
-    private transient Object proxyInstance = null;
+    private Object proxyInstance = null;
     
     /**Contextual bean dependent instances*/
     private Map<Object, DependentCreationalContext<?>> dependentObjects = new WeakHashMap<Object, DependentCreationalContext<?>>();
@@ -136,7 +136,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     /**
      * Returns incomplete instance.
      * 
-     * @param incompleteBean instance owner
      * @return incomplete instance
      */
     public Object get()
@@ -147,8 +146,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     
     /**
      * Removes from creational context.
-     * 
-     * @param bean owner bean
      */
     public void  remove()
     {
@@ -206,6 +203,46 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     public void setOwnerCreational(CreationalContextImpl<?> ownerCreational)
     {
         this.ownerCreational = ownerCreational;
+    }
+
+    private synchronized void writeObject(ObjectOutputStream s)
+    throws IOException
+    {
+        s.writeObject(incompleteInstance);
+        s.writeObject(proxyInstance);
+
+        // we have to remap into a standard HashMap because WeakHashMap is not serializable
+        HashMap<Object, DependentCreationalContext<?>> depo
+                = new HashMap<Object, DependentCreationalContext<?>>(dependentObjects);
+        s.writeObject(depo);
+
+        if (contextual != null && contextual instanceof PassivationCapable)
+        {
+            s.writeObject(((PassivationCapable)contextual).getId());
+        }
+        else
+        {
+            s.writeObject(null);
+        }
+        s.writeObject(ownerCreational);
+    }
+
+
+    private synchronized void readObject(ObjectInputStream s)
+    throws IOException, ClassNotFoundException
+    {
+        incompleteInstance = s.readObject();
+        proxyInstance = s.readObject();
+
+        HashMap<Object, DependentCreationalContext<?>> depo = (HashMap<Object, DependentCreationalContext<?>>)s.readObject();
+        dependentObjects = new WeakHashMap<Object, DependentCreationalContext<?>>(depo);
+
+        String id = (String) s.readObject();
+        if (id != null)
+        {
+            contextual = (Contextual<T>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
+        }
+        ownerCreational = (CreationalContextImpl<?>) s.readObject();
     }
 
 }

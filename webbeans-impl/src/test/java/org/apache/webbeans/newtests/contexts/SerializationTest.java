@@ -31,7 +31,9 @@ import org.apache.webbeans.newtests.injection.circular.beans.CircularNormalInCon
 import junit.framework.Assert;
 import org.junit.Test;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,14 +41,37 @@ import java.util.Set;
 
 
 /**
- *
- * @author <a href="mailto:struberg@yahoo.de">Mark Struberg</a>
+ *  Tests for various serialization issues
  */
 public class SerializationTest extends AbstractUnitTest
 {
 
     @Test
-    public void testPersonalDataBean() throws ClassNotFoundException, IOException {
+    public void testCreationalContextSerialization() throws Exception
+    {
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+
+        // add a few random classes
+        classes.add(PersonalDataBean.class);
+        startContainer(classes);
+
+        BeanManager bm = getLifecycle().getBeanManager();
+        Set<Bean<?>> beans = getLifecycle().getBeanManager().getBeans(PersonalDataBean.class);
+        Assert.assertNotNull(beans);
+        Assert.assertTrue(beans.size() == 1);
+        Bean pdbBean = beans.iterator().next();
+        CreationalContext<PersonalDataBean> pdbCreational = bm.createCreationalContext(pdbBean);
+        Assert.assertNotNull(pdbCreational);
+
+        // oki, now let's serializeBean the CreationalContext
+        byte[] serial = serializeCreationalContext(pdbCreational);
+        CreationalContext<?> cc2 = deSerializeCreationalContext(serial);
+        Assert.assertNotNull(cc2);
+    }
+
+    @Test
+    public void testPersonalDataBean() throws ClassNotFoundException, IOException
+    {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
 
         // add a few random classes
@@ -72,15 +97,15 @@ public class SerializationTest extends AbstractUnitTest
                 bean = new SerializableBean(bean);
             }
             
-            byte[] serial = serialize(bean);
-            Bean b2 = deSerialize(serial);
+            byte[] serial = serializeBean(bean);
+            Bean b2 = deSerializeBean(serial);
 
             Assert.assertEquals(((SerializableBean)bean).getBean(), ((SerializableBean)b2).getBean());
         }
 
     }
 
-    private byte[] serialize(Bean<?> bean) throws IOException
+    private byte[] serializeBean(Bean<?> bean) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -88,10 +113,24 @@ public class SerializationTest extends AbstractUnitTest
         return baos.toByteArray();
     }
 
-    private Bean<?> deSerialize(byte[] serial) throws IOException, ClassNotFoundException {
+    private Bean<?> deSerializeBean(byte[] serial) throws IOException, ClassNotFoundException {
         ByteArrayInputStream baos = new ByteArrayInputStream(serial);
         ObjectInputStream ois = new ObjectInputStream(baos);
         return (Bean<?>) ois.readObject();
+    }
+
+    private byte[] serializeCreationalContext(CreationalContext<?> cc) throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(cc);
+        return baos.toByteArray();
+    }
+
+    private CreationalContext<?> deSerializeCreationalContext(byte[] serial) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream baos = new ByteArrayInputStream(serial);
+        ObjectInputStream ois = new ObjectInputStream(baos);
+        return (CreationalContext<?>) ois.readObject();
     }
 
 
