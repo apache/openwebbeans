@@ -40,11 +40,16 @@ import java.util.Set;
  *
  * @version $Rev$ $Date$
  */
-public final class SerializableBean<T> implements Bean<T>, PassivationCapable, Serializable {
+public final class SerializableBean<T> implements Bean<T>, PassivationCapable, Serializable 
+{
+
+    private static final long serialVersionUID = -8141263188006177021L;
 
     /** the delegated bean */
     private Bean<T> bean;
 
+    private String id;
+    
     /**
      * @return the deletaged internal Bean. 
      */
@@ -53,9 +58,10 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
         return bean;
     }
 
-    public SerializableBean(Bean<T> bean)
+    public SerializableBean(Bean<T> bean, String id)
     {
         this.bean = bean;
+        this.id  = id;        
     }
 
     @Override
@@ -127,11 +133,7 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
     @Override
     public String getId()
     {
-        if (bean instanceof PassivationCapable)
-        {
-            return ((PassivationCapable)bean).getId();
-        }
-        return null;
+        return this.id;
     }
 
     private synchronized void writeObject(ObjectOutputStream s)
@@ -147,6 +149,7 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
     }
 
 
+    @SuppressWarnings("unchecked")
     private synchronized void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
@@ -157,8 +160,9 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
         }
         if (b instanceof SerializableBean)
         {
-            b = ((SerializableBean)b).getBean();
+            b = ((SerializableBean<T>)b).getBean();
         }
+        
         bean = b;
     }
 

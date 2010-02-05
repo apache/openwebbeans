@@ -28,6 +28,8 @@ import org.apache.webbeans.newtests.injection.circular.beans.CircularApplication
 import org.apache.webbeans.newtests.injection.circular.beans.CircularConstructorOrProducerMethodParameterBean;
 import org.apache.webbeans.newtests.injection.circular.beans.CircularDependenScopeBean;
 import org.apache.webbeans.newtests.injection.circular.beans.CircularNormalInConstructor;
+import org.apache.webbeans.util.WebBeansUtil;
+
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -92,15 +94,17 @@ public class SerializationTest extends AbstractUnitTest
 
         for (Bean<?> bean : beans)
         {
-            if (! (bean instanceof SerializableBean))
+            String id = null;
+            if((id = WebBeansUtil.isPassivationCapable(bean)) != null)
             {
-                bean = new SerializableBean(bean);
-            }
-            
-            byte[] serial = serializeBean(bean);
-            Bean b2 = deSerializeBean(serial);
+                bean = new SerializableBean(bean,id);
+                
+                byte[] serial = serializeBean(bean);
+                Bean b2 = deSerializeBean(serial);
 
-            Assert.assertEquals(((SerializableBean)bean).getBean(), ((SerializableBean)b2).getBean());
+                Assert.assertEquals(((SerializableBean)bean).getBean(), ((SerializableBean)b2).getBean());
+                
+            }            
         }
 
     }

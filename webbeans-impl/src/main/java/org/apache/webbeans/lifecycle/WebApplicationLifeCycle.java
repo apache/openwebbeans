@@ -128,7 +128,7 @@ public final class WebApplicationLifeCycle implements ContainerLifecycle
             		httpRequest.getSession();
             	}
             	catch(Exception e) {
-            		logger.error("Got an Exception while starting a fresh session! ", e);
+            		logger.error(OWBLogConst.ERROR_0013, e);
             	}
             }
         }

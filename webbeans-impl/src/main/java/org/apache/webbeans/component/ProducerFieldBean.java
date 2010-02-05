@@ -175,6 +175,13 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
         String errorMessage = "WebBeans producer method : " + producerField.getName() + " return type in the component implementation class : " + this.ownerComponent.getReturnType().getName() + " with passivating scope @" + this.getScope().getName() + " must be Serializable";
         WebBeansUtil.checkSerializableScopeType(this.getScope(), this.isSerializable(), errorMessage);
     }
+    
+    @Override
+    public boolean isPassivationCapable()
+    {
+        return isPassivationCapable(this.producerField.getType(),this.producerField.getModifiers());
+    }
+    
 
     /**
      * {@inheritDoc}

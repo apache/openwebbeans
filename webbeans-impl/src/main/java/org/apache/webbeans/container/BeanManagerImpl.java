@@ -99,8 +99,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**Holds the context with key scope*/
     private static Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
 
-    /**Activity webbeans components*/
-    private Set<Bean<?>> components = new CopyOnWriteArraySet<Bean<?>>();
+    /**Deployment archive beans*/
+    private Set<Bean<?>> deploymentBeans = new CopyOnWriteArraySet<Bean<?>>();
 
     /**Activity interceptors*/
     private Set<Interceptor<?>> webBeansInterceptors = new CopyOnWriteArraySet<Interceptor<?>>();
@@ -140,7 +140,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * This map stores all {@link PassivationCapable} beans along with their unique id.
      * This is used for serialization.
      */
-    private Map<String, Bean<?>> passivationCapableBeans = new ConcurrentHashMap<String, Bean<?>>(); 
+    private ConcurrentHashMap<String, Bean<?>> passivationCapableBeans = new ConcurrentHashMap<String, Bean<?>>(); 
 
     /**
      * The parent Manager this child is depending from.
@@ -276,23 +276,23 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     /**
-     * Add new webbeans component to the activity.
+     * Add new bean.
      * 
-     * @param component new webbeans component
-     * @return the this activity
+     * @param newBean new bean instance
+     * @return the this manager
      */
     
-    public BeanManager addBean(Bean<?> component)
+    public BeanManager addBean(Bean<?> newBean)
     {
-        if(component instanceof AbstractBean)
+        if(newBean instanceof AbstractBean)
         {
-            this.components.add(component);
-            addPassivationCapableBean(component);
+            this.deploymentBeans.add(newBean);
+            addPassivationCapableBean(newBean);
         }
         else
         {
-            ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(component);
-            this.components.add(bean);
+            ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(newBean);
+            this.deploymentBeans.add(bean);
             addPassivationCapableBean(bean);
         }
         
@@ -308,20 +308,16 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     protected void addPassivationCapableBean(Bean<?> bean) throws DefinitionException
     {
-        if (bean instanceof PassivationCapable)
+        String id = null;
+        if((id=WebBeansUtil.isPassivationCapable(bean)) != null)
         {
-            PassivationCapable pc = (PassivationCapable) bean;
-            String id = pc.getId();
-
-            if (id != null)
+            Bean<?> oldBean = passivationCapableBeans.putIfAbsent(id, bean);
+            if (oldBean != null)
             {
-                Bean<?> oldBean = passivationCapableBeans.put(id, bean);
-                if (oldBean != null)
-                {
-                    throw new DefinitionException("PassivationCapable bean id is not unique: " + id);
-                }
+                throw new DefinitionException("PassivationCapable bean id is not unique: " + id);
             }
-        }
+            
+        }        
     }
 
     
@@ -438,7 +434,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public Set<Bean<?>> getComponents()
     {
-        return getManager().components;
+        return getManager().deploymentBeans;
     }
     
     
@@ -521,7 +517,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public Set<Bean<?>> getBeans()
     {
-        return this.components;
+        return this.deploymentBeans;
     }
     
     public Set<Interceptor<?>> getInterceptors()
@@ -871,7 +867,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             for (ExternalScope extScope : additionalScopes)
             {
-                if (extScope.equals(annotationType)) {
+                if (extScope.equals(annotationType))
+                {
                     return extScope.isPassivating();
                 }
             }

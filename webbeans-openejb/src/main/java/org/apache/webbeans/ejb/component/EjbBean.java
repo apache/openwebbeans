@@ -107,6 +107,22 @@ public class EjbBean<T> extends AbstractInjectionTargetBean<T> implements Enterp
         //No-operations
     }
     
+    
+    
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.component.AbstractBean#isPassivationCapable()
+     */
+    @Override
+    public boolean isPassivationCapable()
+    {
+        if(this.ejbType.equals(SessionBeanType.STATELESS))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+
     /**
      * Inject session bean injected fields. It is called from
      * interceptor.

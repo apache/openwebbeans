@@ -41,9 +41,6 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     /** Disposal method */
     protected Method disposalMethod;
 
-    /** @deprecated*/ /*, Realizations are removed from the specification*/
-    protected boolean fromRealizes;
-
     /**
      * Creates a new instance.
      * 
@@ -264,25 +261,13 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         WebBeansUtil.checkSerializableScopeType(this.getScope(), this.isSerializable(), errorMessage);
 
     }
-
-    /**
-     * Returns fromRealize.
-     * 
-     * @return the fromRealizes
-     */
-    public boolean isFromRealizes()
+    
+    
+    
+    @Override
+    public boolean isPassivationCapable()
     {
-        return fromRealizes;
-    }
-
-    /**
-     * Set fromRealize.
-     * 
-     * @param fromRealizes the fromRealizes to set
-     */
-    public void setFromRealizes(boolean fromRealizes)
-    {
-        this.fromRealizes = fromRealizes;
+        return isPassivationCapable(this.creatorMethod.getReturnType(),this.creatorMethod.getModifiers());
     }
 
     public String toString()

@@ -18,13 +18,12 @@ package org.apache.webbeans.container;
 * under the License.
 */
 
-import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.PassivationCapable;
-import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,32 +50,23 @@ public class SerializableBeanVault {
         return (SerializableBeanVault) WebBeansFinder.getSingletonInstance(SerializableBeanVault.class.getName());
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Contextual<T> getSerializableBean(Contextual<T> bean)
     {
-        if (bean instanceof Serializable)
+        String id = null;
+        
+        if((id=WebBeansUtil.isPassivationCapable(bean)) != null) 
         {
-            // we don't need to wrap beans which are already Serializable
-            return bean;
-        }
-
-        if (bean instanceof AbstractBean)
-        {
-            AbstractBean<T> ab = (AbstractBean<T>)bean;
-            if (ab.isSerializable())
+            SerializableBean<T> sb = (SerializableBean<T>) serializableBeans.get(id);
+            if (sb == null)
             {
-                String id = ab.getId();
-                SerializableBean<T> sb = (SerializableBean<T>) serializableBeans.get(id);
-                if (sb == null)
-                {
-                    sb = new SerializableBean<T>((Bean<T>) bean);
-                    serializableBeans.put(id, sb);
-                }
-
-                return sb;
+                sb = new SerializableBean<T>((Bean<T>) bean,id);
+                serializableBeans.put(id, sb);
             }
-        }
 
-        // this should not happen, because all our beans are AbstractBeans!
+            return sb;            
+        }
+        
         return null;
     }
 }

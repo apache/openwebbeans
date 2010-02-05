@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.component;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -200,5 +202,21 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
 
         return super.getInjectionPoints();
     }
+    
+    protected boolean isPassivationCapable(Class<?> returnType, Integer modifiers)
+    {
+        if(ClassUtil.isFinal(modifiers) && !(Serializable.class.isAssignableFrom(returnType)))
+        {
+            return false;
+        }
+        
+        if(ClassUtil.isPrimitive(returnType) || Serializable.class.isAssignableFrom(returnType))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
 
 }

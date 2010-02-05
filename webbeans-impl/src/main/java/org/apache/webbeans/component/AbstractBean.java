@@ -220,11 +220,9 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     {
         
     }
-
+    
     /**
-     * This is needed for serialization
-     * @return the id uniquely identifying the bean.
-     * @see javax.enterprise.inject.spi.PassivationCapable#getId() 
+     * {@inheritDoc}
      */
     public String getId()
     {
@@ -242,6 +240,11 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         //X TODO there are most probably other infos which must get added to make the id unique! 
 
         return sb.toString();
+    }
+    
+    public boolean isPassivationCapable()
+    {
+        return false;
     }
 
     /**

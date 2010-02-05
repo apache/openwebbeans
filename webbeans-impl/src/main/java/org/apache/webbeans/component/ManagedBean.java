@@ -13,14 +13,15 @@
  */
 package org.apache.webbeans.component;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.inject.InjectableConstructor;
+import org.apache.webbeans.intercept.InterceptorData;
 
 /**
  * Managed bean implementation of the {@link Bean}.
@@ -85,5 +86,30 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T>
     {
         this.constructor = constructor;
     }
+    
+    public boolean isPassivationCapable()
+    {
+        if(Serializable.class.isAssignableFrom(this.returnType))
+        {
+            for(Decorator<?> dec : this.decorators)
+            {
+                if(!Serializable.class.isAssignableFrom(dec.getBeanClass()))
+                {
+                    return false;
+                }
+            }
+            
+            for(InterceptorData interceptorData : this.interceptorStack)
+            {
+                if(!(interceptorData.getInterceptorInstance() instanceof Serializable))
+                {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+
 
 }

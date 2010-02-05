@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -95,6 +96,28 @@ public class ThirdpartyBeanImpl<T> extends AbstractBean<T>
     }
 
 
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.component.AbstractBean#getId()
+     */
+    @Override
+    public String getId()
+    {
+        if(this.bean instanceof PassivationCapable)
+        {
+            PassivationCapable pc = (PassivationCapable)this.bean;
+            return pc.getId();
+        }
+        
+        return null;
+    }
+    
+    
+
+    @Override
+    public boolean isPassivationCapable()
+    {
+        return this.bean instanceof PassivationCapable ? true : false;
+    }
 
     @Override
     protected T createInstance(CreationalContext<T> creationalContext)

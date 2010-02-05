@@ -24,12 +24,13 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.util.Asserts;
 
 /** {@inheritDoc} */
 public class CreationalContextImpl<T> implements CreationalContext<T>, Serializable
 {
+    private static final long serialVersionUID = -3416834742959340960L;
+
     private transient Object incompleteInstance = null;
     
     private Object proxyInstance = null;
@@ -43,6 +44,8 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     
     private static class DependentCreationalContext<S> implements Serializable
     {
+        private static final long serialVersionUID = 7107949019995422165L;
+
         private CreationalContext<S> creationalContext;
         
         private Contextual<S> contextual;
@@ -228,6 +231,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     }
 
 
+    @SuppressWarnings("unchecked")
     private synchronized void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {

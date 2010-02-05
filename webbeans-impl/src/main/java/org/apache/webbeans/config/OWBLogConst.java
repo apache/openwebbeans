@@ -43,7 +43,6 @@ public class OWBLogConst
     public final static String TEXT_CONFIG_NOT_FOUND = "TEXT_CONFIG_NOT_FOUND"; // ] not found. Using default settings.
     public final static String TEXT_CONFIG_FOUND     = "TEXT_CONFIG_FOUND";     // ] found at location :
     public final static String TEXT_OVERRIDING       = "TEXT_OVERRIDING";       // . Overriding default settings.
-    public final static String TEXT_MUSTSCOPE        = "TEXT_MUSTSCOPE";        // Stereotypes must declare the same @Scope annotations for Managed Bean Implementation Class :
     public final static String TEXT_MB_IMPL          = "TEXT_MB_IMPL";          // Managed Bean implementation class : 
     public final static String TEXT_SAME_SCOPE       = "TEXT_SAME_SCOPE";       //  stereotypes must declare the same @Scope annotations.
     public final static String TEXT_JAVA_TYPENAME    = "TEXT_JAVA_TYPENAME";    // Java type with name : 
@@ -80,13 +79,7 @@ public class OWBLogConst
     public final static String INFO_0030 = "INFO_0030"; // Checking Specialization constraints is ended.
     public final static String INFO_0031 = "INFO_0031"; // Checking StereoTypes constraints is started.
     public final static String INFO_0032 = "INFO_0032"; // Checking StereoTypes constraints is ended.
-    public final static String INFO_0033 = "INFO_0033"; // Adding OpenWebBeansPlugin : 
-    public final static String INFO_0034 = "INFO_0034"; // Create new transitional conversation for non-faces request with view id : [{1}]
-    public final static String INFO_0035 = "INFO_0035"; // Propogation of the conversation for non-faces request with cid: [{1}] for view: [{2}]
-    public final static String INFO_0036 = "INFO_0036"; // Propogated conversation for non-faces request can not be restored for view id : [{1}]. Creates new transitional conversation.
-    public final static String INFO_0038 = "INFO_0038"; // Conversation is restored for non-faces request with cid: [{1}] for view id: [{2}]
-    public final static String INFO_0039 = "INFO_0039"; // Conversation is restored for JSF postback with cid: [{1}] for view id: [{2}]
-    public final static String INFO_0040 = "INFO_0040"; // Create new transient conversation for JSF postback view id : [{1}]
+    public final static String INFO_0033 = "INFO_0033"; // Adding OpenWebBeansPlugin :
     public final static String INFO_0041 = "INFO_0041"; // Destroying the conversation context with cid: [{0}] for view: [{1}]
     public final static String INFO_0042 = "INFO_0042"; // Restoring conversation with cid: [{0}] for view: [{1}]
     public final static String INFO_0043 = "INFO_0043"; // Creating a new transitional conversation for view: [{0}]
@@ -111,6 +104,7 @@ public class OWBLogConst
     public final static String ERROR_0010 = "ERROR_0010"; // An error occured while closing the JMS instance.
     public final static String ERROR_0011 = "ERROR_0011"; // Method security access violation for method : [{1}] in decorator class : [{2}]
     public final static String ERROR_0012 = "ERROR_0012"; // Exception in calling method : [{1}] in decorator class : [{2}]. Look in the log for target checked exception.
+    public final static String ERROR_0013 = "ERROR_0013"; // Got an Exception while starting a fresh session!
     public final static String ERROR_0014 = "ERROR_0014"; // Method illegal access for method : [{1}] in decorator class : [{2}]
     public final static String ERROR_0015 = "ERROR_0015"; // Illegal access exception for field : [{1}] in decorator class : [{2}]
     public final static String ERROR_0016 = "ERROR_0016"; // IllegalArgumentException has occured while calling the field: [{1}] on the class: [{2}]

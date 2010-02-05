@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.util;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -45,6 +46,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Alternative;
@@ -69,6 +71,7 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
@@ -135,7 +138,6 @@ import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
-import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
@@ -728,6 +730,7 @@ public final class WebBeansUtil
      * Creates a new instance bean.
      * @return new instance bean
      */
+    @SuppressWarnings("serial")
     public static <T> InstanceBean<T> getInstanceBean()
     {
         InstanceBean<T> instanceBean = new InstanceBean<T>();
@@ -747,6 +750,7 @@ public final class WebBeansUtil
      * Creates a new event bean.
      * @return new event bean
      */
+    @SuppressWarnings("serial")
     public static <T> EventBean<T> getEventBean()
     {
         EventBean<T> eventBean = new EventBean<T>();
@@ -2322,7 +2326,38 @@ public final class WebBeansUtil
         }finally
         {
             stack.clear();
+        }        
+    }
+    
+    public static String isPassivationCapable(Contextual<?> contextual)
+    {
+        if(contextual instanceof Bean)
+        {
+            if(contextual instanceof AbstractBean)
+            {
+                if( ((AbstractBean<?>)contextual).isPassivationCapable())
+                {
+                    return ((AbstractBean<?>)contextual).getId();
+                }
+            }
+            
+            else if(contextual instanceof PassivationCapable)
+            {
+                PassivationCapable pc = (PassivationCapable)contextual;
+                
+                return pc.getId();
+            }
+        }
+        else
+        {
+            if((contextual instanceof PassivationCapable) && (contextual instanceof Serializable))
+            {
+                PassivationCapable pc = (PassivationCapable)contextual;
+                
+                return pc.getId();
+            }
         }
         
+        return null;
     }
 }

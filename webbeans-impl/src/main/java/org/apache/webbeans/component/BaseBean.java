@@ -31,7 +31,7 @@ import org.apache.webbeans.intercept.InterceptorData;
  * @version $Rev$ $Date$
  * <T> bean class
  */
-public abstract class BaseBean<T> implements Bean<T>, PassivationCapable
+public abstract class BaseBean<T> implements Bean<T>
 {
     /**Bean Manager*/
     private final BeanManager manager;
@@ -204,5 +204,17 @@ public abstract class BaseBean<T> implements Bean<T>, PassivationCapable
      * @return true if enabled
      */    
     public abstract boolean isEnabled();
+    
+    /**
+     * Gets id of the bean.
+     * @return id of the bean
+     */
+    public abstract String getId();
+    
+    /**
+     * True if passivation capable false otherwise.
+     * @return true if this bean is passivation capable
+     */
+    public abstract boolean isPassivationCapable();
     
 }

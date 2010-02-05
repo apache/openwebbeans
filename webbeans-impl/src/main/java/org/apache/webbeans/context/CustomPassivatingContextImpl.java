@@ -33,16 +33,16 @@ public class CustomPassivatingContextImpl extends CustomContextImpl
         super(context);
     }
 
-    public <T> T get(Contextual<T> component, CreationalContext<T> crreationalContext)
+    public <T> T get(Contextual<T> contextual, CreationalContext<T> crreationalContext)
     {
         SerializableBeanVault sbv = SerializableBeanVault.getInstance();
-        return super.get(sbv.getSerializableBean(component), crreationalContext);
+        return super.get(sbv.getSerializableBean(contextual), crreationalContext);
     }
 
-    public <T> T get(Contextual<T> component)
+    public <T> T get(Contextual<T> contextual)
     {
         SerializableBeanVault sbv = SerializableBeanVault.getInstance();
-        return super.get(sbv.getSerializableBean(component));
+        return super.get(sbv.getSerializableBean(contextual));
     }
 
 }
