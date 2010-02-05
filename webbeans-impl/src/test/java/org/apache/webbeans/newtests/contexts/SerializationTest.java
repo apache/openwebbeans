@@ -19,6 +19,7 @@ package org.apache.webbeans.newtests.contexts;
 */
 
 import org.apache.webbeans.container.SerializableBean;
+import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.contexts.session.common.PersonalDataBean;
 import org.apache.webbeans.newtests.decorators.multiple.Decorator1;
@@ -97,7 +98,7 @@ public class SerializationTest extends AbstractUnitTest
             String id = null;
             if((id = WebBeansUtil.isPassivationCapable(bean)) != null)
             {
-                bean = new SerializableBean(bean,id);
+                bean = (Bean<?>) SerializableBeanVault.getInstance().getSerializableBean(bean);
                 
                 byte[] serial = serializeBean(bean);
                 Bean b2 = deSerializeBean(serial);

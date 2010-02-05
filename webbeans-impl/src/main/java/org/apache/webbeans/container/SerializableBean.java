@@ -49,19 +49,25 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
     private Bean<T> bean;
 
     private String id;
-    
+
     /**
-     * @return the deletaged internal Bean. 
+     * @return the delegated internal Bean. 
      */
     public Bean<T> getBean()
     {
         return bean;
     }
 
-    public SerializableBean(Bean<T> bean, String id)
+    /**
+     * This constructor shall not be invoked directly, but only get called
+     * from {@link org.apache.webbeans.container.SerializableBeanVault}
+     * @param bean the PassivationCapable bean which should be made Serializable
+     * @param id the {@link javax.enterprise.inject.spi.PassivationCapable#getId()}
+     */
+    SerializableBean(Bean<T> bean, String id)
     {
         this.bean = bean;
-        this.id  = id;        
+        this.id  = id;
     }
 
     @Override
