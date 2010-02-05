@@ -27,8 +27,8 @@ under the License.
     	<from-view-id>/buy.xhtml</from-view-id>
     	<navigation-case>
     		<from-outcome>toListingPage</from-outcome>
+                <to-view-id>/listing.xhtml</to-view-id>
     		<redirect/>
-    		<to-view-id>/listing.xhtml</to-view-id>
     	</navigation-case>
     </navigation-rule>
     

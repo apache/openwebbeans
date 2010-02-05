@@ -43,8 +43,8 @@ under the License.
     	<from-view-id>/conversation.xhtml</from-view-id>
     	<navigation-case>
     		<from-outcome>toRedirect</from-outcome>
-    		<redirect/>
     		<to-view-id>/redirect.jsf?book=alis</to-view-id>
+    		<redirect/>
     	</navigation-case>
     </navigation-rule>
 	
