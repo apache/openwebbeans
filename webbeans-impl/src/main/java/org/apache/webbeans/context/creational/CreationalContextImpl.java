@@ -21,10 +21,10 @@ import java.util.*;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /** {@inheritDoc} */
 public class CreationalContextImpl<T> implements CreationalContext<T>, Serializable
@@ -219,9 +219,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                 = new HashMap<Object, DependentCreationalContext<?>>(dependentObjects);
         s.writeObject(depo);
 
-        if (contextual != null && contextual instanceof PassivationCapable)
+        String id = null;
+        if (contextual != null && (id = WebBeansUtil.isPassivationCapable(contextual)) != null)
         {
-            s.writeObject(((PassivationCapable)contextual).getId());
+            s.writeObject(id);
         }
         else
         {
