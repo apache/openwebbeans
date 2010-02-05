@@ -111,7 +111,7 @@ public class BeansDeployer
      * Deploys all the defined web beans components in the container startup.
      * <p>
      * It deploys from the web-beans.xml files and from the class files. It uses
-     * the {@link WebBeansScanner} class to get classes.
+     * the {@link org.apache.webbeans.spi.ScannerService} to get classes.
      * </p>
      * 
      * @throws WebBeansDeploymentException if any deployment exception occurs

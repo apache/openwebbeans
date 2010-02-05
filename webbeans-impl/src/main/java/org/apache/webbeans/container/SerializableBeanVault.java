@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>This class acts as a storage for {@link SerializableBean}s.</p>
  *
  * <h3>The Background:</h3>
- * <p>Any Contextual&lt;T&gt; which holds his information on a storage which may get serialized,
+ * <p>Any Contextual&lt;T&gt; which holds it's information on a storage which may get serialized,
  * like e.g. the SessionContext, the ConversationContext or any 3-rd party Context
  * for a NormalScoped(passivating=true) and therefore PassivationCapable Scope needs to be Serializable.</p>
  * <p>Normal {@link Bean}s are not serializable because they contain non transportable information. But each
@@ -53,6 +53,12 @@ public class SerializableBeanVault {
     @SuppressWarnings("unchecked")
     public <T> Contextual<T> getSerializableBean(Contextual<T> bean)
     {
+        if (bean instanceof SerializableBean)
+        {
+            // we don't like to wrap SerializedBeans in itself!
+            return bean;
+        }
+
         String id = null;
         
         if((id=WebBeansUtil.isPassivationCapable(bean)) != null) 
