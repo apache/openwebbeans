@@ -17,9 +17,15 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.ProcessBean;
+import javax.enterprise.inject.spi.ProcessObserverMethod;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.event.NotificationManager;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.portable.events.generics.GProcessBean;
+import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
+import org.apache.webbeans.util.AnnotationUtil;
 
 /**
  * Event that is fired by the container after it discovers beans.
@@ -42,7 +48,11 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addBean(Bean<?> bean)
     {
-        this.beanManager.addBean(bean);
+        //Fire Event
+        ProcessBean<?> processBeanEvent = new GProcessBean(bean,AnnotatedElementFactory.newAnnotatedType(bean.getBeanClass()));
+        this.beanManager.fireEvent(processBeanEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        
+        this.beanManager.addBean(bean);        
     }
 
     /**
@@ -70,6 +80,8 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @Override
     public void addObserverMethod(ObserverMethod<?> observerMethod)
     {
+        ProcessObserverMethod<?, ?> event = new GProcessObservableMethod(null,observerMethod);
+        this.beanManager.fireEvent(event, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         NotificationManager.getInstance().addObserver(observerMethod, observerMethod.getObservedType());
     }
 

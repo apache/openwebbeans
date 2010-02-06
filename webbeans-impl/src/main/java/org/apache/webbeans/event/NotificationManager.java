@@ -36,6 +36,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
@@ -230,7 +231,13 @@ public final class NotificationManager
         
                         if(ClassUtil.isParametrizedType(type))
                         {
-                            addToMathingWithParametrizedForProducers(type, beanClass, producerOrObserverReturnClass, matching);
+                            boolean isObserverMethod = false;
+                            if(observerClass.equals(ProcessObserverMethod.class))
+                            {
+                                isObserverMethod = true;
+                            }
+                            
+                            addToMathingWithParametrizedForProducers(isObserverMethod,type, beanClass, producerOrObserverReturnClass, matching);
                         }
                         else
                         {
@@ -320,7 +327,7 @@ public final class NotificationManager
         
     }
     
-    private <T> void addToMathingWithParametrizedForProducers(Type type, Class<?> beanClass, Class<?> producerOrObserverReturnClass, Set<ObserverMethod<? super T>> matching )
+    private <T> void addToMathingWithParametrizedForProducers(boolean isObserverMethod,Type type, Class<?> beanClass, Class<?> producerOrObserverReturnClass, Set<ObserverMethod<? super T>> matching )
     {
         ParameterizedType pt = (ParameterizedType)type;
         Type[] actualArgs = pt.getActualTypeArguments();
@@ -335,8 +342,17 @@ public final class NotificationManager
         }
         else
         {
-            if(checkEventTypeParameterForExtensions(beanClass, actualArgs[0]) && 
-                    checkEventTypeParameterForExtensions(producerOrObserverReturnClass, actualArgs[1]))
+            Type beanClassArg = actualArgs[0];
+            Type returnClassArg = actualArgs[1];
+            
+            if(isObserverMethod)
+            {
+                beanClassArg = actualArgs[1];
+                returnClassArg = actualArgs[0];
+            }
+            
+            if(checkEventTypeParameterForExtensions(beanClass, beanClassArg) && 
+                    checkEventTypeParameterForExtensions(producerOrObserverReturnClass, returnClassArg))
             {
                 addToMatching(type, matching);   
             }

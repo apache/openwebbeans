@@ -55,6 +55,9 @@ public class ExtensionTest extends AbstractUnitTest
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(BookShop.class);
         classes.add(PrimitiveProducer.class);
+        
+        addExtension(new MyExtension());
+        
         startContainer(classes);
 
         MockServletContext servletContext = new MockServletContext();

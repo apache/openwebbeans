@@ -26,7 +26,7 @@ import org.apache.webbeans.container.BeanManagerImpl;
  *
  * @param <X> bean class info
  */
-public  abstract class ProcessBeanImpl<X> implements ProcessBean<X>
+public  class ProcessBeanImpl<X> implements ProcessBean<X>
 {
     /**Annotated instance. Can be AnnotatedType, AnnotatedMethod or AnnotatedField*/
     private final Annotated annotated;

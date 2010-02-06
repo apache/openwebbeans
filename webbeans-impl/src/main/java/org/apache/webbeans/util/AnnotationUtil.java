@@ -47,6 +47,8 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
  */
 public final class AnnotationUtil
 {
+    public static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
+    
     // No instantiate
     private AnnotationUtil()
     {

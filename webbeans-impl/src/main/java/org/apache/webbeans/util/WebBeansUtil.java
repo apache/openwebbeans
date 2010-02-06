@@ -140,6 +140,7 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
+import org.apache.webbeans.portable.events.generics.GProcessBean;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
@@ -1974,7 +1975,7 @@ public final class WebBeansUtil
         GProcessAnnotatedType processAnnotatedEvent = new GProcessAnnotatedType(annotatedType);
         
         //Fires ProcessAnnotatedType
-        BeanManagerImpl.getManager().fireEvent(processAnnotatedEvent, new Annotation[0]);
+        BeanManagerImpl.getManager().fireEvent(processAnnotatedEvent,AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         
         return processAnnotatedEvent;        
     }
@@ -1992,7 +1993,7 @@ public final class WebBeansUtil
         GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,annotatedType);
         
         //Fires ProcessInjectionTarget
-        BeanManagerImpl.getManager().fireEvent(processInjectionTargetEvent, new Annotation[0]);
+        BeanManagerImpl.getManager().fireEvent(processInjectionTargetEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         
         return processInjectionTargetEvent;
         
@@ -2003,7 +2004,7 @@ public final class WebBeansUtil
         GProcessProducer producerEvent = new GProcessProducer(method);
         
         //Fires ProcessProducer for methods
-        BeanManagerImpl.getManager().fireEvent(producerEvent, new Annotation[0]);
+        BeanManagerImpl.getManager().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         
         return producerEvent;
     }
@@ -2013,7 +2014,7 @@ public final class WebBeansUtil
         GProcessProducer producerEvent = new GProcessProducer(field);
         
         //Fires ProcessProducer for fields
-        BeanManagerImpl.getManager().fireEvent(producerEvent, new Annotation[0]);
+        BeanManagerImpl.getManager().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         
         return producerEvent;
     }
@@ -2039,7 +2040,7 @@ public final class WebBeansUtil
             
 
             //Fires ProcessProducer
-            BeanManagerImpl.getManager().fireEvent(processProducerMethodEvent, new Annotation[0]);
+            BeanManagerImpl.getManager().fireEvent(processProducerMethodEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         }                
     }
     
@@ -2052,7 +2053,7 @@ public final class WebBeansUtil
             GProcessObservableMethod event = new GProcessObservableMethod(annotatedMethod, observableMethod);
 
             //Fires ProcessProducer
-            BeanManagerImpl.getManager().fireEvent(event, new Annotation[0]);
+            BeanManagerImpl.getManager().fireEvent(event, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         }                
     }
     
@@ -2066,7 +2067,7 @@ public final class WebBeansUtil
             GProcessProducerField processProducerFieldEvent = new GProcessProducerField(bean,field);
             
             //Fire ProcessProducer
-            BeanManagerImpl.getManager().fireEvent(processProducerFieldEvent, new Annotation[0]);
+            BeanManagerImpl.getManager().fireEvent(processProducerFieldEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         }        
     }
     
@@ -2221,6 +2222,7 @@ public final class WebBeansUtil
                 clazz.equals(GProcessProducerField.class) ||
                 clazz.equals(GProcessProducerMethod.class) ||
                 clazz.equals(GProcessManagedBean.class) ||
+                clazz.equals(GProcessBean.class) ||
                 clazz.equals(GProcessSessionBean.class) ||
                 clazz.equals(GProcessObservableMethod.class)
                 )
@@ -2236,7 +2238,8 @@ public final class WebBeansUtil
         if(clazz.equals(GProcessAnnotatedType.class) ||
                 clazz.equals(GProcessInjectionTarget.class) ||
                 clazz.equals(GProcessManagedBean.class) ||
-                clazz.equals(GProcessSessionBean.class)
+                clazz.equals(GProcessSessionBean.class) ||
+                clazz.equals(GProcessBean.class)
                 )
         {
             return true;

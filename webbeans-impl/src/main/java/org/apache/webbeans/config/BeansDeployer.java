@@ -303,9 +303,12 @@ public class BeansDeployer
                 //Bean injection points
                 Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
                                 
-                for (InjectionPoint injectionPoint : injectionPoints)
+                if(injectionPoints != null)
                 {
-                    manager.validate(injectionPoint);
+                    for (InjectionPoint injectionPoint : injectionPoints)
+                    {
+                        manager.validate(injectionPoint);
+                    }                    
                 }
             }
         }
