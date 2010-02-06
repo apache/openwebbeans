@@ -15,11 +15,14 @@ package org.apache.webbeans.component.creation;
 
 import java.lang.reflect.Constructor;
 
+import javax.enterprise.inject.spi.AnnotatedConstructor;
+
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
+import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -61,16 +64,21 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
     @Override
     public void defineConstructor()
     {
+        Constructor<T> constructor = null;
         if(isDefaultMetaDataProvider())
         {
-            Constructor<T> constructor = WebBeansUtil.defineConstructor(getBean().getReturnType());
-            getBean().setConstructor(constructor);
+            constructor = WebBeansUtil.defineConstructor(getBean().getReturnType());
             DefinitionUtil.addConstructorInjectionPointMetaData(getBean(), constructor);
         }
         else
         {
-            //TODO
+           AnnotatedConstructor<T> annotated = WebBeansAnnotatedTypeUtil.getBeanConstructor(getAnnotatedType());
+           constructor = annotated.getJavaMember();
+           WebBeansAnnotatedTypeUtil.addConstructorInjectionPointMetaData(getBean(), annotated);
         }
+        
+        getBean().setConstructor(constructor);
+        
     }
 
     /**

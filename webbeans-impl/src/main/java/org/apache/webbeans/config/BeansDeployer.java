@@ -642,6 +642,7 @@ public class BeansDeployer
             
             if(processAnnotatedEvent.isSet())
             {
+                managedBeanCreator.setAnnotatedType(processAnnotatedEvent.getAnnotatedType());
                 managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
             }
             
@@ -659,7 +660,7 @@ public class BeansDeployer
             
             managedBeanCreator.defineApiType();
             managedBeanCreator.defineQualifier();
-            managedBeanCreator.defineName(WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
+            managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
             managedBeanCreator.defineConstructor();            
             Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();       
             Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();           
@@ -694,7 +695,7 @@ public class BeansDeployer
                 
                 if(producerEvent.isProducerSet())
                 {
-                    producerMethod.setProducer((Producer) managedBeanCreator.getProducer());
+                    producerMethod.setProducer((Producer)managedBeanCreator);
                 }
                 
                 producerEvent.setProducerSet(false);
@@ -711,7 +712,7 @@ public class BeansDeployer
                 
                 if(producerEvent.isProducerSet())
                 {
-                    producerField.setProducer((Producer) managedBeanCreator.getProducer());
+                    producerField.setProducer((Producer) managedBeanCreator);
                 }
                 
                 producerEvent.setProducerSet(false);
@@ -746,7 +747,7 @@ public class BeansDeployer
             //Set InjectionTarget that is used by the container to inject dependencies!
             if(managedBeanCreator.isInjectionTargetSet())
             {
-                managedBean.setInjectionTarget(managedBeanCreator.getInjectedTarget());   
+                managedBean.setInjectionTarget(managedBeanCreator);   
             }
             
             BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewBean(managedBean));                

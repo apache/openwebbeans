@@ -1519,12 +1519,12 @@ public final class WebBeansXMLConfigurator
             }
             else
             {
-                component.setName(WebBeansUtil.getSimpleWebBeanDefaultName(component.getReturnType().getName()));
+                component.setName(WebBeansUtil.getManagedBeanDefaultName(component.getReturnType().getName()));
             }
         }
         else
         {
-            DefinitionUtil.defineName(component, component.getReturnType().getDeclaredAnnotations(), WebBeansUtil.getSimpleWebBeanDefaultName(component.getReturnType().getSimpleName()));
+            DefinitionUtil.defineName(component, component.getReturnType().getDeclaredAnnotations(), WebBeansUtil.getManagedBeanDefaultName(component.getReturnType().getSimpleName()));
         }
     }
 

@@ -1235,7 +1235,7 @@ public final class WebBeansUtil
         return false;
     }
 
-    public static String getSimpleWebBeanDefaultName(String clazzName)
+    public static String getManagedBeanDefaultName(String clazzName)
     {
         Asserts.assertNotNull(clazzName);
         

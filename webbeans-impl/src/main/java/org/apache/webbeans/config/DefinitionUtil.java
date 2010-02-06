@@ -795,7 +795,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void defineInternalInjectedFieldsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
+    public static <T> void defineInternalInjectedFieldsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
     {
         // From inheritance
         Class<?> superClazz = clazz.getSuperclass();
@@ -811,7 +811,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void defineInternalInjectedFields(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromSuperClazz)
+    public static <T> void defineInternalInjectedFields(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromSuperClazz)
     {
 
         Field[] fields = clazz.getDeclaredFields();
@@ -887,7 +887,7 @@ public final class DefinitionUtil
         defineInternalInjectedMethodsRecursively(bean, clazz);
     }
 
-    private static <T> void defineInternalInjectedMethodsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
+    public static <T> void defineInternalInjectedMethodsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
     {
         // From inheritance
         Class<?> superClazz = clazz.getSuperclass();

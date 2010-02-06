@@ -27,6 +27,8 @@ import java.util.StringTokenizer;
 
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Stereotype;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
@@ -123,6 +125,24 @@ public final class AnnotationUtil
         }
         return false;
     }
+    
+    public static <X> boolean hasAnnotatedMethodParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
+    {
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
+        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+
+        List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
+        for(AnnotatedParameter<X> parameter : parameters)
+        {
+            if(parameter.isAnnotationPresent(clazz))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
 
     public static Type[] getMethodParameterGenericTypesWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
     {
@@ -230,6 +250,34 @@ public final class AnnotationUtil
         }
         return false;
     }
+    
+    public static <X> boolean hasAnnotatedMethodMultipleParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
+    {
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
+        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+
+        boolean found = false;
+        
+        List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
+        for(AnnotatedParameter<X> parameter : parameters)
+        {
+            if(parameter.isAnnotationPresent(clazz))
+            {
+                if(!found)
+                {
+                    found = true;
+                }
+                else
+                {
+                    return true;   
+                }                
+            }
+        }
+        
+        
+        return false;
+    }
+    
 
     /**
      * Gets the method first found parameter type that is annotated with the
@@ -264,6 +312,41 @@ public final class AnnotationUtil
         }
         return null;
     }
+    
+    public static <X> Type getAnnotatedMethodFirstParameterWithAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
+    {
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
+        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+
+        List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
+        for(AnnotatedParameter<X> parameter : parameters)
+        {
+            if(parameter.isAnnotationPresent(clazz))
+            {
+                return parameter.getBaseType();
+            }
+        }
+        
+        return null;
+    }
+    
+    public static <X> Annotation[] getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
+    {
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
+        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+
+        List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
+        for(AnnotatedParameter<X> parameter : parameters)
+        {
+            if(parameter.isAnnotationPresent(clazz))
+            {
+                return getAnnotationsFromSet(parameter.getAnnotations());
+            }
+        }
+        
+        return null;
+    }
+    
 
     public static Class<?> getMethodFirstParameterTypeClazzWithAnnotation(Method method, Class<? extends Annotation> clazz)
     {
@@ -401,6 +484,25 @@ public final class AnnotationUtil
 
         return null;
     }    
+    
+    public static <X,T extends Annotation> T getAnnotatedMethodFirstParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<T> clazz)
+    {
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
+        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        
+        
+        List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
+        for(AnnotatedParameter<X> parameter : parameters)
+        {
+            if(parameter.isAnnotationPresent(clazz))
+            {
+                return clazz.cast(parameter.getAnnotation(clazz));
+            }
+        }
+        
+        return null;
+    }    
+    
 
     /**
      * Check given annotation cross ref exist in the any parameter of the given

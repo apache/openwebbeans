@@ -14,15 +14,18 @@
 package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.config.DefinitionUtil;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -45,6 +48,11 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     
     /**Bean annotations*/
     private final Annotation[] beanAnnotations;
+    
+    /**If annotated type is set by ProcessAnnotatedType event, used this annotated type
+     * to define bean instance intead of using class artifacts.
+     */
+    private AnnotatedType<T> annotatedType;
     
     /**Producer set or not*/
     private boolean producerSet = false;
@@ -91,7 +99,8 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         }
         else
         {
-            //TODO Define Api Types by third party
+            Set<Type> types = this.annotatedType.getTypeClosure();
+            this.bean.getTypes().addAll(types);
         }
     }
 
@@ -107,7 +116,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         }
         else
         {
-            //TODO Define Qualifiers
+            DefinitionUtil.defineQualifiers(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()));
         }
         
     }
@@ -124,7 +133,8 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         }
         else
         {
-            //TODO
+            DefinitionUtil.defineName(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()), 
+                    WebBeansUtil.getManagedBeanDefaultName(annotatedType.getJavaClass().getSimpleName()));
         }
         
     }
@@ -142,7 +152,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         }
         else
         {
-            //TODO
+            DefinitionUtil.defineScopeType(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()), errorMessage);
         }
     }
 
@@ -152,15 +162,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     @Override
     public void defineSerializable()
     {
-        if(isDefaultMetaDataProvider())
-        {
-            DefinitionUtil.defineSerializable(this.bean);
-        }
-        else
-        {
-            //TODO
-        }
-        
+        DefinitionUtil.defineSerializable(this.bean);        
     }
 
     /**
@@ -175,7 +177,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         }
         else
         {
-            //TODO
+            DefinitionUtil.defineStereoTypes(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()));
         }
         
     }
@@ -266,5 +268,15 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     public T produce(CreationalContext<T> creationalContext)
     {
         return producer.produce(creationalContext);
+    }
+    
+    protected AnnotatedType<T> getAnnotatedType()
+    {
+        return this.annotatedType;
+    }
+    
+    public void setAnnotatedType(AnnotatedType<T> annotatedType)
+    {
+        this.annotatedType = annotatedType;
     }
 }

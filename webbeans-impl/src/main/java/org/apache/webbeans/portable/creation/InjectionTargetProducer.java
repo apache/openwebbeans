@@ -14,7 +14,6 @@
 package org.apache.webbeans.portable.creation;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;

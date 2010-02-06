@@ -65,11 +65,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     /** Injected methods of the bean */
     private Set<Method> injectedFromSuperMethods = new HashSet<Method>();
     
-
-    /** @deprecated */
-    /* Removed from specification */
-    protected boolean fromRealizes;
-
     /**
      * InjectionTargt instance. If this is not null, it is used for creating
      * instance.

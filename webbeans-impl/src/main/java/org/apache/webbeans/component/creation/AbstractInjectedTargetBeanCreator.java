@@ -23,6 +23,7 @@ import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.config.DefinitionUtil;
+import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
 /**
  * Abstract implementation of {@link InjectedTargetBeanCreator}.
@@ -70,7 +71,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
         }
         else
         {
-            //TODO
+            WebBeansAnnotatedTypeUtil.defineDisposalMethods(getBean(), getAnnotatedType());
         }
         
     }
@@ -87,7 +88,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
         }
         else
         {
-            //TODO
+            WebBeansAnnotatedTypeUtil.defineInjectedFields(getBean(), getAnnotatedType());
         }
         
     }
@@ -101,6 +102,10 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
         if(isDefaultMetaDataProvider())
         {
             DefinitionUtil.defineInjectedMethods(getBean());
+        }
+        else
+        {
+            WebBeansAnnotatedTypeUtil.defineInjectedMethods(getBean(), getAnnotatedType());
         }
         
     }
@@ -117,7 +122,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
         }
         else
         {
-            return null;
+            return WebBeansAnnotatedTypeUtil.defineObserverMethods(getBean(), getAnnotatedType());
         }
     }
 
@@ -133,7 +138,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
         }
         else
         {
-            return null;
+            return WebBeansAnnotatedTypeUtil.defineProducerFields(getBean(), getAnnotatedType());
         }
     }
 
@@ -149,7 +154,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
         }
         else
         {
-            return null;
+            return WebBeansAnnotatedTypeUtil.defineProducerMethods(getBean(), getAnnotatedType());
         }
     }
     

@@ -125,7 +125,7 @@ public final class ManagedBeanConfigurator
         WebBeansUtil.checkGenericType(component);
         WebBeansUtil.checkPassivationScope(component, component.getScope().getAnnotation(NormalScope.class));
         DefinitionUtil.defineQualifiers(component, clazzAnns);
-        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));
+        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
 
         Constructor<T> constructor = WebBeansUtil.defineConstructor(clazz);
         component.setConstructor(constructor);
@@ -167,7 +167,7 @@ public final class ManagedBeanConfigurator
         WebBeansUtil.checkGenericType(component);
         WebBeansUtil.checkPassivationScope(component, component.getScope().getAnnotation(NormalScope.class));
         DefinitionUtil.defineQualifiers(component, clazzAnns);
-        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getSimpleWebBeanDefaultName(javaClazz.getSimpleName()));
+        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(javaClazz.getSimpleName()));
 
         Constructor<T> constructor = WebBeansUtil.defineConstructor(annotatedType.getConstructors().toArray(new Constructor[0]), javaClazz);
         component.setConstructor(constructor);

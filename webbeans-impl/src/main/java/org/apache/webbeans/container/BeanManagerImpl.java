@@ -51,10 +51,7 @@ import javax.naming.StringRefAddr;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.JmsBeanMarker;
-import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
-import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -79,6 +76,7 @@ import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
@@ -955,9 +953,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
-        ManagedBean<T> bean = ManagedBeanConfigurator.define(type.getJavaClass(), WebBeansType.MANAGED);
-        
-        return new InjectionTargetProducer<T>(bean);
+        return new InjectionTargetProducer<T>(WebBeansAnnotatedTypeUtil.defineManagedBean(type));
     }
 
     @Override
