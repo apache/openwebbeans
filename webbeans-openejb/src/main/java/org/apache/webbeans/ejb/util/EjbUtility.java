@@ -82,7 +82,7 @@ public final class EjbUtility
         ejbBeanCreator.defineApiType();
         ejbBeanCreator.defineScopeType("Session Bean implementation class : " + clazz.getName() + " stereotypes must declare same @ScopeType annotations");
         ejbBeanCreator.defineQualifier();
-        ejbBeanCreator.defineName(WebBeansUtil.getSimpleWebBeanDefaultName(clazz.getSimpleName()));            
+        ejbBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));            
         Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods();        
         checkProducerMethods(producerMethodBeans, ejbBean);
         Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields();           
@@ -110,7 +110,7 @@ public final class EjbUtility
             
             if(producerEvent.isProducerSet())
             {
-                producerMethod.setProducer((Producer) ejbBeanCreator.getProducer());
+                producerMethod.setProducer((Producer) ejbBeanCreator);
             }
             
             producerEvent.setProducerSet(false);
@@ -127,7 +127,7 @@ public final class EjbUtility
             
             if(producerEvent.isProducerSet())
             {
-                producerField.setProducer((Producer) ejbBeanCreator.getProducer());
+                producerField.setProducer((Producer) ejbBeanCreator);
             }
             
             producerEvent.setProducerSet(false);
@@ -164,7 +164,7 @@ public final class EjbUtility
         //Set InjectionTarget that is used by the container to inject dependencies!
         if(ejbBeanCreator.isInjectionTargetSet())
         {
-            ejbBean.setInjectionTarget(ejbBeanCreator.getInjectedTarget());   
+            ejbBean.setInjectionTarget(ejbBeanCreator);   
         }
         
         BeanManagerImpl.getManager().addBean(ejbBean);
