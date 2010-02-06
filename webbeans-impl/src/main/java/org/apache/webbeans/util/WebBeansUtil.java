@@ -2328,7 +2328,12 @@ public final class WebBeansUtil
             stack.clear();
         }        
     }
-    
+
+    /**
+     *
+     * @param contextual the {@link Bean} to check
+     * @return the uniqueId if it is passivationcapable and enabled
+     */
     public static String isPassivationCapable(Contextual<?> contextual)
     {
         if(contextual instanceof Bean)

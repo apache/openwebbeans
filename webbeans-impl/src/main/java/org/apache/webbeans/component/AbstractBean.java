@@ -151,7 +151,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     @SuppressWarnings("unchecked")
     public T create(CreationalContext<T> creationalContext)
     {
-        T instance = null;
+        T instance;
         try
         {  
             if(!(creationalContext instanceof CreationalContextImpl))
@@ -165,17 +165,11 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         {
             Throwable throwable = ClassUtil.getRootException(re);
             
-            if(throwable instanceof RuntimeException)
-            {
-                RuntimeException rt = (RuntimeException)throwable;
-                
-                throw rt;
-            }
-            else
+            if(!(throwable instanceof RuntimeException))
             {
                 throw new CreationException(throwable);
             }
-            
+            throw (RuntimeException) throwable;
         }
 
         return instance;
@@ -184,13 +178,15 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     /**
      * Creates the instance of the bean that has a specific implementation
      * type. Each subclass must define its own create mechanism.
-     * 
+     *
+     * @param creationalContext the contextual instance shall be created in
      * @return instance of the bean
      */
     protected abstract T createInstance(CreationalContext<T> creationalContext);
 
     /*
      * (non-Javadoc)
+     * @param creationalContext the contextual instance has been created in
      * @see javax.webbeans.bean.Component#destroy(java.lang.Object)
      */
     public void destroy(T instance, CreationalContext<T> creationalContext)
@@ -215,6 +211,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
      * destroy mechanism.
      * 
      * @param instance instance of the bean that is being destroyed
+     * @param creationalContext the contextual instance has been created in
      */
     protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
@@ -222,11 +219,17 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
     
     /**
+     * TODO there are probably other infos which must get added to make the id unique!
+     * If not, it will crash in {@link BeanManagerImpl#addPassivationCapableBean(javax.enterprise.inject.spi.Bean)}
+     * anyway. 
+     *
      * {@inheritDoc}
      */
     public String getId()
     {
-        if (!isEnabled()) {
+        if (!isEnabled() || returnType.equals(Object.class)) {
+            // if the Bean is disabled, either by rule, or by
+            // annotating it @Typed() as Object, then it is not serializable
             return null;
         }
         
@@ -236,8 +239,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         {
             sb.append(qualifier.toString()).append(',');
         }
-
-        //X TODO there are most probably other infos which must get added to make the id unique! 
 
         return sb.toString();
     }
@@ -571,7 +572,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     public String toString()
     {
         StringBuilder builder = new StringBuilder();        
-        builder.append("Name:"+ getName() +",WebBeans Type:"+ getWebBeansType());
+        builder.append("Name:").append(getName()).append(",WebBeans Type:").append(getWebBeansType());
         builder.append(",API Types:[");
         
         int size = getTypes().size();
