@@ -1755,6 +1755,26 @@ public final class ClassUtil
         return null;
 
     }
+    
+    public static Field[] getFieldsWithType(Class<?> clazz, Type type)
+    {
+        Asserts.nullCheckForClass(clazz);
+        Asserts.assertNotNull(type, "type parameter can not be null");
+
+        List<Field> fieldsWithType = new ArrayList<Field>();
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields)
+        {
+            if(field.getType().equals(type))
+            {
+                fieldsWithType.add(field);
+            }
+        }
+
+        return fieldsWithType.toArray(new Field[0]);
+
+    }
+    
 
     public static boolean checkForTypeArguments(Class<?> src, Type[] typeArguments, Class<?> target)
     {

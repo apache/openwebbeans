@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.decorator.Delegate;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
@@ -307,7 +308,17 @@ public class BeansDeployer
                 {
                     for (InjectionPoint injectionPoint : injectionPoints)
                     {
-                        manager.validate(injectionPoint);
+                        if(!injectionPoint.isDelegate())
+                        {
+                            manager.validate(injectionPoint);   
+                        }
+                        else
+                        {
+                            if(!bean.getBeanClass().isAnnotationPresent(javax.decorator.Decorator.class))
+                            {
+                                throw new WebBeansConfigurationException("Delegate injection points can not defined by beans that are not decorator. Injection point : " + injectionPoint);
+                            }
+                        }
                     }                    
                 }
             }

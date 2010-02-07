@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.decorator.Delegate;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 import javax.enterprise.context.ContextNotActiveException;
@@ -924,6 +925,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public void validate(InjectionPoint injectionPoint)
     {
         Bean<?> bean = injectionPoint.getBean();
+                
         //Check for correct injection type
         this.injectionResolver.checkInjectionPointType(injectionPoint);
         

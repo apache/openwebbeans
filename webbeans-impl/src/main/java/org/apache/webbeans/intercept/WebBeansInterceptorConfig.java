@@ -165,12 +165,13 @@ public final class WebBeansInterceptorConfig
     private static void addMethodInterceptors(Class<?> clazz, List<InterceptorData> stack, Set<Interceptor<?>> componentInterceptors)
     {
         Method[] methods = clazz.getDeclaredMethods();
-        Set<Annotation> interceptorAnns = new HashSet<Annotation>();
-
+        
         for (Method method : methods)
         {
+            Set<Annotation> interceptorAnns = new HashSet<Annotation>();
+
             if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(method.getAnnotations()))
-            {
+            {                
                 Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(method.getDeclaredAnnotations());
                 Annotation[] annsClazz = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations());
 

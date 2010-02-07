@@ -839,10 +839,13 @@ public final class DefinitionUtil
                 
                 Annotation[] anns = field.getDeclaredAnnotations();
 
-                // Injected fields can not be @Decorates or @Produces
-                if (AnnotationUtil.hasAnnotation(anns, Produces.class) || AnnotationUtil.hasAnnotation(anns, Delegate.class))
+                // Injected fields can not be @Produces
+                if (AnnotationUtil.hasAnnotation(anns, Produces.class))
                 {
-                    continue;
+                    if(!useOwbSpecificInjection)
+                    {
+                        throw new WebBeansConfigurationException("Injection fields can not be annotated with @Produces");
+                    }
                 }
 
                 Annotation[] qualifierAnns = AnnotationUtil.getQualifierAnnotations(anns);

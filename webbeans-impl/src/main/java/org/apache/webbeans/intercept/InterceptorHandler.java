@@ -13,6 +13,9 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -135,6 +138,8 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class InterceptorHandler implements MethodHandler, Serializable
 {
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
+    
     protected AbstractBean<?> bean = null;
 
     protected InterceptorHandler(AbstractBean<?> bean)
@@ -332,6 +337,32 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             
         }
         
+    }
+    
+    private  void writeObject(ObjectOutputStream s) throws IOException
+    {
+        if(WebBeansUtil.isPassivationCapable(this.bean) != null)
+        {
+            s.writeByte(1);
+            s.writeUTF(this.bean.getId());   
+        }
+        else
+        {
+            logger.warn("Trying to serialize not passivated capable bean proxy : " + this.bean);
+            s.writeByte(0);
+        }
+    }
+    
+    private  void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
+    {
+        if( s.readByte() == 1)
+        {
+            this.bean = (AbstractBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(s.readUTF());   
+        }
+        else
+        {
+            logger.warn("Trying to deserialize not passivated capable bean proxy : " + this.bean);
+        }
     }
 
 }

@@ -16,7 +16,10 @@ package org.apache.webbeans.decorator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.decorator.Decorator;
+
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.Asserts;
 
 public class DecoratorsManager
@@ -40,6 +43,11 @@ public class DecoratorsManager
         Asserts.assertNotNull(decoratorClazz, "decoratorClazz parameter can not be emtpy");
         if (!enabledDecorators.contains(decoratorClazz))
         {
+            if(!decoratorClazz.isAnnotationPresent(Decorator.class))
+            {
+                throw new WebBeansConfigurationException("Given class : " + decoratorClazz + " is not a decorator class");
+            }
+            
             enabledDecorators.add(decoratorClazz);
         }
     }

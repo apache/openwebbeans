@@ -15,6 +15,8 @@ package org.apache.webbeans.decorator;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -27,12 +29,14 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
 
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
@@ -62,9 +66,11 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
 
     /** Delegate field class type */
     protected Type delegateType;
-
+    
     /** Delegate field bindings */
     protected Set<Annotation> delegateBindings = new HashSet<Annotation>();
+    
+    protected Field delegateField;
 
     /** Wrapped bean*/
     private AbstractBean<T> wrappedBean;
@@ -97,47 +103,73 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
 
     protected void initDelegate()
     {
-        Field field = ClassUtil.getFieldWithAnnotation(this.clazz, Delegate.class);
-        
-        if(field == null)
+        Set<InjectionPoint> injectionPoints = getInjectionPoints();
+        boolean found = false;
+        InjectionPoint ipFound = null;
+        for(InjectionPoint ip : injectionPoints)
         {
-            initDelegateRecursively(this.clazz);
+            if(ip.getAnnotated().isAnnotationPresent(Delegate.class))
+            {
+                if(!found)
+                {
+                    found = true;
+                    ipFound = ip;                    
+                }
+                else
+                {
+                    throw new WebBeansConfigurationException("Decorators must have a one @Delegate injection point. " +
+                    		"But the decorator bean : " + toString() + " has more than one");
+                }
+            }            
+        }
+        
+        
+        if(ipFound == null)
+        {
+            throw new WebBeansConfigurationException("Decorators must have a one @Delegate injection point." +
+                    "But the decorator bean : " + toString() + " has none");
+        }
+        
+        String message = new String("Error in decorator : "+ toString() + ". The delegate injection point must be an injected field, " +
+        		"initializer method parameter or bean constructor method parameter. ");
+        
+        if(!(ipFound.getMember() instanceof Constructor))
+        {
+            AnnotatedElement element = (AnnotatedElement)ipFound.getMember();
+            if(!element.isAnnotationPresent(Inject.class))
+            {
+                throw new WebBeansConfigurationException(message);
+            }                
+        }
+        
+        initDelegateInternal(ipFound);
+        
+    }
+    
+    
+    private void initDelegateInternal(InjectionPoint ip)
+    {
+        this.delegateType = ip.getType();
+        this.delegateBindings = ip.getQualifiers();
+        
+        if(ip.getMember() instanceof Field)
+        {
+            this.delegateField = (Field)ip.getMember();
         }
         else
         {
-            initDelegateInternal(field);
-        }
-    }
-    
-    private void initDelegateRecursively(Class<?> delegateClazz)
-    {
-        Class<?> superClazz = delegateClazz.getSuperclass();
-        if(!superClazz.equals(Object.class))
-        {
-            Field field = ClassUtil.getFieldWithAnnotation(superClazz, Delegate.class);
-            if(field != null)
+            Field[] fields = ClassUtil.getFieldsWithType(returnType, delegateType);
+            if(fields.length == 0)
             {
-                initDelegateInternal(field);
+                throw new WebBeansConfigurationException("Delegate injection field is not found for decorator : " + toString());
             }
-            else
+            
+            if(fields.length > 0)
             {
-                initDelegateRecursively(superClazz);
+                throw new WebBeansConfigurationException("More than one delegate injection field is found for decorator : " + toString());
             }
-        }
-    }
-    
-    private void initDelegateInternal(Field field)
-    {
-        this.delegateType = field.getGenericType();
-
-        Annotation[] anns = field.getAnnotations();
-
-        for (Annotation ann : anns)
-        {
-            if (AnnotationUtil.isQualifierAnnotation(ann.annotationType()))
-            {
-                this.delegateBindings.add(ann);
-            }
+            
+            this.delegateField = fields[0];
         }
         
     }
@@ -209,15 +241,14 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
 
     public void setDelegate(Object instance, Object delegate)
     {
-        Field field = ClassUtil.getFieldWithAnnotation(getClazz(), Delegate.class);
-        if (!field.isAccessible())
+        if (!delegateField.isAccessible())
         {
-            field.setAccessible(true);
+            delegateField.setAccessible(true);
         }
 
         try
         {
-            field.set(instance, delegate);
+            delegateField.set(instance, delegate);
 
         }
         catch (IllegalArgumentException e)
@@ -228,7 +259,7 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
         }
         catch (IllegalAccessException e)
         {
-            logger.error(OWBLogConst.ERROR_0015, new Object[]{field.getName(), instance.getClass().getName()}, e);
+            logger.error(OWBLogConst.ERROR_0015, new Object[]{delegateField.getName(), instance.getClass().getName()}, e);
         }
 
     }

@@ -28,7 +28,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 
-public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
+public class NormalScopedBeanInterceptorHandler extends InterceptorHandler 
 {
     private static final long serialVersionUID = -7169354477951284657L;
 

@@ -16,11 +16,12 @@ package org.apache.webbeans.newtests.decorators.common;
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 import javax.enterprise.context.Conversation;
+import javax.inject.Inject;
 
 @Decorator
 public class ConversationDecorator implements Conversation
 {
-    private @Delegate Conversation conversation;
+    private @Inject @Delegate Conversation conversation;
     
     public static boolean CALLED = false;
 

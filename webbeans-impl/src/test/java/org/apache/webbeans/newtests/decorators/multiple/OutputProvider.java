@@ -18,7 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 @RequestScoped
-@Named
+@Named("op")
 public class OutputProvider implements IOutputProvider
 {
 

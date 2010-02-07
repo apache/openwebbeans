@@ -646,31 +646,35 @@ public final class WebBeansUtil
      * Returns a new managed bean from given bean.
      * 
      * @param <T> bean type parameter
-     * @param component managed bean
+     * @param bean bean instance
      * @return the new bean from given managed bean
      */
-    public static <T> NewBean<T> createNewBean(ManagedBean<T> component)
+    public static <T> NewBean<T> createNewBean(AbstractInjectionTargetBean<T> bean)
     {
-        Asserts.assertNotNull(component, "component argument can not be null");
+        Asserts.assertNotNull(bean, "bean argument can not be null");
 
         NewBean<T> comp = null;
 
-        comp = new NewBean<T>(component.getReturnType(), WebBeansType.NEW);
+        comp = new NewBean<T>(bean.getReturnType(), WebBeansType.NEW);
         
-        DefinitionUtil.defineApiTypes(comp, component.getReturnType());
-        comp.setConstructor(component.getConstructor());
+        comp.getTypes().addAll(bean.getTypes());
         
-        for(Field injectedField : component.getInjectedFields())
+        if(bean instanceof ManagedBean)
+        {
+            comp.setConstructor(((ManagedBean)bean).getConstructor());   
+        }
+        
+        for(Field injectedField : bean.getInjectedFields())
         {
             comp.addInjectedField(injectedField);
         }
         
-        for(Method injectedMethod : component.getInjectedMethods())
+        for(Method injectedMethod : bean.getInjectedMethods())
         {
             comp.addInjectedMethod(injectedMethod);
         }
         
-        List<InterceptorData> interceptorList = component.getInterceptorStack();
+        List<InterceptorData> interceptorList = bean.getInterceptorStack();
         if(!interceptorList.isEmpty())
         {
             comp.getInterceptorStack().addAll(interceptorList);   
@@ -678,10 +682,10 @@ public final class WebBeansUtil
         
         
         comp.setImplScopeType(new DependentScopeLiteral());
-        comp.addQualifier(new NewLiteral(component.getBeanClass()));
+        comp.addQualifier(new NewLiteral(bean.getBeanClass()));
         comp.setName(null);
         
-        Set<InjectionPoint> injectionPoints = component.getInjectionPoints();
+        Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
         for(InjectionPoint injectionPoint : injectionPoints)
         {
             comp.addInjectionPoint(injectionPoint);
