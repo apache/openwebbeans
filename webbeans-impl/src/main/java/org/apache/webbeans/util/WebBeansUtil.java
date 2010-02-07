@@ -1484,7 +1484,7 @@ public final class WebBeansUtil
 
             }
         }
-
+        
         if (superClass != null && !superClass.equals(Object.class))
         {
             Constructor<?> cons = ClassUtil.isContaintNoArgConstructor(superClass);

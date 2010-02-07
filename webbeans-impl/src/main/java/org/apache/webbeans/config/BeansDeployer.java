@@ -661,15 +661,13 @@ public class BeansDeployer
 
             //Define meta-data
             managedBeanCreator.defineStereoTypes();
-
             //Scope type
-            managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
-            managedBeanCreator.checkCreateConditions();
-                                    
+            managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                                            
             //Check for Enabled via Alternative
             WebBeansUtil.setBeanEnableFlag(managedBean);
             
-            managedBeanCreator.defineApiType();
+            managedBeanCreator.defineApiType();                        
+            managedBeanCreator.checkCreateConditions();
             managedBeanCreator.defineQualifier();
             managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
             managedBeanCreator.defineConstructor();            

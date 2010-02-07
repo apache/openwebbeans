@@ -197,12 +197,19 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
      */
     private boolean apiTypesMatchDelegateType(Set<Type> apiTypes)
     {
+        boolean ok = false;
         for (Type apiType : apiTypes)
         {
             if (ClassUtil.isAssignable(apiType, this.delegateType))
             {
-                return true;
+                ok = true;
+                break;
             }
+        }
+        
+        if(ok) 
+        {
+            return true;
         }
 
         return false;

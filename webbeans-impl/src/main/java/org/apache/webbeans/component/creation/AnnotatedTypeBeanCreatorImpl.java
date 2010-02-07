@@ -39,6 +39,8 @@ public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
     {
         WebBeansAnnotatedTypeUtil.checkManagedBeanCondition(getAnnotatedType());
         WebBeansUtil.checkGenericType(getBean());
+        //Check Unproxiable
+        WebBeansUtil.checkUnproxiableApiType(getBean(), getBean().getScope());                    
     }
     
     

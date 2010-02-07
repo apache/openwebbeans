@@ -659,6 +659,7 @@ public final class DefinitionUtil
 
         DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
         DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
+        WebBeansUtil.checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,method);        
         DefinitionUtil.defineQualifiers(component, methodAnns);
         DefinitionUtil.defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
@@ -707,6 +708,7 @@ public final class DefinitionUtil
 
         DefinitionUtil.defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
         DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
+        WebBeansUtil.checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,field);
         DefinitionUtil.defineQualifiers(component, fieldAnns);
         DefinitionUtil.defineName(component, fieldAnns, field.getName());

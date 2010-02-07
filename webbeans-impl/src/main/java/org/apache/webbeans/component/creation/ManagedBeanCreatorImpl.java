@@ -54,7 +54,8 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
     {
         ManagedBeanConfigurator.checkManagedBeanCondition(getBean().getReturnType());
         WebBeansUtil.checkGenericType(getBean());
-        
+        //Check Unproxiable
+        WebBeansUtil.checkUnproxiableApiType(getBean(), getBean().getScope());                    
     }
 
 

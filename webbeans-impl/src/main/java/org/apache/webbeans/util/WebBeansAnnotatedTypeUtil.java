@@ -433,6 +433,7 @@ public final class WebBeansAnnotatedTypeUtil
                     Set<Type> types = annotatedField.getTypeClosure();
                     producerFieldBean.getTypes().addAll(types);
                     DefinitionUtil.defineScopeType(producerFieldBean, anns, "Annotated producer field: " + annotatedField +  "must declare default @Scope annotation");
+                    WebBeansUtil.checkUnproxiableApiType(producerFieldBean, producerFieldBean.getScope());
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());        
                     DefinitionUtil.defineQualifiers(producerFieldBean, anns);
                     DefinitionUtil.defineName(producerFieldBean, anns, WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
@@ -488,6 +489,7 @@ public final class WebBeansAnnotatedTypeUtil
                 Set<Type> types = annotatedMethod.getTypeClosure();
                 producerMethodBean.getTypes().addAll(types);
                 DefinitionUtil.defineScopeType(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()), "Annotated producer method : " + annotatedMethod +  "must declare default @Scope annotation");
+                WebBeansUtil.checkUnproxiableApiType(producerMethodBean, producerMethodBean.getScope());
                 WebBeansUtil.checkProducerGenericType(producerMethodBean,annotatedMethod.getJavaMember());        
                 DefinitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
                 DefinitionUtil.defineName(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()), WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
@@ -744,13 +746,11 @@ public final class WebBeansAnnotatedTypeUtil
         managedBeanCreator.defineStereoTypes();
 
         //Scope type
-        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
-        managedBeanCreator.checkCreateConditions();
-                                
+        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                        
         //Check for Enabled via Alternative
-        WebBeansUtil.setBeanEnableFlag(managedBean);
-        
+        WebBeansUtil.setBeanEnableFlag(managedBean);        
         managedBeanCreator.defineApiType();
+        managedBeanCreator.checkCreateConditions();
         managedBeanCreator.defineQualifier();
         managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
         managedBeanCreator.defineConstructor();            
