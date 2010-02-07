@@ -14,7 +14,9 @@
 package org.apache.webbeans.ejb.component.creation;
 
 import java.util.List;
+import java.util.Set;
 
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.openejb.DeploymentInfo;
@@ -95,6 +97,20 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
     }
     
     
+    
+    
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.component.creation.AbstractInjectedTargetBeanCreator#defineObserverMethods()
+     */
+    @Override
+    public Set<ObserverMethod<?>> defineObserverMethods()
+    {
+        Set<ObserverMethod<?>> observerMethods = super.defineObserverMethods();
+        EjbValidator.validateObserverMethods(getBean(), observerMethods);
+        
+        return observerMethods;
+    }
+
     /**
      * {@inheritDoc}
      */

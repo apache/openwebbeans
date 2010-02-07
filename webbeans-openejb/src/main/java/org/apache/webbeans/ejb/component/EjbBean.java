@@ -59,6 +59,9 @@ public class EjbBean<T> extends AbstractInjectionTargetBean<T> implements Enterp
     public EjbBean(Class<T> ejbClassType)
     {
         super(WebBeansType.ENTERPRISE,ejbClassType);
+
+        //Setting inherited meta data instance
+        setInheritedMetaData();
     }
 
     /**

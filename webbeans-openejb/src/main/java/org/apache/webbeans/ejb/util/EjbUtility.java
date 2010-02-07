@@ -86,7 +86,6 @@ public final class EjbUtility
         Set<ProducerMethodBean<?>> producerMethodBeans = ejbBeanCreator.defineProducerMethods();        
         checkProducerMethods(producerMethodBeans, ejbBean);
         Set<ProducerFieldBean<?>> producerFieldBeans = ejbBeanCreator.defineProducerFields();           
-        ejbBeanCreator.defineDisposalMethods();
         ejbBeanCreator.defineInjectedFields();
         ejbBeanCreator.defineInjectedMethods();
         Set<ObserverMethod<?>> observerMethods = ejbBeanCreator.defineObserverMethods();        
@@ -167,8 +166,10 @@ public final class EjbUtility
             ejbBean.setInjectionTarget(ejbBeanCreator);   
         }
         
+        BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewBean(ejbBean));                
         BeanManagerImpl.getManager().addBean(ejbBean);
         BeanManagerImpl.getManager().getBeans().addAll(producerMethodBeans);
+        ejbBeanCreator.defineDisposalMethods();
         BeanManagerImpl.getManager().getBeans().addAll(producerFieldBeans);
     }
     

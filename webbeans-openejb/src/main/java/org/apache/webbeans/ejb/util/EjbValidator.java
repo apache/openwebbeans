@@ -14,15 +14,22 @@
 package org.apache.webbeans.ejb.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.SessionBeanType;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.ejb.EjbConstants;
 import org.apache.webbeans.ejb.component.EjbBean;
+import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -69,7 +76,7 @@ public final class EjbValidator
         }
         else if (ejbBean.getEjbType().equals(SessionBeanType.SINGLETON))
         {
-            if (!(ejbBean.getScope().equals(Dependent.class) || ejbBean.getScope().equals(ApplicationScoped.class)))
+            if (!ejbBean.getScope().equals(Dependent.class) && !ejbBean.getScope().equals(ApplicationScoped.class))
             {
                 throw new WebBeansConfigurationException("Singleton Session Bean class : " + ejbBean.getReturnType() + " " + "can not define scope other than @Dependent or @ApplicationScoped");
             }
@@ -112,6 +119,41 @@ public final class EjbValidator
             if(!scopeType.equals(Dependent.class))
             {
                 throw new WebBeansConfigurationException("Ejb generic bean class : " + ejbClass.getName() + "scope must be @Dependent");
+            }
+        }
+    }
+    
+    public static void validateObserverMethods(EjbBean<?> bean, Set<ObserverMethod<?>> observers)
+    {
+        for(ObserverMethod<?> observer : observers)
+        {
+            ObserverMethodImpl<?> obs = (ObserverMethodImpl<?>)observer;
+            Method method = obs.getObserverMethod();
+            List<?> locals =  bean.getDeploymentInfo().getBusinessLocalInterfaces();
+            if(locals != null)
+            {
+                Iterator<?> it = locals.iterator();
+                boolean found = false;
+                while(it.hasNext())
+                {
+                    Class<?> clazz = (Class<?>)it.next();
+                    List<Method> methods = ClassUtil.getClassMethodsWithTypes(clazz, method.getName(), Arrays.asList(method.getParameterTypes()));
+                    if(methods.isEmpty())
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if(!found)
+                {
+                    throw new WebBeansConfigurationException("Observer method : " + method.getName() + " in session bean class : " + 
+                            bean.getBeanClass() + " must be business method");                    
+                }
             }
         }
     }
