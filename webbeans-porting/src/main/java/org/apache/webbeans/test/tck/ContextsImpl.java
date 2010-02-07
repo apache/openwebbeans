@@ -13,8 +13,11 @@
  */
 package org.apache.webbeans.test.tck;
 
+import javax.enterprise.context.RequestScoped;
+
 import org.apache.webbeans.context.AbstractContext;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.jboss.jsr299.tck.spi.Contexts;
 
@@ -23,7 +26,13 @@ public class ContextsImpl implements Contexts<AbstractContext>
 
     public AbstractContext getRequestContext()
     {
-        ContextFactory.initRequestContext(null);
+        RequestContext ctx =  (RequestContext)ContextFactory.getStandardContext(RequestScoped.class);
+        
+        if(ctx == null)
+        {
+            ContextFactory.initRequestContext(null);   
+        }
+        
         return (AbstractContext) ContextFactory.getStandartContext(ContextTypes.REQUEST);
     }
 
