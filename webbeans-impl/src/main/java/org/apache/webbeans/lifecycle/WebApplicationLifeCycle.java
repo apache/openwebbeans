@@ -157,12 +157,18 @@ public final class WebApplicationLifeCycle implements ContainerLifecycle
 
     public void applicationStarted(Object startupObject)
     {
-        if(startupObject != null && !(ServletContextEvent.class.isAssignableFrom(startupObject.getClass())))
+        ServletContext servletContext = null;
+        if(startupObject != null)
         {
-            throw new WebBeansException(logger.getTokenString(OWBLogConst.EXCEPT_0001));
+            if(startupObject instanceof ServletContextEvent)
+            {
+                servletContext = ((ServletContextEvent) startupObject).getServletContext();
+            }
+            else
+            {
+                throw new WebBeansException(logger.getTokenString(OWBLogConst.EXCEPT_0001));
+            }
         }
-        
-        ServletContextEvent event = (ServletContextEvent)startupObject; 
         
         // Initalize Application Context
         logger.info(OWBLogConst.INFO_0002);
@@ -170,13 +176,13 @@ public final class WebApplicationLifeCycle implements ContainerLifecycle
         long begin = System.currentTimeMillis();
 
         //Application Context initialization
-        ContextFactory.initApplicationContext(event.getServletContext());
+        ContextFactory.initApplicationContext(servletContext);
         
         //Singleton context
-        ContextFactory.initSingletonContext(event.getServletContext());
+        ContextFactory.initSingletonContext(servletContext);
 
         this.discovery = ServiceLoader.getService(ScannerService.class);
-        this.discovery.init(event.getServletContext());
+        this.discovery.init(servletContext);
 
         // load all optional plugins
         PluginLoader.getInstance().startUp();
@@ -200,9 +206,7 @@ public final class WebApplicationLifeCycle implements ContainerLifecycle
         {
             logger.debug(OWBLogConst.DEBUG_0001);
             
-            ServletContext context = event.getServletContext();
-
-            JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext(context);
+            JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext(servletContext);
             applicationCtx.addELResolver(new WebBeansELResolver());            
         }
         
@@ -213,23 +217,28 @@ public final class WebApplicationLifeCycle implements ContainerLifecycle
 
     public void applicationEnded(Object endObject)
     {
-        logger.info(OWBLogConst.INFO_0006);
-        
-        if(endObject != null && !(ServletContextEvent.class.isAssignableFrom(endObject.getClass())))
+        ServletContext servletContext = null;
+        if(endObject != null)
         {
-            throw new WebBeansException(logger.getTokenString(OWBLogConst.EXCEPT_0002));
+            if(endObject instanceof ServletContextEvent)
+            {
+                servletContext = ((ServletContextEvent) endObject).getServletContext();
+            }
+            else
+            {
+                throw new WebBeansException(logger.getTokenString(OWBLogConst.EXCEPT_0002));
+            }
         }
-        
-        ServletContextEvent event = (ServletContextEvent)endObject;
-        
+        logger.info(OWBLogConst.INFO_0006);
+
         //Fire shut down
         this.rootManager.fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
                 
         service.shutdownNow();
 
-        ContextFactory.destroyApplicationContext(event.getServletContext());
+        ContextFactory.destroyApplicationContext(servletContext);
         
-        ContextFactory.destroySingletonContext(event.getServletContext());
+        ContextFactory.destroySingletonContext(servletContext);
 
         jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
 
@@ -242,31 +251,31 @@ public final class WebApplicationLifeCycle implements ContainerLifecycle
         //Clear singleton list
         WebBeansFinder.clearInstances();
                 
-        logger.info(OWBLogConst.INFO_0008, new Object[]{event.getServletContext().getContextPath()});        
+        logger.info(OWBLogConst.INFO_0008, new Object[]{servletContext != null ? servletContext.getContextPath() : null});
     }
     
     public void sessionPassivated(HttpSessionEvent event)
     {
-    	logger.info(OWBLogConst.INFO_0009, new Object[]{event.getSession().getId()});
+        logger.info(OWBLogConst.INFO_0009, new Object[]{event.getSession().getId()});
     }
-    
+
     public void sessionActivated(HttpSessionEvent event)
     {
-    	logger.info(OWBLogConst.INFO_0010, new Object[]{event.getSession().getId()});
+        logger.info(OWBLogConst.INFO_0010, new Object[]{event.getSession().getId()});
     }
-    
+
     private static class ConversationCleaner implements Runnable
     {
-    	public ConversationCleaner()
-    	{
-    		
-    	}
-    	
+        public ConversationCleaner()
+        {
+
+        }
+
         public void run()
         {
             ConversationManager.getInstance().destroyWithRespectToTimout();
 
-        }    	
+        }
     }
 
     @Override
