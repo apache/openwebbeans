@@ -51,7 +51,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         //Context of the bean
         Context webbeansContext = beanManager.getContext(bean.getScope());
         Object webbeansInstance = webbeansContext.get(this.bean);
-                                                                     C
+
         if (webbeansInstance == null)
         {
             CreationalContext<Object> cc = creationalContxt.get();
