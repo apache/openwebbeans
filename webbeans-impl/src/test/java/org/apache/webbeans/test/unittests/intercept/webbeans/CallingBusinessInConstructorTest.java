@@ -25,8 +25,10 @@ import org.apache.webbeans.test.component.intercept.webbeans.CallBusinessInConst
 import org.apache.webbeans.test.component.intercept.webbeans.SecureInterceptor;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class CallingBusinessInConstructorTest extends TestContext
 {
     public CallingBusinessInConstructorTest()

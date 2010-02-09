@@ -2297,17 +2297,6 @@ public final class WebBeansUtil
 
     }    
     
-    public static boolean isProxyForScopeCachable(Class<? extends Annotation> scopeType)
-    {
-        Asserts.assertNotNull(scopeType, "Scope type is null");
-        if(scopeType.equals(ApplicationScoped.class))
-        {
-            return true;
-        }
-        
-        return false;
-    }
-    
     public static boolean isDependent(Bean<?> bean)
     {
         if(bean.getScope().equals(Dependent.class))

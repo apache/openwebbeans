@@ -89,8 +89,11 @@ public final class ContextFactory
      */
     public static void initRequestContext(ServletRequestEvent event)
     {
-        requestContext.set(new RequestContext());// set thread local
-        requestContext.get().setActive(true);
+        RequestContext rq = new RequestContext();
+        rq.setActive(true);
+
+        requestContext.set(rq);// set thread local
+        RequestContext rq2 = requestContext.get();
         
         if(event != null)
         {

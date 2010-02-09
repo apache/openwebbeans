@@ -32,26 +32,55 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
 {
     private static final long serialVersionUID = -7169354477951284657L;
 
-    private CreationalContext<?> creationalContext;
-    
-    
-    public NormalScopedBeanInterceptorHandler(AbstractBean<?> bean, CreationalContext<?> creationalContext)
+    // A creationalContext has a very short lifespan. So we can use a ThreadLocal to pass it over
+    // if we make sure that it is cleaned up properly!
+    private static ThreadLocal<CreationalContext<Object>> creationalContxt = new ThreadLocal<CreationalContext<Object>>();
+
+    public NormalScopedBeanInterceptorHandler(AbstractBean<?> bean, CreationalContext<?> cc)
     {
         super(bean);
-        this.creationalContext = creationalContext;
+        creationalContxt.set((CreationalContext<Object>) cc);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
+        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
+
         //Context of the bean
-        Context webbeansContext = BeanManagerImpl.getManager().getContext(bean.getScope());
-        
-        //Get bean instance from context
-        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, (CreationalContext<Object>)this.creationalContext);
-        
-        // TODO Auto-generated method stub
+        Context webbeansContext = beanManager.getContext(bean.getScope());
+        Object webbeansInstance = webbeansContext.get(this.bean);
+                                                                     C
+        if (webbeansInstance == null)
+        {
+            CreationalContext<Object> cc = creationalContxt.get();
+
+            if (cc == null)
+            {
+                // we need to create the CreationalContext ourself and store it
+                try
+                {
+                    cc = (CreationalContext<Object>) beanManager.createCreationalContext(bean);
+                    creationalContxt.set(cc);
+                    //Get bean instance from context
+                    webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, cc);
+                }
+                finally
+                {
+                    // make sure that we remove the cc from the thread in the handler who created it
+                    creationalContxt.remove();
+                }
+            }
+            else
+            {
+                //Get bean instance from context
+                webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, cc);
+            }
+
+        }
+
+
         return super.invoke(webbeansInstance, method, proceed, arguments);
     }
     
