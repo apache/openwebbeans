@@ -30,7 +30,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.disposes.beans.DisposeModel;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointMetaDataOwner;
 import org.apache.webbeans.newtests.injection.injectionpoint.beans.LoggerInjectedBean;
 import org.junit.Test;

@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;

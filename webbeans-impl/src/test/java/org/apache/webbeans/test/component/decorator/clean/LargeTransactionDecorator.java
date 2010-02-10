@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 
 import javax.decorator.Delegate;
 import javax.decorator.Decorator;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @Decorator

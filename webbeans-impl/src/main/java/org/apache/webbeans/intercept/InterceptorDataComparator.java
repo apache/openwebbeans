@@ -16,8 +16,6 @@ package org.apache.webbeans.intercept;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import javax.enterprise.inject.spi.BeanManager;
-
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 
 public class InterceptorDataComparator implements Comparator<InterceptorData>, Serializable

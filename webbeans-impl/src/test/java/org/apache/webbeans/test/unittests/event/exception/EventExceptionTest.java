@@ -14,8 +14,6 @@
 package org.apache.webbeans.test.unittests.event.exception;
 
 import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.util.AnnotationLiteral;

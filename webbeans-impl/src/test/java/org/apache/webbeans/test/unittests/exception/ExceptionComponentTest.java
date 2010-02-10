@@ -19,7 +19,6 @@ import javax.servlet.ServletContext;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractBean;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.test.TestContext;
@@ -38,14 +37,11 @@ import org.apache.webbeans.test.component.exception.MoreThanOneConstructureCompo
 import org.apache.webbeans.test.component.exception.MoreThanOnePostConstructComponent;
 import org.apache.webbeans.test.component.exception.MultipleDisposalMethodComponent;
 import org.apache.webbeans.test.component.exception.NewComponentBindingComponent;
-import org.apache.webbeans.test.component.exception.NewComponentInterfaceComponent;
-import org.apache.webbeans.test.component.exception.NewMethodComponentBindingComponent;
 import org.apache.webbeans.test.component.exception.NoConstructureComponent;
 import org.apache.webbeans.test.component.exception.PostContructMethodHasCheckedExceptionComponent;
 import org.apache.webbeans.test.component.exception.PostContructMethodHasParameterComponent;
 import org.apache.webbeans.test.component.exception.PostContructMethodHasReturnTypeComponent;
 import org.apache.webbeans.test.component.exception.PostContructMethodHasStaticComponent;
-import org.apache.webbeans.test.component.exception.ProducerTypeExceptionComponent;
 import org.apache.webbeans.test.component.exception.ProducerTypeStaticComponent;
 import org.apache.webbeans.test.component.exception.InnerComponent.InnerInnerComponent;
 import org.apache.webbeans.test.component.intercept.NoArgConstructorInterceptorComponent;

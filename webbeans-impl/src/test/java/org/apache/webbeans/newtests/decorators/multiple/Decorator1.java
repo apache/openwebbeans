@@ -13,8 +13,6 @@
  */
 package org.apache.webbeans.newtests.decorators.multiple;
 
-import java.util.LinkedList;
-
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 import javax.enterprise.inject.Any;

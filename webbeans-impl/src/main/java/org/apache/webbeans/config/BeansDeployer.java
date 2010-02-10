@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.decorator.Delegate;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;

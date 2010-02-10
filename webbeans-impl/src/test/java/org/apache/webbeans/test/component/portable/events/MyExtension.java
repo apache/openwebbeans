@@ -19,7 +19,6 @@
 package org.apache.webbeans.test.component.portable.events;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.BeanManager;

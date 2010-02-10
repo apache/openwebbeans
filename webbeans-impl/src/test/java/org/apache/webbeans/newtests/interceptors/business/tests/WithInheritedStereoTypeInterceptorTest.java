@@ -25,7 +25,6 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.business.common.WithInheritedStereoTypeInterceptorBean;
-import org.apache.webbeans.newtests.interceptors.business.common.WithStereoTypeInterceptorBean;
 import org.apache.webbeans.newtests.interceptors.common.SecureInterceptor;
 import org.apache.webbeans.newtests.interceptors.common.TransactionInterceptor;
 import org.junit.Test;

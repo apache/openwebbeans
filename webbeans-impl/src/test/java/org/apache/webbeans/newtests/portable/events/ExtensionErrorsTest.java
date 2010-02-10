@@ -22,12 +22,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.Assert;
-
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.portable.events.beans.Apple;
-import org.apache.webbeans.newtests.portable.events.extensions.AppleExtension;
 import org.apache.webbeans.newtests.portable.events.extensions.errors.AfterBeanDiscoveryErrorExtension;
 import org.apache.webbeans.newtests.portable.events.extensions.errors.AfterBeansValidationErrorExtension;
 import org.junit.Test;

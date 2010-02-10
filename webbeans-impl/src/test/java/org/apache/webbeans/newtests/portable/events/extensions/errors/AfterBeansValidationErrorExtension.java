@@ -19,7 +19,6 @@
 package org.apache.webbeans.newtests.portable.events.extensions.errors;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.Extension;
 

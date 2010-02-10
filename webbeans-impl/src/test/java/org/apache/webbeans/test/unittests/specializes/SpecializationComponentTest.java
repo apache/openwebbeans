@@ -22,7 +22,6 @@ import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.specializes.AsynhrounousSpecalizesService;
 import org.apache.webbeans.test.component.specializes.SpecializesServiceInjectorComponent;
-import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

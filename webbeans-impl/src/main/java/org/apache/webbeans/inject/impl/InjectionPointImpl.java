@@ -34,7 +34,6 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.AnnotationLiteral;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.portable.AnnotatedElementFactory;

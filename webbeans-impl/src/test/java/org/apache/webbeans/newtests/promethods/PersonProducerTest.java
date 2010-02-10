@@ -30,7 +30,6 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.interceptors.lifecycle.LifecycleBean;
 import org.apache.webbeans.newtests.promethods.beans.PersonProducerBean;
 import org.apache.webbeans.newtests.promethods.common.Person;
 import org.junit.Test;
