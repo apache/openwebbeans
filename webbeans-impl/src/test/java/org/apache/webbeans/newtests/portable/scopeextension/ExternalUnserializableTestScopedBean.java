@@ -18,13 +18,9 @@
  */
 package org.apache.webbeans.newtests.portable.scopeextension;
 
-import java.io.Serializable;
-
 @ExternalTestScoped
-public class ExternalTestScopedBean implements Serializable{
+public class ExternalUnserializableTestScopedBean {
 
-	private static final long serialVersionUID = -917790714891819356L;
-	
 	public int i = 0;
 
     public int getI() {
