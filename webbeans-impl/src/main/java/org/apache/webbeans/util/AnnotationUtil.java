@@ -629,7 +629,15 @@ public final class AnnotationUtil
                     srcBuf.append("=");
 
                     if (tok2.hasMoreElements())
-                        srcBuf.append(tok2.nextToken());
+                    {
+                        String str = tok2.nextToken();
+                        if(str.charAt(0) == '"' && str.charAt(str.length() -1) == '"')
+                        {
+                            str = str.substring(1,str.length()-1);
+                        }
+                        
+                        srcBuf.append(str);   
+                    }
                 }
             }
 
