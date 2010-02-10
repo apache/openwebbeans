@@ -28,11 +28,13 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.lifecycle.test.MockServletContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopeExtension;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScoped;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopedBean;
+import org.apache.webbeans.newtests.portable.scopeextension.ExternalUnserializableTestScopedBean;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.junit.Test;
 
@@ -78,4 +80,25 @@ public class ExtensionTest extends AbstractUnitTest
         ContextFactory.destroyApplicationContext(servletContext);
     }
     
+    /**
+     * Classes in a passivatable scope must be Serializable
+     */
+    @Test
+    public void testUnserializableBean() 
+    {
+        try 
+        {
+            Collection<Class<?>> classes = new ArrayList<Class<?>>();
+            classes.add(ExternalUnserializableTestScopedBean.class);
+            addExtension(new ExternalTestScopeExtension());
+            startContainer(classes);
+            
+            // we must not get here since an Exception is expected!
+            Assert.fail();
+        }
+        catch (DefinitionException dex)
+        {
+            // this is expected!
+        }
+    }
 }
