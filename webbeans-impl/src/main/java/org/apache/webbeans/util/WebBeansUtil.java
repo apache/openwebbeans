@@ -1742,13 +1742,13 @@ public final class WebBeansUtil
         return true;
     }
 
-    public static <T> void checkPassivationScope(AbstractBean<T> component, NormalScope scope)
+    public static <T> void checkPassivationScope(AbstractBean<T> component, Class<? extends Annotation> scope)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
         if(scope != null)
         {
-            boolean passivating = scope.passivating();
+            boolean passivating = BeanManagerImpl.getManager().isPassivatingScope(scope);
             Class<T> clazz = component.getReturnType();
 
             if (passivating)
@@ -1766,7 +1766,8 @@ public final class WebBeansUtil
                 // if no plugin did check some special conditions, the bean must be Serializable
                 if (!component.isSerializable())
                 {
-                    throw new WebBeansPassivationException("WebBeans component implementation class : " + clazz.getName() + " with passivating scope @" + scope.annotationType().getName() + " must be Serializable");
+                    throw new WebBeansPassivationException("WebBeans component implementation class : " + clazz.getName() + 
+                            " with passivating scope @" + scope.toString() + " must be Serializable");
                 }
 
                 //X TODO we might check the non-transient childs of the bean for serializability?

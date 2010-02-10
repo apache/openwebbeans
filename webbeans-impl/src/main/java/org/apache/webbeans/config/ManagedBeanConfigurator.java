@@ -15,7 +15,6 @@ import java.lang.reflect.Constructor;
 import java.util.Set;
 
 import javax.decorator.Decorator;
-import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.interceptor.Interceptor;
 
@@ -123,7 +122,7 @@ public final class ManagedBeanConfigurator
         DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName() + " stereotypes must declare same @Scope annotations");
         
         WebBeansUtil.checkGenericType(component);
-        WebBeansUtil.checkPassivationScope(component, component.getScope().getAnnotation(NormalScope.class));
+        WebBeansUtil.checkPassivationScope(component, component.getScope());
         DefinitionUtil.defineQualifiers(component, clazzAnns);
         DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
 
@@ -165,7 +164,7 @@ public final class ManagedBeanConfigurator
         DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + javaClazz.getName() + " stereotypes must declare same @Scope annotations");
         
         WebBeansUtil.checkGenericType(component);
-        WebBeansUtil.checkPassivationScope(component, component.getScope().getAnnotation(NormalScope.class));
+        WebBeansUtil.checkPassivationScope(component, component.getScope());
         DefinitionUtil.defineQualifiers(component, clazzAnns);
         DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(javaClazz.getSimpleName()));
 

@@ -17,7 +17,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -148,7 +147,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         if(isDefaultMetaDataProvider())
         {
             DefinitionUtil.defineScopeType(this.bean, this.beanAnnotations, errorMessage);
-            WebBeansUtil.checkPassivationScope(getBean(), getBean().getScope().getAnnotation(NormalScope.class));
+            WebBeansUtil.checkPassivationScope(getBean(), getBean().getScope());
         }
         else
         {
