@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.decorator.Delegate;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 import javax.enterprise.context.ContextNotActiveException;
@@ -857,14 +856,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public boolean isPassivatingScope(Class<? extends Annotation> annotationType)
     {
-        if(additionalScopes.contains(annotationType))
+        for (ExternalScope extScope : additionalScopes)
         {
-            for (ExternalScope extScope : additionalScopes)
+            if (extScope.getScope().equals(annotationType))
             {
-                if (extScope.equals(annotationType))
-                {
-                    return extScope.isPassivating();
-                }
+                return extScope.isPassivating();
             }
         }
 

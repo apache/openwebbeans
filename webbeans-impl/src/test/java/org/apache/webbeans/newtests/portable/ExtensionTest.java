@@ -31,8 +31,8 @@ import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.lifecycle.test.MockServletContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopeExtension;
+import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScoped;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopedBean;
-import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.junit.Test;
 
@@ -70,6 +70,7 @@ public class ExtensionTest extends AbstractUnitTest
         
         Assert.assertNotNull(instance);
         
+        Assert.assertTrue(getLifecycle().getBeanManager().isPassivatingScope(ExternalTestScoped.class));
         
         //Fire shut down
         getBeanManager().fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
