@@ -663,7 +663,7 @@ public class BeansDeployer
             //Scope type
             managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                                            
             //Check for Enabled via Alternative
-            WebBeansUtil.setBeanEnableFlag(managedBean);
+            WebBeansUtil.setInjectionTargetBeanEnableFlag(managedBean);
             
             managedBeanCreator.defineApiType();                        
             managedBeanCreator.checkCreateConditions();
@@ -790,6 +790,6 @@ public class BeansDeployer
     protected <T> void defineEnterpriseWebBean(Class<T> clazz)
     {
         AbstractBean<T> bean = (AbstractBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz);
-        WebBeansUtil.setBeanEnableFlag(bean);
+        WebBeansUtil.setInjectionTargetBeanEnableFlag(bean);
     }
 }

@@ -111,7 +111,7 @@ public final class ManagedBeanConfigurator
 
         ManagedBean<T> component = new ManagedBean<T>(clazz, type);
         
-        WebBeansUtil.setBeanEnableFlag(component);   
+        WebBeansUtil.setInjectionTargetBeanEnableFlag(component);   
         
         DefinitionUtil.defineSerializable(component);
         DefinitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
@@ -153,7 +153,7 @@ public final class ManagedBeanConfigurator
         Class<T> javaClazz = annotatedType.getJavaClass();
         ManagedBean<T> component = new ManagedBean<T>(javaClazz, WebBeansType.MANAGED);
         
-        WebBeansUtil.setBeanEnableFlag(component);   
+        WebBeansUtil.setInjectionTargetBeanEnableFlag(component);   
         
         Annotation[] clazzAnns = annotatedType.getAnnotations().toArray(new Annotation[0]);
         

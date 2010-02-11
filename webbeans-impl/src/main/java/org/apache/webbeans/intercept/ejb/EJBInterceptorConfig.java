@@ -52,7 +52,7 @@ public final class EJBInterceptorConfig
      */
     public static void configure(Class<?> clazz, List<InterceptorData> stack)
     {
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         if (AnnotationUtil.hasClassAnnotation(clazz, Interceptors.class))
         {

@@ -1508,7 +1508,7 @@ public final class ClassUtil
     
     public static TypeVariable<?>[] getTypeVariables(Class<?> clazz)
     {
-        Asserts.assertNotNull("clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
         
         return clazz.getTypeParameters();
     }

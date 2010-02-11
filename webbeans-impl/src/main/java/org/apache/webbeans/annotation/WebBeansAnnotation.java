@@ -100,7 +100,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
 
     public void setMemberValue(String memberName, Object memberValue)
     {
-        Asserts.assertNotNull(memberValue, "memberName parameter can not be null");
+        Asserts.assertNotNull(memberName, "memberName parameter can not be null");
         Asserts.assertNotNull(memberValue, "memberValue parameter can not be null");
 
         this.annotationMembersValueMap.put(memberName, memberValue);

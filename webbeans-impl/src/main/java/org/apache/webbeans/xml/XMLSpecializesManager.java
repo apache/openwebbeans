@@ -42,7 +42,7 @@ public class XMLSpecializesManager
 
     public void addXMLSpecializeClass(Class<?> clazz)
     {
-        Asserts.assertNotNull(clazz, "clazz parameter can not be null");
+        Asserts.nullCheckForClass(clazz);
         specializeClasses.add(clazz);
     }
 }

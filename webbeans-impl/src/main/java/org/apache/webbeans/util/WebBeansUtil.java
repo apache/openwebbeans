@@ -105,6 +105,7 @@ import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.component.InjectionPointBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
@@ -476,13 +477,12 @@ public final class WebBeansUtil
      * Check conditions for the new binding. 
      * @param annotations annotations
      * @return Annotation[] with all binding annotations
-     * @throws WebBeansConfigurationException if &x0040;New plus any other binding annotation is set or
-     *         if &x0040;New is used for an Interface or an abstract class.
+     * @throws WebBeansConfigurationException if New plus any other binding annotation is set         
      */
     public static Annotation[] checkForNewQualifierForDeployment(Type type, Class<?> clazz, String name, Annotation[] annotations)
     {
         Asserts.assertNotNull(type, "Type argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
         Annotation[] as = AnnotationUtil.getQualifierAnnotations(annotations);
@@ -494,11 +494,6 @@ public final class WebBeansUtil
                 {
                     throw new WebBeansConfigurationException("@New binding annotation can not have any binding annotation in class : " + clazz.getName() + " in field/method : " + name);
                 }
-
-//                if (ClassUtil.isAbstract(ClassUtil.getClass(type).getModifiers()) || ClassUtil.isInterface(ClassUtil.getClass(type).getModifiers()))
-//                {
-//                    throw new WebBeansConfigurationException("@New binding annotation field can not have interface or abstract type in class : " + clazz.getName() + " in field/method : " + name);
-//                }
             }
         }
         
@@ -515,7 +510,7 @@ public final class WebBeansUtil
     public static void checkForValidResources(Type type, Class<?> clazz, String name, Annotation[] annotations)
     {
         Asserts.assertNotNull(type, "Type argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
         List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
@@ -585,7 +580,7 @@ public final class WebBeansUtil
      */
     public static <T> NewBean<T> createNewComponent(Class<T> clazz)
     {
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         NewBean<T> comp = null;
 
@@ -625,7 +620,7 @@ public final class WebBeansUtil
      */
     public static <T> ExtensionBean<T> createExtensionComponent(Class<T> clazz)
     {
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         ExtensionBean<T> comp = null;
         comp = new ExtensionBean<T>(clazz);
@@ -816,7 +811,7 @@ public final class WebBeansUtil
      */
     public static Method checkCommonAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> commonAnnotation, boolean invocationContext)
     {
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);        
 
         Method[] methods = ClassUtil.getDeclaredMethods(clazz);
         Method result = null;
@@ -894,7 +889,7 @@ public final class WebBeansUtil
      */
     public static Method checkAroundInvokeAnnotationCriterias(Class<?> clazz)
     {
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         Method[] methods = ClassUtil.getDeclaredMethods(clazz);
         Method result = null;
@@ -2127,9 +2122,34 @@ public final class WebBeansUtil
      * Sets bean enabled flag.
      * @param bean bean instance
      */
-    public static void setBeanEnableFlag(AbstractBean<?> bean)
+    public static void setInjectionTargetBeanEnableFlag(AbstractBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean can not be null");
+        
+        if(!(bean instanceof InjectionTargetBean))
+        {
+            throw new IllegalArgumentException("Bean must be InjectionTargetBean");
+        }
+        
+        
+        if(hasInjectionTargetBeanAnnotatedWithAlternative(bean))
+        {
+            if(!AlternativesManager.getInstance().isBeanHasAlternative(bean))
+            {
+                bean.setEnabled(false);
+            }
+        }
+    }
+    
+   
+    public static boolean hasInjectionTargetBeanAnnotatedWithAlternative(AbstractBean<?> bean)
+    {
+        Asserts.assertNotNull(bean, "bean can not be null");
+        
+        if(!(bean instanceof InjectionTargetBean))
+        {
+            throw new IllegalArgumentException("Bean must be InjectionTargetBean");
+        }
         
         boolean alternative = false;
         
@@ -2152,13 +2172,8 @@ public final class WebBeansUtil
             
         }
         
-        if(alternative)
-        {
-            if(!AlternativesManager.getInstance().isBeanHasAlternative(bean))
-            {
-                bean.setEnabled(false);
-            }
-        }
+        return alternative;
+        
     }
     
     public static void setBeanEnableFlagForProducerBean(AbstractBean<?> parent,AbstractProducerBean<?> producer, Annotation[] annotations)
@@ -2188,7 +2203,8 @@ public final class WebBeansUtil
         
         if(alternative)
         {
-            if(AlternativesManager.getInstance().isBeanHasAlternative(parent))
+            if(hasInjectionTargetBeanAnnotatedWithAlternative(parent) && 
+                    AlternativesManager.getInstance().isBeanHasAlternative(parent))
             {
                 producer.setEnabled(true);
             }

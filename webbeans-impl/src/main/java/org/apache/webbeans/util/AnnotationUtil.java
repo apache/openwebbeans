@@ -67,7 +67,7 @@ public final class AnnotationUtil
     public static boolean hasMethodAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         Annotation[] anns = method.getDeclaredAnnotations();
         for (Annotation annotation : anns)
@@ -107,7 +107,7 @@ public final class AnnotationUtil
     public static boolean hasMethodParameterAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
 
@@ -129,7 +129,7 @@ public final class AnnotationUtil
     public static <X> boolean hasAnnotatedMethodParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
         for(AnnotatedParameter<X> parameter : parameters)
@@ -147,7 +147,7 @@ public final class AnnotationUtil
     public static Type[] getMethodParameterGenericTypesWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         List<Type> list = new ArrayList<Type>();
         Type[] result = null;
@@ -181,7 +181,7 @@ public final class AnnotationUtil
     public static Type[] getConstructorParameterGenericTypesWithGivenAnnotation(Constructor<?> constructor, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(constructor, "constructor argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         List<Type> list = new ArrayList<Type>();
         Type[] result = null;
@@ -223,7 +223,7 @@ public final class AnnotationUtil
     public static boolean hasMethodMultipleParameterAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
 
@@ -254,7 +254,7 @@ public final class AnnotationUtil
     public static <X> boolean hasAnnotatedMethodMultipleParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         boolean found = false;
         
@@ -290,7 +290,7 @@ public final class AnnotationUtil
     public static Type getMethodFirstParameterWithAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
         Type[] params = method.getGenericParameterTypes();
@@ -316,7 +316,7 @@ public final class AnnotationUtil
     public static <X> Type getAnnotatedMethodFirstParameterWithAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
         for(AnnotatedParameter<X> parameter : parameters)
@@ -333,7 +333,7 @@ public final class AnnotationUtil
     public static <X> Annotation[] getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(AnnotatedMethod<X> annotatedMethod, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
         for(AnnotatedParameter<X> parameter : parameters)
@@ -373,7 +373,7 @@ public final class AnnotationUtil
     public static Annotation[] getMethodFirstParameterQualifierWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
         List<Annotation> list = new ArrayList<Annotation>();
@@ -422,7 +422,7 @@ public final class AnnotationUtil
     public static Type getTypeOfParameterWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
         Type result = null;
@@ -464,7 +464,7 @@ public final class AnnotationUtil
     public static <T extends Annotation> T getMethodFirstParameterAnnotation(Method method, Class<T> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
 
@@ -488,7 +488,7 @@ public final class AnnotationUtil
     public static <X,T extends Annotation> T getAnnotatedMethodFirstParameterAnnotation(AnnotatedMethod<X> annotatedMethod, Class<T> clazz)
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
         
         
         List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
@@ -515,7 +515,7 @@ public final class AnnotationUtil
     public static boolean hasMethodParameterAnnotationCrossRef(Method method, Class<? extends Annotation> clazz)
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
 
@@ -549,7 +549,7 @@ public final class AnnotationUtil
      */
     public static boolean hasAnnotationMember(Class<? extends Annotation> clazz, Annotation src, Annotation member)
     {
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(src, "Src argument can not be null");
         Asserts.assertNotNull(member, "Member argument can not be null");
 
@@ -715,7 +715,7 @@ public final class AnnotationUtil
      */
     public static Method[] getMethodsWithParameterAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
     {
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotation, "Annotation argument can not be null");
 
         Method[] methods = clazz.getDeclaredMethods();
@@ -745,7 +745,7 @@ public final class AnnotationUtil
      */
     public static Method[] getMethodsWithAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
     {
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotation, "Annotation argument can not be null");
 
         Method[] methods = clazz.getDeclaredMethods();
@@ -775,7 +775,7 @@ public final class AnnotationUtil
      */
     public static boolean hasClassAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
     {
-        Asserts.assertNotNull(clazz, "Clazz argument can not be null");
+        Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotation, "Annotation argument can not be null");
 
         Annotation a = clazz.getAnnotation(annotation);
@@ -939,7 +939,7 @@ public final class AnnotationUtil
      */
     public static boolean isQualifierAnnotation(Class<? extends Annotation> clazz)
     {
-        Asserts.assertNotNull(clazz, "clazz parameter can not be null");
+        Asserts.nullCheckForClass(clazz);
         XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
         if (manager.hasBindingType(clazz))
         {
@@ -1021,7 +1021,7 @@ public final class AnnotationUtil
      */
     public static boolean isResourceAnnotation(Class<? extends Annotation> clazz)
     {
-        Asserts.assertNotNull(clazz, "clazz parameter can not be null");
+        Asserts.nullCheckForClass(clazz);
 
         List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
         
@@ -1046,7 +1046,7 @@ public final class AnnotationUtil
      */
     public static boolean isInterceptorBindingAnnotation(Class<? extends Annotation> clazz)
     {
-        Asserts.assertNotNull(clazz, "clazz parameter can not be null");
+        Asserts.nullCheckForClass(clazz);
         XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
         if (manager.hasInterceptorBindingType(clazz))
         {
@@ -1182,7 +1182,7 @@ public final class AnnotationUtil
      */
     public static boolean isStereoTypeAnnotation(Class<? extends Annotation> clazz)
     {
-        Asserts.assertNotNull(clazz, "clazz parameter can not be null");
+        Asserts.nullCheckForClass(clazz);
         XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
         if (manager.hasStereoType(clazz))
         {
