@@ -18,12 +18,16 @@
  */
 package org.apache.webbeans.newtests.concepts.alternatives.common;
 
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Alternative
-public class PencilProducerBean
-{
-    @Produces @Alternative @Pen
-    public static Pencil pencil = new Pencil();
+import javax.inject.Qualifier;
+
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.METHOD,ElementType.CONSTRUCTOR,ElementType.FIELD})
+public @interface QualifierProducerBased {
+
 }

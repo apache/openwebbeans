@@ -18,12 +18,13 @@
  */
 package org.apache.webbeans.newtests.concepts.alternatives.common;
 
-import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 
-@Alternative
-public class PencilProducerBean
-{
-    @Produces @Alternative @Pen
-    public static Pencil pencil = new Pencil();
+public class DefaultBeanProducerWithoutDisposes {
+	
+	public @Produces @QualifierProducerBased IProducedBean 
+	generateBean() {
+		return new ProducedBean("defaultwithoutdisposes", this);
+	}
+
 }

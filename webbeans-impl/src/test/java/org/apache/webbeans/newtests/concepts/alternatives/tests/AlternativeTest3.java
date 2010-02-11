@@ -18,47 +18,55 @@
  */
 package org.apache.webbeans.newtests.concepts.alternatives.tests;
 
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.AnnotationLiteral;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.concepts.alternatives.common.Pen;
-import org.apache.webbeans.newtests.concepts.alternatives.common.Pencil;
-import org.apache.webbeans.newtests.concepts.alternatives.common.PencilProducerBean;
+import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeBeanProducer3;
+import org.apache.webbeans.newtests.concepts.alternatives.common.DefaultBeanProducer;
+import org.apache.webbeans.newtests.concepts.alternatives.common.IProducedBean;
+import org.apache.webbeans.newtests.concepts.alternatives.common.QualifierProducerBased;
 import org.junit.Test;
 
-public class AlternativeOnProducerFieldTest extends AbstractUnitTest
-{
-   private static final String PACKAGE_NAME = AlternativeOnProducerFieldTest.class.getPackage().getName(); 
-    
-    public AlternativeOnProducerFieldTest()
-    {
-        
-    }
-    
+public class AlternativeTest3  extends AbstractUnitTest {
+	
     @Test
-    public void testProducerFieldAlternativeNotEnabled()
+    @SuppressWarnings("unchecked")
+    public void testDisposerMethodInAlternativeBean()
     {
         Collection<URL> beanXmls = new ArrayList<URL>();
-        beanXmls.add(getXMLUrl(PACKAGE_NAME ,"AlternativeOnProducerFieldTest"));
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(PencilProducerBean.class);
-        beanClasses.add(Pencil.class);
+        beanClasses.add(DefaultBeanProducer.class);
+        beanClasses.add(AlternativeBeanProducer3.class);
         
         startContainer(beanClasses, beanXmls);        
-        
-        Set<Bean<?>> beans = getBeanManager().getBeans(Pencil.class, new AnnotationLiteral<Pen>(){});
-        Assert.assertEquals(1, beans.size());
+
+        Annotation[] anns = new Annotation[1];
+        anns[0] = new AnnotationLiteral<QualifierProducerBased>()
+        {
+        };
+
+        Set beans = getBeanManager().getBeans(IProducedBean.class, anns);
+        System.out.println("Size of the bean set is " + beans.size());
+        Bean<IProducedBean> bean = (Bean<IProducedBean>)beans.iterator().next();
+        CreationalContext<IProducedBean> cc = getBeanManager().createCreationalContext(bean);
+        IProducedBean producedBean = (IProducedBean) getBeanManager().getReference(bean, IProducedBean.class, cc);
+        System.out.println(producedBean.getID());
         
         shutDownContainer();
+        
+        Assert.assertTrue(Boolean.TRUE);
+
     }
-    
+
 }

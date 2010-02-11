@@ -18,12 +18,11 @@
  */
 package org.apache.webbeans.newtests.concepts.alternatives.common;
 
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
 
-@Alternative
-public class PencilProducerBean
-{
-    @Produces @Alternative @Pen
-    public static Pencil pencil = new Pencil();
+public interface IProducedBean {
+		
+	public String getID();
+
+	public String getProducerID();
+		
 }

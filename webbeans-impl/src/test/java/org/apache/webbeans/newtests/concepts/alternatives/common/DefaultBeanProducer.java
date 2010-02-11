@@ -18,12 +18,20 @@
  */
 package org.apache.webbeans.newtests.concepts.alternatives.common;
 
-import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 
-@Alternative
-public class PencilProducerBean
-{
-    @Produces @Alternative @Pen
-    public static Pencil pencil = new Pencil();
+
+public class DefaultBeanProducer {
+	
+		public @Produces @QualifierProducerBased IProducedBean 
+			generateBean() {
+			return new ProducedBean("default", this);
+		}
+		
+		public void dumpBean(
+				@Disposes @QualifierProducerBased IProducedBean bean) {
+			System.out.println(bean + " is dumped in dumpBean().");
+		}
+
 }
