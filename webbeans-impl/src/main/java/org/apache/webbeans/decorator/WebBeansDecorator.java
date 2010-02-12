@@ -32,6 +32,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
@@ -54,7 +55,7 @@ import org.apache.webbeans.util.ClassUtil;
  *
  * @param <T> decorator type info
  */
-public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T>
+public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> implements Decorator<T>
 {
     private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansDecorator.class);
 
@@ -73,13 +74,13 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     protected Field delegateField;
 
     /** Wrapped bean*/
-    private AbstractBean<T> wrappedBean;
+    private AbstractInjectionTargetBean<T> wrappedBean;
     
     /**
      * Creates a new decorator bean instance with the given wrapped bean.
      * @param delegateComponent delegate bean instance
      */
-    public WebBeansDecorator(AbstractBean<T> wrappedBean)
+    public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean)
     {
         super(WebBeansType.DECORATOR,wrappedBean.getReturnType());
         
@@ -172,6 +173,29 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
             this.delegateField = fields[0];
         }
         
+        Type fieldType = this.delegateField.getGenericType();
+        if (!ClassUtil.isInterface(ClassUtil.getClazz(fieldType).getModifiers()))
+        {
+            throw new WebBeansConfigurationException("Decorator bean : " + toString() + " delegate attribute type must be interface");
+        }
+
+        for (Type decType : this.decoratedTypes)
+        {
+            if (!(ClassUtil.getClass(decType)).isAssignableFrom(ClassUtil.getClass(fieldType)))
+            {
+                throw new WebBeansConfigurationException("Decorator : " + toString() + " delegate attribute must implement all of the decorator decorated types.");
+            }
+            else
+            {
+                if(ClassUtil.isParametrizedType(decType) && ClassUtil.isParametrizedType(fieldType))
+                {                    
+                    if(!fieldType.equals(decType))
+                    {
+                        throw new WebBeansConfigurationException("Decorator : " + toString() + " generic delegate attribute must be same with decorated type : " + decType);
+                    }
+                }
+            }
+        }
     }
     
     private boolean bindingMatchesAnnotations(Annotation bindingType, Set<Annotation> annotations)
@@ -457,6 +481,4 @@ public class WebBeansDecorator<T> extends AbstractBean<T> implements Decorator<T
     {
         return this.wrappedBean.isAlternative();
     }
-
-
 }

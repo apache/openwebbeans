@@ -15,7 +15,6 @@ import java.lang.reflect.Constructor;
 import java.util.Set;
 
 import javax.decorator.Decorator;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.ManagedBean;
@@ -143,35 +142,6 @@ public final class ManagedBeanConfigurator
         DefinitionUtil.defineInjectedFields(component);
         DefinitionUtil.defineInjectedMethods(component);
         DefinitionUtil.defineObserverMethods(component, clazz);
-
-        return component;
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> ManagedBean<T> defineFromAnnotatedType(AnnotatedType<T> annotatedType) throws WebBeansConfigurationException
-    {
-        Class<T> javaClazz = annotatedType.getJavaClass();
-        ManagedBean<T> component = new ManagedBean<T>(javaClazz, WebBeansType.MANAGED);
-        
-        WebBeansUtil.setInjectionTargetBeanEnableFlag(component);   
-        
-        Annotation[] clazzAnns = annotatedType.getAnnotations().toArray(new Annotation[0]);
-        
-        DefinitionUtil.defineSerializable(component);
-        DefinitionUtil.defineStereoTypes(component, clazzAnns);
-        
-        DefinitionUtil.defineApiTypes(component, javaClazz);
-        DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + javaClazz.getName() + " stereotypes must declare same @Scope annotations");
-        
-        WebBeansUtil.checkGenericType(component);
-        WebBeansUtil.checkPassivationScope(component, component.getScope());
-        DefinitionUtil.defineQualifiers(component, clazzAnns);
-        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(javaClazz.getSimpleName()));
-
-        Constructor<T> constructor = WebBeansUtil.defineConstructor(annotatedType.getConstructors().toArray(new Constructor[0]), javaClazz);
-        component.setConstructor(constructor);
-        DefinitionUtil.addConstructorInjectionPointMetaData(component, constructor);
-
 
         return component;
     }    

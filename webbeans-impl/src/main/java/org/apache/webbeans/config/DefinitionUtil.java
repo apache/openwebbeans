@@ -239,7 +239,13 @@ public final class DefinitionUtil
         }
         
         // Adding inherited qualifiers
-        IBeanInheritedMetaData inheritedMetaData = component.getInheritedMetaData();
+        IBeanInheritedMetaData inheritedMetaData = null;
+        
+        if(component instanceof InjectionTargetBean)
+        {
+            inheritedMetaData = ((InjectionTargetBean<?>) component).getInheritedMetaData();
+        }
+        
         if (inheritedMetaData != null)
         {
             Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedQualifiers();
@@ -382,7 +388,13 @@ public final class DefinitionUtil
         }
         
         // Adding inherited qualifiers
-        IBeanInheritedMetaData inheritedMetaData = component.getInheritedMetaData();
+        IBeanInheritedMetaData inheritedMetaData = null;
+        
+        if(component instanceof InjectionTargetBean)
+        {
+            inheritedMetaData = ((InjectionTargetBean<?>) component).getInheritedMetaData();
+        }
+        
         if (inheritedMetaData != null)
         {
             Set<Annotation> inheritedTypes = inheritedMetaData.getInheritedStereoTypes();        
@@ -410,7 +422,11 @@ public final class DefinitionUtil
     public static void defineDefaultScopeType(BaseBean<?> component, String exceptionMessage)
     {
         // Frist look for inherited scope
-        IBeanInheritedMetaData metaData = component.getInheritedMetaData();
+        IBeanInheritedMetaData metaData = null;
+        if(component instanceof InjectionTargetBean)
+        {
+            metaData = ((InjectionTargetBean<?>)component).getInheritedMetaData();
+        }
         boolean found = false;
         if (metaData != null)
         {
@@ -1021,12 +1037,12 @@ public final class DefinitionUtil
      * Configure bean instance interceptor stack.
      * @param bean bean instance
      */
-    public static void defineBeanInterceptorStack(AbstractBean<?> bean)
+    public static void defineBeanInterceptorStack(AbstractInjectionTargetBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean parameter can no be null");
 
         // @javax.interceptor.Interceptors
-        EJBInterceptorConfig.configure(bean.getReturnType(), bean.getInterceptorStack());
+        EJBInterceptorConfig.configure(((AbstractBean)bean).getReturnType(), bean.getInterceptorStack());
 
         // @javax.webbeans.Interceptor
         WebBeansInterceptorConfig.configure(bean, bean.getInterceptorStack());

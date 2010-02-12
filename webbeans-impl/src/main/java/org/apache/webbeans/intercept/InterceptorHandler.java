@@ -32,6 +32,8 @@ import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -59,7 +61,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * <code>configureDecorators(scanner)</code>. Those methods further call
  * <code>defineInterceptor(interceptor class)</code> and <code>defineDecorator(decorator class)</code>
  * methods. Those methods finally call {@link WebBeansUtil#defineInterceptors(Class)} and
- * {@link WebBeansUtil#defineDecorators(Class)} methods for actual configuration.
+ * {@link WebBeansUtil#defineDecorator(Class)} methods for actual configuration.
  * <p>
  * Let's look at the "WebBeansUtil's" methods; 
  * </p>
@@ -154,59 +156,65 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         
         try
         {
-            //toString is supported but no other object method names!!!
-            if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) && InterceptorUtil.isWebBeansBusinessMethod(method))
+            if(bean instanceof InjectionTargetBean)
             {
+                InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>)this.bean;
                 
-                DelegateHandler delegateHandler = null;
-                List<Object> decorators = null;
-                
-                if(bean.getDecorators().size() > 0)
+                //toString is supported but no other object method names!!!
+                if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) && InterceptorUtil.isWebBeansBusinessMethod(method))
                 {
-                	ProxyFactory delegateFactory = JavassistProxyFactory.createProxyFactory(bean);
-                	delegateHandler = new DelegateHandler();
-                	delegateFactory.setHandler(delegateHandler);
-                	Object delegate = delegateFactory.createClass().newInstance();
-                		
-                    //Gets component decorator stack
-                    decorators = WebBeansDecoratorConfig.getDecoratorStack(bean, instance, delegate);
                     
-                    delegateHandler.setDecorators(decorators);
-                }
-           
-                // Run around invoke chain
-                List<InterceptorData> stack = bean.getInterceptorStack();
-                
-                List<InterceptorData> temp = new ArrayList<InterceptorData>(stack);
-                
-                //Filter both EJB and WebBeans interceptors
-                filterCommonInterceptorStackList(temp, method);
-                
-                //Call Around Invokes
-                if (WebBeansUtil.isContainsInterceptorMethod(temp, InterceptorType.AROUND_INVOKE))
-                {
-                    result = callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(temp, InterceptorType.AROUND_INVOKE));
-                    interceptorRun = true;
-                }
-                
-                //If there are Decorators, allow the delegate handler to manage the stack
-                if(decorators != null)
-                {
-                	return delegateHandler.invoke(instance, method, proceed, arguments);
-                }
+                    DelegateHandler delegateHandler = null;
+                    List<Object> decorators = null;
+                    
+                    if(injectionTarget.getDecoratorStack().size() > 0)
+                    {
+                        ProxyFactory delegateFactory = JavassistProxyFactory.createProxyFactory(bean);
+                        delegateHandler = new DelegateHandler();
+                        delegateFactory.setHandler(delegateHandler);
+                        Object delegate = delegateFactory.createClass().newInstance();
+                            
+                        //Gets component decorator stack
+                        decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate);
+                        
+                        delegateHandler.setDecorators(decorators);
+                    }
                
-            }
+                    // Run around invoke chain
+                    List<InterceptorData> stack = injectionTarget.getInterceptorStack();
+                    
+                    List<InterceptorData> temp = new ArrayList<InterceptorData>(stack);
+                    
+                    //Filter both EJB and WebBeans interceptors
+                    filterCommonInterceptorStackList(temp, method);
+                    
+                    //Call Around Invokes
+                    if (WebBeansUtil.isContainsInterceptorMethod(temp, InterceptorType.AROUND_INVOKE))
+                    {
+                        result = callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(temp, InterceptorType.AROUND_INVOKE));
+                        interceptorRun = true;
+                    }
+                    
+                    //If there are Decorators, allow the delegate handler to manage the stack
+                    if(decorators != null)
+                    {
+                        return delegateHandler.invoke(instance, method, proceed, arguments);
+                    }
+                   
+                }
 
-            if(interceptorRun)
-            {
-                return result;
+                if(interceptorRun)
+                {
+                    return result;
+                }
+                
+                if (!method.isAccessible())
+                {
+                    method.setAccessible(true);
+                }
+                
             }
             
-            if (!method.isAccessible())
-            {
-                method.setAccessible(true);
-            }
-
             return method.invoke(instance, arguments);
             
         }catch(InvocationTargetException e)
@@ -357,7 +365,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     {
         if( s.readByte() == 1)
         {
-            this.bean = (AbstractBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(s.readUTF());   
+            this.bean = (AbstractInjectionTargetBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(s.readUTF());   
         }
         else
         {

@@ -18,10 +18,8 @@ import java.lang.reflect.Constructor;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -52,10 +50,18 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
     @Override
     public void checkCreateConditions()
     {
-        ManagedBeanConfigurator.checkManagedBeanCondition(getBean().getReturnType());
+        if(isDefaultMetaDataProvider())
+        {
+            ManagedBeanConfigurator.checkManagedBeanCondition(getBean().getReturnType());                        
+        }
+        else
+        {
+            WebBeansAnnotatedTypeUtil.checkManagedBeanCondition(getAnnotatedType());
+        }
+        
         WebBeansUtil.checkGenericType(getBean());
         //Check Unproxiable
-        WebBeansUtil.checkUnproxiableApiType(getBean(), getBean().getScope());                    
+        WebBeansUtil.checkUnproxiableApiType(getBean(), getBean().getScope());                                
     }
 
 
@@ -90,23 +96,4 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
         return (ManagedBean<T>)super.getBean();
     }
 
-
-    @Override
-    public void defineDecoratorStack()
-    {
-        if(getBean().getWebBeansType().equals(WebBeansType.MANAGED))
-        {
-            WebBeansDecoratorConfig.configureDecarotors(getBean());   
-        }
-    }
-
-
-    @Override
-    public void defineInterceptorStack()
-    {
-        if(getBean().getWebBeansType().equals(WebBeansType.MANAGED))
-        {
-            DefinitionUtil.defineBeanInterceptorStack(getBean());            
-        }                
-    }
 }

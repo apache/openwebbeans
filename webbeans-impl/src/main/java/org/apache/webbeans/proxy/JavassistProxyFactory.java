@@ -29,6 +29,7 @@ import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandler;
@@ -44,7 +45,7 @@ public final class JavassistProxyFactory
 
     }
 
-    public static Object createNormalScopedBeanProxy(Bean<?> bean, CreationalContext<?> creationalContext)
+    public static Object createNormalScopedBeanProxy(AbstractBean<?> bean, CreationalContext<?> creationalContext)
     {
         Object result = null;
         try
@@ -66,19 +67,27 @@ public final class JavassistProxyFactory
         return result;
     }
     
-    public static Object createDependentScopedBeanProxy(Bean<?> bean, Object actualInstance)
+    public static Object createDependentScopedBeanProxy(AbstractBean<?> bean, Object actualInstance)
     {
         Object result = null;
         
-        List<InterceptorData> interceptors = ((AbstractBean<?>) bean).getInterceptorStack();
-        List<Decorator<?>> decorators = ((AbstractBean<?>) bean).getDecorators();
-        if(interceptors.isEmpty() && decorators.isEmpty())
+        List<InterceptorData> interceptors =  null;
+        List<Decorator<?>> decorators = null;
+        InjectionTargetBean<?> injectionTargetBean = null;
+        if(bean instanceof InjectionTargetBean)
+        {
+            injectionTargetBean = (InjectionTargetBean<?>)bean;
+            interceptors = injectionTargetBean.getInterceptorStack();
+            decorators = injectionTargetBean.getDecoratorStack();
+        }
+        
+        if(interceptors == null && decorators == null)
         {
             return actualInstance;
         }
         
         boolean notInInterceptorClassAndLifecycle = false;
-        if(!interceptors.isEmpty())
+        if(interceptors != null)
         {
             Iterator<InterceptorData> its = interceptors.iterator();
             while(its.hasNext())
@@ -108,7 +117,7 @@ public final class JavassistProxyFactory
 
             if (!(bean instanceof WebBeansDecorator) && !(bean instanceof WebBeansInterceptor))
             {
-                fact.setHandler(new DependentScopedBeanInterceptorHandler((AbstractBean<?>) bean, actualInstance));
+                fact.setHandler(new DependentScopedBeanInterceptorHandler(bean, actualInstance));
             }
 
             result = fact.createClass().newInstance();

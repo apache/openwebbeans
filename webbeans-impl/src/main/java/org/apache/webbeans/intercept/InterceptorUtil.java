@@ -17,12 +17,18 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
@@ -98,6 +104,46 @@ public final class InterceptorUtil
             throw new WebBeansException("Undefined interceotion type");
         }
     }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> boolean isBusinessMethodInterceptor(AnnotatedType<T> annotatedType)
+    {
+        Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
+        for(AnnotatedMethod<? super T> methodA : methods)
+        {
+            AnnotatedMethod<T> method = (AnnotatedMethod<T>)methodA;
+            if(method.isAnnotationPresent(AroundInvoke.class))
+            {
+                    if (!methodA.getParameters().isEmpty())
+                    {
+                        List<AnnotatedParameter<T>> parameters = method.getParameters();
+                        List<Class<?>> clazzParameters = new ArrayList<Class<?>>();
+                        for(AnnotatedParameter<T> parameter : parameters)
+                        {
+                            clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
+                        }
+                        
+                        Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
+                        if (params.length == 1 && params[0].equals(InvocationContext.class))
+                        {
+                            if (ClassUtil.getReturnType(method.getJavaMember()).equals(Object.class))
+                            {
+                                if (!ClassUtil.isMethodHasCheckedException(method.getJavaMember()))
+                                {
+                                    if (!ClassUtil.isStatic(method.getJavaMember().getModifiers()) && !ClassUtil.isFinal(method.getJavaMember().getModifiers()))
+                                    {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }                
+            }           
+        }
+        
+        return false;
+    }
+    
 
     public static boolean isBusinessMethodInterceptor(Class<?> clazz)
     {
@@ -165,6 +211,69 @@ public final class InterceptorUtil
 
         return false;
     }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> boolean isLifecycleMethodInterceptor(AnnotatedType<T> annotatedType)
+    {
+        Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
+        for(AnnotatedMethod<? super T> methodA : methods)
+        {
+            AnnotatedMethod<T> method = (AnnotatedMethod<T>)methodA;
+            if(method.isAnnotationPresent(PostConstruct.class) 
+                    || method.isAnnotationPresent(PreDestroy.class))
+            {
+                    if (!methodA.getParameters().isEmpty())
+                    {
+                        List<AnnotatedParameter<T>> parameters = method.getParameters();
+                        List<Class<?>> clazzParameters = new ArrayList<Class<?>>();
+                        for(AnnotatedParameter<T> parameter : parameters)
+                        {
+                            clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
+                        }
+                        
+                        Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
+                        if (params.length == 1 && params[0].equals(InvocationContext.class))
+                        {
+                            if (ClassUtil.getReturnType(method.getJavaMember()).equals(Void.TYPE))
+                            {
+                                if (!ClassUtil.isMethodHasCheckedException(method.getJavaMember()))
+                                {
+                                    if (!ClassUtil.isStatic(method.getJavaMember().getModifiers()))
+                                    {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }                
+            }           
+        }
+        
+        return false;
+    }
+    
+    
+    public static <T> void checkAnnotatedTypeInterceptorConditions(AnnotatedType<T> annotatedType)
+    {
+        Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
+        for(AnnotatedMethod<? super T> methodA : methods)
+        {
+            if(methodA.isAnnotationPresent(Produces.class))
+            {
+                throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName() + " can not have producer methods but it has one with name : " + methodA.getJavaMember().getName());
+            }
+            
+        }
+        
+        Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[0]);
+        if (!AnnotationUtil.hasInterceptorBindingMetaAnnotation(anns))
+        {
+            throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName() + " must have at least one @InterceptorBinding annotation");
+        }
+
+        checkLifecycleConditions(annotatedType, anns, "Lifecycle interceptor : " + annotatedType.getJavaClass().getName() + " interceptor binding type must be defined as @Target{TYPE}");
+    }
+    
 
     public static void checkInterceptorConditions(Class<?> clazz)
     {
@@ -208,6 +317,27 @@ public final class InterceptorUtil
         }
 
     }
+    
+    public static <T> void checkLifecycleConditions(AnnotatedType<T> annotatedType, Annotation[] annots, String errorMessage)
+    {
+        if (isLifecycleMethodInterceptor(annotatedType) && !isBusinessMethodInterceptor(annotatedType))
+        {
+            Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(annots);
+
+            for (Annotation annotation : anns)
+            {
+                Target target = annotation.annotationType().getAnnotation(Target.class);
+                ElementType[] elementTypes = target.value();
+
+                if (!(elementTypes.length == 1 && elementTypes[0].equals(ElementType.TYPE)))
+                {
+                    throw new WebBeansConfigurationException(errorMessage);
+                }
+            }
+        }
+
+    }
+    
 
     public static void checkSimpleWebBeansInterceptorConditions(Class<?> clazz)
     {

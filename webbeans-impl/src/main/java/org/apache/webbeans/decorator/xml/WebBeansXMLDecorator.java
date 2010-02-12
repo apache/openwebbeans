@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.decorator.xml;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 
@@ -21,7 +21,7 @@ public class WebBeansXMLDecorator<T> extends WebBeansDecorator<T>
 {
     private XMLInjectionPointModel decoratesModel = null;
 
-    public WebBeansXMLDecorator(AbstractBean<T> delegateComponent, XMLInjectionPointModel model)
+    public WebBeansXMLDecorator(AbstractInjectionTargetBean<T> delegateComponent, XMLInjectionPointModel model)
     {
         super(delegateComponent);
         this.decoratesModel = model;

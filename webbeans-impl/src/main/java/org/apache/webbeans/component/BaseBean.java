@@ -20,9 +20,6 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.*;
 
-import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
-import org.apache.webbeans.intercept.InterceptorData;
-
 /**
  * OWB specific extension of the {@link Bean} interface.
  * It is used internally. Do not use it. Instead use {@link AbstractBean}
@@ -55,14 +52,7 @@ public abstract class BaseBean<T> implements Bean<T>
     {
         return manager;
     }
-    
-    /**
-     * Returns bean's inherited meta data.
-     * 
-     * @return inherited meta data.
-     */
-    public abstract IBeanInheritedMetaData getInheritedMetaData();
-    
+        
     /**
      * Returns scope type annotation.
      * 
@@ -76,6 +66,19 @@ public abstract class BaseBean<T> implements Bean<T>
      * @param scopeType bean scope type annotation
      */
     public abstract void setImplScopeType(Annotation scopeType);
+    
+    /**
+     * Sets annotated type.
+     * @param annotatedType annotated type
+     */
+    public abstract void setAnnotatedType(AnnotatedType<T> annotatedType);    
+    
+    /**
+     * Gets annotated type.
+     * @return annotated type
+     */
+    public abstract AnnotatedType<T> getAnnotatedType();
+    
 
     /**
      * Returns bean type.
@@ -156,18 +159,6 @@ public abstract class BaseBean<T> implements Bean<T>
      * @return bean class type
      */
     public abstract Class<T> getReturnType();
-
-    /**
-     * Gets interceptor stack of bean instance.
-     * @return interceptor stack
-     */
-    public abstract List<InterceptorData> getInterceptorStack();
-
-    /**
-     * Gets decorator stack of bean instance.
-     * @return decorator stack
-     */
-    public abstract List<Decorator<?>> getDecorators();
 
     /**
      * Sets serializable flag.

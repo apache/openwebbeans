@@ -15,6 +15,8 @@ package org.apache.webbeans.exception;
 
 public class WebBeansPassivationException extends WebBeansConfigurationException
 {
+    private static final long serialVersionUID = 778898501784477029L;
+
     public WebBeansPassivationException(String message)
     {
         super(message);

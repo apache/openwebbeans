@@ -30,11 +30,13 @@ public class LifecycleInterceptor
     public void postConstruct(InvocationContext context)
     {
         POST_CONSTRUCT = true;
+        NotAnnotatedBean.PC = true;
     }
     
     @PreDestroy
     public void preDestroy(InvocationContext context)
     {
         PRE_DESTROY = true;
+        NotAnnotatedBean.PC = true;
     }
 }

@@ -24,18 +24,15 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
-import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -82,15 +79,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     /**This bean is enabled or disabled*/
     protected boolean enabled = true;
     
-    /**
-     * Holds the all of the interceptor related data, contains around-invoke,
-     * post-construct and pre-destroy
-     */
-    protected List<InterceptorData> interceptorStack = new ArrayList<InterceptorData>();
-
-    /**Decorators*/
-    protected List<Decorator<?>> decorators = new ArrayList<Decorator<?>>();
-
     /** The bean is serializable or not */
     protected boolean serializable;
 
@@ -100,9 +88,10 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
     
-    /**Bean inherited meta data*/
-    protected IBeanInheritedMetaData inheritedMetaData;
-        
+    /**Annotated type for bean*/
+    protected AnnotatedType<T> annotatedType;
+    
+            
     /**
      * Constructor definiton. Each subclass redefines its own constructor with
      * calling this.
@@ -129,22 +118,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public IBeanInheritedMetaData getInheritedMetaData()
-    {
-        return this.inheritedMetaData;
-    }
-    
-    /**
-     * Sets inherited meta data.
-     */
-    protected void setInheritedMetaData()
-    {
-        this.inheritedMetaData = new BeanInheritedMetaData<T>(this);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -423,15 +396,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     {
         return returnType;
     }
-
-    
-    /**
-     * {@inheritDoc}
-     */
-    public List<InterceptorData> getInterceptorStack()
-    {
-        return this.interceptorStack;
-    }
     
     /**
      * {@inheritDoc}
@@ -462,6 +426,17 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         return this.nullable;
     }
 
+    public void setAnnotatedType(AnnotatedType<T> annotatedType)
+    {
+        this.annotatedType = annotatedType;
+    }
+    
+    
+    public AnnotatedType<T> getAnnotatedType()
+    {
+        return this.annotatedType;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -560,12 +535,7 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         return this.enabled;
     }
     
-    
-    public List<Decorator<?>> getDecorators()
-    {
-        return this.decorators;
-    }
-    
+        
     /**
      * {@inheritDoc}
      */    

@@ -23,6 +23,8 @@ import javax.enterprise.context.spi.CreationalContext;
 
 class WrappedCreationalContext<T> extends CreationalContextImpl<T> implements CreationalContext<T>
 {
+    private static final long serialVersionUID = 3580925478881669439L;
+    
     private CreationalContext<T> wrapped = null;    
 
     WrappedCreationalContext(Contextual<T> contextual, CreationalContext<T> creationalContext)

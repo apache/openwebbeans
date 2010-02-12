@@ -36,6 +36,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     // if we make sure that it is cleaned up properly!
     private static ThreadLocal<CreationalContext<Object>> creationalContxt = new ThreadLocal<CreationalContext<Object>>();
 
+    @SuppressWarnings("unchecked")
     public NormalScopedBeanInterceptorHandler(AbstractBean<?> bean, CreationalContext<?> cc)
     {
         super(bean);

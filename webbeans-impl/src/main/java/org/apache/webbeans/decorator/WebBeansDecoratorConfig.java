@@ -27,7 +27,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
@@ -43,7 +44,7 @@ public final class WebBeansDecoratorConfig
 
     }
 
-    public static <T> void configureDecoratorClass(AbstractBean<T> delegate)
+    public static <T> void configureDecoratorClass(AbstractInjectionTargetBean<T> delegate)
     {
         logger.info(OWBLogConst.INFO_0011, new Object[]{logger.getTokenString(OWBLogConst.TEXT_ANNO_CLASS), delegate.getReturnType().getName()});
 
@@ -54,7 +55,7 @@ public final class WebBeansDecoratorConfig
         BeanManagerImpl.getManager().addDecorator(decorator);
     }
 
-    public static <T> void configureXMLDecoratorClass(AbstractBean<T> delegate, XMLInjectionPointModel model)
+    public static <T> void configureXMLDecoratorClass(AbstractInjectionTargetBean<T> delegate, XMLInjectionPointModel model)
     {
         logger.info(OWBLogConst.INFO_0011, new Object[]{logger.getTokenString(OWBLogConst.TEXT_XML_CLASS), delegate.getReturnType().getName()});
 
@@ -65,7 +66,7 @@ public final class WebBeansDecoratorConfig
         BeanManagerImpl.getManager().addDecorator(decorator);
     }
 
-    public static void configureDecarotors(AbstractBean<?> component)
+    public static void configureDecarotors(AbstractInjectionTargetBean<?> component)
     {
         Set<Annotation> qualifiers = component.getQualifiers();
         Annotation[] anns = new Annotation[qualifiers.size()];
@@ -77,14 +78,14 @@ public final class WebBeansDecoratorConfig
         while (itList.hasNext())
         {
             WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();            
-            component.getDecorators().add(decorator);            
+            component.getDecoratorStack().add(decorator);            
         }
     }
     
-    public static List<Object> getDecoratorStack(AbstractBean<?> component, Object instance, Object delegate)
+    public static List<Object> getDecoratorStack(InjectionTargetBean<?> component, Object instance, Object delegate)
     {
         List<Object> decoratorStack = new ArrayList<Object>();
-        List<Decorator<?>> decoratorList = component.getDecorators();        
+        List<Decorator<?>> decoratorList = component.getDecoratorStack();        
         Iterator<Decorator<?>> itList = decoratorList.iterator();
         BeanManager manager = BeanManagerImpl.getManager();
         while (itList.hasNext())

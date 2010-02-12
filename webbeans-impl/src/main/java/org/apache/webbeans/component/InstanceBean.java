@@ -30,6 +30,7 @@ public class InstanceBean<T> extends AbstractBean<Instance<T>>
 {
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     
+    @SuppressWarnings("serial")
     public InstanceBean()
     {
         super(WebBeansType.INSTANCE, new TypeLiteral<Instance<T>>(){}.getRawType());        

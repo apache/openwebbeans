@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Delegate;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Decorator;
 
@@ -67,6 +68,11 @@ public final class DecoratorUtil
             if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
             {
                 throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz + " can not have producer methods but it has one with name : " + method.getName());
+            }
+            
+            if(AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
+            {
+                throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz + " can not have observer methods but it has one with name : " + method.getName());
             }
         }
         

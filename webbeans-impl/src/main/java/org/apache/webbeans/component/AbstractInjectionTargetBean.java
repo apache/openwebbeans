@@ -15,21 +15,27 @@ package org.apache.webbeans.component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Delegate;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
+import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
@@ -40,7 +46,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Abstract class for owning observer methods.
+ * Abstract class for injection target beans.
  * 
  * @version $Rev$ $Date$
  * @param <T> bean class
@@ -66,13 +72,26 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     private Set<Method> injectedFromSuperMethods = new HashSet<Method>();
     
     /**
+     * Holds the all of the interceptor related data, contains around-invoke,
+     * post-construct and pre-destroy
+     */
+    protected List<InterceptorData> interceptorStack = new ArrayList<InterceptorData>();
+
+    /**Decorators*/
+    protected List<Decorator<?>> decorators = new ArrayList<Decorator<?>>();
+    
+    /**Bean inherited meta data*/
+    protected IBeanInheritedMetaData inheritedMetaData;    
+    
+    
+    /**
      * InjectionTargt instance. If this is not null, it is used for creating
      * instance.
      * 
      * @see InjectionTarget
      */
     protected InjectionTarget<T> injectionTarget;
-
+    
     /**
      * Creates a new observer owner component.
      * 
@@ -164,7 +183,10 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
      * @param creationalContext creational context
      * @return bean instance
      */
-    abstract protected T createComponentInstance(CreationalContext<T> creationalContext);
+    protected T createComponentInstance(CreationalContext<T> creationalContext)
+    {
+        return null;
+    }
 
     /**
      * Sub-classes must override this method to destroy bean instance.
@@ -493,7 +515,37 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     {
         this.injectionTarget = injectionTarget;
     }
+        
+    /**
+     * {@inheritDoc}
+     */
+    public List<InterceptorData> getInterceptorStack()
+    {
+        return this.interceptorStack;
+    }
+    
+    public List<Decorator<?>> getDecoratorStack()
+    {
+        return this.decorators;
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    public IBeanInheritedMetaData getInheritedMetaData()
+    {
+        return this.inheritedMetaData;
+    }
+    
+    /**
+     * Sets inherited meta data.
+     */
+    public void setInheritedMetaData()
+    {
+        this.inheritedMetaData = new BeanInheritedMetaData<T>(this);
+    }
+    
+    
     /**
      * Returns injection target.
      * 

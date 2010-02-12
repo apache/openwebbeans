@@ -20,15 +20,15 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 
-import org.apache.webbeans.config.ManagedBeanConfigurator;
+import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
 public class DefaultInjectionTargetImpl<T> implements InjectionTarget<T>
 {
     private InjectionTargetProducer<T> target;
     
-    private DefaultInjectionTargetImpl(AnnotatedType<T> annotatedType)
+    public DefaultInjectionTargetImpl(AnnotatedType<T> annotatedType)
     {
-        target = new InjectionTargetProducer<T>(ManagedBeanConfigurator.defineFromAnnotatedType(annotatedType));
+        target = new InjectionTargetProducer<T>(WebBeansAnnotatedTypeUtil.defineManagedBean(annotatedType));
     }
 
     @Override

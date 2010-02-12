@@ -26,7 +26,7 @@ import org.apache.webbeans.spi.ServiceLoader;
  * @version $Rev$ $Date$
  *
  */
-public class ConversationBean extends AbstractBean<Conversation>
+public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
 {
     /**
      * Default constructor.

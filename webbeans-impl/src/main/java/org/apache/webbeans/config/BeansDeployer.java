@@ -17,41 +17,35 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.Producer;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.component.ProducerFieldBean;
-import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecorator;
+import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
-import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
@@ -60,17 +54,14 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
-import org.apache.webbeans.portable.events.ProcessBeanImpl;
-import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
-import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
-import org.apache.webbeans.portable.events.generics.GProcessManagedBean;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
@@ -141,12 +132,6 @@ public class BeansDeployer
                 //Checking stereotype conditions
                 checkStereoTypes(scanner);
                 
-                //Configure Interceptors
-                configureInterceptors(scanner);
-                
-                //Configure Decorators
-                configureDecorators(scanner);
-                
                 //Configure Default Beans
                 configureDefaultBeans();
                                 
@@ -189,6 +174,9 @@ public class BeansDeployer
         }
     }
     
+    /**
+     * Configure Default Beans.
+     */
     private void configureDefaultBeans()
     {
         BeanManagerImpl beanManager = BeanManagerImpl.getManager();
@@ -252,7 +240,7 @@ public class BeansDeployer
         for(Decorator decorator : decorators)
         {
             WebBeansDecorator wbDec = (WebBeansDecorator)decorator;
-            beans.add(wbDec.getDelegateComponent());
+            beans.add(wbDec);
         }
         
         
@@ -268,7 +256,7 @@ public class BeansDeployer
         for(javax.enterprise.inject.spi.Interceptor interceptor : interceptors)
         {
             WebBeansInterceptor wbInt = (WebBeansInterceptor)interceptor;
-            beans.add(wbInt.getDelegate());
+            beans.add(wbInt);
         }
         
         logger.info(OWBLogConst.INFO_0015);
@@ -300,6 +288,15 @@ public class BeansDeployer
         {
             for (Bean<?> bean : beans)
             {
+                //Configure decorator and interceptor stack for ManagedBeans
+                if((bean instanceof AbstractInjectionTargetBean) && 
+                        !(bean instanceof NewBean) &&
+                        !(bean instanceof EnterpriseBeanMarker))
+                {
+                    WebBeansDecoratorConfig.configureDecarotors((AbstractInjectionTargetBean<Object>)bean);
+                    DefinitionUtil.defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);
+                }
+                
                 //Bean injection points
                 Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
                                 
@@ -342,16 +339,8 @@ public class BeansDeployer
         {
             for(Class<?> implClass : classIndex)
             {
-                //It must not be @Interceptor or @Decorator
-                if(AnnotationUtil.hasClassAnnotation(implClass, javax.decorator.Decorator.class) ||
-                        AnnotationUtil.hasClassAnnotation(implClass, Interceptor.class))
-                {
-                    continue;
-                }
-                
                 if (ManagedBeanConfigurator.isManagedBean(implClass))
                 {
-                    logger.info(OWBLogConst.INFO_0018, new Object[]{implClass.getName()});
                     defineManagedBean(implClass);
                 }
                 else if(this.discoverEjb)
@@ -418,57 +407,11 @@ public class BeansDeployer
         logger.info(OWBLogConst.INFO_0022);
     }
     
-    /**
-     * Discovers and deploys interceptors.
-     * 
-     * @param scanner discovery scanner
-     * @throws ClassNotFoundException if class not found
-     */
-    protected void configureInterceptors(ScannerService scanner) throws ClassNotFoundException
-    {
-        logger.info(OWBLogConst.INFO_0023);
-
-        // Interceptors Set
-        Set<Class<?>> beanClasses = scanner.getBeanClasses();
-
-        for (Class<?> interceptorClazz : beanClasses)
-        {
-            if(AnnotationUtil.hasClassAnnotation(interceptorClazz, Interceptor.class))
-            {
-                logger.info(OWBLogConst.INFO_0024, new Object[]{interceptorClazz});
-                defineInterceptor(interceptorClazz);                
-            }
-        }
-
-        logger.info(OWBLogConst.INFO_0025);
-
-    }
 
     /**
-     * Discovers and deploys decorators.
-     * 
-     * @param scanner discovery scanner
-     * @throws ClassNotFoundException if class not found
+     * Checks specialization.
+     * @param scanner scanner instance
      */
-    protected void configureDecorators(ScannerService scanner) throws ClassNotFoundException
-    {
-        logger.info(OWBLogConst.INFO_0026);
-
-        Set<Class<?>> beanClasses = scanner.getBeanClasses();
-
-        for (Class<?> decoratorClazz : beanClasses)
-        {
-            if(AnnotationUtil.hasClassAnnotation(decoratorClazz, javax.decorator.Decorator.class))
-            {
-                logger.info(OWBLogConst.INFO_0027, new Object[]{decoratorClazz});
-                defineDecorator(decoratorClazz);                
-            }
-        }
-
-        logger.info(OWBLogConst.INFO_0028);
-
-    }
-
     protected void checkSpecializations(ScannerService scanner)
     {
         logger.info(OWBLogConst.INFO_0029);
@@ -518,7 +461,12 @@ public class BeansDeployer
         logger.info(OWBLogConst.INFO_0030);
     }
 
-    private void checkXMLSpecializations()
+    
+    /**
+     * Check xml specializations.
+     * NOTE : Currently XML is not used in configuration.
+     */
+    protected void checkXMLSpecializations()
     {
         // Check XML specializations
         Set<Class<?>> clazzes = XMLSpecializesManager.getInstance().getXMLSpecializationClasses();
@@ -547,6 +495,9 @@ public class BeansDeployer
         }
     }
 
+    /**
+     * Check passivations.
+     */
     protected void checkPassivationScopes()
     {
         Set<Bean<?>> beans = BeanManagerImpl.getManager().getBeans();
@@ -565,13 +516,7 @@ public class BeansDeployer
                     {
                         if (scope.passivating())
                         {
-                            // TODO  Check constructor
-
-                            // TODO Check non-transient fields
-
-                            // TODO Check initializer methods
-
-                            // TODO Check producer methods
+                            // TODO
                         }                        
                     }
                 }
@@ -579,6 +524,10 @@ public class BeansDeployer
         }
     }
 
+    /**
+     * Check steretypes.
+     * @param scanner scanner instance
+     */
     protected void checkStereoTypes(ScannerService scanner)
     {
         logger.info(OWBLogConst.INFO_0031);
@@ -609,6 +558,9 @@ public class BeansDeployer
         logger.info(OWBLogConst.INFO_0032);
     }
 
+    /**
+     * Adds default stereotypes.
+     */
     protected void addDefaultStereoTypes()
     {
         StereoTypeModel model = new StereoTypeModel(Model.class);
@@ -622,166 +574,68 @@ public class BeansDeployer
     }
     
     /**
-     * Defines and creates a new {@link ManagedBean}.
-     * 
-     * <p>
-     * It fires each event that is defined in the specification
-     * section 11.5, <b>Container Lifecycle Events</b>
-     * </p>
-     * 
-     * @param <T> bean class
-     * @param clazz managed bean class
+     * Defines and configures managed bean.
+     * @param <T> type info
+     * @param clazz bean class
      */
     protected <T> void defineManagedBean(Class<T> clazz)
     {
-        if (!AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class) && !AnnotationUtil.hasClassAnnotation(clazz, javax.decorator.Decorator.class))
+        AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(clazz);
+        
+        //Fires ProcessAnnotatedType
+        ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);      
+        
+        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);                  
+        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
+        
+        if(processAnnotatedEvent.isVeto())
         {
-
-            AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(clazz);
-            
-            //Fires ProcessAnnotatedType
-            ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);      
-            
-            ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);                  
-            ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
-            
-            if(processAnnotatedEvent.isVeto())
+            return;
+        }
+        
+        boolean annotationTypeSet = false;
+        if(processAnnotatedEvent.isSet())
+        {
+            annotationTypeSet = true;
+            managedBean.setAnnotatedType(annotatedType);
+            annotatedType = processAnnotatedEvent.getAnnotatedType();
+            managedBeanCreator.setAnnotatedType(annotatedType);
+            managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
+        }
+        
+        //Decorator
+        if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeDecorator(annotatedType))
+        {
+            logger.info(OWBLogConst.INFO_0027, new Object[]{annotatedType.getJavaClass().getName()});
+            if(annotationTypeSet)
             {
-                return;
+                WebBeansAnnotatedTypeUtil.defineDecorator(annotatedType);
             }
-            
-            if(processAnnotatedEvent.isSet())
+            else
             {
-                managedBeanCreator.setAnnotatedType(processAnnotatedEvent.getAnnotatedType());
-                managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
+                WebBeansUtil.defineDecorator(managedBeanCreator, annotatedType);
             }
-            
-            managedBeanCreator.defineSerializable();
-
-            //Define meta-data
-            managedBeanCreator.defineStereoTypes();
-            //Scope type
-            managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                                            
-            //Check for Enabled via Alternative
-            WebBeansUtil.setInjectionTargetBeanEnableFlag(managedBean);
-            
-            managedBeanCreator.defineApiType();                        
-            managedBeanCreator.checkCreateConditions();
-            managedBeanCreator.defineQualifier();
-            managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
-            managedBeanCreator.defineConstructor();            
-            Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();       
-            Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();           
-            managedBeanCreator.defineInjectedFields();
-            managedBeanCreator.defineInjectedMethods();
-            managedBeanCreator.defineDecoratorStack();
-            managedBeanCreator.defineInterceptorStack();
-            
-            Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
-            if(managedBean.isEnabled())
+        }
+        //Interceptor
+        else if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeInterceptor(annotatedType))
+        {
+            logger.info(OWBLogConst.INFO_0024, new Object[]{annotatedType.getJavaClass().getName()});
+            if(annotationTypeSet)
             {
-                observerMethods = managedBeanCreator.defineObserverMethods();
+                WebBeansAnnotatedTypeUtil.defineInterceptor(annotatedType);
             }
-                                    
-            //Fires ProcessInjectionTarget
-            ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);    
-            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
-            
-            if(processInjectionTargetEvent.isSet())
+            else
             {
-                managedBeanCreator.setInjectedTarget(processInjectionTargetEvent.getInjectionTarget());
+                WebBeansUtil.defineInterceptor(managedBeanCreator, annotatedType);
             }
-            
-            Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods = new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>(); 
-            for(ProducerMethodBean<?> producerMethod : producerMethods)
-            {
-                AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), producerMethod.getParent().getReturnType());
-                ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForMethod(producerMethod,method);                
-                WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerMethods. Look at logs for further details");
-
-                annotatedMethods.put(producerMethod, method);
-                
-                if(producerEvent.isProducerSet())
-                {
-                    producerMethod.setProducer((Producer)managedBeanCreator);
-                }
-                
-                producerEvent.setProducerSet(false);
-            }
-            
-            Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields = new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
-            for(ProducerFieldBean<?> producerField : producerFields)
-            {
-                AnnotatedField<?> field = AnnotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), producerField.getParent().getReturnType());
-                ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForField(producerField, field);
-                WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerFields. Look at logs for further details");
-                
-                annotatedFields.put(producerField, field);
-                
-                if(producerEvent.isProducerSet())
-                {
-                    producerField.setProducer((Producer) managedBeanCreator);
-                }
-                
-                producerEvent.setProducerSet(false);
-            }
-
-            Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap = new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>(); 
-            for(ObserverMethod<?> observerMethod : observerMethods)
-            {
-                ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
-                AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(impl.getObserverMethod(), impl.getBeanClass());
-                
-                observerMethodsMap.put(observerMethod, method);
-            }
-            
-            //Fires ProcessManagedBean
-            ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean,annotatedType);            
-            BeanManagerImpl.getManager().fireEvent(processBeanEvent, new Annotation[0]);            
-            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for managed beans. Look at logs for further details");
-            
-            //Fires ProcessProducerMethod
-            WebBeansUtil.fireProcessProducerMethodBeanEvent(annotatedMethods);            
-            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerMethod event observers for producer method beans. Look at logs for further details");            
-            
-            //Fires ProcessProducerField
-            WebBeansUtil.fireProcessProducerFieldBeanEvent(annotatedFields);
-            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerField event observers for producer field beans. Look at logs for further details");            
-            
-            //Fire ObservableMethods
-            WebBeansUtil.fireProcessObservableMethodBeanEvent(observerMethodsMap);
-            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for observer methods. Look at logs for further details");
-            
-            //Set InjectionTarget that is used by the container to inject dependencies!
-            if(managedBeanCreator.isInjectionTargetSet())
-            {
-                managedBean.setInjectionTarget(managedBeanCreator);   
-            }
-            
-            BeanManagerImpl.getManager().addBean(WebBeansUtil.createNewBean(managedBean));                
-            DecoratorUtil.checkManagedBeanDecoratorConditions(managedBean);
-            BeanManagerImpl.getManager().addBean(managedBean);
-            BeanManagerImpl.getManager().getBeans().addAll(producerMethods);
-            managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
-            BeanManagerImpl.getManager().getBeans().addAll(producerFields);
+        }
+        else
+        {
+            logger.info(OWBLogConst.INFO_0018, new Object[]{annotatedType.getJavaClass().getName()});
+            WebBeansUtil.defineManagedBean(managedBeanCreator, annotatedType);   
         }
     }
-
-    /**
-     * Defines the new interceptor with given class.
-     * 
-     * @param clazz interceptor class
-     */
-    protected <T> void defineInterceptor(Class<T> clazz)
-    {
-        WebBeansUtil.defineInterceptors(clazz);
-    }
-
-    protected <T> void defineDecorator(Class<T> clazz)
-    {
-        WebBeansUtil.defineDecorators(clazz);
-    }
-
+    
     /**
      * Defines enterprise bean via plugin.
      * @param <T> bean class type

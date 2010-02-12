@@ -16,16 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.component.creation;
+package org.apache.webbeans.newtests.interceptors.lifecycle;
 
-import org.apache.webbeans.component.ManagedBean;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.util.AnnotationLiteral;
 
-public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
+public class InterceptorExtension implements Extension
 {
-
-    public AnnotatedTypeBeanCreatorImpl(ManagedBean<T> managedBean)
+    @SuppressWarnings("serial")
+    public void observe(@Observes ProcessAnnotatedType<NotAnnotatedBean> process)
     {
-        super(managedBean);
-        setMetaDataProvider(MetaDataProvider.THIRDPARTY);
+        process.getAnnotatedType().getAnnotations().add(new AnnotationLiteral<LifecycleBinding>(){});
+        process.setAnnotatedType(process.getAnnotatedType());
     }
+
 }

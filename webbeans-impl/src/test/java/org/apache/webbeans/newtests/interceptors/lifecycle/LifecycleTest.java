@@ -73,4 +73,35 @@ public class LifecycleTest extends AbstractUnitTest
         
     }
     
+    @Test
+    public void testNotannotated()
+    {
+        Collection<URL> beanXmls = new ArrayList<URL>();
+        beanXmls.add(getXMLUrl(PACKAGE_NAME, "LifecycleTest"));
+        
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(NotAnnotatedBean.class);
+        beanClasses.add(LifecycleInterceptor.class);
+        
+        
+        addExtension(new InterceptorExtension());
+        
+        startContainer(beanClasses, beanXmls);        
+        
+        Set<Bean<?>> beans = getBeanManager().getBeans(NotAnnotatedBean.class.getName());
+        Assert.assertNotNull(beans);        
+        Bean<NotAnnotatedBean> notAnnotatedBean = (Bean<NotAnnotatedBean>)beans.iterator().next();
+        
+        CreationalContext<NotAnnotatedBean> ctx = getBeanManager().createCreationalContext(notAnnotatedBean);
+        
+        Object reference = getBeanManager().getReference(notAnnotatedBean, NotAnnotatedBean.class, ctx);
+        Assert.assertNotNull(reference);
+        
+        NotAnnotatedBean nab = (NotAnnotatedBean)reference;
+        nab.sayHello();
+        Assert.assertTrue(NotAnnotatedBean.PC);
+        
+        shutDownContainer();
+    }
+    
 }

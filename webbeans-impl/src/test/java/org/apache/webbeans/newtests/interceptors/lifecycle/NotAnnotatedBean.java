@@ -16,16 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.component.creation;
+package org.apache.webbeans.newtests.interceptors.lifecycle;
 
-import org.apache.webbeans.component.ManagedBean;
+import javax.inject.Named;
 
-public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
+@Named("org.apache.webbeans.newtests.interceptors.lifecycle.NotAnnotatedBean")
+public class NotAnnotatedBean
 {
-
-    public AnnotatedTypeBeanCreatorImpl(ManagedBean<T> managedBean)
+    public static boolean PC = false;
+    
+    public void sayHello()
     {
-        super(managedBean);
-        setMetaDataProvider(MetaDataProvider.THIRDPARTY);
+        
     }
 }

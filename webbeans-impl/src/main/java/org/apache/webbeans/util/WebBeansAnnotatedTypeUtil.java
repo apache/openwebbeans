@@ -65,9 +65,14 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.DecoratorUtil;
+import org.apache.webbeans.decorator.DecoratorsManager;
+import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
+import org.apache.webbeans.intercept.InterceptorUtil;
+import org.apache.webbeans.intercept.InterceptorsManager;
+import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 
 public final class WebBeansAnnotatedTypeUtil
@@ -758,8 +763,6 @@ public final class WebBeansAnnotatedTypeUtil
         managedBeanCreator.defineProducerFields();           
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
-        managedBeanCreator.defineDecoratorStack();
-        managedBeanCreator.defineInterceptorStack();        
         managedBeanCreator.defineObserverMethods();
                                 
         
@@ -769,5 +772,115 @@ public final class WebBeansAnnotatedTypeUtil
         return managedBean;
     }
     
+    /**
+     * Return true if this annotated type represents a decorator.
+     * @param annotatedType annotated type
+     * @return true if decorator
+     */
+    public static boolean isAnnotatedTypeDecorator(AnnotatedType<?> annotatedType)
+    {
+        if(annotatedType.isAnnotationPresent(Decorator.class))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Return true if this annotated type represents a decorator.
+     * @param annotatedType annotated type
+     * @return true if decorator
+     */
+    public static boolean isAnnotatedTypeDecoratorOrInterceptor(AnnotatedType<?> annotatedType)
+    {
+        if(isAnnotatedTypeDecorator(annotatedType) ||
+                isAnnotatedTypeInterceptor(annotatedType))            
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * Return true if this annotated type represents a decorator.
+     * @param annotatedType annotated type
+     * @return true if decorator
+     */
+    public static boolean isAnnotatedTypeInterceptor(AnnotatedType<?> annotatedType)
+    {
+        if(annotatedType.isAnnotationPresent(Interceptor.class))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * Define decorator bean.
+     * @param <T> type info
+     * @param clazz decorator class
+     */
+    public static <T> void defineDecorator(AnnotatedType<T> annotatedType)
+    {
+        if (DecoratorsManager.getInstance().isDecoratorEnabled(annotatedType.getJavaClass()))
+        {
+            ManagedBean<T> delegate = null;
+            
+            Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
+            for(AnnotatedMethod<? super T> methodA : methods)
+            {
+                Method method = methodA.getJavaMember();
+                if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
+                {
+                    throw new WebBeansConfigurationException("Decorator class : " + annotatedType.getJavaClass() + " can not have producer methods but it has one with name : " + method.getName());
+                }
+                
+                if(AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
+                {
+                    throw new WebBeansConfigurationException("Decorator class : " + annotatedType.getJavaClass() + " can not have observer methods but it has one with name : " + method.getName());
+                }
+                
+            }
+            
+            delegate = defineManagedBean(annotatedType);
+
+            if (delegate != null)
+            {
+                WebBeansDecoratorConfig.configureDecoratorClass(delegate);
+            }
+            else
+            {
+                logger.trace("Unable to configure decorator with class : " + annotatedType.getJavaClass());
+            }
+        }
+    }
+    
+    public static <T> void defineInterceptor(AnnotatedType<T> annotatedType)
+    {
+        Class<?> clazz = annotatedType.getJavaClass();
+        if (InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
+        {
+            ManagedBean<T> delegate = null;
+
+            InterceptorUtil.checkAnnotatedTypeInterceptorConditions(annotatedType);
+            delegate = defineManagedBean(annotatedType);
+
+            if (delegate != null)
+            {
+                WebBeansInterceptorConfig.configureInterceptorClass(delegate, 
+                        AnnotationUtil.getInterceptorBindingMetaAnnotations(annotatedType.getAnnotations().toArray(new Annotation[0])));
+            }
+            else
+            {
+                logger.trace("Unable to configure interceptor with class : " + annotatedType.getJavaClass());
+            }
+        }
+
+    }    
     
 }

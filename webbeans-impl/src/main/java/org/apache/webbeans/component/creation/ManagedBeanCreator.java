@@ -28,9 +28,5 @@ public interface ManagedBeanCreator<T> extends InjectedTargetBeanCreator<T>
      * Define managed bean constructor.
      */
     public void defineConstructor();
-    
-    public void defineInterceptorStack();    
-    
-    public void defineDecoratorStack();    
-    
+        
 }

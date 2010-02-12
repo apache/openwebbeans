@@ -37,6 +37,8 @@ import org.apache.webbeans.util.ClassUtil;
  */
 public class EventImpl<T> implements Event<T>, Serializable
 {
+    private static final long serialVersionUID = -9035218380365451350L;
+
     /**Event binding types*/
     private Annotation[] injectedBindings;
 

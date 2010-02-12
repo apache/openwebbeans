@@ -38,6 +38,7 @@ import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.container.InjectionResolver;
@@ -426,7 +427,7 @@ public final class XMLDefinitionUtil
 
                     XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(type, errorMessage);
 
-                    WebBeansDecoratorConfig.configureXMLDecoratorClass((AbstractBean<Object>) component, model);
+                    WebBeansDecoratorConfig.configureXMLDecoratorClass((AbstractInjectionTargetBean<Object>) component, model);
                 }
                 else
                 {

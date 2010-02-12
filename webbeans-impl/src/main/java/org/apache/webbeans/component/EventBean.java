@@ -41,6 +41,7 @@ public class EventBean<T> extends AbstractBean<Event<T>>
      * @param eventType event type
      * @param definedType webbeans type
      */
+    @SuppressWarnings("serial")
     public EventBean()
     {
         super(WebBeansType.OBSERVABLE,new TypeLiteral<Event<T>>(){}.getRawType());

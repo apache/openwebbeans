@@ -62,7 +62,6 @@ public class XMLStereoTypeModel implements IStereoTypeModel
         List<Element> childs = stereoTypeDecleration.elements();
         if (childs != null && childs.size() > 0)
         {
-            boolean deploymentTypeFound = false;
             boolean scopeTypeFound = false;
 
             for (Element child : childs)

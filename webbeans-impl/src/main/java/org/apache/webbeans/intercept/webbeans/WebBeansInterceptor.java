@@ -26,6 +26,7 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
@@ -34,6 +35,7 @@ import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -72,9 +74,9 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     private Class<?> clazz;
 
     /**Delegate Bean*/
-    private AbstractBean<T> delegateBean;
+    private AbstractInjectionTargetBean<T> delegateBean;
     
-    public WebBeansInterceptor(AbstractBean<T> delegateBean)
+    public WebBeansInterceptor(AbstractInjectionTargetBean<T> delegateBean)
     {
         super(WebBeansType.INTERCEPTOR,delegateBean.getReturnType());
         
@@ -87,6 +89,12 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     {
         return this.delegateBean;
     }
+    
+    public AnnotatedType<T> getAnnotatedType()
+    {
+        return this.delegateBean.getAnnotatedType();
+    }
+    
 
     /**
      * Add new binding type to the interceptor.
@@ -454,4 +462,5 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
     {
         return this.delegateBean.isAlternative();
     }
+
 }

@@ -13,14 +13,20 @@
  */
 package org.apache.webbeans.component;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.InjectionTarget;
+
+import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
+import org.apache.webbeans.intercept.InterceptorData;
 
 /**
- * Defines contract for beans that coud have observable
- * method.
+ * Defines contract for injection target beans.
  * 
  * @version $Rev$ $Date$
  *
@@ -81,8 +87,44 @@ public interface InjectionTargetBean<T>
      * @param creationalContext creational context
      */
     public void injectSuperMethods(T instance, CreationalContext<T> creationalContext);
-
+        
+    public void setInjectionTarget(InjectionTarget<T> injectionTarget);
     
+    public InjectionTarget<T> getInjectionTarget();
+    
+    public Set<Field> getInjectedFields();
+
+    public void addInjectedField(Field field);
+    
+    public Set<Field> getInjectedFromSuperFields();
+
+    public void addInjectedFieldToSuper(Field field);    
+
+    public Set<Method> getInjectedMethods();
+
+    public void addInjectedMethod(Method method);
+
+    public Set<Method> getInjectedFromSuperMethods();
+
+    public void addInjectedMethodToSuper(Method method);
+    
+    public IBeanInheritedMetaData getInheritedMetaData();
+    
+    public void setInheritedMetaData();
+    
+    
+    /**
+     * Gets interceptor stack of bean instance.
+     * @return interceptor stack
+     */
+    public List<InterceptorData> getInterceptorStack();
+    
+    /**
+     * Gets decorator stack of bean instance.
+     * @return decorator stack
+     */
+    public List<Decorator<?>> getDecoratorStack();
+
     /**
      * Calls post constrcut method.
      * 

@@ -744,7 +744,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 }
                 else
                 {
-                    instance = JavassistProxyFactory.createNormalScopedBeanProxy(bean,creationalContext);
+                    instance = JavassistProxyFactory.createNormalScopedBeanProxy((AbstractBean<?>)bean,creationalContext);
                     
                     this.proxyMap.put(bean, instance);   
 
@@ -769,7 +769,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             
             
             instance = context.get((Bean<Object>)bean, (CreationalContext<Object>)creationalContext);     
-            instance = JavassistProxyFactory.createDependentScopedBeanProxy(bean, instance);
+            instance = JavassistProxyFactory.createDependentScopedBeanProxy((AbstractBean<?>)bean, instance);
         }
         
         return instance;

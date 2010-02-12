@@ -36,6 +36,7 @@ import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.xml.XMLManagedBean;
@@ -306,7 +307,7 @@ public abstract class TestContext implements ITestContext
      * @param clazz simple webbeans class
      * @return simple webbean
      */
-    protected <T> AbstractBean<T> defineManagedBean(Class<T> clazz)
+    protected <T> AbstractInjectionTargetBean<T> defineManagedBean(Class<T> clazz)
     {
         ManagedBean<T> bean = null;
 
