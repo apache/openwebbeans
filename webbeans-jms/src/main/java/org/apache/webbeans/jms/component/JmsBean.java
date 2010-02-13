@@ -19,14 +19,14 @@ package org.apache.webbeans.jms.component;
 import java.lang.reflect.Method;
 
 import javax.enterprise.context.spi.CreationalContext;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.util.Closable;
 
-public class JmsBean<T> extends AbstractBean<T> implements JmsBeanMarker
+public class JmsBean<T> extends AbstractOwbBean<T> implements JmsBeanMarker
 {
     private JMSModel jmsModel = null;
     
