@@ -43,7 +43,6 @@ import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -293,7 +292,7 @@ public class BeansDeployer
                         !(bean instanceof NewBean) &&
                         !(bean instanceof EnterpriseBeanMarker))
                 {
-                    WebBeansDecoratorConfig.configureDecarotors((AbstractInjectionTargetBean<Object>)bean);
+                    DefinitionUtil.defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);
                     DefinitionUtil.defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);
                 }
                 

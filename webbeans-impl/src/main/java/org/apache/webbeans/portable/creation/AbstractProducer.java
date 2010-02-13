@@ -19,7 +19,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.OwbBean;
 
 /**
  * Abstract implementation of {@link Producer} contract.
@@ -31,14 +31,14 @@ import org.apache.webbeans.component.AbstractOwbBean;
 public abstract class AbstractProducer<T> implements Producer<T> 
 {
     /**Bean instance*/
-    private AbstractOwbBean<T> bean;
+    private OwbBean<T> bean;
 
     /**
      * Create a new producer with given bean.
      * 
      * @param bean bean instance
      */
-    protected AbstractProducer(AbstractOwbBean<T> bean)
+    protected AbstractProducer(OwbBean<T> bean)
     {
         this.bean = bean;
     }

@@ -50,6 +50,7 @@ import javax.naming.StringRefAddr;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansFinder;
@@ -639,7 +640,15 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
         
         //Owner bean creational context
-        CreationalContextImpl<?> ownerCreationalContextImpl = (CreationalContextImpl<?>)ownerCreationalContext;
+        CreationalContextImpl<?> ownerCreationalContextImpl = null;
+        if(!(ownerCreationalContext instanceof CreationalContextImpl))
+        {
+            ownerCreationalContextImpl = (CreationalContextImpl<?>)CreationalContextFactory.getInstance().wrappedCreationalContext(ownerCreationalContext, injectionPoint.getBean());
+        }
+        else
+        {
+            ownerCreationalContextImpl = (CreationalContextImpl<?>)ownerCreationalContext;
+        }
                                 
         //Find the injection point Bean
         Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
@@ -647,7 +656,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         if(WebBeansUtil.isDependent(injectedBean))
         {        
-            injectedCreational.setOwnerCreational((CreationalContextImpl<?>)ownerCreationalContext);            
+            injectedCreational.setOwnerCreational(ownerCreationalContextImpl);            
             //Creating a new creational context for target bean instance
             instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
             
@@ -723,6 +732,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             
         }
         
+        if(!(creationalContext instanceof CreationalContextImpl))
+        {
+            creationalContext = CreationalContextFactory.getInstance().wrappedCreationalContext(creationalContext, bean);
+        }        
+        
+        
         //Get bean context
         context = getContext(bean.getScope());
         
@@ -749,11 +764,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                     this.proxyMap.put(bean, instance);   
 
                     //push this proxy instance into creational context
-                    if(creationalContext instanceof CreationalContextImpl)
-                    {
-                        CreationalContextImpl<Object> temp = (CreationalContextImpl<Object>)creationalContext;
-                        temp.setProxyInstance(instance);
-                    }
+                    CreationalContextImpl<Object> temp = (CreationalContextImpl<Object>)creationalContext;
+                    temp.setProxyInstance(instance);
                 }
             }            
         }
@@ -946,7 +958,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
-        return new InjectionTargetProducer<T>(WebBeansAnnotatedTypeUtil.defineManagedBean(type));
+        InjectionTargetBean<T> bean = WebBeansAnnotatedTypeUtil.defineManagedBean(type);
+        bean.setFullyInitialize(false);
+        
+        return new InjectionTargetProducer<T>(bean);
     }
 
     @Override

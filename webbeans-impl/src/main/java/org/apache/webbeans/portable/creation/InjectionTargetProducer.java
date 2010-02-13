@@ -16,7 +16,6 @@ package org.apache.webbeans.portable.creation;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionTarget;
 
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 
 /**
@@ -28,7 +27,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
  */
 public class InjectionTargetProducer<T> extends AbstractProducer<T> implements InjectionTarget<T>
 {
-    public InjectionTargetProducer(AbstractInjectionTargetBean<T> bean)
+    public InjectionTargetProducer(InjectionTargetBean<T> bean)
     {
         super(bean);
     }

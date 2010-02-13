@@ -196,4 +196,17 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
      * @return annotated type
      */
     public AnnotatedType<T> getAnnotatedType();    
+    
+    /**
+     * If fully initialize then fully initialize instance
+     * otherwise just create instance.
+     * @param initialize fully initialize
+     */
+    public void setFullyInitialize(boolean initialize);
+    
+    /**
+     * Gets fully initialize.
+     * @return fully initialize
+     */
+    public boolean isFullyInitialize();
 }

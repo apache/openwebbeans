@@ -60,6 +60,7 @@ import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -1048,6 +1049,10 @@ public final class DefinitionUtil
         WebBeansInterceptorConfig.configure(bean, bean.getInterceptorStack());
     }
 
+    public static void defineDecoratorStack(AbstractInjectionTargetBean<?> bean)
+    {
+        WebBeansDecoratorConfig.configureDecarotors((AbstractInjectionTargetBean<Object>)bean);
+    }
 
     public static <T> Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> component, Class<T> clazz)
     {

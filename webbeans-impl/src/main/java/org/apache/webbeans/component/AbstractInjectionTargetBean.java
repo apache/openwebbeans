@@ -75,6 +75,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     /**Annotated type for bean*/
     private AnnotatedType<T> annotatedType;
     
+    /**Fully initialize, true as default*/
+    private boolean fullyInitialize = true;
+    
     /**
      * Holds the all of the interceptor related data, contains around-invoke,
      * post-construct and pre-destroy
@@ -147,6 +150,11 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         beforeConstructor();
 
         T instance = createComponentInstance(creationalContext);
+        
+        if(!isFullyInitialize())
+        {
+            return instance;
+        }
                 
         //Push instance into creational context, this is necessary because
         //Context objects look for instance in the interceptors. If we do not
@@ -611,4 +619,22 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     {
         this.annotatedType = annotatedType;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setFullyInitialize(boolean initialize)
+    {
+        this.fullyInitialize = initialize;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFullyInitialize()
+    {
+        return this.fullyInitialize;
+    }    
 }

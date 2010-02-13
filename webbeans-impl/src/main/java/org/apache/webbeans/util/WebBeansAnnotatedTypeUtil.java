@@ -742,7 +742,8 @@ public final class WebBeansAnnotatedTypeUtil
     {
         Class<T> clazz = type.getJavaClass();
         
-        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);                  
+        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);    
+        managedBean.setAnnotatedType(type);
         AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(managedBean);            
         managedBeanCreator.setAnnotatedType(type);
         
@@ -765,6 +766,8 @@ public final class WebBeansAnnotatedTypeUtil
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
+        DefinitionUtil.defineDecoratorStack(managedBean);
+        DefinitionUtil.defineBeanInterceptorStack(managedBean);
                                 
         
         DecoratorUtil.checkManagedBeanDecoratorConditions(managedBean);
