@@ -18,8 +18,7 @@ import java.lang.reflect.Method;
 import javax.enterprise.inject.spi.Bean;
 import javax.persistence.Entity;
 
-
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
@@ -33,7 +32,7 @@ public class BeansImpl implements Beans
     @SuppressWarnings("unchecked")
     public <T> Bean<T> createProducerMethodBean(Method method, Bean<?> declaringBean)
     {
-        return DefinitionUtil.createProducerComponent((Class<T>)method.getReturnType(), method, (AbstractBean<?>)declaringBean, false);
+        return DefinitionUtil.createProducerComponent((Class<T>)method.getReturnType(), method, (InjectionTargetBean<?>)declaringBean, false);
         
     }
 
