@@ -36,7 +36,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -45,7 +45,7 @@ public class MockManager implements BeanManager
 {
     private BeanManagerImpl manager = null;
 
-    private List<AbstractBean<?>> componentList = new ArrayList<AbstractBean<?>>();
+    private List<AbstractOwbBean<?>> componentList = new ArrayList<AbstractOwbBean<?>>();
 
     public MockManager()
     {
@@ -64,12 +64,12 @@ public class MockManager implements BeanManager
         this.manager = BeanManagerImpl.getManager();        
     }
 
-    public List<AbstractBean<?>> getComponents()
+    public List<AbstractOwbBean<?>> getComponents()
     {
         return componentList;
     }
 
-    public AbstractBean<?> getComponent(int i)
+    public AbstractOwbBean<?> getComponent(int i)
     {
         return componentList.get(i);
     }

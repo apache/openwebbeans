@@ -37,8 +37,9 @@ import javax.inject.Scope;
 import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.WebBeansConstants;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.container.InjectionResolver;
@@ -155,7 +156,7 @@ public final class XMLDefinitionUtil
      * @return applicable annotation class for given defineType parameter from
      *         the given set
      */
-    public static <T> Class<? extends Annotation> defineXMLTypeMetaData(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, Class<? extends Annotation> defineType, String errorMessage)
+    public static <T> Class<? extends Annotation> defineXMLTypeMetaData(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet, Class<? extends Annotation> defineType, String errorMessage)
     {
         // Found annotation for given defineType parameter
         Class<? extends Annotation> metaType = null;
@@ -182,7 +183,7 @@ public final class XMLDefinitionUtil
         return metaType;
     }
 
-    public static <T> boolean defineXMLBindingType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
+    public static <T> boolean defineXMLBindingType(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         boolean found = false;
@@ -298,7 +299,7 @@ public final class XMLDefinitionUtil
      * @param component webbeans component
      * @param annotationSet set of type-level metadata annotation set
      */
-    public static <T> void defineXMLStereoType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet)
+    public static <T> void defineXMLStereoType(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         while (it.hasNext())
@@ -311,7 +312,7 @@ public final class XMLDefinitionUtil
         }
     }
 
-    public static <T> boolean defineXMLName(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet)
+    public static <T> boolean defineXMLName(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         while (it.hasNext())
@@ -551,7 +552,7 @@ public final class XMLDefinitionUtil
      * @return new xml defines producer method component
      * @see XMLProducerBean
      */
-    private static <T> XMLProducerBean<T> configureProducerMethod(AbstractBean<?> parentComponent, Method producesMethod, List<XMLInjectionPointModel> injectedParameters, Class<T> type, Element arrayElement, Element typeElement, String errorMessage)
+    private static <T> XMLProducerBean<T> configureProducerMethod(InjectionTargetBean<?> parentComponent, Method producesMethod, List<XMLInjectionPointModel> injectedParameters, Class<T> type, Element arrayElement, Element typeElement, String errorMessage)
     {
         /* New producer webbeans component */
         XMLProducerBean<T> producerComponentImpl = new XMLProducerBean<T>(parentComponent, type);
@@ -760,7 +761,7 @@ public final class XMLDefinitionUtil
         }
     }
     
-    public static InjectionPoint getXMLMethodInjectionPoint(AbstractBean<?> component, XMLInjectionPointModel model, Method method)
+    public static InjectionPoint getXMLMethodInjectionPoint(AbstractOwbBean<?> component, XMLInjectionPointModel model, Method method)
     {
         Asserts.assertNotNull(model,"model parameter can not be null");
         Asserts.assertNotNull(method,"method parameter can not be null");

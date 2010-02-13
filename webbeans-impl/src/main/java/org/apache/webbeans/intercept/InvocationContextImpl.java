@@ -24,7 +24,7 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 
 /**
@@ -67,7 +67,7 @@ public class InvocationContextImpl implements InvocationContext
      * @param datas interceptor stack
      * @param type interceptor type
      */
-    public InvocationContextImpl(AbstractBean<?> bean, Object instance, Method method, Object[] parameters, List<InterceptorData> datas, InterceptorType type)
+    public InvocationContextImpl(AbstractOwbBean<?> bean, Object instance, Method method, Object[] parameters, List<InterceptorData> datas, InterceptorType type)
     {
         this.method = method;
         this.parameters = parameters;
@@ -91,7 +91,7 @@ public class InvocationContextImpl implements InvocationContext
 
     
     @SuppressWarnings("unchecked")
-    private void configureTarget(AbstractBean<?> bean)
+    private void configureTarget(AbstractOwbBean<?> bean)
     {
         Context webbeansContext = BeanManagerImpl.getManager().getContext(bean.getScope());
         

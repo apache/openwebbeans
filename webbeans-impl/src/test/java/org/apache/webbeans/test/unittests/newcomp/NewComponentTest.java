@@ -17,7 +17,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -54,7 +54,7 @@ public class NewComponentTest extends TestContext
 
         ContextFactory.initRequestContext(null);
 
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         Assert.assertEquals(3, comps.size());
 

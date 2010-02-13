@@ -98,10 +98,10 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
-import org.apache.webbeans.component.BaseBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.component.ConversationBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
@@ -1394,7 +1394,7 @@ public final class WebBeansUtil
      * @param anns annotation array
      * @return true if array contains the StereoType meta annotation
      */
-    public static boolean isComponentHasStereoType(BaseBean<?> component)
+    public static boolean isComponentHasStereoType(OwbBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
@@ -1414,7 +1414,7 @@ public final class WebBeansUtil
      * @param bean bean instance
      * @return bean stereotypes
      */
-    public static Annotation[] getComponentStereoTypes(BaseBean<?> bean)
+    public static Annotation[] getComponentStereoTypes(OwbBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean parameter can not be null");
         if (isComponentHasStereoType(bean))
@@ -1434,7 +1434,7 @@ public final class WebBeansUtil
      * @param bean bean instance
      * @return true if name exists
      */
-    public static boolean hasNamedOnStereoTypes(BaseBean<?> bean)
+    public static boolean hasNamedOnStereoTypes(OwbBean<?> bean)
     {
         Annotation[] types = getComponentStereoTypes(bean);
         
@@ -1599,7 +1599,7 @@ public final class WebBeansUtil
             
             for(Bean<?> candidates : resolvers)
             {
-                AbstractBean<?> candidate = (AbstractBean<?>)candidates;
+                AbstractOwbBean<?> candidate = (AbstractOwbBean<?>)candidates;
                 
                 if(!(candidate instanceof NewBean))
                 {
@@ -1613,9 +1613,9 @@ public final class WebBeansUtil
                         
             if (superBean != null)
             {
-                ((AbstractBean<?>)superBean).setEnabled(false);
+                ((AbstractOwbBean<?>)superBean).setEnabled(false);
                                 
-                AbstractBean<?> comp = (AbstractBean<?>)specialized;
+                AbstractOwbBean<?> comp = (AbstractOwbBean<?>)specialized;
 
                 if(superBean.getName() != null)
                 {
@@ -1650,7 +1650,7 @@ public final class WebBeansUtil
         
         while (it.hasNext())
         {
-            AbstractBean<?> bean = (AbstractBean<?>)it.next();
+            AbstractOwbBean<?> bean = (AbstractOwbBean<?>)it.next();
             
             if (bean.getTypes().contains(clazz))
             {
@@ -1711,7 +1711,7 @@ public final class WebBeansUtil
 
     }
 
-    public static void checkNullable(Class<?> type, AbstractBean<?> component)
+    public static void checkNullable(Class<?> type, AbstractOwbBean<?> component)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
         Asserts.assertNotNull(component, "component parameter can not be null");
@@ -1735,7 +1735,7 @@ public final class WebBeansUtil
      *         parent also has name
      * @throws WebBeansConfigurationException any other exceptions
      */
-    public static void configureProducerSpecialization(AbstractBean<?> component, Method method, Class<?> superClass)
+    public static void configureProducerSpecialization(AbstractOwbBean<?> component, Method method, Class<?> superClass)
     {
         Method superMethod = ClassUtil.getClassMethodWithTypes(superClass, method.getName(), Arrays.asList(method.getParameterTypes()));
         if (superMethod == null)
@@ -1768,7 +1768,7 @@ public final class WebBeansUtil
      * @param method specialized producer method
      * @param superMethod overriden super producer method
      */
-    public static void configuredProducerSpecializedName(AbstractBean<?> component,Method method,Method superMethod)
+    public static void configuredProducerSpecializedName(AbstractOwbBean<?> component,Method method,Method superMethod)
     {
         Asserts.assertNotNull(component,"component parameter can not be null");
         Asserts.assertNotNull(method,"method parameter can not be null");
@@ -1952,7 +1952,7 @@ public final class WebBeansUtil
         return true;
     }
 
-    public static <T> void checkPassivationScope(AbstractBean<T> component, Class<? extends Annotation> scope)
+    public static <T> void checkPassivationScope(AbstractOwbBean<T> component, Class<? extends Annotation> scope)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
@@ -2088,7 +2088,7 @@ public final class WebBeansUtil
         }
     }
     
-    public static boolean isManagedBean(AbstractBean<?> component)
+    public static boolean isManagedBean(AbstractOwbBean<?> component)
     {
         if(component.getWebBeansType().equals(WebBeansType.MANAGED) ||
                 component.getWebBeansType().equals(WebBeansType.INTERCEPTOR) ||
@@ -2100,7 +2100,7 @@ public final class WebBeansUtil
         return false;
     }
     
-    public static boolean isProducerBean(AbstractBean<?> bean)
+    public static boolean isProducerBean(AbstractOwbBean<?> bean)
     {
         if(bean.getWebBeansType().equals(WebBeansType.PRODUCERFIELD) ||
                 bean.getWebBeansType().equals(WebBeansType.PRODUCERMETHOD))
@@ -2116,7 +2116,7 @@ public final class WebBeansUtil
      * @param bean bean instance
      * @return true if bean is an enterprise bean
      */
-    public static boolean isEnterpriseBean(AbstractBean<?> bean)
+    public static boolean isEnterpriseBean(AbstractOwbBean<?> bean)
     {
         Asserts.assertNotNull(bean,"Bean is null");
         
@@ -2348,7 +2348,7 @@ public final class WebBeansUtil
      * Sets bean enabled flag.
      * @param bean bean instance
      */
-    public static void setInjectionTargetBeanEnableFlag(AbstractBean<?> bean)
+    public static void setInjectionTargetBeanEnableFlag(InjectionTargetBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean can not be null");
         
@@ -2368,7 +2368,7 @@ public final class WebBeansUtil
     }
     
    
-    public static boolean hasInjectionTargetBeanAnnotatedWithAlternative(AbstractBean<?> bean)
+    public static boolean hasInjectionTargetBeanAnnotatedWithAlternative(InjectionTargetBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean can not be null");
         
@@ -2402,7 +2402,7 @@ public final class WebBeansUtil
         
     }
     
-    public static void setBeanEnableFlagForProducerBean(AbstractBean<?> parent,AbstractProducerBean<?> producer, Annotation[] annotations)
+    public static void setBeanEnableFlagForProducerBean(InjectionTargetBean<?> parent,AbstractProducerBean<?> producer, Annotation[] annotations)
     {
         Asserts.assertNotNull(parent, "parent can not be null");
         Asserts.assertNotNull(producer, "producer can not be null");
@@ -2587,11 +2587,11 @@ public final class WebBeansUtil
     {
         if(contextual instanceof Bean)
         {
-            if(contextual instanceof AbstractBean)
+            if(contextual instanceof AbstractOwbBean)
             {
-                if( ((AbstractBean<?>)contextual).isPassivationCapable())
+                if( ((AbstractOwbBean<?>)contextual).isPassivationCapable())
                 {
-                    return ((AbstractBean<?>)contextual).getId();
+                    return ((AbstractOwbBean<?>)contextual).getId();
                 }
             }
             

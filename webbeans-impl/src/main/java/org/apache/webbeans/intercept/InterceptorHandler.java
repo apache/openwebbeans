@@ -31,7 +31,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.BeansDeployer;
@@ -94,7 +94,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * instantiated by the container first time. This method can be found in the
  * AbstractInjectionTargetBean" class "afterConstructor()" method. Actual
  * configuration is done by the
- * {@link DefinitionUtil#defineBeanInterceptorStack(AbstractBean)} and
+ * {@link DefinitionUtil#defineBeanInterceptorStack(AbstractOwbBean)} and
  * {@link DefinitionUtil#defineWebBeanDecoratorStack}. In
  * "DefinitionUtil.defineSimpleWebBeanInterceptorStack", firstly it configures
  * "EJB spec. interceptors" after that configures "JSR-299 spec. interceptors."
@@ -142,9 +142,9 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
     
-    protected AbstractBean<?> bean = null;
+    protected AbstractOwbBean<?> bean = null;
 
-    protected InterceptorHandler(AbstractBean<?> bean)
+    protected InterceptorHandler(AbstractOwbBean<?> bean)
     {
         this.bean = bean;
     }

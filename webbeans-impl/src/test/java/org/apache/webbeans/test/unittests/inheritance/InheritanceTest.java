@@ -21,7 +21,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.inheritance.InheritFromParentComponent;
@@ -48,7 +48,7 @@ public class InheritanceTest extends TestContext
     @Test
     public void testInheritedComponentMetaData()
     {
-        AbstractBean<InheritFromParentComponent> component = defineManagedBean(InheritFromParentComponent.class);
+        AbstractOwbBean<InheritFromParentComponent> component = defineManagedBean(InheritFromParentComponent.class);
         
         BeanInheritedMetaData<InheritFromParentComponent> data = new BeanInheritedMetaData<InheritFromParentComponent>(component);
         

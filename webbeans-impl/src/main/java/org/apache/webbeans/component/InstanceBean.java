@@ -26,7 +26,7 @@ import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.inject.instance.InstanceFactory;
 
-public class InstanceBean<T> extends AbstractBean<Instance<T>>
+public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
 {
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     

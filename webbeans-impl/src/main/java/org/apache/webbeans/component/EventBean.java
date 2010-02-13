@@ -30,7 +30,7 @@ import org.apache.webbeans.exception.WebBeansException;
  * 
  * @version $Rev$ $Date$
  */
-public class EventBean<T> extends AbstractBean<Event<T>>
+public class EventBean<T> extends AbstractOwbBean<Event<T>>
 {
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
 

@@ -21,7 +21,7 @@ import java.util.List;
 
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.util.Asserts;
@@ -40,7 +40,7 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
      * @param constructor bean constructor
      * @param owner constructor owner beans
      */
-    public XMLInjectableConstructor(Constructor<T> constructor, AbstractBean<?> owner,CreationalContext<?> creationalContext)
+    public XMLInjectableConstructor(Constructor<T> constructor, AbstractOwbBean<?> owner,CreationalContext<?> creationalContext)
     {
         super(constructor, owner,creationalContext);
     }

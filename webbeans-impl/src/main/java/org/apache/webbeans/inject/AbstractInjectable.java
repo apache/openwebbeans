@@ -25,10 +25,10 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InstanceBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -51,7 +51,7 @@ public abstract class AbstractInjectable implements Injectable
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(AbstractInjectable.class);
     
     /** Owner bean of the injection point*/
-    protected AbstractBean<?> injectionOwnerBean;
+    protected OwbBean<?> injectionOwnerBean;
     
     /**Creational context instance that is passed to bean's create*/
     protected CreationalContext<?> injectionOwnerCreationalContext;
@@ -65,7 +65,7 @@ public abstract class AbstractInjectable implements Injectable
      * @param bean owner bean
      * @param creaitonalContext creational context instance
      */
-    protected AbstractInjectable(AbstractBean<?> injectionOwnerBean, CreationalContext<?> injectionOwnerCreationalContext)
+    protected AbstractInjectable(OwbBean<?> injectionOwnerBean, CreationalContext<?> injectionOwnerCreationalContext)
     {
         this.injectionOwnerBean = injectionOwnerBean;
         this.injectionOwnerCreationalContext = injectionOwnerCreationalContext;
@@ -169,7 +169,7 @@ public abstract class AbstractInjectable implements Injectable
      * 
      * @return the component
      */
-    public AbstractBean<?> getInjectionOwnerComponent()
+    public OwbBean<?> getInjectionOwnerComponent()
     {
         return this.injectionOwnerBean;
     }

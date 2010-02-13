@@ -18,7 +18,7 @@ import java.lang.reflect.Field;
 
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 
@@ -26,7 +26,7 @@ public class XMLInjectableField extends InjectableField
 {
     private XMLInjectionPointModel injectionPointModel = null;
 
-    public XMLInjectableField(Field field, Object instance, AbstractBean<?> owner, XMLInjectionPointModel model,CreationalContext<?> creationalContext)
+    public XMLInjectableField(Field field, Object instance, AbstractOwbBean<?> owner, XMLInjectionPointModel model,CreationalContext<?> creationalContext)
     {
         super(field, instance, owner,creationalContext);
         this.injectionPointModel = model;

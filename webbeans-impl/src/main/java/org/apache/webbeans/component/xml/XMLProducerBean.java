@@ -20,7 +20,7 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.inject.xml.XMLInjectableMethods;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
@@ -36,7 +36,7 @@ public class XMLProducerBean<T> extends ProducerMethodBean<T>
     
     private CreationalContext<?> creationalContext;
 
-    public XMLProducerBean(AbstractBean<?> parent, Class<T> returnType)
+    public XMLProducerBean(InjectionTargetBean<?> parent, Class<T> returnType)
     {
         super(parent, returnType);
         this.ownerComponent = parent;

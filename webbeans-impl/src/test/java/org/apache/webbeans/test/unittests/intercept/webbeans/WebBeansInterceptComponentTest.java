@@ -19,7 +19,7 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.TestContext;
@@ -87,7 +87,7 @@ public class WebBeansInterceptComponentTest extends TestContext
         defineManagedBean(WInterceptorComponent.class);
 
         ContextFactory.initRequestContext(null);
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         Object object = getManager().getInstance(comps.get(0));
 
@@ -111,7 +111,7 @@ public class WebBeansInterceptComponentTest extends TestContext
         defineManagedBean(WMetaInterceptorComponent.class);
 
         ContextFactory.initRequestContext(null);
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         Object object = getManager().getInstance(comps.get(0));
 

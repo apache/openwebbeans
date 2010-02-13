@@ -25,10 +25,10 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.PassivationCapable;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 
-public class ThirdpartyBeanImpl<T> extends AbstractBean<T>
+public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T>
 {
     private Bean<T> bean = null;
     

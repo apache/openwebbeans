@@ -35,7 +35,7 @@ import javax.servlet.http.HttpSession;
 import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -319,7 +319,7 @@ public abstract class TestContext implements ITestContext
             WebBeansDecoratorConfig.configureDecarotors(bean);
             DefinitionUtil.defineBeanInterceptorStack(bean);
 
-            getComponents().add((AbstractBean<?>) bean);
+            getComponents().add((AbstractOwbBean<?>) bean);
             manager.addBean(bean);
             
             GProcessAnnotatedType type = new GProcessAnnotatedType(AnnotatedElementFactory.newAnnotatedType(clazz));
@@ -377,7 +377,7 @@ public abstract class TestContext implements ITestContext
      * @return XMLComponentImpl<?> with the WebBean definition
      */
     @SuppressWarnings("unchecked")
-    protected AbstractBean<?> getWebBeanFromXml(String xmlResourcePath, Class<?> desiredClazz, Annotation... bindings)
+    protected AbstractOwbBean<?> getWebBeanFromXml(String xmlResourcePath, Class<?> desiredClazz, Annotation... bindings)
     {
         InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
         Assert.assertNotNull(stream);
@@ -394,7 +394,7 @@ public abstract class TestContext implements ITestContext
         Set<Bean<?>> beans = getManager().getBeans(desiredClazz, bindings);
         if (beans != null && beans.size() == 1)
         {
-            return (AbstractBean<?>) beans.iterator().next();
+            return (AbstractOwbBean<?>) beans.iterator().next();
         }
         return null;
     }
@@ -406,7 +406,7 @@ public abstract class TestContext implements ITestContext
      * @return the new interceptor
      */
     @SuppressWarnings("unchecked")
-    protected <T> AbstractBean<T> defineInterceptor(Class<T> clazz)
+    protected <T> AbstractOwbBean<T> defineInterceptor(Class<T> clazz)
     {
         ManagedBean<T> component = null;
 
@@ -429,7 +429,7 @@ public abstract class TestContext implements ITestContext
      * @return the new decorator
      */
     @SuppressWarnings("unchecked")
-    protected <T> AbstractBean<T> defineDecorator(Class<T> clazz)
+    protected <T> AbstractOwbBean<T> defineDecorator(Class<T> clazz)
     {
         ManagedBean<T> component = null;
 
@@ -462,7 +462,7 @@ public abstract class TestContext implements ITestContext
      * @param i ith component in the {@link MockManager}
      * @return the ith component in the list
      */
-    protected AbstractBean<?> getComponent(int i)
+    protected AbstractOwbBean<?> getComponent(int i)
     {
         return manager.getComponent(i);
     }
@@ -472,7 +472,7 @@ public abstract class TestContext implements ITestContext
      * 
      * @return all components
      */
-    protected List<AbstractBean<?>> getComponents()
+    protected List<AbstractOwbBean<?>> getComponents()
     {
         return manager.getComponents();
     }

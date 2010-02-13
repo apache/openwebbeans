@@ -32,9 +32,9 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
-import org.apache.webbeans.component.AbstractBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -643,7 +643,7 @@ public class BeansDeployer
      */
     protected <T> void defineEnterpriseWebBean(Class<T> clazz)
     {
-        AbstractBean<T> bean = (AbstractBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz);
+        InjectionTargetBean<T> bean = (InjectionTargetBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz);
         WebBeansUtil.setInjectionTargetBeanEnableFlag(bean);
     }
 }

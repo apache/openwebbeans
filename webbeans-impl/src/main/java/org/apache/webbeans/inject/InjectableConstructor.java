@@ -21,7 +21,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.exception.WebBeansException;
 
@@ -43,7 +43,7 @@ public class InjectableConstructor<T> extends AbstractInjectable
      * 
      * @param cons injectable constructor
      */
-    public InjectableConstructor(Constructor<T> cons, AbstractBean<?> owner,CreationalContext<?> creationalContext)
+    public InjectableConstructor(Constructor<T> cons, AbstractOwbBean<?> owner,CreationalContext<?> creationalContext)
     {
         super(owner,creationalContext);
         this.con = cons;

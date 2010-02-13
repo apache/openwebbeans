@@ -18,7 +18,7 @@ import java.lang.reflect.Field;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
@@ -32,7 +32,7 @@ public class InjectableField extends AbstractInjectable
     protected Field field;
     protected Object instance;
 
-    public InjectableField(Field field, Object instance, AbstractBean<?> owner,CreationalContext<?> creationalContext)
+    public InjectableField(Field field, Object instance, AbstractOwbBean<?> owner,CreationalContext<?> creationalContext)
     {
         super(owner,creationalContext);
         this.field = field;

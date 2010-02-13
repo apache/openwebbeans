@@ -38,7 +38,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
@@ -156,8 +156,8 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     {
         logger.trace(OWBLogConst.TRACE_0001, new Object[]{event.toString()});
         
-        AbstractBean<Object> baseComponent = (AbstractBean<Object>) bean;
-        AbstractBean<Object> specializedComponent = null;
+        AbstractOwbBean<Object> baseComponent = (AbstractOwbBean<Object>) bean;
+        AbstractOwbBean<Object> specializedComponent = null;
         Object object = null;
         
         CreationalContext<Object> creationalContext = null;
@@ -184,7 +184,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             else
             {
                 BeanManagerImpl manager = BeanManagerImpl.getManager();
-                specializedComponent = (AbstractBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
+                specializedComponent = (AbstractOwbBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
                 Context context = manager.getContext(specializedComponent.getScope());
                 
                 creationalContext = manager.createCreationalContext(specializedComponent);

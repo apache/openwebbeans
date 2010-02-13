@@ -19,7 +19,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
@@ -53,7 +53,7 @@ public class DisposalInjectedComponentTest extends TestContext
         defineManagedBean(ServiceImpl1.class);
         defineManagedBean(DisposalMethodComponent.class);
 
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
         ContextFactory.initApplicationContext(null);

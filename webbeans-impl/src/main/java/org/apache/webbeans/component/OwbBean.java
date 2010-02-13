@@ -22,63 +22,27 @@ import javax.enterprise.inject.spi.*;
 
 /**
  * OWB specific extension of the {@link Bean} interface.
- * It is used internally. Do not use it. Instead use {@link AbstractBean}
+ * It is used internally. Do not use it. Instead use {@link AbstractOwbBean}
  * for extension.
  * 
  * @version $Rev$ $Date$
  * <T> bean class
  */
-public abstract class BaseBean<T> implements Bean<T>
-{
-    /**Bean Manager*/
-    private final BeanManager manager;
-
-    /**
-     * Creates a new bean instance with given manager.
-     * 
-     * @param manager bean manager
-     */
-    protected BaseBean(BeanManager manager)
-    {
-        this.manager = manager;
-    }
-    
-    /**
-     * Gets manager instance
-     * 
-     * @return manager instance
-     */
-    protected BeanManager getManager()
-    {
-        return manager;
-    }
-        
+public interface OwbBean<T> extends Bean<T>
+{        
     /**
      * Returns scope type annotation.
      * 
      * @return scope type annotation
      */
-    public abstract Annotation getImplScopeType();
+    public Annotation getImplScopeType();
 
     /**
      * Sets bean scope type annotation.
      * 
      * @param scopeType bean scope type annotation
      */
-    public abstract void setImplScopeType(Annotation scopeType);
-    
-    /**
-     * Sets annotated type.
-     * @param annotatedType annotated type
-     */
-    public abstract void setAnnotatedType(AnnotatedType<T> annotatedType);    
-    
-    /**
-     * Gets annotated type.
-     * @return annotated type
-     */
-    public abstract AnnotatedType<T> getAnnotatedType();
-    
+    public void setImplScopeType(Annotation scopeType);    
 
     /**
      * Returns bean type.
@@ -86,14 +50,14 @@ public abstract class BaseBean<T> implements Bean<T>
      * @return webbeans type
      * @see WebBeansType
      */
-    public abstract WebBeansType getWebBeansType();
+    public WebBeansType getWebBeansType();
 
     /**
      * Adds qualifier.
      * 
      * @param qualifier bean qualifier
      */
-    public abstract void addQualifier(Annotation qualifier);
+    public void addQualifier(Annotation qualifier);
     
     /**
      * Returns true if bean is capable of
@@ -101,47 +65,47 @@ public abstract class BaseBean<T> implements Bean<T>
      * 
      * @return true if bean is serializable
      */
-    public abstract boolean isSerializable();    
+    public boolean isSerializable();    
 
     /**
      * Adds new stereotype annotation.
      * 
      * @param stereoType stereotype annotation
      */
-    public abstract void addStereoType(Annotation stereoType);
+    public void addStereoType(Annotation stereoType);
 
     /**
      * Adds new api type.
      * 
      * @param apiType api type
      */
-    public abstract void addApiType(Class<?> apiType);
+    public void addApiType(Class<?> apiType);
     
     /**
      * Adds new injection point.
      * 
      * @param injectionPoint injection point
      */
-    public abstract void addInjectionPoint(InjectionPoint injectionPoint);
+    public void addInjectionPoint(InjectionPoint injectionPoint);
 
     /**
      * Returns set of qualifier annotations.
      * 
      * @return set of qualifier annotations
      */
-    public abstract Set<Annotation> getImplQualifiers();
+    public Set<Annotation> getImplQualifiers();
 
     /**
      * Gets stereotypes annotations.
      */
-    public abstract Set<Annotation> getOwbStereotypes();
+    public Set<Annotation> getOwbStereotypes();
 
     /**
      * Sets name of the bean.
      * 
      * @param name bean name
      */
-    public abstract void setName(String name);
+    public void setName(String name);
     
     /**
      * Gets injection points for given member.
@@ -152,60 +116,60 @@ public abstract class BaseBean<T> implements Bean<T>
      * @param member java member
      * @return injection points for given member
      */
-    public abstract List<InjectionPoint> getInjectionPoint(Member member);
+    public List<InjectionPoint> getInjectionPoint(Member member);
 
     /**
      * Returns bean class type
      * @return bean class type
      */
-    public abstract Class<T> getReturnType();
+    public Class<T> getReturnType();
 
     /**
      * Sets serializable flag.
      * @param serializable flag
      */
-    public abstract void setSerializable(boolean serializable);
+    public void setSerializable(boolean serializable);
 
     /**
      * Set nullable flag.
      * @param nullable flag
      */
-    public abstract void setNullable(boolean nullable);
+    public void setNullable(boolean nullable);
     
     /**
      * Set specialized flag.
      * @param specialized flag
      */
-    public abstract void setSpecializedBean(boolean specialized);
+    public void setSpecializedBean(boolean specialized);
     
     /**
      * Returns true if bean is a specialized bean, false otherwise.
      * @return true if bean is a specialized bean
      */
-    public abstract boolean isSpecializedBean();
+    public boolean isSpecializedBean();
     
     /**
      * Set enableed flag.
      * @param enabled flag
      */
-    public abstract void setEnabled(boolean enabled);    
+    public void setEnabled(boolean enabled);    
     
     /**
      * Bean is enabled or not.
      * @return true if enabled
      */    
-    public abstract boolean isEnabled();
+    public boolean isEnabled();
     
     /**
      * Gets id of the bean.
      * @return id of the bean
      */
-    public abstract String getId();
+    public String getId();
     
     /**
      * True if passivation capable false otherwise.
      * @return true if this bean is passivation capable
      */
-    public abstract boolean isPassivationCapable();
+    public boolean isPassivationCapable();
     
 }

@@ -23,7 +23,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 
 
-public class InjectionPointBean extends AbstractBean<InjectionPoint>
+public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 {
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     

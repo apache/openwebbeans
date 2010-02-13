@@ -16,7 +16,7 @@ package org.apache.webbeans.component.creation;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Producer;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 
 /**
  * Contract for {@link Bean} creation.
@@ -117,7 +117,7 @@ public interface BeanCreator<T> extends Producer<T>
      * 
      * @return bean instance
      */
-    public AbstractBean<T> getBean();
+    public AbstractOwbBean<T> getBean();
     
     /**
      * Returns producer instance is set or not.

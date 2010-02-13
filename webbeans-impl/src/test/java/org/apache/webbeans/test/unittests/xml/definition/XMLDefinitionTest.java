@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests.xml.definition;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -147,7 +147,7 @@ public class XMLDefinitionTest extends TestContext
 
         ContextFactory.initRequestContext(null);
 
-        AbstractBean<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml", TstBeanConstructor.class);
+        AbstractOwbBean<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml", TstBeanConstructor.class);
 
         Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
         Assert.assertNotNull(instance);

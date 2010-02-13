@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.ProcessInjectionTarget;
 
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -32,7 +34,7 @@ import org.apache.webbeans.intercept.InterceptorData;
  *
  * @param <T> bean type
  */
-public interface InjectionTargetBean<T>
+public interface InjectionTargetBean<T> extends OwbBean<T>
 {
     /**
      * Returns set of observable methods.
@@ -88,30 +90,74 @@ public interface InjectionTargetBean<T>
      */
     public void injectSuperMethods(T instance, CreationalContext<T> creationalContext);
         
+    /**
+     * Sets injection target for this bean. This
+     * is generally set by {@link ProcessInjectionTarget}
+     * event.
+     * @param injectionTarget injection target
+     */
     public void setInjectionTarget(InjectionTarget<T> injectionTarget);
     
+    /**
+     * Gets injection target or null if not
+     * set.
+     * @return injection target
+     */
     public InjectionTarget<T> getInjectionTarget();
     
+    /**
+     * Gets all injected fields of bean.
+     * @return all injected fields
+     */
     public Set<Field> getInjectedFields();
 
+    /**
+     * Adds new injected field.
+     * @param field new injected field
+     */
     public void addInjectedField(Field field);
     
+    /**
+     * Gets injected fields from super class.
+     * @return injected fields from super class 
+     */
     public Set<Field> getInjectedFromSuperFields();
 
+    /**
+     * Adds new super injected field.
+     * @param field add to super
+     */
     public void addInjectedFieldToSuper(Field field);    
-
+    
+    /**
+     * Gets injected methods.
+     * @return injected(initializer) methods
+     */
     public Set<Method> getInjectedMethods();
 
+    /**
+     * Adds new injected method.
+     * @param method new injected method
+     */
     public void addInjectedMethod(Method method);
 
+    /**
+     * Gets injected methods from super class.
+     * @return injected method from super class
+     */
     public Set<Method> getInjectedFromSuperMethods();
 
+    /**
+     * Add injected method to super list.
+     * @param method injected method
+     */
     public void addInjectedMethodToSuper(Method method);
     
+    /**
+     * Gets inherited meta data.
+     * @return inherited meta data
+     */
     public IBeanInheritedMetaData getInheritedMetaData();
-    
-    public void setInheritedMetaData();
-    
     
     /**
      * Gets interceptor stack of bean instance.
@@ -138,4 +184,16 @@ public interface InjectionTargetBean<T>
      * @param instance bean instance
      */
     public void preDestroy(T instance);    
+    
+    /**
+     * Sets annotated type.
+     * @param annotatedType annotated type
+     */
+    public void setAnnotatedType(AnnotatedType<T> annotatedType);    
+    
+    /**
+     * Gets annotated type.
+     * @return annotated type
+     */
+    public AnnotatedType<T> getAnnotatedType();    
 }

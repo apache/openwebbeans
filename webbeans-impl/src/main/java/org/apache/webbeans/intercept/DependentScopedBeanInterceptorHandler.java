@@ -21,7 +21,7 @@ package org.apache.webbeans.intercept;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 
 public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
 {
@@ -29,7 +29,7 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
     
     private Object actualInstance;
     
-    public DependentScopedBeanInterceptorHandler(AbstractBean<?> bean, Object instance)
+    public DependentScopedBeanInterceptorHandler(AbstractOwbBean<?> bean, Object instance)
     {
         super(bean);
         

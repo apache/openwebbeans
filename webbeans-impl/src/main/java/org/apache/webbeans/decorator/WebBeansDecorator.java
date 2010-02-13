@@ -31,7 +31,7 @@ import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -404,7 +404,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     /**
      * @return the delegateComponent
      */
-    public AbstractBean<T> getDelegateComponent()
+    public AbstractOwbBean<T> getDelegateComponent()
     {
         return wrappedBean;
     }

@@ -31,10 +31,10 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @version $Rev$ $Date$
  * @param <T> bean type info
  */
-public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements IBeanHasParent<T>
+public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> implements IBeanHasParent<T>
 {
     /** Owner of the producer field component */
-    protected AbstractBean<?> ownerComponent;
+    protected InjectionTargetBean<?> ownerComponent;
 
     /** Producer instance responsible for produce and dispose */
     protected Producer<T> producer;
@@ -46,7 +46,7 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
      * @param returnType bean type info
      * @param ownerComponent owner bean
      */
-    protected AbstractProducerBean(WebBeansType type, Class<T> returnType, AbstractBean<?> ownerComponent)
+    protected AbstractProducerBean(WebBeansType type, Class<T> returnType, InjectionTargetBean<?> ownerComponent)
     {
         super(type, returnType);
         this.ownerComponent = ownerComponent;
@@ -55,7 +55,7 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
     /**
      * {@inheritDoc}
      */
-    public AbstractBean<?> getParent()
+    public InjectionTargetBean<?> getParent()
     {
         return this.ownerComponent;
     }
@@ -140,7 +140,7 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
         Annotation[] anns = new Annotation[this.ownerComponent.getQualifiers().size()];
         anns = this.ownerComponent.getQualifiers().toArray(anns);
 
-        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractBean<T>) this.ownerComponent);
+        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractOwbBean<T>) this.ownerComponent);
 
         if (specialize != null)
         {
@@ -164,7 +164,7 @@ public abstract class AbstractProducerBean<T> extends AbstractBean<T> implements
         Annotation[] anns = new Annotation[this.ownerComponent.getQualifiers().size()];
         anns = this.ownerComponent.getQualifiers().toArray(anns);
 
-        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractBean<T>) this.ownerComponent);
+        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractOwbBean<T>) this.ownerComponent);
 
         if (specialize != null)
         {

@@ -34,7 +34,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InvocationContext;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -63,7 +63,7 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
  * 
  * @version $Rev$ $Date$
  */
-public class WebBeansInterceptor<T> extends AbstractBean<T> implements Interceptor<T>
+public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements Interceptor<T>
 {
 	private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptor.class);
 	
@@ -85,7 +85,7 @@ public class WebBeansInterceptor<T> extends AbstractBean<T> implements Intercept
 
     }
 
-    public AbstractBean<T> getDelegate()
+    public AbstractOwbBean<T> getDelegate()
     {
         return this.delegateBean;
     }

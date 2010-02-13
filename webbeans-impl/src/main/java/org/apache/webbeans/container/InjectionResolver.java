@@ -29,7 +29,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
@@ -297,7 +297,7 @@ public class InjectionResolver
         {
             for(Bean<?> bean : resolvedComponents)
             {
-                AbstractBean<?> component = (AbstractBean<?>)bean;
+                AbstractOwbBean<?> component = (AbstractOwbBean<?>)bean;
                 
                 if(component.isEnabled())
                 {
@@ -324,7 +324,7 @@ public class InjectionResolver
         {
             for(Bean<?> bean : resolvedComponents)
             {
-                AbstractBean<?> component = (AbstractBean<?>)bean;
+                AbstractOwbBean<?> component = (AbstractOwbBean<?>)bean;
                 
                 if(component.isSpecializedBean())
                 {
@@ -436,7 +436,7 @@ public class InjectionResolver
         
         while(it.hasNext())
         {
-            AbstractBean<?> component = (AbstractBean<?>)it.next();
+            AbstractOwbBean<?> component = (AbstractOwbBean<?>)it.next();
             if(component.isSpecializedBean())
             {
                 res.add(component);
@@ -476,7 +476,7 @@ public class InjectionResolver
             {
                 if(!containsAlternative)
                 {                    
-                    AbstractBean<?> temp = (AbstractBean<?>)bean;
+                    AbstractOwbBean<?> temp = (AbstractOwbBean<?>)bean;
                     if(temp.isEnabled())
                     {
                         enableSet.add(bean);

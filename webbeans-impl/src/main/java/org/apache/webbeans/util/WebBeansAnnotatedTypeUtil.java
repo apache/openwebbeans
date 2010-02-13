@@ -53,8 +53,9 @@ import javax.inject.Named;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -142,7 +143,7 @@ public final class WebBeansAnnotatedTypeUtil
         return result;
     }
     
-    public static <T> void addConstructorInjectionPointMetaData(AbstractBean<T> owner, AnnotatedConstructor<T> constructor)
+    public static <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, AnnotatedConstructor<T> constructor)
     {
         List<InjectionPoint> injectionPoints = InjectionPointFactory.getConstructorInjectionPointData(owner, constructor);
         for (InjectionPoint injectionPoint : injectionPoints)
@@ -152,7 +153,7 @@ public final class WebBeansAnnotatedTypeUtil
         }
     }
     
-    public static <T,X> void addMethodInjectionPointMetaData(AbstractBean<T> owner, AnnotatedMethod<X> method)
+    public static <T,X> void addMethodInjectionPointMetaData(InjectionTargetBean<T> owner, AnnotatedMethod<X> method)
     {
         List<InjectionPoint> injectionPoints = InjectionPointFactory.getMethodInjectionPointData(owner, method);
         for (InjectionPoint injectionPoint : injectionPoints)
@@ -162,7 +163,7 @@ public final class WebBeansAnnotatedTypeUtil
         }
     }
     
-    public static <T,X> void addFieldInjectionPointMetaData(AbstractBean<T> owner, AnnotatedField<X> annotField)
+    public static <T,X> void addFieldInjectionPointMetaData(AbstractOwbBean<T> owner, AnnotatedField<X> annotField)
     {
         owner.addInjectionPoint(InjectionPointFactory.getFieldInjectionPointData(owner, annotField));        
     }
@@ -385,7 +386,7 @@ public final class WebBeansAnnotatedTypeUtil
     
     
     @SuppressWarnings("unchecked")
-    public static <X> Set<ProducerFieldBean<?>> defineProducerFields(AbstractBean<X> bean, AnnotatedType<X> annotatedType)
+    public static <X> Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
     {
         Set<ProducerFieldBean<?>> producerBeans = new HashSet<ProducerFieldBean<?>>();
         Set<AnnotatedField<? super X>> annotatedFields = annotatedType.getFields();        
@@ -453,7 +454,7 @@ public final class WebBeansAnnotatedTypeUtil
     
     
     @SuppressWarnings("unchecked")
-    public static <X> Set<ProducerMethodBean<?>> defineProducerMethods(AbstractBean<X> bean, AnnotatedType<X> annotatedType)
+    public static <X> Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
     {
         Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
         Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
@@ -529,7 +530,7 @@ public final class WebBeansAnnotatedTypeUtil
     }
     
     
-    public static <X> void configureProducerSpecialization(AbstractBean<X> bean,AnnotatedMethod<X> annotatedMethod)
+    public static <X> void configureProducerSpecialization(AbstractOwbBean<X> bean,AnnotatedMethod<X> annotatedMethod)
     {
         List<AnnotatedParameter<X>> annotatedParameters = annotatedMethod.getParameters();
         List<Class<?>> parameters = new ArrayList<Class<?>>();

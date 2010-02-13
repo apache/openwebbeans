@@ -15,7 +15,7 @@ package org.apache.webbeans.test.unittests.intercept.webbeans;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureComponent;
@@ -41,7 +41,7 @@ public class SecureInterceptorComponentTest extends TestContext
     public void testSecureInterceptor()
     {
         defineInterceptor(SecureInterceptor.class);
-        AbstractBean<SecureComponent> component = defineManagedBean(SecureComponent.class);
+        AbstractOwbBean<SecureComponent> component = defineManagedBean(SecureComponent.class);
 
         ContextFactory.initRequestContext(null);
 

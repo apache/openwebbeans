@@ -18,7 +18,7 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
@@ -82,7 +82,7 @@ public class ExceptionComponentTest extends TestContext
         try
         {
             clear();
-            defineManagedBean(AbstractBean.class);
+            defineManagedBean(AbstractOwbBean.class);
         }
         catch (WebBeansConfigurationException e)
         {

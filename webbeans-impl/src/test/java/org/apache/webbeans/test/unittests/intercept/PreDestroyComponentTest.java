@@ -19,7 +19,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
@@ -54,7 +54,7 @@ public class PreDestroyComponentTest extends TestContext
 
         defineManagedBean(CheckWithCheckPayment.class);
         defineManagedBean(PreDestroyComponent.class);
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
 

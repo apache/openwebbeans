@@ -48,7 +48,7 @@ import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
@@ -282,7 +282,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public BeanManager addBean(Bean<?> newBean)
     {
-        if(newBean instanceof AbstractBean)
+        if(newBean instanceof AbstractOwbBean)
         {
             this.deploymentBeans.add(newBean);
             addPassivationCapableBean(newBean);
@@ -343,7 +343,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Deprecated
     public Object getInstanceByName(String name, CreationalContext<?> creationalContext)
     {
-        AbstractBean<?> component = null;
+        AbstractOwbBean<?> component = null;
         Object object = null;
 
         Set<Bean<?>> set = this.injectionResolver.implResolveByName(name);
@@ -357,7 +357,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             throw new AmbiguousResolutionException("There are more than one WebBeans with name : " + name);
         }
 
-        component = (AbstractBean<?>) set.iterator().next();
+        component = (AbstractOwbBean<?>) set.iterator().next();
 
         object = getInstance(component, creationalContext);
 
@@ -744,7 +744,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 }
                 else
                 {
-                    instance = JavassistProxyFactory.createNormalScopedBeanProxy((AbstractBean<?>)bean,creationalContext);
+                    instance = JavassistProxyFactory.createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
                     
                     this.proxyMap.put(bean, instance);   
 
@@ -769,7 +769,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             
             
             instance = context.get((Bean<Object>)bean, (CreationalContext<Object>)creationalContext);     
-            instance = JavassistProxyFactory.createDependentScopedBeanProxy((AbstractBean<?>)bean, instance);
+            instance = JavassistProxyFactory.createDependentScopedBeanProxy((AbstractOwbBean<?>)bean, instance);
         }
         
         return instance;

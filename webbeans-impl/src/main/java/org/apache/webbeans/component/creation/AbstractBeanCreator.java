@@ -22,7 +22,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -37,7 +37,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class AbstractBeanCreator<T> implements BeanCreator<T>
 {
     /**Bean instance*/
-    private final AbstractBean<T> bean;    
+    private final AbstractOwbBean<T> bean;    
     
     /**Default metadata provider*/
     private MetaDataProvider metadataProvider = MetaDataProvider.DEFAULT;
@@ -62,7 +62,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      * @param bean bean instance
      * @param beanAnnotations annotations
      */
-    public AbstractBeanCreator(AbstractBean<T> bean, Annotation[] beanAnnotations)
+    public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotation[] beanAnnotations)
     {
         this.bean = bean;
         this.beanAnnotations = beanAnnotations;           
@@ -235,7 +235,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**
      * {@inheritDoc}
      */
-    public AbstractBean<T> getBean()
+    public AbstractOwbBean<T> getBean()
     {
         return this.bean;
     }

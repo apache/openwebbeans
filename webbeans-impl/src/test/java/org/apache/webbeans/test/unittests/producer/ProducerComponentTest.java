@@ -21,7 +21,7 @@ import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.lifecycle.test.MockHttpSession;
 import org.apache.webbeans.test.TestContext;
@@ -117,7 +117,7 @@ public class ProducerComponentTest extends TestContext
     public void testProducer4()
     {
         defineManagedBean(Producer4.class);
-        AbstractBean<Producer4ConsumerComponent> component = defineManagedBean(Producer4ConsumerComponent.class);
+        AbstractOwbBean<Producer4ConsumerComponent> component = defineManagedBean(Producer4ConsumerComponent.class);
 
         ContextFactory.initSessionContext(new MockHttpSession());
 

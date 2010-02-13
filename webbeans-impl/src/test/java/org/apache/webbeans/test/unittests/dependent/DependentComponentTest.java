@@ -17,7 +17,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
@@ -49,7 +49,7 @@ public class DependentComponentTest extends TestContext
 
         ContextFactory.initRequestContext(null);
 
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         Assert.assertEquals(2, comps.size());
 
@@ -69,8 +69,8 @@ public class DependentComponentTest extends TestContext
         
         ContextFactory.initRequestContext(null);
 
-        AbstractBean<DependentA> componentA = defineManagedBean(DependentA.class);
-        AbstractBean<DependentB> componentB = defineManagedBean(DependentB.class);
+        AbstractOwbBean<DependentA> componentA = defineManagedBean(DependentA.class);
+        AbstractOwbBean<DependentB> componentB = defineManagedBean(DependentB.class);
         
         Assert.assertNotNull(componentB);
         

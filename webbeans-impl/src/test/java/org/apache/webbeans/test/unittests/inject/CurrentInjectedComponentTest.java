@@ -19,7 +19,7 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.ContaintsCurrentComponent;
@@ -51,7 +51,7 @@ public class CurrentInjectedComponentTest extends TestContext
         defineManagedBean(Typed2.class);
         defineManagedBean(CurrentBindingComponent.class);
         defineManagedBean(ContaintsCurrentComponent.class);
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         HttpSession session = getSession();
         ContextFactory.initRequestContext(null);

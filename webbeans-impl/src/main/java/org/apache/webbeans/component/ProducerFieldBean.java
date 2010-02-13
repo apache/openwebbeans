@@ -39,7 +39,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      * 
      * @param returnType type of the field decleration
      */
-    public ProducerFieldBean(AbstractBean<?> ownerComponent, Class<T> returnType)
+    public ProducerFieldBean(InjectionTargetBean<?> ownerComponent, Class<T> returnType)
     {
         super(WebBeansType.PRODUCERFIELD, returnType, ownerComponent);
     }

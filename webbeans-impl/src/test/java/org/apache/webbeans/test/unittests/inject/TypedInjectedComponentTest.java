@@ -20,7 +20,7 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
@@ -54,7 +54,7 @@ public class TypedInjectedComponentTest extends TestContext
 
         defineManagedBean(Typed2.class);
         defineManagedBean(TypedInjection.class);
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         HttpSession session = getSession();
 
@@ -89,7 +89,7 @@ public class TypedInjectedComponentTest extends TestContext
 
         defineManagedBean(Typed2.class);
         defineManagedBean(TypedInjectionWithoutArguments.class);
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         HttpSession session = getSession();
 

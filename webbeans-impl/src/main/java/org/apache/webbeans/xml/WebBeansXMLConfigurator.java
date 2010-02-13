@@ -45,7 +45,7 @@ import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.config.DefinitionUtil;
@@ -906,7 +906,7 @@ public final class WebBeansXMLConfigurator
      * @param annotationSet type level annotation set
      * @param webBeanDecleration webbeans decleration element
      */
-    public <T> void configureProducerTypeLevelMetaData(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, Element webBeanDecleration)
+    public <T> void configureProducerTypeLevelMetaData(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, Element webBeanDecleration)
     {
         configureBindingType(component, annotationSet, annotationElementList);
 
@@ -1389,7 +1389,7 @@ public final class WebBeansXMLConfigurator
      * @throws DefinitionException if disposes element can not contain exactly
      *             one child element
      */
-    private <T> void checkConfigureDisposes(AbstractBean<T> component, Element disposes)
+    private <T> void checkConfigureDisposes(AbstractOwbBean<T> component, Element disposes)
     {
         List<Element> disposesChilds = disposes.elements();
 
@@ -1411,7 +1411,7 @@ public final class WebBeansXMLConfigurator
      *             AfterTransactionFailure, BeforeTransactionCompletion}
      *             element.
      */
-    private <T> void checkConfigureObserves(AbstractBean<T> component, Element observes)
+    private <T> void checkConfigureObserves(AbstractOwbBean<T> component, Element observes)
     {
         List<Element> observesChilds = observes.elements();
 
@@ -1438,7 +1438,7 @@ public final class WebBeansXMLConfigurator
      * @param component xml defined web beans component
      * @param annotationSet all annotation defined in XML
      */
-    private <T> void configureScopeType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
+    private <T> void configureScopeType(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
         Class<? extends Annotation> scopeType = XMLDefinitionUtil.defineXMLTypeMetaData(component, annotationSet, NormalScope.class, createConfigurationFailedMessage() + "@Scope/@NormalScope annotation is not configured correctly");
 
@@ -1465,7 +1465,7 @@ public final class WebBeansXMLConfigurator
      * @param component web beans xml component
      * @param anns annotations defined in the xml documents
      */
-    private <T> void configureBindingType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
+    private <T> void configureBindingType(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
         boolean isDefined = XMLDefinitionUtil.defineXMLBindingType(component, annotationSet, annotationElementList, createConfigurationFailedMessage());
 
@@ -1493,7 +1493,7 @@ public final class WebBeansXMLConfigurator
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      */
-    private <T> void configureStereoType(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
+    private <T> void configureStereoType(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList)
     {
         XMLDefinitionUtil.defineXMLStereoType(component, annotationSet);
     }
@@ -1505,7 +1505,7 @@ public final class WebBeansXMLConfigurator
      * @param annotationSet type-level metadata annotation set
      * @param webBeanDecleration webbeans decleration element
      */
-    private <T> void configureNamed(AbstractBean<T> component, List<Class<? extends Annotation>> annotationSet, Element webBeanDecleration)
+    private <T> void configureNamed(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet, Element webBeanDecleration)
     {
         boolean isDefined = XMLDefinitionUtil.defineXMLName(component, annotationSet);
         if (isDefined)

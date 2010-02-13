@@ -49,10 +49,10 @@ import javax.inject.Scope;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
-import org.apache.webbeans.component.BaseBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -89,7 +89,7 @@ public final class DefinitionUtil
      * @param bean configuring web beans component
      * @param clazz bean implementation class
      */
-    public static <T> void defineApiTypes(AbstractBean<T> bean, Class<T> clazz)
+    public static <T> void defineApiTypes(AbstractOwbBean<T> bean, Class<T> clazz)
     {
         Annotation[] annots = clazz.getDeclaredAnnotations();
         
@@ -106,13 +106,13 @@ public final class DefinitionUtil
     }
      
     
-    private static <T> void defineNormalApiTypes(AbstractBean<T> bean, Class<T> clazz)
+    private static <T> void defineNormalApiTypes(AbstractOwbBean<T> bean, Class<T> clazz)
     {
         bean.getTypes().add(Object.class);
         ClassUtil.setTypeHierarchy(bean.getTypes(), clazz);           
     }
     
-    private static <T> void defineUserDefinedBeanTypes(AbstractBean<T> bean, Type producerGenericReturnType, Typed beanTypes)
+    private static <T> void defineUserDefinedBeanTypes(AbstractOwbBean<T> bean, Type producerGenericReturnType, Typed beanTypes)
     {
         if(producerGenericReturnType != null)
         {
@@ -206,7 +206,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param annotations annotations
      */
-    public static <T> void defineQualifiers(AbstractBean<T> component, Annotation[] annotations)
+    public static <T> void defineQualifiers(AbstractOwbBean<T> component, Annotation[] annotations)
     {
         boolean find = false;
         for (Annotation annotation : annotations)
@@ -298,7 +298,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param annotations annotations
      */
-    public static <T> void defineScopeType(AbstractBean<T> component, Annotation[] annotations, String exceptionMessage)
+    public static <T> void defineScopeType(AbstractOwbBean<T> component, Annotation[] annotations, String exceptionMessage)
     {
         boolean found = false;
 
@@ -375,7 +375,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void defineStereoTypes(BaseBean<?> component, Annotation[] anns)
+    public static <T> void defineStereoTypes(OwbBean<?> component, Annotation[] anns)
     {
         if (AnnotationUtil.hasStereoTypeMetaAnnotation(anns))
         {
@@ -419,7 +419,7 @@ public final class DefinitionUtil
         
     }
 
-    public static void defineDefaultScopeType(BaseBean<?> component, String exceptionMessage)
+    public static void defineDefaultScopeType(OwbBean<?> component, String exceptionMessage)
     {
         // Frist look for inherited scope
         IBeanInheritedMetaData metaData = null;
@@ -500,7 +500,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param defaultName default name of the web bean
      */
-    public static <T> void defineName(AbstractBean<T> component, Annotation[] anns, String defaultName)
+    public static <T> void defineName(AbstractOwbBean<T> component, Annotation[] anns, String defaultName)
     {
         Named nameAnnot = null;
         boolean isDefault = false;
@@ -549,7 +549,7 @@ public final class DefinitionUtil
      * @param component producer field owner component
      * @return the set of producer field components
      */
-    public static Set<ProducerFieldBean<?>> defineProduerFields(AbstractBean<?> component)
+    public static Set<ProducerFieldBean<?>> defineProduerFields(InjectionTargetBean<?> component)
     {
         Set<ProducerFieldBean<?>> producerFields = new HashSet<ProducerFieldBean<?>>();
         Field[] fields = component.getReturnType().getDeclaredFields();
@@ -563,7 +563,7 @@ public final class DefinitionUtil
         return producerFields;
     }
 
-    private static void createProducerField(AbstractBean<?> component, Set<ProducerFieldBean<?>> producerFields, Field[] fields)
+    private static void createProducerField(InjectionTargetBean<?> component, Set<ProducerFieldBean<?>> producerFields, Field[] fields)
     {
         for (Field field : fields)
         {            
@@ -620,7 +620,7 @@ public final class DefinitionUtil
         return producerComponents;
     }
 
-    private static <T> void createProducerComponents(AbstractBean<T> component, Set<ProducerMethodBean<?>> producerComponents, Method declaredMethod, Class<?> clazz)
+    private static <T> void createProducerComponents(InjectionTargetBean<T> component, Set<ProducerMethodBean<?>> producerComponents, Method declaredMethod, Class<?> clazz)
     {
         boolean isSpecializes = false;
         
@@ -650,7 +650,7 @@ public final class DefinitionUtil
 
     }
 
-    public static <T> ProducerMethodBean<T> createProducerComponent(Class<T> returnType, Method method, AbstractBean<?> parent, boolean isSpecializes)
+    public static <T> ProducerMethodBean<T> createProducerComponent(Class<T> returnType, Method method, InjectionTargetBean<?> parent, boolean isSpecializes)
     {
         ProducerMethodBean<T> component = new ProducerMethodBean<T>(parent, returnType);
         component.setCreatorMethod(method);
@@ -682,7 +682,7 @@ public final class DefinitionUtil
         return component;
     }
 
-    private static <T> ProducerFieldBean<T> createProducerFieldComponent(Class<T> returnType, Field field, AbstractBean<?> parent)
+    private static <T> ProducerFieldBean<T> createProducerFieldComponent(Class<T> returnType, Field field, InjectionTargetBean<?> parent)
     {
         ProducerFieldBean<T> component = new ProducerFieldBean<T>(parent, returnType);
         
@@ -731,7 +731,7 @@ public final class DefinitionUtil
         return component;
     }
 
-    public static <T> void defineDisposalMethods(AbstractBean<T> component)
+    public static <T> void defineDisposalMethods(AbstractOwbBean<T> component)
     {
         Class<?> clazz = component.getReturnType();
 
@@ -742,7 +742,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void createDisposalMethods(AbstractBean<T> component, Method[] methods, Class<?> clazz)
+    private static <T> void createDisposalMethods(AbstractOwbBean<T> component, Method[] methods, Class<?> clazz)
     {
         ProducerMethodBean<?> previous = null;
         for (Method declaredMethod : methods)
@@ -1042,7 +1042,7 @@ public final class DefinitionUtil
         Asserts.assertNotNull(bean, "bean parameter can no be null");
 
         // @javax.interceptor.Interceptors
-        EJBInterceptorConfig.configure(((AbstractBean)bean).getReturnType(), bean.getInterceptorStack());
+        EJBInterceptorConfig.configure(((AbstractOwbBean)bean).getReturnType(), bean.getInterceptorStack());
 
         // @javax.webbeans.Interceptor
         WebBeansInterceptorConfig.configure(bean, bean.getInterceptorStack());
@@ -1072,7 +1072,7 @@ public final class DefinitionUtil
         {
 
             EventUtil.checkObserverMethodConditions(candidateMethod, clazz);
-            AbstractBean<?> bean = (AbstractBean<?>) component;
+            AbstractOwbBean<?> bean = (AbstractOwbBean<?>) component;
             if(bean.getScope().equals(Dependent.class))
             {
                 //Check Reception
@@ -1085,12 +1085,12 @@ public final class DefinitionUtil
             
             component.addObservableMethod(candidateMethod);
 
-            addMethodInjectionPointMetaData((AbstractBean<T>) component, candidateMethod);
+            addMethodInjectionPointMetaData((AbstractOwbBean<T>) component, candidateMethod);
         }
 
     }
 
-    public static <T> void defineSerializable(AbstractBean<T> component)
+    public static <T> void defineSerializable(AbstractOwbBean<T> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         if (ClassUtil.isAssignable(Serializable.class, component.getReturnType()))
@@ -1099,7 +1099,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void addFieldInjectionPointMetaData(AbstractBean<T> owner, Field field)
+    public static <T> void addFieldInjectionPointMetaData(AbstractOwbBean<T> owner, Field field)
     {
         InjectionPoint injectionPoint = InjectionPointFactory.getFieldInjectionPointData(owner, field);
         if (injectionPoint != null)
@@ -1109,7 +1109,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void addMethodInjectionPointMetaData(AbstractBean<T> owner, Method method)
+    public static <T> void addMethodInjectionPointMetaData(AbstractOwbBean<T> owner, Method method)
     {
         List<InjectionPoint> injectionPoints = InjectionPointFactory.getMethodInjectionPointData(owner, method);
         for (InjectionPoint injectionPoint : injectionPoints)
@@ -1119,7 +1119,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void addConstructorInjectionPointMetaData(AbstractBean<T> owner, Constructor<T> constructor)
+    public static <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, Constructor<T> constructor)
     {
         List<InjectionPoint> injectionPoints = InjectionPointFactory.getConstructorInjectionPointData(owner, constructor);
         for (InjectionPoint injectionPoint : injectionPoints)
@@ -1142,7 +1142,7 @@ public final class DefinitionUtil
         }
     }
     
-    public static <X> Set<ProducerMethodBean<?>> defineProducerMethods(AbstractBean<X> bean, AnnotatedType<X> annotatedType)
+    public static <X> Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
     {
         Set<ProducerMethodBean<?>> producerComponents = new HashSet<ProducerMethodBean<?>>();
         Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
@@ -1155,7 +1155,7 @@ public final class DefinitionUtil
         return producerComponents;
     }
     
-    private static <X> void createProducerBeansFromAnnotatedType(AbstractBean<X> bean, Set<ProducerMethodBean<?>> producerComponents, AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
+    private static <X> void createProducerBeansFromAnnotatedType(InjectionTargetBean<X> bean, Set<ProducerMethodBean<?>> producerComponents, AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
     {
         Annotation[] anns = annotatedMethod.getAnnotations().toArray(new Annotation[0]);
         
@@ -1193,7 +1193,7 @@ public final class DefinitionUtil
 
     }
 
-    public static <X> ProducerMethodBean<X> createProducerBeanFromAnnotatedType(Class<X> returnType, AnnotatedMethod<X> method, AbstractBean<?> parent, boolean isSpecializes)
+    public static <X> ProducerMethodBean<X> createProducerBeanFromAnnotatedType(Class<X> returnType, AnnotatedMethod<X> method, InjectionTargetBean<?> parent, boolean isSpecializes)
     {
         ProducerMethodBean<X> bean = new ProducerMethodBean<X>(parent, returnType);
         bean.setCreatorMethod(method.getJavaMember());

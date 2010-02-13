@@ -18,7 +18,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 
-public class BeanManagerBean extends AbstractBean<BeanManager>
+public class BeanManagerBean extends AbstractOwbBean<BeanManager>
 {
     private BeanManager manager = null;
 

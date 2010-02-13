@@ -26,12 +26,12 @@ import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.util.AnnotationUtil;
 
 public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
 {
-    public BeanInheritedMetaData(AbstractBean<T> component)
+    public BeanInheritedMetaData(AbstractOwbBean<T> component)
     {
         super(component, component.getReturnType().getSuperclass());
     }

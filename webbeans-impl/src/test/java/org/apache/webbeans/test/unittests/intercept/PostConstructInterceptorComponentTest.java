@@ -17,7 +17,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -48,7 +48,7 @@ public class PostConstructInterceptorComponentTest extends TestContext
 
         defineManagedBean(CheckWithCheckPayment.class);
         defineManagedBean(PostConstructInterceptorComponent.class);
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
 

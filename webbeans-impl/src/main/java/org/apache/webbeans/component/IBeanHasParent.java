@@ -20,7 +20,7 @@ import javax.enterprise.context.spi.CreationalContext;
 
 public interface IBeanHasParent<T>
 {
-    public AbstractBean<?> getParent();
+    public InjectionTargetBean<?> getParent();
     
     public void dispose(T instance, CreationalContext<T> creationalContext);
 }

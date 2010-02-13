@@ -24,8 +24,8 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -37,23 +37,20 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
- * Abstract implementation of the {@link BaseBean} contract. 
+ * Abstract implementation of the {@link OwbBean} contract. 
  * 
  * @version $Rev$ $Date$
  * 
- * @see BaseBean
+ * @see OwbBean
  * @see Bean
  */
-public abstract class AbstractBean<T> extends BaseBean<T>
+public abstract class AbstractOwbBean<T> implements OwbBean<T>
 {
     /**Logger instance*/
     private final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
     
     /** Name of the bean */
     protected String name;
-
-    /** Deployment type of the bean */
-    protected Annotation type;
 
     /** Scope type of the bean */
     protected Annotation implScopeType;
@@ -87,9 +84,10 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     
     /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
-    
-    /**Annotated type for bean*/
-    protected AnnotatedType<T> annotatedType;
+        
+    /**Bean Manager*/
+    private final BeanManager manager;
+
     
             
     /**
@@ -99,11 +97,11 @@ public abstract class AbstractBean<T> extends BaseBean<T>
      * @param returnType of the bean
      * @param webBeansType web beans type
      */
-    protected AbstractBean(WebBeansType webBeansType, Class<T> returnType)
+    protected AbstractOwbBean(WebBeansType webBeansType, Class<T> returnType)
     {
-        super(BeanManagerImpl.getManager());
         this.webBeansType = webBeansType;
         this.returnType = returnType;
+        this.manager = BeanManagerImpl.getManager();
     }
     
     /**
@@ -111,12 +109,21 @@ public abstract class AbstractBean<T> extends BaseBean<T>
      * 
      * @param webBeanType beans type
      */
-    protected AbstractBean(WebBeansType webBeanType)
+    protected AbstractOwbBean(WebBeansType webBeanType)
     {
-        super(BeanManagerImpl.getManager());
-        this.webBeansType = webBeanType;
-        
+        this(webBeanType, null);        
     }
+    
+    /**
+     * Gets manager instance
+     * 
+     * @return manager instance
+     */
+    protected BeanManager getManager()
+    {
+        return manager;
+    }
+    
     
     /**
      * {@inheritDoc}
@@ -222,17 +229,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     }
 
     /**
-     * Get bean type.
-     * 
-     * @return bean type
-     */
-    public Annotation getType()
-    {
-        return type;
-    }
-    
-    
-    /**
      * Get return types of the bean.
      */
     public Class<?> getBeanClass()
@@ -246,16 +242,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
         }
         
         return getReturnType();
-    }
-
-    /**
-     * Set bean type.
-     * 
-     * @param type bean type
-     */
-    public void setType(Annotation type)
-    {
-        this.type = type;
     }
 
     /**
@@ -424,17 +410,6 @@ public abstract class AbstractBean<T> extends BaseBean<T>
     {
 
         return this.nullable;
-    }
-
-    public void setAnnotatedType(AnnotatedType<T> annotatedType)
-    {
-        this.annotatedType = annotatedType;
-    }
-    
-    
-    public AnnotatedType<T> getAnnotatedType()
-    {
-        return this.annotatedType;
     }
     
     /**

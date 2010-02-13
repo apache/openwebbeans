@@ -17,7 +17,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.service.InjectedComponent;
@@ -46,7 +46,7 @@ public class InjectedComponentTest extends TestContext
 
         defineManagedBean(InjectedComponent.class);
         defineManagedBean(ServiceImpl1.class);
-        List<AbstractBean<?>> comps = getComponents();
+        List<AbstractOwbBean<?>> comps = getComponents();
 
         ContextFactory.initRequestContext(null);
         ContextFactory.initApplicationContext(null);

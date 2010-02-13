@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.decorator.Delegate;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -51,7 +52,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @version $Rev$ $Date$
  * @param <T> bean class
  */
-public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> implements InjectionTargetBean<T>
+public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> implements InjectionTargetBean<T>
 {
     /** Logger instance */
     private final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
@@ -70,6 +71,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
 
     /** Injected methods of the bean */
     private Set<Method> injectedFromSuperMethods = new HashSet<Method>();
+    
+    /**Annotated type for bean*/
+    private AnnotatedType<T> annotatedType;
     
     /**
      * Holds the all of the interceptor related data, contains around-invoke,
@@ -540,7 +544,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
     /**
      * Sets inherited meta data.
      */
-    public void setInheritedMetaData()
+    protected void setInheritedMetaData()
     {
         this.inheritedMetaData = new BeanInheritedMetaData<T>(this);
     }
@@ -589,5 +593,22 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractBean<T> imp
 
         return super.getInjectionPoints();
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AnnotatedType<T> getAnnotatedType()
+    {
+        return this.annotatedType;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setAnnotatedType(AnnotatedType<T> annotatedType)
+    {
+        this.annotatedType = annotatedType;
+    }
 }

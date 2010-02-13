@@ -26,7 +26,7 @@ import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Concrete implementation of the {@link AbstractBean}.
+ * Concrete implementation of the {@link AbstractOwbBean}.
  * <p>
  * It is defined as producer method component.
  * </p>
@@ -47,7 +47,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      * @param parent parent bean
      * @param returnType producer method return type
      */
-    public ProducerMethodBean(AbstractBean<?> parent, Class<T> returnType)
+    public ProducerMethodBean(InjectionTargetBean<?> parent, Class<T> returnType)
     {
         super(WebBeansType.PRODUCERMETHOD, returnType, parent);
     }

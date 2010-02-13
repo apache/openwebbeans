@@ -28,7 +28,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansException;
@@ -45,7 +45,7 @@ public final class JavassistProxyFactory
 
     }
 
-    public static Object createNormalScopedBeanProxy(AbstractBean<?> bean, CreationalContext<?> creationalContext)
+    public static Object createNormalScopedBeanProxy(AbstractOwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         Object result = null;
         try
@@ -54,7 +54,7 @@ public final class JavassistProxyFactory
 
             if (!(bean instanceof WebBeansDecorator) && !(bean instanceof WebBeansInterceptor))
             {
-                fact.setHandler(new NormalScopedBeanInterceptorHandler((AbstractBean<?>) bean, creationalContext));
+                fact.setHandler(new NormalScopedBeanInterceptorHandler((AbstractOwbBean<?>) bean, creationalContext));
             }
 
             result = fact.createClass().newInstance();
@@ -67,7 +67,7 @@ public final class JavassistProxyFactory
         return result;
     }
     
-    public static Object createDependentScopedBeanProxy(AbstractBean<?> bean, Object actualInstance)
+    public static Object createDependentScopedBeanProxy(AbstractOwbBean<?> bean, Object actualInstance)
     {
         Object result = null;
         

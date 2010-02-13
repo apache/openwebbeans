@@ -23,7 +23,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.service.ITyped;
 import org.apache.webbeans.test.component.service.TypedComponent;
@@ -51,7 +51,7 @@ public class TypedComponentTest extends TestContext
     {
         clear();
         defineManagedBean(TypedComponent.class);
-        List<AbstractBean<?>> list = getComponents();
+        List<AbstractOwbBean<?>> list = getComponents();
 
         @SuppressWarnings("unused")
         Set<Bean<?>> beans= getManager().resolveByType(TypedComponentTest.class.getDeclaredField("s").getType(), new Default()

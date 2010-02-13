@@ -29,7 +29,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 
-import org.apache.webbeans.component.AbstractBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.config.OWBLogConst;
@@ -88,7 +88,7 @@ public final class WebBeansInterceptorConfig
      */
     public static void configure(AbstractInjectionTargetBean<?> component, List<InterceptorData> stack)
     {
-        Class<?> clazz = ((AbstractBean<?>)component).getReturnType();
+        Class<?> clazz = ((AbstractOwbBean<?>)component).getReturnType();
         AnnotatedType<?> annotatedType = component.getAnnotatedType();
         Set<Annotation> annotations = null;
         
