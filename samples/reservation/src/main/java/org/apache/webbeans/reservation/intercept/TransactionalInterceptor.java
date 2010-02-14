@@ -16,7 +16,6 @@
  */
 package org.apache.webbeans.reservation.intercept;
 
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -26,13 +25,14 @@ import javax.persistence.EntityTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;
+import org.apache.webbeans.reservation.bindings.EntityManagerQualifier;
 import org.apache.webbeans.reservation.bindings.intercep.Transactional;
 
 @Interceptor
 @Transactional
 public class TransactionalInterceptor
 {
-    private @Inject @Default EntityManager entityManager;
+    private @Inject @EntityManagerQualifier EntityManager entityManager;
     
     private @Inject @ApplicationLog Log logger; 
     

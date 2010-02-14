@@ -42,12 +42,6 @@
 		
 	</build>
 	
-    <properties>
-    	<geronimo_cdi.version>1.0-SNAPSHOT</geronimo_cdi.version>
-    	<geronimo_atinject.version>1.0-SNAPSHOT</geronimo_atinject.version>
-    </properties>
-	
-
 	<dependencies>
 
 		<!-- For Junit Test -->
@@ -64,21 +58,6 @@
 			<version>1.1.14</version>
 		</dependency>
 
-         <dependency>
-                 <groupId>org.apache.geronimo.specs</groupId>
-                 <artifactId>geronimo-jcdi_1.0_spec</artifactId>
-                 <version>${geronimo_cdi.version}</version>
-                 <scope>provided</scope>
-         </dependency>
-
-         <dependency>
-                 <groupId>org.apache.geronimo.specs</groupId>
-                 <artifactId>geronimo-atinject_1.0_spec</artifactId>
-                 <version>${geronimo_atinject.version}</version>
-                 <scope>provided</scope>
-         </dependency>
-
-		
 		<!-- JSR-299 Implementation -->
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
@@ -135,24 +114,18 @@
 			<version>${project.version}</version>
 		</dependency>
 		
-		<!-- Geronimo  PLugin-->	
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-interceptor_1.1_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jpa_2.0_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>		
 				
-		
-		<!-- Interceptor API -->
-		
-		<!-- JPA API -->
-		
-
 	</dependencies>
 
 </project>

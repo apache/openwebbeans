@@ -32,35 +32,8 @@
 		<finalName>guess</finalName>
 	</build>
         
-    <properties>
-    	<geronimo_cdi.version>1.0-SNAPSHOT</geronimo_cdi.version>
-    	<geronimo_atinject.version>1.0-SNAPSHOT</geronimo_atinject.version>
-    </properties>
-        
-
 	<dependencies>
 
-		<!-- For Junit Test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		
-         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
-            <version>${geronimo_cdi.version}</version>
-            <scope>provided</scope>
-         </dependency>
-
-         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-atinject_1.0_spec</artifactId>
-            <version>${geronimo_atinject.version}</version>
-            <scope>provided</scope>
-         </dependency>
-					
 		<!-- JSF Facelet -->
 		<dependency>
 			<groupId>com.sun.facelets</groupId>
@@ -88,6 +61,15 @@
 			<artifactId>geronimo-servlet_2.5_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
+
+                                <!-- OWB implementation per application -->
+                                <dependency>
+                                        <groupId>org.apache.openwebbeans</groupId>
+                                        <artifactId>openwebbeans-impl</artifactId>
+                                        <version>${project.version}</version>
+                                </dependency>
+
 				
 	</dependencies>
 
@@ -97,25 +79,6 @@
 			<id>jetty</id>
 			<dependencies>				
        
-              <dependency>
-                 <groupId>org.apache.geronimo.specs</groupId>
-                 <artifactId>geronimo-jcdi_1.0_spec</artifactId>
-                 <version>${geronimo_cdi.version}</version>
-              </dependency>
-
-              <dependency>
-                 <groupId>org.apache.geronimo.specs</groupId>
-                 <artifactId>geronimo-atinject_1.0_spec</artifactId>
-                 <version>${geronimo_atinject.version}</version>
-              </dependency>
-				
-				<!-- OWB implementation per application -->
-				<dependency>
-					<groupId>org.apache.openwebbeans</groupId>
-					<artifactId>openwebbeans-impl</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-				
 				<!-- MyFaces API -->
 				<dependency>
 					<groupId>org.apache.myfaces.core</groupId>

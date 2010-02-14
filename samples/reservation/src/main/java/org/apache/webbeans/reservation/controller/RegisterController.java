@@ -17,13 +17,13 @@
 package org.apache.webbeans.reservation.controller;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;
+import org.apache.webbeans.reservation.bindings.EntityManagerQualifier;
 import org.apache.webbeans.reservation.bindings.intercep.Transactional;
 import org.apache.webbeans.reservation.controller.api.IRegisterController;
 import org.apache.webbeans.reservation.entity.User;
@@ -37,7 +37,7 @@ public class RegisterController implements IRegisterController
 {
     private @Inject @ApplicationLog Log logger;
     
-    private @Inject @Default EntityManager entityManager;
+    private @Inject @EntityManagerQualifier EntityManager entityManager;
 
     /**
      * Register the user.

@@ -21,7 +21,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
@@ -29,6 +28,7 @@ import javax.persistence.Query;
 
 import org.apache.commons.validator.GenericValidator;
 import org.apache.webbeans.reservation.bindings.DatabaseLogin;
+import org.apache.webbeans.reservation.bindings.EntityManagerQualifier;
 import org.apache.webbeans.reservation.bindings.intercep.Transactional;
 import org.apache.webbeans.reservation.controller.api.ILoginController;
 import org.apache.webbeans.reservation.entity.User;
@@ -41,7 +41,7 @@ public class LoginController implements ILoginController
     private Logger logger = Logger.getLogger(LoginController.class.getName());
     
     /**Injection of the request scope entity manager*/
-    private @Inject @Default EntityManager entityManager;
+    private @Inject @EntityManagerQualifier EntityManager entityManager;
 
     /**
      * Returns true if user exist else false
