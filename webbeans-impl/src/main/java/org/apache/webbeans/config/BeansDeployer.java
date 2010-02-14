@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -40,6 +39,9 @@ import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
+import org.apache.webbeans.component.javaee.PrinicipalBean;
+import org.apache.webbeans.component.javaee.ValidatorBean;
+import org.apache.webbeans.component.javaee.ValidatorFactoryBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -191,6 +193,15 @@ public class BeansDeployer
         
         //Register Event Bean
         beanManager.addBean(WebBeansUtil.getEventBean());
+        
+        //Register Validator Bean
+        beanManager.addBean(new ValidatorBean());
+        
+        //Register ValidatorFactory Bean
+        beanManager.addBean(new ValidatorFactoryBean());
+        
+        //Register Principal Bean
+        beanManager.addBean(new PrinicipalBean());
     }
     
     /**

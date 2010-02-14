@@ -21,7 +21,7 @@ import javax.servlet.http.HttpSessionActivationListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.apache.webbeans.lifecycle.WebApplicationLifeCycle;
+import org.apache.webbeans.lifecycle.DefaultLifecycle;
 
 /**
  * Initializing the beans container for using in an web application
@@ -32,7 +32,7 @@ import org.apache.webbeans.lifecycle.WebApplicationLifeCycle;
 public class WebBeansConfigurationListener implements ServletContextListener, ServletRequestListener, HttpSessionListener,HttpSessionActivationListener
 {
 	/**Manages the container lifecycle*/
-    private WebApplicationLifeCycle lifeCycle = null;
+    private DefaultLifecycle lifeCycle = null;
 
     /**
      * Default constructor
@@ -56,7 +56,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
 	 */
     public void contextInitialized(ServletContextEvent event)
     {
-        this.lifeCycle = new WebApplicationLifeCycle();
+        this.lifeCycle = new DefaultLifecycle();
         this.lifeCycle.applicationStarted(event);
     }
 

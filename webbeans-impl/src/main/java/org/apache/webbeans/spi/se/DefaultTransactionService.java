@@ -24,7 +24,7 @@ import org.apache.webbeans.spi.TransactionService;
  *
  * This SPI Implementation is used if no JTA is available.
  */
-public class TransactionServiceNonJTA implements TransactionService
+public class DefaultTransactionService implements TransactionService
 {
 
     /**

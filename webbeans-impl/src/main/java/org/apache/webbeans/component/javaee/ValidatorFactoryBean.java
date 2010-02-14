@@ -31,7 +31,7 @@ import org.apache.webbeans.spi.ValidatorService;
 public class ValidatorFactoryBean extends AbstractOwbBean<ValidatorFactory>
 {
 
-    protected ValidatorFactoryBean()
+    public ValidatorFactoryBean()
     {
         super(WebBeansType.USERTRANSACTION);
         addApiType(Object.class);

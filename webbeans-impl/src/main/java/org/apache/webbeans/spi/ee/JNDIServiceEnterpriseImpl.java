@@ -22,7 +22,7 @@ import org.apache.webbeans.util.JNDIUtil;
  * This version performs JNDI handling in J2EE environments where
  * the java:comp and java:app context can be written
  *
- * @see org.apache.webbeans.spi.se.JNDIServiceStaticImpl
+ * @see org.apache.webbeans.spi.se.DefaultJndiService
  */
 public final class JNDIServiceEnterpriseImpl implements JNDIService
 {

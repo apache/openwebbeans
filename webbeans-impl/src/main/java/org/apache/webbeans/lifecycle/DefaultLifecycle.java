@@ -61,10 +61,10 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
  * @version $Rev$ $Date$
  * @see WebBeansConfigurationListener
  */
-public final class WebApplicationLifeCycle implements ContainerLifecycle
+public final class DefaultLifecycle implements ContainerLifecycle
 {
 	//Logger instance
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebApplicationLifeCycle.class);
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(DefaultLifecycle.class);
 
     /**Manages unused conversations*/
     private ScheduledExecutorService service = null;
@@ -90,7 +90,7 @@ public final class WebApplicationLifeCycle implements ContainerLifecycle
      * Creates a new lifecycle instance and initializes
      * the instance variables.
      */
-    public WebApplicationLifeCycle()
+    public DefaultLifecycle()
     {
         this.rootManager = (BeanManagerImpl) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_MANAGER);
         this.xmlDeployer = new WebBeansXMLConfigurator();

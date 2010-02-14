@@ -29,15 +29,15 @@ import org.scannotation.WarUrlFinder;
 /**
  * Configures the web application to find beans.
  */
-public class WarMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
+public class DefaultScannerService extends AbstractMetaDataDiscovery
 {
-    private WebBeansLogger logger = WebBeansLogger.getLogger(WarMetaDataDiscoveryImpl.class);
+    private WebBeansLogger logger = WebBeansLogger.getLogger(DefaultScannerService.class);
 
     private boolean configure = false;
 
     private ServletContext servletContext = null;
 
-    public WarMetaDataDiscoveryImpl()
+    public DefaultScannerService()
     {
         
     }

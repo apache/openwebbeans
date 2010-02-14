@@ -32,7 +32,7 @@ import org.apache.webbeans.spi.ServiceLoader;
 public class PrinicipalBean extends AbstractOwbBean<Principal>
 {
 
-    protected PrinicipalBean()
+    public PrinicipalBean()
     {
         super(WebBeansType.USERTRANSACTION);
         addApiType(Object.class);

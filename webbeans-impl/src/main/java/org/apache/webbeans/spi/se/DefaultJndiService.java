@@ -29,7 +29,7 @@ import org.apache.webbeans.spi.JNDIService;
  *
  * @see org.apache.webbeans.spi.ee.JNDIServiceEnterpriseImpl
  */
-public class JNDIServiceStaticImpl implements JNDIService
+public class DefaultJndiService implements JNDIService
 {
 
     private HashMap<String, Object> jndiContent = new HashMap<String, Object>(); 
