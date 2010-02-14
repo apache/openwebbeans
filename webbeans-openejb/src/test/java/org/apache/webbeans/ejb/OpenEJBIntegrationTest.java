@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.ejb;
 
+import java.lang.reflect.Field;
 import java.util.Properties;
 
 import javax.naming.Context;
@@ -46,15 +47,17 @@ public class OpenEJBIntegrationTest extends TestCase{
         p.put("movieDatabaseUnmanaged.JdbcUrl", "jdbc:hsqldb:mem:moviedb");
         p.put("movieDatabaseUnmanaged.JtaManaged", "false");
         
-        Context context = new InitialContext(p);
+        new InitialContext(p);
 
         ResourceFactory rf = ResourceFactory.getInstance();
         
         Class<TestBean> c = TestBean.class;
-        EntityManagerFactory emf = (EntityManagerFactory) rf.getResourceObject(c.getField("emf"));
+        Field field = c.getField("emf");
+        EntityManagerFactory emf = (EntityManagerFactory) rf.getResource(field.getType(), field.getDeclaredAnnotations());
         Assert.assertNotNull( emf );
         
-        EntityManager em = (EntityManager) rf.getResourceObject(c.getField("em"));
+        field = c.getField("em");
+        EntityManager em = (EntityManager) rf.getResource(field.getType(), field.getDeclaredAnnotations());
         Assert.assertNotNull( em );
     }
 

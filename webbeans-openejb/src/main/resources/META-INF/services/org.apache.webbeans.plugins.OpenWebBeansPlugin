@@ -19,3 +19,4 @@
 # JMS integration into OpenWebBeans
 # this file contains information for java.util.ServiceLoader
 org.apache.webbeans.ejb.EjbPlugin
+org.apache.webbeans.ejb.resource.OpenEjbResourcePlugin

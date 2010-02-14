@@ -36,7 +36,7 @@
 		
 		<dependency>
 		    <groupId>org.apache.geronimo.specs</groupId>
-		    <artifactId>geronimo-el_1.0_spec</artifactId>
+		    <artifactId>geronimo-el_2.2_spec</artifactId>
 		    <scope>test</scope>
 		</dependency>
 		
@@ -57,8 +57,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.5</version>
-			<scope>test</scope>
 		</dependency>
 		
 	</dependencies>

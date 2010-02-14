@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.ejb.resource;
 
-import java.lang.reflect.Field;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.annotation.Resource;
@@ -32,6 +32,7 @@ import javax.xml.ws.WebServiceRef;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.persistence.JtaEntityManager;
 import org.apache.openejb.persistence.JtaEntityManagerRegistry;
+import org.apache.webbeans.util.AnnotationUtil;
 
 
 class ResourceInjectionProcessor
@@ -43,52 +44,49 @@ class ResourceInjectionProcessor
         this.context = context;
     }
 
-    public Object getResourceObject(Field field) throws IllegalAccessException, InvocationTargetException, NamingException
+    public <T> T getResourceObject(Class<T> resourceType, Annotation[] resourceAnns) throws IllegalAccessException, InvocationTargetException, NamingException
     {
+        Object resource = null;
+        
         if (context == null)
         {
             // No resource injection
             return null;
         }
 
-        if (field.isAnnotationPresent(Resource.class))
+        if (AnnotationUtil.hasAnnotation(resourceAnns, Resource.class))
         {
-            Resource annotation = field.getAnnotation(Resource.class);
-            
-            return lookupFieldResource(context, "openejb/Resource/"+annotation.name());
+            Resource annotation = AnnotationUtil.getAnnotation(resourceAnns, Resource.class);            
+            resource= lookupFieldResource(context, "openejb/Resource/"+annotation.name());
             
         }
         
-        if (field.isAnnotationPresent(EJB.class))
+        if (AnnotationUtil.hasAnnotation(resourceAnns, EJB.class))
         {
-            EJB annotation = field.getAnnotation(EJB.class);
-            
-            return lookupFieldResource(context, annotation.name());
+            EJB annotation = AnnotationUtil.getAnnotation(resourceAnns, EJB.class);            
+            resource = lookupFieldResource(context, annotation.name());
         }
         
-        if (field.isAnnotationPresent(WebServiceRef.class))
+        if (AnnotationUtil.hasAnnotation(resourceAnns, WebServiceRef.class))
         {
-            WebServiceRef annotation = field.getAnnotation(WebServiceRef.class);
-            
-            return lookupFieldResource(context, annotation.name());
+            WebServiceRef annotation = AnnotationUtil.getAnnotation(resourceAnns, WebServiceRef.class);            
+            resource = lookupFieldResource(context, annotation.name());
         }
         
-        if (field.isAnnotationPresent(PersistenceContext.class))
+        if (AnnotationUtil.hasAnnotation(resourceAnns, PersistenceContext.class))
         {
-            PersistenceContext annotation = field.getAnnotation(PersistenceContext.class);
-            
-            return this.getPersistenceContext(context, annotation.unitName());
+            PersistenceContext annotation = AnnotationUtil.getAnnotation(resourceAnns, PersistenceContext.class);            
+            resource = this.getPersistenceContext(context, annotation.unitName());
             
         }
         
-        if (field.isAnnotationPresent(PersistenceUnit.class))
+        if (AnnotationUtil.hasAnnotation(resourceAnns, PersistenceUnit.class))
         {
-            PersistenceUnit annotation = field.getAnnotation(PersistenceUnit.class);
-            
-            return this.getPersistenceUnit(context, annotation.unitName());
+            PersistenceUnit annotation = AnnotationUtil.getAnnotation(resourceAnns, PersistenceUnit.class);            
+            resource = this.getPersistenceUnit(context, annotation.unitName());
         }
         
-        return null;
+        return resourceType.cast(resource);
     }
 
     /**

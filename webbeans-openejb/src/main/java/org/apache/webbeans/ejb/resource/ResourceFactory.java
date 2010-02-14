@@ -13,15 +13,19 @@
  */
 package org.apache.webbeans.ejb.resource;
 
-import java.lang.reflect.Field;
+import java.lang.annotation.Annotation;
 
 import javax.naming.Context;
+import javax.naming.NamingException;
 
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
+import org.apache.webbeans.logger.WebBeansLogger;
 
 public class ResourceFactory
 {
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ResourceFactory.class);
+    
     private static ResourceFactory factory = null;
     
     private ResourceInjectionProcessor processor = null;
@@ -52,15 +56,29 @@ public class ResourceFactory
         return factory;
     }
     
-    public Object getResourceObject(Field field) throws RuntimeException
+    public <T> T getResource(Class<T> resourceType,Annotation[] resoAnnotations) throws Exception
     {
         try
         {
-            return this.processor.getResourceObject(field);   
+            return this.processor.getResourceObject(resourceType, resoAnnotations);   
             
         } catch(Exception e)
         {
-            throw new RuntimeException(e);
+           throw e;
+        }
+    }
+    
+    public void close()
+    {
+        try
+        {
+            context.close();
+            factory = null;
+            processor = null;
+        }
+        catch (NamingException e)
+        {
+            logger.warn("Unable to clear ResourceFactory",e);
         }
     }
 
