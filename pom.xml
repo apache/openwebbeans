@@ -408,62 +408,75 @@
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
-				<version>1.2.14</version>
+				<version>${log4j.version}</version>
 			</dependency>
 
 			<dependency>
 			    <groupId>org.apache.geronimo.specs</groupId>
 			    <artifactId>geronimo-jaxws_2.1_spec</artifactId>
-			    <version>1.0</version>
+			    <version>${geronimo_jaxws.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-servlet_2.5_spec</artifactId>
-				<version>1.2</version>
+				<version>${geronimo_servlet.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>dom4j</groupId>
 				<artifactId>dom4j</artifactId>
-				<version>1.6.1</version>
+				<version>${dom4j.version}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>org.apache.geronimo.specs 
-				</groupId>
+				<groupId>org.apache.geronimo.specs</groupId> 
 				<artifactId>geronimo-ejb_3.0_spec</artifactId>
-				<version>1.0-M1</version>
+				<version>${geronimo_ejb.version}</version>
 			</dependency>
+
+                        <dependency>
+                                <groupId>javax.annotation</groupId>
+                                <artifactId>jsr250-api</artifactId>
+                                <version>${javax.annot.version}</version>
+                        </dependency>
+
 
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-el_1.0_spec</artifactId>
-				<version>1.0-M1</version>
+				<artifactId>geronimo-el_2.2_spec</artifactId>
+				<version>${geronimo_el.version}</version>
 			</dependency>
+
+		        <dependency>
+                		<groupId>org.apache.geronimo.specs</groupId>
+		                <artifactId>geronimo-validation_1.0_spec</artifactId>
+                		<version>${geronimo_validation.version}</version>
+		        </dependency>
+
 
 			<dependency>
 				<groupId>org.apache.myfaces.core</groupId>
 				<artifactId>myfaces-api</artifactId>
-				<version>2.0.0-beta</version>
+				<version>${myfaces.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.myfaces.core</groupId>
 				<artifactId>myfaces-impl</artifactId>
-				<version>2.0.0-beta</version>
+				<version>${myfaces.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>javassist</groupId>
 				<artifactId>javassist</artifactId>
-				<version>3.8.0.GA</version>
+				<version>${javassist.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>net.sf.scannotation</groupId>
 				<artifactId>scannotation</artifactId>
-				<version>1.0.2</version>
+				<version>${scannatation.version}</version>
 				<exclusions>
                                   <exclusion>
   				  <groupId>javassist</groupId>
@@ -480,33 +493,33 @@
 			</dependency>
 
 			<dependency>
-				<groupId>javax.annotation</groupId>
-				<artifactId>jsr250-api</artifactId>
-				<version>1.0</version>
+				<groupId>org.apache.geronimo.specs</groupId>
+				<artifactId>geronimo-annotation_1.1_spec</artifactId>
+				<version>${geronimo_annotation.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-jpa_2.0_spec</artifactId>
-				<version>1.0-PFD2</version>
+				<version>${geronimo_jpa.version}</version>
 			</dependency>
 
 			<dependency>
 			    <groupId>org.apache.geronimo.specs</groupId>
 			    <artifactId>geronimo-interceptor_1.1_spec</artifactId>
-			    <version>1.0.0-EA1-SNAPSHOT</version>
+			    <version>${geronimo_interceptor.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-jta_1.1_spec</artifactId>
-				<version>1.1.1</version>
+				<version>${geronimo_jta.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-jsp_2.1_spec</artifactId>
-				<version>1.0.1</version>
+				<version>${geronimo_jsp.version}</version>
 			</dependency>
 
 			<dependency>
@@ -543,6 +556,12 @@
 
                         <dependency>
                                 <groupId>org.apache.openwebbeans</groupId>
+                                <artifactId>openwebbeans-spi</artifactId>
+                                <version>${openwebbeans.version}</version>
+                        </dependency>
+
+                        <dependency>
+                                <groupId>org.apache.openwebbeans</groupId>
                                 <artifactId>openwebbeans-resource</artifactId>
                                 <version>${openwebbeans.version}</version>
                         </dependency>
@@ -557,13 +576,13 @@
 			<dependency>
 				<groupId>org.apache.openejb</groupId>
 				<artifactId>openejb-core</artifactId>
-				<version>3.1.2</version>
+				<version>${openejb.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.apache.openejb</groupId>
 				<artifactId>openejb-tomcat-catalina</artifactId>
-				<version>3.1.2</version>
+				<version>${openejb.version}</version>
 			</dependency>
 
 		</dependencies>
@@ -591,8 +610,25 @@
       
 	<properties>
           <openwebbeans.version>1.0.0-SNAPSHOT</openwebbeans.version>
-          <geronimo_cdi.version>1.0-SNAPSHOT</geronimo_cdi.version>
-          <geronimo_atinject.version>1.0-SNAPSHOT</geronimo_atinject.version>
+          <log4j.version>1.2.14</log4j.version>
+          <geronimo_jaxws.version>1.0</geronimo_jaxws.version>
+          <geronimo_servlet.version>1.2</geronimo_servlet.version>
+          <dom4j.version>1.6.1</dom4j.version>
+          <geronimo_ejb.version>1.0.1</geronimo_ejb.version>
+          <geronimo_el.version>1.0-beta</geronimo_el.version>
+          <scannatation.version>1.0.2</scannatation.version>
+          <geronimo_annotation.version>1.1</geronimo_annotation.version>
+          <geronimo_jpa.version>1.0-PFD2</geronimo_jpa.version>
+          <geronimo_jta.version>1.1.1</geronimo_jta.version>
+          <geronimo_jsp.version>1.0.1</geronimo_jsp.version>
+          <geronimo_cdi.version>1.0-beta</geronimo_cdi.version>
+          <geronimo_atinject.version>1.0-beta</geronimo_atinject.version>
+          <geronimo_interceptor.version>1.0.0-beta</geronimo_interceptor.version>
+          <geronimo_validation.version>1.0</geronimo_validation.version>
+          <javassist.version>3.11.0.GA</javassist.version>
+          <openejb.version>3.1.2</openejb.version>
+          <myfaces.version>2.0.0-beta</myfaces.version>
+          <javax.annot.version>1.0</javax.annot.version>
 	  <siteId>/OWB/1.0.0-M3-rc2/plugins</siteId>
 	</properties>
 
