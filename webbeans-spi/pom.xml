@@ -38,7 +38,7 @@
 
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-el_1.0_spec</artifactId>
+            <artifactId>geronimo-el_2.2_spec</artifactId>
             <optional>true</optional>
         </dependency>
 
@@ -54,20 +54,17 @@
         </dependency>
         <dependency>
         	<groupId>org.apache.geronimo.specs</groupId>
-        	<artifactId>geronimo-cdi_1.0_spec</artifactId>
-        	<version>1.0-SNAPSHOT</version>
+        	<artifactId>geronimo-jcdi_1.0_spec</artifactId>
         	<optional>true</optional>
         </dependency>
         <dependency>
         	<groupId>org.apache.geronimo.specs</groupId>
         	<artifactId>geronimo-jta_1.1_spec</artifactId>
-        	<version>1.1.1</version>
         	<optional>true</optional>
         </dependency>
         <dependency>
         	<groupId>org.apache.geronimo.specs</groupId>
         	<artifactId>geronimo-validation_1.0_spec</artifactId>
-        	<version>1.0-EA6-SNAPSHOT</version>
         	<optional>true</optional>
         </dependency>
       
