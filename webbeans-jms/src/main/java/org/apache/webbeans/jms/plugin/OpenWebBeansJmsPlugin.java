@@ -21,14 +21,14 @@ import org.apache.webbeans.jms.component.JmsComponentFactory;
 import org.apache.webbeans.jms.component.JmsBean;
 import org.apache.webbeans.jms.util.JmsProxyHandler;
 import org.apache.webbeans.jms.util.JmsUtil;
-import org.apache.webbeans.plugins.AbstractOpenWebBeansPlugin;
+import org.apache.webbeans.plugins.AbstractOwbPlugin;
 
 /**
  * JMS Plugin for JMS related components.
  * 
  * @version $Rev$ $Date$
  */
-public class OpenWebBeansJmsPlugin extends AbstractOpenWebBeansPlugin implements org.apache.webbeans.plugins.OpenWebBeansJmsPlugin
+public class OpenWebBeansJmsPlugin extends AbstractOwbPlugin implements org.apache.webbeans.plugins.OpenWebBeansJmsPlugin
 {
 
     public OpenWebBeansJmsPlugin()
