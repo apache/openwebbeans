@@ -29,7 +29,6 @@
 	<artifactId>openwebbeans-tck</artifactId>
 	<name>Apache OpenWebBeans :: OpenWebBeans JSR-299 TCK</name>
 	<packaging>jar</packaging>
-	<version>1.0.0-incubating-SNAPSHOT</version>
 	<description>All TCK tests for the  OpenWebBeans Implementation</description>
 
     <properties>
@@ -91,6 +90,11 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.openwebbeans</groupId>
+        	<artifactId>openwebbeans-ejb</artifactId>
+        	<version>1.0.0-SNAPSHOT</version>
         </dependency>
 
 
@@ -173,14 +177,6 @@
 								<artifactItem>
 									<groupId>org.apache.openwebbeans</groupId>
 									<artifactId>openwebbeans-resource</artifactId>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
-								</artifactItem>
-							
-								<!-- OWB Geronimo Plugin Package -->
-								<artifactItem>
-									<groupId>org.apache.openwebbeans</groupId>
-									<artifactId>openwebbeans-geronimo</artifactId>
 									<overWrite>true</overWrite>
 									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
 								</artifactItem>
