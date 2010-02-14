@@ -21,7 +21,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.webbeans.spi.ConversationService;
 import org.apache.webbeans.util.JSFUtil;
 
-public class JSFConversationServiceImpl implements ConversationService
+public class DefaultConversationService implements ConversationService
 {
 
     public String getConversationId()
