@@ -37,6 +37,7 @@ import javax.interceptor.InterceptorBinding;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.plugins.OpenWebBeansResourcePlugin;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
@@ -816,7 +817,8 @@ public final class AnnotationUtil
      * @param annotation
      * @return the Annotation with the given type or <code>null</code> if no such found.
      */
-    public static Annotation getAnnotation(Annotation[] anns, Class<? extends Annotation> annotation)
+    @SuppressWarnings("unchecked")
+    public static <T extends Annotation> T getAnnotation(Annotation[] anns, Class<T> annotation)
     {
         Asserts.assertNotNull(anns, "anns argument can not be null");
         Asserts.assertNotNull(annotation, "annotation argument can not be null");
@@ -824,7 +826,7 @@ public final class AnnotationUtil
         {
             if (annot.annotationType().equals(annotation))
             {
-                return annot;
+                return (T)annot;
             }
         }
 
@@ -1027,9 +1029,12 @@ public final class AnnotationUtil
         
         for (OpenWebBeansPlugin plugin : plugins)
         {
-            if (plugin.isResourceAnnotation(clazz))
+            if(plugin instanceof OpenWebBeansResourcePlugin)
             {
-                return true;
+                if (((OpenWebBeansResourcePlugin)plugin).isResourceAnnotation(clazz))
+                {
+                    return true;
+                }                
             }
         }
 

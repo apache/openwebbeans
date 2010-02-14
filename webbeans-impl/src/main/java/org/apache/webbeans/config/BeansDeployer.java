@@ -287,6 +287,8 @@ public class BeansDeployer
         {
             for (Bean<?> bean : beans)
             {
+                checkPassivationScope(bean);
+                
                 //Configure decorator and interceptor stack for ManagedBeans
                 if((bean instanceof AbstractInjectionTargetBean) && 
                         !(bean instanceof NewBean) &&
@@ -497,27 +499,16 @@ public class BeansDeployer
     /**
      * Check passivations.
      */
-    protected void checkPassivationScopes()
+    protected void checkPassivationScope(Bean<?> beanObj)
     {
-        Set<Bean<?>> beans = BeanManagerImpl.getManager().getBeans();
-
-        if (beans != null && beans.size() > 0)
+        if (beanObj instanceof ManagedBean)
         {
-            Iterator<Bean<?>> itBeans = beans.iterator();
-            while (itBeans.hasNext())
+            ManagedBean<?> bean = (ManagedBean<?>) beanObj;
+            if(BeanManagerImpl.getManager().isPassivatingScope(bean.getScope()))
             {
-                Object beanObj = itBeans.next();
-                if (beanObj instanceof ManagedBean)
+                if(!bean.isPassivationCapable())
                 {
-                    ManagedBean<?> component = (ManagedBean<?>) beanObj;
-                    NormalScope scope = component.getScope().getAnnotation(NormalScope.class);
-                    if(scope != null)
-                    {
-                        if (scope.passivating())
-                        {
-                            // TODO
-                        }                        
-                    }
+                    throw new WebBeansConfigurationException("Bean : " + bean.toString()+  " must be passivation capable becuase it defines passivation capable scope");
                 }
             }
         }

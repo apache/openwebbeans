@@ -147,7 +147,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         if(isDefaultMetaDataProvider())
         {
             DefinitionUtil.defineScopeType(this.bean, this.beanAnnotations, errorMessage);
-            WebBeansUtil.checkPassivationScope(getBean(), getBean().getScope());
         }
         else
         {

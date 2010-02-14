@@ -56,6 +56,7 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
@@ -65,6 +66,7 @@ import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
+import org.apache.webbeans.inject.resource.ResourceModel;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -554,12 +556,7 @@ public final class DefinitionUtil
     {
         Set<ProducerFieldBean<?>> producerFields = new HashSet<ProducerFieldBean<?>>();
         Field[] fields = component.getReturnType().getDeclaredFields();
-
-        // From normal class
         createProducerField(component, producerFields, fields);
-
-        // From @Realizations
-        fields = new Field[0];
 
         return producerFields;
     }
@@ -567,12 +564,12 @@ public final class DefinitionUtil
     private static void createProducerField(InjectionTargetBean<?> component, Set<ProducerFieldBean<?>> producerFields, Field[] fields)
     {
         for (Field field : fields)
-        {            
+        {        
+            Type genericType = field.getGenericType();
+            
             // Producer field
             if (AnnotationUtil.hasAnnotation(field.getDeclaredAnnotations(), Produces.class))
-            {
-                Type genericType = field.getGenericType();
-                
+            {                
                 if(ClassUtil.isParametrizedType(genericType))
                 {
                     if(!ClassUtil.checkParametrizedType((ParameterizedType)genericType))
@@ -587,8 +584,7 @@ public final class DefinitionUtil
                 if (newComponent != null)
                 {
                     producerFields.add(newComponent);
-                }
-
+                }                    
             }
 
         }
@@ -691,7 +687,14 @@ public final class DefinitionUtil
         if(AnnotationUtil.hasResourceAnnotation(field.getDeclaredAnnotations()))
         {
             //Check for valid resource annotation
-            WebBeansUtil.checkForValidResources(field.getGenericType(), field.getType(), field.getName(), field.getDeclaredAnnotations());
+            WebBeansUtil.checkForValidResources(field.getDeclaringClass(), field.getType(), field.getName(), field.getDeclaredAnnotations());
+            ResourceModel<T> resourceModel = new ResourceModel();
+            resourceModel.setName(field.getName());
+            resourceModel.setOwner(parent.getReturnType());
+            resourceModel.setResourceAnnotations(field.getDeclaredAnnotations());
+            resourceModel.setResourceType((Class<T>)field.getType());
+            resourceModel.setMember(field);
+            parent.addInjectableResourceModel(resourceModel);
             
             //Can not define EL name
             if(field.isAnnotationPresent(Named.class))
@@ -699,13 +702,13 @@ public final class DefinitionUtil
                 throw new WebBeansConfigurationException("Resource producer field : " + field + " can not define EL name");
             }
             
-            component.setProducerField(field);
-            component.addApiType(Object.class);
-            component.addApiType(field.getType());
-            defineQualifiers(component, field.getDeclaredAnnotations());
-            component.setImplScopeType(new DependentScopeLiteral());
+            ResourceBean<T> resourceBean = new ResourceBean((Class<T>)field.getType(),parent);
             
-            return component;
+            defineProducerMethodApiTypes(resourceBean, field.getGenericType() , field.getDeclaredAnnotations());
+            defineQualifiers(resourceBean, field.getDeclaredAnnotations());
+            resourceBean.setImplScopeType(new DependentScopeLiteral());
+            
+            return resourceBean;
         }
         
         component.setProducerField(field);

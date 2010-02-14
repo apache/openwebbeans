@@ -13,13 +13,7 @@
  */
 package org.apache.webbeans.plugins;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
-import javax.enterprise.inject.spi.Bean;
-
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.WebBeansPassivationException;
 
 /**
  * <p>Interface which all OpenWebBeans plugins has to implement to 
@@ -29,14 +23,6 @@ import org.apache.webbeans.exception.WebBeansPassivationException;
  * <ol>
  *  <li>
  *    plugin lifecycle like {@code #startUp()} and {@code #shutDown()}
- *  </li>
- *  <li>
- *    check functions which will be called when a class is scanned
- *    like {@code #isSimpleBeanClass(Class)}
- *  </li>
- *  <li>
- *    injection preparation functions will be called once when
- *    the bean is being scanned like TODO
  *  </li>
  *  <li>
  *    injection execution will be called every time a been get's
@@ -70,53 +56,4 @@ public interface OpenWebBeansPlugin
      * @throws WebBeansConfigurationException if the given clazz cannot be used as simple web bean.
      */
     public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException;
-    
-
-    /**
-     * Check whether the given annotation class represents a resource which
-     * can be injected by this plugin.
-     * @param annotationClass which should be ckecked
-     * @return <code>true</code> if this plugin handles the resource represented by this annotation
-     */
-    public boolean isResourceAnnotation(Class<? extends Annotation> annotationClass);
-
-    /**
-     * Check whether the given beans passivation capabilities are enough.
-     * This function will be called if a bean has a lifecycle (scope) which
-     * requires that the bean must be passivation capable.
-     * 
-     * Usually beans of such scopes have to be {@link java.io.Serializable}.
-     * For specific beans, like e.g. EJB Beans, there might be other criterias.
-     * 
-     * @param annotationClass which should be ckecked
-     * @return <code>true</code> if this plugin handles the bean and all is ok, <code>false</code>
-     *         if the plugin doesn't handle this type of component
-     * @throws WebBeansPassivationException if the component should be able to be passivated  
-     */
-    public boolean isPassivationCapable(Bean<?> component) throws WebBeansPassivationException;
-
-    /**
-     * Check conditions for the resources.
-     * 
-     * @param type
-     * @param clazz
-     * @param name
-     * @param annotations annotations
-     * @throws WebBeansConfigurationException if resource annotations exists and do not fit to the fields type, etc.
-     * @see #isResourceAnnotation(Class)
-     */
-    
-    public void checkForValidResources(Type type, Class<?> clazz, String name, Annotation[] annotations);
-    
-    /**
-     * Get a resource to inject.
-     * A resource is not a usual bean but one predefined one like 
-     * javax.persistence.PersistenceUnit, javax.persistence.PersistenceContext
-     * etc.
-     * @param type the bean type
-     * @param annotations all the annotations which are defined on the member. 
-     * @return the bean to inject or <code>null</code> if non found.  
-     */
-    public Object injectResource(Type type, Annotation[] annotations);
-
 }

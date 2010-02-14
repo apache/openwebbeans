@@ -130,7 +130,6 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.exception.WebBeansPassivationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
@@ -142,6 +141,7 @@ import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.plugins.OpenWebBeansResourcePlugin;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -512,23 +512,28 @@ public final class WebBeansUtil
         return as;
     }
 
-    /**
-     * Check conditions for the resources.
-     * 
-     * @param annotations annotations
-     * @throws WebBeansConfigurationException if resource annotations exists and do not fit to the fields type, etc.
-     * @see AnnotationUtil#isResourceAnnotation(Class)
-     */
-    public static void checkForValidResources(Type type, Class<?> clazz, String name, Annotation[] annotations)
+ 
+    public static void checkForValidResources(Class<?> owner, Class<?> resourceClass, String name, Annotation[] annotations)
     {
-        Asserts.assertNotNull(type, "Type argument can not be null");
-        Asserts.nullCheckForClass(clazz);
+        Asserts.assertNotNull(owner, "Type argument can not be null");
+        Asserts.nullCheckForClass(resourceClass);
         Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
         List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
         for (OpenWebBeansPlugin plugin : plugins)
         {
-            plugin.checkForValidResources(type, clazz, name, annotations);
+            if(plugin instanceof OpenWebBeansResourcePlugin)
+            {
+                OpenWebBeansResourcePlugin rpl = (OpenWebBeansResourcePlugin)plugin;
+                for(Annotation ann : annotations)
+                {
+                    if(rpl.isResourceAnnotation(ann.annotationType()))
+                    {
+                        rpl.validateResource(owner, name, resourceClass, annotations);
+                        return;
+                    }
+                }
+            }
         }
     }
     
@@ -1951,41 +1956,6 @@ public final class WebBeansUtil
         
         return true;
     }
-
-    public static <T> void checkPassivationScope(AbstractOwbBean<T> component, Class<? extends Annotation> scope)
-    {
-        Asserts.assertNotNull(component, "component parameter can not be null");
-
-        if(scope != null)
-        {
-            boolean passivating = BeanManagerImpl.getManager().isPassivatingScope(scope);
-            Class<T> clazz = component.getReturnType();
-
-            if (passivating)
-            {
-                List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
-                for (OpenWebBeansPlugin plugin : plugins)
-                {
-                    if (plugin.isPassivationCapable(component))
-                    {
-                        // passivation capabilities are ok.
-                        return;
-                    }
-                }
-
-                // if no plugin did check some special conditions, the bean must be Serializable
-                if (!component.isSerializable())
-                {
-                    throw new WebBeansPassivationException("WebBeans component implementation class : " + clazz.getName() + 
-                            " with passivating scope @" + scope.toString() + " must be Serializable");
-                }
-
-                //X TODO we might check the non-transient childs of the bean for serializability?
-                
-            }            
-        }        
-    }
-
     
     public static <T> void defineInterceptor(ManagedBeanCreatorImpl<T> managedBeanCreator, AnnotatedType<T> annotatedType)
     {
@@ -2733,6 +2703,29 @@ public final class WebBeansUtil
         }
         
         return managedBean;
+    }
+    
+    public static <T> T getResource(Class<?> owner, Class<T> resourceType, String name, Annotation[] resourceAnns)
+    {
+        T instance = null;
+        OpenWebBeansResourcePlugin[] plugins = PluginLoader.getInstance().getResourcePlugins();
+        for(OpenWebBeansResourcePlugin plugin : plugins)
+        {
+            try
+            {
+                instance = plugin.getResource(owner, name, resourceType, resourceAnns);
+                if(instance != null)
+                {
+                    break;
+                }
+                
+            }catch(Exception e)
+            {
+                //Ignore
+            }
+        }
+        
+        return instance;
     }
     
 }

@@ -59,6 +59,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
@@ -71,6 +72,7 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
+import org.apache.webbeans.inject.resource.ResourceModel;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
@@ -404,17 +406,24 @@ public final class WebBeansAnnotatedTypeUtil
                     }
                 }
                 
-                ProducerFieldBean<X> producerFieldBean = new ProducerFieldBean<X>(bean, (Class<X>)ClassUtil.getClass(annotatedField.getBaseType()));
                 Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(annotatedField.getAnnotations());
                 Field field = annotatedField.getJavaMember();
                 
-                producerFieldBean.setProducerField(field);
                 //Producer field for resource
                 if(AnnotationUtil.hasResourceAnnotation(anns))
                 {
-                    
                     //Check for valid resource annotation
-                    WebBeansUtil.checkForValidResources(annotatedField.getBaseType(), field.getType(), field.getName(), anns);
+                    WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
+                    ResourceModel<X> resourceModel = new ResourceModel();
+                    resourceModel.setName(field.getName());
+                    resourceModel.setOwner(annotatedField.getDeclaringType().getJavaClass());
+                    resourceModel.setResourceAnnotations(anns);
+                    resourceModel.setResourceType((Class<X>)field.getType());
+                    resourceModel.setMember(field);
+                    bean.addInjectableResourceModel(resourceModel);
+                    
+                    ResourceBean<X> resourceBean = new ResourceBean((Class<X>)field.getType(),bean);                    
+                    
                     
                     //Can not define EL name
                     if(annotatedField.isAnnotationPresent(Named.class))
@@ -422,12 +431,17 @@ public final class WebBeansAnnotatedTypeUtil
                         throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
                     }
                     
-                    producerFieldBean.getTypes().addAll(annotatedField.getTypeClosure());
-                    DefinitionUtil.defineQualifiers(producerFieldBean, anns);                    
-                    producerFieldBean.setImplScopeType(new DependentScopeLiteral());                    
+                    resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
+                    DefinitionUtil.defineQualifiers(resourceBean, anns);                    
+                    resourceBean.setImplScopeType(new DependentScopeLiteral());            
+                    
+                    producerBeans.add(resourceBean);                    
                 }
                 else
                 {
+                    ProducerFieldBean<X> producerFieldBean = new ProducerFieldBean<X>(bean, (Class<X>)ClassUtil.getClass(annotatedField.getBaseType()));
+                    producerFieldBean.setProducerField(field);
+                    
                     if (ClassUtil.isPrimitive(ClassUtil.getClass(annotatedField.getBaseType())))
                     {
                         producerFieldBean.setNullable(false);
@@ -443,9 +457,9 @@ public final class WebBeansAnnotatedTypeUtil
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());        
                     DefinitionUtil.defineQualifiers(producerFieldBean, anns);
                     DefinitionUtil.defineName(producerFieldBean, anns, WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
+                    
+                    producerBeans.add(producerFieldBean);
                 }
-                
-                producerBeans.add(producerFieldBean);
             }
         }
         

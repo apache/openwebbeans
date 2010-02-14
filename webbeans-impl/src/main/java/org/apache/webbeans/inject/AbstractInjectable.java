@@ -13,7 +13,6 @@
  */
 package org.apache.webbeans.inject;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -32,7 +31,6 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -104,15 +102,6 @@ public abstract class AbstractInjectable implements Injectable
         return injected;
     }
     
-
-    /**
-     * check if any of the given resources is a resource annotation
-     * @see AnnotationUtil#isResourceAnnotation(Class)
-     */
-    protected boolean isResource(Annotation... annotations)
-    {
-        return AnnotationUtil.hasResourceAnnotation(annotations); 
-    }
         
     /**
      * Returns injection points related with given member type of the bean.

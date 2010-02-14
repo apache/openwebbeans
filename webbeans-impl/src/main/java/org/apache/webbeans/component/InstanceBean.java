@@ -52,5 +52,17 @@ public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
             local.set(null);
         }
     }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.component.AbstractOwbBean#isPassivationCapable()
+     */
+    @Override
+    public boolean isPassivationCapable()
+    {
+        return true;
+    }
+    
+    
     
 }

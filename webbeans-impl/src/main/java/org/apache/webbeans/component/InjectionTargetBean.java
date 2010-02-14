@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
+import org.apache.webbeans.inject.resource.ResourceModel;
 import org.apache.webbeans.intercept.InterceptorData;
 
 /**
@@ -164,6 +165,18 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
      * @return interceptor stack
      */
     public List<InterceptorData> getInterceptorStack();
+    
+    /**
+     * Gets injectable resources.
+     * @return list of injectable resource.
+     */
+    public List<ResourceModel<?>> getInjectableResourceModels();
+    
+    /**
+     * Sets models.
+     * @param model model
+     */
+    public void addInjectableResourceModel(ResourceModel<?> model);
     
     /**
      * Gets decorator stack of bean instance.

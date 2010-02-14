@@ -56,5 +56,14 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
         local.remove();
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.component.AbstractOwbBean#isPassivationCapable()
+     */
+    @Override
+    public boolean isPassivationCapable()
+    {
+        return true;
+    }
+    
     
 }

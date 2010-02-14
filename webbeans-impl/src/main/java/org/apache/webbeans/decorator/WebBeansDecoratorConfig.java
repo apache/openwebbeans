@@ -46,12 +46,8 @@ public final class WebBeansDecoratorConfig
 
     public static <T> void configureDecoratorClass(AbstractInjectionTargetBean<T> delegate)
     {
-        logger.info(OWBLogConst.INFO_0011, new Object[]{logger.getTokenString(OWBLogConst.TEXT_ANNO_CLASS), delegate.getReturnType().getName()});
-
+        logger.debug("Configuring decorator class : " + delegate.getReturnType());
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
-
-        logger.info(OWBLogConst.INFO_0012, new Object[]{logger.getTokenString(OWBLogConst.TEXT_ANNO_CLASS), delegate.getReturnType()});
-
         BeanManagerImpl.getManager().addDecorator(decorator);
     }
 

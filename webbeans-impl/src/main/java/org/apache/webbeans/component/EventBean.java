@@ -90,4 +90,14 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
                         
         return instance;
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.component.AbstractOwbBean#isPassivationCapable()
+     */
+    @Override
+    public boolean isPassivationCapable()
+    {
+        return true;
+    }
+    
 }

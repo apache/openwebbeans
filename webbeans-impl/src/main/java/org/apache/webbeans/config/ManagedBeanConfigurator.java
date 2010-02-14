@@ -121,7 +121,6 @@ public final class ManagedBeanConfigurator
         DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName() + " stereotypes must declare same @Scope annotations");
         
         WebBeansUtil.checkGenericType(component);
-        WebBeansUtil.checkPassivationScope(component, component.getScope());
         DefinitionUtil.defineQualifiers(component, clazzAnns);
         DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
 

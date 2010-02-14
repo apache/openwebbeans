@@ -106,9 +106,11 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T>
                     return false;
                 }
             }
+            
+            return true;
         }
         
-        return true;
+        return false;
     }
 
 

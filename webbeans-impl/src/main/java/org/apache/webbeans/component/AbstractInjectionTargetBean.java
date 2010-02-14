@@ -36,6 +36,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.inject.resource.ResourceModel;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorType;
@@ -77,6 +78,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     
     /**Fully initialize, true as default*/
     private boolean fullyInitialize = true;
+    
+    /**Injetable resource models*/
+    private List<ResourceModel<?>> injectableResources = new ArrayList<ResourceModel<?>>();
     
     /**
      * Holds the all of the interceptor related data, contains around-invoke,
@@ -226,6 +230,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     protected void afterConstructor(T instance, CreationalContext<T> creationalContext)
     {
+        //Inject resources
+        injectResources(instance, creationalContext);
+        
         injectSuperFields(instance, creationalContext);
         injectSuperMethods(instance, creationalContext);
         
@@ -263,13 +270,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     {
         if(getWebBeansType().equals(WebBeansType.MANAGED))
         {
-            //Inject Resources
-            OpenWebBeansResourcePlugin resourcePlugin = PluginLoader.getInstance().getResourcePlugin();
-            if(resourcePlugin != null)
-            {
-                resourcePlugin.injectResources(instance);
-            }
-            
             // Call Post Construct
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
             {
@@ -418,7 +418,34 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public void injectResources(T instance, CreationalContext<T> creationalContext)
     {
-        // TODO Java EE injections
+        if(getWebBeansType().equals(WebBeansType.MANAGED))
+        {
+            for(ResourceModel<?> model : this.injectableResources)
+            {
+                OpenWebBeansResourcePlugin[] resourcePlugins = PluginLoader.getInstance().getResourcePlugins();
+                for(OpenWebBeansResourcePlugin plugin : resourcePlugins)
+                {
+                    boolean accessible = model.getMember().isAccessible();
+                    try
+                    {
+                        Object resource = plugin.getResource(model.getOwner(), model.getName(), model.getResourceType(), model.getResourceAnnotations());
+                        if(resource != null)
+                        {
+                            model.getMember().setAccessible(true);
+                            model.getMember().set(instance, resource);
+                            break;
+                        }
+                        
+                    }catch(Exception e)
+                    {
+                        //Ignore
+                    }finally
+                    {
+                        model.getMember().setAccessible(accessible);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -637,4 +664,19 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     {
         return this.fullyInitialize;
     }    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ResourceModel<?>> getInjectableResourceModels()
+    {
+        return this.injectableResources;
+    }
+    
+    @Override
+    public void addInjectableResourceModel(ResourceModel<?> model)
+    {
+        this.injectableResources.add(model);
+    }
 }

@@ -60,6 +60,20 @@ public class PluginLoader
     public PluginLoader()
     {
     }
+    
+    public OpenWebBeansResourcePlugin[] getResourcePlugins()
+    {
+        List<OpenWebBeansResourcePlugin> res = new ArrayList<OpenWebBeansResourcePlugin>();
+        for(OpenWebBeansPlugin plugin : this.plugins)
+        {
+            if(plugin instanceof OpenWebBeansResourcePlugin)
+            {
+                res.add((OpenWebBeansResourcePlugin)plugin);
+            }
+        }
+        
+        return res.toArray(new OpenWebBeansResourcePlugin[0]);
+    }
 
     /**
      * load and startup all registered plugins.

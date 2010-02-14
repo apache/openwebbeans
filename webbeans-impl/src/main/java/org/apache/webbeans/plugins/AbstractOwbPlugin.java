@@ -16,13 +16,7 @@
  */
 package org.apache.webbeans.plugins;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
-import javax.enterprise.inject.spi.Bean;
-
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.WebBeansPassivationException;
 
 /**
  * Abstract imlpementation of the {@link OpenWebBeansPlugin} interface
@@ -34,55 +28,26 @@ import org.apache.webbeans.exception.WebBeansPassivationException;
  *  method definition.
  *  </p>
  */
-public abstract class AbstractOpenWebBeansPlugin implements OpenWebBeansPlugin
+public abstract class AbstractOwbPlugin implements OpenWebBeansPlugin
 {
-    protected AbstractOpenWebBeansPlugin()
+    protected AbstractOwbPlugin()
     {
         
     }
 
-    /** @{inheritDoc} */
-    public void checkForValidResources(Type type, Class<?> clazz, String name, Annotation[] annotations)
-    {
-        
-        
-    }
-
-    /** @{inheritDoc} */
-    public Object injectResource(Type type, Annotation[] annotations)
-    {
-        return null;
-    }
-
-    /** @{inheritDoc} */
-    public boolean isResourceAnnotation(Class<? extends Annotation> annotationClass)
-    {
-        return false;
-    }
-
-    /** @{inheritDoc} */
-    public boolean isPassivationCapable(Bean<?> component) throws WebBeansPassivationException
-    {
-        return false;
-    }
-    
     /** @{inheritDoc} */
     public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
     {
-        
     }
 
     /** @{inheritDoc} */
     public void shutDown() throws WebBeansConfigurationException
     {
-        
     }
 
     /** @{inheritDoc} */
     public void startUp() throws WebBeansConfigurationException
     {
-        
     }
-
 
 }

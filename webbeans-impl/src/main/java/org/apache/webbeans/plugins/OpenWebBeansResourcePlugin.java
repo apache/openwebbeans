@@ -13,8 +13,44 @@
  */
 package org.apache.webbeans.plugins;
 
+import java.lang.annotation.Annotation;
+
 public interface OpenWebBeansResourcePlugin extends OpenWebBeansPlugin 
 {
-    public void injectResources(Object instance) throws RuntimeException;
+    /**
+     * Given plugin supports injection of resource. 
+     * @param annotationClass annotation class
+     * @return true if supports
+     */
+    public boolean isResourceAnnotation(Class<? extends Annotation> annotationClass);
 
+    /**
+     * Gets resource instance.
+     * @param <T> resource type info
+     * @param owner reource owner
+     * @param name resource member name
+     * @param resourceType resource type
+     * @param resourceAnnoations resource anns
+     * @return resource instance
+     * @throws Exception for exception
+     */
+    <T> T getResource(Class<?> owner, String name, Class<T> resourceType, Annotation[] resourceAnnoations);    
+    
+    /**
+     * Any clear functionality.
+     */
+    void clear();
+    
+    /**
+     * Validate resource.
+     * @param <T> resource type info
+     * @param owner reource owner
+     * @param name resource member name
+     * @param resourceType resource type
+     * @param resourceAnnoations resource anns
+     * @return resource instance
+     * @throws Exception for exception
+     */    
+    <T> void validateResource(Class<?> owner, String name, Class<T> resourceType, Annotation[] resourceAnnoations);
+    
 }

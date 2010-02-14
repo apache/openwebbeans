@@ -43,5 +43,14 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
     {
         this.manager = null;
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.component.AbstractOwbBean#isPassivationCapable()
+     */
+    @Override
+    public boolean isPassivationCapable()
+    {
+        return true;
+    }    
 
 }

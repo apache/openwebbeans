@@ -78,6 +78,9 @@ public class ExtensionTest extends AbstractUnitTest
         getBeanManager().fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
 
         ContextFactory.destroyApplicationContext(servletContext);
+        
+        shutDownContainer();
+        
     }
     
     /**
