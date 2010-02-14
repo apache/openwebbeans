@@ -13,8 +13,9 @@
  */
 package org.apache.webbeans.resource.spi.se;
 
-import java.lang.reflect.Field;
+import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
@@ -26,15 +27,22 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.spi.ResourceService;
+import org.apache.webbeans.util.AnnotationUtil;
 
-public class ResourceServiceImpl implements ResourceService
+public class StandaloneResourceProcessor
 { 
     private static InitialContext context = null;
     
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(ResourceServiceImpl.class);
+    private static WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneResourceProcessor.class);
+    
+    private static final StandaloneResourceProcessor processor = new StandaloneResourceProcessor();
+    
+    /**
+     *  A cache for EntityManagerFactories.
+     */
+    private Map<String, EntityManagerFactory> factoryCache = new ConcurrentHashMap<String, EntityManagerFactory>();    
     
     static
     {
@@ -48,36 +56,43 @@ public class ResourceServiceImpl implements ResourceService
         }
     }
 
-    @Override
-    public Object getResource(Field field) throws WebBeansException
+    public static StandaloneResourceProcessor getProcessor()
+    {
+        return processor;
+    }
+    
+    public <T> T getResource(Class<?> owner, Class<T> resourceClass, Annotation[] resourceAnnotations)
     {
         Object obj = null;
         
-        if (field.isAnnotationPresent(PersistenceContext.class))
+        if (AnnotationUtil.hasAnnotation(resourceAnnotations, PersistenceContext.class))
         {
-            PersistenceContext context = field.getAnnotation(PersistenceContext.class);            
+            PersistenceContext context = AnnotationUtil.getAnnotation(resourceAnnotations, PersistenceContext.class);            
             obj = getPersistenceContext(context.unitName());
-            if (obj == null) {
+            if (obj == null) 
+            {
             	logger.info("Could not find @PersistenceContext with unit name " + context.unitName());
             }
         }
         
-        else if (field.isAnnotationPresent(PersistenceUnit.class))
+        else if (AnnotationUtil.hasAnnotation(resourceAnnotations, PersistenceUnit.class))
         {
-            PersistenceUnit annotation = field.getAnnotation(PersistenceUnit.class);
+            PersistenceUnit annotation = AnnotationUtil.getAnnotation(resourceAnnotations, PersistenceUnit.class);
             
             obj = getPersistenceUnit(annotation.unitName());
-            if (obj == null) {
+            if (obj == null) 
+            {
             	logger.info("Could not find @PersistenceUnit with unit name " + annotation.unitName());
             }
         }
-        else if(field.isAnnotationPresent(Resource.class))
+        else if (AnnotationUtil.hasAnnotation(resourceAnnotations, Resource.class))
         {
-            Resource resource = field.getAnnotation(Resource.class);            
+            Resource resource = AnnotationUtil.getAnnotation(resourceAnnotations, Resource.class);     
             try
             {
                 obj = context.lookup("java:/comp/env/"+ resource.name()); 
-                if (obj == null) {
+                if (obj == null) 
+                {
                 	logger.info("Could not find @Resource with name " + resource.name());
                 }
 
@@ -88,13 +103,21 @@ public class ResourceServiceImpl implements ResourceService
             }             
         }        
         
-        return obj;
+        return resourceClass.cast(obj);
     }
-
-    /**
-     *  A cache for EntityManagerFactories.
-     */
-    private Map<String, EntityManagerFactory> factoryCache = new ConcurrentHashMap<String, EntityManagerFactory>();
+    
+    public <T> void validateResource(Class<?> owner, Class<T> resourceClass, Annotation[] resourceAnnotations)
+    {
+        try
+        {
+            getResource(owner, resourceClass, resourceAnnotations);
+            
+        }catch(Exception e)
+        {
+            logger.error("Unable to get resource with class " + resourceClass + " in " + owner,e);
+            throw new WebBeansConfigurationException("Unable to get resource with class " + resourceClass + " in " + owner,e);
+        }    
+    }
 
     /**
      * {@inheritDoc}
@@ -107,9 +130,7 @@ public class ResourceServiceImpl implements ResourceService
             return factoryCache.get(unitName);
         }
         
-        //X TODO this currently ignores JNDI
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(unitName);
-        
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(unitName);        
         factoryCache.put(unitName, emf);
             
         return emf;
@@ -126,6 +147,23 @@ public class ResourceServiceImpl implements ResourceService
         EntityManager em = emf.createEntityManager();
         
         return em;
+    }
+    
+    public void clear()
+    {
+        Set<String> keys = this.factoryCache.keySet();
+        for(String key : keys)
+        {
+            EntityManagerFactory factory = this.factoryCache.get(key);
+            try
+            {
+                factory.close();
+                
+            }catch(Exception e)
+            {
+                logger.warn("Unable to close entity manager factory with name : " + key,e);
+            }
+        }
     }
 
 }

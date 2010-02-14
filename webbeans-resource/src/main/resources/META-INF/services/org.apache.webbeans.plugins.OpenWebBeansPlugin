@@ -18,4 +18,4 @@
 # this file contains the service implementation for the 
 # resource integration into OpenWebBeans
 # this file contains information for java.util.ServiceLoader
-org.apache.webbeans.resource.OpenWebBeansResourcePlugin
+org.apache.webbeans.resource.StandaloneResourcePlugin
