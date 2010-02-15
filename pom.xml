@@ -345,7 +345,7 @@
         <module>webbeans-jms</module>
         <module>webbeans-jsf</module>
         <module>webbeans-resource</module>
-  <!--      <module>webbeans-porting</module> -->
+        <module>webbeans-porting</module>
         <module>samples</module>
         <!-- <module>webbeans-tck</module>-->
   </modules>
