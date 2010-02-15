@@ -155,7 +155,7 @@ public final class EJBInterceptorConfig
      */
     private static boolean removeInheritedButOverridenInterceptor(Class<?> clazz, InterceptorData interceptorData)
     {    
-        Method interceptor = interceptorData.getInterceptor();
+        Method interceptor = interceptorData.getInterceptorMethod();
         Class<?> declaringClass = interceptor.getDeclaringClass();
         
         //Not look for Interceptor classes

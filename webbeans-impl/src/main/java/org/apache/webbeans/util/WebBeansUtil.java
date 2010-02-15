@@ -1146,7 +1146,7 @@ public final class WebBeansUtil
             intData = new InterceptorDataImpl(isDefinedWithWebBeans);
             intData.setDefinedInInterceptorClass(definedInInterceptorClass);
             intData.setDefinedInMethod(definedInMethod);
-            intData.setAnnotatedMethod(annotatedInterceptorClassMethod);
+            intData.setInterceptorBindingMethod(annotatedInterceptorClassMethod);
             intData.setWebBeansInterceptor(webBeansInterceptor);
 
             if (definedInInterceptorClass)
@@ -1168,7 +1168,7 @@ public final class WebBeansUtil
                 }
             }
 
-            intData.setInterceptor(method, annotation);
+            intData.setInterceptorMethod(method, annotation);
 
             stack.add(intData);
         }
@@ -1212,7 +1212,7 @@ public final class WebBeansUtil
             intData = new InterceptorDataImpl(isDefinedWithWebBeans);
             intData.setDefinedInInterceptorClass(definedInInterceptorClass);
             intData.setDefinedInMethod(definedInMethod);
-            intData.setAnnotatedMethod(annotatedInterceptorClassMethod);
+            intData.setInterceptorBindingMethod(annotatedInterceptorClassMethod);
             intData.setWebBeansInterceptor(webBeansInterceptor);
 
             if (definedInInterceptorClass)
@@ -1234,7 +1234,7 @@ public final class WebBeansUtil
                 }
             }
 
-            intData.setInterceptor(method, annotation);
+            intData.setInterceptorMethod(method, annotation);
 
             stack.add(intData);
         }

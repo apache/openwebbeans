@@ -278,7 +278,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 }
             }
             // If the interceptor is defined in a different method, remove it
-            if (id.isDefinedInMethod() && !id.getAnnotatedMethod().equals(method))
+            if (id.isDefinedInMethod() && !id.getInterceptorBindingMethod().equals(method))
             {
                 return true;
             }

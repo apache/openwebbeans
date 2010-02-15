@@ -23,9 +23,7 @@ import javax.interceptor.AroundInvoke;
 
 /**
  * Abstract implementation of the {@link InterceptorData} api contract.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
+ * @version $Rev$ $Date$ 
  */
 public class InterceptorDataImpl implements InterceptorData
 {
@@ -50,8 +48,8 @@ public class InterceptorDataImpl implements InterceptorData
     private boolean definedInMethod;
 
     /**
-     * If defined in method true, then this method holds the interceptor
-     * annotated method
+     * If defined in method true, then this method holds
+     * interceptor binding annotated method
      */
     private Method annotatedMethod;
 
@@ -69,7 +67,7 @@ public class InterceptorDataImpl implements InterceptorData
      * org.apache.webbeans.intercept.InterceptorData#setInterceptor(java.lang
      * .reflect.Method, java.lang.Class)
      */
-    public void setInterceptor(Method m, Class<? extends Annotation> annotation)
+    public void setInterceptorMethod(Method m, Class<? extends Annotation> annotation)
     {
         if (annotation.equals(AroundInvoke.class))
         {
@@ -211,7 +209,7 @@ public class InterceptorDataImpl implements InterceptorData
      * (non-Javadoc)
      * @see org.apache.webbeans.intercept.InterceptorData#getAnnotatedMethod()
      */
-    public Method getAnnotatedMethod()
+    public Method getInterceptorBindingMethod()
     {
         return annotatedMethod;
     }
@@ -222,7 +220,7 @@ public class InterceptorDataImpl implements InterceptorData
      * org.apache.webbeans.intercept.InterceptorData#setAnnotatedMethod(java
      * .lang.reflect.Method)
      */
-    public void setAnnotatedMethod(Method annotatedMethod)
+    public void setInterceptorBindingMethod(Method annotatedMethod)
     {
         this.annotatedMethod = annotatedMethod;
     }
@@ -253,7 +251,7 @@ public class InterceptorDataImpl implements InterceptorData
         this.webBeansInterceptor = webBeansInterceptor;
     }
     
-    public Method getInterceptor()
+    public Method getInterceptorMethod()
     {
         if(aroundInvoke != null)
         {
