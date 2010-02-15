@@ -53,6 +53,14 @@
 			<optional>true</optional>
 		</dependency>
 
+                 <!-- Validator API -->
+                 <dependency>
+                         <groupId>org.apache.geronimo.specs</groupId>
+                         <artifactId>geronimo-validation_1.0_spec</artifactId>
+                         <optional>true</optional> 
+                  </dependency>
+
+
 	</dependencies>
 
 	<build>

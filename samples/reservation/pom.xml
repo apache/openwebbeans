@@ -151,6 +151,13 @@
 					<version>2.0.0-M3</version>
 				</dependency>
 
+		                 <!-- Validator API -->
+                		 <dependency>
+	        	                <groupId>org.apache.geronimo.specs</groupId>
+        	        	        <artifactId>geronimo-validation_1.0_spec</artifactId>
+		                  </dependency>
+
+
 			</dependencies>
 
 			<build>
