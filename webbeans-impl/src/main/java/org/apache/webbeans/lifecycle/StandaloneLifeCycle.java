@@ -94,7 +94,7 @@ public class StandaloneLifeCycle implements ContainerLifecycle
     {
         if(this.started.compareAndSet(false, true))
         {            
-            logger.info(OWBLogConst.INFO_0002);
+            logger.debug("OpenWebBeans Container is starting.");
             long begin = System.currentTimeMillis();
             
             //Singleton context
@@ -103,17 +103,17 @@ public class StandaloneLifeCycle implements ContainerLifecycle
             // load all optional plugins
             PluginLoader.getInstance().startUp();
 
-            logger.info(OWBLogConst.INFO_0003);
+            logger.debug("Scanning classpaths for beans artifacts.");
 
             this.discoveryService.scan();
 
-            logger.info(OWBLogConst.INFO_0004);
+            logger.debug("Deploying scanned beans.");
 
             this.beansDeployer.deploy(this.discoveryService);
                         
             long end = System.currentTimeMillis();
             
-            logger.info(OWBLogConst.INFO_0005, new Object[]{Long.toString(end - begin)});            
+            logger.info(OWBLogConst.INFO_0002, new Object[]{Long.toString(end - begin)});            
             
         }
         else
@@ -127,7 +127,7 @@ public class StandaloneLifeCycle implements ContainerLifecycle
     {
         if(this.stopped.compareAndSet(false, true))
         {
-            logger.info(OWBLogConst.INFO_0006);
+            logger.debug("OpenWebBeans Container is stopping.");
             
 
             //Fire shut down
@@ -148,7 +148,7 @@ public class StandaloneLifeCycle implements ContainerLifecycle
             //Clear singleton list
             WebBeansFinder.clearInstances();
                     
-            logger.info(OWBLogConst.INFO_0007);        
+            logger.debug("OpenWebBeans Container has stopped.");        
             
         }
         else

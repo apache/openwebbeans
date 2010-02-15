@@ -19,7 +19,6 @@ import java.io.InputStream;
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.config.OWBLogConst;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -37,7 +36,7 @@ public class WebBeansResolver implements EntityResolver
      */
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
     {
-        logger.debug(OWBLogConst.DEBUG_0002, new Object[]{systemId});
+        logger.debug("Resolving systemId with : ", new Object[]{systemId});
 
         if (systemId.equals(WebBeansConstants.WEB_BEANS_XML_SYSID))
         {
@@ -45,7 +44,7 @@ public class WebBeansResolver implements EntityResolver
 
             if (stream != null)
             {
-                logger.debug(OWBLogConst.DEBUG_0003, new Object[]{systemId});
+                logger.debug("Resolving is successful with systemId : ", new Object[]{systemId});
                 return createInputSource(stream, publicId, systemId);
             }
         }
@@ -57,12 +56,12 @@ public class WebBeansResolver implements EntityResolver
 
             if (stream != null)
             {
-                logger.debug(OWBLogConst.DEBUG_0003, new Object[]{systemId});
+                logger.debug("Resolving is successful with systemId : ", new Object[]{systemId});
                 return createInputSource(stream, publicId, systemId);
             }
         }
 
-        logger.debug(OWBLogConst.DEBUG_0004, new Object[]{systemId});
+        logger.debug("Resolving failed using default SAXResolver for systemId : ", new Object[]{systemId});
         return null;
     }
 

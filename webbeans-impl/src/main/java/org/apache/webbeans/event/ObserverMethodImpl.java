@@ -41,7 +41,6 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansException;
@@ -154,7 +153,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     public void notify(T event)
     {
-        logger.trace(OWBLogConst.TRACE_0001, new Object[]{event.toString()});
+        logger.trace("Notifying with event payload : ", new Object[]{event.toString()});
         
         AbstractOwbBean<Object> baseComponent = (AbstractOwbBean<Object>) bean;
         AbstractOwbBean<Object> specializedComponent = null;

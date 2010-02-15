@@ -53,12 +53,8 @@ public final class WebBeansDecoratorConfig
 
     public static <T> void configureXMLDecoratorClass(AbstractInjectionTargetBean<T> delegate, XMLInjectionPointModel model)
     {
-        logger.info(OWBLogConst.INFO_0011, new Object[]{logger.getTokenString(OWBLogConst.TEXT_XML_CLASS), delegate.getReturnType().getName()});
-
+        logger.debug("Configuring XML decorator class : " + delegate.getReturnType());
         WebBeansXMLDecorator<T> decorator = new WebBeansXMLDecorator<T>(delegate, model);
-
-        logger.info(OWBLogConst.INFO_0012, new Object[]{logger.getTokenString(OWBLogConst.TEXT_XML_CLASS), delegate.getReturnType()});
-
         BeanManagerImpl.getManager().addDecorator(decorator);
     }
 

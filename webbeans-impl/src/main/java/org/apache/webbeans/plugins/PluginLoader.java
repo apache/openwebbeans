@@ -84,7 +84,7 @@ public class PluginLoader
     {
         if(this.started.compareAndSet(false, true))
         {
-            logger.debug(OWBLogConst.DEBUG_0009);
+            logger.debug("PluginLoader startUp called.");
             ArrayList<OpenWebBeansPlugin> ps = new ArrayList<OpenWebBeansPlugin>();
 
             ServiceLoader<OpenWebBeansPlugin> owbPluginsLoader = ServiceLoader.load(OpenWebBeansPlugin.class);
@@ -92,7 +92,7 @@ public class PluginLoader
             while(pluginIter.hasNext()) 
             {
               OpenWebBeansPlugin plugin = pluginIter.next();
-              logger.info(OWBLogConst.INFO_0033, new Object[]{plugin.getClass().getSimpleName()});
+              logger.info(OWBLogConst.INFO_0013, new Object[]{plugin.getClass().getSimpleName()});
               plugin.startUp();
               ps.add(plugin);
             }   
@@ -102,7 +102,7 @@ public class PluginLoader
         }
         else
         {
-            logger.debug(OWBLogConst.DEBUG_0010);
+            logger.debug("PluginLoader is already started.");
         }
     }
     
@@ -115,7 +115,7 @@ public class PluginLoader
     {
         if(this.started.compareAndSet(true, false))
         {
-            logger.debug(OWBLogConst.DEBUG_0011);
+            logger.debug("PluginLoader shutDown called.");
             
             if (plugins == null)
             {
@@ -147,7 +147,7 @@ public class PluginLoader
         }
         else
         {
-            logger.debug(OWBLogConst.DEBUG_0012);
+            logger.debug("PluginLoader is already shut down.");
         }
     }
     

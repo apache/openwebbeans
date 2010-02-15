@@ -21,21 +21,6 @@ public class OWBLogConst
 {
     public final static String DEFAULT_MSGS_PROPERTIES_NAME = "javax.openwebbeans.Messages";
 
-    public final static String DEBUG_0001 = "DEBUG_0001"; // Application is configured as JSP. Adding EL Resolver.
-    public final static String DEBUG_0002 = "DEBUG_0002"; // Resolving systemId with : 
-    public final static String DEBUG_0003 = "DEBUG_0003"; // Resolving is successful with systemId : 
-    public final static String DEBUG_0004 = "DEBUG_0004"; // Resolving failed using default SAXResolver for systemId : 
-    public final static String DEBUG_0005 = "DEBUG_0005"; // Starting a new request : 
-    public final static String DEBUG_0006 = "DEBUG_0006"; // Destroying a request : 
-    public final static String DEBUG_0007 = "DEBUG_0007"; // Starting a session with session id : 
-    public final static String DEBUG_0008 = "DEBUG_0008"; // Destroying a session with session id : 
-    public final static String DEBUG_0009 = "DEBUG_0009"; // PluginLoader startUp called.
-    public final static String DEBUG_0010 = "DEBUG_0010"; // PluginLoader is already started.
-    public final static String DEBUG_0011 = "DEBUG_0011"; // PluginLoader shutDown called.
-    public final static String DEBUG_0012 = "DEBUG_0012"; // PluginLoader is already shut down.
-
-    public final static String TRACE_0001 = "TRACE_0001"; // Notifying with event payload : 
-
     public final static String TEXT_INTERCEPT_CLASS  = "TEXT_INTERCEPT_CLASS";  // Interceptor Class : 
     public final static String TEXT_ANNO_CLASS       = "TEXT_ANNO_CLASS";       // Annotated Decorator Class : 
     public final static String TEXT_XML_CLASS        = "TEXT_XML_CLASS";        // XML based Decorator Class : 
@@ -48,41 +33,21 @@ public class OWBLogConst
     public final static String TEXT_JAVA_TYPENAME    = "TEXT_JAVA_TYPENAME";    // Java type with name : 
 
     public final static String INFO_0001 = "INFO_0001"; // Using discovery service implementation class : [{1}]
-    public final static String INFO_0002 = "INFO_0002"; // OpenWebBeans Container is starting.
-    public final static String INFO_0003 = "INFO_0003"; // Scanning classpaths for beans artifacts.
-    public final static String INFO_0004 = "INFO_0004"; // Deploying scanned beans.
-    public final static String INFO_0005 = "INFO_0005"; // OpenWebBeans Container is started, it took {1} ms.
-    public final static String INFO_0006 = "INFO_0006"; // OpenWebBeans Container is stopping.
-    public final static String INFO_0007 = "INFO_0007"; // OpenWebBeans Container has stopped.
-    public final static String INFO_0008 = "INFO_0008"; // OpenWebBeans Container is stopped for context path, 
-    public final static String INFO_0009 = "INFO_0009"; // Session is passivated. Session id : [{1}] 
-    public final static String INFO_0010 = "INFO_0010"; // Session is activated. Session id : [{1}] 
-    public final static String INFO_0011 = "INFO_0011"; // Starting configuration of Web Beans {1}
-    public final static String INFO_0012 = "INFO_0012"; // Finished configuration of Web Beans {1}
-    public final static String INFO_0013 = "INFO_0013"; // Validation of injection points are started.
-    public final static String INFO_0014 = "INFO_0014"; // Validation of the decorator's injection points are started.
-    public final static String INFO_0015 = "INFO_0015"; // Validation of the interceptor's injection points are started.
-    public final static String INFO_0016 = "INFO_0016"; // All injection points are validated succesfully.
-    public final static String INFO_0017 = "INFO_0017"; // Deploying configurations from class files is started.
-    public final static String INFO_0018 = "INFO_0018"; // Found Managed Bean with class name : [{1}]
-    public final static String INFO_0019 = "INFO_0019"; // Found Enterprise Bean with class name : [{1}]
-    public final static String INFO_0020 = "INFO_0020"; // Deploying configurations from class files is ended.
-    public final static String INFO_0021 = "INFO_0021"; // Deploying configurations from XML files is started.
-    public final static String INFO_0022 = "INFO_0022"; // Deploying configurations from XML is ended succesfully.
-    public final static String INFO_0023 = "INFO_0023"; // Configuring the Interceptors is started.
-    public final static String INFO_0024 = "INFO_0024"; // Found Managed Bean Interceptor with class name : [{1}]
-    public final static String INFO_0025 = "INFO_0025"; // Configuring the Interceptors is ended.
-    public final static String INFO_0026 = "INFO_0026"; // Configuring the Decorators is started.
-    public final static String INFO_0027 = "INFO_0027"; // Found Managed Bean Decorator with class name : [{1}]
-    public final static String INFO_0028 = "INFO_0028"; // Configuring the Decorators is ended.
-    public final static String INFO_0029 = "INFO_0029"; // Checking Specialization constraints is started.
-    public final static String INFO_0030 = "INFO_0030"; // Checking Specialization constraints is ended.
-    public final static String INFO_0031 = "INFO_0031"; // Checking StereoTypes constraints is started.
-    public final static String INFO_0032 = "INFO_0032"; // Checking StereoTypes constraints is ended.
-    public final static String INFO_0033 = "INFO_0033"; // Adding OpenWebBeansPlugin :
-    public final static String INFO_0041 = "INFO_0041"; // Destroying the conversation context with cid: [{0}] for view: [{1}]
-    public final static String INFO_0042 = "INFO_0042"; // Restoring conversation with cid: [{0}] for view: [{1}]
-    public final static String INFO_0043 = "INFO_0043"; // Creating a new transitional conversation for view: [{0}]
+    public final static String INFO_0002 = "INFO_0002"; // OpenWebBeans Container is started, it took {1} ms.
+    public final static String INFO_0003 = "INFO_0003"; // OpenWebBeans Container is stopped for context path, 
+    public final static String INFO_0004 = "INFO_0004"; // Session is passivated. Session id : [{1}] 
+    public final static String INFO_0005 = "INFO_0005"; // Session is activated. Session id : [{1}] 
+    public final static String INFO_0006 = "INFO_0006"; // Starting configuration of Web Beans {1}
+    public final static String INFO_0007 = "INFO_0007"; // Finished configuration of Web Beans {1}
+    public final static String INFO_0008 = "INFO_0008"; // All injection points are validated successfully.
+    public final static String INFO_0009 = "INFO_0009"; // Found Managed Bean with class name : [{1}]
+    public final static String INFO_0010 = "INFO_0010"; // Found Enterprise Bean with class name : [{1}]
+    public final static String INFO_0011 = "INFO_0011"; // Found Managed Bean Interceptor with class name : [{1}]
+    public final static String INFO_0012 = "INFO_0012"; // Found Managed Bean Decorator with class name : [{1}]
+    public final static String INFO_0013 = "INFO_0013"; // Adding OpenWebBeansPlugin :
+    public final static String INFO_0014 = "INFO_0014"; // Destroying the conversation context with cid: [{0}] for view: [{1}]
+    public final static String INFO_0015 = "INFO_0015"; // Restoring conversation with cid: [{0}] for view: [{1}]
+    public final static String INFO_0016 = "INFO_0016"; // Creating a new transitional conversation for view: [{0}]
 
     public final static String WARN_0001 = "WARN_0001"; // No plugins to shutDown.
     public final static String WARN_0002 = "WARN_0002"; // Alternative XML content is wrong. Child of <alternatives> must be <class>,<stereotype> but found : 
@@ -94,21 +59,21 @@ public class OWBLogConst
 
     public final static String ERROR_0001 = "ERROR_0001"; // Unable to inject resource for : [{1}]
     public final static String ERROR_0002 = "ERROR_0002"; // Initialization of the WebBeans container has failed.
-    public final static String ERROR_0003 = "ERROR_0003"; // An exception has occured in the transactional observer.
+    public final static String ERROR_0003 = "ERROR_0003"; // An exception has occurred in the transactional observer.
     public final static String ERROR_0004 = "ERROR_0004"; // Unable to initialize InitialContext object.
     public final static String ERROR_0005 = "ERROR_0005"; // Unable to bind object with name : [{1}]
     public final static String ERROR_0006 = "ERROR_0006"; // Security exception. Cannot access decorator class: [{1}] method : [{2}]
     public final static String ERROR_0007 = "ERROR_0007"; // Delegate field is not found on the given decorator class : [{1}]
-    public final static String ERROR_0008 = "ERROR_0008"; // Error occured while executing {1}
+    public final static String ERROR_0008 = "ERROR_0008"; // Error occurred while executing {1}
     public final static String ERROR_0009 = "ERROR_0009"; // Error while shutting down the plugin : [{1}]
-    public final static String ERROR_0010 = "ERROR_0010"; // An error occured while closing the JMS instance.
+    public final static String ERROR_0010 = "ERROR_0010"; // An error occurred while closing the JMS instance.
     public final static String ERROR_0011 = "ERROR_0011"; // Method security access violation for method : [{1}] in decorator class : [{2}]
     public final static String ERROR_0012 = "ERROR_0012"; // Exception in calling method : [{1}] in decorator class : [{2}]. Look in the log for target checked exception.
     public final static String ERROR_0013 = "ERROR_0013"; // Got an Exception while starting a fresh session!
     public final static String ERROR_0014 = "ERROR_0014"; // Method illegal access for method : [{1}] in decorator class : [{2}]
     public final static String ERROR_0015 = "ERROR_0015"; // Illegal access exception for field : [{1}] in decorator class : [{2}]
-    public final static String ERROR_0016 = "ERROR_0016"; // IllegalArgumentException has occured while calling the field: [{1}] on the class: [{2}]
-    public final static String ERROR_0017 = "ERROR_0017"; // IllegalAccessException has occured while calling the field: [{1}] on the class: [{2}]
+    public final static String ERROR_0016 = "ERROR_0016"; // IllegalArgumentException has occurred while calling the field: [{1}] on the class: [{2}]
+    public final static String ERROR_0017 = "ERROR_0017"; // IllegalAccessException has occurred while calling the field: [{1}] on the class: [{2}]
 
     public final static String FATAL_0001 = "FATAL_0001"; // Exception thrown while destroying bean instance : {1}
     public final static String FATAL_0002 = "FATAL_0002"; // Unable to read root element of the given input stream.
@@ -118,7 +83,7 @@ public class OWBLogConst
     public final static String EXCEPT_0001 = "EXCEPT_0001"; // Wrong initialization object.
     public final static String EXCEPT_0002 = "EXCEPT_0002"; // Wrong ended object.
     public final static String EXCEPT_0003 = "EXCEPT_0003"; // Specialized class [
-    public final static String EXCEPT_0004 = "EXCEPT_0004"; // ] must extendanothre class.
+    public final static String EXCEPT_0004 = "EXCEPT_0004"; // ] must extend another class.
     public final static String EXCEPT_XML  = "EXCEPT_XML";  // XML Specialization Error : 
     public final static String EXCEPT_0005 = "EXCEPT_0005"; // More than one class specialized the same super class :
     public final static String EXCEPT_0006 = "EXCEPT_0006"; // Got Exceptions while sending shutdown to the following plugins : 

@@ -107,7 +107,7 @@ public final class DefaultLifecycle implements ContainerLifecycle
     
     public void requestStarted(ServletRequestEvent event)
     {
-        logger.debug(OWBLogConst.DEBUG_0005, new Object[]{event.getServletRequest().getRemoteAddr()});
+        logger.debug("Starting a new request : ", new Object[]{event.getServletRequest().getRemoteAddr()});
         
         ContextFactory.initializeThreadLocals();
         
@@ -136,19 +136,19 @@ public final class DefaultLifecycle implements ContainerLifecycle
 
     public void requestEnded(ServletRequestEvent event)
     {
-    	logger.debug(OWBLogConst.DEBUG_0006, new Object[]{event.getServletRequest().getRemoteAddr()});
+    	logger.debug("Destroying a request : ", new Object[]{event.getServletRequest().getRemoteAddr()});
         ContextFactory.destroyRequestContext((HttpServletRequest) event.getServletRequest());
     }
 
     public void sessionStarted(HttpSessionEvent event)
     {
-        logger.debug(OWBLogConst.DEBUG_0007, new Object[]{event.getSession().getId()});
+        logger.debug("Starting a session with session id : ", new Object[]{event.getSession().getId()});
         ContextFactory.initSessionContext(event.getSession());
     }
 
     public void sessionEnded(HttpSessionEvent event)
     {
-    	logger.debug(OWBLogConst.DEBUG_0008, new Object[]{event.getSession().getId()});
+    	logger.debug("Destroying a session with session id : ", new Object[]{event.getSession().getId()});
         ContextFactory.destroySessionContext(event.getSession());
 
         ConversationManager conversationManager = ConversationManager.getInstance();
@@ -171,7 +171,7 @@ public final class DefaultLifecycle implements ContainerLifecycle
         }
         
         // Initalize Application Context
-        logger.info(OWBLogConst.INFO_0002);
+        logger.debug("OpenWebBeans Container is starting.");
         
         long begin = System.currentTimeMillis();
 
@@ -193,18 +193,18 @@ public final class DefaultLifecycle implements ContainerLifecycle
         service = Executors.newScheduledThreadPool(1);
         service.scheduleWithFixedDelay(new ConversationCleaner(), delay, delay, TimeUnit.MILLISECONDS);
 
-        logger.info(OWBLogConst.INFO_0003);
+        logger.debug("Scanning classpaths for beans artifacts.");
 
         this.discovery.scan();
 
-        logger.info(OWBLogConst.INFO_0004);
+        logger.debug("Deploying scanned beans.");
 
         deployer.deploy(this.discovery);
         
         //Application is configured as JSP
         if(OpenWebBeansConfiguration.getInstance().isJspApplication())
         {
-            logger.debug(OWBLogConst.DEBUG_0001);
+            logger.debug("Application is configured as JSP. Adding EL Resolver.");
             
             JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext(servletContext);
             applicationCtx.addELResolver(new WebBeansELResolver());            
@@ -212,7 +212,7 @@ public final class DefaultLifecycle implements ContainerLifecycle
         
         long end = System.currentTimeMillis();
         
-        logger.info(OWBLogConst.INFO_0005, new Object[]{Long.toString(end - begin)});
+        logger.info(OWBLogConst.INFO_0002, new Object[]{Long.toString(end - begin)});
     }
 
     public void applicationEnded(Object endObject)
@@ -229,7 +229,7 @@ public final class DefaultLifecycle implements ContainerLifecycle
                 throw new WebBeansException(logger.getTokenString(OWBLogConst.EXCEPT_0002));
             }
         }
-        logger.info(OWBLogConst.INFO_0006);
+        logger.debug("OpenWebBeans Container is stopping.");
 
         //Fire shut down
         this.rootManager.fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
@@ -251,17 +251,17 @@ public final class DefaultLifecycle implements ContainerLifecycle
         //Clear singleton list
         WebBeansFinder.clearInstances();
                 
-        logger.info(OWBLogConst.INFO_0008, new Object[]{servletContext != null ? servletContext.getContextPath() : null});
+        logger.info(OWBLogConst.INFO_0003, new Object[]{servletContext != null ? servletContext.getContextPath() : null});
     }
     
     public void sessionPassivated(HttpSessionEvent event)
     {
-        logger.info(OWBLogConst.INFO_0009, new Object[]{event.getSession().getId()});
+        logger.info(OWBLogConst.INFO_0004, new Object[]{event.getSession().getId()});
     }
 
     public void sessionActivated(HttpSessionEvent event)
     {
-        logger.info(OWBLogConst.INFO_0010, new Object[]{event.getSession().getId()});
+        logger.info(OWBLogConst.INFO_0005, new Object[]{event.getSession().getId()});
     }
 
     private static class ConversationCleaner implements Runnable
