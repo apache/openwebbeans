@@ -93,7 +93,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T>
         {
             for(Decorator<?> dec : this.decorators)
             {
-                if(!Serializable.class.isAssignableFrom(dec.getBeanClass()))
+                if(dec.getBeanClass() != null && !Serializable.class.isAssignableFrom(dec.getBeanClass()))
                 {
                     return false;
                 }
@@ -101,7 +101,8 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T>
             
             for(InterceptorData interceptorData : this.interceptorStack)
             {
-                if(!(interceptorData.getInterceptorInstance() instanceof Serializable))
+                Object interceptor = interceptorData.getInterceptorInstance();
+                if(interceptor != null && !(interceptor instanceof Serializable))
                 {
                     return false;
                 }
