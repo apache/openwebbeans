@@ -34,7 +34,7 @@ public class PrinicipalBean extends AbstractOwbBean<Principal>
 
     public PrinicipalBean()
     {
-        super(WebBeansType.USERTRANSACTION);
+        super(WebBeansType.PRINCIPAL, Principal.class);
         addApiType(Object.class);
         addApiType(Principal.class);
         addQualifier(new DefaultLiteral());

@@ -111,7 +111,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     protected AbstractOwbBean(WebBeansType webBeanType)
     {
-        this(webBeanType, null);        
+        this(webBeanType, null);
     }
     
     /**

@@ -33,7 +33,7 @@ public class ValidatorBean extends AbstractOwbBean<Validator>
 
     public ValidatorBean()
     {
-        super(WebBeansType.USERTRANSACTION);
+        super(WebBeansType.VALIDATION, Validator.class);
         addApiType(Object.class);
         addApiType(Validator.class);
         addQualifier(new DefaultLiteral());

@@ -20,7 +20,6 @@ package org.apache.webbeans.newtests.concepts.alternatives.common;
 
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Disposes;
 
 
 @Alternative

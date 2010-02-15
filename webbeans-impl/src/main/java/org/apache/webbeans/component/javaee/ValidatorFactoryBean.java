@@ -33,7 +33,7 @@ public class ValidatorFactoryBean extends AbstractOwbBean<ValidatorFactory>
 
     public ValidatorFactoryBean()
     {
-        super(WebBeansType.USERTRANSACTION);
+        super(WebBeansType.VALIDATIONFACT, ValidatorFactory.class);
         addApiType(Object.class);
         addApiType(ValidatorFactory.class);
         addQualifier(new DefaultLiteral());

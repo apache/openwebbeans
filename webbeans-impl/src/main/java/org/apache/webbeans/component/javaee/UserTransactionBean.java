@@ -33,7 +33,7 @@ public class UserTransactionBean extends AbstractOwbBean<UserTransaction>
 
     protected UserTransactionBean()
     {
-        super(WebBeansType.USERTRANSACTION);
+        super(WebBeansType.USERTRANSACTION, UserTransaction.class);
         addApiType(Object.class);
         addApiType(UserTransaction.class);
         addQualifier(new DefaultLiteral());

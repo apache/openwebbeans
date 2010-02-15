@@ -15,7 +15,6 @@ package org.apache.webbeans.test.unittests.intercept;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
