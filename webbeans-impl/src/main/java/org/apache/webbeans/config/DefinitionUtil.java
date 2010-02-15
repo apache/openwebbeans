@@ -707,6 +707,7 @@ public final class DefinitionUtil
             defineProducerMethodApiTypes(resourceBean, field.getGenericType() , field.getDeclaredAnnotations());
             defineQualifiers(resourceBean, field.getDeclaredAnnotations());
             resourceBean.setImplScopeType(new DependentScopeLiteral());
+            resourceBean.setProducerField(field);
             
             return resourceBean;
         }

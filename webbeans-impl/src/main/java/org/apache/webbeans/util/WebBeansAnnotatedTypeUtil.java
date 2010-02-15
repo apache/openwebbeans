@@ -433,7 +433,8 @@ public final class WebBeansAnnotatedTypeUtil
                     
                     resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
                     DefinitionUtil.defineQualifiers(resourceBean, anns);                    
-                    resourceBean.setImplScopeType(new DependentScopeLiteral());            
+                    resourceBean.setImplScopeType(new DependentScopeLiteral());
+                    resourceBean.setProducerField(field);
                     
                     producerBeans.add(resourceBean);                    
                 }
