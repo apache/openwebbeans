@@ -986,11 +986,11 @@ public final class AnnotationUtil
     }
 
     /**
-     * If candidate class has an interceptor binding annotation type then return
+     * If any Annotations in the input is an interceptor binding annotation type then return
      * true, false otherwise.
      * 
-     * @param clazz interceptor candidate class
-     * @return true if candidate class has an interceptor binding annotation
+     * @param anns array of Annotations to check 
+     * @return true if one or moe of the input annotations are an interceptor binding annotation
      *         type false otherwise
      */
     public static boolean hasInterceptorBindingMetaAnnotation(Annotation[] anns)
@@ -1012,6 +1012,12 @@ public final class AnnotationUtil
         return false;
     }
 
+    /**
+     * Collect the interceptor bindings from an array of annotations, including
+     * transitively defined interceptor bindings.
+     * @param anns An array of annotations
+     * @return an array of interceptor binding annotations, including the input and any transitively declared annotations
+     */
     public static Annotation[] getInterceptorBindingMetaAnnotations(Annotation[] anns)
     {
         Asserts.assertNotNull(anns, "anns parameter can not be null");
