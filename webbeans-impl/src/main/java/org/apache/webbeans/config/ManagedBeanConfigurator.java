@@ -131,11 +131,20 @@ public final class ManagedBeanConfigurator
         //Dropped from the speicification
         //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
 
-        Set<ProducerMethodBean<?>> producerComponents = DefinitionUtil.defineProducerMethods(component);
-        manager.getBeans().addAll(producerComponents);
-
+        Set<ProducerMethodBean<?>> producerMethods = DefinitionUtil.defineProducerMethods(component);
+        for (ProducerMethodBean<?> producerMethod : producerMethods)
+        {
+            // add them one after the other to enable serialization handling et al
+            manager.addBean(producerMethod);
+        }
+        
         Set<ProducerFieldBean<?>> producerFields = DefinitionUtil.defineProduerFields(component);
-        manager.getBeans().addAll(producerFields);
+        for (ProducerFieldBean<?> producerField : producerFields)
+        {
+            // add them one after the other to enable serialization handling et al
+            manager.addBean(producerField);
+        }
+        
 
         DefinitionUtil.defineDisposalMethods(component);
         DefinitionUtil.defineInjectedFields(component);
