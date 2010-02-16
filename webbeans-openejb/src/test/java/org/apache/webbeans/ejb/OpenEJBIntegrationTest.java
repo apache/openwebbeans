@@ -26,7 +26,9 @@ import javax.persistence.PersistenceUnit;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.apache.webbeans.api.ResourceReference;
 import org.apache.webbeans.ejb.resource.ResourceFactory;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.junit.Test;
 
 
@@ -53,11 +55,11 @@ public class OpenEJBIntegrationTest extends TestCase{
         
         Class<TestBean> c = TestBean.class;
         Field field = c.getField("emf");
-        EntityManagerFactory emf = (EntityManagerFactory) rf.getResource(field.getType(), field.getDeclaredAnnotations());
+        EntityManagerFactory emf = (EntityManagerFactory) rf.getResourceReference(new ResourceReference(field.getDeclaringClass(),field.getName(),field.getType(),AnnotationUtil.hasOwbInjectableResource(field.getDeclaredAnnotations())));
         Assert.assertNotNull( emf );
         
         field = c.getField("em");
-        EntityManager em = (EntityManager) rf.getResource(field.getType(), field.getDeclaredAnnotations());
+        EntityManager em = (EntityManager) rf.getResourceReference(new ResourceReference(field.getDeclaringClass(),field.getName(),field.getType(),AnnotationUtil.hasOwbInjectableResource(field.getDeclaredAnnotations())));
         Assert.assertNotNull( em );
     }
 

@@ -53,6 +53,7 @@ import javax.inject.Named;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.annotation.DependentScopeLiteral;
+import org.apache.webbeans.api.ResourceReference;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -72,7 +73,6 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
-import org.apache.webbeans.inject.resource.ResourceModel;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
@@ -294,14 +294,7 @@ public final class WebBeansAnnotatedTypeUtil
         
         for (AnnotatedMethod<? super X> annotatedMethod : annotatedMethods)
         {            
-            Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations());
             boolean isInitializer = annotatedMethod.isAnnotationPresent(Inject.class);            
-            boolean isResource = AnnotationUtil.hasResourceAnnotation(anns);
-
-            if (isInitializer && isResource)
-            {
-                throw new WebBeansConfigurationException("Found initializer and resource injection at the same time for the annotated method : " + annotatedMethod);
-            }
 
             if (isInitializer)
             {
@@ -312,10 +305,6 @@ public final class WebBeansAnnotatedTypeUtil
                 }
                 
                 checkForInjectedInitializerMethod(bean, (AnnotatedMethod<X>)annotatedMethod);
-            }
-            else if (isResource)
-            {
-                throw new WebBeansConfigurationException("Error in annotated method : " + annotatedMethod + ".Injection of resources into methods are not supported.");
             }
             else
             {
@@ -410,33 +399,31 @@ public final class WebBeansAnnotatedTypeUtil
                 Field field = annotatedField.getJavaMember();
                 
                 //Producer field for resource
-                if(AnnotationUtil.hasResourceAnnotation(anns))
-                {
+                Annotation resourceAnnotation = AnnotationUtil.hasOwbInjectableResource(anns);                
+                //Producer field for resource
+                if(resourceAnnotation != null)
+                {                    
                     //Check for valid resource annotation
-                    WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
-                    ResourceModel<X> resourceModel = new ResourceModel();
-                    resourceModel.setName(field.getName());
-                    resourceModel.setOwner(annotatedField.getDeclaringType().getJavaClass());
-                    resourceModel.setResourceAnnotations(anns);
-                    resourceModel.setResourceType((Class<X>)field.getType());
-                    resourceModel.setMember(field);
-                    bean.addInjectableResourceModel(resourceModel);
-                    
-                    ResourceBean<X> resourceBean = new ResourceBean((Class<X>)field.getType(),bean);                    
-                    
-                    
-                    //Can not define EL name
-                    if(annotatedField.isAnnotationPresent(Named.class))
+                    //WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
+                    if(!ClassUtil.isStatic(field.getModifiers()))
                     {
-                        throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
+                        ResourceReference<X,Annotation> resourceRef = new ResourceReference<X, Annotation>(bean.getBeanClass(), field.getName(), (Class<X>)field.getType(), resourceAnnotation);
+                        
+                        //Can not define EL name
+                        if(annotatedField.isAnnotationPresent(Named.class))
+                        {
+                            throw new WebBeansConfigurationException("Resource producer annotated field : " + annotatedField + " can not define EL name");
+                        }
+                        
+                        ResourceBean<X,Annotation> resourceBean = new ResourceBean((Class<X>)field.getType(),bean, resourceRef);
+                        
+                        resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
+                        DefinitionUtil.defineQualifiers(resourceBean, anns);                    
+                        resourceBean.setImplScopeType(new DependentScopeLiteral());
+                        resourceBean.setProducerField(field);
+                        
+                        producerBeans.add(resourceBean);                                            
                     }
-                    
-                    resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
-                    DefinitionUtil.defineQualifiers(resourceBean, anns);                    
-                    resourceBean.setImplScopeType(new DependentScopeLiteral());
-                    resourceBean.setProducerField(field);
-                    
-                    producerBeans.add(resourceBean);                    
                 }
                 else
                 {

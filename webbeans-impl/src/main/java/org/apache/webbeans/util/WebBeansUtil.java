@@ -141,7 +141,6 @@ import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.OpenWebBeansResourcePlugin;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -507,31 +506,6 @@ public final class WebBeansUtil
         }
         
         return as;
-    }
-
- 
-    public static void checkForValidResources(Class<?> owner, Class<?> resourceClass, String name, Annotation[] annotations)
-    {
-        Asserts.assertNotNull(owner, "Type argument can not be null");
-        Asserts.nullCheckForClass(resourceClass);
-        Asserts.assertNotNull(annotations, "Annotations argument can not be null");
-
-        List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
-        for (OpenWebBeansPlugin plugin : plugins)
-        {
-            if(plugin instanceof OpenWebBeansResourcePlugin)
-            {
-                OpenWebBeansResourcePlugin rpl = (OpenWebBeansResourcePlugin)plugin;
-                for(Annotation ann : annotations)
-                {
-                    if(rpl.isResourceAnnotation(ann.annotationType()))
-                    {
-                        rpl.validateResource(owner, name, resourceClass, annotations);
-                        return;
-                    }
-                }
-            }
-        }
     }
     
     /**
@@ -2683,29 +2657,6 @@ public final class WebBeansUtil
         }
         
         return managedBean;
-    }
-    
-    public static <T> T getResource(Class<?> owner, Class<T> resourceType, String name, Annotation[] resourceAnns)
-    {
-        T instance = null;
-        OpenWebBeansResourcePlugin[] plugins = PluginLoader.getInstance().getResourcePlugins();
-        for(OpenWebBeansResourcePlugin plugin : plugins)
-        {
-            try
-            {
-                instance = plugin.getResource(owner, name, resourceType, resourceAnns);
-                if(instance != null)
-                {
-                    break;
-                }
-                
-            }catch(Exception e)
-            {
-                //Ignore
-            }
-        }
-        
-        return instance;
     }
     
 }

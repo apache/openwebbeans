@@ -18,12 +18,62 @@
  */
 package org.apache.webbeans.component;
 
-public class ResourceBean<T> extends ProducerFieldBean<T>
+import java.lang.annotation.Annotation;
+
+import javassist.util.proxy.ProxyFactory;
+
+import javax.enterprise.context.spi.CreationalContext;
+
+import org.apache.webbeans.api.ResourceReference;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.proxy.ResourceProxyHandler;
+import org.apache.webbeans.spi.ResourceInjectionService;
+import org.apache.webbeans.spi.ServiceLoader;
+
+public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
 {
-    public ResourceBean(Class<T> returnType, InjectionTargetBean<?> ownerBean)
+    private X actualResourceReference = null;
+    
+    private ResourceReference<X,T> resourceReference = null;
+    
+    public ResourceBean(Class<X> returnType, InjectionTargetBean<?> ownerBean, ResourceReference<X, T> resourceReference)
     {
         super(ownerBean, returnType);
+        this.resourceReference = resourceReference;
     }
+
+     
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    protected X createInstance(CreationalContext<X> creationalContext)
+    {
+        X instance = null;
+        try
+        {
+            ProxyFactory proxyFactory = JavassistProxyFactory.createProxyFactory(this);
+            
+            ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
+            this.actualResourceReference = resourceService.getResourceReference(this.resourceReference);
+            proxyFactory.setHandler(new ResourceProxyHandler(this.actualResourceReference));
+            
+            instance = (X)proxyFactory.createClass().newInstance();
+        }
+        catch (Exception e)
+        {
+            throw new WebBeansException(e);
+        }
+        
+        return instance;
+    }
+
+    @Override
+    protected void destroyInstance(X instance, CreationalContext<X> creationalContext)
+    {
+        this.actualResourceReference = null;
+    }
+
 
     public boolean isPassivationCapable()
     {

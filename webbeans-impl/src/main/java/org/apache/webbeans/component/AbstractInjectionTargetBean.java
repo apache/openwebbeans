@@ -36,14 +36,13 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
-import org.apache.webbeans.inject.resource.ResourceModel;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.OpenWebBeansResourcePlugin;
-import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.spi.ResourceInjectionService;
+import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -78,9 +77,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     
     /**Fully initialize, true as default*/
     private boolean fullyInitialize = true;
-    
-    /**Injetable resource models*/
-    private List<ResourceModel<?>> injectableResources = new ArrayList<ResourceModel<?>>();
     
     /**
      * Holds the all of the interceptor related data, contains around-invoke,
@@ -420,30 +416,27 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     {
         if(getWebBeansType().equals(WebBeansType.MANAGED))
         {
-            for(ResourceModel<?> model : this.injectableResources)
+            try
             {
-                OpenWebBeansResourcePlugin[] resourcePlugins = PluginLoader.getInstance().getResourcePlugins();
-                for(OpenWebBeansResourcePlugin plugin : resourcePlugins)
+                ResourceInjectionService service = null;
+                try
                 {
-                    boolean accessible = model.getMember().isAccessible();
-                    try
-                    {
-                        Object resource = plugin.getResource(model.getOwner(), model.getName(), model.getResourceType(), model.getResourceAnnotations());
-                        if(resource != null)
-                        {
-                            model.getMember().setAccessible(true);
-                            model.getMember().set(instance, resource);
-                            break;
-                        }
-                        
-                    }catch(Exception e)
-                    {
-                        //Ignore
-                    }finally
-                    {
-                        model.getMember().setAccessible(accessible);
-                    }
+                    service = ServiceLoader.getService(ResourceInjectionService.class);
+                    
+                }catch(Exception e)
+                {
+                    // When running in tests
                 }
+                
+                if(service != null)
+                {
+                    service.injectJavaEEResources(instance);   
+                }
+            }
+            catch (Exception e)
+            {
+                logger.error("Error is occured while injection Java EE Resources for the bean instance : " + instance);
+                throw new WebBeansException("Error is occured while injection Java EE Resources for the bean instance : " + instance,e);
             }
         }
     }
@@ -665,18 +658,4 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         return this.fullyInitialize;
     }    
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<ResourceModel<?>> getInjectableResourceModels()
-    {
-        return this.injectableResources;
-    }
-    
-    @Override
-    public void addInjectableResourceModel(ResourceModel<?> model)
-    {
-        this.injectableResources.add(model);
-    }
 }

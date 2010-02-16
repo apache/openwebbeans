@@ -25,7 +25,7 @@ import javax.persistence.PersistenceContext;
 @RequestScoped
 public class EntityManagerUtil
 {
-    private @Produces @PersistenceContext(unitName="reservation") EntityManager entityManager;
+    private @PersistenceContext(unitName="reservation") EntityManager entityManager;
     
     public EntityManagerUtil()
     {

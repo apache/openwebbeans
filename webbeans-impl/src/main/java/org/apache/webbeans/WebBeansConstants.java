@@ -28,6 +28,12 @@ public final class WebBeansConstants
         throw new UnsupportedOperationException();
     }
 
+    public static final String [] OWB_INJECTABLE_RESOURCE_ANNOTATIONS = {"javax.ejb.EJB",
+                                                                         "javax.annotation.Resource",
+                                                                         "javax.xml.ws.WebServiceRef",
+                                                                         "javax.persistence.PersistenceUnit",
+                                                                         "javax.persistence.PersistenceContext"};
+    
     /** Prefix of the web beans package */
     public static final String WEB_BEANS_PREFIX = "javax.webbeans";
 

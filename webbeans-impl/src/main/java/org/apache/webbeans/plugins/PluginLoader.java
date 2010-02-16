@@ -59,21 +59,7 @@ public class PluginLoader
     
     public PluginLoader()
     {
-    }
-    
-    public OpenWebBeansResourcePlugin[] getResourcePlugins()
-    {
-        List<OpenWebBeansResourcePlugin> res = new ArrayList<OpenWebBeansResourcePlugin>();
-        for(OpenWebBeansPlugin plugin : this.plugins)
-        {
-            if(plugin instanceof OpenWebBeansResourcePlugin)
-            {
-                res.add((OpenWebBeansResourcePlugin)plugin);
-            }
-        }
-        
-        return res.toArray(new OpenWebBeansResourcePlugin[0]);
-    }
+    }    
 
     /**
      * load and startup all registered plugins.
@@ -195,24 +181,7 @@ public class PluginLoader
         return null;
     }
     
-    /**
-     * Gets the EE resource plugin
-     * 
-     * @return ejb plugin
-     */
-    public OpenWebBeansResourcePlugin getResourcePlugin()
-    {
-        for(OpenWebBeansPlugin plugin : this.plugins)
-        {
-            if(plugin instanceof OpenWebBeansResourcePlugin)
-            {
-                return (OpenWebBeansResourcePlugin)plugin;
-            }
-        }
-        
-        return null;
-    }
-    
+ 
     public boolean isShowDown()
     {
         return !this.started.get();

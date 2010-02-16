@@ -20,6 +20,7 @@ import javax.naming.NamingException;
 
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
+import org.apache.webbeans.api.ResourceReference;
 import org.apache.webbeans.logger.WebBeansLogger;
 
 public class ResourceFactory
@@ -56,11 +57,11 @@ public class ResourceFactory
         return factory;
     }
     
-    public <T> T getResource(Class<T> resourceType,Annotation[] resoAnnotations) throws Exception
+    public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference) throws Exception
     {
         try
         {
-            return this.processor.getResourceObject(resourceType, resoAnnotations);   
+            return this.processor.getResourceReference(resourceReference);   
             
         } catch(Exception e)
         {

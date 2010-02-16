@@ -23,7 +23,6 @@ import javax.naming.Context;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
@@ -32,7 +31,7 @@ import javax.xml.ws.WebServiceRef;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.persistence.JtaEntityManager;
 import org.apache.openejb.persistence.JtaEntityManagerRegistry;
-import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.api.ResourceReference;
 
 
 class ResourceInjectionProcessor
@@ -43,56 +42,50 @@ class ResourceInjectionProcessor
     {
         this.context = context;
     }
-
-    public <T> T getResourceObject(Class<T> resourceType, Annotation[] resourceAnns) throws IllegalAccessException, InvocationTargetException, NamingException
+    
+    public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference) throws IllegalAccessException, InvocationTargetException, NamingException
     {
-        Object resource = null;
+        X resource = null;
         
         if (context == null)
         {
             // No resource injection
             return null;
         }
-
-        if (AnnotationUtil.hasAnnotation(resourceAnns, Resource.class))
+        
+        if(resourceReference.supports(Resource.class))
         {
-            Resource annotation = AnnotationUtil.getAnnotation(resourceAnns, Resource.class);            
-            resource= lookupFieldResource(context, "openejb/Resource/"+annotation.name());
-            
+            Resource annotation = resourceReference.getAnnotation(Resource.class);
+            resource= lookupFieldResource(context, "openejb/Resource/"+annotation.name(), resourceReference.getResourceType());
+        }
+        else if(resourceReference.supports(EJB.class))
+        {
+            EJB annotation = resourceReference.getAnnotation(EJB.class);
+            resource = lookupFieldResource(context, annotation.name(), resourceReference.getResourceType());
+        }
+        else if(resourceReference.supports(WebServiceRef.class))
+        {
+            WebServiceRef annotation = resourceReference.getAnnotation(WebServiceRef.class);
+            resource = lookupFieldResource(context, annotation.name(), resourceReference.getResourceType());
+        }
+        else if(resourceReference.supports(PersistenceUnit.class))
+        {
+            PersistenceUnit annotation = resourceReference.getAnnotation(PersistenceUnit.class);
+            resource = getPersistenceUnit(context, annotation.unitName(), resourceReference.getResourceType());
+        }
+        else if(resourceReference.supports(PersistenceContext.class))
+        {
+            PersistenceContext annotation = resourceReference.getAnnotation(PersistenceContext.class);
+            resource = getPersistenceContext(context, annotation.unitName(), resourceReference.getResourceType());
         }
         
-        if (AnnotationUtil.hasAnnotation(resourceAnns, EJB.class))
-        {
-            EJB annotation = AnnotationUtil.getAnnotation(resourceAnns, EJB.class);            
-            resource = lookupFieldResource(context, annotation.name());
-        }
-        
-        if (AnnotationUtil.hasAnnotation(resourceAnns, WebServiceRef.class))
-        {
-            WebServiceRef annotation = AnnotationUtil.getAnnotation(resourceAnns, WebServiceRef.class);            
-            resource = lookupFieldResource(context, annotation.name());
-        }
-        
-        if (AnnotationUtil.hasAnnotation(resourceAnns, PersistenceContext.class))
-        {
-            PersistenceContext annotation = AnnotationUtil.getAnnotation(resourceAnns, PersistenceContext.class);            
-            resource = this.getPersistenceContext(context, annotation.unitName());
-            
-        }
-        
-        if (AnnotationUtil.hasAnnotation(resourceAnns, PersistenceUnit.class))
-        {
-            PersistenceUnit annotation = AnnotationUtil.getAnnotation(resourceAnns, PersistenceUnit.class);            
-            resource = this.getPersistenceUnit(context, annotation.unitName());
-        }
-        
-        return resourceType.cast(resource);
+        return resource;
     }
 
     /**
      * Inject resources in specified field.
      */
-    protected Object lookupFieldResource(javax.naming.Context context, String name) throws NamingException, IllegalAccessException
+    protected <X> X lookupFieldResource(javax.naming.Context context, String name, Class<X> clazz) throws NamingException, IllegalAccessException
     {
         Object lookedupResource = null;
 
@@ -101,21 +94,21 @@ class ResourceInjectionProcessor
             lookedupResource = context.lookup("java:/" + name);                        
         }
         
-        return lookedupResource;
+        return clazz.cast(lookedupResource);
     }    
     
-    private  EntityManager getPersistenceContext(Context context, String unitName) {
+    private  <X> X getPersistenceContext(Context context, String unitName, Class<X> clazz) {
         // get JtaEntityManagerRegistry
         JtaEntityManagerRegistry jtaEntityManagerRegistry = SystemInstance.get().getComponent(JtaEntityManagerRegistry.class);
 
-        EntityManagerFactory factory = getPersistenceUnit(context, unitName);
+        EntityManagerFactory factory = getPersistenceUnit(context, unitName, EntityManagerFactory.class);
 
         JtaEntityManager jtaEntityManager = new JtaEntityManager(jtaEntityManagerRegistry, factory, null, false);
 
-        return jtaEntityManager;
+        return clazz.cast(jtaEntityManager);
     }
 
-    private  EntityManagerFactory getPersistenceUnit(Context context, String unitName) {
+    private  <X> X getPersistenceUnit(Context context, String unitName, Class<X> clazz) {
         EntityManagerFactory factory;
         try {
 
@@ -153,7 +146,7 @@ class ResourceInjectionProcessor
         } catch (NamingException e) {
             throw new CreationException("PersistenceUnit '" + unitName + "' not found", e );
         }
-        return factory;
+        return clazz.cast(factory);
     }
 
 

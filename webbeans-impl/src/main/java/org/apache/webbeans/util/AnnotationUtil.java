@@ -34,10 +34,10 @@ import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 import javax.interceptor.InterceptorBinding;
 
+import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.plugins.OpenWebBeansResourcePlugin;
 import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
@@ -83,20 +83,7 @@ public final class AnnotationUtil
 
     }
 
-    /**
-     * Check if a resource annotation exist on the method.
-     * 
-     * @param method method
-     * @return <code>true</code> if any resource annotation exists for the given method
-     */
-    public static boolean hasResourceAnnotation(Method method)
-    {
-        Asserts.assertNotNull(method, "Method argument can not be null");
-        
-        Annotation[] anns = method.getDeclaredAnnotations();
-        return hasResourceAnnotation(anns);
-    }
-    
+
     /**
      * Check given annotation exist in the any parameter of the given method.
      * Return true if exist false otherwise.
@@ -680,33 +667,7 @@ public final class AnnotationUtil
         return a;
     }
 
-    /**
-     * Gets the array of resource annotations on the given array.
-     * 
-     * @param annotations annotation array
-     * @return array containing resource type anns
-     */
-    public static Annotation[] getResourceAnnotations(Annotation... annotations)
-    {
-        Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
-        Set<Annotation> set = new HashSet<Annotation>();
-
-        for (Annotation annot : annotations)
-        {
-            if (AnnotationUtil.isResourceAnnotation(annot.annotationType()))
-            {
-                set.add(annot);
-            }
-        }
-
-        Annotation[] a = new Annotation[set.size()];
-        a = set.toArray(a);
-
-        return a;
-
-    }
-    
     /**
      * Gets array of methods that has parameter with given annotation type.
      * 
@@ -982,64 +943,23 @@ public final class AnnotationUtil
     	return false;
     }
 
-    /**
-     * check if any of the given resources is a resource annotation
-     * @see AnnotationUtil#isResourceAnnotation(Class)
-     */
-    public static boolean hasResourceAnnotation(Annotation[] annotations)
+    
+    public static Annotation hasOwbInjectableResource(Annotation[] annotations)
     {
         for (Annotation anno : annotations)
         {
-            if (AnnotationUtil.isResourceAnnotation(anno.annotationType()))
+            for(String name : WebBeansConstants.OWB_INJECTABLE_RESOURCE_ANNOTATIONS)
             {
-                return true;
+                if(anno.annotationType().getName().equals(name))
+                {
+                    return anno;
+                }
             }
         }        
         
-        return false;
+        return null;        
     }
-
-    /**
-     * Returns true if the annotation is a valid WebBeans Resource,
-     * a resource defined in common annotations JSR-250, a remote EJB
-     * or a web service.
-     * The following annotations indicate resources
-     * <ol>
-     * <li>&#x0040;CustomerDataservice</li>
-     * <li>&#x0040;Resource</li>
-     * <li>&#x0040;PersistenceContext</li>
-     * <li>&#x0040;PersistenceUnit</li>
-     * <li>&#x0040;EJB</li>
-     * <li>&#x0040;WebServiceRef</li>
-     * <li>&#x0040;</li>
-     * </ol>
-     * 
-     * Please note that &#x0040;PersistenceContext(type=EXTENDED) 
-     * is not supported for simple beans.
-     * 
-     * @param clazz type of the annotation
-     * @return true if the annotation is defined in xml or annotated with
-     *         {@link javax.inject.Qualifier} false otherwise
-     */
-    public static boolean isResourceAnnotation(Class<? extends Annotation> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
-        
-        for (OpenWebBeansPlugin plugin : plugins)
-        {
-            if(plugin instanceof OpenWebBeansResourcePlugin)
-            {
-                if (((OpenWebBeansResourcePlugin)plugin).isResourceAnnotation(clazz))
-                {
-                    return true;
-                }                
-            }
-        }
-
-        return false;
-    }
+    
 
     /**
      * Returns true if the annotation is defined in xml or annotated with
