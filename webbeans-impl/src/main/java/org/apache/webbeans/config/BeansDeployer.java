@@ -168,10 +168,8 @@ public class BeansDeployer
             {
                 throw  (WebBeansDeploymentException)e;
             }
-            else
-            {
-                throw new WebBeansDeploymentException(e);
-            }
+            
+            throw new WebBeansDeploymentException(e);
         }
     }
     

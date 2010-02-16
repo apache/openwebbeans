@@ -18,6 +18,7 @@ package org.apache.webbeans.container;
 * under the License.
 */
 
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.exception.inject.DeploymentException;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -48,7 +49,6 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
     /** the delegated bean */
     private Bean<T> bean;
 
-    private String id;
 
     /**
      * @return the delegated internal Bean. 
@@ -62,12 +62,10 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
      * This constructor shall not be invoked directly, but only get called
      * from {@link org.apache.webbeans.container.SerializableBeanVault}
      * @param bean the PassivationCapable bean which should be made Serializable
-     * @param id the {@link javax.enterprise.inject.spi.PassivationCapable#getId()}
      */
-    SerializableBean(Bean<T> bean, String id)
+    SerializableBean(Bean<T> bean)
     {
         this.bean = bean;
-        this.id  = id;
     }
 
     @Override
@@ -139,7 +137,7 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
     @Override
     public String getId()
     {
-        return this.id;
+        return ((OwbBean<?>) bean).getId();
     }
 
     private synchronized void writeObject(ObjectOutputStream s)
@@ -172,5 +170,29 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
         bean = b;
     }
 
+    /**
+     * If the other object is a SerializableBean too, we compare the 2 underlying wrapped beans.
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof SerializableBean<?>)
+        {
+            return bean.equals(((SerializableBean<?>)other).getBean());
+        }
+        
+        return super.equals(other);
+    }
+
+    /**
+     * We need to return the hashCode of the wrapped underlying bean, otherwise the context
+     * won't work.
+     * @return hashCode of the underlying bean instance.
+     */
+    @Override
+    public int hashCode() {
+        return bean.hashCode();
+    }
 
 }

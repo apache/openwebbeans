@@ -66,7 +66,7 @@ public class SerializableBeanVault {
             SerializableBean<T> sb = (SerializableBean<T>) serializableBeans.get(id);
             if (sb == null)
             {
-                sb = new SerializableBean<T>((Bean<T>) bean,id);
+                sb = new SerializableBean<T>((Bean<T>) bean);
                 serializableBeans.put(id, sb);
             }
 

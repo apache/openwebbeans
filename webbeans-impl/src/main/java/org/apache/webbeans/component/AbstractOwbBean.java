@@ -84,7 +84,14 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     
     /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
-        
+    
+    /**
+     * This string will be used for passivating the Bean.
+     * It will be created on the first use.
+     * @see #getId()
+     */
+    private String passivatingId = null;
+    
     /**Bean Manager*/
     private final BeanManager manager;
 
@@ -212,15 +219,19 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             // annotating it @Typed() as Object, then it is not serializable
             return null;
         }
-        
-        StringBuilder sb = new StringBuilder(webBeansType.toString()).append('#');
-        sb.append(returnType).append('#');
-        for (Annotation qualifier : implQualifiers)
+        if (passivatingId == null)
         {
-            sb.append(qualifier.toString()).append(',');
+            StringBuilder sb = new StringBuilder(webBeansType.toString()).append('#');
+            sb.append(returnType).append('#');
+            for (Annotation qualifier : implQualifiers)
+            {
+                sb.append(qualifier.toString()).append(',');
+            }
+            
+            passivatingId = sb.toString();
         }
 
-        return sb.toString();
+        return passivatingId;
     }
     
     public boolean isPassivationCapable()

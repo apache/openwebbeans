@@ -133,8 +133,8 @@ public class SerializationTest extends AbstractUnitTest
     }
 
     private CreationalContext<?> deSerializeCreationalContext(byte[] serial) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream baos = new ByteArrayInputStream(serial);
-        ObjectInputStream ois = new ObjectInputStream(baos);
+        ByteArrayInputStream bais = new ByteArrayInputStream(serial);
+        ObjectInputStream ois = new ObjectInputStream(bais);
         return (CreationalContext<?>) ois.readObject();
     }
 
