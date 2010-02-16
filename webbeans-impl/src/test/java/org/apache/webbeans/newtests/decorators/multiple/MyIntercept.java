@@ -13,32 +13,17 @@
  */
 package org.apache.webbeans.newtests.decorators.multiple;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@RequestScoped
-@Named("op")
-public class OutputProvider implements IOutputProvider
-{
+import javax.interceptor.InterceptorBinding;
 
-    @Inject
-    RequestStringBuilder rsb = null;
+@Inherited
+@InterceptorBinding
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyIntercept {}
 
-    @MyIntercept
-    public String getOutput()
-    {
-
-        rsb.addOutput("OutputProvider\n");
-        return rsb.toString();
-    }
-
-    public String trace() { 
-        return "delegate/trace";
-    }
-
-    @Override
-    public String otherMethod() {
-        return "delegate/otherMethod";
-    }
-}

@@ -13,32 +13,20 @@
  */
 package org.apache.webbeans.newtests.decorators.multiple;
 
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InvocationContext;
 
-@RequestScoped
-@Named("op")
-public class OutputProvider implements IOutputProvider
-{
+@MyIntercept @Interceptor
+public class OutputInterceptor {
+	
+	@Inject RequestStringBuilder rb;
+	
+	@AroundInvoke
+	public Object myHook(InvocationContext ctx) throws Exception{
+		rb.addOutput("OutputInterceptor\n");
+		return ctx.proceed();
+	}
 
-    @Inject
-    RequestStringBuilder rsb = null;
-
-    @MyIntercept
-    public String getOutput()
-    {
-
-        rsb.addOutput("OutputProvider\n");
-        return rsb.toString();
-    }
-
-    public String trace() { 
-        return "delegate/trace";
-    }
-
-    @Override
-    public String otherMethod() {
-        return "delegate/otherMethod";
-    }
 }

@@ -11,34 +11,35 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.newtests.decorators.multiple;
+package org.apache.webbeans.decorator;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InvocationContext;
 
-@RequestScoped
-@Named("op")
-public class OutputProvider implements IOutputProvider
+@Interceptor
+public class WebBeansDecoratorInterceptor
 {
 
-    @Inject
-    RequestStringBuilder rsb = null;
+    private DelegateHandler delegate;
+    private Object instance;
 
-    @MyIntercept
-    public String getOutput()
+    public WebBeansDecoratorInterceptor(DelegateHandler delegate, Object instance)
     {
-
-        rsb.addOutput("OutputProvider\n");
-        return rsb.toString();
+        this.delegate = delegate;
+        this.instance = instance;
     }
 
-    public String trace() { 
-        return "delegate/trace";
+    /**
+     * Acts as the entry point into the Decorator stack when this Interceptor is
+     * added to the end of the InterceptorStack.
+     * 
+     * @throws Exception
+     */
+    @AroundInvoke
+    public Object invokeDecorators(InvocationContext ctx) throws Exception
+    {
+        return delegate.invoke(instance, ctx.getMethod(), ctx.getMethod(), ctx.getParameters());
     }
 
-    @Override
-    public String otherMethod() {
-        return "delegate/otherMethod";
-    }
 }
