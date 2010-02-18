@@ -14,7 +14,7 @@
 package org.apache.webbeans.test.unittests.specializes.logger;
 
 import java.io.InputStream;
-
+import java.util.ArrayList;
 import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
@@ -91,7 +91,9 @@ public class LoggerSpecializationTest extends TestContext
         defineManagedBean(SystemLogger.class);
         defineManagedBean(MockSpecializedLogger.class);
         
-        WebBeansUtil.configureSpecializations(MockSpecializedLogger.class);
+        ArrayList<Class<?>> specialClassList = new ArrayList<Class<?>>();
+        specialClassList.add(MockSpecializedLogger.class);
+        WebBeansUtil.configureSpecializations(specialClassList);
         
         Bean<SpecializedInjector> bean = defineManagedBean(SpecializedInjector.class);
         Object instance = getManager().getReference(bean, SpecializedInjector.class, getManager().createCreationalContext(bean));

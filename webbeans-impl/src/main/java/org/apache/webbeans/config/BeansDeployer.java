@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.ArrayList;
 
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
@@ -431,32 +432,31 @@ public class BeansDeployer
             Set<Class<?>> beanClasses = scanner.getBeanClasses();
             if (beanClasses != null && beanClasses.size() > 0)
             {
+                //superClassList is used to handle the case: Car, CarToyota, Bus, SchoolBus, CarFord
+                //for which case, the owb should throw exception that both CarToyota and CarFord are 
+                //specialize Car. 
                 Class<?> superClass = null;
+                ArrayList<Class<?>> superClassList = new ArrayList<Class<?>>();
+                ArrayList<Class<?>> specialClassList = new ArrayList<Class<?>>();
                 for(Class<?> specialClass : beanClasses)
                 {
                     if(AnnotationUtil.hasClassAnnotation(specialClass, Specializes.class))
                     {
-                        if (superClass == null)
+                        superClass = specialClass.getSuperclass();
+                        if(superClass.equals(Object.class))
                         {
-                            superClass = specialClass.getSuperclass();
-                            
-                            if(superClass.equals(Object.class))
-                            {
-                                throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EXCEPT_0003) + specialClass.getName()
-                                                                         + logger.getTokenString(OWBLogConst.EXCEPT_0004));
-                            }
+                            throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EXCEPT_0003) + specialClass.getName()
+                                                                     + logger.getTokenString(OWBLogConst.EXCEPT_0004));
                         }
-                        else
+                        if (superClassList.contains(superClass))
                         {
-                            if (superClass.equals(specialClass.getSuperclass()))
-                            {
-                                throw new InconsistentSpecializationException(logger.getTokenString(OWBLogConst.EXCEPT_0005) + superClass.getName());
-                            }
+                            throw new InconsistentSpecializationException(logger.getTokenString(OWBLogConst.EXCEPT_0005) + superClass.getName());
                         }
-                        
-                        WebBeansUtil.configureSpecializations(specialClass);                        
+                        superClassList.add(superClass);
+                        specialClassList.add(specialClass);
                     }
                 }
+                WebBeansUtil.configureSpecializations(specialClassList);                        
             }
 
             // XML Defined Specializations
@@ -483,6 +483,7 @@ public class BeansDeployer
         Iterator<Class<?>> it = clazzes.iterator();
         Class<?> superClass = null;
         Class<?> specialClass = null;
+        ArrayList<Class<?>> specialClassList = new ArrayList<Class<?>>();
         while (it.hasNext())
         {
             specialClass = it.next();
@@ -499,10 +500,9 @@ public class BeansDeployer
                                                                  + superClass.getName());
                 }
             }
-
-            WebBeansUtil.configureSpecializations(specialClass);
-
+            specialClassList.add(specialClass);
         }
+        WebBeansUtil.configureSpecializations(specialClassList);
     }
 
     /**

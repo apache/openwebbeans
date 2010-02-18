@@ -1516,6 +1516,52 @@ public final class WebBeansUtil
         }
     }
     
+    /**
+     * Return true if a list of beans are directly specialized/extended each other.
+     * 
+     * @param beans, a set of specialized beans.
+     * 
+     * @return
+     */
+    protected static boolean isDirectlySpecializedBeanSet(Set<Bean<?>> beans) {
+    	
+    	ArrayList<AbstractOwbBean<?>> beanList = new ArrayList<AbstractOwbBean<?>>();
+
+    	for(Bean<?> bb : beans) 
+    	{
+    		AbstractOwbBean<?>bean = (AbstractOwbBean<?>)bb;
+    		beanList.add(bean);
+    	}
+    	
+    	java.util.Collections.sort(beanList, new java.util.Comparator() 
+    	{
+    		public int compare(Object o1, Object o2) 
+    		{
+    			AbstractOwbBean<?> b1 = (AbstractOwbBean<?>)o1;
+    			AbstractOwbBean<?> b2 = (AbstractOwbBean<?>)o2;
+    			Class c1 = b1.getReturnType();
+    			Class c2 = b2.getReturnType();
+    			if (c2.isAssignableFrom(c1)) return 1;
+    			if (c1.isAssignableFrom(c2)) return -1;
+    			throw new InconsistentSpecializationException(c1 + " and " + c2 + "are not assignable to each other." );
+    		}
+    	});
+
+    	for(int i=0; i<beanList.size() - 1; i++) 
+    	{
+    		if (!beanList.get(i).getReturnType().equals(beanList.get(i+1).getReturnType().getSuperclass()))
+    				return false;
+    	}
+    	return true;
+    }
+
+    public static void configureSpecializations(List<Class<?>> beanClasses)
+    {
+    	for(Class<?> clazz : beanClasses) 
+    	{
+    		configureSpecializations(clazz, beanClasses);
+    	}
+	}
 
     /**
      * Configures the bean specializations.
@@ -1530,28 +1576,39 @@ public final class WebBeansUtil
      * @throws InconsistentSpecializationException related with priority
      * @throws WebBeansConfigurationException any other exception
      */
-    public static void configureSpecializations(Class<?> specializedClass)
+    protected static void configureSpecializations(Class<?> specializedClass, List<Class<?>> beanClasses)
     {
         Asserts.nullCheckForClass(specializedClass);
 
         Bean<?> superBean = null;
         Bean<?> specialized = null;
         Set<Bean<?>> resolvers = null;
+        AlternativesManager altManager = AlternativesManager.getInstance();
         
-        if ((resolvers = isConfiguredWebBeans(specializedClass,true)) != null)
+        if ((resolvers = isConfiguredWebBeans(specializedClass, true)) != null)
         {            
             if(resolvers.isEmpty())
             {
                 throw new InconsistentSpecializationException("Specialized bean for class : " + specializedClass + " is not enabled in the deployment.");
             }
             
+            specialized = resolvers.iterator().next();
+            
             if(resolvers.size() > 1)
             {
-                throw new InconsistentSpecializationException("More than one specialized bean for class : " + specializedClass + " is enabled in the deployment.");
+            	if (!isDirectlySpecializedBeanSet(resolvers)) 
+            	{
+            		throw new InconsistentSpecializationException("More than one specialized bean for class : " + specializedClass + " is enabled in the deployment.");
+            	}
+            	// find the widest bean which satisfies the specializedClass
+                for( Bean<?> sp : resolvers) {
+                	if (sp == specialized) continue;
+                	if (((AbstractOwbBean<?>)sp).getReturnType().isAssignableFrom(((AbstractOwbBean<?>)specialized).getReturnType())) 
+                	{
+                		specialized = sp;
+                	}
+                }
             }
-            
-                                   
-            specialized = resolvers.iterator().next();
             
             Class<?> superClass = specializedClass.getSuperclass();
             
@@ -1573,7 +1630,23 @@ public final class WebBeansUtil
                         
             if (superBean != null)
             {
-                ((AbstractOwbBean<?>)superBean).setEnabled(false);
+            	// Recursively configure super class first if super class is also a special bean.
+            	// So the name and bean meta data could be populated to this beanclass.  
+            	if (beanClasses.contains(superClass) && ((AbstractOwbBean<?>)superBean).isEnabled()) 
+            	{
+            		configureSpecializations(superClass, beanClasses);
+            	}
+            	
+            	if (!AnnotationUtil.hasClassAnnotation(specializedClass, Alternative.class)) 
+            	{
+            		//disable superbean if the current bean is not an alternative 
+            		((AbstractOwbBean<?>)superBean).setEnabled(false);
+            	} 
+            	else if(altManager.isClassAlternative(specializedClass)) 
+            	{
+            		//disable superbean if the current bean is an enabled alternative 
+            		((AbstractOwbBean<?>)superBean).setEnabled(false);
+            	}
                                 
                 AbstractOwbBean<?> comp = (AbstractOwbBean<?>)specialized;
 
