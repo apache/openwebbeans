@@ -129,7 +129,13 @@ public class DefaultScannerService extends AbstractMetaDataDiscovery
      */
     private URL createURLFromWARFile() throws Exception
     {
-        URL url = this.servletContext.getResource("/WEB-INF/beans.xml");
+        if (servletContext == null)
+        {
+            // this may happen if we are running in a test container, in IDE development, etc
+            return null;
+        }
+        
+        URL url = servletContext.getResource("/WEB-INF/beans.xml");
 
         if (url != null)
         {
