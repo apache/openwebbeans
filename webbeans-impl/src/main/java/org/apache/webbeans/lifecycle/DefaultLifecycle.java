@@ -44,10 +44,10 @@ import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.servlet.WebBeansConfigurationListener;
-import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.ServiceLoader;
+import org.apache.webbeans.spi.ServletContainerLifecycle;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 /**
@@ -61,7 +61,7 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
  * @version $Rev$ $Date$
  * @see WebBeansConfigurationListener
  */
-public final class DefaultLifecycle implements ContainerLifecycle
+public final class DefaultLifecycle implements ServletContainerLifecycle
 {
 	//Logger instance
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(DefaultLifecycle.class);
@@ -105,8 +105,14 @@ public final class DefaultLifecycle implements ContainerLifecycle
         rootManager.setXMLConfigurator(this.xmlDeployer);        
     }
     
-    public void requestStarted(ServletRequestEvent event)
+    public void requestStarted(Object startObject)
     {
+        ServletRequestEvent event = null;
+        if (startObject instanceof ServletRequestEvent)
+        {
+            event = (ServletRequestEvent) startObject;
+        }
+        
         logger.debug("Starting a new request : ", new Object[]{event.getServletRequest().getRemoteAddr()});
         
         ContextFactory.initializeThreadLocals();
@@ -134,20 +140,37 @@ public final class DefaultLifecycle implements ContainerLifecycle
         }
     }
 
-    public void requestEnded(ServletRequestEvent event)
+    public void requestEnded(Object endObject)
     {
+        ServletRequestEvent event = null;
+        if (endObject instanceof ServletRequestEvent)
+        {
+            event = (ServletRequestEvent) endObject;
+        }
+
     	logger.debug("Destroying a request : ", new Object[]{event.getServletRequest().getRemoteAddr()});
         ContextFactory.destroyRequestContext((HttpServletRequest) event.getServletRequest());
     }
 
-    public void sessionStarted(HttpSessionEvent event)
+    public void sessionStarted(Object startObject)
     {
+        HttpSessionEvent event = null;
+        if (startObject instanceof HttpSessionEvent)
+        {
+            event = (HttpSessionEvent) startObject;
+        }
+
         logger.debug("Starting a session with session id : ", new Object[]{event.getSession().getId()});
         ContextFactory.initSessionContext(event.getSession());
     }
 
-    public void sessionEnded(HttpSessionEvent event)
+    public void sessionEnded(Object endObject)
     {
+        HttpSessionEvent event = null;
+        if (endObject instanceof HttpSessionEvent)
+        {
+            event = (HttpSessionEvent) endObject;
+        }
     	logger.debug("Destroying a session with session id : ", new Object[]{event.getSession().getId()});
         ContextFactory.destroySessionContext(event.getSession());
 
