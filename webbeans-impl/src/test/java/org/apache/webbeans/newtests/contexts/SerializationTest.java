@@ -1,4 +1,3 @@
-package org.apache.webbeans.newtests.contexts;
 /*
 * Licensed to the Apache Software Foundation (ASF) under one
 * or more contributor license agreements. See the NOTICE file
@@ -17,6 +16,8 @@ package org.apache.webbeans.newtests.contexts;
 * specific language governing permissions and limitations
 * under the License.
 */
+package org.apache.webbeans.newtests.contexts;
+
 
 import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.container.SerializableBeanVault;
