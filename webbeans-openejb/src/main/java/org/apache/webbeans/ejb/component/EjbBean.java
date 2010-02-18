@@ -181,7 +181,7 @@ public class EjbBean<T> extends AbstractInjectionTargetBean<T> implements Enterp
      * {@inheritDoc}
      */
     @Override
-    protected void destroyComponentInstance(T instance)
+    protected void destroyComponentInstance(T instance, CreationalContext<T> creational)
     {
         if(removeStatefulInstance && getEjbType().equals(SessionBeanType.STATEFUL))
         {
