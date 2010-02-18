@@ -301,7 +301,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     {
         Context context = BeanManagerImpl.getManager().getContext(getScope());
         Object actualInstance = context.get((Bean<Object>)this.wrappedBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T)JavassistProxyFactory.createDependentScopedBeanProxy(this.wrappedBean, actualInstance);
+        T proxy = (T)JavassistProxyFactory.createDependentScopedBeanProxy(this.wrappedBean, actualInstance, creationalContext);
         
         return proxy;        
     }
@@ -358,13 +358,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         InjectableMethods m = new InjectableMethods(method, instance, this.wrappedBean, creationalContext);
         m.doInjection();        
     }
-    
-    
-    public void destroy(T instance,CreationalContext<T> context)
-    {
-        wrappedBean.destroy(instance,context);
-    }
-
+        
     @Override
     public Set<Annotation> getQualifiers()
     {

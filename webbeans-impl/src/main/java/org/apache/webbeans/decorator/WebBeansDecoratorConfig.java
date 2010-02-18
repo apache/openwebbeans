@@ -30,6 +30,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -73,7 +74,8 @@ public final class WebBeansDecoratorConfig
         }
     }
     
-    public static List<Object> getDecoratorStack(InjectionTargetBean<?> component, Object instance, Object delegate)
+    public static List<Object> getDecoratorStack(InjectionTargetBean<?> component, Object instance, 
+            Object delegate, CreationalContextImpl<?> ownerCreationalContext)
     {
         List<Object> decoratorStack = new ArrayList<Object>();
         List<Decorator<?>> decoratorList = component.getDecoratorStack();        
@@ -81,13 +83,15 @@ public final class WebBeansDecoratorConfig
         BeanManager manager = BeanManagerImpl.getManager();
         while (itList.hasNext())
         {
-            WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();
-            CreationalContext<?> creationalContext = manager.createCreationalContext(decorator);
+            WebBeansDecorator<Object> decorator = (WebBeansDecorator<Object>) itList.next();
+            CreationalContext<Object> creationalContext = manager.createCreationalContext(decorator);
             Object decoratorInstance = manager.getReference(decorator, decorator.getBeanClass(), creationalContext);
             
             decorator.setInjections(decoratorInstance, creationalContext);
             decorator.setDelegate(decoratorInstance, delegate);
             decoratorStack.add(decoratorInstance);
+            
+            ownerCreationalContext.addDependent(decorator, decoratorInstance, creationalContext);
         }
 
         return decoratorStack;

@@ -127,7 +127,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             getInjectionTarget().inject(instance, creationalContext);
             
             //Call @PostConstrcut
-            postConstruct(instance);
+            postConstruct(instance, creationalContext);
         }
         //Default operations
         else
@@ -186,7 +186,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
-        destroyComponentInstance(instance);
+        destroyComponentInstance(instance,creationalContext);
     }
 
     /**
@@ -205,9 +205,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      * 
      * @param instance object instance.
      */
-    protected void destroyComponentInstance(T instance)
+    protected void destroyComponentInstance(T instance, CreationalContext<T> creationalContext)
     {
-        preDestroy(instance);
+        preDestroy(instance, creationalContext);
     }
 
     /**
@@ -239,13 +239,13 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         injectMethods(instance, creationalContext);
         
         //Post construct
-        postConstruct(instance);
+        postConstruct(instance, creationalContext);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void postConstruct(T instance)
+    public void postConstruct(T instance, CreationalContext<T> cretionalContext)
     {
         if (isInjectionTargetSet())
         {
@@ -253,7 +253,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         }
         else
         {
-            postConstructDefault(instance);
+            postConstructDefault(instance, cretionalContext);
         }
     }
 
@@ -262,14 +262,14 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      * 
      * @param instance bean instance
      */
-    protected void postConstructDefault(T instance)
+    protected void postConstructDefault(T instance, CreationalContext<T> ownerCreationalContext)
     {
         if(getWebBeansType().equals(WebBeansType.MANAGED))
         {
             // Call Post Construct
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
             {
-                InterceptorHandler.injectInterceptorFields(getInterceptorStack());
+                InterceptorHandler.injectInterceptorFields(getInterceptorStack(), (CreationalContextImpl<T>)ownerCreationalContext);
                 
                 InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
                 try
@@ -289,7 +289,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     /**
      * {@inheritDoc}
      */
-    public void preDestroy(T instance)
+    public void preDestroy(T instance, CreationalContext<T> creationalContext)
     {
         if (isInjectionTargetSet())
         {
@@ -297,7 +297,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         }
         else
         {
-            preDestroyDefault(instance);
+            preDestroyDefault(instance, creationalContext);
         }
     }
 
@@ -306,13 +306,14 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      * 
      * @param instance bean instance
      */
-    protected void preDestroyDefault(T instance)
+    protected void preDestroyDefault(T instance, CreationalContext<T> creationalContext)
     {
-        if(getWebBeansType().equals(WebBeansType.MANAGED))
+        if(getWebBeansType().equals(WebBeansType.MANAGED) ||
+                getWebBeansType().equals(WebBeansType.DECORATOR))                
         {
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
             {
-                InterceptorHandler.injectInterceptorFields(getInterceptorStack());
+                InterceptorHandler.injectInterceptorFields(getInterceptorStack(),(CreationalContextImpl<T>) creationalContext);
                 
                 InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
                 try

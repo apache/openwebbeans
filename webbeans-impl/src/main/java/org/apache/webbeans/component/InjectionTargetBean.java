@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.intercept.InterceptorData;
 
 /**
@@ -176,14 +177,14 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
      * 
      * @param instance bean instance
      */
-    public void postConstruct(T instance);
+    public void postConstruct(T instance, CreationalContext<T> creationalContext);
     
     /**
      * Calls predestroy method.
      * 
      * @param instance bean instance
      */
-    public void preDestroy(T instance);    
+    public void preDestroy(T instance, CreationalContext<T> creationalContext);    
     
     /**
      * Sets annotated type.

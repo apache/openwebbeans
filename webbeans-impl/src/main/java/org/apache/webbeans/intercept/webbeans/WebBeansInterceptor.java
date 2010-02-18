@@ -279,7 +279,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements Interc
     {
         Context context = BeanManagerImpl.getManager().getContext(getScope());
         Object actualInstance = context.get((Bean<Object>)this.delegateBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T)JavassistProxyFactory.createDependentScopedBeanProxy(this.delegateBean, actualInstance);
+        T proxy = (T)JavassistProxyFactory.createDependentScopedBeanProxy(this.delegateBean, actualInstance, creationalContext);
         
         return proxy;
     }
@@ -328,12 +328,6 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements Interc
         m.doInjection();        
     }
     
-
-    public void destroy(T instance,CreationalContext<T> context)
-    {
-        delegateBean.destroy(instance,context);
-    }
-
     @Override
     public Set<Annotation> getQualifiers()
     {

@@ -67,7 +67,7 @@ public final class JavassistProxyFactory
         return result;
     }
     
-    public static Object createDependentScopedBeanProxy(AbstractOwbBean<?> bean, Object actualInstance)
+    public static Object createDependentScopedBeanProxy(AbstractOwbBean<?> bean, Object actualInstance, CreationalContext<?> creastionalContext)
     {
         Object result = null;
         
@@ -117,7 +117,7 @@ public final class JavassistProxyFactory
 
             if (!(bean instanceof WebBeansDecorator) && !(bean instanceof WebBeansInterceptor))
             {
-                fact.setHandler(new DependentScopedBeanInterceptorHandler(bean, actualInstance));
+                fact.setHandler(new DependentScopedBeanInterceptorHandler(bean, actualInstance, creastionalContext));
             }
 
             result = fact.createClass().newInstance();

@@ -51,7 +51,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
         @SuppressWarnings("unchecked")
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
         
-        bean.postConstruct(instance);
+        bean.postConstruct(instance,null);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
         @SuppressWarnings("unchecked")
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
         
-        bean.preDestroy(instance);
+        bean.preDestroy(instance,null);
     }
 
 }

@@ -786,7 +786,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             
             
             instance = context.get((Bean<Object>)bean, (CreationalContext<Object>)creationalContext);     
-            instance = JavassistProxyFactory.createDependentScopedBeanProxy((AbstractOwbBean<?>)bean, instance);
+            instance = JavassistProxyFactory.createDependentScopedBeanProxy((AbstractOwbBean<Object>)bean, instance, (CreationalContext<Object>)creationalContext);
         }
         
         return instance;

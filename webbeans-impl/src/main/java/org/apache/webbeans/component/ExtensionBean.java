@@ -51,7 +51,7 @@ public class ExtensionBean<T> extends AbstractInjectionTargetBean<T>
      * {@inheritDoc}
      */
     @Override
-    protected void destroyComponentInstance(T instance)
+    protected void destroyComponentInstance(T instance, CreationalContext<T> creationalContext)
     {
         
     }

@@ -21,7 +21,10 @@ package org.apache.webbeans.intercept;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import javax.enterprise.context.spi.CreationalContext;
+
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
 {
@@ -29,17 +32,19 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
     
     private Object actualInstance;
     
-    public DependentScopedBeanInterceptorHandler(AbstractOwbBean<?> bean, Object instance)
+    private CreationalContext<?> creationalContext;
+    
+    public DependentScopedBeanInterceptorHandler(AbstractOwbBean<?> bean, Object instance, CreationalContext<?> creationalContext)
     {
-        super(bean);
-        
+        super(bean);        
         this.actualInstance = instance;
+        this.creationalContext = creationalContext;
     }
 
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
-        return super.invoke(this.actualInstance, method, proceed, arguments);
+        return super.invoke(this.actualInstance, method, proceed, arguments, (CreationalContextImpl<?>)creationalContext);
     }
     
     protected <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception

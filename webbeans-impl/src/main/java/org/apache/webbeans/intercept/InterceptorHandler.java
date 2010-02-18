@@ -37,6 +37,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -150,7 +151,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         this.bean = bean;
     }
 
-    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
+    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments, CreationalContextImpl<?> ownerCreationalContext) throws Exception
     {
         try
         {
@@ -173,7 +174,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         Object delegate = delegateFactory.createClass().newInstance();
 
                         // Gets component decorator stack
-                        decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate);
+                        decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, ownerCreationalContext);
 
                         delegateHandler.setDecorators(decorators);
                     }
@@ -184,7 +185,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                     List<InterceptorData> temp = new ArrayList<InterceptorData>(stack);
 
                     // Filter both EJB and WebBeans interceptors
-                    filterCommonInterceptorStackList(temp, method);
+                    filterCommonInterceptorStackList(temp, method, ownerCreationalContext);
 
                     // If there are both interceptors and decorators, add hook
                     // point to the end of the interceptor stack.
@@ -294,7 +295,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         return false;
     }
 
-    private void filterCommonInterceptorStackList(final List<InterceptorData> stack, Method method)
+    private void filterCommonInterceptorStackList(final List<InterceptorData> stack, Method method, CreationalContextImpl<?> ownerCreationalContext)
     {
         Iterator<InterceptorData> it = stack.iterator();
         while (it.hasNext())
@@ -307,11 +308,11 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             }
         }
         
-        injectInterceptorFields(stack);
+        injectInterceptorFields(stack, ownerCreationalContext);
     }
     
     
-    public static void injectInterceptorFields(final List<InterceptorData> stack)
+    public static void injectInterceptorFields(final List<InterceptorData> stack, CreationalContextImpl<?> ownerCreationalContext)
     {
         Iterator<InterceptorData> it = stack.iterator();
         BeanManager manager = BeanManagerImpl.getManager();
@@ -325,14 +326,16 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 {
                     if (intData.isDefinedWithWebBeansInterceptor())
                     {
-                        WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>)intData.getWebBeansInterceptor();
-                        CreationalContext<?> creationalContext = manager.createCreationalContext(interceptor);
+                        WebBeansInterceptor<Object> interceptor = (WebBeansInterceptor<Object>)intData.getWebBeansInterceptor();
+                        CreationalContext<Object> creationalContext = manager.createCreationalContext(interceptor);
                         Object interceptorProxy = manager.getReference(interceptor,interceptor.getBeanClass(), creationalContext);
                         
                         interceptor.setInjections(interceptorProxy, creationalContext);
 
                         //Setting interceptor proxy instance
                         intData.setInterceptorInstance(interceptorProxy);
+                        
+                        ownerCreationalContext.addDependent(interceptor, interceptorProxy, creationalContext);
                     }
 
                 }

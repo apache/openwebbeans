@@ -27,6 +27,7 @@ import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 public class NormalScopedBeanInterceptorHandler extends InterceptorHandler 
 {
@@ -82,7 +83,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         }
 
 
-        return super.invoke(webbeansInstance, method, proceed, arguments);
+        return super.invoke(webbeansInstance, method, proceed, arguments, (CreationalContextImpl<?>)creationalContxt.get());
     }
     
     protected <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
