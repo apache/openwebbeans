@@ -1,15 +1,20 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements. See the NOTICE file distributed with this
- * work for additional information regarding copyright ownership. The ASF
- * licenses this file to You under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
- * or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.webbeans.lifecycle;
 
@@ -44,10 +49,10 @@ import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.servlet.WebBeansConfigurationListener;
+import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.ServiceLoader;
-import org.apache.webbeans.spi.ServletContainerLifecycle;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 /**
@@ -61,7 +66,7 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
  * @version $Rev$ $Date$
  * @see WebBeansConfigurationListener
  */
-public final class DefaultLifecycle implements ServletContainerLifecycle
+public final class DefaultLifecycle implements ContainerLifecycle
 {
 	//Logger instance
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(DefaultLifecycle.class);
@@ -105,14 +110,8 @@ public final class DefaultLifecycle implements ServletContainerLifecycle
         rootManager.setXMLConfigurator(this.xmlDeployer);        
     }
     
-    public void requestStarted(Object startObject)
+    public void requestStarted(ServletRequestEvent event)
     {
-        ServletRequestEvent event = null;
-        if (startObject instanceof ServletRequestEvent)
-        {
-            event = (ServletRequestEvent) startObject;
-        }
-        
         logger.debug("Starting a new request : ", new Object[]{event.getServletRequest().getRemoteAddr()});
         
         ContextFactory.initializeThreadLocals();
@@ -140,37 +139,20 @@ public final class DefaultLifecycle implements ServletContainerLifecycle
         }
     }
 
-    public void requestEnded(Object endObject)
+    public void requestEnded(ServletRequestEvent event)
     {
-        ServletRequestEvent event = null;
-        if (endObject instanceof ServletRequestEvent)
-        {
-            event = (ServletRequestEvent) endObject;
-        }
-
     	logger.debug("Destroying a request : ", new Object[]{event.getServletRequest().getRemoteAddr()});
         ContextFactory.destroyRequestContext((HttpServletRequest) event.getServletRequest());
     }
 
-    public void sessionStarted(Object startObject)
+    public void sessionStarted(HttpSessionEvent event)
     {
-        HttpSessionEvent event = null;
-        if (startObject instanceof HttpSessionEvent)
-        {
-            event = (HttpSessionEvent) startObject;
-        }
-
         logger.debug("Starting a session with session id : ", new Object[]{event.getSession().getId()});
         ContextFactory.initSessionContext(event.getSession());
     }
 
-    public void sessionEnded(Object endObject)
+    public void sessionEnded(HttpSessionEvent event)
     {
-        HttpSessionEvent event = null;
-        if (endObject instanceof HttpSessionEvent)
-        {
-            event = (HttpSessionEvent) endObject;
-        }
     	logger.debug("Destroying a session with session id : ", new Object[]{event.getSession().getId()});
         ContextFactory.destroySessionContext(event.getSession());
 
