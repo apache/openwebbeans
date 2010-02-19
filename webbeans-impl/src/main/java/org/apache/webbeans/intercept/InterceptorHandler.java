@@ -32,8 +32,8 @@ import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -144,7 +144,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
     
-    protected AbstractOwbBean<?> bean = null;
+    protected OwbBean<?> bean = null;
 
     protected InterceptorHandler(AbstractOwbBean<?> bean)
     {
@@ -371,7 +371,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     {
         if( s.readByte() == 1)
         {
-            this.bean = (AbstractInjectionTargetBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(s.readUTF());   
+            this.bean = (OwbBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(s.readUTF());
         }
         else
         {
