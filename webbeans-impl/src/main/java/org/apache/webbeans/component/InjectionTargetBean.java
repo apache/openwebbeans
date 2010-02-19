@@ -25,7 +25,6 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.intercept.InterceptorData;
 
 /**

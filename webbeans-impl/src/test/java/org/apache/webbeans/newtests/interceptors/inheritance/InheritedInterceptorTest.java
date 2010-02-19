@@ -25,9 +25,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class InheritedInterceptorTest extends AbstractUnitTest

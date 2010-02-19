@@ -38,8 +38,6 @@ import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.plugins.OpenWebBeansPlugin;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 /**
