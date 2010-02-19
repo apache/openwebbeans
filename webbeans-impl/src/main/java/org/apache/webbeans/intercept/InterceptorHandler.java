@@ -42,7 +42,6 @@ import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
@@ -335,11 +334,14 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         //Setting interceptor proxy instance
                         intData.setInterceptorInstance(interceptorProxy);
                         
-                        ownerCreationalContext.addDependent(interceptor, interceptorProxy, creationalContext);
+                        if (ownerCreationalContext != null)
+                        {
+                        	ownerCreationalContext.addDependent(interceptor, interceptorProxy, creationalContext);
+                        }
                     }
 
                 }
-                catch (WebBeansConfigurationException e1)
+                catch (WebBeansException e1)
                 {
                     throw e1;
                 }

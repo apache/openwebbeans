@@ -91,7 +91,10 @@ public final class WebBeansDecoratorConfig
             decorator.setDelegate(decoratorInstance, delegate);
             decoratorStack.add(decoratorInstance);
             
-            ownerCreationalContext.addDependent(decorator, decoratorInstance, creationalContext);
+            if (ownerCreationalContext != null)
+            {
+            	ownerCreationalContext.addDependent(decorator, decoratorInstance, creationalContext);
+            }
         }
 
         return decoratorStack;

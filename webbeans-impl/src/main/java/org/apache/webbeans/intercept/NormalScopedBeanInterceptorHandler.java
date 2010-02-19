@@ -54,9 +54,11 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         Context webbeansContext = beanManager.getContext(bean.getScope());
         Object webbeansInstance = webbeansContext.get(this.bean);
 
+        CreationalContext<Object> cc = null;
+
         if (webbeansInstance == null)
         {
-            CreationalContext<Object> cc = creationalContxt.get();
+            cc = creationalContxt.get();
 
             if (cc == null)
             {
@@ -83,7 +85,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         }
 
 
-        return super.invoke(webbeansInstance, method, proceed, arguments, (CreationalContextImpl<?>)creationalContxt.get());
+        return super.invoke(webbeansInstance, method, proceed, arguments, (CreationalContextImpl<?>) cc);
     }
     
     protected <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
