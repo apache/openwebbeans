@@ -19,16 +19,19 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansException;
@@ -44,20 +47,31 @@ public final class JavassistProxyFactory
     {
 
     }
+    
+    private static Map<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    
+    private static Map<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
 
-    public static Object createNormalScopedBeanProxy(AbstractOwbBean<?> bean, CreationalContext<?> creationalContext)
+    public static Object createNormalScopedBeanProxy(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         Object result = null;
         try
         {
-            ProxyFactory fact = createProxyFactory(bean);
-
-            if (!(bean instanceof WebBeansDecorator) && !(bean instanceof WebBeansInterceptor))
+            Class<?> proxyClass = normalScopedBeanProxyClasses.get(bean);
+            if (proxyClass == null)
             {
-                fact.setHandler(new NormalScopedBeanInterceptorHandler((AbstractOwbBean<?>) bean, creationalContext));
-            }
+                ProxyFactory fact = createProxyFactory(bean);
 
-            result = fact.createClass().newInstance();
+                proxyClass = fact.createClass();
+                normalScopedBeanProxyClasses.put(bean, proxyClass);
+            }
+            
+            result = proxyClass.newInstance();
+            
+            if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
+            {
+                ((ProxyObject)result).setHandler(new NormalScopedBeanInterceptorHandler(bean, creationalContext));
+            }
         }
         catch (Exception e)
         {
@@ -67,14 +81,14 @@ public final class JavassistProxyFactory
         return result;
     }
     
-    public static Object createDependentScopedBeanProxy(AbstractOwbBean<?> bean, Object actualInstance, CreationalContext<?> creastionalContext)
+    public static Object createDependentScopedBeanProxy(OwbBean<?> bean, Object actualInstance, CreationalContext<?> creastionalContext)
     {
         Object result = null;
         
         List<InterceptorData> interceptors =  null;
         List<Decorator<?>> decorators = null;
         InjectionTargetBean<?> injectionTargetBean = null;
-        if(bean instanceof InjectionTargetBean)
+        if(bean instanceof InjectionTargetBean<?>)
         {
             injectionTargetBean = (InjectionTargetBean<?>)bean;
             interceptors = injectionTargetBean.getInterceptorStack();
@@ -97,11 +111,8 @@ public final class JavassistProxyFactory
                 {
                     continue;
                 }
-                else
-                {
-                    notInInterceptorClassAndLifecycle = true;
-                    break;
-                }
+                notInInterceptorClassAndLifecycle = true;
+                break;
             }
         }
         
@@ -113,14 +124,20 @@ public final class JavassistProxyFactory
         
         try
         {
-            ProxyFactory fact = createProxyFactory(bean);
-
-            if (!(bean instanceof WebBeansDecorator) && !(bean instanceof WebBeansInterceptor))
+            Class<?> proxyClass = dependentScopedBeanProxyClasses.get(bean);
+            if (proxyClass == null)
             {
-                fact.setHandler(new DependentScopedBeanInterceptorHandler(bean, actualInstance, creastionalContext));
+                ProxyFactory fact = createProxyFactory(bean);
+                proxyClass = fact.createClass();
+                dependentScopedBeanProxyClasses.put(bean, proxyClass);
+            }
+            
+            result = proxyClass.newInstance();
+            if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
+            {
+                ((ProxyObject)result).setHandler(new DependentScopedBeanInterceptorHandler(bean, actualInstance, creastionalContext));
             }
 
-            result = fact.createClass().newInstance();
         }
         catch (Exception e)
         {
@@ -138,7 +155,7 @@ public final class JavassistProxyFactory
         Class<?> superClass = null;
         for (Type generic : types)
         {
-            Class<?> type = (Class<?>)ClassUtil.getClazz(generic);
+            Class<?> type = ClassUtil.getClazz(generic);
             
             if (type.isInterface())
             {

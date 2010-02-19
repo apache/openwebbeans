@@ -25,7 +25,7 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
@@ -33,15 +33,12 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
 {
     private static final long serialVersionUID = -7169354477951284657L;
 
-    // A creationalContext has a very short lifespan. So we can use a ThreadLocal to pass it over
-    // if we make sure that it is cleaned up properly!
-    private static ThreadLocal<CreationalContext<Object>> creationalContxt = new ThreadLocal<CreationalContext<Object>>();
+    private CreationalContext<?> creationalContext;
 
-    @SuppressWarnings("unchecked")
-    public NormalScopedBeanInterceptorHandler(AbstractOwbBean<?> bean, CreationalContext<?> cc)
+    public NormalScopedBeanInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         super(bean);
-        creationalContxt.set((CreationalContext<Object>) cc);
+        this.creationalContext = creationalContext;
     }
     
     @SuppressWarnings("unchecked")
@@ -52,40 +49,11 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
 
         //Context of the bean
         Context webbeansContext = beanManager.getContext(bean.getScope());
-        Object webbeansInstance = webbeansContext.get(this.bean);
 
-        CreationalContext<Object> cc = null;
+        //Get bean instance from context
+        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, (CreationalContext<Object>) creationalContext);
 
-        if (webbeansInstance == null)
-        {
-            cc = creationalContxt.get();
-
-            if (cc == null)
-            {
-                // we need to create the CreationalContext ourself and store it
-                try
-                {
-                    cc = (CreationalContext<Object>) beanManager.createCreationalContext(bean);
-                    creationalContxt.set(cc);
-                    //Get bean instance from context
-                    webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, cc);
-                }
-                finally
-                {
-                    // make sure that we remove the cc from the thread in the handler who created it
-                    creationalContxt.remove();
-                }
-            }
-            else
-            {
-                //Get bean instance from context
-                webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, cc);
-            }
-
-        }
-
-
-        return super.invoke(webbeansInstance, method, proceed, arguments, (CreationalContextImpl<?>) cc);
+        return super.invoke(webbeansInstance, method, proceed, arguments, (CreationalContextImpl<?>) creationalContext);
     }
     
     protected <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception

@@ -23,7 +23,7 @@ import java.util.List;
 
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
@@ -34,7 +34,7 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
     
     private CreationalContext<?> creationalContext;
     
-    public DependentScopedBeanInterceptorHandler(AbstractOwbBean<?> bean, Object instance, CreationalContext<?> creationalContext)
+    public DependentScopedBeanInterceptorHandler(OwbBean<?> bean, Object instance, CreationalContext<?> creationalContext)
     {
         super(bean);        
         this.actualInstance = instance;

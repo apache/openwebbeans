@@ -22,9 +22,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
@@ -141,20 +144,25 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class InterceptorHandler implements MethodHandler, Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
     
     protected OwbBean<?> bean = null;
 
-    protected InterceptorHandler(AbstractOwbBean<?> bean)
+    // TODO this proxy cache should get moved to JavassistProxyFactory
+    private static Map<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+
+    protected InterceptorHandler(OwbBean<?> bean2)
     {
-        this.bean = bean;
+        this.bean = bean2;
     }
 
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments, CreationalContextImpl<?> ownerCreationalContext) throws Exception
     {
         try
         {
-            if (bean instanceof InjectionTargetBean)
+            if (bean instanceof InjectionTargetBean<?>)
             {
                 InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) this.bean;
 
@@ -167,10 +175,17 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
 
                     if (injectionTarget.getDecoratorStack().size() > 0)
                     {
-                        ProxyFactory delegateFactory = JavassistProxyFactory.createProxyFactory(bean);
+                        // TODO move this part into JavassistProxyFactory
+                        Class<?> proxyClass = interceptorProxyClasses.get(bean);
+                        if (proxyClass == null)
+                        {
+                            ProxyFactory delegateFactory = JavassistProxyFactory.createProxyFactory(bean);
+                            proxyClass = delegateFactory.createClass();
+                            interceptorProxyClasses.put(bean, proxyClass);
+                        }
+                        Object delegate = proxyClass.newInstance();
                         delegateHandler = new DelegateHandler();
-                        delegateFactory.setHandler(delegateHandler);
-                        Object delegate = delegateFactory.createClass().newInstance();
+                        ((ProxyObject)delegate).setHandler(delegateHandler);
 
                         // Gets component decorator stack
                         decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, ownerCreationalContext);

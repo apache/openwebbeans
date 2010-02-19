@@ -64,7 +64,6 @@ public class MyExtension implements Extension
     
     public MyExtension()
     {
-        reset();
     }
 
     public void observeBeforeBeanDiscovery(@Observes BeforeBeanDiscovery beforeBean) 

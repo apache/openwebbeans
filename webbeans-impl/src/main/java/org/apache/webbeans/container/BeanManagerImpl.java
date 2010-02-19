@@ -25,7 +25,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -118,9 +117,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**Injection resolver instance*/
     private InjectionResolver injectionResolver = null;
 
-    /**Proxy map for the webbeans components*/
-    private Map<Bean<?>, Object> proxyMap = Collections.synchronizedMap(new IdentityHashMap<Bean<?>, Object>());
-    
     /**XML configurator instance*/
     private WebBeansXMLConfigurator xmlConfigurator = null;
     
@@ -756,23 +752,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 return instance;
             }            
             //Create Managed Bean Proxy
-            else
-            {   
-                if (this.proxyMap.containsKey(bean))
-                {
-                    instance = this.proxyMap.get(bean);
-                }
-                else
-                {
-                    instance = JavassistProxyFactory.createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
-                    
-                    this.proxyMap.put(bean, instance);   
-
-                    //push this proxy instance into creational context
-                    CreationalContextImpl<Object> temp = (CreationalContextImpl<Object>)creationalContext;
-                    temp.setProxyInstance(instance);
-                }
-            }            
+            instance = JavassistProxyFactory.createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
+            
+            //push this proxy instance into creational context
+            CreationalContextImpl<Object> temp = (CreationalContextImpl<Object>)creationalContext;
+            temp.setProxyInstance(instance);
         }
         //Create Pseudo-Scope Bean Instance
         else

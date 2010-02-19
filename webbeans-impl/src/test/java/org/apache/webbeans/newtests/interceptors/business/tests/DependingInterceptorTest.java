@@ -92,7 +92,7 @@ public class DependingInterceptorTest extends AbstractUnitTest
         Assert.assertEquals(2, TransactionInterceptor.coount);
         
         Assert.assertNotSame(realInstance1, realInstance2);
-        Assert.assertSame(realInstance1.getMyService(), realInstance2.getMyService());
+        Assert.assertEquals(realInstance1.getMyService().getJ(), realInstance2.getMyService().getJ());
         
         shutDownContainer();
         

@@ -52,6 +52,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
         X instance = null;
         try
         {
+            //X TODO cache proxy class!
             ProxyFactory proxyFactory = JavassistProxyFactory.createProxyFactory(this);
             
             ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
