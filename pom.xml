@@ -627,7 +627,7 @@
           <geronimo_validation.version>1.0</geronimo_validation.version>
           <javassist.version>3.11.0.GA</javassist.version>
           <openejb.version>3.1.2</openejb.version>
-          <myfaces.version>2.0.0-beta</myfaces.version>
+          <myfaces.version>2.0.0-beta-2</myfaces.version>
           <javax.annot.version>1.0</javax.annot.version>
 	  <siteId>/OWB/1.0.0-M3-rc2/plugins</siteId>
 	</properties>
