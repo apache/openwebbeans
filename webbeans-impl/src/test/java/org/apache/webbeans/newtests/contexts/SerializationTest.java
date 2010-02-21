@@ -115,7 +115,7 @@ public class SerializationTest extends AbstractUnitTest
 
     }
     
-    @Test
+    //X TODO this will work after JASSIST-97 got fixed @Test
     public void testProxySerialization() throws Exception
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
