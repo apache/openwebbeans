@@ -205,5 +205,14 @@ public final class JavassistProxyFactory
 
         return result;
     }
+    
+    /**
+     * @param o the object to check
+     * @return <code>true</code> if the given object is a proxy
+     */
+    public static boolean isProxyInstance(Object o)
+    {
+        return o instanceof ProxyObject;
+    }
 
 }

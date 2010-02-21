@@ -42,54 +42,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     
     private CreationalContextImpl<?> ownerCreational = null;
     
-    private static class DependentCreationalContext<S> implements Serializable
-    {
-        private static final long serialVersionUID = 7107949019995422165L;
-
-        private CreationalContext<S> creationalContext;
-        
-        private Contextual<S> contextual;
-        
-        /**
-         * @return the creationalContext
-         */
-        public CreationalContext<S> getCreationalContext()
-        {
-            return creationalContext;
-        }
-
-        /**
-         * @param creationalContext the creationalContext to set
-         */
-        public void setCreationalContext(CreationalContext<S> creationalContext)
-        {
-            this.creationalContext = creationalContext;
-        }
-
-        /**
-         * @return the contextual
-         */
-        public Contextual<S> getContextual()
-        {
-            return contextual;
-        }
-
-        /**
-         * @param contextual the contextual to set
-         */
-        public void setContextual(Contextual<S> contextual)
-        {
-            this.contextual = contextual;
-        }
-
-        public DependentCreationalContext(CreationalContext<S> cc, Contextual<S> contextual)
-        {
-            this.contextual = contextual;
-            this.creationalContext = cc;
-        }
-    }
-    
-    
     /**
      * Package private
      */
@@ -168,7 +120,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         {
             T instance = (T)iterator.next();
             DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)this.dependentObjects.get(instance);
-            dependent.getContextual().destroy(instance, (CreationalContext<T>)dependent.getCreationalContext());                
+            dependent.getContextual().destroy(instance, dependent.getCreationalContext());
         }
         
         this.dependentObjects.clear();
@@ -180,7 +132,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     @Override
     public void release()
     {
-        removeDependents();        
+        removeDependents();
         
     }
     

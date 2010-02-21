@@ -456,5 +456,10 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements Interc
     {
         return this.delegateBean.isAlternative();
     }
-
+    
+    @Override
+    public boolean isPassivationCapable()
+    {
+        return true;
+    }    
 }

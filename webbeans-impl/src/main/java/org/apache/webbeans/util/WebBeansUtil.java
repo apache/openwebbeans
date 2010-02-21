@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -2730,6 +2731,26 @@ public final class WebBeansUtil
         }
         
         return managedBean;
+    }
+
+    /**
+     * Determines if the injection is to be performed into a static field.
+     * 
+     * @param injectionPoint
+     * @return <code>true</code> if the injection is into a static field
+     */
+    public static boolean isStaticInjection(InjectionPoint injectionPoint) 
+    {
+        if (injectionPoint != null)
+        {
+            Member member = injectionPoint.getMember(); 
+            if (member != null && Modifier.isStatic(member.getModifiers()))
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
 }

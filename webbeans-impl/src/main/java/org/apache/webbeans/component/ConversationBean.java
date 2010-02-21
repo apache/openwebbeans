@@ -16,6 +16,7 @@ package org.apache.webbeans.component;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.spi.CreationalContext;
 
+import org.apache.webbeans.annotation.ApplicationScopeLiteral;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.spi.ConversationService;
@@ -34,6 +35,7 @@ public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
     public ConversationBean()
     {
         super(WebBeansType.CONVERSATION, Conversation.class);
+        setImplScopeType(new ApplicationScopeLiteral());
     }
 
     /**

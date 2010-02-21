@@ -650,19 +650,23 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             ownerCreationalContextImpl = (CreationalContextImpl<?>)ownerCreationalContext;
         }
-                                
+
         //Find the injection point Bean
         Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
         CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);
         
         if(WebBeansUtil.isDependent(injectedBean))
         {        
-            injectedCreational.setOwnerCreational(ownerCreationalContextImpl);            
+            injectedCreational.setOwnerCreational(ownerCreationalContextImpl);
             //Creating a new creational context for target bean instance
             instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
             
-            //Add this dependent into bean dependent list
-            ownerCreationalContextImpl.addDependent(injectedBean, instance, injectedCreational);
+            // add this dependent into bean dependent list
+            // only if the member is not static and not already a proxy
+            if (!WebBeansUtil.isStaticInjection(injectionPoint) && !JavassistProxyFactory.isProxyInstance(instance))
+            {
+                ownerCreationalContextImpl.addDependent(injectedBean, instance, injectedCreational);
+            }
         }
         
         else

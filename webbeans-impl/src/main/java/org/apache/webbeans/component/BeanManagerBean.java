@@ -16,6 +16,7 @@ package org.apache.webbeans.component;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
 
+import org.apache.webbeans.annotation.ApplicationScopeLiteral;
 import org.apache.webbeans.container.BeanManagerImpl;
 
 public class BeanManagerBean extends AbstractOwbBean<BeanManager>
@@ -34,6 +35,7 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
         {
             manager = BeanManagerImpl.getManager();
         }
+        setImplScopeType(new ApplicationScopeLiteral());
 
         return manager;
     }
