@@ -22,6 +22,8 @@ package org.apache.webbeans.newtests.contexts;
 import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.apache.webbeans.newtests.contexts.serialize.AppScopedBean;
+import org.apache.webbeans.newtests.contexts.serialize.SessScopedBean;
 import org.apache.webbeans.newtests.contexts.session.common.PersonalDataBean;
 import org.apache.webbeans.newtests.decorators.multiple.Decorator1;
 import org.apache.webbeans.newtests.decorators.multiple.OutputProvider;
@@ -34,6 +36,8 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 import junit.framework.Assert;
 import org.junit.Test;
+
+import javassist.util.proxy.ProxyObject;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -102,13 +106,53 @@ public class SerializationTest extends AbstractUnitTest
                 bean = (Bean<?>) SerializableBeanVault.getInstance().getSerializableBean(bean);
                 
                 byte[] serial = serializeBean(bean);
-                Bean b2 = deSerializeBean(serial);
+                Bean<?> b2 = deSerializeBean(serial);
 
-                Assert.assertEquals(((SerializableBean)bean).getBean(), ((SerializableBean)b2).getBean());
+                Assert.assertEquals(((SerializableBean<?>)bean).getBean(), ((SerializableBean<?>)b2).getBean());
                 
             }            
         }
 
+    }
+    
+    @Test
+    public void testProxySerialization() throws Exception
+    {
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+
+        // add a few random classes
+        classes.add(SessScopedBean.class);
+        classes.add(AppScopedBean.class);
+
+        startContainer(classes);
+
+        Set<Bean<?>> beans = getLifecycle().getBeanManager().getBeans(SessScopedBean.class);
+        Assert.assertNotNull(beans);
+        Assert.assertTrue(beans.size() == 1);
+        
+        @SuppressWarnings("unchecked")
+        Bean<SessScopedBean> bean = (Bean<SessScopedBean>) beans.iterator().next();
+        CreationalContext<SessScopedBean> ssbCreational = getBeanManager().createCreationalContext(bean);
+        Assert.assertNotNull(ssbCreational);
+        
+        SessScopedBean reference = (SessScopedBean) getBeanManager().getReference(bean, SessScopedBean.class, ssbCreational);
+        Assert.assertNotNull(reference);
+        Assert.assertTrue(reference instanceof ProxyObject);
+        
+        reference.getApp().setI(4711);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(reference);
+        byte[] ba = baos.toByteArray();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(ba);
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        SessScopedBean ssb2 =  (SessScopedBean) ois.readObject();
+        Assert.assertNotNull(ssb2);
+        
+        Assert.assertNotNull(ssb2.getApp());
+        Assert.assertTrue(ssb2.getApp().getI() == 4711);
     }
 
     private byte[] serializeBean(Bean<?> bean) throws IOException
@@ -120,8 +164,8 @@ public class SerializationTest extends AbstractUnitTest
     }
 
     private Bean<?> deSerializeBean(byte[] serial) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream baos = new ByteArrayInputStream(serial);
-        ObjectInputStream ois = new ObjectInputStream(baos);
+        ByteArrayInputStream bais = new ByteArrayInputStream(serial);
+        ObjectInputStream ois = new ObjectInputStream(bais);
         return (Bean<?>) ois.readObject();
     }
 
