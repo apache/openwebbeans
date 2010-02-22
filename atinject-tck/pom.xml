@@ -84,6 +84,16 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <dependency>
+        	<groupId>org.apache.openejb</groupId>
+        	<artifactId>openejb-core</artifactId>
+        	<version>3.1.2</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.geronimo.specs</groupId>
+        	<artifactId>geronimo-validation_1.0_spec</artifactId>
+        	<version>1.0-CR5</version>
+        </dependency>
         
         
     </dependencies>
