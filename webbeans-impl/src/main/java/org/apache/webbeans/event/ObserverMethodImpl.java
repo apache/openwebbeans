@@ -94,6 +94,16 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     /** the transaction phase */
     private final TransactionPhase phase;
     
+    private static class ObserverParams
+    {
+        private Bean<Object> bean;
+        
+        private Object instance;
+        
+        private CreationalContext<Object> creational;
+        
+        private boolean isBean = false;
+    }
     
     /**
      * Creates a new bean observer instance.
@@ -160,18 +170,22 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         Object object = null;
         
         CreationalContext<Object> creationalContext = null;
-        
+        List<ObserverParams> methodArgsMap = getMethodArguments(event);
+        ObserverParams[] obargs = null;
         try
         {
-            Object[] args = null;
-            
-            List<Object> argsObjects = getMethodArguments(event);
-            args = new Object[argsObjects.size()];
-            args = argsObjects.toArray(args);
-
             if (!this.observerMethod.isAccessible())
             {
                 this.observerMethod.setAccessible(true);
+            }
+            
+            obargs = new ObserverParams[methodArgsMap.size()];
+            obargs = methodArgsMap.toArray(obargs);
+            Object[] args = new Object[obargs.length];
+            int i = 0;
+            for(ObserverParams param : obargs)
+            {
+                args[i++] = param.instance;
             }
             
             //Static or not
@@ -210,9 +224,22 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         }
         finally
         {
+            //Destory bean instance
             if (baseComponent.getScope().equals(Dependent.class))
             {
                 baseComponent.destroy(object,(CreationalContext<Object>)creationalContext);
+            }
+            
+            //Destroy observer method dependent instances
+            if(methodArgsMap != null)
+            {
+                for(ObserverParams param : obargs)
+                {
+                    if(param.isBean)
+                    {
+                        param.bean.destroy(param.instance, param.creational);
+                    }
+                }
             }
         }
 
@@ -224,16 +251,16 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      * @param event event instance
      * @return list of observer method parameters
      */
-    protected List<Object> getMethodArguments(Object event)
+    protected List<ObserverParams> getMethodArguments(Object event)
     {
         Type[] types = this.observerMethod.getGenericParameterTypes();
 
         Annotation[][] annots = this.observerMethod.getParameterAnnotations();
 
-        List<Object> list = new ArrayList<Object>();
+        List<ObserverParams> list = new ArrayList<ObserverParams>();
 
         BeanManagerImpl manager = BeanManagerImpl.getManager();
-
+        ObserverParams param = null;
         if (types.length > 0)
         {
             int i = 0;
@@ -254,7 +281,9 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     {
                         if (observersAnnot.annotationType().equals(Observes.class))
                         {
-                            list.add(event);
+                            param = new ObserverParams();
+                            param.instance = event;
+                            list.add(param); 
                             observesAnnotation = true;
                             break;
                         }
@@ -269,13 +298,22 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     if (bindingTypes.length > 0)
                     {
                         InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(null, type, null, null, bindingTypes);
-                        Bean<?> bean = InjectionResolver.getInstance().getInjectionPointBean(point);
+                        @SuppressWarnings("unchecked")
+                        Bean<Object> bean = (Bean<Object>)InjectionResolver.getInstance().getInjectionPointBean(point);
+                        CreationalContext<Object> creational = manager.createCreationalContext(bean);
+                        Object instance = manager.getInstance(bean, creational); 
                         
-                        list.add(manager.getInstance(bean, manager.createCreationalContext(bean)));
+                        param = new ObserverParams();
+                        param.isBean = true;
+                        param.creational = creational;
+                        param.instance = instance;
+                        param.bean = bean;
+                        list.add(param);
                     }
                     else
                     {
-                        list.add(null);
+                        param = new ObserverParams();
+                        list.add(param);
                     }
                 }
                 

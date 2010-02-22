@@ -48,7 +48,7 @@ public class BeanObserverXMLImpl<T> extends ObserverMethodImpl<T>
      * .Object)
      */
     @Override
-    protected List<Object> getMethodArguments(Object event)
+    protected List getMethodArguments(Object event)
     {
         List<Object> params = new ArrayList<Object>();
         BeanManagerImpl manager = BeanManagerImpl.getManager();

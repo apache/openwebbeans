@@ -26,6 +26,7 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
     public BeanManagerBean()
     {
         super(WebBeansType.MANAGER, BeanManager.class);
+        setImplScopeType(new ApplicationScopeLiteral());
     }
 
     @Override
@@ -35,7 +36,6 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
         {
             manager = BeanManagerImpl.getManager();
         }
-        setImplScopeType(new ApplicationScopeLiteral());
 
         return manager;
     }
