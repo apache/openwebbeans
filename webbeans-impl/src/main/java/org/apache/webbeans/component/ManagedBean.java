@@ -16,6 +16,7 @@ package org.apache.webbeans.component;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
@@ -114,5 +115,12 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T>
         return false;
     }
 
+    /**
+     * look at a Dependent scope annotation.
+     */
+    @Override
+    public boolean isDependent() {
+        return getScope().equals(Dependent.class);
+    }
 
 }

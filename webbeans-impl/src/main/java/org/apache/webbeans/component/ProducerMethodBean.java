@@ -42,6 +42,13 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     protected Method disposalMethod;
 
     /**
+     * This string will be used for passivating the Bean.
+     * It will be created on the first use.
+     * @see #getId()
+     */
+    private String passivatingId = null;
+
+    /**
      * Creates a new instance.
      * 
      * @param parent parent bean
@@ -96,6 +103,16 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         this.disposalMethod = disposalMethod;
     }
 
+    public String getId()
+    {
+        if (passivatingId == null)
+        {
+            String id = super.getId();
+            
+            passivatingId = id + "#" + creatorMethod.toGenericString();
+        }
+        return passivatingId;
+    }
     /**
      * Gets actual type arguments.
      * 

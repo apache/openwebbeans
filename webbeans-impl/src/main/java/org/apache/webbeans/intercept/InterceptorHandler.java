@@ -373,21 +373,25 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     private  void writeObject(ObjectOutputStream s) throws IOException
     {
         s.writeLong(serialVersionUID);
-        if(WebBeansUtil.isPassivationCapable(this.bean) != null)
+        // we have to write the ids for all beans, not only PassivationCapable
+        // since this gets serialized along with the Bean proxy.
+        String passivationId = this.bean.getId();
+        if (passivationId!= null)
         {
-            s.writeUTF(this.bean.getId());   
+            s.writeObject(passivationId);
         }
         else
         {
+            s.writeObject(null);
             logger.warn("Trying to serialize not passivated capable bean proxy : " + this.bean);
         }
     }
     
     private  void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
     {
-        if( s.readLong() == serialVersionUID)
+        if(s.readLong() == serialVersionUID)
         {
-            String passivationId = s.readUTF();
+            String passivationId = (String) s.readObject();
             if (passivationId != null)
             {
                 this.bean = (OwbBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(passivationId);

@@ -207,7 +207,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     
     /**
      * TODO there are probably other infos which must get added to make the id unique!
-     * If not, it will crash in {@link BeanManagerImpl#addPassivationCapableBean(javax.enterprise.inject.spi.Bean)}
+     * If not, it will crash in {@link BeanManagerImpl#addPassivationInfo(javax.enterprise.inject.spi.Bean)}
      * anyway. 
      *
      * {@inheritDoc}
@@ -579,4 +579,10 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         return this.logger;
     }
+
+    @Override
+    public boolean isDependent() {
+        return false;
+    }
+    
 }

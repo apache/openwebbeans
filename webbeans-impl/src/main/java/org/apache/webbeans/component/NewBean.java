@@ -54,4 +54,12 @@ public class NewBean<T> extends ManagedBean<T>
         return definedType;
     }
 
+    /**
+     * always true for New qualifier
+     */
+    @Override
+    public boolean isDependent() {
+        return true;
+    }
+
 }

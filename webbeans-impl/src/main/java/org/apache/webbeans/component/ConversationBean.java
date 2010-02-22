@@ -85,4 +85,5 @@ public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
             instance = null;
         }
     }
+    
 }

@@ -56,6 +56,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
@@ -137,10 +138,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private List<AnnotatedType<?>> additionalAnnotatedTypes = new CopyOnWriteArrayList<AnnotatedType<?>>();
 
     /**
-     * This map stores all {@link PassivationCapable} beans along with their unique id.
-     * This is used for serialization.
+     * This map stores all beans along with their unique {@link PassivationCapable} id.
+     * This is used as a reference for serialization.
      */
-    private ConcurrentHashMap<String, Bean<?>> passivationCapableBeans = new ConcurrentHashMap<String, Bean<?>>(); 
+    private ConcurrentHashMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>(); 
 
     /**
      * The parent Manager this child is depending from.
@@ -287,13 +288,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         if(newBean instanceof AbstractOwbBean)
         {
             this.deploymentBeans.add(newBean);
-            addPassivationCapableBean(newBean);
+            addPassivationInfo((OwbBean)newBean);
         }
         else
         {
             ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(newBean);
             this.deploymentBeans.add(bean);
-            addPassivationCapableBean(bean);
+            addPassivationInfo(bean);
         }
         
 
@@ -301,20 +302,20 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     /**
-     * Check if the bean is PassivationCapable and add it to the id store.
+     * Check if the bean is has a passivation id and add it to the id store.
      *
      * @param bean
      * @throws DefinitionException if the id is not unique.
      */
-    protected void addPassivationCapableBean(Bean<?> bean) throws DefinitionException
+    protected void addPassivationInfo(OwbBean<?> bean) throws DefinitionException
     {
-        String id = null;
-        if((id=WebBeansUtil.isPassivationCapable(bean)) != null)
+        String id = bean.getId();
+        if(id != null)
         {
-            Bean<?> oldBean = passivationCapableBeans.putIfAbsent(id, bean);
+            Bean<?> oldBean = passivationBeans.putIfAbsent(id, bean);
             if (oldBean != null)
             {
-                throw new DefinitionException("PassivationCapable bean id is not unique: " + id);
+                throw new DefinitionException("PassivationCapable bean id is not unique: " + id + " bean:" + bean);
             }
             
         }        
@@ -662,8 +663,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
             
             // add this dependent into bean dependent list
-            // only if the member is not static and not already a proxy
-            if (!WebBeansUtil.isStaticInjection(injectionPoint) && !JavassistProxyFactory.isProxyInstance(instance))
+            if (!WebBeansUtil.isStaticInjection(injectionPoint))
             {
                 ownerCreationalContextImpl.addDependent(injectedBean, instance, injectedCreational);
             }
@@ -710,7 +710,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public Bean<?> getPassivationCapableBean(String id)
     {
-        return passivationCapableBeans.get(id);
+        return passivationBeans.get(id);
     }
 
     /**

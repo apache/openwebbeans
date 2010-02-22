@@ -32,6 +32,13 @@ import org.apache.webbeans.newtests.injection.circular.beans.CircularApplication
 import org.apache.webbeans.newtests.injection.circular.beans.CircularConstructorOrProducerMethodParameterBean;
 import org.apache.webbeans.newtests.injection.circular.beans.CircularDependenScopeBean;
 import org.apache.webbeans.newtests.injection.circular.beans.CircularNormalInConstructor;
+import org.apache.webbeans.test.component.CheckWithCheckPayment;
+import org.apache.webbeans.test.component.CheckWithMoneyPayment;
+import org.apache.webbeans.test.component.IPayment;
+import org.apache.webbeans.test.component.PaymentProcessorComponent;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves1;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves2;
+import org.apache.webbeans.test.component.event.normal.TransactionalInterceptor;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import junit.framework.Assert;
@@ -91,6 +98,13 @@ public class SerializationTest extends AbstractUnitTest
         classes.add(CircularConstructorOrProducerMethodParameterBean.class);
         classes.add(CircularDependenScopeBean.class);
         classes.add(CircularNormalInConstructor.class);
+        classes.add(TransactionalInterceptor.class);
+        classes.add(ComponentWithObserves1.class);
+        classes.add(ComponentWithObserves2.class);
+        classes.add(PaymentProcessorComponent.class);
+        classes.add(IPayment.class);
+        classes.add(CheckWithCheckPayment.class);
+        classes.add(CheckWithMoneyPayment.class);
 
         startContainer(classes);
 

@@ -2540,12 +2540,7 @@ public final class WebBeansUtil
     
     public static boolean isDependent(Bean<?> bean)
     {
-        if(bean.getScope().equals(Dependent.class))
-        {
-            return true;
-        }
-        
-        return false;
+        return ((OwbBean) bean).isDependent();
     }
     
     public static void inspectErrorStack(String logMessage)

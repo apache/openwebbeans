@@ -172,4 +172,11 @@ public interface OwbBean<T> extends Bean<T>
      */
     public boolean isPassivationCapable();
     
+    /**
+     * This determines if this bean is really a dependent bean,
+     * and as such always creats a freshl instance for each
+     * InjectionPoint. A BeanManagerBean is e.g. not a dependent bean.
+     * @return <code>true</code> if this is a dependent bean
+     */
+    public boolean isDependent();
 }
