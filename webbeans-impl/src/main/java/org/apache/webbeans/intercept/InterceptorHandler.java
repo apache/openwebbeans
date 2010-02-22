@@ -340,6 +340,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 {
                     if (intData.isDefinedWithWebBeansInterceptor())
                     {
+                        @SuppressWarnings("unchecked")
                         WebBeansInterceptor<Object> interceptor = (WebBeansInterceptor<Object>)intData.getWebBeansInterceptor();
                         CreationalContext<Object> creationalContext = manager.createCreationalContext(interceptor);
                         Object interceptorProxy = manager.getReference(interceptor,interceptor.getBeanClass(), creationalContext);

@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
@@ -581,8 +582,9 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     }
 
     @Override
-    public boolean isDependent() {
-        return false;
+    public boolean isDependent() 
+    {
+        return getScope().equals(Dependent.class);
     }
     
 }

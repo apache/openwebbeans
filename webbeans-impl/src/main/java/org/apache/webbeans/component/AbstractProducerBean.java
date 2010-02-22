@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -217,15 +216,5 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         }
         
         return false;
-    }
-    
-    /**
-     * look at a Dependent scope annotation.
-     */
-    @Override
-    public boolean isDependent() {
-        return getScope().equals(Dependent.class);
-    }
-
-
+    }    
 }

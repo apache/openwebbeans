@@ -31,7 +31,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 {
     private static final long serialVersionUID = -3416834742959340960L;
 
-    private transient Object incompleteInstance = null;
+    private Object incompleteInstance = null;
     
     private Object proxyInstance = null;
     
