@@ -25,7 +25,7 @@ public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin
     /** {@inheritDoc} */
     public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException 
     {
-        if (ClassUtil.isAssignable(UIComponent.class, clazz))
+        if (ClassUtil.isClassAssignable(UIComponent.class, clazz))
         {
             throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() 
                                                      + " can not implement JSF UIComponent");
