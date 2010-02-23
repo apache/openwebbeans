@@ -79,6 +79,11 @@ public final class DecoratorUtil
         Set<Type> decoratorSet = new HashSet<Type>();
         ClassUtil.setInterfaceTypeHierarchy(decoratorSet, decoratorClazz);
         
+        //Per section 8.1 do no consider Serializable a decorated type
+        if(decoratorSet.contains(java.io.Serializable.class)){
+            decoratorSet.remove(java.io.Serializable.class);
+        }
+        
         //No-Decorates found, check from super class
         if(!checkInternalDecoratorConditions(decoratorClazz, decoratorSet))
         {
