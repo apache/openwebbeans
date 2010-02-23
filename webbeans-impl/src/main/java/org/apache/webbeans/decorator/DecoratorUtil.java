@@ -125,10 +125,6 @@ public final class DecoratorUtil
                 else
                 {
                     Class<?> fieldType = field.getType();
-                    if (!ClassUtil.isInterface(fieldType.getModifiers()))
-                    {
-                        throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz.getName() + " delegate attribute type must be interface");
-                    }
 
                     for (Type decType : decoratorSet)
                     {

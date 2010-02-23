@@ -174,10 +174,6 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         }
         
         Type fieldType = this.delegateField.getGenericType();
-        if (!ClassUtil.isInterface(ClassUtil.getClazz(fieldType).getModifiers()))
-        {
-            throw new WebBeansConfigurationException("Decorator bean : " + toString() + " delegate attribute type must be interface");
-        }
 
         for (Type decType : this.decoratedTypes)
         {
