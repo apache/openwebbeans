@@ -349,9 +349,10 @@ public class BeansDeployer
         if (classIndex != null)
         {
             for(Class<?> implClass : classIndex)
-            {
+            {               
                 if (ManagedBeanConfigurator.isManagedBean(implClass))
                 {
+                    ManagedBeanConfigurator.checkManagedBeanCondition(implClass);
                     defineManagedBean(implClass);
                 }
                 else if(this.discoverEjb)
@@ -359,8 +360,7 @@ public class BeansDeployer
                     if(EJBWebBeansConfigurator.isSessionBean(implClass))
                     {
                         logger.info(OWBLogConst.INFO_0010, new Object[]{implClass.getName()});
-                        defineEnterpriseWebBean(implClass);
-                        
+                        defineEnterpriseWebBean(implClass);                        
                     }
                 }
             }

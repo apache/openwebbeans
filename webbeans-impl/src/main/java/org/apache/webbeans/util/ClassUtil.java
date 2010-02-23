@@ -41,8 +41,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Provider;
 
+import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 /**
@@ -791,7 +794,7 @@ public final class ClassUtil
             ParameterizedType ptBean = (ParameterizedType)beanType;
             Class<?> clazzBeanType = (Class<?>)ptBean.getRawType();
             Class<?> clazzReqType = (Class<?>)requiredType;
-            if(isAssignable(clazzReqType, clazzBeanType ))
+            if(isClassAssignable(clazzReqType, clazzBeanType ))
             {
                 Type[]  beanTypeArgs = ptBean.getActualTypeArguments();               
                 for(Type actual : beanTypeArgs)
@@ -833,11 +836,15 @@ public final class ClassUtil
             ParameterizedType ptReq = (ParameterizedType)requiredType;
             Class<?> clazzReqType = (Class<?>)ptReq.getRawType();
             
-            if(isAssignable(clazzReqType, clazzBeanType))
+            if(Provider.class.isAssignableFrom(clazzReqType) ||
+                    Event.class.isAssignableFrom(clazzReqType))
             {
-                return true;
+                if(isClassAssignable(clazzReqType, clazzBeanType))
+                {
+                    return true;
+                }    
             }
-            
+                        
             return false;
         }
         else
@@ -875,7 +882,7 @@ public final class ClassUtil
             ParameterizedType ptEvent = (ParameterizedType)eventType;
             Class<?> eventClazz = (Class<?>)ptEvent.getRawType();
             
-            if(isAssignable(clazzBeanType, eventClazz))
+            if(isClassAssignable(clazzBeanType, eventClazz))
             {
                 return true;
             }
@@ -884,7 +891,7 @@ public final class ClassUtil
         }
         else if(observerType instanceof Class && eventType instanceof Class)
         {
-            return isAssignable((Class<?>)observerType, (Class<?>) eventType);
+            return isClassAssignable((Class<?>)observerType, (Class<?>) eventType);
         }
         
         return false;
@@ -899,7 +906,7 @@ public final class ClassUtil
      * @param rhs right hand side class
      * @return true if rhs is assignable to lhs
      */
-    public static boolean isAssignable(Class<?> lhs, Class<?> rhs)
+    public static boolean isClassAssignable(Class<?> lhs, Class<?> rhs)
     {
         Asserts.assertNotNull(lhs, "lhs parameter can not be null");
         Asserts.assertNotNull(rhs, "rhs parameter can not be null");
@@ -935,7 +942,7 @@ public final class ClassUtil
         Class<?> beanRawType = (Class<?>) beanType.getRawType();
         Class<?> requiredRawType = (Class<?>) requiredType.getRawType();
 
-        if (ClassUtil.isAssignable(requiredRawType,beanRawType))
+        if (ClassUtil.isClassAssignable(requiredRawType,beanRawType))
         {
             //Bean api type actual type arguments
             Type[] beanTypeArgs = beanType.getActualTypeArguments();
@@ -987,7 +994,7 @@ public final class ClassUtil
             }      
             else if((beanTypeArg instanceof Class) && (requiredTypeArg instanceof Class))
             {
-                if(isAssignable(beanTypeArg, requiredTypeArg))
+                if(isClassAssignable((Class<?>)requiredTypeArg,(Class<?>)beanTypeArg))
                 {
                     return true;
                 }
@@ -1560,11 +1567,16 @@ public final class ClassUtil
     {
         Class<?> raw = getClazz(clazz);
         
-        if (raw == null) {
+        if (raw == null) 
+        {
             return null;
         }
         
         set.add(clazz);
+        if(ClassUtil.isDefinitionConstainsTypeVariables(raw))
+        {
+            set.add(new OwbParametrizedTypeImpl(raw));
+        }
 
         Type sc = raw.getGenericSuperclass();
 

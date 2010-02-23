@@ -319,7 +319,7 @@ public final class WebBeansUtil
         Asserts.nullCheckForClass(clazz, "Class is null");
         
         int modifier = clazz.getModifiers();
-
+        
         if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
             throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() + " can not be non-static inner class");
 

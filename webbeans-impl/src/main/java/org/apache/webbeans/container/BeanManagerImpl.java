@@ -19,6 +19,7 @@
 package org.apache.webbeans.container;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -98,8 +99,10 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
  * @see BeanManager 
  */
 @SuppressWarnings("unchecked")
-public class BeanManagerImpl implements BeanManager, Referenceable
+public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     /**Holds the context with key scope*/
     private static Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
 

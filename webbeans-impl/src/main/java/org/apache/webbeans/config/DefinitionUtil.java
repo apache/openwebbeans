@@ -1074,7 +1074,7 @@ public final class DefinitionUtil
     public static <T> void defineSerializable(AbstractOwbBean<T> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
-        if (ClassUtil.isAssignable(Serializable.class, component.getReturnType()))
+        if (ClassUtil.isClassAssignable(Serializable.class, component.getReturnType()))
         {
             component.setSerializable(true);
         }

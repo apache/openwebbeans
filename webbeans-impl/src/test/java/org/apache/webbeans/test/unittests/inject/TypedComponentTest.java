@@ -53,7 +53,6 @@ public class TypedComponentTest extends TestContext
         defineManagedBean(TypedComponent.class);
         List<AbstractOwbBean<?>> list = getComponents();
 
-        @SuppressWarnings("unused")
         Set<Bean<?>> beans= getManager().resolveByType(TypedComponentTest.class.getDeclaredField("s").getType(), new Default()
         {
 
@@ -65,7 +64,7 @@ public class TypedComponentTest extends TestContext
 
         });
 
-        Assert.assertTrue(beans.size() == 0 ? true : false);
+        Assert.assertTrue(beans.size() == 1 ? true : false);
     }
 
 }

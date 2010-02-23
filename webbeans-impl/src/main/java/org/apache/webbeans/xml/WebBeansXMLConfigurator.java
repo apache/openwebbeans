@@ -952,7 +952,7 @@ public final class WebBeansXMLConfigurator
                 {
                     Class<?> xmlType = typeList.get(j);
 
-                    if (ClassUtil.isAssignable(parameterType, xmlType))
+                    if (ClassUtil.isClassAssignable(parameterType, xmlType))
                     {
                         if (!ok)
                         {
@@ -1089,7 +1089,7 @@ public final class WebBeansXMLConfigurator
             else
             {
                 Class<?> directChildType = XMLUtil.getElementJavaType(directChild);
-                if (!ClassUtil.isAssignable(field.getType(), directChildType))
+                if (!ClassUtil.isClassAssignable(field.getType(), directChildType))
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Declared field type is not assignable to class field type");
                 }

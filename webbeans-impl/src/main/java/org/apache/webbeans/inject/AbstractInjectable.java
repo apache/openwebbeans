@@ -20,9 +20,9 @@ import java.util.List;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Provider;
 
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
@@ -125,7 +125,7 @@ public abstract class AbstractInjectable implements Injectable
             ParameterizedType pt = (ParameterizedType) type;            
             Class<?> clazz = (Class<?>) pt.getRawType();
             
-            if(clazz.isAssignableFrom(Instance.class))
+            if(Provider.class.isAssignableFrom(clazz))
             {
                 return true;
             }

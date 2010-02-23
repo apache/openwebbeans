@@ -23,22 +23,23 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
+import javax.inject.Provider;
 
 import org.apache.webbeans.inject.instance.InstanceFactory;
 
-public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
+public class InstanceBean<T> extends AbstractOwbBean<Provider<T>>
 {
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     
     @SuppressWarnings("serial")
     public InstanceBean()
     {
-        super(WebBeansType.INSTANCE, new TypeLiteral<Instance<T>>(){}.getRawType());        
+        super(WebBeansType.INSTANCE, new TypeLiteral<Provider<T>>(){}.getRawType());        
     }
     
          
     @Override
-    protected Instance<T> createInstance(CreationalContext<Instance<T>> creationalContext)
+    protected Provider<T> createInstance(CreationalContext<Provider<T>> creationalContext)
     {
         try
         {
