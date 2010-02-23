@@ -1908,6 +1908,10 @@ public final class WebBeansUtil
         Annotation old = null;
         for (Annotation qualifier : qualifiers)
         {
+            if (!AnnotationUtil.isQualifierAnnotation(qualifier.annotationType()))
+            {
+                throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array can not contain other annotation that is not @Qualifier");
+            }
             if (old == null)
             {
                 old = qualifier;
@@ -1917,11 +1921,6 @@ public final class WebBeansUtil
                 if (old.annotationType().equals(qualifier.annotationType()))
                 {
                     throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array argument can not define duplicate qualifier annotation with name : @" + old.annotationType().getName());
-                }
-
-                if (!AnnotationUtil.isQualifierAnnotation(qualifier.annotationType()))
-                {
-                    throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array can not contain other annotation that is not @Qualifier");
                 }
 
                 old = qualifier;
