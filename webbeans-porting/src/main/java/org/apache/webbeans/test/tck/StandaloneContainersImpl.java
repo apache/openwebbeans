@@ -81,6 +81,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
             
         }catch(Throwable e)
         {
+            e.printStackTrace();
             this.excpetion = new DeploymentException("Standalone Container Impl.",e);
             throw this.excpetion;
         }
@@ -114,6 +115,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
         }
         catch(Throwable e)
         {
+            e.printStackTrace();
             this.excpetion = new DeploymentException("Standalone Container Impl.",e);
             
             return false;

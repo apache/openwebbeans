@@ -31,6 +31,10 @@
 	<packaging>jar</packaging>
 	<description>TCK Porting Package OpenWebBeans Implementation</description>
 
+    <properties>
+        <webbeans.tck.version>1.0.1-Final</webbeans.tck.version>
+    </properties>
+
     <dependencies>
         
         <dependency>
@@ -72,7 +76,7 @@
         <dependency>
             <groupId>org.jboss.jsr299.tck</groupId>
             <artifactId>jsr299-tck-api</artifactId>
-            <version>1.0.1-CR1</version>
+            <version>${webbeans.tck.version}</version>
             <exclusions>
             	<exclusion>
             		<groupId>javax.enterprise</groupId>
