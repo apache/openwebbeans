@@ -36,7 +36,7 @@ public final class ResolutionUtil
 
     }
 
-    public static boolean checkBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType)
+    public static boolean checkBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean newBean)
     { 
         Iterator<Type> itBeanApiTypes = beanTypes.iterator();
         while (itBeanApiTypes.hasNext())
@@ -46,7 +46,19 @@ public final class ResolutionUtil
             if(ClassUtil.isAssignable(beanApiType, givenType))
             {
                 return true;
-            }                    
+            }           
+            else
+            {
+                //Check for @New
+                if(newBean && ClassUtil.isParametrizedType(givenType))
+                {
+                    Class<?> requiredType = ClassUtil.getClass(givenType);
+                    if(ClassUtil.isClassAssignable(requiredType, ClassUtil.getClass(beanApiType)))
+                    {
+                        return true;
+                    }
+                }                
+            }
         }
         
         return false;

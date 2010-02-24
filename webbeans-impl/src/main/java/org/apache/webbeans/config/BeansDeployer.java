@@ -33,6 +33,7 @@ import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
@@ -520,7 +521,19 @@ public class BeansDeployer
      */
     protected void checkPassivationScope(Bean<?> beanObj)
     {
-        ((OwbBean<?>)beanObj).validatePassivationDependencies();
+        if(BeanManagerImpl.getManager().isPassivatingScope(beanObj.getScope()))
+        {
+            if(WebBeansUtil.isPassivationCapable(beanObj) == null)
+            {
+                if(!(beanObj instanceof AbstractProducerBean))
+                {
+                    throw new WebBeansConfigurationException("Passivation scoped defined bean must be passivation capable, " +
+                            "but bean : " + toString() + " is not passivation capable");                    
+                }
+            }
+            
+            ((OwbBean<?>)beanObj).validatePassivationDependencies();
+        } 
     }
 
     /**

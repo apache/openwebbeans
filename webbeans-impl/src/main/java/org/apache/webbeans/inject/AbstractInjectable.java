@@ -34,6 +34,7 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -97,7 +98,11 @@ public abstract class AbstractInjectable implements Injectable
         boolean dependentProducer = false;
         if(WebBeansUtil.isDependent(injectedBean))
         {
-            InjectionPointBean.local.set(injectionPoint);
+            if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(injectionPoint.getType())))
+            {
+                InjectionPointBean.local.set(injectionPoint);   
+            }
+            
             if(!injectionPoint.isTransient())
             {
                 if(injectedBean instanceof AbstractProducerBean)

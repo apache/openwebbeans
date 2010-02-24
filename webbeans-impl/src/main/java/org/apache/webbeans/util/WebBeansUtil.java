@@ -564,7 +564,7 @@ public final class WebBeansUtil
      * @param clazz impl. class
      * @return the new component
      */
-    public static <T> NewBean<T> createNewComponent(Class<T> clazz)
+    public static <T> NewBean<T> createNewComponent(Class<T> clazz, Type apiType)
     {
         Asserts.nullCheckForClass(clazz);
 
@@ -592,7 +592,15 @@ public final class WebBeansUtil
 
         comp.addQualifier(new NewLiteral(clazz));
         comp.setName(null);
-        comp.addApiType(clazz);
+        if(apiType == null)
+        {
+            comp.addApiType(clazz);   
+        }
+        else
+        {
+            comp.getTypes().add(apiType);
+        }
+        
         comp.addApiType(Object.class);
 
         return comp;
@@ -1855,7 +1863,14 @@ public final class WebBeansUtil
         {
             AbstractOwbBean<?> bean = (AbstractOwbBean<?>)it.next();
             
-            if (bean.getTypes().contains(clazz))
+            boolean enterprise = false;
+            if(bean instanceof EnterpriseBeanMarker)
+            {
+                enterprise = true;
+            }
+            
+            if (bean.getTypes().contains(clazz) ||
+                    (enterprise && bean.getBeanClass().equals(clazz)))
             {
                 if(annotate)
                 {

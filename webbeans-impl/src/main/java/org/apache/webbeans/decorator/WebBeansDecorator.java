@@ -468,7 +468,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
 
 	@Override
 	public Set<Type> getDecoratedTypes() {
-		return this.wrappedBean.getTypes();
+		return this.decoratedTypes;
 	}
 
     @Override

@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.newtests.interceptors.lifecycle;
 
+import java.io.Serializable;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.interceptor.Interceptor;
@@ -20,7 +22,7 @@ import javax.interceptor.InvocationContext;
 
 @LifecycleBinding
 @Interceptor
-public class LifecycleInterceptor
+public class LifecycleInterceptor implements Serializable
 {
     public static boolean POST_CONSTRUCT = false;
     

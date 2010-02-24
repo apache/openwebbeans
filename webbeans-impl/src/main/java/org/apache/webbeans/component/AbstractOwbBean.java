@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
+import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -601,6 +602,10 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                 {
                     if(!WebBeansUtil.isPassivationCapableDependency(injectionPoint))
                     {
+                        if(injectionPoint.getAnnotated().isAnnotationPresent(Disposes.class))
+                        {
+                            continue;
+                        }
                         throw new WebBeansConfigurationException("Passivation capable beans must satisfy passivation capable dependencies. " +
                                 "Bean : " + toString() + " does not satisfy.");
                     }

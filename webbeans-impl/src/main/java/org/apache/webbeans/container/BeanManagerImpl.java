@@ -58,6 +58,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
+import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansFinder;
@@ -737,7 +738,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
         //Check type if bean type is given
         if(beanType != null)
         {
-            if(!ResolutionUtil.checkBeanTypeAssignableToGivenType(bean.getTypes(), beanType))
+            if(!ResolutionUtil.checkBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }

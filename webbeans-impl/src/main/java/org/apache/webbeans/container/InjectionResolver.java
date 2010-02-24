@@ -143,11 +143,11 @@ public class InjectionResolver
                 
                 if(newQualifier.value() == New.class)
                 {
-                    beanSet.add(WebBeansUtil.createNewComponent(clazz));    
+                    beanSet.add(WebBeansUtil.createNewComponent(clazz, type));    
                 }
                 else
                 {
-                    beanSet.add(WebBeansUtil.createNewComponent(newQualifier.value()));
+                    beanSet.add(WebBeansUtil.createNewComponent(newQualifier.value(),null));
                 }
                 
             }
@@ -209,11 +209,11 @@ public class InjectionResolver
                 
                 if(newQualifier.value() == New.class)
                 {
-                    beanSet.add(WebBeansUtil.createNewComponent(clazz));    
+                    beanSet.add(WebBeansUtil.createNewComponent(clazz,type));    
                 }
                 else
                 {
-                    beanSet.add(WebBeansUtil.createNewComponent(newQualifier.value()));
+                    beanSet.add(WebBeansUtil.createNewComponent(newQualifier.value(),null));
                 }
 
             }
