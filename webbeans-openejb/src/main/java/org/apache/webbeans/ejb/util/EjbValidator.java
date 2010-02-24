@@ -151,8 +151,11 @@ public final class EjbValidator
                 
                 if(!found)
                 {
-                    throw new WebBeansConfigurationException("Observer method : " + method.getName() + " in session bean class : " + 
-                            bean.getBeanClass() + " must be business method");                    
+                    if(!ClassUtil.isStatic(method.getModifiers()))
+                    {
+                        throw new WebBeansConfigurationException("Observer method : " + method.getName() + " in session bean class : " + 
+                                bean.getBeanClass() + " must be business method");                                            
+                    }
                 }
             }
         }
