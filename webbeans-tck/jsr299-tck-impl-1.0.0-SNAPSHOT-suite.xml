@@ -28,45 +28,15 @@
       </groups>
      <classes>
          
-         <!-- Issues in Weld (the RI) -->
-         
-         <!-- WELD-393 -->
+         <!-- Issues in Weld (the RI
+                  
          <class name="org.jboss.jsr299.tck.interceptors.tests.definition.DefinitionTest">
             <methods>
                <exclude name="testInterceptorMethodDefinedOnTargetClass" />
             </methods>
          </class>
-         
-         <!-- WELD-390 -->
-         <class name="org.jboss.jsr299.tck.interceptors.tests.lifecycleCallback.order.InvocationOrderTest">
-            <methods>
-               <exclude name="testInvocationOrder" />
-            </methods>
-         </class>
-         <!-- WELD-269 -->
-         <class name="org.jboss.jsr299.tck.tests.decorators.custom.CustomDecoratorTest">
-            <methods>
-               <exclude name="testCustomImplementationOfDecoratorInterface" />
-            </methods>
-         </class>
-         <!-- WELD-272 -->
-         <class name="org.jboss.jsr299.tck.tests.decorators.definition.broken.finalBeanClass.FinalBeanClassTest">
-            <methods>
-               <exclude name="testAppliesToFinalManagedBeanClass" />
-            </methods>
-         </class>
-         <class name="org.jboss.jsr299.tck.tests.decorators.definition.broken.finalBeanMethod.FinalBeanMethodTest">
-            <methods>
-               <exclude name="testAppliesToFinalMethodOnManagedBeanClass" />
-            </methods>
-         </class>
-         <!-- WELD-377 -->
-         <class name="org.jboss.jsr299.tck.tests.decorators.invocation.EJBDecoratorInvocationTest">
-            <methods>
-               <exclude name="testEJBDecoratorInvocation" />
-            </methods>
-         </class>
-                  
+         -->
+                           
       </classes>       
  
       <packages>         
