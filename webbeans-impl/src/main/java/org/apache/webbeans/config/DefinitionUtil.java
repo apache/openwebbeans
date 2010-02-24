@@ -53,6 +53,7 @@ import org.apache.webbeans.api.ResourceReference;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -1020,7 +1021,10 @@ public final class DefinitionUtil
         Asserts.assertNotNull(bean, "bean parameter can no be null");
 
         // @javax.interceptor.Interceptors
-        EJBInterceptorConfig.configure(((AbstractOwbBean)bean).getReturnType(), bean.getInterceptorStack());
+        if(!(bean instanceof EnterpriseBeanMarker))
+        {
+            EJBInterceptorConfig.configure(((AbstractOwbBean)bean).getReturnType(), bean.getInterceptorStack());   
+        }
 
         // @javax.webbeans.Interceptor
         WebBeansInterceptorConfig.configure(bean, bean.getInterceptorStack());
