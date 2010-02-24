@@ -33,7 +33,6 @@ import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
@@ -307,7 +306,8 @@ public class BeansDeployer
                         DefinitionUtil.defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);   
                     }
                     
-                    if(!(bean instanceof javax.enterprise.inject.spi.Interceptor))
+                    if(!(bean instanceof javax.enterprise.inject.spi.Interceptor) &&
+                            !(bean instanceof NewBean))
                     {
                         DefinitionUtil.defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);   
                     }
