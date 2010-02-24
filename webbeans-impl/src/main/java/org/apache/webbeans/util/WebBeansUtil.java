@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Comparator;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -1675,6 +1676,171 @@ public final class WebBeansUtil
         }
 
     }
+    
+    /**
+     * Configure a list of producer method beans, which override the same method
+     * and the bean classes are directly extended each other.
+     * 
+     * @param sortedProducerBeans
+     */
+    protected static void configSpecializedProducerMethodBeans(List<ProducerMethodBean> sortedProducerBeans) 
+    {
+    	if (sortedProducerBeans.isEmpty()) return;
+        AlternativesManager altManager = AlternativesManager.getInstance();
+    	Method superMethod = sortedProducerBeans.get(0).getCreatorMethod();
+
+    	for(int i=1; i<sortedProducerBeans.size(); i++) 
+    	{
+    		ProducerMethodBean bean = sortedProducerBeans.get(i);
+    		ProducerMethodBean superBean = sortedProducerBeans.get(i - 1);
+    		
+    		// inherit superbean qualifiers
+    		Set<Annotation> qualifiers = superBean.getQualifiers();
+    		for(Annotation an : qualifiers) 
+    		{
+    			bean.addQualifier(an);
+    		}
+    		// inherit name is super class has name
+    		boolean isSuperHasName = configuredProducerSpecializedName(bean, bean.getCreatorMethod(), superMethod);
+    		
+    		// disable super bean if needed
+        	if (bean.getCreatorMethod().getAnnotation(Alternative.class) == null) 
+        	{
+        		//disable superbean if the current bean is not an alternative 
+        		superBean.setEnabled(false);
+        	} 
+        	else if(altManager.isClassAlternative(bean.getBeanClass())) 
+        	{
+        		//disable superbean if the current bean is an enabled alternative 
+        		superBean.setEnabled(false);
+        	}
+        	
+        	//if no name defined, set superMethod to this bean since this
+        	//bean's method might have name defined.
+        	if (!isSuperHasName) 
+        	{
+        		superMethod = bean.getCreatorMethod();
+        	}
+    	}
+    }
+
+    /**
+     * Configure direct/indirect specialized producer method beans.
+     */
+    public static void configureProducerMethodSpecializations() 
+    {
+        Method method;
+        ProducerMethodBean pbean, pLeft, pRight;
+
+        logger.debug("configure Specialized producer beans has started.");
+
+        // collect all producer method beans
+        Set<Bean<?>> beans = BeanManagerImpl.getManager().getBeans();
+        List<ProducerMethodBean> producerBeans = new ArrayList<ProducerMethodBean>();
+        for(Bean b : beans) 
+        {
+        	if (b instanceof ProducerMethodBean) 
+        	{
+        		producerBeans.add((ProducerMethodBean)b);
+        	}
+        }
+        
+        // create sorted bean helper.
+        SortedListHelper<ProducerMethodBean> producerBeanListHelper = new
+        	SortedListHelper<ProducerMethodBean>(new ArrayList<ProducerMethodBean>(), 
+        		new Comparator<ProducerMethodBean> () 
+        		{
+	        		public int compare(ProducerMethodBean e1, ProducerMethodBean e2) 
+	        		{
+	        			if (e1.getBeanClass().isAssignableFrom(e2.getBeanClass())) 
+	        			{
+	        				return -1;
+	        			} 
+	        			else if (e1.equals(e2)) 
+	        			{
+	        				return 0;
+	        			}
+	        			return 1;
+	        		}
+        	});
+        
+        while(true) 
+        {
+        	pbean = null;
+        	method = null;
+        	producerBeanListHelper.clear();
+        	
+        	//locate a specialized bean 
+        	for(ProducerMethodBean pb : producerBeans) 
+            {
+        		if (pb.isSpecializedBean()) 
+            	{	
+            		pbean = pb;
+            		method = pb.getCreatorMethod();
+            		producerBeanListHelper.add(pb);
+            		break;
+            	}
+            }
+            if (pbean == null) break;
+            
+            pLeft = pRight = pbean;
+            boolean pLeftContinue = true;
+            boolean pRightContinue = true;
+            
+            // find all pbean's super beans and sub sub beans
+            while(pLeftContinue || pRightContinue)
+            {
+            	pLeftContinue = pRightContinue = false;
+	            for(ProducerMethodBean pb : producerBeans) 
+	            {
+	            	//left
+	            	if (pLeft!= null &&
+            			pLeft.getBeanClass().getSuperclass().equals(pb.getBeanClass()))
+	            	{
+	            		Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(), Arrays.asList(method.getParameterTypes()));
+	               		if (superMethod != null)
+	    				{
+	               			producerBeanListHelper.add(pb);
+	               			pLeft = (pb.isSpecializedBean()) ? pb : null; 
+	    				} 
+	               		else {
+	               			pLeft = null;
+	               		}
+	               		if (pLeft != null) pLeftContinue = true; 
+	            	}
+	            	//right
+	            	if (pRight != null && 
+	            		pb.getBeanClass().getSuperclass().equals(pRight.getBeanClass()))
+	            	{
+	            		if (!pb.isSpecializedBean()) 
+	            		{
+	            			pRight = null;
+	            		} else {
+		            		Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(), Arrays.asList(method.getParameterTypes()));
+		               		if (superMethod != null)
+		    				{
+		               			producerBeanListHelper.add(pb);
+		               			pRight = pb;
+		    				} else 
+		    				{
+		    					pRight = null;
+		    				}
+	            		}
+	               		if (pRight != null) pRightContinue = true; 
+	            	}
+	            } // for
+            } // while
+            
+            //remove the group from producer bean list
+            for(ProducerMethodBean pb : producerBeanListHelper.getList())
+    		{
+            	producerBeans.remove(pb);
+    		}
+            //configure the directly extended producer beans
+            configSpecializedProducerMethodBeans(producerBeanListHelper.getList());
+        }
+    }
+    
 
     public static Set<Bean<?>> isConfiguredWebBeans(Class<?> clazz,boolean annotate)
     {   
@@ -1789,11 +1955,11 @@ public final class WebBeansUtil
 
         for (Annotation ann : anns)
         {
-            component.addQualifier(ann);
+        	component.addQualifier(ann);
         }
         
-        configuredProducerSpecializedName(component, method, superMethod);
-        
+        WebBeansUtil.configuredProducerSpecializedName(component, method, superMethod);
+
         component.setSpecializedBean(true);
         
     }
@@ -1805,7 +1971,7 @@ public final class WebBeansUtil
      * @param method specialized producer method
      * @param superMethod overriden super producer method
      */
-    public static void configuredProducerSpecializedName(AbstractOwbBean<?> component,Method method,Method superMethod)
+    public static boolean configuredProducerSpecializedName(AbstractOwbBean<?> component,Method method,Method superMethod)
     {
         Asserts.assertNotNull(component,"component parameter can not be null");
         Asserts.assertNotNull(method,"method parameter can not be null");
@@ -1850,6 +2016,7 @@ public final class WebBeansUtil
             component.setName(name);
         }
         
+        return hasName;
 //        else
 //        {
 //            component.setName(name);

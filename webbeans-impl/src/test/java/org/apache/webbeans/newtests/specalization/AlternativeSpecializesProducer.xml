@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+	<alternatives>
+		<class>org.apache.webbeans.newtests.specializes4.AdvancedPenProducer</class>
+		<class>org.apache.webbeans.newtests.specializes4.PremiumPenProducer</class>
+	</alternatives>
+</beans>

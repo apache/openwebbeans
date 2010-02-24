@@ -467,7 +467,10 @@ public class BeansDeployer
             }
 
             // XML Defined Specializations
-            checkXMLSpecializations();            
+            checkXMLSpecializations();
+            
+            //configure specialized producer beans.
+            WebBeansUtil.configureProducerMethodSpecializations();
         }
         catch(Exception e)
         {

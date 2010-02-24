@@ -412,11 +412,13 @@ public class InjectionResolver
         //Look for alternative
         results = findByAlternatives(results);
 
+        
         //Ambigious resulotion, check for specialization
         if(results.size() > 1)
         {
             //Look for specialization
             results = findBySpecialization(results);            
+
         }
         
         return results;
@@ -437,7 +439,7 @@ public class InjectionResolver
         while(it.hasNext())
         {
             AbstractOwbBean<?> component = (AbstractOwbBean<?>)it.next();
-            if(component.isSpecializedBean())
+            if(component.isSpecializedBean() && component.isEnabled())
             {
                 res.add(component);
             }
