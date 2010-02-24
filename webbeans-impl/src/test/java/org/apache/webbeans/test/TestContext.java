@@ -315,7 +315,7 @@ public abstract class TestContext implements ITestContext
         if (bean != null)
         {
             manager.addBean(WebBeansUtil.createNewBean(bean));
-            DecoratorUtil.checkManagedBeanDecoratorConditions(bean);
+            DecoratorUtil.checkManagedBeanDecoratorConditions(bean,null);
             WebBeansDecoratorConfig.configureDecarotors(bean);
             DefinitionUtil.defineBeanInterceptorStack(bean);
 

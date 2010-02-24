@@ -65,12 +65,17 @@ public final class WebBeansDecoratorConfig
         anns = qualifiers.toArray(anns);
 
         List<Decorator<?>> decoratorList = BeanManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
-        Iterator<Decorator<?>> itList = decoratorList.iterator();
-
-        while (itList.hasNext())
+        
+        if(decoratorList != null && !decoratorList.isEmpty())
         {
-            WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();            
-            component.getDecoratorStack().add(decorator);            
+            DecoratorUtil.checkManagedBeanDecoratorConditions(component, decoratorList);
+            Iterator<Decorator<?>> itList = decoratorList.iterator();
+
+            while (itList.hasNext())
+            {
+                WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();            
+                component.getDecoratorStack().add(decorator);            
+            }            
         }
     }
     

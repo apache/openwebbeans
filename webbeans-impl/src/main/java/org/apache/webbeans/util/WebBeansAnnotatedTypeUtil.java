@@ -770,9 +770,7 @@ public final class WebBeansAnnotatedTypeUtil
         managedBeanCreator.defineObserverMethods();
         DefinitionUtil.defineDecoratorStack(managedBean);
         DefinitionUtil.defineBeanInterceptorStack(managedBean);
-                                
-        
-        DecoratorUtil.checkManagedBeanDecoratorConditions(managedBean);
+                                        
         managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
         
         return managedBean;

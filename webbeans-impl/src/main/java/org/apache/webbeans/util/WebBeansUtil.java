@@ -2899,7 +2899,6 @@ public final class WebBeansUtil
         beanManager.addBean(WebBeansUtil.createNewBean(managedBean));                
         if(!WebBeansAnnotatedTypeUtil.isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
         {
-            DecoratorUtil.checkManagedBeanDecoratorConditions(managedBean);
             beanManager.addBean(managedBean);
             for (ProducerMethodBean<?> producerMethod : producerMethods)
             {

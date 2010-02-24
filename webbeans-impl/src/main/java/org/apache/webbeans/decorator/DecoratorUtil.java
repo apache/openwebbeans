@@ -25,6 +25,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Decorator;
 
+import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -84,21 +85,24 @@ public final class DecoratorUtil
         
     }
    
-    public static void checkManagedBeanDecoratorConditions(ManagedBean<?> component)
+    public static void checkManagedBeanDecoratorConditions(AbstractInjectionTargetBean<?> bean, List<Decorator<?>> decoratorList)
     {
-        Asserts.assertNotNull("component", "component parameter can not be null");
+        Asserts.assertNotNull("bean", "bean parameter can not be null");
 
-        Set<Annotation> annSet = component.getQualifiers();
+        Set<Annotation> annSet = bean.getQualifiers();
         Annotation[] anns = new Annotation[annSet.size()];
         anns = annSet.toArray(anns);
 
-        List<Decorator<?>> decoratorList = BeanManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
+        if(decoratorList == null)
+        {
+            decoratorList = BeanManagerImpl.getManager().resolveDecorators(bean.getTypes(), anns);   
+        }
         if (!decoratorList.isEmpty())
         {
-            Class<?> clazz = component.getReturnType();
+            Class<?> clazz = bean.getReturnType();
             if (ClassUtil.isFinal(clazz.getModifiers()))
             {
-                throw new WebBeansConfigurationException("Managed Bean : " + component.getReturnType().getName() + " can not be declared final, because it has one or more decorators");
+                throw new WebBeansConfigurationException("Bean : " + bean.getReturnType().getName() + " can not be declared final, because it has one or more decorators");
             }
 
             Method[] methods = clazz.getDeclaredMethods();
@@ -118,7 +122,7 @@ public final class DecoratorUtil
                         {
                             if (decClazz.getMethod(method.getName(), method.getParameterTypes()) != null)
                             {
-                                throw new WebBeansConfigurationException("Managed Bean : " + component.getReturnType().getName() + " can not define non-private, non-static, final method : " + method.getName() + ", because one of its decorators implements this method");
+                                throw new WebBeansConfigurationException("Bean : " + bean.getReturnType().getName() + " can not define non-private, non-static, final method : " + method.getName() + ", because one of its decorators implements this method");
 
                             }
 
