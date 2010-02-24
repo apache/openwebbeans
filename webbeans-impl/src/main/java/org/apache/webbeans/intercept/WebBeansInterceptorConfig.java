@@ -27,6 +27,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 
@@ -34,6 +35,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -69,13 +71,31 @@ public final class WebBeansInterceptorConfig
         logger.debug("Configuring interceptor class : " + delegate.getReturnType());
         WebBeansInterceptor<T> interceptor = new WebBeansInterceptor<T>(delegate);
 
+        List<Annotation> anns = Arrays.asList(interceptorBindingTypes);
+        
         for (Annotation ann : interceptorBindingTypes)
         {
+            checkAnns(anns, ann, delegate);
             interceptor.addInterceptorBinding(ann.annotationType(), ann);
         }
+                
 
         BeanManagerImpl.getManager().addInterceptor(interceptor);
 
+    }
+    
+    private static void checkAnns(List<Annotation> list, Annotation ann, Bean<?> bean)
+    {
+        for(Annotation old : list)
+        {
+            if(old.annotationType().equals(ann.annotationType()))
+            {
+                if(!AnnotationUtil.hasAnnotationMember(ann.annotationType(), ann, old))
+                {
+                    throw new WebBeansConfigurationException("Interceptor Binding types must be equal for interceptor : " + bean);
+                }                
+            }
+        }
     }
 
     /**
@@ -174,9 +194,16 @@ public final class WebBeansInterceptorConfig
                 }
             }
         }
-
+        
         anns = new Annotation[bindingTypeSet.size()];
         anns = bindingTypeSet.toArray(anns);
+        
+        //Spec Section 9.5.2
+        List<Annotation> beanAnnots = Arrays.asList(anns);
+        for(Annotation checkAnn : anns)
+        {
+            checkAnns(beanAnnots, checkAnn, component);
+        }
 
         if (anns.length > 0)
         {
@@ -237,6 +264,21 @@ public final class WebBeansInterceptorConfig
     {
         // All methods, not just those declared
         Method[] methods = clazz.getMethods();
+        Set<Method> set = new HashSet<Method>();
+        for(Method m : methods)
+        {
+            set.add(m);
+        }
+        
+        //GE : I added for private, protected etc. methods.
+        //Not just for public methods.
+        methods = clazz.getDeclaredMethods();
+        for(Method m : methods)
+        {
+            set.add(m);
+        }
+        
+        methods = set.toArray(new Method[0]);
 
         for (Method method : methods)
         {

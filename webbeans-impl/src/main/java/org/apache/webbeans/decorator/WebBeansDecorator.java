@@ -147,7 +147,12 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         
     }
     
-    
+    @Override
+    public boolean isPassivationCapable()
+    {
+        return this.wrappedBean.isPassivationCapable();
+    }
+
     private void initDelegateInternal(InjectionPoint ip)
     {
         this.delegateType = ip.getType();
@@ -165,7 +170,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
                 throw new WebBeansConfigurationException("Delegate injection field is not found for decorator : " + toString());
             }
             
-            if(fields.length > 0)
+            if(fields.length > 1)
             {
                 throw new WebBeansConfigurationException("More than one delegate injection field is found for decorator : " + toString());
             }
@@ -471,4 +476,11 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     {
         return this.wrappedBean.isAlternative();
     }
+    
+    @Override
+    public void validatePassivationDependencies()
+    {
+        this.wrappedBean.validatePassivationDependencies();
+    }    
+    
 }

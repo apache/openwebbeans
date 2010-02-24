@@ -33,6 +33,8 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.decorator.WebBeansDecorator;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
@@ -40,6 +42,7 @@ import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.ServiceLoader;
@@ -657,6 +660,51 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     public boolean isFullyInitialize()
     {
         return this.fullyInitialize;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.component.AbstractOwbBean#validatePassivationDependencies()
+     */
+    @Override
+    public void validatePassivationDependencies()
+    {
+        if(isPassivationCapable())
+        {
+            super.validatePassivationDependencies();
+            
+            //Check for interceptors and decorators
+            for(Decorator<?> dec : this.decorators)
+            {
+                WebBeansDecorator<?> decorator = (WebBeansDecorator<?>)dec;
+                if(!decorator.isPassivationCapable())
+                {
+                    throw new WebBeansConfigurationException("Passivation bean : " + toString() + " decorators must be passivating capable");
+                }
+                else
+                {
+                    decorator.validatePassivationDependencies();
+                }
+            }
+            
+            for(InterceptorData interceptorData : this.interceptorStack)
+            {
+                if(interceptorData.isDefinedWithWebBeansInterceptor())
+                {
+                    WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>)interceptorData.getWebBeansInterceptor();
+                    if(!interceptor.isPassivationCapable())
+                    {
+                        throw new WebBeansConfigurationException("Passivation bean : " + toString() + " interceptors must be passivating capable");
+                    }
+                    else
+                    {
+                        interceptor.validatePassivationDependencies();
+                    }
+                }
+            }
+            
+        }
     }    
+    
+    
     
 }

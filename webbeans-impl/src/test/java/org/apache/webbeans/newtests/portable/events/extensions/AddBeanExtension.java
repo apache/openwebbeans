@@ -30,6 +30,8 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessBean;
 
+import org.apache.webbeans.annotation.DependentScopeLiteral;
+
 public class AddBeanExtension implements Extension
 {
     public static class MyBean
@@ -82,8 +84,7 @@ public class AddBeanExtension implements Extension
             @Override
             public Class<? extends Annotation> getScope()
             {
-                // TODO Auto-generated method stub
-                return null;
+                return new DependentScopeLiteral().annotationType();
             }
 
             @Override

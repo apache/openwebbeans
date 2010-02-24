@@ -841,6 +841,15 @@ public final class DefinitionUtil
         {
             for (Field field : fields)
             {
+                //Check for public fields
+                if(ClassUtil.isPublic(field.getModifiers()) && !ClassUtil.isStatic(field.getModifiers()))
+                {
+                    if(!component.getScope().equals(Dependent.class))
+                    {
+                        throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Dependent");
+                    }
+                }                
+                                
                 if(!useOwbSpecificInjection)
                 {
                     if(!field.isAnnotationPresent(Inject.class))
@@ -848,14 +857,6 @@ public final class DefinitionUtil
                         continue;
                     }                       
                 }
-                
-                if(ClassUtil.isPublic(field.getModifiers()))
-                {
-                    if(!component.getScope().equals(Dependent.class))
-                    {
-                        throw new WebBeansConfigurationException("If bean has a public modifier injection point, bean scope must be defined as @Dependent");
-                    }
-                }                
                 
                 Annotation[] anns = field.getDeclaredAnnotations();
 

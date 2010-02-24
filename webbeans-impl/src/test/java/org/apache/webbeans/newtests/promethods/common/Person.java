@@ -18,7 +18,9 @@
  */
 package org.apache.webbeans.newtests.promethods.common;
 
-public class Person
+import java.io.Serializable;
+
+public class Person implements Serializable
 {
 
 }

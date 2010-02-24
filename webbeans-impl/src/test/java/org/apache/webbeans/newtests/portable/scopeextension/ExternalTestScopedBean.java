@@ -25,7 +25,7 @@ public class ExternalTestScopedBean implements Serializable{
 
 	private static final long serialVersionUID = -917790714891819356L;
 	
-	public int i = 0;
+	private int i = 0;
 
     public int getI() {
         return i;

@@ -33,9 +33,11 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation of the {@link OwbBean} contract. 
@@ -585,6 +587,26 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public boolean isDependent() 
     {
         return getScope().equals(Dependent.class);
+    }
+    
+    @Override
+    public void validatePassivationDependencies()
+    {
+        if(isPassivationCapable())
+        {
+            Set<InjectionPoint> injectionPoints = getInjectionPoints();
+            for(InjectionPoint injectionPoint : injectionPoints)
+            {
+                if(!injectionPoint.isTransient())
+                {
+                    if(!WebBeansUtil.isPassivationCapableDependency(injectionPoint))
+                    {
+                        throw new WebBeansConfigurationException("Passivation capable beans must satisfy passivation capable dependencies. " +
+                                "Bean : " + toString() + " does not satisfy.");
+                    }
+                }
+            }            
+        }
     }
     
 }

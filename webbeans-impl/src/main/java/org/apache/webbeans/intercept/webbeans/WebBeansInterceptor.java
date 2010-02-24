@@ -460,6 +460,14 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements Interc
     @Override
     public boolean isPassivationCapable()
     {
-        return true;
+        return this.delegateBean.isPassivationCapable();
+    }
+
+    @Override
+    public void validatePassivationDependencies()
+    {
+        this.delegateBean.validatePassivationDependencies();
     }    
+    
+    
 }

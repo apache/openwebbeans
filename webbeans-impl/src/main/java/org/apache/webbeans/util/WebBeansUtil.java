@@ -115,6 +115,7 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
+import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
@@ -123,6 +124,7 @@ import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
+import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.decorator.DecoratorUtil;
@@ -570,6 +572,7 @@ public final class WebBeansUtil
         if (ManagedBeanConfigurator.isManagedBean(clazz))
         {
             comp = new NewBean<T>(clazz, WebBeansType.MANAGED);
+            comp.setImplScopeType(new DependentScopeLiteral());
             comp.setConstructor(WebBeansUtil.defineConstructor(clazz));
             DefinitionUtil.addConstructorInjectionPointMetaData(comp, comp.getConstructor());
 
@@ -579,13 +582,13 @@ public final class WebBeansUtil
         else if (EJBWebBeansConfigurator.isSessionBean(clazz))
         {
             comp = new NewBean<T>(clazz, WebBeansType.ENTERPRISE);
+            comp.setImplScopeType(new DependentScopeLiteral());
         }
         else
         {
             throw new WebBeansConfigurationException("@New annotation on type : " + clazz.getName() + " must defined as a simple or an enterprise web bean");
         }
 
-        comp.setImplScopeType(new DependentScopeLiteral());
         comp.addQualifier(new NewLiteral(clazz));
         comp.setName(null);
         comp.addApiType(clazz);
@@ -2070,20 +2073,15 @@ public final class WebBeansUtil
         
     }
     
-    public static void checkSerializableScopeType(Class<?> scopeType, boolean isSerializable, String errorMessage)
+    public static void checkSerializableScopeType(Class<? extends Annotation> scopeType, boolean isSerializable, String errorMessage)
     {
-        // Scope type check
-        NormalScope scope = scopeType.getAnnotation(NormalScope.class);
-        if(scope != null)
+        if (BeanManagerImpl.getManager().isPassivatingScope(scopeType))
         {
-            if (scope.passivating())
+            if (!isSerializable)
             {
-                if (!isSerializable)
-                {
-                    throw new IllegalProductException(errorMessage);
-                }
-            }            
-        }
+                throw new IllegalProductException(errorMessage);
+            }
+        }            
     }
     
     public static boolean isManagedBean(AbstractOwbBean<?> component)
@@ -2754,6 +2752,34 @@ public final class WebBeansUtil
             }
         }
         
+        return false;
+    }
+    
+    public static boolean isPassivationCapableDependency(InjectionPoint injectionPoint)
+    {
+        Bean<?> bean = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
+        if((bean instanceof EnterpriseBeanMarker) ||
+                (bean instanceof ResourceBean) ||
+                (bean instanceof InstanceBean) ||
+                (bean instanceof EventBean) ||
+                (bean instanceof InjectionPointBean) ||
+                (bean instanceof BeanManagerBean)
+                )
+        {
+            return true;
+        }
+        
+        else if(BeanManagerImpl.getManager().isNormalScope(bean.getScope()))
+        {
+            return true;
+        }        
+        else
+        {
+            if(isPassivationCapable(bean) != null)
+            {
+                return true;
+            }
+        }
         return false;
     }
     

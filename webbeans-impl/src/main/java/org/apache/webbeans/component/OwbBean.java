@@ -20,6 +20,8 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.*;
 
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+
 /**
  * OWB specific extension of the {@link Bean} interface.
  * It is used internally. Do not use it. Instead use {@link AbstractOwbBean}
@@ -179,4 +181,10 @@ public interface OwbBean<T> extends Bean<T>
      * @return <code>true</code> if this is a dependent bean
      */
     public boolean isDependent();
+    
+    /**
+     * If bean is passivation capable, it validate all of its dependencies.
+     * @throws WebBeansConfigurationException if not satisfy passivation dependencies
+     */
+    public void validatePassivationDependencies();
 }

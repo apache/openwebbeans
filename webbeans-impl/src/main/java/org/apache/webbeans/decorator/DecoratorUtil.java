@@ -14,7 +14,6 @@
 package org.apache.webbeans.decorator;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -22,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.decorator.Delegate;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Decorator;
@@ -84,70 +82,8 @@ public final class DecoratorUtil
             decoratorSet.remove(java.io.Serializable.class);
         }
         
-        //No-Decorates found, check from super class
-        if(!checkInternalDecoratorConditions(decoratorClazz, decoratorSet))
-        {
-           boolean found = checkInternalDecoratorConditionsRecursivley(decoratorClazz,decoratorSet);
-           
-           if(!found)
-           {
-               throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EXCEPT_0011) + decoratorClazz.getName());
-           }
-        }
     }
-    
-    private static boolean checkInternalDecoratorConditionsRecursivley(Class<?> decoratorClazz,Set<Type> decoratorSet)
-    {
-        Class<?> superClazz = decoratorClazz.getSuperclass();
-        if(!superClazz.equals(Object.class))
-        {
-            boolean found = checkInternalDecoratorConditions(superClazz, decoratorSet);
-            if(!found)
-            {
-                return checkInternalDecoratorConditionsRecursivley(superClazz, decoratorSet);
-            }
-            else
-            {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    private static boolean checkInternalDecoratorConditions(Class<?> decoratorClazz,Set<Type> decoratorSet)
-    {
-        Field[] fields = decoratorClazz.getDeclaredFields();
-        boolean found = false;
-        for (Field field : fields)
-        {
-            if (AnnotationUtil.hasAnnotation(field.getDeclaredAnnotations(), Delegate.class))
-            {
-                if (found)
-                {
-                    throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz.getName() + " can only contain one delegate attribute but find more than one!.");
-                }
-                else
-                {
-                    Class<?> fieldType = field.getType();
-
-                    for (Type decType : decoratorSet)
-                    {
-                        if (!(ClassUtil.getClass(decType)).isAssignableFrom(fieldType))
-                        {
-                            throw new WebBeansConfigurationException("Decorator class : " + decoratorClazz.getName() + " delegate attribute must implement all of the decorator decorated types.");
-                        }
-                    }
-
-                    found = true;
-                }
-            }
-        }
-        
-        return found;
-        
-    }
-
+   
     public static void checkManagedBeanDecoratorConditions(ManagedBean<?> component)
     {
         Asserts.assertNotNull("component", "component parameter can not be null");

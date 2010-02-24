@@ -37,6 +37,7 @@ import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
@@ -297,17 +298,23 @@ public class BeansDeployer
         {
             for (Bean<?> bean : beans)
             {
-                checkPassivationScope(bean);
-                
                 //Configure decorator and interceptor stack for ManagedBeans
                 if((bean instanceof AbstractInjectionTargetBean) && 
-                        !(bean instanceof NewBean) &&
-                        !(bean instanceof EnterpriseBeanMarker))
+                        !(bean instanceof NewBean))
                 {
-                    DefinitionUtil.defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);
-                    DefinitionUtil.defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);
+                    if(!(bean instanceof Decorator) && !(bean instanceof javax.enterprise.inject.spi.Interceptor))
+                    {
+                        DefinitionUtil.defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);   
+                    }
+                    
+                    if(!(bean instanceof javax.enterprise.inject.spi.Interceptor))
+                    {
+                        DefinitionUtil.defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);   
+                    }
                 }
                 
+                checkPassivationScope(bean);
+                                
                 //Bean injection points
                 Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
                                 
@@ -510,17 +517,7 @@ public class BeansDeployer
      */
     protected void checkPassivationScope(Bean<?> beanObj)
     {
-        if (beanObj instanceof ManagedBean)
-        {
-            ManagedBean<?> bean = (ManagedBean<?>) beanObj;
-            if(BeanManagerImpl.getManager().isPassivatingScope(bean.getScope()))
-            {
-                if(!bean.isPassivationCapable())
-                {
-                    throw new WebBeansConfigurationException("Bean : " + bean.toString()+  " must be passivation capable becuase it defines passivation capable scope");
-                }
-            }
-        }
+        ((OwbBean<?>)beanObj).validatePassivationDependencies();
     }
 
     /**

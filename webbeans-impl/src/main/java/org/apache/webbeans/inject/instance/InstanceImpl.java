@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.inject.instance;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -34,7 +36,7 @@ import org.apache.webbeans.util.ClassUtil;
  * 
  * @param <T> specific instance type
  */
-class InstanceImpl<T> implements Instance<T>
+class InstanceImpl<T> implements Instance<T>, Serializable
 {
     /** Injected class type */
     private Type injectionClazz;
@@ -234,5 +236,29 @@ class InstanceImpl<T> implements Instance<T>
         builder.append("}");
 
         return builder.toString();
+    }
+    
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        this.injectionClazz = (Type)in.readObject();
+        int q = in.readByte();
+        if(q != 0)
+        {
+            this.qualifierAnnotations = new HashSet<Annotation>();
+            for(int i =0; i< q; i++)
+            {
+                this.qualifierAnnotations.add((Annotation)in.readObject());
+            }
+        }
+    }
+    
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException
+    {
+        out.writeObject(this.injectionClazz);
+        out.writeByte(this.qualifierAnnotations.size());
+        for(Annotation ann : this.qualifierAnnotations)
+        {
+            out.writeObject(ann);
+        }
     }
 }

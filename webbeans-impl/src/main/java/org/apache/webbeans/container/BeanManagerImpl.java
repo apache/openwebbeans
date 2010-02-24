@@ -48,6 +48,7 @@ import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.spi.*;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Scope;
+import javax.interceptor.InterceptorBinding;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
@@ -691,12 +692,15 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
     @Override
     public Set<Annotation> getInterceptorBindingDefinition(Class<? extends Annotation> binding)
     {
-        Annotation[] annotations = AnnotationUtil.getInterceptorBindingMetaAnnotations(binding.getDeclaredAnnotations());
+        Annotation[] annotations = binding.getDeclaredAnnotations();
         Set<Annotation> set = new HashSet<Annotation>();
         
-        for(Annotation ann : annotations)
+        if(binding.isAnnotationPresent(InterceptorBinding.class))
         {
-            set.add(ann);
+            for(Annotation ann : annotations)
+            {
+                set.add(ann);
+            }            
         }
         
         return set;
@@ -816,12 +820,15 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
     @Override
     public Set<Annotation> getStereotypeDefinition(Class<? extends Annotation> stereotype)
     {
-        Annotation[] annotations = AnnotationUtil.getStereotypeMetaAnnotations(stereotype.getDeclaredAnnotations());
+        Annotation[] annotations = stereotype.getDeclaredAnnotations();
         Set<Annotation> set = new HashSet<Annotation>();
         
-        for(Annotation ann : annotations)
+        if(stereotype.isAnnotationPresent(Stereotype.class))
         {
-            set.add(ann);
+            for(Annotation ann : annotations)
+            {
+                set.add(ann);
+            }            
         }
         
         return set;
@@ -842,9 +849,18 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
     @Override
     public boolean isScope(Class<? extends Annotation> annotationType)
     {
-        if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Scope.class))
+        if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Scope.class) ||
+                AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class))
         {
             return true;
+        }
+        
+        for(ExternalScope ext : this.additionalScopes)
+        {
+            if(ext.getScope().equals(annotationType))
+            {
+                return true;
+            }
         }
      
         return false;
@@ -853,6 +869,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
     @Override
     public boolean isNormalScope(Class<? extends Annotation> annotationType)
     {
+        for (ExternalScope extScope : additionalScopes)
+        {
+            if (extScope.getScope().equals(annotationType))
+            {
+                return extScope.isNormal();
+            }
+        }
+        
         if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class))
         {
             return true;
@@ -933,8 +957,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
         // check for InjectionPoint injection
         if (rawType.equals(InjectionPoint.class))
         {
-            Annotated annotated = injectionPoint.getAnnotated();
-            if (annotated.getAnnotations().size() == 1 && annotated.isAnnotationPresent(Default.class))
+            if (AnnotationUtil.hasAnnotation(AnnotationUtil.getAnnotationsFromSet(injectionPoint.getQualifiers()), Default.class))
             {
                 if (!bean.getScope().equals(Dependent.class))
                 {

@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.inject;
 
+import java.io.Serializable;
 import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -20,10 +21,12 @@ import java.util.List;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.IllegalProductException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Provider;
 
+import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InstanceBean;
@@ -91,13 +94,33 @@ public abstract class AbstractInjectable implements Injectable
         }        
         
         //Injection for dependent instance InjectionPoint fields
+        boolean dependentProducer = false;
         if(WebBeansUtil.isDependent(injectedBean))
         {
             InjectionPointBean.local.set(injectionPoint);
+            if(!injectionPoint.isTransient())
+            {
+                if(injectedBean instanceof AbstractProducerBean)
+                {
+                    if(this.injectionOwnerBean.isPassivationCapable())
+                    {
+                        dependentProducer = true;   
+                    }
+                }
+            }
         }        
         
         injected = BeanManagerImpl.getManager().getInjectableReference(injectionPoint, this.injectionOwnerCreationalContext);
-                
+        
+        if(dependentProducer)
+        {
+            if(!Serializable.class.isAssignableFrom(injected.getClass()))
+            {
+                throw new IllegalProductException("If a producer method or field of scope @Dependent returns an serializable object for injection " +
+                		                                "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
+            }
+        }
+        
 
         return injected;
     }
