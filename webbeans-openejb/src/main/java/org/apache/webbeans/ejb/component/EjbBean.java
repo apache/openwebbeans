@@ -118,7 +118,7 @@ public class EjbBean<T> extends AbstractInjectionTargetBean<T> implements Enterp
     @Override
     public boolean isPassivationCapable()
     {
-        if(this.ejbType.equals(SessionBeanType.STATELESS))
+        if(this.ejbType.equals(SessionBeanType.STATEFUL))
         {
             return true;
         }
