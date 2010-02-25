@@ -802,6 +802,8 @@ public final class WebBeansUtil
      * 
      * @param clazz checked class
      * @param commonAnnotation post construct or predestroy annotation
+     * @param invocationContext whether the takes an invocationContext, as in
+     *            interceptors defiend outside of the bean class.
      * @return post construct or predestroy method
      */
     public static Method checkCommonAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> commonAnnotation, boolean invocationContext)
@@ -1066,7 +1068,7 @@ public final class WebBeansUtil
      * @param clazz interceptor class
      * @param annotation annotation type
      * @param definedInInterceptorClass check if annotation is defined in
-     *            interceptor class
+     *            interceptor class (as opposed to bean class)
      * @param definedInMethod check if the interceptor is defined in the comp.
      *            method
      * @param stack interceptor stack
