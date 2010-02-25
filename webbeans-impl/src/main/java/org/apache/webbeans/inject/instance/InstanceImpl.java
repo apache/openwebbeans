@@ -38,6 +38,8 @@ import org.apache.webbeans.util.ClassUtil;
  */
 class InstanceImpl<T> implements Instance<T>, Serializable
 {
+    private static final long serialVersionUID = -8401944412490389024L;
+
     /** Injected class type */
     private Type injectionClazz;
 

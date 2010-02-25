@@ -26,9 +26,11 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.profields.beans.GetterStringFieldInjector;
 import org.apache.webbeans.newtests.profields.beans.GetterStringProducerBean;
+import org.apache.webbeans.newtests.profields.beans.InformationConsumerBean;
 import org.junit.Test;
 
 public class GetterStringInjectorTest extends AbstractUnitTest
@@ -42,6 +44,7 @@ public class GetterStringInjectorTest extends AbstractUnitTest
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(GetterStringProducerBean.class);
         beanClasses.add(GetterStringFieldInjector.class);
+        beanClasses.add(InformationConsumerBean.class);
         
         startContainer(beanClasses, beanXmls);   
         
@@ -49,6 +52,8 @@ public class GetterStringInjectorTest extends AbstractUnitTest
         GetterStringFieldInjector injector = (GetterStringFieldInjector) getBeanManager().getReference(bean, GetterStringFieldInjector.class, getBeanManager().createCreationalContext(bean));
         
         Assert.assertEquals("Sucess from getProducts",injector.getTestNamed3());
+        
+        InformationConsumerBean icb = getInstance(InformationConsumerBean.class, new NamedLiteral("ProMethodNamed1"));
         
         shutDownContainer();
     }

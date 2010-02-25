@@ -13,18 +13,21 @@
  */
 package org.apache.webbeans.newtests;
 
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.portable.events.ExtensionLoader;
-
+import org.junit.Assert;
 
 
 public abstract class AbstractUnitTest
@@ -93,6 +96,18 @@ public abstract class AbstractUnitTest
     protected BeanManager getBeanManager()
     {
         return this.testLifecycle.getBeanManager();
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected <T> T getInstance(Class<T> type, Annotation... qualifiers)
+    {
+        Set<Bean<?>> beans = getBeanManager().getBeans(type, qualifiers);
+        Assert.assertNotNull(beans);
+        Assert.assertTrue("resolving bean with type" + type + " is ambiguous!", beans.size() == 1);
+        
+        Bean<T> bean = (Bean<T>) beans.iterator().next();
+        
+        return (T) getBeanManager().getReference(bean, type, getBeanManager().createCreationalContext(bean));
     }
     
     protected URL getXMLUrl(String packageName, String fileName)

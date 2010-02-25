@@ -67,7 +67,6 @@ import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
@@ -104,11 +103,9 @@ public final class WebBeansAnnotatedTypeUtil
                     {
                         throw new WebBeansConfigurationException("There are more than one constructor with @Inject annotation in annotation type : " + type);
                     }
-                    else
-                    {
-                        found = true;
-                        result = annConst;
-                    }                    
+                    
+                    found = true;
+                    result = annConst;
                 }
                 else
                 {
@@ -254,10 +251,7 @@ public final class WebBeansAnnotatedTypeUtil
                     throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + annotatedMethod.getDeclaringType().getJavaClass() + "is not found");
                 }
 
-                else
-                {
-                    pr = (ProducerMethodBean<?>) foundBean;
-                }
+                pr = (ProducerMethodBean<?>) foundBean;
 
                 if (previous == null)
                 {
@@ -623,9 +617,8 @@ public final class WebBeansAnnotatedTypeUtil
                             + ". Multiple disposes annotation.");
                 }
                 else
-                {
-                    found = true;
-                }
+
+                found = true;
             }
         }
         
@@ -728,12 +721,10 @@ public final class WebBeansAnnotatedTypeUtil
                 {
                     throw new WebBeansConfigurationException("Maanged bean class : " + clazz.getName() + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
                 }
-                else
+
+                if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(AnnotationUtil.getAnnotationsFromSet(methodA.getAnnotations())))
                 {
-                    if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(AnnotationUtil.getAnnotationsFromSet(methodA.getAnnotations())))
-                    {
-                        throw new WebBeansConfigurationException("Method : " + method.getName() + "in managed bean class : " + clazz.getName() + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");
-                    }
+                    throw new WebBeansConfigurationException("Method : " + method.getName() + "in managed bean class : " + clazz.getName() + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");
                 }
             }
             

@@ -25,6 +25,16 @@ import javax.inject.Named;
 public class NamedLiteral extends AnnotationLiteral<Named> implements Named
 {
     private String value;
+    
+    public NamedLiteral()
+    {
+        
+    }
+
+    public NamedLiteral(String value)
+    {
+        this.value = value;
+    }
 
     @Override
     public String value()

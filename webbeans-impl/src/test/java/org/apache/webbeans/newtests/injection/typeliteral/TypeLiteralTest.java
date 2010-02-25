@@ -19,22 +19,16 @@
 package org.apache.webbeans.newtests.injection.typeliteral;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 
-import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.injection.injectionpoint.beans.InjectionPointMetaDataOwner;
-import org.apache.webbeans.newtests.injection.injectionpoint.beans.LoggerInjectedBean;
 import org.junit.Test;
 
 public class TypeLiteralTest extends AbstractUnitTest
