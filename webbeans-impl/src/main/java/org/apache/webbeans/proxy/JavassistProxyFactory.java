@@ -180,6 +180,11 @@ public final class JavassistProxyFactory
         fact.setInterfaces(interfaceArray);
         fact.setSuperclass(superClass);
 
+        // turn off caching since this is utterly broken
+        // this is a static field, but we do not know who else
+        // might turn it on again ...
+        ProxyFactory.useCache = false;
+        
         return fact;
         
     }
