@@ -103,7 +103,7 @@ public abstract class AbstractUnitTest
     {
         Set<Bean<?>> beans = getBeanManager().getBeans(type, qualifiers);
         Assert.assertNotNull(beans);
-        Assert.assertTrue("resolving bean with type" + type + " is ambiguous!", beans.size() == 1);
+        Assert.assertTrue("resolving bean with type" + type + " is ambiguous or bean is not found!", beans.size() == 1);
         
         Bean<T> bean = (Bean<T>) beans.iterator().next();
         
