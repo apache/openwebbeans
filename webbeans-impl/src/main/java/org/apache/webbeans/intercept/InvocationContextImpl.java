@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,6 +153,22 @@ public class InvocationContextImpl implements InvocationContext
                 return proceedCommonAnnots(this.interceptorDatas, this.type);
             }
 
+        }
+        catch (InvocationTargetException ite)
+        {
+            this.target = null; // destroy target instance
+            
+            // Try to provide the original exception to the interceptor stack, 
+            // not the InvocationTargetException from Method.invoke
+            Throwable t = ite.getCause();
+            if (t instanceof Exception)
+            {
+                throw (Exception) t;
+            }
+            else
+            {
+                throw ite;
+            }
         }
         catch (Exception e)
         {
