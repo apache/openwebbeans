@@ -11,13 +11,19 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.test.unittests.producer.specializes;
+package org.apache.webbeans.newtests.producer.specializes;
 
 import java.lang.annotation.Annotation;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.apache.webbeans.test.TestContext;
+import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.producer.specializes.SpecializesProducer1;
@@ -26,27 +32,20 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SpecializesProducer1Test extends TestContext
+public class SpecializesProducer1Test extends AbstractUnitTest
 {
-
-    public SpecializesProducer1Test()
-    {
-        super(SpecializesProducer1Test.class.getName());
-    }
-
-    @Before
-    public void init()
-    {
-    }
 
     @Test
     public void testSpecializedProducer1()
     {
-        clear();
+        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
 
-        defineManagedBean(SpecializesProducer1SuperClazz.class);
-        defineManagedBean(SpecializesProducer1.class);
-
+        beanClasses.add(SpecializesProducer1SuperClazz.class);
+        beanClasses.add(SpecializesProducer1.class);
+        
+        startContainer(beanClasses, beanXmls);        
+        
         Annotation binding1 = new AnnotationLiteral<Binding1>()
         {
         };
@@ -54,10 +53,16 @@ public class SpecializesProducer1Test extends TestContext
         {
         };
 
-        Object number = getManager().getInstanceByType(int.class, new Annotation[] { binding1, binding2 });
-        //This test is not valid since specialize configuration requires
-        //all producers at deployment step in container. See:
-        //org.apache.webbeans.newtests.producer.specializes.SpecializesProducer1Test
-        //Assert.assertEquals(10000, number);
+        Set beans = getBeanManager().getBeans(int.class, new Annotation[] { binding1, binding2 });
+        System.out.print("Size of the bean set is " + beans.size());
+        Assert.assertTrue(beans.size() == 1);
+        Bean<Integer> bean = (Bean<Integer>)beans.iterator().next();
+        CreationalContext<Integer> cc = getBeanManager().createCreationalContext(bean);
+        Integer number = (Integer) getBeanManager().getReference(bean, int.class, cc);
+        
+        Assert.assertEquals(10000, number.intValue());
+        
+        shutDownContainer();       
+        
     }
 }

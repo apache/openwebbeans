@@ -549,6 +549,8 @@ public final class WebBeansAnnotatedTypeUtil
                     annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName() + " is not annotated with @Produces" + " for annotated method : " + annotatedMethod);
         }
 
+        /* To avoid multiple invocations of setBeanName(), following code is delayed to
+         * configSpecializedProducerMethodBeans() when checkSpecializations.
         Annotation[] anns = AnnotationUtil.getQualifierAnnotations(superMethod.getAnnotations());
 
         for (Annotation ann : anns)
@@ -557,6 +559,7 @@ public final class WebBeansAnnotatedTypeUtil
         }
         
         WebBeansUtil.configuredProducerSpecializedName(bean, annotatedMethod.getJavaMember(), superMethod);
+        */
         
         bean.setSpecializedBean(true);        
     }

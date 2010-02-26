@@ -1664,7 +1664,14 @@ public final class WebBeansUtil
             	}
                                 
                 AbstractOwbBean<?> comp = (AbstractOwbBean<?>)specialized;
-
+                if (comp.isSpecializedBean())
+               	{
+                	// This comp is already configured in previous invocation
+                	// return directly, else Exception might be fired when set
+                	// bean name again.
+                	return;
+               	}
+                
                 if(superBean.getName() != null)
                 {
                     if(comp.getName() != null)
@@ -1968,6 +1975,8 @@ public final class WebBeansUtil
             throw new WebBeansConfigurationException("Producer method specialization is failed. Method " + method.getName() + " found in super class : " + superClass.getName() + " is not annotated with @Produces");
         }
 
+        /* To avoid multiple invocations of setBeanName(), following code is delayed to
+         * configSpecializedProducerMethodBeans() when checkSpecializations.
         Annotation[] anns = AnnotationUtil.getQualifierAnnotations(superMethod.getAnnotations());
 
         for (Annotation ann : anns)
@@ -1976,7 +1985,8 @@ public final class WebBeansUtil
         }
         
         WebBeansUtil.configuredProducerSpecializedName(component, method, superMethod);
-
+		*/
+        
         component.setSpecializedBean(true);
         
     }
