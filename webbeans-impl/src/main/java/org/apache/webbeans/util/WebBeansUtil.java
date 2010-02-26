@@ -835,7 +835,10 @@ public final class WebBeansUtil
                 {
                     if (!invocationContext)
                     {
-                        throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not take any formal arguments");   
+                        /* We thought we were looking at an bean class that intercepts itself (no invocation context),
+                         * but this is actually a definedInInterceptor Interceptor bound via @Interceptors.
+                         */
+                        return null;   
                     }
                     // Check method criterias
                     Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
@@ -846,7 +849,8 @@ public final class WebBeansUtil
                 }
                 else if(invocationContext)
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must take a parameter with class type javax.interceptor.InvocationContext.");                        
+                    // Maybe it just intercepts itself, but we were looking at it like an @Interceptor
+                    return null;
                 }
 
                 if (!ClassUtil.getReturnType(method).equals(Void.TYPE))
