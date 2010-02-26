@@ -833,13 +833,6 @@ public final class WebBeansUtil
                 // Check method criterias
                 if (ClassUtil.isMethodHasParameter(method))
                 {
-                    if (!invocationContext)
-                    {
-                        /* We thought we were looking at an bean class that intercepts itself (no invocation context),
-                         * but this is actually a definedInInterceptor Interceptor bound via @Interceptors.
-                         */
-                        return null;   
-                    }
                     // Check method criterias
                     Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
                     if (params.length != 1 || !params[0].equals(InvocationContext.class))
