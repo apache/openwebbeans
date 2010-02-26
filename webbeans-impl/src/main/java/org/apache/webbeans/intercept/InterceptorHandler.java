@@ -283,29 +283,23 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             }
         }
 
-        if (isMethodAnnotatedWithInterceptorClass)
+        if (isMethodAnnotatedWithExcludeInterceptorClass)
         {
-
-            if (isMethodAnnotatedWithExcludeInterceptorClass)
-            {
-                // If the interceptor is defined at the class level it should be
-                // removed due to ExcludeClassInterceptors method annotation
-                if (!id.isDefinedInMethod() && id.isDefinedInInterceptorClass())
-                {
-                    return true;
-                }
-            }
-            // If the interceptor is defined in a different method, remove it
-            if (id.isDefinedInMethod() && !id.getInterceptorBindingMethod().equals(method))
+            // If the interceptor is defined at the class level it should be
+            // removed due to ExcludeClassInterceptors method annotation
+            if (!id.isDefinedInMethod() && id.isDefinedInInterceptorClass())
             {
                 return true;
             }
         }
-        else if (id.isDefinedInMethod())
+        
+        // If the interceptor is defined in a different method, remove it
+        if (id.isDefinedInMethod() && !id.getInterceptorBindingMethod().equals(method))
         {
             return true;
         }
 
+        
         return false;
     }
 
