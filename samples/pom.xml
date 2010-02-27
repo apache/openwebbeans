@@ -32,6 +32,7 @@ under the License.
            <module>conversation-sample</module>
            <module>jsf2sample</module>
            <module>ejb-sample</module>
+           <module>ejb-telephone</module>
            <module>jms-sample</module>
            <module>reservation</module>
            <module>standalone-sample</module>
