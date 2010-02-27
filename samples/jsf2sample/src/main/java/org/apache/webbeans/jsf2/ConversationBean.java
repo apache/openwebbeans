@@ -106,6 +106,10 @@ public class ConversationBean
         this.current = current;
     }
     
+    public String conversationLive()
+    {
+    	return null;
+    }
     
 
 }

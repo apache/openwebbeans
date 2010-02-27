@@ -49,16 +49,13 @@
 		</div>		
 			
 		<div style="margin-top: 10px;">
-			<h:commandButton id="button1" value="Start Conversation" actionListener="#{conversationBean.startConversation}"
-			    onclick="jsf.ajax.request(this,event, {execute:'form:button1',render:'form:message form:status'});return false;">
+			<h:commandButton id="button1" value="Start Conversation" action="#{conversationBean.startConversation}">
 			</h:commandButton>
 			
-			<h:commandButton id="button2" value="End Conversation" actionListener="#{conversationBean.stopConversation}"
-			    onclick="jsf.ajax.request(this,event, {execute:'form:button2',render:'form:message form:status'});return false;">
+			<h:commandButton id="button2" value="End Conversation" action="#{conversationBean.stopConversation}">
 			</h:commandButton>
 			
-			<h:commandButton id="button3" value="Show Number"
-			    onclick="jsf.ajax.request(this,event, {execute:'form:button3',render:'form:status'});return false;">
+			<h:commandButton id="button3" value="Show Number" action="#{conversationBean.conversationLive}">
 			</h:commandButton>							
 		</div>
 				
