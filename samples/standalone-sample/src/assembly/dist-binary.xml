@@ -42,17 +42,21 @@ under the License.
                 <include>org.apache.openwebbeans:atinject-api</include>
                 <include>org.apache.openwebbeans:openwebbeans-api</include>
                 <include>org.apache.openwebbeans:openwebbeans-impl</include>
-                <include>org.apache.geronimo.specs:geronimo-el_1.0_spec</include>
-				<include>org.apache.geronimo.specs:geronimo-interceptor_3.0_spec</include>
-				<include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
-				<include>log4j:log4j</include>
-				<include>dom4j:dom4j</include>
-				<include>javassist:javassist</include>
-				<include>net.sf.scannotation:scannotation</include>
+                <include>org.apache.openwebbeans:openwebbeans-spi</include>
+                <include>org.apache.geronimo.specs:geronimo-el_2.2_spec</include>
+		<include>org.apache.geronimo.specs:geronimo-interceptor_1.1_spec</include>
+		<include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
+                <include>org.apache.geronimo.specs:geronimo-atinject_1.0_spec</include>
+                <include>org.apache.geronimo.specs:geronimo-jcdi_1.0_spec</include>
+                <include>org.apache.geronimo.specs:geronimo-validation_1.0_spec</include>
+		<include>log4j:log4j</include>
+		<include>dom4j:dom4j</include>
+		<include>javassist:javassist</include>
+		<include>net.sf.scannotation:scannotation</include>
+                
             </includes>
 	    <excludes>
-			<exclude>org.apache.openwebbeans:atinject-api:jar:sources</exclude>
-			<exclude>org.apache.openwebbeans:openwebbeans-api:jar:sources</exclude>
+			<exclude>org.apache.openwebbeans:openwebbeans-spi:jar:sources</exclude>
 			<exclude>org.apache.openwebbeans:openwebbeans-impl:jar:sources</exclude>
 	    </excludes>
         </dependencySet>
