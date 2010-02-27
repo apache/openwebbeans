@@ -345,7 +345,8 @@
         <module>webbeans-resource</module>
         <module>webbeans-porting</module>
         <module>samples</module>
-        <!-- <module>webbeans-tck</module>-->
+        <module>atinject-tck</module>
+        <!--<module>webbeans-tck</module>-->
   </modules>
     
 	<repositories>

@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>org.apache.openwebbeans</groupId>
 		<artifactId>openwebbeans</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0-M4</version>
 	</parent>
     
 	<artifactId>openwebbeans-tck</artifactId>
@@ -94,7 +94,7 @@
         <dependency>
         	<groupId>org.apache.openwebbeans</groupId>
         	<artifactId>openwebbeans-ejb</artifactId>
-        	<version>1.0.0-SNAPSHOT</version>
+        	<version>${project.version}</version>
         </dependency>
 
 

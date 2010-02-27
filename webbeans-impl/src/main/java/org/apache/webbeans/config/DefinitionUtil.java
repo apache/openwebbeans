@@ -845,9 +845,9 @@ public final class DefinitionUtil
                 //Check for public fields
                 if(ClassUtil.isPublic(field.getModifiers()) && !ClassUtil.isStatic(field.getModifiers()))
                 {
-                    if(!component.getScope().equals(Dependent.class))
+                    if(BeanManagerImpl.getManager().isNormalScope(component.getScope()))
                     {
-                        throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Dependent");
+                        throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Scope. Bean is : " + component.toString());
                     }
                 }                
                                 
