@@ -24,7 +24,7 @@
 	<artifactId>openwebbeans</artifactId>
 	<name>Apache OpenWebBeans</name>
 	<packaging>pom</packaging>
-	<version>1.0.0-M4</version>
+	<version>1.0.0-SNAPSHOT</version>
 	
 	<url>openwebbeans.apache.org</url>
     
@@ -41,9 +41,9 @@
     <inceptionYear>2008</inceptionYear>
 
 	<scm>
-	    <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.0.0-M4</connection>
-	    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.0.0-M4</developerConnection>
-	    <url>https://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.0.0-M4</url>
+	    <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/trunk</connection>
+	    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/trunk</developerConnection>
+	    <url>https://svn.apache.org/repos/asf/openwebbeans/trunk</url>
     </scm>
 
     <issueManagement>
