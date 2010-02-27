@@ -27,6 +27,7 @@ import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Implementation of the {@link InvocationContext} interface.
@@ -295,29 +296,48 @@ public class InvocationContextImpl implements InvocationContext
         {
             if (params == null)
             {
-                if (this.parameters.length > 0)
+                if (this.parameters.length >= 0)
                 {
-                    throw new IllegalArgumentException("Parameters is null");
+                    throw new IllegalArgumentException("Gvien parameters is null but expected not null parameters");
                 }
             }
             else
             {
-                List<Class<?>> src = new ArrayList<Class<?>>();
-
                 if (params.length != this.parameters.length)
                 {
-                    throw new IllegalArgumentException("Parameters length not match");
+                	 throw new IllegalArgumentException("Expected " + this.parameters.length + " " +
+                	 		"parameters, but only got " + params.length + " parameters"); 
                 }
 
-                for (Object param : params)
+                Class<?>[] methodParameters = this.method.getParameterTypes();
+                int i = 0;
+                for (Object obj : params)
                 {
-                    src.add(param.getClass());
-                }
-
-                for (Class<?> param : this.method.getParameterTypes())
-                {
-                    if (!src.contains(param))
-                        throw new IllegalArgumentException("Parameters types not match");
+                	Class<?> parameterType = methodParameters[i++];
+                    if (obj == null) 
+                    {
+                        if (parameterType.isPrimitive()) 
+                        {
+                            throw new IllegalArgumentException("Expected parameter " + i + " to be primitive type " + parameterType.getName() +
+                                ", but got a parameter that is null");
+                        }
+                    }
+                    else
+                    {
+                    	//Primitive check
+                    	if(parameterType.isPrimitive())
+                    	{
+                    		//First change to wrapper for comparision
+                    		parameterType = ClassUtil.getPrimitiveWrapper(parameterType);
+                    	}
+                    	
+                    	//Actual check
+                    	if (!parameterType.isInstance(obj))                    	
+                    	{
+                            throw new IllegalArgumentException("Expected parameter " + i + " to be of type " + parameterType.getName() +
+                                    ", but got a parameter of type " + obj.getClass().getName());                                        		
+                    	}                    	
+                    }
                 }
 
                 System.arraycopy(params, 0, this.parameters, 0, params.length);
@@ -332,6 +352,5 @@ public class InvocationContextImpl implements InvocationContext
     {
         // TODO Auto-generated method stub
         return null;
-    }
-
+    }    
 }
