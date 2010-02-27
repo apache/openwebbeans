@@ -592,18 +592,18 @@
             <id>apache.openwebbeans.site</id>
             <url>scp://minotaur.apache.org/www/openwebbeans.apache.org/${project.version}</url>
         </site>
-<!--
 	<repository>
 	    <id>apache.openwebbeans.stage</id>
 	    <url>scp://people.apache.org/home/gerdogdu/public_html/staging-repo/${siteId}</url>
 	</repository>
--->
+       <!--
 	<snapshotRepository>
             <uniqueVersion>false</uniqueVersion>
             <id>apache.incubating</id>
             <name>Apache Incubating Repository</name>
             <url>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</url>
         </snapshotRepository>
+       -->
     
 </distributionManagement>
       
@@ -628,7 +628,7 @@
           <openejb.version>3.1.2</openejb.version>
           <myfaces.version>2.0.0-beta-2</myfaces.version>
           <javax.annot.version>1.0</javax.annot.version>
-	  <siteId>/OWB/1.0.0-M3-rc2/plugins</siteId>
+	  <siteId>/OWB/1.0.0-M4/plugins</siteId>
 	</properties>
 
     <profiles>
