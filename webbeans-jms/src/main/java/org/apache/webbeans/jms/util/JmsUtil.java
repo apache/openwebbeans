@@ -43,6 +43,7 @@ import org.apache.webbeans.exception.WebBeansCreationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.component.JmsBean;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.Asserts;
@@ -177,7 +178,7 @@ public final class JmsUtil
             
             pf.setHandler(new JmsProxyHandler(jmsComponent,intf));
 
-            result = pf.createClass().newInstance();
+            result = JavassistProxyFactory.getProxyClass(pf).newInstance();
 
         }
         catch (Exception e)

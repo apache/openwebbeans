@@ -59,7 +59,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
             this.actualResourceReference = resourceService.getResourceReference(this.resourceReference);
             proxyFactory.setHandler(new ResourceProxyHandler(this.actualResourceReference));
             
-            instance = (X)proxyFactory.createClass().newInstance();
+            instance = (X)(JavassistProxyFactory.getProxyClass(proxyFactory).newInstance());
         }
         catch (Exception e)
         {

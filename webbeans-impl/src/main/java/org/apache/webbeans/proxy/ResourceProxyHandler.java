@@ -32,9 +32,9 @@ public class ResourceProxyHandler implements MethodHandler
     }
     
     @Override
-    public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable
+    public Object invoke(Object self, Method actualMethod, Method proceed, Object[] args) throws Throwable
     {
-        return proceed.invoke(this.actualResource, args);
+        return actualMethod.invoke(this.actualResource, args);
     }
 
 }

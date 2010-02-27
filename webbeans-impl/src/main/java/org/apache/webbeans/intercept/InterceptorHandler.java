@@ -180,7 +180,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         if (proxyClass == null)
                         {
                             ProxyFactory delegateFactory = JavassistProxyFactory.createProxyFactory(bean);
-                            proxyClass = delegateFactory.createClass();
+                            proxyClass = JavassistProxyFactory.getProxyClass(delegateFactory);
                             interceptorProxyClasses.put(bean, proxyClass);
                         }
                         Object delegate = proxyClass.newInstance();

@@ -63,12 +63,12 @@
 		</dependency>
 
 
-                                <!-- OWB implementation per application -->
-                                <dependency>
-                                        <groupId>org.apache.openwebbeans</groupId>
-                                        <artifactId>openwebbeans-impl</artifactId>
-                                        <version>${project.version}</version>
-                                </dependency>
+         <!-- OWB implementation per application -->
+         <dependency>
+                 <groupId>org.apache.openwebbeans</groupId>
+                 <artifactId>openwebbeans-impl</artifactId>
+                 <version>${project.version}</version>
+         </dependency>
 
 				
 	</dependencies>

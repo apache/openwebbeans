@@ -24,6 +24,7 @@ import org.apache.webbeans.ejb.component.EjbBean;
 import org.apache.webbeans.ejb.component.creation.EjbBeanCreatorImpl;
 import org.apache.webbeans.ejb.proxy.EjbBeanProxyHandler;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 
 /**
  * @version $Rev$ $Date$
@@ -63,7 +64,7 @@ public final class EjbDefinitionUtility
                 factory.setInterfaces(new Class[]{iface});
             }
          
-            return (T)factory.createClass().newInstance();
+            return (T)(JavassistProxyFactory.getProxyClass(factory).newInstance());
             
         }catch(Exception e)
         {

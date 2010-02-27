@@ -62,7 +62,7 @@ public final class JavassistProxyFactory
             {
                 ProxyFactory fact = createProxyFactory(bean);
 
-                proxyClass = fact.createClass();
+                proxyClass = getProxyClass(fact);
                 normalScopedBeanProxyClasses.put(bean, proxyClass);
             }
             
@@ -128,7 +128,7 @@ public final class JavassistProxyFactory
             if (proxyClass == null)
             {
                 ProxyFactory fact = createProxyFactory(bean);
-                proxyClass = fact.createClass();
+                proxyClass = getProxyClass(fact);
                 dependentScopedBeanProxyClasses.put(bean, proxyClass);
             }
             
@@ -148,6 +148,31 @@ public final class JavassistProxyFactory
     }
     
 
+    public static Class<?> getProxyClass(ProxyFactory factory)
+    {
+    	Class<?> proxyClass = null;
+        try
+        {
+        	proxyClass = factory.createClass();
+        	
+        }catch(Exception e)
+        {
+            ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider(){
+
+    			@Override
+    			public ClassLoader get(ProxyFactory pf) 
+    			{
+    				return Thread.currentThread().getContextClassLoader();
+    			}
+            	
+            };
+            
+            proxyClass = factory.createClass();        	
+        }                
+            	
+        return proxyClass;
+    }
+    
     public static ProxyFactory createProxyFactory(Bean<?> bean) throws Exception
     {
         Set<Type> types = bean.getTypes();
@@ -176,9 +201,9 @@ public final class JavassistProxyFactory
         Class<?>[] interfaceArray = new Class<?>[interfaceList.size()];
         interfaceArray = interfaceList.toArray(interfaceArray);
 
-        ProxyFactory fact = new ProxyFactory();
+        ProxyFactory fact = new ProxyFactory();        
         fact.setInterfaces(interfaceArray);
-        fact.setSuperclass(superClass);
+        fact.setSuperclass(superClass);        
 
         // turn off caching since this is utterly broken
         // this is a static field, but we do not know who else
