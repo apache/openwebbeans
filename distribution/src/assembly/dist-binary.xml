@@ -37,7 +37,7 @@ under the License.
         </file>
 
         <file>
-            <source>../readme/README_M3.txt</source>
+            <source>../readme/README_M4.txt</source>
         </file>
 
         <file>
@@ -101,6 +101,81 @@ under the License.
                 <exclude>**/.gitignore</exclude>
             </excludes>
         </fileSet>
+        <fileSet>
+            <directory>../samples/ejb-telephone</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <outputDirectory>samples/ejb-telephone</outputDirectory>
+            <excludes>
+                <exclude>**/target/**</exclude>
+                <exclude>**/.classpath</exclude>
+                <exclude>**/.project</exclude>
+                <exclude>**/.settings/**</exclude>
+                <exclude>**/.git/**</exclude>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/.metadata/**</exclude>
+                <exclude>**/.gitignore</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../samples/conversation-sample</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <outputDirectory>samples/conversation-sample</outputDirectory>
+            <excludes>
+                <exclude>**/target/**</exclude>
+                <exclude>**/.classpath</exclude>
+                <exclude>**/.project</exclude>
+                <exclude>**/.settings/**</exclude>
+                <exclude>**/.git/**</exclude>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/.metadata/**</exclude>
+                <exclude>**/.gitignore</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../samples/jms-sample</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <outputDirectory>samples/jms-sample</outputDirectory>
+            <excludes>
+                <exclude>**/target/**</exclude>
+                <exclude>**/.classpath</exclude>
+                <exclude>**/.project</exclude>
+                <exclude>**/.settings/**</exclude>
+                <exclude>**/.git/**</exclude>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/.metadata/**</exclude>
+                <exclude>**/.gitignore</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../samples/jsf2sample</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <outputDirectory>samples/jsf2sample</outputDirectory>
+            <excludes>
+                <exclude>**/target/**</exclude>
+                <exclude>**/.classpath</exclude>
+                <exclude>**/.project</exclude>
+                <exclude>**/.settings/**</exclude>
+                <exclude>**/.git/**</exclude>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/.metadata/**</exclude>
+                <exclude>**/.gitignore</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../samples/standalone-sample</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <outputDirectory>samples/standalone-sample</outputDirectory>
+            <excludes>
+                <exclude>**/target/**</exclude>
+                <exclude>**/.classpath</exclude>
+                <exclude>**/.project</exclude>
+                <exclude>**/.settings/**</exclude>
+                <exclude>**/.git/**</exclude>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/.metadata/**</exclude>
+                <exclude>**/.gitignore</exclude>
+            </excludes>
+        </fileSet>
     </fileSets>
 
     <dependencySets>
@@ -108,35 +183,45 @@ under the License.
         <dependencySet>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans:atinject-api</include>
-                <include>org.apache.openwebbeans:openwebbeans-api</include>
                 <include>org.apache.openwebbeans:openwebbeans-impl</include>
-                <include>org.apache.openwebbeans:openwebbeans-ejb</include>
-                <include>org.apache.openwebbeans:openwebbeans-jsf</include>
-                <include>org.apache.openwebbeans:openwebbeans-jpa</include>
-                <include>org.apache.openwebbeans:openwebbeans-jms</include>
-                <include>org.apache.openwebbeans:openwebbeans-geronimo</include>
-                <include>org.apache.openwebbeans:openwebbeans-resource</include>
             </includes>
 	    <excludes>
-		<exclude>org.apache.openwebbeans:atinject-api:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:openwebbeans-api:jar:sources</exclude>
 		<exclude>org.apache.openwebbeans:openwebbeans-impl:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:openwebbeans-ejb:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:openwebbeans-jsf:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:openwebbeans-jpa:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:openwebbeans-jms:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:openwebbeans-geronimo:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:openwebbeans-resources:jar:sources</exclude>
 	    </excludes>
         </dependencySet>
 
+        <dependencySet>
+            <outputDirectory>api</outputDirectory>
+            <includes>
+                <include>org.apache.geronimo.specs:geronimo-atinject_1.0_spec:jar:1.0-beta</include>
+                <include>org.apache.geronimo.specs:geronimo-jcdi_1.0_spec:jar:1.0-beta</include>
+            </includes>
+        </dependencySet>
 
         <dependencySet>
-            <outputDirectory>samples</outputDirectory>
+            <outputDirectory>plugins</outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans.samples:jms-sample:war</include>
+                <include>org.apache.openwebbeans:openwebbeans-ejb</include>
+                <include>org.apache.openwebbeans:openwebbeans-resource</include>
+                <include>org.apache.openwebbeans:openwebbeans-jsf</include>
+                <include>org.apache.openwebbeans:openwebbeans-jms</include>
             </includes>
+	    <excludes>
+		<exclude>org.apache.openwebbeans:openwebbeans-ejb:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-resource:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-jsf:jar:sources</exclude>
+		<exclude>org.apache.openwebbeans:openwebbeans-jms:jar:sources</exclude>
+            </excludes>
+        </dependencySet>
+
+        <dependencySet>
+            <outputDirectory>spi</outputDirectory>
+            <includes>
+                <include>org.apache.openwebbeans:openwebbeans-spi</include>
+            </includes>
+	    <excludes>
+		<exclude>org.apache.openwebbeans:openwebbeans-spi:jar:sources</exclude>
+            </excludes>
         </dependencySet>
 
     </dependencySets>
