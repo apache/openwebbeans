@@ -24,7 +24,7 @@
 	<artifactId>openwebbeans</artifactId>
 	<name>Apache OpenWebBeans</name>
 	<packaging>pom</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0-M4</version>
 	
 	<url>openwebbeans.apache.org</url>
     
@@ -41,9 +41,9 @@
     <inceptionYear>2008</inceptionYear>
 
 	<scm>
-	    <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/trunk</connection>
-	    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/trunk</developerConnection>
-	    <url>https://svn.apache.org/repos/asf/openwebbeans/trunk</url>
+	    <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.0.0-M4</connection>
+	    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.0.0-M4</developerConnection>
+	    <url>https://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.0.0-M4</url>
     </scm>
 
     <issueManagement>
@@ -608,7 +608,7 @@
 </distributionManagement>
       
 	<properties>
-          <openwebbeans.version>1.0.0-SNAPSHOT</openwebbeans.version>
+          <openwebbeans.version>1.0.0-M4</openwebbeans.version>
           <log4j.version>1.2.14</log4j.version>
           <geronimo_jaxws.version>1.0</geronimo_jaxws.version>
           <geronimo_servlet.version>1.2</geronimo_servlet.version>
