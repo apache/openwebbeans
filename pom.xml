@@ -608,7 +608,7 @@
 </distributionManagement>
       
 	<properties>
-          <openwebbeans.version>1.0.0-M4</openwebbeans.version>
+          <openwebbeans.version>1.0.0-SNAPSHOT</openwebbeans.version>
           <log4j.version>1.2.14</log4j.version>
           <geronimo_jaxws.version>1.0</geronimo_jaxws.version>
           <geronimo_servlet.version>1.2</geronimo_servlet.version>
