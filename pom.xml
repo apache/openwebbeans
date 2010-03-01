@@ -348,57 +348,6 @@
         <module>atinject-tck</module>
         <!--<module>webbeans-tck</module>-->
   </modules>
-    
-	<repositories>
-
-<!--
-     WE MUST ASAP GET RID OF THOSE REPOSITORIES!
--->
-    	   <repository>
-		<id>java.net</id>
-		<url>http://download.java.net/maven/1</url>
-		<layout>legacy</layout>
-	   </repository>
-
-    	   <repository>
-		<id>java.net2</id>
-		<url>http://download.java.net/maven/2</url>
-	   </repository>
-           <repository>
-             <releases />
-             <id>repository.jboss.org</id>
-             <name>JBoss Repository</name>
-             <url>http://repository.jboss.org/maven2</url>
-           </repository>
-           <repository>
-             <id>snapshots.jboss.org</id>
-             <name>JBoss Snapshots Repository</name>
-             <url>http://snapshots.jboss.org/maven2</url>
-             <releases>
-               <enabled>false</enabled>
-             </releases>
-             <snapshots>
-               <enabled>true</enabled>
-               <updatePolicy>always</updatePolicy>
-             </snapshots>
-           </repository>
-
-           <repository>
-             <id>repo1.maven.org</id>
-             <name>Maven repository (for cdi-api)</name>
-             <url>http://repo1.maven.org/maven2</url>
-           </repository>
-
-          <repository>
-            <id>geronimo-snapshots</id>
-            <name>Apache Nexus Snapshots</name>
-            <url>https://repository.apache.org/content/groups/snapshots-group</url>
-            <snapshots>
-              <enabled>true</enabled>
-            </snapshots>
-         </repository>
-
-	</repositories>
 
 	<dependencyManagement>
 
