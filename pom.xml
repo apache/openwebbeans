@@ -557,7 +557,7 @@
 </distributionManagement>
       
 	<properties>
-          <openwebbeans.version>1.0.0-M4</openwebbeans.version>
+          <openwebbeans.version>1.0.0-SNAPSHOT</openwebbeans.version>
           <log4j.version>1.2.14</log4j.version>
           <geronimo_jaxws.version>1.0</geronimo_jaxws.version>
           <geronimo_servlet.version>1.2</geronimo_servlet.version>
@@ -573,11 +573,11 @@
           <geronimo_atinject.version>1.0-beta</geronimo_atinject.version>
           <geronimo_interceptor.version>1.0.0-beta</geronimo_interceptor.version>
           <geronimo_validation.version>1.0</geronimo_validation.version>
-          <javassist.version>3.11.0.GA</javassist.version>
+          <javassist.version>3.12.0-SNAPSHOT</javassist.version>
           <openejb.version>3.1.2</openejb.version>
           <myfaces.version>2.0.0-beta-2</myfaces.version>
           <javax.annot.version>1.0</javax.annot.version>
-	  <siteId>/OWB/1.0.0-M4/plugins</siteId>
+	  <siteId>/OWB/1.0.0-SNAPSHOTS/plugins</siteId>
 	</properties>
 
     <profiles>
