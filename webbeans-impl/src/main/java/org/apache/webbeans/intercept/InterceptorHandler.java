@@ -153,9 +153,9 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     // TODO this proxy cache should get moved to JavassistProxyFactory
     private static Map<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
 
-    protected InterceptorHandler(OwbBean<?> bean2)
+    protected InterceptorHandler(OwbBean<?> bean)
     {
-        this.bean = bean2;
+        this.bean = bean;
     }
 
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments, CreationalContextImpl<?> ownerCreationalContext) throws Exception

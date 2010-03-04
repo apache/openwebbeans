@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
@@ -35,6 +36,7 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.intercept.ApplicationScopedBeanIntereptorHandler;
 import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
@@ -70,7 +72,13 @@ public final class JavassistProxyFactory
             
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
             {
-                ((ProxyObject)result).setHandler(new NormalScopedBeanInterceptorHandler(bean, creationalContext));
+                if (bean.getScope().equals(ApplicationScoped.class)){
+                    ((ProxyObject)result).setHandler(new ApplicationScopedBeanIntereptorHandler(bean, creationalContext));
+                }
+                else 
+                {
+                    ((ProxyObject)result).setHandler(new NormalScopedBeanInterceptorHandler(bean, creationalContext));
+                }
             }
         }
         catch (Exception e)

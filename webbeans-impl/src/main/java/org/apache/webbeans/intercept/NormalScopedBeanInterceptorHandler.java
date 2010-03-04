@@ -34,6 +34,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     private static final long serialVersionUID = -7169354477951284657L;
 
     private CreationalContext<?> creationalContext;
+    private BeanManagerImpl beanManager;
 
     public NormalScopedBeanInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
@@ -41,28 +42,47 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         this.creationalContext = creationalContext;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
-        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
-
-        //Context of the bean
-        Context webbeansContext = beanManager.getContext(bean.getScope());
-
-        //Get bean instance from context
-        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, (CreationalContext<Object>) creationalContext);
-
+        @SuppressWarnings("unchecked")
+        Object webbeansInstance = getContextualInstance((OwbBean<Object>) bean, (CreationalContext<Object>) creationalContext);
         return super.invoke(webbeansInstance, method, proceed, arguments, (CreationalContextImpl<?>) creationalContext);
     }
     
     protected <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
-        InvocationContextImpl impl = new InvocationContextImpl(this.bean, null,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+        InvocationContextImpl impl = new InvocationContextImpl(bean, 
+                                                               getContextualInstance((OwbBean<Object>) bean, (CreationalContext<Object>)creationalContext),
+                                                               proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+        impl.setCreationalContext(creationalContext);
 
         return impl.proceed();
 
     }
     
+    protected BeanManagerImpl getBeanManager()
+    {
+        if (beanManager == null)
+        {
+            beanManager = BeanManagerImpl.getManager();
+        }
+        return beanManager;
+    }
     
+    /**
+     * @param bean
+     * @param cc the CreationalContext
+     * @return the underlying contextual instance, either cached or resolved from the context 
+     */
+    protected Object getContextualInstance(OwbBean<Object> bean, CreationalContext<Object> cc)
+    {
+        //Context of the bean
+        Context webbeansContext = getBeanManager().getContext(bean.getScope());
+
+        //Get bean instance from context
+        @SuppressWarnings("unchecked")
+        Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, (CreationalContext<Object>) creationalContext);
+        return webbeansInstance;
+    }
 }
