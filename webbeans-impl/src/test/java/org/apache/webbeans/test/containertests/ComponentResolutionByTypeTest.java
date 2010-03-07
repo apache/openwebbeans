@@ -16,7 +16,6 @@ package org.apache.webbeans.test.containertests;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
@@ -57,10 +56,6 @@ public class ComponentResolutionByTypeTest extends TestContext
         cont = BeanManagerImpl.getManager();
     }
 
-    public void endTests(ServletContext ctx)
-    {
-        cont = null;
-    }
 
     @Test
     public void testBindingTypeOk() throws Throwable

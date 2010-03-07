@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Decorator;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
@@ -46,16 +45,6 @@ public class DecoratorTest1 extends TestContext
     public DecoratorTest1()
     {
         super(DecoratorTest1.class.getName());
-    }
-
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @Before

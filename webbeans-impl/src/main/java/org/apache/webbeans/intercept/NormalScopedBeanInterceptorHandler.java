@@ -29,6 +29,7 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
+@SuppressWarnings("unchecked")
 public class NormalScopedBeanInterceptorHandler extends InterceptorHandler 
 {
     private static final long serialVersionUID = -7169354477951284657L;
@@ -45,11 +46,10 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
-        @SuppressWarnings("unchecked")
         Object webbeansInstance = getContextualInstance((OwbBean<Object>) bean, (CreationalContext<Object>) creationalContext);
         return super.invoke(webbeansInstance, method, proceed, arguments, (CreationalContextImpl<?>) creationalContext);
     }
-    
+        
     protected <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
         InvocationContextImpl impl = new InvocationContextImpl(bean, 
@@ -81,8 +81,8 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         Context webbeansContext = getBeanManager().getContext(bean.getScope());
 
         //Get bean instance from context
-        @SuppressWarnings("unchecked")
         Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, (CreationalContext<Object>) creationalContext);
+        
         return webbeansInstance;
     }
 }

@@ -21,7 +21,6 @@ import javax.enterprise.inject.spi.Bean;
 import junit.framework.Assert;
 
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.lifecycle.test.MockHttpSession;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureAndTransactionalComponent;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureAndTransactionalInterceptor;
@@ -45,7 +44,7 @@ public class SecureAndTransactionalInterceptorTest extends TestContext
     @Test
     public void testSecureAndTransactionalInterceptor()
     {
-        ContextFactory.initSessionContext(new MockHttpSession());
+        ContextFactory.initSessionContext(null);
         defineInterceptor(SecureAndTransactionalInterceptor.class);
         
         Bean<SecureAndTransactionalComponent> bean = defineManagedBean(SecureAndTransactionalComponent.class);
@@ -58,6 +57,6 @@ public class SecureAndTransactionalInterceptorTest extends TestContext
         Assert.assertTrue(SecureAndTransactionalComponent.getCALL());
         
                 
-        ContextFactory.destroySessionContext(new MockHttpSession());
+        ContextFactory.destroySessionContext(null);
     }
 }

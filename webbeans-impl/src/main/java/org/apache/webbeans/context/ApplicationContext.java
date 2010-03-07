@@ -25,7 +25,7 @@ import org.apache.webbeans.context.type.ContextTypes;
  */
 public class ApplicationContext extends AbstractContext
 {
-    protected ApplicationContext()
+    public ApplicationContext()
     {
         super(ContextTypes.APPLICATION);
     }

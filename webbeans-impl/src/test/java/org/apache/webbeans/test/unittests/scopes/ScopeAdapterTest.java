@@ -15,8 +15,6 @@ package org.apache.webbeans.test.unittests.scopes;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -51,7 +49,7 @@ public class ScopeAdapterTest extends TestContext
         defineManagedBean(ScopeAdaptorComponent.class);
         defineManagedBean(ScopeAdaptorInjectorComponent.class);
 
-        HttpSession session = getSession();
+        Object session = getSession();
         ContextFactory.initRequestContext(null);
         ContextFactory.initSessionContext(session);
         ContextFactory.initApplicationContext(null);

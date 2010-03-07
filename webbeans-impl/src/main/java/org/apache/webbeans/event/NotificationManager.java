@@ -38,9 +38,6 @@ import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.util.TypeLiteral;
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
-import javax.transaction.Transaction;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -64,8 +61,6 @@ public final class NotificationManager
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(NotificationManager.class);
 
     private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
-
-    private final TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
 
     public NotificationManager()
     {
@@ -406,8 +401,6 @@ public final class NotificationManager
 
     public void fireEvent(Object event, Annotation... qualifiers)
     {
-        Transaction transaction = transactionService.getTransaction();
-
         Set<ObserverMethod<? super Object>> observers = resolveObservers(event, qualifiers);
 
         for (ObserverMethod<? super Object> observer : observers)
@@ -415,28 +408,10 @@ public final class NotificationManager
             try
             {
                 TransactionPhase phase = observer.getTransactionPhase();
-                if (transaction != null && phase != null)
+                TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
+                if(transactionService != null)
                 {
-                    if (phase.equals(TransactionPhase.AFTER_COMPLETION))
-                    {
-                        transaction.registerSynchronization(new AfterCompletion(observer, event));
-                    }
-                    else if (phase.equals(TransactionPhase.AFTER_SUCCESS))
-                    {
-                        transaction.registerSynchronization(new AfterCompletionSuccess(observer, event));
-                    }
-                    else if (phase.equals(TransactionPhase.AFTER_FAILURE))
-                    {
-                        transaction.registerSynchronization(new AfterCompletionFailure(observer, event));
-                    }
-                    else if (phase.equals(TransactionPhase.BEFORE_COMPLETION))
-                    {
-                        transaction.registerSynchronization(new BeforeCompletion(observer, event));
-                    }
-                    else
-                    {
-                        throw new IllegalStateException(logger.getTokenString(OWBLogConst.EXCEPT_0007) + phase);
-                    }
+                    transactionService.registerTransactionSynchronization(phase, observer, event);
                 }
                 else
                 {
@@ -501,103 +476,5 @@ public final class NotificationManager
         }
 
         return observerMethods;
-    }
-
-
-    private static class AbstractSynchronization<T> implements Synchronization
-    {
-
-        private final ObserverMethod<T> observer;
-        private final T event;
-
-        public AbstractSynchronization(ObserverMethod<T> observer, T event)
-        {
-            this.observer = observer;
-            this.event = event;
-        }
-
-        public void beforeCompletion()
-        {
-            // Do nothing
-        }
-
-        public void afterCompletion(int i)
-        {
-            //Do nothing
-        }
-
-        public void notifyObserver()
-        {
-            try
-            {
-                observer.notify(event);
-            }
-            catch (Exception e)
-            {
-                logger.error(OWBLogConst.ERROR_0003, e);
-            }
-        }
-    }
-
-    private static class BeforeCompletion extends AbstractSynchronization
-    {
-        private BeforeCompletion(ObserverMethod observer, Object event)
-        {
-            super(observer, event);
-        }
-
-        @Override
-        public void beforeCompletion()
-        {
-            notifyObserver();
-        }
-    }
-
-    private static class AfterCompletion extends AbstractSynchronization
-    {
-        private AfterCompletion(ObserverMethod observer, Object event)
-        {
-            super(observer, event);
-        }
-
-        @Override
-        public void afterCompletion(int i)
-        {
-            notifyObserver();
-        }
-    }
-
-    private static class AfterCompletionSuccess extends AbstractSynchronization
-    {
-        private AfterCompletionSuccess(ObserverMethod observer, Object event)
-        {
-            super(observer, event);
-        }
-
-        @Override
-        public void afterCompletion(int i)
-        {
-            if (i == Status.STATUS_COMMITTED)
-            {
-                notifyObserver();
-            }
-        }
-    }
-
-    private static class AfterCompletionFailure extends AbstractSynchronization
-    {
-        private AfterCompletionFailure(ObserverMethod observer, Object event)
-        {
-            super(observer, event);
-        }
-
-        @Override
-        public void afterCompletion(int i)
-        {
-            if (i != Status.STATUS_COMMITTED)
-            {
-                notifyObserver();
-            }
-        }
     }
 }

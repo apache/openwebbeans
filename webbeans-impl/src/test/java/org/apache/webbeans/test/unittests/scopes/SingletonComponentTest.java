@@ -16,7 +16,6 @@ package org.apache.webbeans.test.unittests.scopes;
 import java.util.List;
 
 import javax.enterprise.inject.spi.BeanManager;
-import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
@@ -56,7 +55,7 @@ public class SingletonComponentTest extends TestContext
         defineManagedBean(Singleton.class);
         List<AbstractOwbBean<?>> comps = getComponents();
 
-        HttpSession session = getSession();
+        Object session = getSession();
 
         ContextFactory.initSessionContext(session);
 

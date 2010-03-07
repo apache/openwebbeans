@@ -17,7 +17,6 @@ import java.lang.annotation.Annotation;
 
 import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.TypeLiteral;
-import javax.servlet.ServletContext;
 
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.test.TestContext;
@@ -38,14 +37,6 @@ public class EventTest extends TestContext
     public EventTest()
     {
         super(EventTest.class.getName());
-    }
-
-    public void endTests(ServletContext ctx)
-    {
-    }
-
-    public void startTests(ServletContext ctx)
-    {
     }
 
     @Test

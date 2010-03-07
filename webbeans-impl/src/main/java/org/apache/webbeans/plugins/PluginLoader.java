@@ -181,7 +181,33 @@ public class PluginLoader
         return null;
     }
     
- 
+    public OpenWebBeansJavaEEPlugin getJavaEEPlugin()
+    {
+        for(OpenWebBeansPlugin plugin : this.plugins)
+        {
+            if(plugin instanceof OpenWebBeansJavaEEPlugin)
+            {
+                return (OpenWebBeansJavaEEPlugin)plugin;
+            }
+        }
+        
+        return null;        
+    }
+    
+    public OpenWebBeansWebPlugin getWebPlugin()
+    {
+        for(OpenWebBeansPlugin plugin : this.plugins)
+        {
+            if(plugin instanceof OpenWebBeansWebPlugin)
+            {
+                return (OpenWebBeansWebPlugin)plugin;
+            }
+        }
+        
+        return null;        
+    }    
+    
+    
     public boolean isShowDown()
     {
         return !this.started.get();

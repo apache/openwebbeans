@@ -14,7 +14,6 @@
 package org.apache.webbeans.test.unittests.exception;
 
 import javax.enterprise.inject.spi.Bean;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
@@ -55,11 +54,6 @@ public class ExceptionComponentTest extends TestContext
     public ExceptionComponentTest()
     {
         super(ExceptionComponentTest.class.getName());
-    }
-
-    public void endTests(ServletContext ctx)
-    {
-
     }
 
     @Before

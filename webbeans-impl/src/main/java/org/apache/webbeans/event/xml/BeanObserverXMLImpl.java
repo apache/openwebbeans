@@ -48,6 +48,7 @@ public class BeanObserverXMLImpl<T> extends ObserverMethodImpl<T>
      * .Object)
      */
     @Override
+    @SuppressWarnings("unchecked")
     protected List getMethodArguments(Object event)
     {
         List<Object> params = new ArrayList<Object>();

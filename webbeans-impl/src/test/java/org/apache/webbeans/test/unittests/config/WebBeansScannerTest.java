@@ -40,7 +40,7 @@ public class WebBeansScannerTest extends AbstractUnitTest
         //Start test container
         startContainer(classes);
         
-        ScannerService scanner = getLifecycle().getDiscoveryService();
+        ScannerService scanner = getLifecycle().getScannerService();
         Set<Class<?>> classMap = scanner.getBeanClasses();
         Assert.assertNotNull(classMap);
         Assert.assertFalse(classMap.isEmpty());

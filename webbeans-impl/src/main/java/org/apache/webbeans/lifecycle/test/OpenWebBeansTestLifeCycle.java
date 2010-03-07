@@ -13,9 +13,10 @@
  */
 package org.apache.webbeans.lifecycle.test;
 
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.exception.WebBeansException;
+import java.util.Properties;
+
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
+import org.apache.webbeans.spi.ScannerService;
 
 /**
  * Ease the writing of the tests. Simulates container
@@ -27,47 +28,19 @@ import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
  */
 public class OpenWebBeansTestLifeCycle extends StandaloneLifeCycle
 {
-    private MockServletContextEvent servletContextEvent;
-    
-    private MockHttpSession mockHttpSession;
-
     public OpenWebBeansTestLifeCycle()
     {
         super();
     }
     
     @Override
-    public void init()
+    public void initApplication(Properties properties)
     {
-        this.mockHttpSession = new MockHttpSession();
-        this.servletContextEvent = new MockServletContextEvent();
-        
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initSessionContext(mockHttpSession);
-        ContextFactory.initConversationContext(null);
-        ContextFactory.initApplicationContext(this.servletContextEvent.getServletContext());        
-        
-        this.discoveryService = new OpenWebBeansTestMetaDataDiscoveryService();
-        
-        this.beanManager.setXMLConfigurator(this.xmlConfig);        
-    }
-
-    @Override
-    public void applicationEnded(Object endObject)
+        this.scannerService = new OpenWebBeansTestMetaDataDiscoveryService();        
+    }    
+    
+    public ScannerService getScannerService()
     {
-        ContextFactory.destroyRequestContext(null);
-        ContextFactory.destroySessionContext(this.mockHttpSession);
-        ContextFactory.destroyConversationContext();
-        
-        super.applicationEnded(this.servletContextEvent);
-        
-        ContextFactory.destroyApplicationContext(this.servletContextEvent.getServletContext());        
+        return this.scannerService;
     }
-
-    @Override
-    public void applicationStarted(Object startupObject) throws WebBeansException
-    {                
-        super.applicationStarted(this.servletContextEvent);
-    }
-        
 }

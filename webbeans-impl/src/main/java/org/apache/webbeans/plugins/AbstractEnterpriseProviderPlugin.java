@@ -16,25 +16,63 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.spi.se;
+package org.apache.webbeans.plugins;
 
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import javax.enterprise.inject.spi.Bean;
 
+import org.apache.webbeans.spi.SecurityService;
+import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.spi.ValidatorService;
 
-public class DefaultValidatorService implements ValidatorService
+public abstract class AbstractEnterpriseProviderPlugin extends AbstractOwbPlugin implements OpenWebBeansJavaEEPlugin
 {
 
     @Override
-    public Validator getDefaultValidator()
+    public Bean<?> getPrincipalBean()
     {
+        
         return null;
     }
 
     @Override
-    public ValidatorFactory getDefaultValidatorFactory()
+    public SecurityService getSecurityService()
     {
+        
+        return null;
+    }
+
+    @Override
+    public TransactionService getTransactionService()
+    {
+        
+        return null;
+    }
+
+    @Override
+    public Bean<?> getUserTransactionBean()
+    {
+        
+        return null;
+    }
+
+    @Override
+    public Bean<?> getValidatorBean()
+    {
+        
+        return null;
+    }
+
+    @Override
+    public Bean<?> getValidatorFactoryBean()
+    {
+        
+        return null;
+    }
+
+    @Override
+    public ValidatorService getValidatorService()
+    {
+        
         return null;
     }
 

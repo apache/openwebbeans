@@ -30,7 +30,7 @@ public class RequestContext extends AbstractContext
     /*
      * Constructor
      */
-    protected RequestContext()
+    public RequestContext()
     {
         super(ContextTypes.REQUEST);
     }

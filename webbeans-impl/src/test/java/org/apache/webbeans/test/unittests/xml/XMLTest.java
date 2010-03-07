@@ -15,14 +15,11 @@ package org.apache.webbeans.test.unittests.xml;
 
 import java.io.InputStream;
 
-import javax.servlet.ServletContext;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.xml.XMLUtil;
 import org.dom4j.Element;
-import org.junit.Before;
 import org.junit.Test;
 
 public class XMLTest extends TestContext
@@ -30,21 +27,6 @@ public class XMLTest extends TestContext
     public XMLTest()
     {
         super(XMLTest.class.getSimpleName());
-    }
-
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
-    @Before
-    public void init()
-    {
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
     }
 
     @Test

@@ -25,7 +25,6 @@ import javax.el.PropertyNotWritableException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.servlet.jsp.JspApplicationContext;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 

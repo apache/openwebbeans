@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.context.SessionContextManager;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.decorator.DecoratorsManager;
@@ -48,7 +47,7 @@ public class WebBeansFinder
 
     public static final String SINGLETON_CREATIONAL_CONTEXT_FACTORY = CreationalContextFactory.class.getName();
     
-    public static final String SINGLETON_SESSION_CONTEXT_MANAGER = SessionContextManager.class.getName();
+    public static final String SINGLETON_SESSION_CONTEXT_MANAGER = "org.apache.webbeans.web.context.SessionContextManager";
     
     public static final String SINGLETON_WEBBEANS_NAMESPACE_CONTAINER = WebBeansNameSpaceContainer.class.getName();
 

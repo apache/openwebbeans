@@ -24,7 +24,7 @@ import org.apache.webbeans.context.type.ContextTypes;
  */
 public class SessionContext extends AbstractContext
 {
-    protected SessionContext()
+    public SessionContext()
     {
         super(ContextTypes.SESSION);
     }

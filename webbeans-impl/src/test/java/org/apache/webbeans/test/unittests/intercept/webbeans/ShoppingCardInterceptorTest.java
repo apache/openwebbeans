@@ -22,7 +22,6 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.intercept.InterceptorsManager;
-import org.apache.webbeans.lifecycle.test.MockHttpSession;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.webbeans.ShoppingCard;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
@@ -49,7 +48,7 @@ public class ShoppingCardInterceptorTest extends TestContext
     @Test
     public void testTransactionalInterceptor()
     {
-        ContextFactory.initSessionContext(new MockHttpSession());
+        ContextFactory.initSessionContext(null);
         
         // Interceptors must explicitly get enabled via XML. We fake this:
         InterceptorsManager.getInstance().addNewInterceptor(TransactionalInterceptor.class);
@@ -67,6 +66,6 @@ public class ShoppingCardInterceptorTest extends TestContext
         
         Assert.assertFalse(ShoppingCard.getCALLED());
                 
-        ContextFactory.destroySessionContext(new MockHttpSession());
+        ContextFactory.destroySessionContext(null);
     }
 }

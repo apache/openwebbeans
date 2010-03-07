@@ -15,8 +15,6 @@ package org.apache.webbeans.test.unittests.intercept;
 
 import java.util.List;
 
-import javax.servlet.ServletContext;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -36,11 +34,6 @@ public class EJBInterceptComponentTest extends TestContext
     public EJBInterceptComponentTest()
     {
         super(EJBInterceptComponentTest.class.getName());
-    }
-
-    public void endTests(ServletContext ctx)
-    {
-
     }
 
     @Before

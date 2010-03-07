@@ -13,8 +13,6 @@
  */
 package org.apache.webbeans.test.servlet;
 
-import javax.servlet.ServletContext;
-
 /**
  * Simple test interfaces.
  * 
@@ -31,11 +29,11 @@ public interface ITestContext
     /**
      * Start all tests in the context
      */
-    public void startTests(ServletContext ctx);
+    public void startTests(Object ctx);
 
     /**
      * End tests in the context
      */
-    public void endTests(ServletContext ctx);
+    public void endTests(Object ctx);
 
 }

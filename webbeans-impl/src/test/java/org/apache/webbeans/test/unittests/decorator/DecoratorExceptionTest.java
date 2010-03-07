@@ -18,8 +18,6 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
@@ -47,15 +45,6 @@ public class DecoratorExceptionTest extends TestContext
         super.init();
     }
 
-    public void endTests(ServletContext ctx)
-    {
-
-    }
-
-    public void startTests(ServletContext ctx)
-    {
-
-    }
 
     @Test
     public void testDelegateAttributeIsnotInterface()

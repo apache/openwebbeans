@@ -15,7 +15,7 @@ package org.apache.webbeans.spi;
 
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.logger.WebBeansLogger;
 
 /**
  * Loads any Service Provider Interface implementation declared in the 
@@ -30,6 +30,8 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
  */
 public class ServiceLoader
 {   
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ServiceLoader.class);
+    
     /**
      * Get a new service singleton instance for the given interface.
      * 
@@ -42,9 +44,8 @@ public class ServiceLoader
         String implName = OpenWebBeansConfiguration.getInstance().getProperty(serviceInterface.getName());
         if (implName == null)
         {
-            throw new WebBeansConfigurationException("Cannot find Service configuration for " + 
-                                                     serviceInterface.getName() +
-                                                     " in the openwebbeans-default.properties file");
+            logger.warn("Unable to find service with class name : " + serviceInterface.getName());
+            return null;
         }
         return (T) WebBeansFinder.getSingletonInstance(implName);
     }

@@ -41,9 +41,6 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
-import org.apache.webbeans.component.javaee.PrinicipalBean;
-import org.apache.webbeans.component.javaee.ValidatorBean;
-import org.apache.webbeans.component.javaee.ValidatorFactoryBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -54,6 +51,9 @@ import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.plugins.OpenWebBeansJavaEEPlugin;
+import org.apache.webbeans.plugins.OpenWebBeansWebPlugin;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
@@ -194,14 +194,46 @@ public class BeansDeployer
         //Register Event Bean
         beanManager.addBean(WebBeansUtil.getEventBean());
         
-        //Register Validator Bean
-        beanManager.addBean(new ValidatorBean());
+        //REgister Provider Beans
+        OpenWebBeansJavaEEPlugin beanEeProvider = PluginLoader.getInstance().getJavaEEPlugin();
+        OpenWebBeansWebPlugin beanWebProvider = PluginLoader.getInstance().getWebPlugin();
         
-        //Register ValidatorFactory Bean
-        beanManager.addBean(new ValidatorFactoryBean());
-        
-        //Register Principal Bean
-        beanManager.addBean(new PrinicipalBean());
+        if(beanEeProvider != null)
+        {
+            if(beanEeProvider.getValidatorBean() != null)
+            {
+                //Register Validator Bean
+                beanManager.addBean(beanEeProvider.getValidatorBean());                
+            }
+            
+            if(beanEeProvider.getValidatorFactoryBean() != null)
+            {
+                //Register ValidatorFactory Bean
+                beanManager.addBean(beanEeProvider.getValidatorFactoryBean());                
+            }
+            
+            if(beanEeProvider.getPrincipalBean() != null)
+            {
+                //Register Principal Bean
+                beanManager.addBean(beanEeProvider.getPrincipalBean());                
+            }
+            
+            if(beanEeProvider.getUserTransactionBean() != null)
+            {
+                //User Transaction Bean
+                beanManager.addBean(beanEeProvider.getUserTransactionBean());                
+            }
+        }       
+        else if(beanWebProvider != null)
+        {
+            if(beanWebProvider.getPrincipalBean() != null)
+            {
+                //Register Principal Bean
+                beanManager.addBean(beanWebProvider.getPrincipalBean());                
+            }
+            
+        }
+            
     }
     
     /**

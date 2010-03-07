@@ -28,7 +28,6 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.lifecycle.test.MockServletContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.test.component.library.BookShop;
@@ -59,9 +58,8 @@ public class ExtensionTest extends AbstractUnitTest
         addExtension(new MyExtension());
         
         startContainer(classes);
-
-        MockServletContext servletContext = new MockServletContext();
-        ContextFactory.initApplicationContext(servletContext);
+        
+        ContextFactory.initApplicationContext(null);
 
         Bean<MyExtension> extension = (Bean<MyExtension>) getBeanManager().getBeans(MyExtension.class, new DefaultLiteral()).iterator().next();
         
@@ -81,7 +79,7 @@ public class ExtensionTest extends AbstractUnitTest
         //Fire shut down
         getBeanManager().fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
 
-        ContextFactory.destroyApplicationContext(servletContext);
+        ContextFactory.destroyApplicationContext(null);
         
         Assert.assertNotNull(MyExtension.beforeShutdownEvent);
     }

@@ -37,37 +37,140 @@ import org.apache.webbeans.logger.WebBeansLogger;
  */
 public class OpenWebBeansConfiguration
 {
-    private final static String DEFALULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-default.properties";
-    private final static String CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
+    /**Logger instance*/
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansConfiguration.class);
 
-    private Properties configProperties = new Properties();
-    private WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansConfiguration.class);
+    /**Default configuration file*/
+    private final static String DEFALULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-default.properties";
     
+    /**Application specified file*/
+    private final static String CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
+    
+    /**Property of application*/
+    private Properties configProperties = new Properties();
+        
     /**Conversation periodic delay in ms.*/
     public static final String CONVERSATION_PERIODIC_DELAY = "org.apache.webbeans.conversation.Conversation.periodicDelay";
     
     /**Use OWB Specific XML Configuration or Strict Spec XML*/
+    @Deprecated //Not use any more 
     public static final String USE_OWB_SPECIFIC_XML_CONFIGURATION = "org.apache.webbeans.useOwbSpecificXmlConfig";
     
     /**Use OWB Specific Field Injection*/
+    @Deprecated //Not use anymore
     public static final String USE_OWB_SPECIFIC_FIELD_INJECTION = "org.apache.webbeans.fieldInjection.useOwbSpecificInjection";    
     
     /**Use EJB Discovery or not*/
-    public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.UseEjbMetaDataDiscoveryService";
+    public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.useEjbMetaDataDiscoveryService";
     
-    public static final String CONTAINER_LIFECYCLE = "org.apache.webbeans.spi.lifecycle";
+    /**Container lifecycle*/
+    public static final String CONTAINER_LIFECYCLE = "org.apache.webbeans.spi.ContainerLifecycle";
     
-    public static final String APPLICATION_IS_JSP = "org.apache.webbeans.application.jspf";
+    /**JNDI Service SPI*/
+    public static final String JNDI_SERVICE = "org.apache.webbeans.spi.JNDIService";    
     
+    /**Scanner Service*/
+    public static final String SCANNER_SERVICE = "org.apache.webbeans.spi.ScannerService";
+
+    /**Contexts Service*/
+    public static final String CONTEXTS_SERVICE = "org.apache.webbeans.spi.ContextsService";
+    
+    /**Conversation Service*/
+    public static final String CONVERSATION_SERVICE = "org.apache.webbeans.spi.ConversationService";
+    
+    /**Resource Injection Service*/
+    public static final String RESOURCE_INJECTION_SERVICE = "org.apache.webbeans.spi.ResourceInjectionService";
+    
+    /**Security Service*/
+    public static final String SECURITY_SERVICE = "org.apache.webbeans.spi.SecurityService";
+    
+    /**Validator Service*/
+    public static final String VALIDATOR_SERVICE = "org.apache.webbeans.spi.ValidatorService";
+    
+    /**Transaction Service*/
+    public static final String TRANSACTION_SERVICE = "org.apache.webbeans.spi.TransactionService";
+    
+    /**Application is core JSP*/
+    public static final String APPLICATION_IS_JSP = "org.apache.webbeans.application.jsp";
+    
+    /**Use of JSF2 extnesions*/
     public static final String USE_JSF2_EXTENSIONS = "org.apache.webbeans.application.useJSF2Extensions";
     
-    public static OpenWebBeansConfiguration getInstance() {
+    /**
+     * Gets singleton instance.
+     * @return singleton instance
+     */
+    public static OpenWebBeansConfiguration getInstance() 
+    {
         return (OpenWebBeansConfiguration) WebBeansFinder.getSingletonInstance(OpenWebBeansConfiguration.class.getName());
     }
     
+    /**
+     * Parse configuration.
+     */
     public OpenWebBeansConfiguration()
     {
         parseConfiguration();
+        
+        logger.debug("Overriden properties from System prpoerties");
+        
+        //Look for System properties
+        loadFromSystemProperties();        
+    }
+    
+    /**
+     * Load from system properties
+     */
+    private void loadFromSystemProperties()
+    {
+        Properties properties = System.getProperties();
+        
+        String value = properties.getProperty(CONVERSATION_PERIODIC_DELAY);
+        setPropertyFromSystemProperty(CONVERSATION_PERIODIC_DELAY, value);        
+        
+        value = properties.getProperty(USE_EJB_DISCOVERY);
+        setPropertyFromSystemProperty(USE_EJB_DISCOVERY, value);
+        
+        value = properties.getProperty(CONTAINER_LIFECYCLE);
+        setPropertyFromSystemProperty(CONTAINER_LIFECYCLE, value);
+
+        value = properties.getProperty(USE_JSF2_EXTENSIONS);
+        setPropertyFromSystemProperty(USE_JSF2_EXTENSIONS, value);
+
+        value = properties.getProperty(APPLICATION_IS_JSP);
+        setPropertyFromSystemProperty(APPLICATION_IS_JSP, value);
+
+        value = properties.getProperty(TRANSACTION_SERVICE);
+        setPropertyFromSystemProperty(TRANSACTION_SERVICE, value);
+
+        value = properties.getProperty(VALIDATOR_SERVICE);
+        setPropertyFromSystemProperty(VALIDATOR_SERVICE, value);
+
+        value = properties.getProperty(SECURITY_SERVICE);
+        setPropertyFromSystemProperty(SECURITY_SERVICE, value);
+
+        value = properties.getProperty(RESOURCE_INJECTION_SERVICE);
+        setPropertyFromSystemProperty(RESOURCE_INJECTION_SERVICE, value);
+
+        value = properties.getProperty(CONVERSATION_SERVICE);
+        setPropertyFromSystemProperty(CONVERSATION_SERVICE, value);
+
+        value = properties.getProperty(CONTEXTS_SERVICE);
+        setPropertyFromSystemProperty(CONTEXTS_SERVICE, value);
+
+        value = properties.getProperty(SCANNER_SERVICE);
+        setPropertyFromSystemProperty(SCANNER_SERVICE, value);
+
+        value = properties.getProperty(JNDI_SERVICE);
+        setPropertyFromSystemProperty(JNDI_SERVICE, value);
+    }
+     
+    private void setPropertyFromSystemProperty(String key, String value)
+    {
+        if(value != null)
+        {
+            setProperty(key, value);
+        }
     }
     
     /**
@@ -120,6 +223,7 @@ public class OpenWebBeansConfiguration
     }
     
     /**
+     * Gets property.
      * @param key
      * @return String with the property value or <code>null</code>
      */
@@ -129,6 +233,7 @@ public class OpenWebBeansConfiguration
     }
     
     /**
+     * Gets property value.
      * @param key
      * @param defaultValue
      * @return String with the property value or <code>null</code>
@@ -138,11 +243,22 @@ public class OpenWebBeansConfiguration
         return configProperties.getProperty(key, defaultValue);
     }
     
-    public void setProperty(String key, Object value)
+    
+    /**
+     * Sets given property.
+     * @param key property name
+     * @param value property value
+     */
+    public synchronized void setProperty(String key, Object value)
     {
         configProperties.put(key, value);
     }
     
+    /**
+     * Returns true if owb specific injection
+     * false otherwise.
+     * @return true if owb specific injection
+     */
     public boolean isOwbSpecificFieldInjection()
     {
         String value = getProperty(USE_OWB_SPECIFIC_FIELD_INJECTION);
@@ -150,6 +266,10 @@ public class OpenWebBeansConfiguration
         return Boolean.valueOf(value);
     }
     
+    /**
+     * Return true if use JSF2.
+     * @return true if use JSF2
+     */
     public boolean isUseJSF2Extensions()
     {
         String value = getProperty(USE_JSF2_EXTENSIONS);
@@ -158,11 +278,15 @@ public class OpenWebBeansConfiguration
         
     }
     
+    /**
+     * Gets jsp property.
+     * @return true if jsp
+     */
     public boolean isJspApplication()
     {
         String value = getProperty(APPLICATION_IS_JSP);
         
         return Boolean.valueOf(value);
     }
-        
+    
 }

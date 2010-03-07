@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.portable.events.ExtensionLoader;
@@ -51,11 +52,18 @@ public abstract class AbstractUnitTest
         }
         
         //Deploy bean classes
-        OpenWebBeansTestMetaDataDiscoveryService discoveyService = (OpenWebBeansTestMetaDataDiscoveryService)testLifecycle.getDiscoveryService();
+        OpenWebBeansTestMetaDataDiscoveryService discoveyService = (OpenWebBeansTestMetaDataDiscoveryService)testLifecycle.getScannerService();
         discoveyService.deployClasses(beanClasses);
         
         //Start application
-        testLifecycle.applicationStarted(null);
+        try
+        {
+            testLifecycle.startApplication(null);
+        }
+        catch (Exception e)
+        {
+            throw new WebBeansConfigurationException(e);
+        }
     }
     
     protected void startContainer(Collection<Class<?>> beanClasses, Collection<URL> beanXmls)
@@ -69,12 +77,19 @@ public abstract class AbstractUnitTest
         }
         
         //Deploy bean classes
-        OpenWebBeansTestMetaDataDiscoveryService discoveyService = (OpenWebBeansTestMetaDataDiscoveryService)testLifecycle.getDiscoveryService();
+        OpenWebBeansTestMetaDataDiscoveryService discoveyService = (OpenWebBeansTestMetaDataDiscoveryService)testLifecycle.getScannerService();
         discoveyService.deployClasses(beanClasses);
         discoveyService.deployXMLs(beanXmls);
         
         //Start application
-        testLifecycle.applicationStarted(null);
+        try
+        {
+            testLifecycle.startApplication(null);
+        }
+        catch (Exception e)
+        {
+            throw new WebBeansConfigurationException(e);
+        }
         
     }
     
@@ -84,7 +99,7 @@ public abstract class AbstractUnitTest
         //Shwtdown application
         if(this.testLifecycle != null)
         {
-            this.testLifecycle.applicationEnded(null);
+            this.testLifecycle.stopApplication(null);
         }        
     }
     

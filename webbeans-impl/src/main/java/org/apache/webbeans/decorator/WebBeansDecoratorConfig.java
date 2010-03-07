@@ -88,6 +88,7 @@ public final class WebBeansDecoratorConfig
         BeanManager manager = BeanManagerImpl.getManager();
         while (itList.hasNext())
         {
+            @SuppressWarnings("unchecked")
             WebBeansDecorator<Object> decorator = (WebBeansDecorator<Object>) itList.next();
             CreationalContext<Object> creationalContext = manager.createCreationalContext(decorator);
             Object decoratorInstance = manager.getReference(decorator, decorator.getBeanClass(), creationalContext);

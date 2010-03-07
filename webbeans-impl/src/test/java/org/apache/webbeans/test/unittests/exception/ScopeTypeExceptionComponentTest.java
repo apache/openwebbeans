@@ -17,7 +17,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.spi.Bean;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
@@ -40,11 +39,6 @@ public class ScopeTypeExceptionComponentTest extends TestContext
     public ScopeTypeExceptionComponentTest()
     {
         super(ScopeTypeExceptionComponentTest.class.getName());
-    }
-
-    public void endTests(ServletContext ctx)
-    {
-
     }
 
     @Before

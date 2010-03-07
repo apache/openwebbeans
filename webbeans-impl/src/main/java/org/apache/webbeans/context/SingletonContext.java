@@ -25,7 +25,7 @@ import org.apache.webbeans.context.type.ContextTypes;
  */
 public class SingletonContext extends AbstractContext
 {
-    protected SingletonContext()
+    public SingletonContext()
     {
         super(ContextTypes.SINGLETON);
     }

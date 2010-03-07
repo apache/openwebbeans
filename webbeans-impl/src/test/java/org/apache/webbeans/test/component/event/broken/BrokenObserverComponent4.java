@@ -16,14 +16,14 @@ package org.apache.webbeans.test.component.event.broken;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.apache.log4j.spi.LoggingEvent;
 import org.apache.webbeans.test.component.CurrentBindingComponent;
+import org.apache.webbeans.test.event.LoggedInEvent;
 
 public class BrokenObserverComponent4
 {
 
     @Inject
-    public CurrentBindingComponent observer(@Observes LoggingEvent event1)
+    public CurrentBindingComponent observer(@Observes LoggedInEvent event1)
     {
         return null;
     }

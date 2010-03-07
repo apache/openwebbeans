@@ -16,7 +16,6 @@ package org.apache.webbeans.test.unittests.disposal;
 import java.util.List;
 
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.lifecycle.test.MockHttpSession;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.disposal.Disposal1;
 import org.junit.Assert;
@@ -43,7 +42,7 @@ public class DisposalTest extends TestContext
         clear();
 
         ContextFactory.initRequestContext(null);
-        ContextFactory.initSessionContext(new MockHttpSession());
+        ContextFactory.initSessionContext(null);
 
         defineManagedBean(Disposal1.class);
 

@@ -15,12 +15,12 @@ package org.apache.webbeans.test.component.event.broken;
 
 import javax.enterprise.event.Observes;
 
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.webbeans.test.event.LoggedInEvent;
 
 public class BrokenObserverComponent2
 {
 
-    public void observer(@Observes LoggingEvent event1, @Observes LoggingEvent event2)
+    public void observer(@Observes LoggedInEvent event1, @Observes LoggedInEvent event2)
     {
 
     }

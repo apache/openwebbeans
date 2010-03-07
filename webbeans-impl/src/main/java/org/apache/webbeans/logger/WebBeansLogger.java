@@ -13,8 +13,12 @@
  */
 package org.apache.webbeans.logger;
 
-import org.apache.log4j.Logger;
-
+/*
+ * These are for use of JDK util logging.
+ */
+import java.util.logging.Logger;
+import java.util.logging.Level;
+ 
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -31,10 +35,23 @@ import java.util.ResourceBundle;
  */
 public final class WebBeansLogger
 {
+    /** Log level mappings from OWB DEBUG, TRACE, INFO, WARN, ERROR, FATAL to whatever log
+     *  levels the currently loaded logger supports (i.e. JUL provides FINEST, FINER, FINE,
+     *  CONFIG, INFO, WARNING, SEVERE).
+     */
+    /* JDK util logger mappings */
+    public final static Level WBL_DEBUG = Level.FINER;
+    public final static Level WBL_TRACE = Level.FINE;
+    public final static Level WBL_INFO = Level.INFO;
+    public final static Level WBL_WARN = Level.WARNING;
+    public final static Level WBL_ERROR = Level.SEVERE;
+    public final static Level WBL_FATAL = Level.SEVERE;
+       
     /** Inner logger object to log actual log messages */
     private Logger logger = null;
     private ResourceBundle wbBundle = null;
-
+    private Class<?> caller = null;
+    
     /** Private constructor */
     private WebBeansLogger()
     {
@@ -50,161 +67,135 @@ public final class WebBeansLogger
     public static WebBeansLogger getLogger(Class<?> clazz)
     {
         WebBeansLogger wbLogger = new WebBeansLogger();
-        Logger inLogger = Logger.getLogger(clazz);
-
+        wbLogger.caller = clazz;
+        Logger inLogger = Logger.getLogger(clazz.getName(),"openwebbeans/Messages");
         wbLogger.setLogger(inLogger);
 
         return wbLogger;
     }
 
-    public void fatal(String messageKey)
+    private void wblLog(Level log_level, String messageKey)
     {
         checkNullLogger();
-        logger.fatal(getTokenString(messageKey));
+        logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey);
+    }
+
+    private void wblLog(Level log_level, String messageKey, Object args[])
+    {
+        checkNullLogger();
+        logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey, args);
+    }
+
+    private void wblLog(Level log_level, String messageKey, Throwable e)
+    {
+        checkNullLogger();
+        logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey, e);
+    }
+
+    private void wblLog(Level log_level, String messageKey, Object args[], Throwable e)
+    {
+        checkNullLogger();
+        logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), constructMessage(messageKey, args), e);
+    }    
+    
+    public void fatal(String messageKey)
+    {
+        this.wblLog(WebBeansLogger.WBL_FATAL, messageKey);
     }
 
     public void fatal(String messageKey, Object args[])
     {
-        checkNullLogger();
-        logger.fatal(constructMessage(messageKey, args));
+        this.wblLog(WebBeansLogger.WBL_FATAL, messageKey, args);
     }
 
     public void fatal(String messageKey, Throwable e)
     {
-        checkNullLogger();
-        logger.fatal(getTokenString(messageKey), e);
-
+        this.wblLog(WebBeansLogger.WBL_FATAL, messageKey, e);
     }
 
     public void error(Throwable e)
     {
-        checkNullLogger();
-        logger.error(e);
+        this.wblLog(WebBeansLogger.WBL_ERROR, "", e);
     }
 
     public void error(String messageKey)
     {
-        checkNullLogger();
-        logger.error(getTokenString(messageKey));
+        this.wblLog(WebBeansLogger.WBL_ERROR, messageKey);
     }
 
     public void error(String messageKey, Object args[])
     {
-        checkNullLogger();
-        logger.error(constructMessage(messageKey, args));
+        this.wblLog(WebBeansLogger.WBL_ERROR, messageKey, args);
     }
     
     public void error(String messageKey, Throwable e)
     {
-        checkNullLogger();
-        logger.error(getTokenString(messageKey), e);
-
+        this.wblLog(WebBeansLogger.WBL_ERROR, messageKey, e);
     }
 
     public void error(String messageKey, Object args[], Throwable e)
     {
-        checkNullLogger();
-        logger.error(constructMessage(messageKey, args), e);
-
+        this.wblLog(WebBeansLogger.WBL_ERROR, messageKey, args, e);
     }
 
     public void warn(String messageKey)
     {
-        checkNullLogger();
-        logger.warn(getTokenString(messageKey));
+        this.wblLog(WebBeansLogger.WBL_WARN, messageKey);
     }
 
     public void warn(String messageKey, Object args[])
     {
-        checkNullLogger();
-        logger.warn(constructMessage(messageKey, args));
+        this.wblLog(WebBeansLogger.WBL_WARN, messageKey, args);
     }
 
     public void warn(String messageKey, Throwable e)
     {
-        checkNullLogger();
-        logger.warn(getTokenString(messageKey), e);
+        this.wblLog(WebBeansLogger.WBL_WARN, messageKey, e);
     }
 
     public void info(String messageKey)
     {
-        checkNullLogger();
-        if (logger.isInfoEnabled())
-        {
-            logger.info(getTokenString(messageKey));   
-        }
+    	this.wblLog(WebBeansLogger.WBL_INFO, messageKey);
     }
 
     public void info(String messageKey, Object args[])
     {
-        checkNullLogger();
-        if (logger.isInfoEnabled())
-        {
-            logger.info(constructMessage(messageKey, args));   
-        }
+        this.wblLog(WebBeansLogger.WBL_INFO, messageKey, args);
     }
     
     public void info(String messageKey, Throwable e)
     {
-        checkNullLogger();
-        if (logger.isInfoEnabled())
-        {
-            logger.info(getTokenString(messageKey), e);   
-        }
+        this.wblLog(WebBeansLogger.WBL_INFO, messageKey, e);
     }
 
     public void debug(String messageKey)
     {
-        checkNullLogger();
-        if (logger.isDebugEnabled())
-        {
-            logger.debug(getTokenString(messageKey));   
-        }
+        this.wblLog(WebBeansLogger.WBL_DEBUG, messageKey);
     }
 
     public void debug(String messageKey, Object args[])
     {
-        checkNullLogger();
-        if (logger.isDebugEnabled())
-        {
-            logger.debug(constructMessage(messageKey, args));   
-        }
+        this.wblLog(WebBeansLogger.WBL_WARN, messageKey, args);
     }
 
     public void debug(String messageKey, Throwable e)
     {
-        checkNullLogger();
-        if (logger.isDebugEnabled())
-        {
-            logger.debug(getTokenString(messageKey), e);   
-        }
+        this.wblLog(WebBeansLogger.WBL_DEBUG, messageKey, e);
     }
 
     public void trace(String messageKey)
     {
-        checkNullLogger();
-        if (logger.isTraceEnabled())
-        {
-            logger.trace(getTokenString(messageKey));   
-        }
+        this.wblLog(WebBeansLogger.WBL_TRACE, messageKey);
     }
 
     public void trace(String messageKey, Object args[])
     {
-        checkNullLogger();
-        if (logger.isTraceEnabled())
-        {
-            logger.trace(constructMessage(messageKey, args));   
-        }
+        this.wblLog(WebBeansLogger.WBL_TRACE, messageKey, args);
     }
 
     public void trace(String messageKey, Throwable e)
     {
-        checkNullLogger();
-        if (logger.isTraceEnabled())
-        {
-            logger.trace(getTokenString(messageKey), e);   
-        }
+        this.wblLog(WebBeansLogger.WBL_TRACE, messageKey, e);
     }
 
     private String constructMessage(String messageKey, Object args[])

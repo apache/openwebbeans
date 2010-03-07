@@ -15,8 +15,6 @@ package org.apache.webbeans.test.unittests.inject;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -53,7 +51,7 @@ public class CurrentInjectedComponentTest extends TestContext
         defineManagedBean(ContaintsCurrentComponent.class);
         List<AbstractOwbBean<?>> comps = getComponents();
 
-        HttpSession session = getSession();
+        Object session = getSession();
         ContextFactory.initRequestContext(null);
         ContextFactory.initSessionContext(session);
 

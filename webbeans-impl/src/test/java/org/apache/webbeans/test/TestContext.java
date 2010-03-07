@@ -28,13 +28,9 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.interceptor.Interceptor;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextListener;
-import javax.servlet.http.HttpSession;
 
 import junit.framework.Assert;
 
-import org.apache.log4j.Logger;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
@@ -52,7 +48,7 @@ import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
-import org.apache.webbeans.lifecycle.test.MockHttpSession;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -95,7 +91,7 @@ import org.dom4j.Element;
  */
 public abstract class TestContext implements ITestContext
 {
-    private Logger logger = Logger.getLogger(TestContext.class);
+    private WebBeansLogger logger = WebBeansLogger.getLogger(TestContext.class);
 
     /**
      * All unit test classes. It is defined for starting the tests from the
@@ -273,12 +269,12 @@ public abstract class TestContext implements ITestContext
      * @see TestListener
      * @see ComponentResolutionByTypeTest
      */
-    public static void startAllTests(ServletContext ctx)
+    public static void startAllTests(Object object)
     {
         Iterator<ITestContext> it = testContexts.iterator();
         while (it.hasNext())
         {
-            it.next().startTests(ctx);
+            it.next().startTests(object);
         }
 
     }
@@ -291,12 +287,12 @@ public abstract class TestContext implements ITestContext
      * @see TestListener
      * @see ComponentResolutionByTypeTest
      */
-    public static void endAllTests(ServletContext ctx)
+    public static void endAllTests(Object object)
     {
         Iterator<ITestContext> it = testContexts.iterator();
         while (it.hasNext())
         {
-            it.next().endTests(ctx);
+            it.next().endTests(object);
         }
 
     }
@@ -524,9 +520,9 @@ public abstract class TestContext implements ITestContext
      * 
      * @return new mock session
      */
-    protected HttpSession getSession()
+    protected Object getSession()
     {
-        return new MockHttpSession();
+        return new Object();
     }
 
     /**
@@ -582,7 +578,7 @@ public abstract class TestContext implements ITestContext
      * @see TestListener
      * @see ComponentResolutionByTypeTest
      */
-    public void endTests(ServletContext ctx)
+    public void endTests(Object ctx)
     {
 
     }
@@ -595,7 +591,7 @@ public abstract class TestContext implements ITestContext
      * @see TestListener
      * @see ComponentResolutionByTypeTest
      */
-    public void startTests(ServletContext ctx)
+    public void startTests(Object ctx)
     {
     }     
 

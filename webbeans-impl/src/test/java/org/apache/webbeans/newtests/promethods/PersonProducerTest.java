@@ -66,6 +66,6 @@ public class PersonProducerTest extends AbstractUnitTest
         
         Assert.assertTrue(reference instanceof Person);
         
-        
+        shutDownContainer();
     }
 }

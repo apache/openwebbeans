@@ -16,35 +16,53 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.spi.se;
+package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
 
-import org.apache.webbeans.api.ResourceReference;
-import org.apache.webbeans.spi.ResourceInjectionService;
+import javax.enterprise.context.ContextException;
+import javax.enterprise.context.spi.Context;
 
-public class DefaultResourceInjectionService implements ResourceInjectionService
+import org.apache.webbeans.spi.ContextsService;
+
+public abstract class AbstractContextsService implements ContextsService
 {
 
     @Override
-    public void clear()
+    public void destroy(Object destroyObject)
     {
-        // Do nothing
-        
+        //Default no-op
     }
 
     @Override
-    public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference)
+    public void endContext(Class<? extends Annotation> scopeType, Object endParameters)
     {
-        // Do nothing
+        //Default no-op
+    }
+
+    @Override
+    public Context getCurrentContext(Class<? extends Annotation> scopeType)
+    {
+        
         return null;
     }
 
     @Override
-    public void injectJavaEEResources(Object managedBeanInstance) throws Exception
+    public void init(Object initializeObject)
     {
-        // Do nothing
-        
+        //Default no-op        
+    }
+
+    @Override
+    public void startContext(Class<? extends Annotation> scopeType, Object startParameter) throws ContextException
+    {
+        //Default no-op        
+    }
+
+    @Override
+    public boolean supportsContext(Class<? extends Annotation> scopeType)
+    {        
+        return false;
     }
 
 }

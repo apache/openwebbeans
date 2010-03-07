@@ -13,177 +13,46 @@
  */
 package org.apache.webbeans.lifecycle;
 
-import java.lang.annotation.Annotation;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.enterprise.inject.spi.BeanManager;
-
-import org.apache.webbeans.WebBeansConstants;
-import org.apache.webbeans.config.BeansDeployer;
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.PluginLoader;
-import org.apache.webbeans.portable.events.ExtensionLoader;
-import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
-import org.apache.webbeans.spi.ContainerLifecycle;
-import org.apache.webbeans.spi.JNDIService;
-import org.apache.webbeans.spi.ScannerService;
-import org.apache.webbeans.spi.ServiceLoader;
-import org.apache.webbeans.spi.se.deployer.MetaDataDiscoveryStandard;
-import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
-public class StandaloneLifeCycle implements ContainerLifecycle
+public class StandaloneLifeCycle extends AbstractLifeCycle
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneLifeCycle.class);
-    
-    /**Deploy discovered beans*/
-    private final BeansDeployer beansDeployer;
         
-    /**Root container.*/
-    protected final BeanManagerImpl beanManager;
-    
-    private AtomicBoolean inited = new AtomicBoolean(false);
-    
-    private AtomicBoolean started = new AtomicBoolean(false);
-    
-    private AtomicBoolean stopped = new AtomicBoolean(false);
-    
-    protected ScannerService discoveryService = null;
-    
-    protected final WebBeansXMLConfigurator xmlConfig;
-    
     public StandaloneLifeCycle()
     {
-        //Clear singletons
+        super(null, logger);        
+    }
+    
+    @Override
+    public void beforeInitApplication(Properties properties)
+    {
         WebBeansFinder.clearInstances();
-
-        this.beanManager = BeanManagerImpl.getManager();
-        this.xmlConfig = new WebBeansXMLConfigurator();
-        this.beansDeployer = new BeansDeployer(this.xmlConfig);        
-
-        init();
     }
     
-    public void init()
+    @Override
+    public void beforeStartApplication(Object object)
     {
-        if(inited.compareAndSet(false, true))
-        {
-            discoveryService = ServiceLoader.getService(ScannerService.class);
-            
-            if(discoveryService == null)
-            {
-                logger.warn(OWBLogConst.WARN_0003);
-                
-                this.discoveryService = new MetaDataDiscoveryStandard();
-            }
-            else
-            {
-                logger.info(OWBLogConst.INFO_0001, new Object[]{discoveryService.getClass().toString()});
-            }
-            
-            beanManager.setXMLConfigurator(this.xmlConfig);        
-        }
+        ContextFactory.initRequestContext(null);
+        ContextFactory.initSessionContext(null);
+        ContextFactory.initConversationContext(null);
+        ContextFactory.initApplicationContext(null);       
+        ContextFactory.initSingletonContext(null);
     }
-
-    public void applicationStarted(Object startupObject) throws WebBeansException
-    {
-        if(this.started.compareAndSet(false, true))
-        {            
-            logger.debug("OpenWebBeans Container is starting.");
-            long begin = System.currentTimeMillis();
-            
-            //Singleton context
-            ContextFactory.initSingletonContext(null);
-
-            // load all optional plugins
-            PluginLoader.getInstance().startUp();
-
-            logger.debug("Scanning classpaths for beans artifacts.");
-
-            this.discoveryService.scan();
-
-            logger.debug("Deploying scanned beans.");
-
-            this.beansDeployer.deploy(this.discoveryService);
-                        
-            long end = System.currentTimeMillis();
-            
-            logger.info(OWBLogConst.INFO_0002, new Object[]{Long.toString(end - begin)});            
-            
-        }
-        else
-        {
-            logger.warn(OWBLogConst.WARN_0004);
-        }
         
+    
+    @Override
+    public void beforeStopApplication(Object endObject)
+    {
+        ContextFactory.destroyRequestContext(null);
+        ContextFactory.destroySessionContext(null);
+        ContextFactory.destroyConversationContext();        
+        ContextFactory.destroyApplicationContext(null);   
+        ContextFactory.destroySingletonContext(null);
     }
     
-    public void applicationEnded(Object endObject)
-    {
-        if(this.stopped.compareAndSet(false, true))
-        {
-            logger.debug("OpenWebBeans Container is stopping.");
-            
-
-            //Fire shut down
-            this.beanManager.fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
-            
-            JNDIService jndiService = ServiceLoader.getService(JNDIService.class);
-            
-            jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
-                    
-            ContextFactory.destroySingletonContext(null);
-
-            // finally free all plugin resources
-            PluginLoader.getInstance().shutDown();
-            
-            //Clear extensions
-            ExtensionLoader.getInstance().clear();
-
-            //Clear singleton list
-            WebBeansFinder.clearInstances();
-                    
-            logger.debug("OpenWebBeans Container has stopped.");        
-            
-        }
-        else
-        {
-            logger.warn(OWBLogConst.WARN_0005);
-        }        
-        
-    }
-
-    @Override
-    public BeanManager getBeanManager()
-    {
-        return this.beanManager;
-    }
-
-    public ScannerService getDiscoveryService()
-    {
-        return this.discoveryService;
-    }
-
-    @Override
-    public void init(Properties properties)
-    {
-        
-    }
-
-    @Override
-    public void start(Object startupObject) throws Exception
-    {
-        applicationStarted(startupObject);
-    }
-
-    @Override
-    public void stop(Object endObject)
-    {
-      applicationEnded(endObject);        
-    }
 }

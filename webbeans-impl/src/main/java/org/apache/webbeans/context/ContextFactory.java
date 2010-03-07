@@ -14,102 +14,46 @@
 package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.*;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Singleton;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.type.ContextTypes;
-import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.ContextsService;
+import org.apache.webbeans.spi.ServiceLoader;
 
 /**
- * Gets current {@link WebBeansContext} instances on the current thread context.
- * 
- * @see WebBeansContext
- * @see AbstractContext
+ * JSR-299 based standard context
+ * related operations.
  */
 public final class ContextFactory
 {
-    private static ThreadLocal<RequestContext> requestContext = null;
-
-    private static ThreadLocal<SessionContext> sessionContext = null;
-
-    private static ThreadLocal<ApplicationContext> applicationContext = null;
-
-    private static ThreadLocal<ConversationContext> conversationContext = null;
+    /**Logger instance*/
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ContextFactory.class);
     
-    private static ThreadLocal<SingletonContext> singletonContext = null;
-
-    private static ThreadLocal<DependentContext> dependentContext = null;
-
-    private static Map<ServletContext, ApplicationContext> currentApplicationContexts = new ConcurrentHashMap<ServletContext, ApplicationContext>();
+    /**Underlying context service*/
+    private static ContextsService contextService = ServiceLoader.getService(ContextsService.class);
     
-    private static Map<ServletContext, SingletonContext> currentSingletonContexts = new ConcurrentHashMap<ServletContext, SingletonContext>();
-
-    private static SessionContextManager sessionCtxManager = SessionContextManager.getInstance();
-
-    private static ConversationManager conversationManager = ConversationManager.getInstance();
-
-    static
-    {
-        requestContext = new ThreadLocal<RequestContext>();
-        sessionContext = new ThreadLocal<SessionContext>();
-        applicationContext = new ThreadLocal<ApplicationContext>();
-        conversationContext = new ThreadLocal<ConversationContext>();
-        dependentContext = new ThreadLocal<DependentContext>();
-        singletonContext = new ThreadLocal<SingletonContext>();
-    }
-
+    /**
+     * Not-instantiate
+     */
     private ContextFactory()
     {
         throw new UnsupportedOperationException();
     }
     
-    public static void initializeThreadLocals()
+    public static void initRequestContext(Object request)
     {
-        requestContext.remove();
-        sessionContext.remove();
-        applicationContext.remove();
-        conversationContext.remove();
-        dependentContext.remove();
-        singletonContext.remove();
-    }
-
-    /**
-     * Initialize requext context with the given request object.
-     * 
-     * @param event http servlet request event
-     */
-    public static void initRequestContext(ServletRequestEvent event)
-    {
-        RequestContext rq = new RequestContext();
-        rq.setActive(true);
-
-        requestContext.set(rq);// set thread local
-        if(event != null)
+        try
         {
-            HttpServletRequest request = (HttpServletRequest) event.getServletRequest();
-            
-            if (request != null)
-            {
-                //Re-initialize thread local for session
-                HttpSession session = request.getSession(false);
-                
-                if(session != null)
-                {
-                    initSessionContext(session);    
-                }
-                            
-                initApplicationContext(event.getServletContext());                
-                initSingletonContext(event.getServletContext());
-            }            
+            contextService.startContext(RequestScoped.class, request);
+        }
+        catch (Exception e)
+        {
+            logger.error(e);
         }
     }
 
@@ -119,74 +63,30 @@ public final class ContextFactory
         {
             return new CustomPassivatingContextImpl(context);
         }
+        
         return new CustomContextImpl(context);
     }
     
-    /**
-     * Destroys the request context and all of its components.
-     * 
-     * @param request http servlet request object
-     */
-    public static void destroyRequestContext(HttpServletRequest request)
+    public static void destroyRequestContext(Object request)
     {
-        if (requestContext != null)
+        contextService.endContext(RequestScoped.class, request);
+    }
+
+    public static void initSessionContext(Object session)
+    {
+        try
         {
-            RequestContext context = getRequestContext();
-
-            if (context != null)
-            {
-                context.destroy();
-            }
-
-            requestContext.remove();
-            
+            contextService.startContext(SessionScoped.class, session);
+        }
+        catch (Exception e)
+        {
+            logger.error(e);
         }
     }
 
-    /**
-     * Creates the session context at the session start.
-     * 
-     * @param session http session object
-     */
-    public static void initSessionContext(HttpSession session)
+    public static void destroySessionContext(Object session)
     {
-        String sessionId = session.getId();
-        SessionContext currentSessionContext = sessionCtxManager.getSessionContextWithSessionId(sessionId);
-
-        if (currentSessionContext == null)
-        {
-            currentSessionContext = new SessionContext();
-            sessionCtxManager.addNewSessionContext(sessionId, currentSessionContext);
-        }
-
-        currentSessionContext.setActive(true);
-
-        sessionContext.set(currentSessionContext);
-    }
-
-    /**
-     * Destroys the session context and all of its components at the end of the
-     * session.
-     * 
-     * @param session http session object
-     */
-    public static void destroySessionContext(HttpSession session)
-    {
-        if (sessionContext != null)
-        {
-            SessionContext context = getSessionContext();
-
-            if (context != null)
-            {
-                context.destroy();
-            }
-
-            sessionContext.remove();
-
-        }
-
-        sessionCtxManager.destroySessionContextWithSessionId(session.getId());
-
+        contextService.endContext(SessionScoped.class, session);
     }
 
     /**
@@ -194,27 +94,15 @@ public final class ContextFactory
      * 
      * @param servletContext servlet context object
      */
-    public static void initApplicationContext(ServletContext servletContext)
+    public static void initApplicationContext(Object servletContext)
     {
-        
-        if(servletContext != null && currentApplicationContexts.containsKey(servletContext))
+        try
         {
-            applicationContext.set(currentApplicationContexts.get(servletContext));
+            contextService.startContext(ApplicationScoped.class, servletContext);
         }
-        
-        else
+        catch (Exception e)
         {
-            ApplicationContext currentApplicationContext = new ApplicationContext();         
-            currentApplicationContext.setActive(true);
-            
-            if(servletContext != null)
-            {
-                currentApplicationContexts.put(servletContext, currentApplicationContext);
-                
-            }
-            
-            applicationContext.set(currentApplicationContext);
-   
+            logger.error(e);
         }
     }
 
@@ -224,112 +112,43 @@ public final class ContextFactory
      * 
      * @param servletContext servlet context object
      */
-    public static void destroyApplicationContext(ServletContext servletContext)
+    public static void destroyApplicationContext(Object servletContext)
     {
-        if (applicationContext != null)
-        {
-            ApplicationContext context = getApplicationContext();
-
-            if (context != null)
-            {
-                context.destroy();
-            }
-
-            applicationContext.remove();
-
-        }
-        
-        if(servletContext != null)
-        {
-            currentApplicationContexts.remove(servletContext);   
-        }
-        
-        sessionCtxManager.destroyAllSessions();
-        conversationManager.destroyAllConversations();
+        contextService.endContext(ApplicationScoped.class, servletContext);
     }
     
-    public static void initSingletonContext(ServletContext servletContext)
+    public static void initSingletonContext(Object servletContext)
     {
-        if(servletContext != null && currentSingletonContexts.containsKey(servletContext))
+        try
         {
-            singletonContext.set(currentSingletonContexts.get(servletContext));
+            contextService.startContext(Singleton.class, servletContext);
         }
-        
-        else
+        catch (Exception e)
         {
-            SingletonContext context = new SingletonContext();
-            context.setActive(true);
-            
-            if(servletContext != null)
-            {
-                currentSingletonContexts.put(servletContext, context);
-                
-            }
-            
-            singletonContext.set(context);
-   
+            logger.error(e);            
         }
-                        
     }
     
-    public static void destroySingletonContext(ServletContext servletContext)
+    public static void destroySingletonContext(Object servletContext)
     {
-        if (singletonContext != null)
-        {
-            SingletonContext context = getSingletonContext();
-
-            if (context != null)
-            {
-                context.destroy();
-            }
-            
-            singletonContext.remove();            
-
-        }
-        
-        if(servletContext != null)
-        {
-            currentSingletonContexts.remove(servletContext);   
-        }                
+        contextService.endContext(Singleton.class, servletContext);
     }
 
-    public static void initConversationContext(ConversationContext context)
+    public static void initConversationContext(Object context)
     {
-        if (context == null)
+        try
         {
-            if(conversationContext.get() == null)
-            {
-                ConversationContext newContext = new ConversationContext();
-                newContext.setActive(true);
-                
-                conversationContext.set(newContext);                
-            }
-            else
-            {
-                conversationContext.get().setActive(true);
-            }
-            
+            contextService.startContext(ConversationScoped.class, context);
         }
-        else
+        catch (Exception e)
         {
-            context.setActive(true);
-            conversationContext.set(context);
+            logger.error(e);            
         }
     }
 
     public static void destroyConversationContext()
     {
-        if (conversationContext != null)
-        {
-            ConversationContext context = getConversationContext();
-
-            if (context != null)
-            {
-                context.destroy();
-            }
-
-            conversationContext.remove();
-        }
+        contextService.endContext(ConversationScoped.class, null);
     }
 
     /**
@@ -339,32 +158,36 @@ public final class ContextFactory
      * @throws ContextNotActiveException if context is not active
      * @throws IllegalArgumentException if the type is not a standard context
      */
-    public static WebBeansContext getStandartContext(ContextTypes type) throws ContextNotActiveException
+    public static Context getStandartContext(ContextTypes type) throws ContextNotActiveException
     {
-        WebBeansContext context = null;
+        Context context = null;
 
         switch (type.getCardinal())
         {
             case 0:
-                context = getRequestContext();
+                context = (Context)contextService.getCurrentContext(RequestScoped.class);
                 break;
     
             case 1:
-                context = getSessionContext();
+                context = (Context)contextService.getCurrentContext(SessionScoped.class);
                 break;
     
             case 2:
-                context = getApplicationContext();
+                context = (Context)contextService.getCurrentContext(ApplicationScoped.class);
                 break;
     
             case 3:
-                context = getConversationContext();
+                context = (Context)contextService.getCurrentContext(ConversationScoped.class);
                 break;
                 
             case 4:
-                context = getDependentContext();
+                context = (Context)contextService.getCurrentContext(Dependent.class);
                 break;
-            
+
+            case 5:
+                context = (Context)contextService.getCurrentContext(Singleton.class);
+                break;
+                
             default:
                 throw new IllegalArgumentException("There is no such a standard context with context id=" + type.getCardinal());
         }
@@ -377,83 +200,36 @@ public final class ContextFactory
      * 
      * @return the current context, or <code>null</code> if no standard context exists for the given scopeType
      */
-    public static WebBeansContext getStandardContext(Class<? extends Annotation> scopeType)
+    public static Context getStandardContext(Class<? extends Annotation> scopeType)
     {
-        WebBeansContext context = null;
+        Context context = null;
 
         if (scopeType.equals(RequestScoped.class))
         {
-            context = getRequestContext();
+            context = getStandartContext(ContextTypes.REQUEST);
         }
         else if (scopeType.equals(SessionScoped.class))
         {
-            context = getSessionContext();
+            context = getStandartContext(ContextTypes.SESSION);
         }
         else if (scopeType.equals(ApplicationScoped.class))
         {
-            context = getApplicationContext();
+            context = getStandartContext(ContextTypes.APPLICATION);
         }
         else if (scopeType.equals(ConversationScoped.class))
         {
-            context = getConversationContext();
+            context = getStandartContext(ContextTypes.CONVERSATION);
 
         }
         else if (scopeType.equals(Dependent.class))
         {
-            context = getDependentContext();
+            context = getStandartContext(ContextTypes.DEPENDENT);
         }
         else if (scopeType.equals(Singleton.class))
         {
-            context = getSingletonContext();
+            context = getStandartContext(ContextTypes.SINGLETON);
         }
         
         return context;
     }
-
-    /*
-     * Get current request ctx.
-     */
-    private static RequestContext getRequestContext()
-    {
-        return requestContext.get();
-    }
-
-    /*
-     * Get current session ctx.
-     */
-    private static SessionContext getSessionContext()
-    {
-        return sessionContext.get();
-    }
-
-    private static ApplicationContext getApplicationContext()
-    {
-        return applicationContext.get();
-    }
-
-    private static SingletonContext getSingletonContext()
-    {
-        return singletonContext.get();
-    }
-
-    /*
-     * Get current conversation ctx.
-     */
-    private static ConversationContext getConversationContext()
-    {
-        return conversationContext.get();
-    }
-
-    public static DependentContext getDependentContext()
-    {
-        DependentContext dependentCtx = dependentContext.get();
-
-        if (dependentCtx == null)
-        {
-            dependentCtx = new DependentContext();
-            dependentContext.set(dependentCtx);
-        }
-
-        return dependentCtx;
-    }     
 }

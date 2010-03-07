@@ -13,10 +13,7 @@
  */
 package org.apache.webbeans.test.servlet;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import org.apache.log4j.Logger;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.test.TestContext;
 import org.junit.Test;
 
@@ -29,9 +26,9 @@ import org.junit.Test;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public class TestListener implements ServletContextListener
+public class TestListener
 {
-    Logger log = Logger.getLogger(TestListener.class);
+    WebBeansLogger log = WebBeansLogger.getLogger(TestListener.class);
 
     private void init()
     {
@@ -42,11 +39,11 @@ public class TestListener implements ServletContextListener
     /**
      * Ending all tests
      */
-    public void contextDestroyed(ServletContextEvent arg0)
+    public void contextDestroyed(Object arg0)
     {
         log.info("Ending all tests");
 
-        TestContext.endAllTests(arg0.getServletContext());
+        TestContext.endAllTests(arg0);
     }
 
     @Test
@@ -58,13 +55,13 @@ public class TestListener implements ServletContextListener
     /**
      * Initialize and start all tests from the web application.
      */
-    public void contextInitialized(ServletContextEvent arg0)
+    public void contextInitialized(Object arg0)
     {
         init();
 
         log.info("Starting all tests");
 
-        TestContext.startAllTests(arg0.getServletContext());
+        TestContext.startAllTests(arg0);
     }
 
 }

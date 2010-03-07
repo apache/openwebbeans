@@ -17,7 +17,6 @@ import java.lang.annotation.Annotation;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.util.AnnotationLiteral;
-import javax.servlet.ServletContext;
 
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.test.TestContext;
@@ -35,14 +34,6 @@ public class EventExceptionTest extends TestContext
     public EventExceptionTest()
     {
         super(EventExceptionTest.class.getName());
-    }
-
-    public void endTests(ServletContext ctx)
-    {
-    }
-
-    public void startTests(ServletContext ctx)
-    {
     }
 
     @Test

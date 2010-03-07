@@ -17,13 +17,11 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 import javax.enterprise.util.TypeLiteral;
-import javax.servlet.ServletContext;
 
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.lifecycle.test.MockHttpSession;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.producer.ParametrizedModel1;
 import org.apache.webbeans.test.component.producer.ParametrizedModel2;
@@ -53,7 +51,7 @@ public class ProducerComponentTest extends TestContext
     /**
      * From the container with servlet context
      */
-    public void startTests(ServletContext ctx)
+    public void startTests(Object ctx)
     {
         testProducerDeployment1();
         testProducerDeployment2();
@@ -119,7 +117,7 @@ public class ProducerComponentTest extends TestContext
         defineManagedBean(Producer4.class);
         AbstractOwbBean<Producer4ConsumerComponent> component = defineManagedBean(Producer4ConsumerComponent.class);
 
-        ContextFactory.initSessionContext(new MockHttpSession());
+        ContextFactory.initSessionContext(new Object());
 
         Producer4ConsumerComponent instance = getManager().getInstance(component);
 
