@@ -560,7 +560,7 @@ public class BeansDeployer
                 if(!(beanObj instanceof AbstractProducerBean))
                 {
                     throw new WebBeansConfigurationException("Passivation scoped defined bean must be passivation capable, " +
-                            "but bean : " + toString() + " is not passivation capable");                    
+                            "but bean : " + beanObj.toString() + " is not passivation capable");                    
                 }
             }
             
