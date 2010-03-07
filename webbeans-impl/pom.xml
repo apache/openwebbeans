@@ -24,7 +24,7 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>openwebbeans-impl</artifactId>
-	<name>Apache OpenWebBeans :: JSR-299 Implementation</name>
+	<name>Apache OpenWebBeans :: OpenWebBeans Core</name>
 	<description>Implementation of the Web Beans API</description>
 
 	<dependencies>
