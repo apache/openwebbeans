@@ -4,24 +4,23 @@ Apache OpenWebBeans M4
 Welcome! Thanks for downloading and using OpenWebBeans. This document is a
 "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the M4 release of the OpenWebBeans. M4 version is so 
-closer to the full implementation of the JSR-299 and it is very stable.
+This document is based on the M4 release of the OpenWebBeans.
 
 NOTE : Final release version of OpenWebBeans will be 1.0.0.
 
 --------------------------------
-What is an OpenWebBeans?
+What is Apache  OpenWebBeans?
 --------------------------------
-OpenWebBeans is an ASL-License implementation of the JSR-299, Contexts and Dependency Injection for the Java EE platform.
+OpenWebBeans is an ASL 2.0-licensed implementation of the JSR-299, Contexts and Dependency Injection for the Java EE platform.
 
-Project web page could be found at the URL : 
+Project's web page can be found at: 
 "http://openwebbeans.apache.org"
 
 --------------------------------
 OpenWebBeans M4 Release Features
 --------------------------------
 
-- M4 Release Supports the followings
+- M4 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Session Beans Support (via Embeddable OpenEJB container in Tomcat)
@@ -39,12 +38,12 @@ OpenWebBeans M4 Release Features
 * Passivation Capability of Beans
 * @Alternative support in drop of @DeploymentType
 
-- M4 Release Does not Supports the followings
+- M4 release does not supports the following features
 --------------------------------------------
 * Injection into other Java EE 6 non-contextual components
-  - Currently, you are not able to injection into Servlets, Filters etc.
+  - Currently, it is not possible to use injection into Servlets, Filters etc.
     that are not contextual beans.
-* Does not fully integrated with Geronimo 
+* Does not fully integrate with Geronimo 
  (You have to configure your application to use OWB functionality, 
   e.g configure web.xml, adding interceptor to EJBs etc.)
 
