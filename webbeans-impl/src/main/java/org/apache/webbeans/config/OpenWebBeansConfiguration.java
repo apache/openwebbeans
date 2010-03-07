@@ -40,8 +40,13 @@ public class OpenWebBeansConfiguration
     /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansConfiguration.class);
 
-    /**Default configuration file*/
-    private final static String DEFALULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-default.properties";
+    /**Default configuration files*/
+    private final static String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-default.properties";
+    private final static String CONFIG_EE_COMMON_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-ee-common.properties";
+    private final static String CONFIG_EE_FULL_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-ee-full.properties";
+    private final static String CONFIG_EE_WEB_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-ee-web.properties";
+    private final static String CONFIG_JMS_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-jms.properties";
+    private final static String CONFIG_JSF_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-jsf.properties";
     
     /**Application specified file*/
     private final static String CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
@@ -183,15 +188,23 @@ public class OpenWebBeansConfiguration
         Properties newConfigProperties = new Properties();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         
-        InputStream is = loader.getResourceAsStream(DEFALULT_CONFIG_PROPERTIES_NAME);
-        try
-        {
-            newConfigProperties.load(is);
-        }
-        catch (IOException ioEx)
-        {
-            throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EDCONF_FAIL), ioEx);
-        }
+        InputStream is = loader.getResourceAsStream(DEFAULT_CONFIG_PROPERTIES_NAME);
+        load(is, newConfigProperties);
+        
+        is = loader.getResourceAsStream(CONFIG_JMS_PROPERTIES_NAME);
+        load(is, newConfigProperties);
+
+        is = loader.getResourceAsStream(CONFIG_JSF_PROPERTIES_NAME);
+        load(is, newConfigProperties);
+
+        is = loader.getResourceAsStream(CONFIG_EE_COMMON_PROPERTIES_NAME);
+        load(is, newConfigProperties);
+
+        is = loader.getResourceAsStream(CONFIG_EE_WEB_PROPERTIES_NAME);
+        load(is, newConfigProperties);
+
+        is = loader.getResourceAsStream(CONFIG_EE_FULL_PROPERTIES_NAME);
+        load(is, newConfigProperties);
         
         // and now overload those settings with the ones from the more specialized version (if available)
         
@@ -207,19 +220,39 @@ public class OpenWebBeansConfiguration
                         + logger.getTokenString(OWBLogConst.TEXT_OVERRIDING));
 
             is = loader.getResourceAsStream(CONFIG_PROPERTIES_NAME);
-            try
-            {
-                newConfigProperties.load(is);
-            }
-            catch (IOException ioEx)
-            {
-                throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.ESCONF_FAIL), ioEx);
-            }
-            
+            load(is, newConfigProperties);
         }
 
         // set the new one as perfect fit.
         configProperties = newConfigProperties;
+    }
+    
+    private void load(InputStream is, Properties newConfigProperties)
+    {
+        try
+        {
+            if(is != null)
+            {
+                newConfigProperties.load(is);   
+            }
+        }
+        catch (IOException ioEx)
+        {
+            throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EDCONF_FAIL), ioEx);
+        }       
+        finally
+        {
+            if(is != null)
+            {
+                try
+                {
+                    is.close();
+                }catch(Exception e)
+                {
+                    
+                }
+            }
+        }
     }
     
     /**

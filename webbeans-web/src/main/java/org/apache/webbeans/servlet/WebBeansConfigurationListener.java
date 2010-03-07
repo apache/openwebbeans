@@ -26,14 +26,10 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.lifecycle.LifecycleFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContainerLifecycle;
-import org.apache.webbeans.web.context.WebContextsService;
-import org.apache.webbeans.web.lifecycle.WebContainerLifecycle;
-import org.apache.webbeans.web.scanner.WebScannerService;
 
 /**
  * Initializing the beans container for using in an web application
@@ -62,17 +58,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
 	 */
     public void contextInitialized(ServletContextEvent event)
     {
-        //Push parse configuration
-        OpenWebBeansConfiguration configuration = OpenWebBeansConfiguration.getInstance();
-        
-        //Set our parameters for Web Plugin
-        //Container Lifecycle
-        configuration.setProperty(OpenWebBeansConfiguration.CONTAINER_LIFECYCLE, WebContainerLifecycle.class.getName());
-        //Scanner Service
-        configuration.setProperty(OpenWebBeansConfiguration.SCANNER_SERVICE, WebScannerService.class.getName());
-        //Contexts Service
-        configuration.setProperty(OpenWebBeansConfiguration.CONTEXTS_SERVICE, WebContextsService.class.getName());
-        
         this.lifeCycle = LifecycleFactory.getInstance().getLifecycle();
 
         try
