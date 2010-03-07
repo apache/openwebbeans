@@ -48,6 +48,12 @@
 			<version>${project.version}</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-web</artifactId>
+			<version>${project.version}</version>
+		</dependency>			
+		
 		<!-- My Faces API -->
 		<dependency>
 			<groupId>org.apache.myfaces.core</groupId>
