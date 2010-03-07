@@ -38,7 +38,7 @@ public interface ContainerLifecycle
      * </p>
      * @param properties any properties
      */
-    public void init(Properties properties);
+    public void initApplication(Properties properties);
     
     /**
      * Starts container. It discovers all beans
@@ -65,14 +65,14 @@ public interface ContainerLifecycle
      * @param startupObject any startup object.
      * @throws Exception exception thrown by startup
      */
-    public void start(Object startupObject) throws Exception;
-    
+    public void startApplication(Object startupObject) throws Exception;
+        
     /**
      * Stops means that container removes all bean instances
      * it store, remove contexts and does necessary final actions.
      * @param endObject any onject provided by implementors
      */
-    public void stop(Object endObject);
+    public void stopApplication(Object endObject);
     
     /**
      * Gets deployment bean manager instance. There is 1-1 correspondence
@@ -80,5 +80,10 @@ public interface ContainerLifecycle
      * @return deployment {@link BeanManager} instance
      */
     public BeanManager getBeanManager();
-
+    
+    /**
+     * Gets container's context service implementation.
+     * @return container contexts service
+     */
+    public ContextsService getContextService();
 }

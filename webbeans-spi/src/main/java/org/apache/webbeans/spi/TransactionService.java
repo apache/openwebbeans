@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.spi;
 
+import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
@@ -40,4 +42,12 @@ public interface TransactionService
      * @return user transaction object
      */
     public UserTransaction getUserTransaction();
+    
+    /**
+     * Register transaction synch.
+     * @param phase transaction phase
+     * @param observer observer 
+     * @param event event
+     */
+    public void registerTransactionSynchronization(TransactionPhase phase, ObserverMethod<? super Object> observer, Object event) throws Exception;
 }
