@@ -32,9 +32,11 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.junit.Test;
 
 
-public class OpenEJBIntegrationTest extends TestCase{
+public class OpenEJBIntegrationTest extends TestCase
+{
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testIntegration() throws Exception 
     {
         Properties p = new Properties();
