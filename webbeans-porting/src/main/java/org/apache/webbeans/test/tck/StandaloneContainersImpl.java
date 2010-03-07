@@ -41,10 +41,7 @@ import org.apache.openejb.jee.SingletonBean;
 import org.apache.openejb.jee.StatefulBean;
 import org.apache.openejb.jee.StatelessBean;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.lifecycle.DefaultLifecycle;
-import org.apache.webbeans.lifecycle.test.MockHttpSession;
-import org.apache.webbeans.lifecycle.test.MockServletContextEvent;
+import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
@@ -53,21 +50,23 @@ import org.jboss.testharness.spi.StandaloneContainers;
 
 public class StandaloneContainersImpl implements StandaloneContainers
 {
-    private DefaultLifecycle lifeCycle = null;
-    
-    private MockServletContextEvent servletContextEvent;
-    
-    private MockHttpSession mockHttpSession;
+    private StandaloneLifeCycle lifeCycle = null;
     
     private DeploymentException excpetion;
         
     public void deployInternal(Iterable<Class<?>> classes) throws DeploymentException
     {
-        initializeContexts();
+        //Scanner service
+        final TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(ScannerService.class);
         
-        TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(ScannerService.class);
-        
-        this.lifeCycle = new DefaultLifecycle();
+        //Lifecycle container
+        this.lifeCycle = new StandaloneLifeCycle()
+        {
+            protected void afterInitApplication(Properties event)
+            {
+                this.scannerService = discovery;
+            }            
+        };
         
         try
         {
@@ -77,7 +76,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
                 discovery.addBeanClass(it.next());
             }
             
-            this.lifeCycle.applicationStarted(servletContextEvent);
+            this.lifeCycle.startApplication(null);
             
         }catch(Throwable e)
         {
@@ -93,11 +92,9 @@ public class StandaloneContainersImpl implements StandaloneContainers
     {
         try
         {
-            initializeContexts();
-            
             TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(ScannerService.class);
             
-            this.lifeCycle = new DefaultLifecycle();
+            this.lifeCycle = new StandaloneLifeCycle();
             
             Iterator<Class<?>> it = classes.iterator();
             while(it.hasNext())
@@ -111,7 +108,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
                 discovery.addBeanXml(itUrl.next());
             }
             
-            this.lifeCycle.applicationStarted(servletContextEvent);            
+            this.lifeCycle.startApplication(null);            
         }
         catch(Throwable e)
         {
@@ -124,18 +121,6 @@ public class StandaloneContainersImpl implements StandaloneContainers
         return true;
     }
 
-    
-    private void initializeContexts()
-    {
-        this.mockHttpSession = new MockHttpSession();
-        
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initSessionContext(mockHttpSession);
-        ContextFactory.initConversationContext(null);
-        
-        this.servletContextEvent = new MockServletContextEvent();        
-    }
-    
     public void setup()
     {
         
@@ -149,11 +134,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
     public void undeploy()
     {
-        this.lifeCycle.applicationEnded(this.servletContextEvent);
-
-        ContextFactory.destroyRequestContext(null);
-        ContextFactory.destroySessionContext(this.mockHttpSession);
-        ContextFactory.destroyConversationContext();
+        this.lifeCycle.stopApplication(null);
      }
 
     public DeploymentException getDeploymentException()
