@@ -86,6 +86,12 @@
 			<artifactId>openwebbeans-jsf</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-web</artifactId>
+			<version>${project.version}</version>
+		</dependency>			
 				
 		<!-- MyFaces API -->
 		<dependency>
@@ -141,12 +147,6 @@
 			<scope>provided</scope>
 		</dependency>		
 
-        <!-- Validator API -->
-        <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                 <artifactId>geronimo-validation_1.0_spec</artifactId>
-         </dependency>
-	
 	</dependencies>
 
 </project>

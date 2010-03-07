@@ -36,7 +36,7 @@ public class Boot
         try
         {
             lifecycle = LifecycleFactory.getInstance().getLifecycle();
-            lifecycle.start(startupObject);
+            lifecycle.startApplication(startupObject);
             
         }catch(Exception e)
         {
@@ -48,8 +48,7 @@ public class Boot
     {
         try
         {
-            lifecycle = LifecycleFactory.getInstance().getLifecycle();
-            lifecycle.stop(endObject);
+            lifecycle.stopApplication(endObject);
             
         }catch(Exception e)
         {
