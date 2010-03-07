@@ -47,7 +47,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         servletContext = new MockServletContext();
         session = new MockHttpSession();
         lifecycle = LifecycleFactory.getInstance().getLifecycle();
-        lifecycle.start(servletContext);
+        lifecycle.startApplication(servletContext);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     {
         if (lifecycle != null) 
         {
-            lifecycle.stop(servletContext);
+            lifecycle.stopApplication(servletContext);
         }
     }
 
