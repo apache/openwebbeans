@@ -1122,7 +1122,20 @@ public final class WebBeansUtil
                 {
                     if (!isDefinedWithWebBeans)
                     {
-                        intData.setInterceptorInstance(newInstanceForced(clazz));
+                        // Check for a duplicate interceptor instance in this beans stack
+                        boolean usedExistingInstance = false;
+                        for (InterceptorData idata : stack) 
+                        { 
+                            if (idata.getInterceptorInstance().getClass().equals(clazz)) 
+                            { 
+                                intData.setInterceptorInstance(idata.getInterceptorInstance());
+                                usedExistingInstance = true;
+                            }
+                        }
+                        if (!usedExistingInstance) 
+                        { 
+                            intData.setInterceptorInstance(newInstanceForced(clazz));
+                        }
                     }
                 }
                 catch (WebBeansConfigurationException e1)
@@ -1221,6 +1234,7 @@ public final class WebBeansUtil
     public static <T> T newInstanceForced(Class<T> clazz) 
     throws WebBeansConfigurationException 
     {
+        // FIXME: This new instance should have JCDI injection performed
         Constructor<T> ct = ClassUtil.isContaintNoArgConstructor(clazz);
         if (ct == null)
         {
