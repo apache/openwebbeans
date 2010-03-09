@@ -16,8 +16,11 @@
  */
 package org.apache.webbeans.ejb.component;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.SessionBeanType;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
@@ -26,60 +29,25 @@ import org.apache.openejb.InterfaceType;
 import org.apache.openejb.assembler.classic.JndiBuilder;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
-import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.component.EnterpriseBeanMarker;
-import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 
 /**
  * Defines bean contract for the session beans.
  * 
  * @version $Rev$ $Date$
  */
-public class EjbBean<T> extends AbstractInjectionTargetBean<T> implements EnterpriseBeanMarker
+public class OpenEjbBean<T> extends BaseEjbBean<T>
 {
-    /**Session bean type*/
-    private SessionBeanType ejbType;
-    
     /**OpenEJB deployment info*/
     private DeploymentInfo deploymentInfo;    
-    
-    /**Current bean instance*/
-    private T instance = null;
-    
-    /**Injected reference local interface type*/
-    private Class<?> iface = null;
-    
-    /**Remove stateful bean instance*/
-    private boolean removeStatefulInstance = false;
     
     /**
      * Creates a new instance of the session bean.
      * @param ejbClassType ebj class type
      */
-    public EjbBean(Class<T> ejbClassType)
+    public OpenEjbBean(Class<T> ejbClassType)
     {
-        super(WebBeansType.ENTERPRISE,ejbClassType);
-
-        //Setting inherited meta data instance
-        setInheritedMetaData();
-    }
-
-    /**
-     * Sets local interface type.
-     * @param iface local interface type
-     */
-    public void setIface(Class<?> iface)
-    {
-        this.iface = iface;
-    }
-    
-    /**
-     * Sets remove flag.
-     * @param remove flag
-     */
-    public void setRemoveStatefulInstance(boolean remove)
-    {
-        this.removeStatefulInstance = remove;
+        super(ejbClassType);
     }
     
     /**
@@ -99,51 +67,13 @@ public class EjbBean<T> extends AbstractInjectionTargetBean<T> implements Enterp
     {
         return this.deploymentInfo;
     }
-    
-        
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void injectFields(T instance, CreationalContext<T> creationalContext)
-    {
-        //No-operations
-    }
-    
-    
-    
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.component.AbstractBean#isPassivationCapable()
-     */
-    @Override
-    public boolean isPassivationCapable()
-    {
-        if(this.ejbType.equals(SessionBeanType.STATEFUL))
-        {
-            return true;
-        }
-        
-        return false;
-    }
-
-    /**
-     * Inject session bean injected fields. It is called from
-     * interceptor.
-     * @param instance bean instance
-     * @param creationalContext creational context instance
-     */
-    @SuppressWarnings("unchecked")
-    public void injectFieldInInterceptor(Object instance, CreationalContext<?> creationalContext)
-    {
-        super.injectFields((T)instance, (CreationalContext<T>)creationalContext);
-    }
-
+            
     /**
      * {@inheritDoc}
      */
     @Override
     @SuppressWarnings("unchecked")
-    protected T createComponentInstance(CreationalContext<T> creationalContext)
+    protected T getInstance(CreationalContext<T> creationalContext)
     {
         if(this.instance == null)
         {
@@ -177,29 +107,6 @@ public class EjbBean<T> extends AbstractInjectionTargetBean<T> implements Enterp
         return instance;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void destroyComponentInstance(T instance, CreationalContext<T> creational)
-    {
-        if(removeStatefulInstance && getEjbType().equals(SessionBeanType.STATEFUL))
-        {
-            //Call remove method
-        }
-        
-        this.instance = null;
-    }
-    
-    /**
-     * Sets session bean type.
-     * @param type session bean type
-     */
-    public void setEjbType(SessionBeanType type)
-    {
-        this.ejbType = type;
-        
-    }
     
     /**
      * Gets ejb name.
@@ -209,14 +116,32 @@ public class EjbBean<T> extends AbstractInjectionTargetBean<T> implements Enterp
     {
         return this.deploymentInfo.getEjbName();
     }
-    
-    /**
-     * Gets ejb session type.
-     * @return type of the ejb
+
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.ejb.common.component.BaseEjbBean#getBusinessLocalInterfaces()
      */
-    public SessionBeanType getEjbType()
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Class<?>> getBusinessLocalInterfaces()
     {
-        return this.ejbType;
+        List<Class<?>> clazzes = new ArrayList<Class<?>>();        
+        List<Class> cl = this.deploymentInfo.getBusinessLocalInterfaces();
+        
+        if(cl != null && !cl.isEmpty())
+        {
+            for(Class<?> c : cl)
+            {
+                clazzes.add(c);
+            }
+        }
+        
+        return clazzes;
     }
 
+    @Override
+    public List<Method> getRemoveMethods()
+    {
+        return super.getRemoveMethods();
+    }
+    
 }

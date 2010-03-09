@@ -18,7 +18,7 @@ package org.apache.webbeans.ejb;
 
 import org.apache.openejb.OpenEJB;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.ejb.component.EjbBean;
+import org.apache.webbeans.ejb.component.OpenEjbBean;
 import org.apache.webbeans.plugins.PluginLoader;
 
 public abstract class EjbTestContext
@@ -59,9 +59,9 @@ public abstract class EjbTestContext
         }
     }
     
-    protected <T> EjbBean<T> defineEjbBean(Class<T> ejbClass)
+    protected <T> OpenEjbBean<T> defineEjbBean(Class<T> ejbClass)
     {
         EjbPlugin plugin = new EjbPlugin();
-       return (EjbBean<T>)plugin.defineSessionBean(ejbClass);
+       return (OpenEjbBean<T>)plugin.defineSessionBean(ejbClass);
     }
 }

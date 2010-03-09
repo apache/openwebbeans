@@ -17,7 +17,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.ejb.EjbTestContext;
-import org.apache.webbeans.ejb.component.EjbBean;
+import org.apache.webbeans.ejb.component.OpenEjbBean;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class SimpleBeanTest extends EjbTestContext
         
         Assert.assertTrue(value);
         
-        EjbBean<SimpleBean> bean = (EjbBean<SimpleBean>)plugin.defineSessionBean(SimpleBean.class);
+        OpenEjbBean<SimpleBean> bean = (OpenEjbBean<SimpleBean>)plugin.defineSessionBean(SimpleBean.class);
         Assert.assertNotNull(bean);
         
         

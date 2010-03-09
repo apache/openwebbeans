@@ -17,7 +17,7 @@
 package org.apache.webbeans.ejb.definition.validator;
 
 import org.apache.webbeans.ejb.EjbTestContext;
-import org.apache.webbeans.ejb.util.EjbValidator;
+import org.apache.webbeans.ejb.common.util.EjbValidator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.junit.Assert;
 import org.junit.Before;

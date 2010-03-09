@@ -27,9 +27,9 @@ import org.apache.openejb.core.stateful.StatefulContainer;
 import org.apache.openejb.core.stateless.StatelessContainer;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
-import org.apache.webbeans.ejb.component.EjbBean;
-import org.apache.webbeans.ejb.util.EjbDefinitionUtility;
-import org.apache.webbeans.ejb.util.EjbUtility;
+import org.apache.webbeans.ejb.common.util.EjbDefinitionUtility;
+import org.apache.webbeans.ejb.common.util.EjbUtility;
+import org.apache.webbeans.ejb.component.OpenEjbBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
@@ -87,7 +87,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
             throw new IllegalArgumentException("Illegal EJB type with class : " + clazz.getName());
         }
         
-        EjbBean<T> bean = new EjbBean<T>(clazz);
+        OpenEjbBean<T> bean = new OpenEjbBean<T>(clazz);
         bean.setDeploymentInfo(info);
         bean.setEjbType(type);
         
@@ -173,7 +173,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     @Override
     public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext)
     {
-        return EjbDefinitionUtility.defineEjbBeanProxy((EjbBean<?>)bean,iface, creationalContext);
+        return EjbDefinitionUtility.defineEjbBeanProxy((OpenEjbBean<?>)bean,iface, creationalContext);
     }
        
 }
