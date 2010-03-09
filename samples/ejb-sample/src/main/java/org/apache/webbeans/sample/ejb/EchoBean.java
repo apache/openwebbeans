@@ -17,7 +17,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.interceptor.Interceptors;
 
-import org.apache.webbeans.ejb.interceptor.OpenWebBeansEjbInterceptor;
+import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 
 @Stateless
 @Dependent
