@@ -351,14 +351,15 @@
     <modules>
         <module>webbeans-spi</module>
         <module>webbeans-impl</module>
+        <module>webbeans-ee-common</module>
+        <module>webbeans-web</module>
+        <module>webbeans-ejb</module>
+        <module>webbeans-ee</module>
         <module>webbeans-openejb</module>
         <module>webbeans-jms</module>
         <module>webbeans-jsf</module>
         <module>webbeans-resource</module>
         <module>webbeans-porting</module>
-        <module>webbeans-ee-common</module>
-        <module>webbeans-web</module>
-        <module>webbeans-ee</module>
         <module>samples</module>
         <module>atinject-tck</module>
         <!--<module>webbeans-tck</module>-->
