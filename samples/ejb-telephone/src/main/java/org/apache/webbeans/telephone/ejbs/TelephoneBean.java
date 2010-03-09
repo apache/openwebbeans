@@ -24,7 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.webbeans.ejb.interceptor.OpenWebBeansEjbInterceptor;
+import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 import org.apache.webbeans.telephone.entity.Record;
 
 @Stateless
