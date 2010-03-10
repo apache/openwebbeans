@@ -55,11 +55,15 @@ public class WebBeansFinder
 
     public static Object getSingletonInstance(String singletonName)
     {
+       return getSingletonInstance(singletonName, WebBeansUtil.getCurrentClassLoader());
+    }
+    
+    public static Object getSingletonInstance(String singletonName, ClassLoader cl)
+    {
         Object object = null;
 
         synchronized (singletonMap)
         {
-            ClassLoader classLoader = WebBeansUtil.getCurrentClassLoader();
             Map<ClassLoader, Object> managerMap = singletonMap.get(singletonName);
 
             if (managerMap == null)
@@ -67,7 +71,7 @@ public class WebBeansFinder
                 managerMap = new HashMap<ClassLoader, Object>();
                 singletonMap.put(singletonName, managerMap);
             }
-            object = managerMap.get(classLoader);
+            object = managerMap.get(cl);
             /* No singleton for this application, create one */
             if (object == null)
             {
@@ -79,7 +83,7 @@ public class WebBeansFinder
                 try
                 {
                     object = clazz.newInstance();
-                    managerMap.put(classLoader, object);
+                    managerMap.put(cl, object);
 
                 }
                 catch (InstantiationException e)

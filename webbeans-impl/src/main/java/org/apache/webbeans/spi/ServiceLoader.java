@@ -49,4 +49,23 @@ public class ServiceLoader
         }
         return (T) WebBeansFinder.getSingletonInstance(implName);
     }
+    
+    /**
+     * Get a new service singleton instance for the given interface.
+     * 
+     * @param serviceInterface
+     * @param classloader to be used for lookup
+     * @return the new service implementation
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getService(Class<T> serviceInterface, ClassLoader cl)
+    {
+        String implName = OpenWebBeansConfiguration.getInstance().getProperty(serviceInterface.getName());
+        if (implName == null)
+        {
+            logger.warn("Unable to find service with class name : " + serviceInterface.getName());
+            return null;
+        }
+        return (T) WebBeansFinder.getSingletonInstance(implName, cl);
+    }
 }
