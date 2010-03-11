@@ -92,9 +92,16 @@ public class StandaloneContainersImpl implements StandaloneContainers
     {
         try
         {
-            TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(ScannerService.class);
+            final TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(ScannerService.class);
             
-            this.lifeCycle = new StandaloneLifeCycle();
+            //Lifecycle container
+            this.lifeCycle = new StandaloneLifeCycle()
+            {
+                protected void afterInitApplication(Properties event)
+                {
+                    this.scannerService = discovery;
+                }            
+            };
             
             Iterator<Class<?>> it = classes.iterator();
             while(it.hasNext())
