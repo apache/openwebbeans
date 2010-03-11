@@ -26,16 +26,14 @@
             <exclude name="integration"></exclude>
          </run>
       </groups>
+   
      <classes>
          
-         <!-- Issues in Weld (the RI
-                  
-         <class name="org.jboss.jsr299.tck.interceptors.tests.definition.DefinitionTest">
+         <class name="org.jboss.jsr299.tck.tests.lookup.circular.CircularDependencyTest">
             <methods>
-               <exclude name="testInterceptorMethodDefinedOnTargetClass" />
+               <exclude name="testCircularInjectionOnTwoNormalBeans"/>
             </methods>
          </class>
-         -->
                            
       </classes>       
  
