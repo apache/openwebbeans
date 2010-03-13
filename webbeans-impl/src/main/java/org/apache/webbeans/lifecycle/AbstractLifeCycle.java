@@ -32,6 +32,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.JNDIService;
@@ -151,10 +152,13 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             
             //Clear singleton list
             WebBeansFinder.clearInstances();
-            
+
+            //Delte proxies
+            JavassistProxyFactory.clear();
+
             //After Stop
             afterStopApplication(endObject);
-            
+                        
         }
         catch (Exception e)
         {

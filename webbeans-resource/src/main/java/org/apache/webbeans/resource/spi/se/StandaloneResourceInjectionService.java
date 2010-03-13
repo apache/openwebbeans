@@ -51,8 +51,9 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
 
         if(resourceReference.supports(WebServiceRef.class))
         {         
-            //Currently not supported in SE
-            return null;
+            WebServiceRef resource = resourceReference.getAnnotation(WebServiceRef.class);
+            return processor.getWebServiceResource(resource, resourceReference.getResourceType());
+
         }
                 
         if(resourceReference.supports(PersistenceContext.class))

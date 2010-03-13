@@ -59,6 +59,11 @@
 			<optional>true</optional>
                 </dependency>
 
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-spi</artifactId>
+			<version>${project.version}</version>
+		</dependency>	
 
 
 	</dependencies>

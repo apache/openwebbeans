@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.plugins;
 
-import javax.enterprise.inject.spi.Bean;
-
 import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.spi.ValidatorService;
 
@@ -47,32 +45,5 @@ public interface OpenWebBeansJavaEEPlugin extends OpenWebBeansWebPlugin
      * implementation.
      * @return validator service
      */
-    public ValidatorService getValidatorService(); 
-    
-    /**
-     * OpenWebBeans provides default implementation
-     * of validator bean that uses valdiator service.
-     * Application servers directly instantiate this bean
-     * instead of implementing custom validator bean.
-     * @return validator bean
-     */
-    public Bean<?> getValidatorBean();
-
-    /**
-     * OpenWebBeans provides default implementation
-     * of validator factory bean that uses valdiator service.
-     * Application servers directly instantiate this bean
-     * instead of implementing custom validator factory bean.
-     * @return validator factory bean
-     */    
-    public Bean<?> getValidatorFactoryBean();
-    
-    /**
-     * OpenWebBeans provides default implementation
-     * of user transaction bean that uses transaction service.
-     * Application servers directly instantiate this bean
-     * instead of implementing custom user transaction bean.
-     * @return user transaction bean
-     */    
-    public Bean<?> getUserTransactionBean();
+    public ValidatorService getValidatorService();     
 }

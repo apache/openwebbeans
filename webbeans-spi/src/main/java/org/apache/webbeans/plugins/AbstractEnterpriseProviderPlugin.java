@@ -18,22 +18,12 @@
  */
 package org.apache.webbeans.plugins;
 
-import javax.enterprise.inject.spi.Bean;
-
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.spi.ValidatorService;
 
 public abstract class AbstractEnterpriseProviderPlugin extends AbstractOwbPlugin implements OpenWebBeansJavaEEPlugin
 {
-
-    @Override
-    public Bean<?> getPrincipalBean()
-    {
-        
-        return null;
-    }
-
     @Override
     public SecurityService getSecurityService()
     {
@@ -47,28 +37,6 @@ public abstract class AbstractEnterpriseProviderPlugin extends AbstractOwbPlugin
         
         return null;
     }
-
-    @Override
-    public Bean<?> getUserTransactionBean()
-    {
-        
-        return null;
-    }
-
-    @Override
-    public Bean<?> getValidatorBean()
-    {
-        
-        return null;
-    }
-
-    @Override
-    public Bean<?> getValidatorFactoryBean()
-    {
-        
-        return null;
-    }
-
     @Override
     public ValidatorService getValidatorService()
     {

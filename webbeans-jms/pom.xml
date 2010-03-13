@@ -28,21 +28,43 @@
 	<packaging>jar</packaging>
 	<description>OpenWebBeans JMS Integration</description>
 	<dependencies>
+		
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-impl</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.5</version>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
     		<groupId>org.apache.geronimo.specs</groupId>
     		<artifactId>geronimo-jms_1.1_spec</artifactId>
     		<version>1.1.1</version>
     		<optional>true</optional>
 		</dependency>		
+		
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
+		<dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                <optional>true</optional>
+        </dependency>
+		
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-spi</artifactId>
+			<optional>true</optional>
+		</dependency>		
+		
 	</dependencies>
 </project>

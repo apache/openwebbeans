@@ -51,10 +51,12 @@
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-api</artifactId>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-impl</artifactId>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-resource</artifactId>
@@ -87,15 +89,28 @@
         </dependency>
 
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
         	<groupId>org.apache.openwebbeans</groupId>
         	<artifactId>openwebbeans-ejb</artifactId>
         	<version>${project.version}</version>
         </dependency>
+
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                <optional>true</optional>
+        </dependency>
+
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-spi</artifactId>
+			<optional>true</optional>
+		</dependency>		
 
 
     </dependencies>
@@ -258,8 +273,7 @@
 									<version>0.4</version>
 									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
 								</artifactItem>
-							
-							
+														
 								<!-- xml-apis -->
 								<artifactItem>
 									<groupId>xml-apis</groupId>
@@ -269,16 +283,6 @@
 									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
 								</artifactItem>
 							
-								<!-- log4j -->
-								<artifactItem>
-									<groupId>log4j</groupId>
-									<artifactId>log4j</artifactId>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
-								</artifactItem>
-							
-							
-                                                                                                                                
                             </artifactItems>
                         </configuration>
                     </execution>

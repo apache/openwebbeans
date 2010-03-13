@@ -30,6 +30,16 @@
 
 	<build>
 		<finalName>guess</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>maven-jetty-plugin</artifactId>
+				<version>6.1.18</version>
+				<configuration>
+					<scanIntervalSeconds>10</scanIntervalSeconds>
+				</configuration>
+			</plugin>
+		</plugins>		
 	</build>
         
 	<dependencies>
@@ -45,7 +55,7 @@
 		<dependency>
 			<groupId>org.apache.myfaces.core</groupId>
 			<artifactId>myfaces-api</artifactId>
-			<scope>provided</scope>
+			<version>1.2.8</version>
 		</dependency>
 						
 		<!-- JSF Plugin -->
@@ -62,62 +72,50 @@
 			<scope>provided</scope>
 		</dependency>
 
-
-         <!-- OWB implementation per application -->
+         <!-- JSR-299 implementation per application -->
          <dependency>
                  <groupId>org.apache.openwebbeans</groupId>
                  <artifactId>openwebbeans-impl</artifactId>
-                 <version>${project.version}</version>
          </dependency>
+         
+         <!-- Web Plugin -->
          <dependency>
          	<groupId>org.apache.openwebbeans</groupId>
          	<artifactId>openwebbeans-web</artifactId>
          	<version>${project.version}</version>
          </dependency>
+		
+		<!-- JSR-299 API -->
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
+		</dependency>
+		
+		<!-- JSR-330 API -->
+		<dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-atinject_1.0_spec</artifactId>
+        </dependency>
+        
+        <!-- SPI API -->
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-spi</artifactId>
+		</dependency>		
+
+		<!-- Interceptor API -->	
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-interceptor_1.1_spec</artifactId>
+		</dependency>
+
+		<!-- MyFaces IMPL -->
+		<dependency>
+			<groupId>org.apache.myfaces.core</groupId>
+			<artifactId>myfaces-impl</artifactId>
+			<version>1.2.8</version>
+		</dependency>
 
 				
 	</dependencies>
-
-	<profiles>
-				
-		<profile>
-			<id>jetty</id>
-			<dependencies>				
-       
-				<!-- MyFaces API -->
-				<dependency>
-					<groupId>org.apache.myfaces.core</groupId>
-					<artifactId>myfaces-api</artifactId>
-					<version>1.2.8</version>
-				</dependency>
-				
-				<!-- MyFaces IMPL -->
-				<dependency>
-					<groupId>org.apache.myfaces.core</groupId>
-					<artifactId>myfaces-impl</artifactId>
-					<version>1.2.8</version>
-				</dependency>
-				
-				<!-- Interceptor API -->	
-				<dependency>
-					<groupId>org.apache.geronimo.specs</groupId>
-					<artifactId>geronimo-interceptor_1.1_spec</artifactId>
-				</dependency>
-
-			</dependencies>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.mortbay.jetty</groupId>
-						<artifactId>maven-jetty-plugin</artifactId>
-						<version>6.1.18</version>
-						<configuration>
-							<scanIntervalSeconds>10</scanIntervalSeconds>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>		
-	</profiles>
 </project>

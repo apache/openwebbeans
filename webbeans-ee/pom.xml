@@ -24,9 +24,9 @@
     </parent>
 
     <artifactId>openwebbeans-ee</artifactId>
-    <name>Apache OpenWebBeans :: Java EE Full Integration</name>
+    <name>Apache OpenWebBeans :: Java EE Utility</name>
     <packaging>jar</packaging>
-    <description>OpenWebBeans Java EE Full Integration</description>
+    <description>OpenWebBeans Java EE Utility</description>
 
     <dependencies>
 
@@ -52,30 +52,53 @@
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
             <optional>true</optional>
         </dependency>
+        
         <dependency>
         	<groupId>org.apache.geronimo.specs</groupId>
         	<artifactId>geronimo-jcdi_1.0_spec</artifactId>
         	<optional>true</optional>
         </dependency>
+        
         <dependency>
         	<groupId>org.apache.geronimo.specs</groupId>
         	<artifactId>geronimo-jta_1.1_spec</artifactId>
         	<optional>true</optional>
         </dependency>
+        
         <dependency>
         	<groupId>org.apache.geronimo.specs</groupId>
         	<artifactId>geronimo-validation_1.0_spec</artifactId>
         	<optional>true</optional>
         </dependency>
+        
         <dependency>
         	<groupId>org.apache.openwebbeans</groupId>
         	<artifactId>openwebbeans-impl</artifactId>
         </dependency>
+        
         <dependency>
         	<groupId>org.apache.openwebbeans</groupId>
         	<artifactId>openwebbeans-ee-common</artifactId>
         	<version>${project.version}</version>
         </dependency>
-      
+        
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
+		<dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                <optional>true</optional>
+        </dependency>
+        
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-spi</artifactId>
+			<optional>true</optional>
+		</dependency>		
+              
     </dependencies>
 </project>

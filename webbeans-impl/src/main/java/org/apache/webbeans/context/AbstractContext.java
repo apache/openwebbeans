@@ -238,7 +238,9 @@ public abstract class AbstractContext implements WebBeansContext
         }
         
         //Clear cache
-        componentInstanceMap.clear();
+        this.componentInstanceMap.clear();
+        this.creationalContextMap.clear();
+        
     }
 
     /**

@@ -68,17 +68,27 @@
 			</exclusions>
 		</dependency>		
 		
+		<!-- JSR-299 API -->
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
+		
+		<!-- JSR-330 API -->
         <dependency>
              <groupId>org.apache.geronimo.specs</groupId>
              <artifactId>geronimo-atinject_1.0_spec</artifactId>
              <scope>provided</scope>
         </dependency>
+        
+        <!-- SPI API -->
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-spi</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>		        
 		
 		<!-- JSF Plugin -->
 		<dependency>
@@ -87,6 +97,7 @@
 			<version>${project.version}</version>
 		</dependency>
 		
+		<!-- Web Plugin -->
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-web</artifactId>
@@ -125,22 +136,22 @@
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-ejb</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		
 		<!-- Resource  PLugin-->	
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-resource</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		
+		<!-- Interceptor API -->
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-interceptor_1.1_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
+		
+		<!-- JPA API -->
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jpa_2.0_spec</artifactId>

@@ -24,6 +24,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+import javax.xml.ws.WebServiceRef;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -81,6 +82,26 @@ public class StandaloneResourceProcessor
     }
     
     public <X> X getResource(Resource resource, Class<X> resourceType)
+    {
+        Object obj = null;
+        try
+        {
+            obj = context.lookup("java:/comp/env/"+ resource.name()); 
+            if (obj == null) 
+            {
+                logger.info("Could not find @Resource with name " + resource.name());
+            }
+
+        }
+        catch(Exception e)
+        {
+            logger.error(OWBLogConst.ERROR_0001, new Object[] {resource.toString()});
+        }   
+        
+        return resourceType.cast(obj);
+    }    
+
+    public <X> X getWebServiceResource(WebServiceRef resource, Class<X> resourceType)
     {
         Object obj = null;
         try

@@ -53,7 +53,21 @@ public final class JavassistProxyFactory
     private static Map<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     
     private static Map<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
-
+    
+    private static Map<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    
+    public static  Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
+    {
+        return interceptorProxyClasses;
+    }
+    
+    public static void clear()
+    {
+        normalScopedBeanProxyClasses.clear();
+        dependentScopedBeanProxyClasses.clear();
+        interceptorProxyClasses.clear();
+    }
+    
     public static Object createNormalScopedBeanProxy(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         Object result = null;

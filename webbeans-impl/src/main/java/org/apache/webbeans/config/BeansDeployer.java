@@ -64,6 +64,7 @@ import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
@@ -200,40 +201,32 @@ public class BeansDeployer
         
         if(beanEeProvider != null)
         {
-            if(beanEeProvider.getValidatorBean() != null)
-            {
-                //Register Validator Bean
-                beanManager.addBean(beanEeProvider.getValidatorBean());                
-            }
-            
-            if(beanEeProvider.getValidatorFactoryBean() != null)
-            {
-                //Register ValidatorFactory Bean
-                beanManager.addBean(beanEeProvider.getValidatorFactoryBean());                
-            }
-            
-            if(beanEeProvider.getPrincipalBean() != null)
-            {
-                //Register Principal Bean
-                beanManager.addBean(beanEeProvider.getPrincipalBean());                
-            }
-            
-            if(beanEeProvider.getUserTransactionBean() != null)
-            {
-                //User Transaction Bean
-                beanManager.addBean(beanEeProvider.getUserTransactionBean());                
-            }
-        }       
+            addDefaultBean(beanManager, "org.apache.webbeans.ee.common.beans.PrinicipalBean");
+            addDefaultBean(beanManager, "org.apache.webbeans.ee.beans.ValidatorBean");
+            addDefaultBean(beanManager, "org.apache.webbeans.ee.beans.ValidatorFactoryBean");
+            addDefaultBean(beanManager, "org.apache.webbeans.ee.beans.UserTransactionBean");
+        }
         else if(beanWebProvider != null)
         {
-            if(beanWebProvider.getPrincipalBean() != null)
-            {
-                //Register Principal Bean
-                beanManager.addBean(beanWebProvider.getPrincipalBean());                
-            }
-            
+            addDefaultBean(beanManager, "org.apache.webbeans.ee.common.beans.PrinicipalBean");
         }
             
+    }
+    
+    private void addDefaultBean(BeanManagerImpl manager,String className)
+    {
+        Bean<?> bean = null;
+        
+        Class<?> beanClass = ClassUtil.getClassFromName(className);
+        if(beanClass != null)
+        {
+            bean  = (Bean)ClassUtil.newInstance(beanClass);
+        }
+        
+        if(bean != null)
+        {
+            manager.addBean(bean);
+        }
     }
     
     /**

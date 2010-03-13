@@ -13,7 +13,6 @@
  */
 package org.apache.webbeans.plugins;
 
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 /**
  * <p>Interface which all OpenWebBeans plugins has to implement to 
@@ -38,7 +37,7 @@ public interface OpenWebBeansPlugin
      * This is called once after the very plugin has been loaded.
      * @throws WebBeansConfigurationException
      */
-    public void startUp() throws WebBeansConfigurationException;
+    public void startUp() throws Exception;
 
     /**
      * At shutdown, the plugin must release all locked resources.
@@ -46,7 +45,7 @@ public interface OpenWebBeansPlugin
      * This is usually the case when the WebApplication gets stopped.
      * @throws WebBeansConfigurationException
      */
-    public void shutDown() throws WebBeansConfigurationException;
+    public void shutDown() throws Exception;
     
 
     /**
@@ -55,5 +54,5 @@ public interface OpenWebBeansPlugin
      * @param clazz the class to check
      * @throws WebBeansConfigurationException if the given clazz cannot be used as simple web bean.
      */
-    public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException;
+    public void isManagedBean(Class<?> clazz) throws Exception;
 }

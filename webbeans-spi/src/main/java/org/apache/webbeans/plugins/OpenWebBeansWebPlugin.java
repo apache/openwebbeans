@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.plugins;
 
-import javax.enterprise.inject.spi.Bean;
-
 import org.apache.webbeans.spi.SecurityService;
 
 /**
@@ -37,18 +35,5 @@ public interface OpenWebBeansWebPlugin extends OpenWebBeansPlugin
      * Gets web container security service implementation.
      * @return security service
      */
-    public SecurityService getSecurityService();
-    
-    /**
-     * Gets web container implemented prinicipal 
-     * bean. 
-     * <p>
-     * There is an default implementation
-     * of prinicipal bean, in the openwebbeans-ee-common.
-     * Generally, web containers instantiates this bean and returns
-     * it.
-     * </p>
-     * @return prinicipal bean
-     */
-    public Bean<?> getPrincipalBean();    
+    public SecurityService getSecurityService();    
 }

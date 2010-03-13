@@ -343,7 +343,14 @@ public final class WebBeansUtil
         List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
         for (OpenWebBeansPlugin plugin : plugins)
         {
-            plugin.isManagedBean(clazz);
+            try
+            {
+                plugin.isManagedBean(clazz);
+            }
+            catch (Exception e)
+            {
+                PluginLoader.throwsException(e);
+            }
         }
     }
 

@@ -30,57 +30,81 @@
 
 	<dependencies>
 
+		<!-- JSR-299 Impl -->
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-impl</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		
+		<!-- Interceptor API -->
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-interceptor_1.1_spec</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 				
+		<!-- JSF Plugin -->
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-jsf</artifactId>
 			<version>${project.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 		
+		<!-- Web Plugin -->
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>			
 		
+		<!-- JSR250 API -->
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>jsr250-api</artifactId>
 			<version>1.0</version>
 		</dependency>
-
+		
+		<!-- JSF API -->
 		<dependency>
 			<groupId>com.sun.faces</groupId>
 			<artifactId>jsf-api</artifactId>
 			<version>2.0.0-b13</version>
 		</dependency>
 
+		<!-- JSF Impl -->
 		<dependency>
 			<groupId>com.sun.faces</groupId>
 			<artifactId>jsf-impl</artifactId>
 			<version>2.0.0-b13</version>
-			<scope>runtime</scope>
 		</dependency>
-
+		
+		<!-- JSTL -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
-			<scope>runtime</scope>
 		</dependency>
-
+		
+		<!-- JSR 299 API -->
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
+		</dependency>
+		
+		<!-- JSR 330 API -->
+		<dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-atinject_1.0_spec</artifactId>
+        </dependency>
+        
+        <!-- SPI API -->
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-spi</artifactId>
+			<version>${project.version}</version>
+		</dependency>		
+				
+		<!-- EL Impl -->
 		<dependency>
 			<groupId>org.glassfish.web</groupId>
 			<artifactId>el-impl</artifactId>
@@ -93,13 +117,6 @@
 				</exclusion>
 			</exclusions>			
 		</dependency>
-
-                 <!-- Validator API -->
-                 <dependency>
-                         <groupId>org.apache.geronimo.specs</groupId>
-                          <artifactId>geronimo-validation_1.0_spec</artifactId>
-                  </dependency>
-
 		
 	</dependencies>
 	

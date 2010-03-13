@@ -47,6 +47,7 @@ import javax.inject.Provider;
 
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.logger.WebBeansLogger;
 
 /**
  * Utility classes with respect to the class operations.
@@ -64,6 +65,8 @@ public final class ClassUtil
     public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP = new HashMap<Class<?>, Class<?>>();
 
     public static final String WEBBEANS_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+    
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ClassUtil.class);
 
     static
     { 
@@ -152,6 +155,24 @@ public final class ClassUtil
 
         return true;
 
+    }
+    
+    public static Object newInstance(Class<?> clazz)
+    {
+        try
+        {
+            return clazz.newInstance();
+        }
+        catch (InstantiationException e)
+        {
+            logger.error(e);
+        }
+        catch (IllegalAccessException e)
+        {
+            logger.error(e);
+        }
+        
+        return null;
     }
 
     public static Class<?> getClassFromName(String name)

@@ -22,8 +22,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
@@ -150,9 +148,6 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     
     protected OwbBean<?> bean = null;
 
-    // TODO this proxy cache should get moved to JavassistProxyFactory
-    private static Map<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
-
     protected InterceptorHandler(OwbBean<?> bean)
     {
         this.bean = bean;
@@ -175,13 +170,12 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
 
                     if (injectionTarget.getDecoratorStack().size() > 0)
                     {
-                        // TODO move this part into JavassistProxyFactory
-                        Class<?> proxyClass = interceptorProxyClasses.get(bean);
+                        Class<?> proxyClass = JavassistProxyFactory.getInterceptorProxyClasses().get(bean);
                         if (proxyClass == null)
                         {
                             ProxyFactory delegateFactory = JavassistProxyFactory.createProxyFactory(bean);
                             proxyClass = JavassistProxyFactory.getProxyClass(delegateFactory);
-                            interceptorProxyClasses.put(bean, proxyClass);
+                            JavassistProxyFactory.getInterceptorProxyClasses().put(bean, proxyClass);
                         }
                         Object delegate = proxyClass.newInstance();
                         delegateHandler = new DelegateHandler();

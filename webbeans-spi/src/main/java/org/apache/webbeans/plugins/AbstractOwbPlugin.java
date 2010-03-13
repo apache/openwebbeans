@@ -16,7 +16,6 @@
  */
 package org.apache.webbeans.plugins;
 
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 
 /**
  * Abstract imlpementation of the {@link OpenWebBeansPlugin} interface
@@ -36,17 +35,17 @@ public abstract class AbstractOwbPlugin implements OpenWebBeansPlugin
     }
 
     /** @{inheritDoc} */
-    public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
+    public void isManagedBean(Class<?> clazz) throws Exception
     {
     }
 
     /** @{inheritDoc} */
-    public void shutDown() throws WebBeansConfigurationException
+    public void shutDown() throws Exception
     {
     }
 
     /** @{inheritDoc} */
-    public void startUp() throws WebBeansConfigurationException
+    public void startUp() throws Exception
     {
     }
 

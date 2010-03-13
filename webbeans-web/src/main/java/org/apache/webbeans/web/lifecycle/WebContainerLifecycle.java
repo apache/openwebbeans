@@ -125,7 +125,17 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
      */
     protected void afterStopApplication(Object stopObject) throws Exception
     {                
-        ServletContext servletContext = getServletContext(stopObject);
+        ServletContext servletContext = null;
+        
+        if(stopObject instanceof ServletContext)
+        {
+            servletContext = (ServletContext)stopObject;
+        }
+        else
+        {
+            servletContext = getServletContext(stopObject);
+        }
+        
         logger.info(OWBLogConst.INFO_0003, new Object[]{servletContext != null ? servletContext.getContextPath() : null});
     }
     

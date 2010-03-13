@@ -24,9 +24,9 @@
     </parent>
 
     <artifactId>openwebbeans-web</artifactId>
-    <name>Apache OpenWebBeans :: Java EE Web Integration</name>
+    <name>Apache OpenWebBeans :: Java EE Web Utility</name>
     <packaging>jar</packaging>
-    <description>OpenWebBeans Java EE Web Integration</description>
+    <description>OpenWebBeans Java EE Web Utility</description>
 
     <dependencies>
 
@@ -64,6 +64,23 @@
 		    <artifactId>geronimo-jsp_2.1_spec</artifactId>
 		    <optional>true</optional>
 		</dependency>
+        
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                <optional>true</optional>
+        </dependency>
+		
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-spi</artifactId>
+			<optional>true</optional>
+		</dependency>		
         
       
     </dependencies>

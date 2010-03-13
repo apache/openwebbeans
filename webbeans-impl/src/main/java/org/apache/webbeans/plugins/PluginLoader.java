@@ -79,7 +79,14 @@ public class PluginLoader
             {
               OpenWebBeansPlugin plugin = pluginIter.next();
               logger.info(OWBLogConst.INFO_0013, new Object[]{plugin.getClass().getSimpleName()});
-              plugin.startUp();
+              try
+            {
+                plugin.startUp();
+            }
+            catch (Exception e)
+            {
+                throwsException(e);
+            }
               ps.add(plugin);
             }   
             
@@ -89,6 +96,18 @@ public class PluginLoader
         else
         {
             logger.debug("PluginLoader is already started.");
+        }
+    }
+    
+    public static void throwsException(Exception e) throws WebBeansConfigurationException
+    {
+        if(e instanceof WebBeansConfigurationException)
+        {
+            throw (WebBeansConfigurationException)e;
+        }
+        else
+        {
+            throw new WebBeansConfigurationException(e);
         }
     }
     
