@@ -43,7 +43,6 @@ public class OpenWebBeansConfiguration
     /**Default configuration files*/
     private final static String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-default.properties";
     private final static String CONFIG_EE_COMMON_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-ee-common.properties";
-    private final static String CONFIG_EE_FULL_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-ee-full.properties";
     private final static String CONFIG_EE_WEB_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-ee-web.properties";
     private final static String CONFIG_JMS_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-jms.properties";
     private final static String CONFIG_JSF_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-jsf.properties";
@@ -203,9 +202,6 @@ public class OpenWebBeansConfiguration
         is = loader.getResourceAsStream(CONFIG_EE_WEB_PROPERTIES_NAME);
         load(is, newConfigProperties);
 
-        is = loader.getResourceAsStream(CONFIG_EE_FULL_PROPERTIES_NAME);
-        load(is, newConfigProperties);
-        
         // and now overload those settings with the ones from the more specialized version (if available)
         
         URL configUrl = loader.getResource(CONFIG_PROPERTIES_NAME);

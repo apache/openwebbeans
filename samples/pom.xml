@@ -35,6 +35,7 @@ under the License.
            <module>ejb-telephone</module>
            <module>jms-sample</module>
            <module>reservation</module>
+           <module>tomcat-sample</module>
            <module>standalone-sample</module>
         </modules>
 </project>

@@ -21,7 +21,7 @@ import javax.enterprise.inject.spi.Bean;
  * 
  * @version $Rev$ $Date$
  */
-public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
+public interface OpenWebBeansEjbPlugin extends OpenWebBeansJavaEEPlugin
 {
     /**
      * Returns true if class is an session bean class false otherwise

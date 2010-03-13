@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.plugins;
 
-import org.apache.webbeans.spi.SecurityService;
-
 /**
  * OpenWebBeans plugin point for Web Containers.
  * Currently there is no default implementation
@@ -31,9 +29,5 @@ import org.apache.webbeans.spi.SecurityService;
  */
 public interface OpenWebBeansWebPlugin extends OpenWebBeansPlugin
 {
-    /**
-     * Gets web container security service implementation.
-     * @return security service
-     */
-    public SecurityService getSecurityService();    
+    
 }

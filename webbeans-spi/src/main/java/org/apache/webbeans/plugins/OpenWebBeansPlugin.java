@@ -55,4 +55,20 @@ public interface OpenWebBeansPlugin
      * @throws WebBeansConfigurationException if the given clazz cannot be used as simple web bean.
      */
     public void isManagedBean(Class<?> clazz) throws Exception;
+    
+    /**
+     * Returns true if plugin provides given service implementation
+     * false otherwise.
+     * @param serviceClass any service class
+     * @return true if plugin provides given service implementation
+     */
+    public boolean supportService(Class<?> serviceClass);
+    
+    /**
+     * Gets service instance.
+     * @param <T> type
+     * @param serviceClass service class
+     * @return service
+     */
+    public <T> T getSupportedService(Class<T> serviceClass);
 }

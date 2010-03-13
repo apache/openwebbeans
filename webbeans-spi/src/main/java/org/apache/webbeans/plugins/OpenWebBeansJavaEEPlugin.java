@@ -18,9 +18,6 @@
  */
 package org.apache.webbeans.plugins;
 
-import org.apache.webbeans.spi.TransactionService;
-import org.apache.webbeans.spi.ValidatorService;
-
 /**
  * In fully Java EE environments, it will be implemented
  * by the application servers.
@@ -33,17 +30,4 @@ import org.apache.webbeans.spi.ValidatorService;
  */
 public interface OpenWebBeansJavaEEPlugin extends OpenWebBeansWebPlugin
 {        
-    /**
-     * Gets application server transaction
-     * service implementation.
-     * @return transaction service
-     */
-    public TransactionService getTransactionService();
-    
-    /**
-     * Gets application server validator service
-     * implementation.
-     * @return validator service
-     */
-    public ValidatorService getValidatorService();     
 }

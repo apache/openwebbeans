@@ -23,7 +23,6 @@ import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.InterceptorsManager;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansNameSpaceContainer;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
@@ -75,13 +74,11 @@ public class WebBeansFinder
             /* No singleton for this application, create one */
             if (object == null)
             {
-                Class<?> clazz = ClassUtil.getClassFromName(singletonName);
-                if (clazz == null)
-                {
-                    throw new WebBeansException("Cannot find class : " + singletonName);
-                }
                 try
                 {
+
+                    Class<?> clazz = cl.loadClass(singletonName);
+                    
                     object = clazz.newInstance();
                     managerMap.put(cl, object);
 
@@ -94,6 +91,9 @@ public class WebBeansFinder
                 {
                     throw new WebBeansException("Illegal access exception in creating instance with class : " + singletonName, e);
                 }
+                catch (ClassNotFoundException e)
+                {
+                    throw new WebBeansException("Class not found exception in creating instance with class : " + singletonName, e);                }
             }
         }
 

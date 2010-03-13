@@ -48,5 +48,21 @@ public abstract class AbstractOwbPlugin implements OpenWebBeansPlugin
     public void startUp() throws Exception
     {
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public boolean supportService(Class<?> serviceClass)
+    {
+        return false;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public <T> T getSupportedService(Class<T> serviceClass)
+    {
+        return null;
+    }
 
 }

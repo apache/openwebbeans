@@ -13,9 +13,13 @@
  */
 package org.apache.webbeans.spi;
 
+import java.util.List;
+
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.plugins.OpenWebBeansPlugin;
+import org.apache.webbeans.plugins.PluginLoader;
 
 /**
  * Loads any Service Provider Interface implementation declared in the 
@@ -42,8 +46,22 @@ public class ServiceLoader
     public static <T> T getService(Class<T> serviceInterface)
     {
         String implName = OpenWebBeansConfiguration.getInstance().getProperty(serviceInterface.getName());
+        
         if (implName == null)
         {
+            //Look for plugins
+            List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+            if(plugins != null && plugins.size() > 0)
+            {
+                for(OpenWebBeansPlugin plugin : plugins)
+                {
+                    if(plugin.supportService(serviceInterface))
+                    {
+                        return plugin.getSupportedService(serviceInterface);
+                    }
+                }
+            }
+            
             logger.warn("Unable to find service with class name : " + serviceInterface.getName());
             return null;
         }
@@ -63,6 +81,19 @@ public class ServiceLoader
         String implName = OpenWebBeansConfiguration.getInstance().getProperty(serviceInterface.getName());
         if (implName == null)
         {
+            //Look for plugins
+            List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+            if(plugins != null && plugins.size() > 0)
+            {
+                for(OpenWebBeansPlugin plugin : plugins)
+                {
+                    if(plugin.supportService(serviceInterface))
+                    {
+                        return plugin.getSupportedService(serviceInterface);
+                    }
+                }
+            }            
+            
             logger.warn("Unable to find service with class name : " + serviceInterface.getName());
             return null;
         }
