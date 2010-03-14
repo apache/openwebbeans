@@ -2994,4 +2994,14 @@ public final class WebBeansUtil
         return false;
     }
     
+    public static void throwRuntimeExceptions(Exception e)
+    {
+        if(RuntimeException.class.isAssignableFrom(e.getClass()))
+        {
+            throw (RuntimeException)e;
+        }
+        
+        throw new RuntimeException(e);
+    }
+    
 }

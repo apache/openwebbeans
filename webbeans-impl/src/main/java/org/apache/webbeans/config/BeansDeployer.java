@@ -158,21 +158,10 @@ public class BeansDeployer
             }
 
         }
-        catch (WebBeansConfigurationException e)
-        {
-            logger.error(e);
-            throw e;
-        }
         catch(Exception e)
         {
             logger.error(e);
-            
-            if(e instanceof WebBeansDeploymentException)
-            {
-                throw  (WebBeansDeploymentException)e;
-            }
-            
-            throw new WebBeansDeploymentException(e);
+            WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
     
