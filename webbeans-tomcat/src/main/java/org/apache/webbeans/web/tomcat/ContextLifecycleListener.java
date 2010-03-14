@@ -17,6 +17,7 @@
  */
 package org.apache.webbeans.web.tomcat;
 
+import org.apache.AnnotationProcessor;
 import org.apache.catalina.Container;
 import org.apache.catalina.ContainerEvent;
 import org.apache.catalina.ContainerListener;
@@ -94,7 +95,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                         }                        
                         
                         context.addApplicationListener(TomcatSecurityListener.class.getName());
-                        context.addInstanceListener(TomcatInstanceListener.class.getName());                        
+                        //context.addInstanceListener(TomcatInstanceListener.class.getName());             
                     }
                 }
             }                        
@@ -142,6 +143,9 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                     
                     if(listener.getClass().getName().equals("org.apache.webbeans.servlet.WebBeansConfigurationListener"))
                     {   
+                        AnnotationProcessor processor = context.getAnnotationProcessor();
+                        context.setAnnotationProcessor(new TomcatAnnotProcessor(context.getLoader().getClassLoader(),processor));
+                        
                         ContextAccessController.setReadOnly(context.getNamingContextListener().getName());
                         
                         URL url = context.getServletContext().getResource("/WEB-INF/beans.xml");
