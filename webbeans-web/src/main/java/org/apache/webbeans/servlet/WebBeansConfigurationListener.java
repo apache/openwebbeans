@@ -30,6 +30,7 @@ import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.lifecycle.LifecycleFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContainerLifecycle;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Initializing the beans container for using in an web application
@@ -67,6 +68,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         catch (Exception e)
         {
              logger.error("Error is occured while starting application context path : " + event.getServletContext().getContextPath());
+             WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
     
@@ -121,7 +123,8 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
         catch (Exception e)
         {
-            logger.error("Error is occured while starting request : " + event.getServletRequest());        
+            logger.error("Error is occured while starting request : " + event.getServletRequest());
+            WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
 
@@ -138,6 +141,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         catch (Exception e)
         {
             logger.error("Error is occured while starting session : " + event.getSession());
+            WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
 

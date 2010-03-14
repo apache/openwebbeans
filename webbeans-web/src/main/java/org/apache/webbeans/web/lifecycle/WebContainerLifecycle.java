@@ -117,7 +117,10 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
      */
     protected void beforeStopApplication(Object stopObject) throws Exception
     {
-        service.shutdownNow();                
+        if(service != null)
+        {
+            service.shutdownNow();   
+        }                
     }
 
     /**
