@@ -36,7 +36,7 @@ public class OpenWebBeansTestLifeCycle extends StandaloneLifeCycle
     @Override
     public void initApplication(Properties properties)
     {
-        this.scannerService = new OpenWebBeansTestMetaDataDiscoveryService();        
+        this.scannerService = new OpenWebBeansTestMetaDataDiscoveryService();
     }    
     
     public ScannerService getScannerService()
