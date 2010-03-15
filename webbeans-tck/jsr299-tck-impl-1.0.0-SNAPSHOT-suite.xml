@@ -7,12 +7,12 @@
          <method-selector>
             <selector-class name="org.jboss.testharness.impl.testng.DisableIntegrationTestsMethodSelector" />
          </method-selector>
-		<!--  
+		
+		<!-- Used for Web Profiles -->
 		<method-selector>
 			<selector-class name="org.jboss.jsr299.tck.impl.WebProfileMethodSelector" />
 		</method-selector>
 		
-		 -->          
 		
          <method-selector>
             <selector-class name="org.jboss.testharness.impl.testng.ExcludeIncontainerUnderInvestigationMethodSelector" />
