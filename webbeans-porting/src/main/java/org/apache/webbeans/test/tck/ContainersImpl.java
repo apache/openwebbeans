@@ -13,68 +13,85 @@
  */
 package org.apache.webbeans.test.tck;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.util.HttpURLConnection;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.jboss.testharness.api.DeploymentException;
 import org.jboss.testharness.spi.Containers;
 
-public class ContainersImpl implements Containers
+public class ContainersImpl extends TomcatConnector implements Containers
 {
-    public static final String TOMCAT_LOCATION = "catalina.home";
-
-    private WebBeansLogger logger = WebBeansLogger.getLogger(ContainersImpl.class);
-
-    public void cleanup() throws IOException
+    private HttpClient client = null;
+    
+    private DeploymentException excepton = null;
+    
+    public ContainersImpl() throws IOException
     {
-
+        super();
+        client = new HttpClient();
+        client = new HttpClient();
+        client.getParams().setAuthenticationPreemptive(true);
+        Credentials credentials = new UsernamePasswordCredentials("tests", "secret");
+        client.getState().setCredentials(new AuthScope(null, 8080, null), credentials);        
     }
 
-    public boolean deploy(InputStream archive, String name)
+    /* (non-Javadoc)
+     * @see org.jboss.testharness.integration.tomcat.TomcatConnector#deploy(java.io.InputStream, java.lang.String)
+     */
+    @Override
+    public boolean deploy(InputStream stream, String name) throws IOException
     {
-        logger.info("Deploying artifact with name : " + name + " to container");
-        
-        try
+        boolean result = super.deploy(stream, name);
+        if(result)
         {
-            if (archive.available() > 0)
+            GetMethod method = null;
+            try
             {
-                File file = new File("target/container/" + name);
-                FileOutputStream os = new FileOutputStream(file);
-                byte temp[] = new byte[512];
-
-                while (archive.read(temp) != -1)
+                method = new GetMethod("http://localhost:8080/manager/list");
+                int r = client.executeMethod(method);
+                if(r == HttpURLConnection.HTTP_OK)
                 {
-                    os.write(temp);
+                    String string = method.getResponseBodyAsString();
+                    int start = string.indexOf(getContextName(name)+":running");
+                    
+                    if(start == -1)
+                    {
+                        this.excepton = new DeploymentException("Deployment Failure",new WebBeansConfigurationException("Deployment Failure"));
+                        return false;   
+                    }                    
                 }
                 
-                os.close();
-                
+            }finally
+            {
+                method.releaseConnection();
             }
         }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-        return false;
+        
+        return result;
     }
 
-    public void setup() throws IOException
-    {
-
-    }
-
-    public void undeploy(String name) throws IOException
-    {
-
-    }
-
+    /* (non-Javadoc)
+     * @see org.jboss.testharness.integration.tomcat.TomcatConnector#getDeploymentException()
+     */
+    @Override
     public DeploymentException getDeploymentException()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if(this.excepton != null)
+        {
+            return this.excepton;
+        }
+        
+        return super.getDeploymentException();
     }
 
+    
+    
+    
 }
