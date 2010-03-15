@@ -183,6 +183,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     {
         this.injectionTarget = injectionTarget;
         this.injectionTargetSet = true;
+        //super.setProducer(injectionTarget);
     }
 
     /**

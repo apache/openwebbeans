@@ -126,6 +126,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
     /**XML configurator instance*/
     private WebBeansXMLConfigurator xmlConfigurator = null;
     
+    /**Additional decorator class*/
+    private List<Class<?>> additionalDecoratorClasses = new CopyOnWriteArrayList<Class<?>>();
+    
+    /**Additional interceptor class*/
+    private List<Class<?>> additionalInterceptorClasses = new CopyOnWriteArrayList<Class<?>>();
+    
     /**
      * This list contains additional qualifiers which got set via the {@link BeforeBeanDiscovery#addQualifier(Class)} 
      * event function.
@@ -335,6 +341,30 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
 
     }
     
+    public void addCustomInterceptorClass(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        this.additionalInterceptorClasses.add(clazz);
+    }
+
+    public void addCustomDecoratorClass(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        this.additionalDecoratorClasses.add(clazz);
+    }
+    
+    public boolean containsCustomInterceptorClass(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        return this.additionalInterceptorClasses.contains(clazz);
+    }
+
+    public boolean containsCustomDecoratorClass(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        return this.additionalDecoratorClasses.contains(clazz);
+    }
+
     /**
      * {@inheritDoc}
      */

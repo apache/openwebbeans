@@ -16,7 +16,12 @@ package org.apache.webbeans.intercept;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.decorator.Decorator;
+import javax.interceptor.Interceptor;
+
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.Asserts;
 
 public class InterceptorsManager
@@ -39,7 +44,15 @@ public class InterceptorsManager
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
 
         if (!enabledInterceptors.contains(interceptorClazz))
+        {
             getInstance().enabledInterceptors.add(interceptorClazz);
+
+            if(!interceptorClazz.isAnnotationPresent(Interceptor.class))
+            {
+                //Maybe custom
+                BeanManagerImpl.getManager().addCustomInterceptorClass(interceptorClazz);
+            }
+        }
     }
 
     public int compare(Class<?> src, Class<?> target)
@@ -69,4 +82,16 @@ public class InterceptorsManager
 
         return getInstance().enabledInterceptors.contains(interceptorClazz);
     }
+    
+    public void validateInterceptorClasses()
+    {
+        for(Class<?> decoratorClazz : enabledInterceptors)
+        {
+            //Validate decorator classes
+            if(!decoratorClazz.isAnnotationPresent(Interceptor.class) && !BeanManagerImpl.getManager().containsCustomInterceptorClass(decoratorClazz))
+            {
+                throw new WebBeansConfigurationException("Given class : " + decoratorClazz + " is not a interceptor class");
+            }   
+        }                
+    }    
 }

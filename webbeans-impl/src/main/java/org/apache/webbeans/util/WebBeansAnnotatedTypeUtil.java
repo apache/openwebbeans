@@ -801,6 +801,11 @@ public final class WebBeansAnnotatedTypeUtil
         {
             return true;
         }
+        else if(DecoratorsManager.getInstance().isDecoratorEnabled(annotatedType.getJavaClass()))
+        {
+            return true;
+        }
+
         
         return false;
     }

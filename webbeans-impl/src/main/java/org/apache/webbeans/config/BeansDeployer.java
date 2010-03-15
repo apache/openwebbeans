@@ -43,12 +43,14 @@ import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
+import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansJavaEEPlugin;
@@ -255,6 +257,9 @@ public class BeansDeployer
     private void validateInjectionPoints()
     {
         logger.debug("Validation of injection points has started.");
+        
+        DecoratorsManager.getInstance().validateDecoratorClasses();
+        InterceptorsManager.getInstance().validateInterceptorClasses();
 
         BeanManagerImpl manager = BeanManagerImpl.getManager();        
         Set<Bean<?>> beans = new HashSet<Bean<?>>();
@@ -293,8 +298,7 @@ public class BeansDeployer
         beans = manager.getBeans();
         
         //Validate Others
-        validate(beans);
-                
+        validate(beans);                
 
         logger.info(OWBLogConst.INFO_0008);
     }
@@ -343,7 +347,8 @@ public class BeansDeployer
                         }
                         else
                         {
-                            if(!bean.getBeanClass().isAnnotationPresent(javax.decorator.Decorator.class))
+                            if(!bean.getBeanClass().isAnnotationPresent(javax.decorator.Decorator.class) 
+                                    && !BeanManagerImpl.getManager().containsCustomDecoratorClass(bean.getBeanClass()))
                             {
                                 throw new WebBeansConfigurationException("Delegate injection points can not defined by beans that are not decorator. Injection point : " + injectionPoint);
                             }
@@ -371,7 +376,7 @@ public class BeansDeployer
         if (classIndex != null)
         {
             for(Class<?> implClass : classIndex)
-            {               
+            {   
                 if (ManagedBeanConfigurator.isManagedBean(implClass))
                 {
                     ManagedBeanConfigurator.checkManagedBeanCondition(implClass);
@@ -544,7 +549,11 @@ public class BeansDeployer
                     throw new WebBeansConfigurationException("Passivation scoped defined bean must be passivation capable, " +
                             "but bean : " + beanObj.toString() + " is not passivation capable");                    
                 }
-            }
+                else
+                {
+                    ((OwbBean<?>)beanObj).validatePassivationDependencies();
+                }
+            }            
             
             ((OwbBean<?>)beanObj).validatePassivationDependencies();
         } 
@@ -657,6 +666,12 @@ public class BeansDeployer
         }
         else
         {
+            if(BeanManagerImpl.getManager().containsCustomDecoratorClass(annotatedType.getJavaClass()) ||
+                    BeanManagerImpl.getManager().containsCustomInterceptorClass(annotatedType.getJavaClass()))
+            {
+                return;
+            }
+            
             logger.info(OWBLogConst.INFO_0009, new Object[]{annotatedType.getJavaClass().getName()});
             WebBeansUtil.defineManagedBean(managedBeanCreator, annotatedType);   
         }

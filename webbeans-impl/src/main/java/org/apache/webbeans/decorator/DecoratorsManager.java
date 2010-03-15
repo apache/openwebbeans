@@ -19,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.decorator.Decorator;
 
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.Asserts;
 
@@ -45,11 +46,12 @@ public class DecoratorsManager
         {
             if(!decoratorClazz.isAnnotationPresent(Decorator.class))
             {
-                throw new WebBeansConfigurationException("Given class : " + decoratorClazz + " is not a decorator class");
+                //Maybe custom
+                BeanManagerImpl.getManager().addCustomDecoratorClass(decoratorClazz);
             }
             
             enabledDecorators.add(decoratorClazz);
-        }
+        }                
     }
 
     public int compare(Class<?> src, Class<?> target)
@@ -78,6 +80,18 @@ public class DecoratorsManager
         Asserts.nullCheckForClass(decoratorClazz, "decoratorClazz can not be null");
 
         return enabledDecorators.contains(decoratorClazz);
+    }
+    
+    public void validateDecoratorClasses()
+    {
+        for(Class<?> decoratorClazz : enabledDecorators)
+        {
+            //Validate decorator classes
+            if(!decoratorClazz.isAnnotationPresent(Decorator.class) && !BeanManagerImpl.getManager().containsCustomDecoratorClass(decoratorClazz))
+            {
+                throw new WebBeansConfigurationException("Given class : " + decoratorClazz + " is not a decorator class");
+            }   
+        }                
     }
 
 }

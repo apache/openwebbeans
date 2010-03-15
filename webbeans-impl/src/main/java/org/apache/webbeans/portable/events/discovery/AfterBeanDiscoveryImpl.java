@@ -27,6 +27,7 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.intercept.custom.CustomInterceptor;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -77,7 +78,12 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         
         else if(bean instanceof Decorator)
         {
-            this.beanManager.addDecorator((Decorator<?>)bean);
+            //Required for custom decorators
+            ManagedBean managedBean = new ManagedBean(bean.getBeanClass(),WebBeansType.MANAGED);                  
+            ManagedBeanCreatorImpl managedBeanCreator = new ManagedBeanCreatorImpl(managedBean);
+            managedBean = WebBeansUtil.defineManagedBean(managedBeanCreator, annotatedType);
+            
+            this.beanManager.addDecorator(new WebBeansDecorator(managedBean, (Decorator)bean));
         }
         else
         {
