@@ -18,46 +18,37 @@
  */
 package org.apache.webbeans.newtests.profields;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.inject.spi.Bean;
-
 import junit.framework.Assert;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.profields.beans.stringproducer.StringProducerBean;
-import org.apache.webbeans.newtests.profields.innerClass.InnerClassInjectStringProducer;
-import org.apache.webbeans.newtests.profields.innerClass.InnerClassInjectStringProducer.Xsimple;
+import org.apache.webbeans.newtests.profields.beans.classproducer.MyProductBean;
+import org.apache.webbeans.newtests.profields.beans.classproducer.MyProductProducer;
+import org.apache.webbeans.newtests.profields.beans.classproducer.ProductInjectedBean;
 import org.junit.Test;
 
-public class InnerClassInjectStringProducerTest extends AbstractUnitTest
+public class ProductProducerTest extends AbstractUnitTest
 {
-    public InnerClassInjectStringProducerTest()
-    {
-        
-    }
-    
     @Test
-    @SuppressWarnings("unchecked")
-    public void testInnerClassProducerInjection()
+    public void testProductProducer()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(StringProducerBean.class);
-        beanClasses.add(InnerClassInjectStringProducer.class);
-        beanClasses.add(Xsimple.class);
+        beanClasses.add(ProductInjectedBean.class);
+        beanClasses.add(MyProductProducer.class);
+        beanClasses.add(MyProductBean.class);
         
-        startContainer(beanClasses, beanXmls);   
+        startContainer(beanClasses);
         
-        Bean<Xsimple> bean = (Bean<Xsimple>) getBeanManager().getBeans("Xsimple").iterator().next();
-        Xsimple simple = (Xsimple) getBeanManager().getReference(bean, Xsimple.class, getBeanManager().createCreationalContext(bean));
+        ProductInjectedBean pib = getInstance(ProductInjectedBean.class, new DefaultLiteral());
+        Assert.assertNotNull(pib);
         
-        Assert.assertNotNull(simple.getInner());
+        pib.getX();
         
         shutDownContainer();
     }
+    
 
 }

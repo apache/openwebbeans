@@ -16,18 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.newtests.profields.beans;
+package org.apache.webbeans.newtests.profields.beans.stringproducer;
 
-import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.inject.Named;
 
-public class GetterStringProducerBean
+@Named("org.apache.webbeans.newtests.profields.beans.GetterStringFieldInjector")
+public class GetterStringFieldInjector
 {
-    @Produces
-    @Named("products")
-    public String getProducts()
+    public @Inject @Named("products") String N3;
+
+    public String getTestNamed3()
     {
-        return "Sucess from getProducts";
+        String y = N3;
+        return y;
     }
 
 }

@@ -29,10 +29,10 @@ import junit.framework.Assert;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.profields.beans.GetterStringFieldInjector;
-import org.apache.webbeans.newtests.profields.beans.GetterStringProducerBean;
-import org.apache.webbeans.newtests.profields.beans.InformationConsumerBean;
-import org.apache.webbeans.newtests.profields.beans.StringProducerBean;
+import org.apache.webbeans.newtests.profields.beans.stringproducer.GetterStringFieldInjector;
+import org.apache.webbeans.newtests.profields.beans.stringproducer.GetterStringProducerBean;
+import org.apache.webbeans.newtests.profields.beans.stringproducer.InformationConsumerBean;
+import org.apache.webbeans.newtests.profields.beans.stringproducer.StringProducerBean;
 import org.junit.Test;
 
 public class GetterStringInjectorTest extends AbstractUnitTest
