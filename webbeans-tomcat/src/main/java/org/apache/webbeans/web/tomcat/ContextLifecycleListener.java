@@ -144,7 +144,10 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                     if(listener.getClass().getName().equals("org.apache.webbeans.servlet.WebBeansConfigurationListener"))
                     {   
                         AnnotationProcessor processor = context.getAnnotationProcessor();
-                        context.setAnnotationProcessor(new TomcatAnnotProcessor(context.getLoader().getClassLoader(),processor));
+                        AnnotationProcessor custom = new TomcatAnnotProcessor(context.getLoader().getClassLoader(),processor);
+                        context.setAnnotationProcessor(custom);
+                        
+                        context.getServletContext().setAttribute(AnnotationProcessor.class.getName(), custom);
                         
                         ContextAccessController.setReadOnly(context.getNamingContextListener().getName());
                         

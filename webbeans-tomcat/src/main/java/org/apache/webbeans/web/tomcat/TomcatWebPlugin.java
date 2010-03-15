@@ -74,7 +74,7 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWe
                 ServletRequestListener.class.isAssignableFrom(clazz) ||
                 ServletRequestAttributeListener.class.isAssignableFrom(clazz) )
         {
-            throw new Exception("Given class is not contextual");
+            throw new Exception("Given class  : " + clazz.getName() + " is not managed bean");
         }
     }
 
