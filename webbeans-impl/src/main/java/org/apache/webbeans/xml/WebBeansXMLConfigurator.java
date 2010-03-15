@@ -497,7 +497,8 @@ public final class WebBeansXMLConfigurator
             }
             else
             {
-                if (!AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
+                if (AnnotationUtil.hasAnnotation(clazz.getDeclaredAnnotations(), Interceptor.class) && 
+                        !AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + 
                     		(this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextTrim()) + " must have at least one @InterceptorBindingType");

@@ -508,7 +508,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
         {
             WebBeansInterceptor interceptor = (WebBeansInterceptor) itSet.next();
 
-            if (interceptor.getMethod(type) != null)
+            if (interceptor.intercepts(type))
             {
                 interceptorList.add(interceptor);
             }

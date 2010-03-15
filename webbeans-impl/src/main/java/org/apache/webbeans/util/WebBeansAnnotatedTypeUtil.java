@@ -797,6 +797,10 @@ public final class WebBeansAnnotatedTypeUtil
         {
             return true;
         }
+        else if(InterceptorsManager.getInstance().isInterceptorEnabled(annotatedType.getJavaClass()))
+        {
+            return true;
+        }
         
         return false;
     }

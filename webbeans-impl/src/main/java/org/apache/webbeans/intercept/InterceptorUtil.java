@@ -32,6 +32,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -98,7 +99,10 @@ public final class InterceptorUtil
 //        {
 //            return PrePassivate.class;
 //        }
-        //X TODO also add handling of AROUND_TIMEOUT somewhere
+        else if (type.equals(InterceptionType.AROUND_TIMEOUT))
+        {
+            return AroundTimeout.class;
+        }
         else
         {
             throw new WebBeansException("Undefined interceotion type");

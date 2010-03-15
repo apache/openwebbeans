@@ -92,6 +92,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Scope;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.annotation.AnyLiteral;
@@ -337,6 +338,18 @@ public final class WebBeansUtil
         if(Extension.class.isAssignableFrom(clazz))
         {
             throw new WebBeansConfigurationException("Bean implementation class can not implement javax.enterprise.inject.spi.Extension.!");
+        }
+        
+        Class<?>[] interfaces = clazz.getInterfaces();
+        if(interfaces != null && interfaces.length > 0)
+        {
+            for(Class<?> intr : interfaces)
+            {
+                if(intr.getName().equals("javax.ejb.EnterpriseBean"))
+                {
+                    throw new WebBeansConfigurationException("Bean implementation class can not implement javax.ejb.EnterpriseBean");
+                }
+            }
         }
             
         // and finally call all checks which are defined in plugins like JSF, JPA, etc
@@ -958,7 +971,7 @@ public final class WebBeansUtil
      * @param clazz checked class
      * @return around invoke method
      */
-    public static Method checkAroundInvokeAnnotationCriterias(Class<?> clazz)
+    public static Method checkAroundInvokeAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> annot)
     {
         Asserts.nullCheckForClass(clazz);
 
@@ -967,7 +980,7 @@ public final class WebBeansUtil
         boolean found = false;
         for (Method method : methods)
         {
-            if (AnnotationUtil.hasMethodAnnotation(method, AroundInvoke.class))
+            if (AnnotationUtil.hasMethodAnnotation(method, annot))
             {
                 // Overriden methods
                 if (ClassUtil.isMoreThanOneMethodWithName(method.getName(), clazz))
@@ -977,7 +990,7 @@ public final class WebBeansUtil
 
                 if (found == true)
                 {
-                    throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotation is declared more than one method in the class : " + clazz.getName());
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotation is declared more than one method in the class : " + clazz.getName());
                 }
                 
                 found = true;
@@ -986,21 +999,21 @@ public final class WebBeansUtil
                 // Check method criterias
                 Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
                 if (params.length != 1 || !params[0].equals(InvocationContext.class))
-                    throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not take any formal arguments other than InvocationContext");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not take any formal arguments other than InvocationContext");
 
                 if (!ClassUtil.getReturnType(method).equals(Object.class))
                 {
-                    throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must return Object type");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must return Object type");
                 }
 
                 if (!ClassUtil.isMethodHasException(method))
                 {
-                    throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must throw Exception");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must throw Exception");
                 }
 
                 if (ClassUtil.isStatic(method.getModifiers()) || ClassUtil.isFinal(method.getModifiers()))
                 {
-                    throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not be static or final");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not be static or final");
                 }
             }
         }
@@ -1008,7 +1021,7 @@ public final class WebBeansUtil
         return result;
     }
     
-    public static <T> Method checkAroundInvokeAnnotationCriterias(AnnotatedType<T> annotatedType)
+    public static <T> Method checkAroundInvokeAnnotationCriterias(AnnotatedType<T> annotatedType, Class<? extends Annotation> annot)
     {
         Method result = null;
         boolean found = false;
@@ -1017,7 +1030,7 @@ public final class WebBeansUtil
         {
             AnnotatedMethod<T> method = (AnnotatedMethod<T>)methodA;
          
-            if (method.isAnnotationPresent(AroundInvoke.class))
+            if (method.isAnnotationPresent(annot))
             {
                 // Overriden methods
                 if (ClassUtil.isMoreThanOneMethodWithName(method.getJavaMember().getName(), annotatedType.getJavaClass()))
@@ -1027,7 +1040,7 @@ public final class WebBeansUtil
 
                 if (found == true)
                 {
-                    throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotation is declared more than one method in the class : " + annotatedType.getJavaClass().getName());
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotation is declared more than one method in the class : " + annotatedType.getJavaClass().getName());
                 }
                 
                 found = true;
@@ -1043,21 +1056,21 @@ public final class WebBeansUtil
                 Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
                 
                 if (params.length != 1 || !params[0].equals(InvocationContext.class))
-                    throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotated method : " + method.getJavaMember().getName() + " in class : " + annotatedType.getJavaClass().getName() + " can not take any formal arguments other than InvocationContext");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getJavaMember().getName() + " in class : " + annotatedType.getJavaClass().getName() + " can not take any formal arguments other than InvocationContext");
 
                 if (!ClassUtil.getReturnType(method.getJavaMember()).equals(Object.class))
                 {
-                    throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotated method : " + method.getJavaMember().getName()+ " in class : " + annotatedType.getJavaClass().getName() + " must return Object type");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getJavaMember().getName()+ " in class : " + annotatedType.getJavaClass().getName() + " must return Object type");
                 }
 
                 if (!ClassUtil.isMethodHasException(method.getJavaMember()))
                 {
-                    throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotated method : " + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName() + " must throw Exception");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName() + " must throw Exception");
                 }
 
                 if (ClassUtil.isStatic(method.getJavaMember().getModifiers()) || ClassUtil.isFinal(method.getJavaMember().getModifiers()))
                 {
-                    throw new WebBeansConfigurationException("@" + AroundInvoke.class.getSimpleName() + " annotated method : " + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName() + " can not be static or final");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName() + " can not be static or final");
                 }
             }   
         }
@@ -1088,9 +1101,9 @@ public final class WebBeansUtil
         InterceptorData intData = null;
         Method method = null;
 
-        if (annotation.equals(AroundInvoke.class))
+        if (annotation.equals(AroundInvoke.class) || annotation.equals(AroundTimeout.class))
         {
-            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(clazz);
+            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(clazz, annotation);
         }
         else if (annotation.equals(PostConstruct.class))
         {
@@ -1167,9 +1180,10 @@ public final class WebBeansUtil
         InterceptorData intData = null;
         Method method = null;
 
-        if (annotation.equals(AroundInvoke.class))
+        if (annotation.equals(AroundInvoke.class) ||
+                annotation.equals(AroundTimeout.class))
         {
-            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(annotatedType);
+            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(annotatedType, annotation);
         }
         else if (annotation.equals(PostConstruct.class))
         {
@@ -2926,9 +2940,9 @@ public final class WebBeansUtil
             managedBean.setInjectionTarget(managedBeanCreator);   
         }
 
-        beanManager.addBean(WebBeansUtil.createNewBean(managedBean));                
         if(!WebBeansAnnotatedTypeUtil.isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
         {
+            beanManager.addBean(WebBeansUtil.createNewBean(managedBean));                
             beanManager.addBean(managedBean);
             for (ProducerMethodBean<?> producerMethod : producerMethods)
             {

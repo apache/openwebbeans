@@ -15,17 +15,25 @@ package org.apache.webbeans.portable.events.discovery;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
 
+import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.event.NotificationManager;
+import org.apache.webbeans.intercept.custom.CustomInterceptor;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Event that is fired by the container after it discovers beans.
@@ -46,13 +54,35 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void addBean(Bean<?> bean)
     {
+        AnnotatedType<?> annotatedType = AnnotatedElementFactory.newAnnotatedType(bean.getBeanClass());
+        
         //Fire Event
-        ProcessBean<?> processBeanEvent = new GProcessBean(bean,AnnotatedElementFactory.newAnnotatedType(bean.getBeanClass()));
+        ProcessBean<?> processBeanEvent = new GProcessBean(bean,annotatedType);
         this.beanManager.fireEvent(processBeanEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         
-        this.beanManager.addBean(bean);        
+        if(bean instanceof Interceptor)
+        {
+            //Required for custom interceptors
+            ManagedBean managedBean = new ManagedBean(bean.getBeanClass(),WebBeansType.MANAGED);                  
+            ManagedBeanCreatorImpl managedBeanCreator = new ManagedBeanCreatorImpl(managedBean);
+            managedBean = WebBeansUtil.defineManagedBean(managedBeanCreator, annotatedType);
+            
+            CustomInterceptor<?> interceptor = new CustomInterceptor(managedBean, (Interceptor<?>)bean);
+            
+            this.beanManager.addInterceptor(interceptor);
+        }
+        
+        else if(bean instanceof Decorator)
+        {
+            this.beanManager.addDecorator((Decorator<?>)bean);
+        }
+        else
+        {
+            this.beanManager.addBean(bean);    
+        }                
     }
 
     /**

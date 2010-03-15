@@ -32,6 +32,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.util.Nonbinding;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -44,6 +46,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.InterceptorUtil;
+import org.apache.webbeans.intercept.OwbInterceptor;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
@@ -63,7 +66,7 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
  * 
  * @version $Rev$ $Date$
  */
-public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements Interceptor<T>
+public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInterceptor<T>
 {
 	private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptor.class);
 	
@@ -145,15 +148,16 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements Interc
         }
 
         /* This interceptor is enabled if all of its interceptor bindings are present on the bean */
-        for (Class<? extends Annotation> bindingType : this.interceptorBindingSet.keySet())
+        for (Annotation ann : getInterceptorBindings())
         {
+            Class<? extends Annotation> bindingType = ann.annotationType(); 
         	int index = bindingTypes.indexOf(bindingType);
         	if (index < 0) 
         	{
         	    return false; /* at least one of this interceptors types is not in the beans bindingTypes */	
         	}
         	
-        	if (!AnnotationUtil.hasAnnotationMember(bindingTypes.get(index), annots.get(index), this.interceptorBindingSet.get(bindingType)))
+        	if (!AnnotationUtil.hasAnnotationMember(bindingTypes.get(index), annots.get(index), ann))
         	
         	{
         		return false;
@@ -177,12 +181,11 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements Interc
     {
         Set<Interceptor<?>> set = new HashSet<Interceptor<?>>();
 
-        Set<Class<? extends Annotation>> keys = interceptorBindingSet.keySet();
-        Iterator<Class<? extends Annotation>> it = keys.iterator();
+        Set<Annotation> keys = getInterceptorBindings();
 
-        while (it.hasNext())
+        for (Annotation key : keys)
         {
-            Class<? extends Annotation> clazzAnnot = it.next();
+            Class<? extends Annotation> clazzAnnot = key.annotationType();
             Set<Annotation> declared = null;
             Annotation[] anns = null;
 
@@ -251,13 +254,18 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements Interc
         return set;
     }
 
-    public Method getMethod(InterceptionType type)
+    private Method getMethod(InterceptionType type)
     {
         Method method = null;
         
         if(type.equals(InterceptionType.AROUND_INVOKE))
         {
-            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(getClazz());
+            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(getClazz(),AroundInvoke.class);
+        }
+
+        else if(type.equals(InterceptionType.AROUND_TIMEOUT))
+        {
+            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(getClazz(),AroundTimeout.class);
         }
         
         else if(type.equals(InterceptionType.POST_ACTIVATE) || type.equals(InterceptionType.PRE_PASSIVATE))
@@ -354,42 +362,6 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements Interc
     public Set<InjectionPoint> getInjectionPoints()
     {
         return delegateBean.getInjectionPoints();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-            return true;
-
-        WebBeansInterceptor<?> o = null;
-
-        if (obj instanceof WebBeansInterceptor)
-        {
-            o = (WebBeansInterceptor<?>) obj;
-
-            if (o.clazz != null && this.clazz != null)
-            {
-                return o.clazz.equals(this.clazz);
-            }
-
-        }
-
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode()
-    {
-        return this.clazz != null ? clazz.hashCode() : 0;
     }
 
     /*
