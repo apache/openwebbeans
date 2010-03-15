@@ -361,6 +361,7 @@
         <module>webbeans-jsf</module>
         <module>webbeans-resource</module>
         <module>webbeans-porting</module>
+        <module>webbeans-test</module>
         <module>samples</module>
         <module>atinject-tck</module>
         <!--<module>webbeans-tck</module>-->
@@ -537,6 +538,17 @@
                                 <version>${openwebbeans.version}</version>
                         </dependency>
 
+                        <!-- CDI Testing Framework -->
+                        <dependency>
+                                <groupId>org.apache.openwebbeans.test</groupId>
+                                <artifactId>cditest</artifactId>
+                                <version>${openwebbeans.version}</version>
+                        </dependency>
+                        <dependency>
+                                <groupId>org.apache.openwebbeans.test</groupId>
+                                <artifactId>cditest-owb</artifactId>
+                                <version>${openwebbeans.version}</version>
+                        </dependency>
 
 			<dependency>
 				<groupId>org.apache.openejb</groupId>
