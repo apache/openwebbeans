@@ -74,29 +74,37 @@ public final class WebBeansLogger
         return wbLogger;
     }
 
-    private void wblLog(Level log_level, String messageKey)
+    private void wblLog(Level level, String messageKey)
     {
-        checkNullLogger();
-        logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey);
+        if (logger.isLoggable(level))
+        {
+            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey);
+        }
     }
 
-    private void wblLog(Level log_level, String messageKey, Object... args)
+    private void wblLog(Level level, String messageKey, Object... args)
     {
-        checkNullLogger();
-        logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey, args);
+        if (logger.isLoggable(level))
+        {
+            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey, args);
+        }
     }
 
-    private void wblLog(Level log_level, String messageKey, Throwable e)
+    private void wblLog(Level level, Throwable e, String messageKey)
     {
-        checkNullLogger();
-        logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey, e);
+        if (logger.isLoggable(level))
+        {
+            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey, e);
+        }
     }
 
-    private void wblLog(Level log_level, Throwable e, String messageKey, Object... args)
+    private void wblLog(Level level, Throwable e, String messageKey, Object... args)
     {
-        checkNullLogger();
-        logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), constructMessage(messageKey, args), e);
-    }    
+        if (logger.isLoggable(level))
+        {
+            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), constructMessage(messageKey, args), e);
+        }
+    }
     
     public void fatal(String messageKey)
     {
@@ -110,12 +118,12 @@ public final class WebBeansLogger
 
     public void fatal(String messageKey, Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_FATAL, messageKey, e);
+        this.wblLog(WebBeansLogger.WBL_FATAL, e, messageKey);
     }
 
     public void error(Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_ERROR, "", e);
+        this.wblLog(WebBeansLogger.WBL_ERROR, e, "");
     }
 
     public void error(String messageKey)
@@ -130,12 +138,12 @@ public final class WebBeansLogger
     
     public void error(String messageKey, Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_ERROR, messageKey, e);
+        this.wblLog(WebBeansLogger.WBL_ERROR, e, messageKey);
     }
 
     public void error(String messageKey, Throwable e, Object... args)
     {
-        this.wblLog(WebBeansLogger.WBL_ERROR, messageKey, args, e);
+        this.wblLog(WebBeansLogger.WBL_ERROR, e, messageKey, args);
     }
 
     public void warn(String messageKey)
@@ -150,7 +158,7 @@ public final class WebBeansLogger
 
     public void warn(String messageKey, Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_WARN, messageKey, e);
+        this.wblLog(WebBeansLogger.WBL_WARN, e, messageKey);
     }
 
     public void info(String messageKey)
@@ -165,7 +173,7 @@ public final class WebBeansLogger
     
     public void info(String messageKey, Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_INFO, messageKey, e);
+        this.wblLog(WebBeansLogger.WBL_INFO, e, messageKey);
     }
 
     public void debug(String messageKey)
@@ -173,14 +181,14 @@ public final class WebBeansLogger
         this.wblLog(WebBeansLogger.WBL_DEBUG, messageKey);
     }
 
+    public void debug(String messageKey, Throwable e)
+    {
+        this.wblLog(WebBeansLogger.WBL_DEBUG, e, messageKey);
+    }
+
     public void debug(String messageKey, Object... args)
     {
         this.wblLog(WebBeansLogger.WBL_DEBUG, messageKey, args);
-    }
-
-    public void debug(String messageKey, Throwable e)
-    {
-        this.wblLog(WebBeansLogger.WBL_DEBUG, messageKey, e);
     }
 
     public void trace(String messageKey)
@@ -195,7 +203,7 @@ public final class WebBeansLogger
 
     public void trace(String messageKey, Throwable e)
     {
-        this.wblLog(WebBeansLogger.WBL_TRACE, messageKey, e);
+        this.wblLog(WebBeansLogger.WBL_TRACE, e, messageKey);
     }
 
     private String constructMessage(String messageKey, Object... args)
@@ -229,10 +237,8 @@ public final class WebBeansLogger
         {
             return messageKey;
         }
-        else
-        {
-            return strVal;
-        }
+
+        return strVal;
     }
 
     /**
@@ -245,11 +251,4 @@ public final class WebBeansLogger
         this.logger = logger;
     }
 
-    private void checkNullLogger()
-    {
-        if (this.logger == null)
-        {
-            throw new NullPointerException("Logger can not be null");
-        }
-    }        
 }

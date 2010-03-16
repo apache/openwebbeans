@@ -18,44 +18,44 @@ import java.util.Comparator;
 
 public class SortedListHelper<E>  {
 
-	List<E> list;
-	Comparator<E> comparator;
-	
-	public SortedListHelper(List<E>list, Comparator<E> comparator) 
-	{
-		this.list = list;
-		this.comparator = comparator;
-	}
-	
-	public List<E> getList() 
-	{
-		return list;
-	}
-	
-	public boolean add(E object) {
-		if (list.isEmpty())
-		{
-			list.add(object);
-			return true;
-		}
-		for(int i=0; i<list.size(); i++) {
-			E obj = list.get(i);
-			if (comparator.compare(object, obj) < 0) 
-			{
-				list.add(i, object);
-				return true;
-			}
-		}
-		return list.add(object);
-	}
-	
-	public void clear() 
-	{
-		list.clear();
-	}
-	
-	public E get(int location) 
-	{
-		return list.get(location);
-	}
+    List<E> list;
+    Comparator<E> comparator;
+
+    public SortedListHelper(List<E>list, Comparator<E> comparator) 
+    {
+        this.list = list;
+        this.comparator = comparator;
+    }
+
+    public List<E> getList() 
+    {
+        return list;
+    }
+
+    public boolean add(E object) {
+        if (list.isEmpty())
+        {
+            list.add(object);
+            return true;
+        }
+        for(int i=0; i<list.size(); i++) {
+            E obj = list.get(i);
+            if (comparator.compare(object, obj) < 0) 
+            {
+                list.add(i, object);
+                return true;
+            }
+        }
+        return list.add(object);
+    }
+
+    public void clear() 
+    {
+        list.clear();
+    }
+
+    public E get(int location) 
+    {
+        return list.get(location);
+    }
 }

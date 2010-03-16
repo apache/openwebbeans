@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -268,17 +269,19 @@ public class InjectionResolver
      * @param name bean name
      * @return set of beans for given bean name
      */
+    @SuppressWarnings("unchecked")
     public Set<Bean<?>> implResolveByName(String name)
     {
         Asserts.assertNotNull(name, "name parameter can not be null");
 
         String cacheKey = name;
-        if (resolvedBeansByName.containsKey(cacheKey))
+        Set<Bean<?>> resolvedComponents = resolvedBeansByName.get(cacheKey);
+        if (resolvedComponents != null)
         {
-            return resolvedBeansByName.get(cacheKey); 
+            return resolvedComponents; 
         }
 
-        Set<Bean<?>> resolvedComponents = new HashSet<Bean<?>>();        
+        resolvedComponents = new HashSet<Bean<?>>();        
         Set<Bean<?>> deployedComponents = this.manager.getBeans();
         
         Iterator<Bean<?>> it = deployedComponents.iterator();
@@ -302,15 +305,23 @@ public class InjectionResolver
         if(resolvedComponents.size() > 1)
         {
             //Check for specialization
-            Set<Bean<?>> specializedComponents = findSpecializedForNameResolution(resolvedComponents);        
+            Set<Bean<?>> specializedComponents = findSpecializedForNameResolution(resolvedComponents);
             if(specializedComponents.size() > 0)
             {
-                return specializedComponents;
+                resolvedComponents =  specializedComponents;
             }            
         }
         
-        resolvedBeansByType.put(cacheKey, resolvedComponents);
-        logger.debug("DEBUG_ADD_BYNYME_CACHE_BEANS", cacheKey);
+        if (resolvedComponents.isEmpty()) 
+        {
+            // maintain negative cache but use standard empty set so we can garbage collect
+            resolvedBeansByName.put(cacheKey, Collections.EMPTY_SET);
+        }
+        else 
+        {
+            resolvedBeansByName.put(cacheKey, resolvedComponents);
+        }
+        logger.debug("DEBUG_ADD_BYNAME_CACHE_BEANS", cacheKey);
 
         return resolvedComponents;
     }
@@ -376,12 +387,13 @@ public class InjectionResolver
         String cacheKey = getBeanCacheKey(injectionPointType, qualifiers);
 
         
-        if (resolvedBeansByType.containsKey(cacheKey))
+        Set<Bean<?>> resolvedComponents = resolvedBeansByType.get(cacheKey);
+        if (resolvedComponents != null)
         {
-            return resolvedBeansByType.get(cacheKey); 
+            return resolvedComponents; 
         }
         
-        Set<Bean<?>> results = new HashSet<Bean<?>>();
+        resolvedComponents = new HashSet<Bean<?>>();
         
         Set<Bean<?>> deployedComponents = this.manager.getBeans();
 
@@ -417,7 +429,7 @@ public class InjectionResolver
 
             if (returnAll)
             {
-                results.add((Bean<?>) component);
+                resolvedComponents.add(component);
                 continue;
             }
 
@@ -429,31 +441,30 @@ public class InjectionResolver
                 
                 if(ClassUtil.isAssignable(componentApiType, injectionPointType))
                 {
-                    results.add((Bean<?>) component);
+                    resolvedComponents.add(component);
                     break;
                 }
             }
         }
  
-        //Look for qualifiers
-        results = findByQualifier(results, qualifiers);
+        // Look for qualifiers
+        resolvedComponents = findByQualifier(resolvedComponents, qualifiers);
         
-        //Look for alternative
-        results = findByAlternatives(results);
+        // Look for alternative
+        resolvedComponents = findByAlternatives(resolvedComponents);
 
         
-        //Ambigious resulotion, check for specialization
-        if(results.size() > 1)
+        // Ambigious resolution, check for specialization
+        if(resolvedComponents.size() > 1)
         {
             //Look for specialization
-            results = findBySpecialization(results);
-
+            resolvedComponents = findBySpecialization(resolvedComponents);
         }
         
-        resolvedBeansByType.put(cacheKey, results);
+        resolvedBeansByType.put(cacheKey, resolvedComponents);
         logger.debug("DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
         
-        return results;
+        return resolvedComponents;
     }
     
     private String getBeanCacheKey(Type injectionPointType, Annotation... qualifiers)

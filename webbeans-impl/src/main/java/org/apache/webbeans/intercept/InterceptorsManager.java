@@ -16,7 +16,6 @@ package org.apache.webbeans.intercept;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.decorator.Decorator;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.config.WebBeansFinder;

@@ -53,5 +53,4 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
         impl.setCreationalContext(creationalContext);
         return impl.proceed();
     }
-    
 }
