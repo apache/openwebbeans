@@ -606,7 +606,7 @@
           <openejb.version>3.1.2</openejb.version>
           <myfaces.version>2.0.0-beta-2</myfaces.version>
           <javax.annot.version>1.0</javax.annot.version>
-	  <siteId>/OWB/1.0.0-SNAPSHOTS/plugins</siteId>
+	  <siteId>/OWB/1.0.0-SNAPSHOT/plugins</siteId>
 	</properties>
 
     <profiles>
