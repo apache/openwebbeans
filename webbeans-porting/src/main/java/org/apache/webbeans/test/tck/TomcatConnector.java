@@ -36,6 +36,11 @@ import org.jboss.testharness.api.DeploymentException;
 import org.jboss.testharness.spi.Containers;
 import org.jboss.testharness.spi.helpers.AbstractContainerConnector;
 
+//NOTE : This code is copied from RI TCK. We have to extend
+//this class but its jar file contains jboss-test-harness.properties
+//that conflict with our provided jboss-test-harness.properties. therefore
+//we remove jar from dependency and copied this class and extends it with
+//our own version.
 public class TomcatConnector extends AbstractContainerConnector implements Containers
 {
 
