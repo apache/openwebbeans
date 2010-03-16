@@ -80,7 +80,7 @@ public final class WebBeansLogger
         logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey);
     }
 
-    private void wblLog(Level log_level, String messageKey, Object args[])
+    private void wblLog(Level log_level, String messageKey, Object... args)
     {
         checkNullLogger();
         logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey, args);
@@ -92,7 +92,7 @@ public final class WebBeansLogger
         logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey, e);
     }
 
-    private void wblLog(Level log_level, String messageKey, Object args[], Throwable e)
+    private void wblLog(Level log_level, Throwable e, String messageKey, Object... args)
     {
         checkNullLogger();
         logger.logp(log_level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), constructMessage(messageKey, args), e);
@@ -123,7 +123,7 @@ public final class WebBeansLogger
         this.wblLog(WebBeansLogger.WBL_ERROR, messageKey);
     }
 
-    public void error(String messageKey, Object args[])
+    public void error(String messageKey, Object... args)
     {
         this.wblLog(WebBeansLogger.WBL_ERROR, messageKey, args);
     }
@@ -133,7 +133,7 @@ public final class WebBeansLogger
         this.wblLog(WebBeansLogger.WBL_ERROR, messageKey, e);
     }
 
-    public void error(String messageKey, Object args[], Throwable e)
+    public void error(String messageKey, Throwable e, Object... args)
     {
         this.wblLog(WebBeansLogger.WBL_ERROR, messageKey, args, e);
     }
@@ -143,7 +143,7 @@ public final class WebBeansLogger
         this.wblLog(WebBeansLogger.WBL_WARN, messageKey);
     }
 
-    public void warn(String messageKey, Object args[])
+    public void warn(String messageKey, Object... args)
     {
         this.wblLog(WebBeansLogger.WBL_WARN, messageKey, args);
     }
@@ -158,7 +158,7 @@ public final class WebBeansLogger
     	this.wblLog(WebBeansLogger.WBL_INFO, messageKey);
     }
 
-    public void info(String messageKey, Object args[])
+    public void info(String messageKey, Object... args)
     {
         this.wblLog(WebBeansLogger.WBL_INFO, messageKey, args);
     }
@@ -173,9 +173,9 @@ public final class WebBeansLogger
         this.wblLog(WebBeansLogger.WBL_DEBUG, messageKey);
     }
 
-    public void debug(String messageKey, Object args[])
+    public void debug(String messageKey, Object... args)
     {
-        this.wblLog(WebBeansLogger.WBL_WARN, messageKey, args);
+        this.wblLog(WebBeansLogger.WBL_DEBUG, messageKey, args);
     }
 
     public void debug(String messageKey, Throwable e)
@@ -188,7 +188,7 @@ public final class WebBeansLogger
         this.wblLog(WebBeansLogger.WBL_TRACE, messageKey);
     }
 
-    public void trace(String messageKey, Object args[])
+    public void trace(String messageKey, Object... args)
     {
         this.wblLog(WebBeansLogger.WBL_TRACE, messageKey, args);
     }
@@ -198,7 +198,7 @@ public final class WebBeansLogger
         this.wblLog(WebBeansLogger.WBL_TRACE, messageKey, e);
     }
 
-    private String constructMessage(String messageKey, Object args[])
+    private String constructMessage(String messageKey, Object... args)
     {
     	MessageFormat msgFrmt;
     	String formattedString;

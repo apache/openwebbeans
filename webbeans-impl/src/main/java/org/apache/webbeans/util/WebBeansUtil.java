@@ -220,10 +220,10 @@ public final class WebBeansUtil
      */
     public static void checkGenericType(Bean<?> bean)
     {
-    	Asserts.assertNotNull(bean);
-    	
-    	Class<?> clazz = bean.getBeanClass();
-    	
+        Asserts.assertNotNull(bean);
+
+        Class<?> clazz = bean.getBeanClass();
+
         if (ClassUtil.isDefinitionConstainsTypeVariables(clazz))
         {
             if(!bean.getScope().equals(Dependent.class))
@@ -232,8 +232,8 @@ public final class WebBeansUtil
             }
         }
     }
-    
-    
+
+
     /**
      * Check producer method/field bean return type. 
      * @param bean producer bean instance
@@ -241,34 +241,34 @@ public final class WebBeansUtil
      */
     public static void checkProducerGenericType(Bean<?> bean,Member member)
     {
-    	Asserts.assertNotNull(bean,"Bean is null");
-    	
-    	Type type = null;
-    	
-    	if(bean instanceof ProducerMethodBean)
-    	{
-    		type = ((ProducerMethodBean<?>)bean).getCreatorMethod().getGenericReturnType();
-    	}
-    	else if(bean instanceof ProducerFieldBean)
-    	{
-    		type = ((ProducerFieldBean<?>)bean).getCreatorField().getGenericType();
-    	}
-    	else
-    	{
-    		throw new IllegalArgumentException("Bean must be Producer Field or Method Bean instance : " + bean);
-    	}
-    	
-    	String message = "Producer Field/Method Bean with name : " + member.getName() + " in bean class : " + member.getDeclaringClass().getName(); 
-    	
-    	if(checkGenericForProducers(type, message))
-    	{
+        Asserts.assertNotNull(bean,"Bean is null");
+
+        Type type = null;
+
+        if(bean instanceof ProducerMethodBean)
+        {
+            type = ((ProducerMethodBean<?>)bean).getCreatorMethod().getGenericReturnType();
+        }
+        else if(bean instanceof ProducerFieldBean)
+        {
+            type = ((ProducerFieldBean<?>)bean).getCreatorField().getGenericType();
+        }
+        else
+        {
+            throw new IllegalArgumentException("Bean must be Producer Field or Method Bean instance : " + bean);
+        }
+
+        String message = "Producer Field/Method Bean with name : " + member.getName() + " in bean class : " + member.getDeclaringClass().getName(); 
+
+        if(checkGenericForProducers(type, message))
+        {
             if(!bean.getScope().equals(Dependent.class))
             {
                 throw new WebBeansConfigurationException(message + " scope must bee @Dependent");
             }
-    	}
+        }
     }
-    
+
     /**
      * Check generic types for producer method and fields.
      * @param type generic return type
@@ -278,37 +278,37 @@ public final class WebBeansUtil
     //Helper method
     private static boolean checkGenericForProducers(Type type, String message)
     {
-    	boolean result = false;
-    	
-    	if(type instanceof TypeVariable)
-    	{
-    		throw new WebBeansConfigurationException(message + " return type can not be type variable");
-    	}
-    	
-    	if(ClassUtil.isParametrizedType(type))
-    	{
-    		Type[] actualTypes = ClassUtil.getActualTypeArguements(type);
-    		
-    		if(actualTypes.length == 0)
-    		{
-        		throw new WebBeansConfigurationException(message + " return type must define actual type arguments or type variable");
-    		}
-    		
-    		for(Type actualType : actualTypes)
-    		{
-    			if(ClassUtil.isWildCardType(actualType))
-    			{
-    				throw new WebBeansConfigurationException(message + " return type can not define wildcard actual type argument");
-    			}
-    			
-    			if(ClassUtil.isTypeVariable(actualType))
-    			{
-    				result = true; 
-    			}
-    		}    		
-    	}
-    	
-    	return result;
+        boolean result = false;
+
+        if(type instanceof TypeVariable)
+        {
+            throw new WebBeansConfigurationException(message + " return type can not be type variable");
+        }
+
+        if(ClassUtil.isParametrizedType(type))
+        {
+            Type[] actualTypes = ClassUtil.getActualTypeArguements(type);
+
+            if(actualTypes.length == 0)
+            {
+                throw new WebBeansConfigurationException(message + " return type must define actual type arguments or type variable");
+            }
+
+            for(Type actualType : actualTypes)
+            {
+                if(ClassUtil.isWildCardType(actualType))
+                {
+                    throw new WebBeansConfigurationException(message + " return type can not define wildcard actual type argument");
+                }
+
+                if(ClassUtil.isTypeVariable(actualType))
+                {
+                    result = true; 
+                }
+            }    		
+        }
+
+        return result;
     }
     
     /**
@@ -1788,103 +1788,103 @@ public final class WebBeansUtil
         List<ProducerMethodBean> producerBeans = new ArrayList<ProducerMethodBean>();
         for(Bean b : beans) 
         {
-        	if (b instanceof ProducerMethodBean) 
-        	{
-        		producerBeans.add((ProducerMethodBean)b);
-        	}
+            if (b instanceof ProducerMethodBean) 
+            {
+                producerBeans.add((ProducerMethodBean)b);
+            }
         }
-        
+
         // create sorted bean helper.
         SortedListHelper<ProducerMethodBean> producerBeanListHelper = new
-        	SortedListHelper<ProducerMethodBean>(new ArrayList<ProducerMethodBean>(), 
-        		new Comparator<ProducerMethodBean> () 
-        		{
-	        		public int compare(ProducerMethodBean e1, ProducerMethodBean e2) 
-	        		{
-	        			if (e1.getBeanClass().isAssignableFrom(e2.getBeanClass())) 
-	        			{
-	        				return -1;
-	        			} 
-	        			else if (e1.equals(e2)) 
-	        			{
-	        				return 0;
-	        			}
-	        			return 1;
-	        		}
-        	});
-        
+        SortedListHelper<ProducerMethodBean>(new ArrayList<ProducerMethodBean>(), 
+                new Comparator<ProducerMethodBean> () 
+                {
+            public int compare(ProducerMethodBean e1, ProducerMethodBean e2) 
+            {
+                if (e1.getBeanClass().isAssignableFrom(e2.getBeanClass())) 
+                {
+                    return -1;
+                } 
+                else if (e1.equals(e2)) 
+                {
+                    return 0;
+                }
+                return 1;
+            }
+                });
+
         while(true) 
         {
-        	pbean = null;
-        	method = null;
-        	producerBeanListHelper.clear();
-        	
-        	//locate a specialized bean 
-        	for(ProducerMethodBean pb : producerBeans) 
+            pbean = null;
+            method = null;
+            producerBeanListHelper.clear();
+
+            //locate a specialized bean 
+            for(ProducerMethodBean pb : producerBeans) 
             {
-        		if (pb.isSpecializedBean()) 
-            	{	
-            		pbean = pb;
-            		method = pb.getCreatorMethod();
-            		producerBeanListHelper.add(pb);
-            		break;
-            	}
+                if (pb.isSpecializedBean()) 
+                {	
+                    pbean = pb;
+                    method = pb.getCreatorMethod();
+                    producerBeanListHelper.add(pb);
+                    break;
+                }
             }
             if (pbean == null) break;
-            
+
             pLeft = pRight = pbean;
             boolean pLeftContinue = true;
             boolean pRightContinue = true;
-            
+
             // find all pbean's super beans and sub sub beans
             while(pLeftContinue || pRightContinue)
             {
-            	pLeftContinue = pRightContinue = false;
-	            for(ProducerMethodBean pb : producerBeans) 
-	            {
-	            	//left
-	            	if (pLeft!= null &&
-            			pLeft.getBeanClass().getSuperclass().equals(pb.getBeanClass()))
-	            	{
-	            		Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(), Arrays.asList(method.getParameterTypes()));
-	               		if (superMethod != null)
-	    				{
-	               			producerBeanListHelper.add(pb);
-	               			pLeft = (pb.isSpecializedBean()) ? pb : null; 
-	    				} 
-	               		else {
-	               			pLeft = null;
-	               		}
-	               		if (pLeft != null) pLeftContinue = true; 
-	            	}
-	            	//right
-	            	if (pRight != null && 
-	            		pb.getBeanClass().getSuperclass().equals(pRight.getBeanClass()))
-	            	{
-	            		if (!pb.isSpecializedBean()) 
-	            		{
-	            			pRight = null;
-	            		} else {
-		            		Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(), Arrays.asList(method.getParameterTypes()));
-		               		if (superMethod != null)
-		    				{
-		               			producerBeanListHelper.add(pb);
-		               			pRight = pb;
-		    				} else 
-		    				{
-		    					pRight = null;
-		    				}
-	            		}
-	               		if (pRight != null) pRightContinue = true; 
-	            	}
-	            } // for
+                pLeftContinue = pRightContinue = false;
+                for(ProducerMethodBean pb : producerBeans) 
+                {
+                    //left
+                    if (pLeft!= null &&
+                            pLeft.getBeanClass().getSuperclass().equals(pb.getBeanClass()))
+                    {
+                        Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(), Arrays.asList(method.getParameterTypes()));
+                        if (superMethod != null)
+                        {
+                            producerBeanListHelper.add(pb);
+                            pLeft = (pb.isSpecializedBean()) ? pb : null; 
+                        } 
+                        else {
+                            pLeft = null;
+                        }
+                        if (pLeft != null) pLeftContinue = true; 
+                    }
+                    //right
+                    if (pRight != null && 
+                            pb.getBeanClass().getSuperclass().equals(pRight.getBeanClass()))
+                    {
+                        if (!pb.isSpecializedBean()) 
+                        {
+                            pRight = null;
+                        } else {
+                            Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(), Arrays.asList(method.getParameterTypes()));
+                            if (superMethod != null)
+                            {
+                                producerBeanListHelper.add(pb);
+                                pRight = pb;
+                            } else 
+                            {
+                                pRight = null;
+                            }
+                        }
+                        if (pRight != null) pRightContinue = true; 
+                    }
+                } // for
             } // while
-            
+
             //remove the group from producer bean list
             for(ProducerMethodBean pb : producerBeanListHelper.getList())
-    		{
-            	producerBeans.remove(pb);
-    		}
+            {
+                producerBeans.remove(pb);
+            }
             //configure the directly extended producer beans
             configSpecializedProducerMethodBeans(producerBeanListHelper.getList());
         }

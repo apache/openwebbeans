@@ -652,6 +652,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
     @Override
     public Set<Bean<?>> getBeans(String name)
     {        
+        Asserts.assertNotNull(name, "name parameter can not be null");
+        
         return this.injectionResolver.implResolveByName(name);
     }
 
@@ -667,6 +669,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
     @Override
     public Object getInjectableReference(InjectionPoint injectionPoint, CreationalContext<?> ownerCreationalContext)
     {
+        Asserts.assertNotNull(injectionPoint, "injectionPoint parameter can not be null");
+
         //Injected instance
         Object instance = null;
         
@@ -757,6 +761,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
     @Override
     public Object getReference(Bean<?> bean, Type beanType, CreationalContext<?> creationalContext)
     {
+        Asserts.assertNotNull(bean, "bean parameter can not be null");
+
         Context context = null;
         Object instance = null;
 

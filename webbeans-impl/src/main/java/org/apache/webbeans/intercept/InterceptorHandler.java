@@ -162,7 +162,8 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) this.bean;
 
                 // toString is supported but no other object method names!!!
-                if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) && InterceptorUtil.isWebBeansBusinessMethod(method))
+                if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) 
+                    && InterceptorUtil.isWebBeansBusinessMethod(method))
                 {
 
                     DelegateHandler delegateHandler = null;
@@ -188,30 +189,35 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                     }
 
                     // Run around invoke chain
-                    List<InterceptorData> stack = injectionTarget.getInterceptorStack();
+                    List<InterceptorData> interceptorStack = injectionTarget.getInterceptorStack();
 
-                    List<InterceptorData> temp = new ArrayList<InterceptorData>(stack);
-
-                    // Filter both EJB and WebBeans interceptors
-                    filterCommonInterceptorStackList(temp, method, ownerCreationalContext);
-
-                    // If there are both interceptors and decorators, add hook
-                    // point to the end of the interceptor stack.
-                    if (decorators != null && temp.size() > 0)
+                    if (interceptorStack.size() > 0)
                     {
-                        WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
-                        InterceptorDataImpl data = new InterceptorDataImpl(true);
-                        data.setInterceptorInstance(lastInterceptor);
-                        data.setAroundInvoke(lastInterceptor.getClass().getDeclaredMethods()[0]);
-                        temp.add(data);
+                        List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
+    
+                        // Filter both EJB and WebBeans interceptors
+                        filterCommonInterceptorStackList(filteredInterceptorStack, method, ownerCreationalContext);
+    
+                        injectInterceptorFields(filteredInterceptorStack, ownerCreationalContext);
+    
+                        // If there are both interceptors and decorators, add hook
+                        // point to the end of the interceptor stack.
+                        if (decorators != null && filteredInterceptorStack.size() > 0)
+                        {
+                            WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
+                            InterceptorDataImpl data = new InterceptorDataImpl(true);
+                            data.setInterceptorInstance(lastInterceptor);
+                            data.setAroundInvoke(lastInterceptor.getClass().getDeclaredMethods()[0]);
+                            filteredInterceptorStack.add(data);
+                        }
+    
+                        // Call Around Invokes
+                        if (WebBeansUtil.isContainsInterceptorMethod(filteredInterceptorStack, InterceptorType.AROUND_INVOKE))
+                        {
+                            return callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(filteredInterceptorStack, InterceptorType.AROUND_INVOKE));
+                        }
                     }
-
-                    // Call Around Invokes
-                    if (WebBeansUtil.isContainsInterceptorMethod(temp, InterceptorType.AROUND_INVOKE))
-                    {
-                        return callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(temp, InterceptorType.AROUND_INVOKE));
-                    }
-
+                    
                     // If there are Decorators, allow the delegate handler to
                     // manage the stack
                     if (decorators != null)
@@ -297,7 +303,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         return false;
     }
 
-    private void filterCommonInterceptorStackList(final List<InterceptorData> stack, Method method, CreationalContextImpl<?> ownerCreationalContext)
+    private void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method, CreationalContextImpl<?> ownerCreationalContext)
     {
         Iterator<InterceptorData> it = stack.iterator();
         while (it.hasNext())
@@ -310,7 +316,6 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             }
         }
         
-        injectInterceptorFields(stack, ownerCreationalContext);
     }
     
     

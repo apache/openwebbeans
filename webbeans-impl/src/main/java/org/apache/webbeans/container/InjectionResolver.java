@@ -19,7 +19,9 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -33,6 +35,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -43,7 +46,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * <p>
  * It is a singleton class per ClassLoader per JVM. It is
- * responsible for resolbing the bean instances at the injection points for 
+ * responsible for resolving the bean instances at the injection points for 
  * its bean manager.
  * </p>
  * 
@@ -52,8 +55,21 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class InjectionResolver
 {
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(InjectionResolver.class);
+
     /**Bean Manager*/
     private BeanManagerImpl manager;
+    
+    /**
+     * This Map contains all resolved beans via it's type and qualifiers.
+     * If a bean have resolved as not existing, the entry will contain <code>null</code> as value.
+     */
+    private Map<String, Set<Bean<?>>> resolvedBeansByType = new ConcurrentHashMap<String, Set<Bean<?>>>();
+    
+    /**
+     * This Map contains all resolved beans via it's ExpressionLanguage name.
+     */
+    private Map<String, Set<Bean<?>>> resolvedBeansByName = new ConcurrentHashMap<String, Set<Bean<?>>>();
     
     /**
      * Creates a new injection resolve for given bean manager.
@@ -256,6 +272,12 @@ public class InjectionResolver
     {
         Asserts.assertNotNull(name, "name parameter can not be null");
 
+        String cacheKey = name;
+        if (resolvedBeansByName.containsKey(cacheKey))
+        {
+            return resolvedBeansByName.get(cacheKey); 
+        }
+
         Set<Bean<?>> resolvedComponents = new HashSet<Bean<?>>();        
         Set<Bean<?>> deployedComponents = this.manager.getBeans();
         
@@ -286,7 +308,10 @@ public class InjectionResolver
                 return specializedComponents;
             }            
         }
-                
+        
+        resolvedBeansByType.put(cacheKey, resolvedComponents);
+        logger.debug("DEBUG_ADD_BYNYME_CACHE_BEANS", cacheKey);
+
         return resolvedComponents;
     }
      
@@ -342,15 +367,22 @@ public class InjectionResolver
      * @param <T> bean type info
      * @param injectionPointType injection point api type
      * @param injectionPointTypeArguments actual type arguments if parameterized type
-     * @param qualifier qualifier of the injection point
+     * @param qualifiers qualifiers of the injection point
      * @return set of resolved beans
      */
-    public Set<Bean<?>> implResolveByType(Type injectionPointType, Annotation... qualifier)
+    public Set<Bean<?>> implResolveByType(Type injectionPointType, Annotation... qualifiers)
     {
-        Asserts.assertNotNull(injectionPointType, "injectionPointType parameter can not be null");
-        Asserts.assertNotNull(qualifier, "qualifier parameter can not be null");
+        //X TODO maybe we need to stringify the qualifiers manually im a loop...
+        String cacheKey = getBeanCacheKey(injectionPointType, qualifiers);
+
+        
+        if (resolvedBeansByType.containsKey(cacheKey))
+        {
+            return resolvedBeansByType.get(cacheKey); 
+        }
         
         Set<Bean<?>> results = new HashSet<Bean<?>>();
+        
         Set<Bean<?>> deployedComponents = this.manager.getBeans();
 
         boolean currentQualifier = false;
@@ -358,16 +390,16 @@ public class InjectionResolver
         
         if(isInstanceOrEventInjection(injectionPointType))
         {
-            qualifier = new Annotation[1];
-            qualifier[0] = new AnyLiteral();
+            qualifiers = new Annotation[1];
+            qualifiers[0] = new AnyLiteral();
         }
         
         else
         {
-            if (qualifier.length == 0)
+            if (qualifiers.length == 0)
             {
-                qualifier = new Annotation[1];
-                qualifier[0] = new DefaultLiteral();
+                qualifiers = new Annotation[1];
+                qualifiers[0] = new DefaultLiteral();
                 currentQualifier = true;
             }                        
         }
@@ -389,25 +421,22 @@ public class InjectionResolver
                 continue;
             }
 
-            else
+            Set<Type> componentApiTypes = component.getTypes();
+            Iterator<Type> itComponentApiTypes = componentApiTypes.iterator();
+            while (itComponentApiTypes.hasNext())
             {
-                Set<Type> componentApiTypes = component.getTypes();
-                Iterator<Type> itComponentApiTypes = componentApiTypes.iterator();
-                while (itComponentApiTypes.hasNext())
+                Type componentApiType = itComponentApiTypes.next();
+                
+                if(ClassUtil.isAssignable(componentApiType, injectionPointType))
                 {
-                    Type componentApiType = itComponentApiTypes.next();                    
-                    
-                    if(ClassUtil.isAssignable(componentApiType, injectionPointType))
-                    {
-                        results.add((Bean<?>) component);
-                        break;                                            
-                    }                    
+                    results.add((Bean<?>) component);
+                    break;
                 }
-            }            
+            }
         }
  
         //Look for qualifiers
-        results = findByQualifier(results, qualifier);
+        results = findByQualifier(results, qualifiers);
         
         //Look for alternative
         results = findByAlternatives(results);
@@ -417,13 +446,26 @@ public class InjectionResolver
         if(results.size() > 1)
         {
             //Look for specialization
-            results = findBySpecialization(results);            
+            results = findBySpecialization(results);
 
         }
+        
+        resolvedBeansByType.put(cacheKey, results);
+        logger.debug("DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
         
         return results;
     }
     
+    private String getBeanCacheKey(Type injectionPointType, Annotation... qualifiers)
+    {
+        StringBuilder cacheKey = new StringBuilder(injectionPointType.toString());
+        for (Annotation a : qualifiers)
+        {
+            cacheKey.append('@').append(a.toString());
+        }
+        return cacheKey.toString();
+    }
+
     /**
      * Returns specialized beans if exists, otherwise return input result
      * 
