@@ -36,29 +36,14 @@
     </properties>
 
     <dependencies>
-
+		
+		<!-- Those dependencies are required for standalone TCK testing -->
+		
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-porting</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-jsf</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.myfaces.core</groupId>
-            <artifactId>myfaces-api</artifactId>
-            <version>1.2.8</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.myfaces.core</groupId>
-            <artifactId>myfaces-impl</artifactId>
-            <version>1.2.8</version>
-        </dependency>
-        
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-resource</artifactId>
@@ -90,18 +75,6 @@
         	<version>${project.version}</version>
         </dependency>
 
-        <dependency>
-        	<groupId>org.apache.openwebbeans</groupId>
-        	<artifactId>openwebbeans-ee-common</artifactId>
-        	<version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-        	<groupId>org.apache.openwebbeans</groupId>
-        	<artifactId>openwebbeans-web</artifactId>
-        	<version>${project.version}</version>
-        </dependency>
-
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
@@ -117,19 +90,12 @@
 			<artifactId>openwebbeans-spi</artifactId>
 		</dependency>		
 		
-		<!-- JSTL -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-ejb_3.0_spec</artifactId>
 			<version>1.0.1</version>
 		</dependency>
 		
-
     </dependencies>
 
 
@@ -148,6 +114,7 @@
                         <configuration>
                             <artifactItems>
                                 
+                                <!-- Those dependencies are required for Web Profile TCK testing -->
                                 <artifactItem>
                                     <groupId>org.jboss.jsr299.tck</groupId>
                                     <artifactId>jsr299-tck-impl</artifactId>
@@ -186,6 +153,7 @@
 									<groupId>org.apache.openwebbeans</groupId>
 									<artifactId>openwebbeans-web</artifactId>
 									<overWrite>true</overWrite>
+									<version>${project.version}</version>
 									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
 								</artifactItem>
 								
@@ -203,6 +171,7 @@
 									<groupId>javax.servlet</groupId>
 									<artifactId>jstl</artifactId>
 									<overWrite>true</overWrite>
+									<version>1.2</version>
 									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
 								</artifactItem>
 
@@ -211,6 +180,7 @@
 									<groupId>org.apache.openwebbeans</groupId>
 									<artifactId>openwebbeans-ee-common</artifactId>
 									<overWrite>true</overWrite>
+									<version>${project.version}</version>
 									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
 								</artifactItem>
 								
@@ -220,6 +190,7 @@
 									<groupId>org.apache.myfaces.core</groupId>
 									<artifactId>myfaces-api</artifactId>
 									<overWrite>true</overWrite>
+						            <version>1.2.8</version>									
 									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
 								</artifactItem>
 							
@@ -228,6 +199,7 @@
 									<groupId>org.apache.myfaces.core</groupId>
 									<artifactId>myfaces-impl</artifactId>
 									<overWrite>true</overWrite>
+						            <version>1.2.8</version>								
 									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
 								</artifactItem>
 							
