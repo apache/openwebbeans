@@ -18,8 +18,16 @@ import java.lang.reflect.Method;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
+
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
+import org.apache.webbeans.inject.OWBInjector;
+import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation of the {@link InterceptorData} api contract.
@@ -38,9 +46,6 @@ public class InterceptorDataImpl implements InterceptorData
 
     private Interceptor<?> webBeansInterceptor;
 
-    /** Instance of the method */
-    private Object interceptorInstance;
-
     /** Defined in the interceptor or bean */
     private boolean definedInInterceptorClass;
 
@@ -55,11 +60,32 @@ public class InterceptorDataImpl implements InterceptorData
 
     /** Defined with webbeans specific interceptor */
     private boolean isDefinedWithWebBeansInterceptor;
+    
+    private Class<?> interceptorClass = null;
+    
+    private WebBeansDecoratorInterceptor decoratorInterceptor = null;
 
     public InterceptorDataImpl(boolean isDefinedWithWebBeansInterceptor)
     {
-        this.isDefinedWithWebBeansInterceptor = isDefinedWithWebBeansInterceptor;
+        this(isDefinedWithWebBeansInterceptor,null);
     }
+
+    public InterceptorDataImpl(boolean isDefinedWithWebBeansInterceptor, WebBeansDecoratorInterceptor decoratorInterceptor)
+    {
+        this.isDefinedWithWebBeansInterceptor = isDefinedWithWebBeansInterceptor;
+        this.decoratorInterceptor = decoratorInterceptor;
+    }
+    
+    public Class<?> getInterceptorClass()
+    {
+        return this.interceptorClass;
+    }
+    
+    public void setInterceptorClass(Class<?> clazz)
+    {
+        this.interceptorClass = clazz;
+    }
+
 
     /*
      * (non-Javadoc)
@@ -141,27 +167,6 @@ public class InterceptorDataImpl implements InterceptorData
     public Method getAroundInvoke()
     {
         return this.aroundInvoke;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.webbeans.intercept.InterceptorData#getInterceptorInstance()
-     */
-    public Object getInterceptorInstance()
-    {
-        return interceptorInstance;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.webbeans.intercept.InterceptorData#setInterceptorInstance(
-     * java.lang.Object)
-     */
-    public void setInterceptorInstance(Object interceptorInstance)
-    {
-        this.interceptorInstance = interceptorInstance;
     }
 
     /*
@@ -278,6 +283,71 @@ public class InterceptorDataImpl implements InterceptorData
         }
         
         return false;
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object createNewInstance(CreationalContextImpl<?> ownerCreationalContext)
+    {
+        //check for this InterceptorData is defined by interceptor class
+        if(this.isDefinedWithWebBeansInterceptor && this.definedInInterceptorClass)
+        {
+            Object interceptor = null;
+            
+            //Means that it is the last interceptor added by InterceptorHandler
+            if(this.webBeansInterceptor == null)
+            {
+                return this.decoratorInterceptor; 
+            }
+            else
+            {
+                interceptor = ownerCreationalContext.getDependentInterceptor(this.webBeansInterceptor);
+                //There is no define interceptor, define and add it into dependent
+                if(interceptor == null)
+                {
+                    BeanManagerImpl manager = BeanManagerImpl.getManager();
+                    
+                    WebBeansInterceptor<Object> actualInterceptor = (WebBeansInterceptor<Object>)this.webBeansInterceptor;
+                    CreationalContext<Object> creationalContext = manager.createCreationalContext(actualInterceptor);
+                    interceptor = manager.getReference(actualInterceptor,actualInterceptor.getBeanClass(), creationalContext);
+                    
+                    actualInterceptor.setInjections(interceptor, creationalContext);
+
+                    if (ownerCreationalContext != null)
+                    {
+                        ownerCreationalContext.addDependent((WebBeansInterceptor<Object>)this.webBeansInterceptor, interceptor, creationalContext);
+                    }                
+                }                
+            }
+            
+            return interceptor;
+        }
+        else
+        {
+            Object interceptor = null;       
+            //control for this InterceptorData is defined by interceptor class
+            if(this.definedInInterceptorClass)
+            {
+                interceptor = ownerCreationalContext.getEjbInterceptor(this.interceptorClass);
+                
+                if(interceptor == null)
+                {
+                    interceptor = WebBeansUtil.newInstanceForced(this.interceptorClass);
+                    try
+                    {
+                        OWBInjector.inject(interceptor);
+                    }
+                    catch (Exception e)
+                    {
+                        //No-op
+                    }          
+                    
+                    ownerCreationalContext.addEjbInterceptor(interceptorClass, interceptor);
+                }                
+            }
+
+            return interceptor; 
+        }        
     }
 
 }

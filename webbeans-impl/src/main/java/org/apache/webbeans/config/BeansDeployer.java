@@ -316,11 +316,14 @@ public class BeansDeployer
         {
             for (Bean<?> bean : beans)
             {
-                //Configure decorator and interceptor stack for ManagedBeans
+                //Configure decorator and interceptor stack for Injection target beans
                 if((bean instanceof AbstractInjectionTargetBean) && 
                         !(bean instanceof NewBean))
                 {
-                    if(!(bean instanceof Decorator) && !(bean instanceof javax.enterprise.inject.spi.Interceptor))
+                    
+                    //Decorators not applied to interceptors/decorators
+                    if(!(bean instanceof Decorator) && 
+                            !(bean instanceof javax.enterprise.inject.spi.Interceptor))
                     {
                         DefinitionUtil.defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);   
                     }
@@ -329,14 +332,16 @@ public class BeansDeployer
                             !(bean instanceof NewBean))
                     {
                         DefinitionUtil.defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);   
-                    }
+                    }                                        
                 }
                 
+                //Check passivation scope
                 checkPassivationScope(bean);
                                 
                 //Bean injection points
                 Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
                                 
+                //Check injection points
                 if(injectionPoints != null)
                 {
                     for (InjectionPoint injectionPoint : injectionPoints)

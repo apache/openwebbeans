@@ -27,10 +27,7 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.interceptor.ExcludeClassInterceptors;
-import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -43,7 +40,6 @@ import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -59,17 +55,16 @@ import org.apache.webbeans.util.WebBeansUtil;
  * <li><b>1- Configuration of decorators and interceptors</b>
  * <p>
  * Decorators and Interceptors are configured from {@link BeansDeployer}
- * class via methods <code>configureInterceptors(scanner)</code> and
- * <code>configureDecorators(scanner)</code>. Those methods further call
+ * class via methods <code>defineManagedBean(class)</code> and Those methods further call
  * <code>defineInterceptor(interceptor class)</code> and <code>defineDecorator(decorator class)</code>
- * methods. Those methods finally call {@link WebBeansUtil#defineInterceptors(Class)} and
+ * methods. Those methods finally call {@link WebBeansUtil#defineInterceptor(Class)} and
  * {@link WebBeansUtil#defineDecorator(Class)} methods for actual configuration.
  * <p>
  * Let's look at the "WebBeansUtil's" methods; 
  * </p>
  * <ul>
  * <li>
- * <code>defineInterceptors</code> : This method firstly
+ * <code>defineInterceptor</code> : This method firstly
  * creates a "Managed Bean" for the given interceptor with
  * "WebBeansType.INTERCEPTOR" as a type. After checking some controls, it calls
  * "WebBeansInterceptorConfig#configureInterceptorClass".
@@ -78,7 +73,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * *Interceptor Binding* annotations. If everything goes well, it adds
  * interceptor instance into the "BeanManager" interceptor list.
  * </li>
- * <li><code>defineDecorators</code> : Exactly doing same thing as "defineInterceptors". If
+ * <li><code>defineDecorator</code> : Exactly doing same thing as "defineInterceptor". If
  * everything goes well, it adds decorator instance into the "BeanManager"
  * decorator list.</li>
  * </p>
@@ -97,10 +92,10 @@ import org.apache.webbeans.util.WebBeansUtil;
  * AbstractInjectionTargetBean" class "afterConstructor()" method. Actual
  * configuration is done by the
  * {@link DefinitionUtil#defineBeanInterceptorStack(AbstractOwbBean)} and
- * {@link DefinitionUtil#defineWebBeanDecoratorStack}. In
- * "DefinitionUtil.defineSimpleWebBeanInterceptorStack", firstly it configures
+ * {@link DefinitionUtil#defineDecoratorStack}. In
+ * "DefinitionUtil.defineBeanInterceptorStack", firstly it configures
  * "EJB spec. interceptors" after that configures "JSR-299 spec. interceptors."
- * In "DefinitionUtil.defineSimpleWebBeanDecoratorStack", it configures
+ * In "DefinitionUtil.defineDecoratorStack", it configures
  * decorator stack. "EJBInterceptorConfig" class is responsible for finding all
  * interceptors for given managed bean class according to the EJB Specification.
  * (But as you said, it may not include AroundInvoke/PostConstruct etc.
@@ -142,19 +137,39 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class InterceptorHandler implements MethodHandler, Serializable
 {
+    /**Default serial id*/
     private static final long serialVersionUID = 1L;
-
+    
+    /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorHandler.class);
     
+    /**Proxied bean*/
     protected OwbBean<?> bean = null;
 
+    /**
+     * Creates a new handler.
+     * @param bean proxied bean
+     */
     protected InterceptorHandler(OwbBean<?> bean)
     {
         this.bean = bean;
     }
 
+    /**
+     * Calls decorators and interceptors and actual
+     * bean method.
+     * @param instance actual bean instance
+     * @param method business method
+     * @param proceed proceed method
+     * @param arguments method arguments
+     * @param ownerCreationalContext bean creational context
+     * @return method result
+     * @throws Exception for exception
+     */
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments, CreationalContextImpl<?> ownerCreationalContext) throws Exception
     {
+        Object result = null;
+        
         try
         {
             if (bean instanceof InjectionTargetBean<?>)
@@ -183,31 +198,30 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         ((ProxyObject)delegate).setHandler(delegateHandler);
 
                         // Gets component decorator stack
-                        decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, ownerCreationalContext);
-
+                        decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, ownerCreationalContext);                        
+                        //Sets decorator stack of delegate
                         delegateHandler.setDecorators(decorators);
                     }
 
                     // Run around invoke chain
                     List<InterceptorData> interceptorStack = injectionTarget.getInterceptorStack();
-
                     if (interceptorStack.size() > 0)
                     {
+                        //Holds filtered interceptor stack
                         List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
     
                         // Filter both EJB and WebBeans interceptors
                         filterCommonInterceptorStackList(filteredInterceptorStack, method, ownerCreationalContext);
-    
-                        injectInterceptorFields(filteredInterceptorStack, ownerCreationalContext);
     
                         // If there are both interceptors and decorators, add hook
                         // point to the end of the interceptor stack.
                         if (decorators != null && filteredInterceptorStack.size() > 0)
                         {
                             WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
-                            InterceptorDataImpl data = new InterceptorDataImpl(true);
-                            data.setInterceptorInstance(lastInterceptor);
+                            InterceptorDataImpl data = new InterceptorDataImpl(true,lastInterceptor);
+                            data.setDefinedInInterceptorClass(true);
                             data.setAroundInvoke(lastInterceptor.getClass().getDeclaredMethods()[0]);
+                            //Add to last
                             filteredInterceptorStack.add(data);
                         }
     
@@ -225,19 +239,27 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         return delegateHandler.invoke(instance, method, proceed, arguments);
                     }
                 }
-
-                if (!method.isAccessible())
-
-                {
-                    method.setAccessible(true);
-                }
-
             }
-            return method.invoke(instance, arguments);
+            
+            //If here call actual method            
+            //If not interceptor or decorator calls
+            //Do normal calling
+            boolean access = method.isAccessible();
+            method.setAccessible(true);
+            try
+            {
+                result = method.invoke(instance, arguments);
+                
+            }finally
+            {
+                method.setAccessible(access);
+            }
+            
         }
         catch (InvocationTargetException e)
         {
             Throwable target = e.getTargetException();
+            //Look for target exception
             if (Exception.class.isAssignableFrom(target.getClass()))
             {
                 throw (Exception) target;
@@ -248,39 +270,43 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             }
         }
 
+        return result;
     }
 
-    protected abstract <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception;
-
+    /**
+     * Call around invoke method of the given bean on
+     * calling interceptedMethod.
+     * @param interceptedMethod intercepted bean method
+     * @param arguments method actual arguments
+     * @param stack interceptor stack
+     * @return return of method
+     * @throws Exception for any exception
+     */
+    protected abstract Object callAroundInvokes(Method interceptedMethod, Object[] arguments, List<InterceptorData> stack) throws Exception;
+    
+    /**
+     * 
+     * @return bean manager
+     */
+    protected BeanManagerImpl getBeanManager()
+    {
+        return BeanManagerImpl.getManager();
+    }
+    
+    
+    /**
+     * Returns true if this interceptor data is not related
+     * false othwewise.
+     * @param id interceptor data
+     * @param method called method
+     * @return true if this interceptor data is not related
+     */
     private boolean shouldRemoveInterceptorCommon(InterceptorData id, Method method)
     {
-        boolean isMethodAnnotatedWithInterceptorClass = false;
-        
         boolean isMethodAnnotatedWithExcludeInterceptorClass = false;
-
-        if (id.isDefinedWithWebBeansInterceptor())
+        if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
         {
-            if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(method.getDeclaredAnnotations()))
-            {
-                isMethodAnnotatedWithInterceptorClass = true;
-            }
-
-            if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
-            {
-                isMethodAnnotatedWithExcludeInterceptorClass = true;
-            }
-        }
-        else
-        {
-            if (AnnotationUtil.hasMethodAnnotation(method, Interceptors.class))
-            {
-                isMethodAnnotatedWithInterceptorClass = true;   
-            }
-
-            if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
-            {
-                isMethodAnnotatedWithExcludeInterceptorClass = true;   
-            }
+            isMethodAnnotatedWithExcludeInterceptorClass = true;
         }
 
         if (isMethodAnnotatedWithExcludeInterceptorClass)
@@ -292,17 +318,22 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 return true;
             }
         }
-        
+
         // If the interceptor is defined in a different method, remove it
         if (id.isDefinedInMethod() && !id.getInterceptorBindingMethod().equals(method))
         {
             return true;
         }
 
-        
         return false;
     }
 
+    /**
+     * Filter bean interceptor stack.
+     * @param stack interceptor stack
+     * @param method called method on proxy
+     * @param ownerCreationalContext bean creational context
+     */
     private void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method, CreationalContextImpl<?> ownerCreationalContext)
     {
         Iterator<InterceptorData> it = stack.iterator();
@@ -314,56 +345,14 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             {
                 it.remove();
             }
-        }
-        
+        }        
     }
-    
-    
-    public static void injectInterceptorFields(final List<InterceptorData> stack, CreationalContextImpl<?> ownerCreationalContext)
-    {
-        Iterator<InterceptorData> it = stack.iterator();
-        BeanManager manager = BeanManagerImpl.getManager();
-        while (it.hasNext())
-        {
-            InterceptorData intData = it.next();
-            
-            if (intData.isDefinedInInterceptorClass())
-            {
-                try
-                {
-                    if (intData.isDefinedWithWebBeansInterceptor())
-                    {
-                        @SuppressWarnings("unchecked")
-                        WebBeansInterceptor<Object> interceptor = (WebBeansInterceptor<Object>)intData.getWebBeansInterceptor();
-                        CreationalContext<Object> creationalContext = manager.createCreationalContext(interceptor);
-                        Object interceptorProxy = manager.getReference(interceptor,interceptor.getBeanClass(), creationalContext);
-                        
-                        interceptor.setInjections(interceptorProxy, creationalContext);
-
-                        //Setting interceptor proxy instance
-                        intData.setInterceptorInstance(interceptorProxy);
-                        
-                        if (ownerCreationalContext != null)
-                        {
-                        	ownerCreationalContext.addDependent(interceptor, interceptorProxy, creationalContext);
-                        }
-                    }
-
-                }
-                catch (WebBeansException e1)
-                {
-                    throw e1;
-                }
-                catch (Exception e)
-                {
-                    throw new WebBeansException(e);
-                }
-            }
-            
-        }
         
-    }
-    
+    /**
+     * Write to stream.
+     * @param s stream
+     * @throws IOException
+     */
     private  void writeObject(ObjectOutputStream s) throws IOException
     {
         s.writeLong(serialVersionUID);
@@ -381,6 +370,12 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         }
     }
     
+    /**
+     * Read from stream.
+     * @param s stream
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private  void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
     {
         if(s.readLong() == serialVersionUID)

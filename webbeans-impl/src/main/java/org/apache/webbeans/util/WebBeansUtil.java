@@ -1082,8 +1082,8 @@ public final class WebBeansUtil
     /**
      * Configures the interceptor stack of the web beans component.
      * 
-     * @param clazz interceptor class
-     * @param annotation annotation type
+     * @param interceptorClass interceptor class
+     * @param interceptorType annotation type
      * @param definedInInterceptorClass check if annotation is defined in
      *            interceptor class (as opposed to bean class)
      * @param definedInMethod check if the interceptor is defined in the comp.
@@ -1091,46 +1091,59 @@ public final class WebBeansUtil
      * @param stack interceptor stack
      * @param annotatedInterceptorClassMethod if definedInMethod, this specify
      *            method
-     * @param isDefinedWithWebBeans if interceptor is defined with WebBeans
+     * @param defineWithInterceptorBinding if interceptor is defined with WebBeans
      *            spec, not EJB spec
      */
-    public static void configureInterceptorMethods(Interceptor<?> webBeansInterceptor, Class<?> clazz, Class<? extends Annotation> annotation, 
+    public static void configureInterceptorMethods(Interceptor<?> webBeansInterceptor, Class<?> interceptorClass, Class<? extends Annotation> interceptorType, 
                                                     boolean definedInInterceptorClass, boolean definedInMethod, List<InterceptorData> stack, 
-                                                    Method annotatedInterceptorClassMethod, boolean isDefinedWithWebBeans)
+                                                    Method annotatedInterceptorClassMethod, boolean defineWithInterceptorBinding)
     {
         InterceptorData intData = null;
         Method method = null;
+        
+        //Check for default constructor of EJB based interceptor
+        if(webBeansInterceptor == null)
+        {
+            if(definedInInterceptorClass)
+            {
+                Constructor<?> ct = ClassUtil.isContaintNoArgConstructor(interceptorClass);
+                if (ct == null)
+                {
+                    throw new WebBeansConfigurationException("class : " + interceptorClass.getName() + " must have no-arg constructor");
+                }                
+            }
+        }
 
-        if (annotation.equals(AroundInvoke.class) || annotation.equals(AroundTimeout.class))
+        if (interceptorType.equals(AroundInvoke.class) || interceptorType.equals(AroundTimeout.class))
         {
-            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(clazz, annotation);
+            method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(interceptorClass, interceptorType);
         }
-        else if (annotation.equals(PostConstruct.class))
+        else if (interceptorType.equals(PostConstruct.class))
         {
             if (definedInInterceptorClass)
             {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PostConstruct.class, true);
+                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PostConstruct.class, true);
             }
             else
             {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PostConstruct.class, false);
+                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PostConstruct.class, false);
             }
         }
-        else if (annotation.equals(PreDestroy.class))
+        else if (interceptorType.equals(PreDestroy.class))
         {
             if (definedInInterceptorClass)
             {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PreDestroy.class, true);
+                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PreDestroy.class, true);
             }
             else
             {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(clazz, PreDestroy.class, false);
+                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PreDestroy.class, false);
             }
         }
 
         if (method != null)
         {
-            intData = new InterceptorDataImpl(isDefinedWithWebBeans);
+            intData = new InterceptorDataImpl(defineWithInterceptorBinding);
             intData.setDefinedInInterceptorClass(definedInInterceptorClass);
             intData.setDefinedInMethod(definedInMethod);
             intData.setInterceptorBindingMethod(annotatedInterceptorClassMethod);
@@ -1138,44 +1151,20 @@ public final class WebBeansUtil
 
             if (definedInInterceptorClass)
             {
-                try
-                {
-                    if (!isDefinedWithWebBeans)
-                    {
-                        // Check for a duplicate interceptor instance in this beans stack
-                        boolean usedExistingInstance = false;
-                        for (InterceptorData idata : stack) 
-                        { 
-                            if (idata.getInterceptorInstance().getClass().equals(clazz)) 
-                            { 
-                                intData.setInterceptorInstance(idata.getInterceptorInstance());
-                                usedExistingInstance = true;
-                            }
-                        }
-                        if (!usedExistingInstance) 
-                        { 
-                            intData.setInterceptorInstance(newInstanceForced(clazz));
-                        }
-                    }
-                }
-                catch (WebBeansConfigurationException e1)
-                {
-                    throw e1;
-                }
-                catch (Exception e)
-                {
-                    throw new WebBeansException(e);
-                }
+                intData.setInterceptorClass(interceptorClass);
             }
 
-            intData.setInterceptorMethod(method, annotation);
+            intData.setInterceptorMethod(method, interceptorType);
 
             stack.add(intData);
         }
     }
     
     
-    public static <T> void configureInterceptorMethods(Interceptor<?> webBeansInterceptor, AnnotatedType<T> annotatedType, Class<? extends Annotation> annotation, boolean definedInInterceptorClass, boolean definedInMethod, List<InterceptorData> stack, Method annotatedInterceptorClassMethod, boolean isDefinedWithWebBeans)
+    public static <T> void configureInterceptorMethods(Interceptor<?> webBeansInterceptor, AnnotatedType<T> annotatedType, 
+                                                        Class<? extends Annotation> annotation, boolean definedInInterceptorClass, 
+                                                        boolean definedInMethod, List<InterceptorData> stack, 
+                                                        Method annotatedInterceptorClassMethod)
     {
         InterceptorData intData = null;
         Method method = null;
@@ -1210,32 +1199,13 @@ public final class WebBeansUtil
 
         if (method != null)
         {
-            intData = new InterceptorDataImpl(isDefinedWithWebBeans);
+            intData = new InterceptorDataImpl(true);
             intData.setDefinedInInterceptorClass(definedInInterceptorClass);
             intData.setDefinedInMethod(definedInMethod);
             intData.setInterceptorBindingMethod(annotatedInterceptorClassMethod);
             intData.setWebBeansInterceptor(webBeansInterceptor);
-
-            if (definedInInterceptorClass)
-            {
-                try
-                {
-                    if (!isDefinedWithWebBeans)
-                    {
-                        intData.setInterceptorInstance(newInstanceForced(annotatedType.getJavaClass()));
-                    }
-                }
-                catch (WebBeansConfigurationException e1)
-                {
-                    throw e1;
-                }
-                catch (Exception e)
-                {
-                    throw new WebBeansException(e);
-                }
-            }
-
             intData.setInterceptorMethod(method, annotation);
+            intData.setInterceptorClass(webBeansInterceptor.getBeanClass());
 
             stack.add(intData);
         }

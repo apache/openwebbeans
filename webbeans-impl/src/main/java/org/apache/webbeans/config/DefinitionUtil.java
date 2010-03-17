@@ -1020,16 +1020,20 @@ public final class DefinitionUtil
     {
         Asserts.assertNotNull(bean, "bean parameter can no be null");
 
-        // @javax.interceptor.Interceptors
+        // If bean is not session bean
         if(!(bean instanceof EnterpriseBeanMarker))
         {
             EJBInterceptorConfig.configure(((AbstractOwbBean)bean).getReturnType(), bean.getInterceptorStack());   
         }
 
-        // @javax.webbeans.Interceptor
+        // For every injection target bean
         WebBeansInterceptorConfig.configure(bean, bean.getInterceptorStack());
     }
 
+    /**
+     * Defines decorator stack of given bean.
+     * @param bean injection target bean
+     */
     public static void defineDecoratorStack(AbstractInjectionTargetBean<?> bean)
     {
         WebBeansDecoratorConfig.configureDecarotors((AbstractInjectionTargetBean<Object>)bean);

@@ -238,9 +238,9 @@ public final class WebBeansInterceptorConfig
             if((annotatedType = interceptor.getAnnotatedType()) != null)
             {
                 // interceptor binding
-                WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, AroundInvoke.class, true, false, stack, null, true);
-                WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PostConstruct.class, true, false, stack, null, true);
-                WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PreDestroy.class, true, false, stack, null, true);                
+                WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, AroundInvoke.class, true, false, stack, null);
+                WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PostConstruct.class, true, false, stack, null);
+                WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PreDestroy.class, true, false, stack, null);                
             }
             else
             {
@@ -383,9 +383,9 @@ public final class WebBeansInterceptorConfig
                 {
                     WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
     
-                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, AroundInvoke.class, true, true, stack, method, true);
-                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PostConstruct.class, true, true, stack, method, true);
-                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PreDestroy.class, true, true, stack, method, true);
+                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, AroundInvoke.class, true, true, stack, method);
+                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PostConstruct.class, true, true, stack, method);
+                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PreDestroy.class, true, true, stack, method);
                 }
             }            
         }

@@ -55,9 +55,7 @@ public class DependentDecoratorDestroyTest extends AbstractUnitTest
         startContainer(classes, xmls);
         
         @SuppressWarnings("serial")
-        Bean<IDestroy> bean = (Bean<IDestroy>)getBeanManager().getBeans(IDestroy.class, new AnnotationLiteral<Default>()
-                {
-                }).iterator().next();
+        Bean<IDestroy> bean = (Bean<IDestroy>)getBeanManager().getBeans(IDestroy.class, new AnnotationLiteral<Default>(){}).iterator().next();
         CreationalContext<IDestroy> creationalContext = getBeanManager().createCreationalContext(bean);
         Object instance = getBeanManager().getReference(bean, IDestroy.class, creationalContext);
         IDestroy outputProvider = (IDestroy) instance;

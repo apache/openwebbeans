@@ -26,14 +26,28 @@ import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
+/**
+ * Dependent scoped beans interceptor handler.
+ * @version $Rev$ $Date$
+ *
+ */
 public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
 {
-    private static final long serialVersionUID = 1712061509316414L;
+    /**default servial id*/
+    private static final long serialVersionUID = 1L;
     
+    /**Bean instance*/
     private Object actualInstance;
     
+    /**Creaitonal context*/
     private CreationalContext<?> creationalContext;
     
+    /**
+     * Creates a new instance of handler.
+     * @param bean dependent bean 
+     * @param instance bean instance
+     * @param creationalContext creational context
+     */
     public DependentScopedBeanInterceptorHandler(OwbBean<?> bean, Object instance, CreationalContext<?> creationalContext)
     {
         super(bean);        
@@ -41,16 +55,23 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
         this.creationalContext = creationalContext;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         return super.invoke(this.actualInstance, method, proceed, arguments, (CreationalContextImpl<?>)creationalContext);
     }
     
-    protected <T> Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
+    /**
+     * {@inheritDoc}
+     */
+    protected Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
         InvocationContextImpl impl = new InvocationContextImpl(this.bean, this.actualInstance ,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
         impl.setCreationalContext(creationalContext);
+        
         return impl.proceed();
     }
 }

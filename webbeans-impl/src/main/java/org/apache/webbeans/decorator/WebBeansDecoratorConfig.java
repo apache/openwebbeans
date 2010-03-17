@@ -88,19 +88,25 @@ public final class WebBeansDecoratorConfig
         BeanManager manager = BeanManagerImpl.getManager();
         while (itList.hasNext())
         {
+            Object decoratorInstance = null;
             @SuppressWarnings("unchecked")
-            WebBeansDecorator<Object> decorator = (WebBeansDecorator<Object>) itList.next();
-            CreationalContext<Object> creationalContext = manager.createCreationalContext(decorator);
-            Object decoratorInstance = manager.getReference(decorator, decorator.getBeanClass(), creationalContext);
-            
-            decorator.setInjections(decoratorInstance, creationalContext);
-            decorator.setDelegate(decoratorInstance, delegate);
-            decoratorStack.add(decoratorInstance);
-            
-            if (ownerCreationalContext != null)
+            WebBeansDecorator<Object> decorator = (WebBeansDecorator<Object>) itList.next();            
+            decoratorInstance = ownerCreationalContext.getDependentDecorator(decorator);
+            if(decoratorInstance == null)
             {
-            	ownerCreationalContext.addDependent(decorator, decoratorInstance, creationalContext);
+                CreationalContext<Object> creationalContext = manager.createCreationalContext(decorator);
+                decoratorInstance = manager.getReference(decorator, decorator.getBeanClass(), creationalContext);
+                
+                decorator.setInjections(decoratorInstance, creationalContext);
+                decorator.setDelegate(decoratorInstance, delegate);
+                
+                if (ownerCreationalContext != null)
+                {
+                    ownerCreationalContext.addDependent(decorator, decoratorInstance, creationalContext);
+                }                
             }
+            
+            decoratorStack.add(decoratorInstance);
         }
 
         return decoratorStack;

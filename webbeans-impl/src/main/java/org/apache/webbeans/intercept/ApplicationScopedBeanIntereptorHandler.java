@@ -33,21 +33,30 @@ import org.apache.webbeans.component.OwbBean;
  */
 public class ApplicationScopedBeanIntereptorHandler extends NormalScopedBeanInterceptorHandler 
 {
+    /**default serial id*/
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 2113381529723088865L;
-
+    /**Cached bean instance*/
     private Object cachedInstance = null;
     
+    /**
+     * Creates a new handler.
+     * @param bean bean
+     * @param creationalContext creaitonal context
+     */
     public ApplicationScopedBeanIntereptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         super(bean, creationalContext);
     }
     
-    protected Object getContextualInstance(OwbBean<Object> bean, CreationalContext<Object> cc)
+    /**
+     * {@inheritDoc}
+     */
+    protected Object getContextualInstance(OwbBean<Object> bean)
     {
         if (cachedInstance == null) 
         {
-            cachedInstance = super.getContextualInstance(bean, cc);
+            cachedInstance = super.getContextualInstance(bean);
         }
         
         return cachedInstance;

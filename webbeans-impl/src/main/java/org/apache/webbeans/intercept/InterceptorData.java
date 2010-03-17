@@ -22,10 +22,12 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptors;
 
+import org.apache.webbeans.context.creational.CreationalContextImpl;
+
 
 /**
- * Web Beans general interceptor API contract. There are two types of
- * interceptor definition in the Web Beans Container. These are;
+ * OWB general interceptor API contract. There are two types of
+ * interceptor definition in the OWB Container. These are;
  * <p>
  * <ul>
  * <li>EJB related interceptors with {@link Interceptors} annotation</li>
@@ -34,9 +36,9 @@ import javax.interceptor.Interceptors;
  * </ul>
  * </p>
  * <p>
- * If the web beans is an EJB component, EJB container is responsible for
- * calling the EJB related interceptors, otherwise Web Beans container takes the
- * responsibility. In the both cases, Web Beans Container is responsible for
+ * If the bean is an EJB component, EJB container is responsible for
+ * calling the EJB related interceptors, otherwise OWB container takes the
+ * responsibility. In the both cases, OWB Container is responsible for
  * calling web beans related inteceptors.
  * </p>
  * 
@@ -99,18 +101,6 @@ public interface InterceptorData
     public void setDefinedInInterceptorClass(boolean definedInInterceptorClass);
 
     /**
-     * Gets the interceptor instance. 
-     * @return the interceptor instance
-     */
-    public Object getInterceptorInstance();
-
-    /**
-     * Sets the interceptor instance. 
-     * @param instance interceptor instance
-     */
-    public void setInterceptorInstance(Object instance);
-
-    /**
      * Checks the interceptor is defined at the method level. 
      * @return inteceptor defined in method
      */
@@ -169,4 +159,23 @@ public interface InterceptorData
      * @return true if lifecycle interceptor method
      */
     public boolean isLifecycleInterceptor();
+    
+    /**
+     * Creates and returns a new interceptor instance.
+     * @return creates a new interceptor instance
+     */
+    public Object createNewInstance(CreationalContextImpl<?> ownerBean);
+    
+    /**
+     * if this interceptor data is defined by interceptor,
+     * null otherwise.
+     * @return interceptor class
+     */
+    public Class<?> getInterceptorClass();
+    
+    /**
+     * sets interceptor class.
+     * @param clazz interceptor class
+     */
+    public void setInterceptorClass(Class<?> clazz);
 }

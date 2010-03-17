@@ -21,8 +21,11 @@ import java.util.*;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.DependentCreationalContext.DependentType;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -31,16 +34,23 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 {
     private static final long serialVersionUID = -3416834742959340960L;
 
+    /**Actual bean instance*/
     private Object incompleteInstance = null;
     
+    /**Bean proxy*/
     private Object proxyInstance = null;
     
     /**Contextual bean dependent instances*/
     private Map<Object, DependentCreationalContext<?>> dependentObjects = new WeakHashMap<Object, DependentCreationalContext<?>>();
      
+    /**Owner bean*/
     private Contextual<T> contextual = null;
     
+    /**Owner creational context*/
     private CreationalContextImpl<?> ownerCreational = null;
+    
+    /**Ejb interceptors*/
+    private Map<Class<?>, Object> ejbInterceptors = new HashMap<Class<?>, Object>();
     
     /**
      * Package private
@@ -48,6 +58,26 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     CreationalContextImpl(Contextual<T> contextual)
     {
         this.contextual = contextual;
+    }
+    
+    /**
+     * Add interceptor instance.
+     * @param clazz interceptor class
+     * @param instance interceptor instance
+     */
+    public void addEjbInterceptor(Class<?> clazz, Object instance)
+    {
+        this.ejbInterceptors.put(clazz, instance);
+    }
+    
+    /**
+     * Gets interceptor instance.
+     * @param clazz interceptor class
+     * @return interceptor instance
+     */
+    public Object getEjbInterceptor(Class<?> clazz)
+    {
+        return this.ejbInterceptors.get(clazz);
     }
     
     
@@ -62,11 +92,19 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         
     }
     
+    /**
+     * Sets bean instance proxy.
+     * @param proxyInstance proxy
+     */
     public void setProxyInstance(Object proxyInstance)
     {
         this.proxyInstance = proxyInstance;
     }
     
+    /**
+     * Gets bean proxy.
+     * @return bean proxy
+     */
     public Object getProxyInstance()
     {
         return this.proxyInstance;
@@ -84,8 +122,109 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         
         if(instance != null)
         {
-           this.dependentObjects.put(instance, new DependentCreationalContext<K>(cc,dependent));   
+           DependentCreationalContext<K> dependentCreational = new DependentCreationalContext<K>(cc,dependent);
+           if(dependent instanceof Interceptor)
+           {
+               dependentCreational.setDependentType(DependentType.INTERCEPTOR);
+           }
+           else if(dependent instanceof Decorator)
+           {
+               dependentCreational.setDependentType(DependentType.DECORATOR);
+           }
+           else
+           {
+               dependentCreational.setDependentType(DependentType.BEAN);
+           }
+           
+           dependentCreational.setInstance(instance);
+           this.dependentObjects.put(instance, dependentCreational);   
         }
+    }
+    
+    /**
+     * Gets bean interceptor instance.
+     * @param interceptor interceptor bean
+     * @return bean interceptor instance
+     */
+    public Object getDependentInterceptor(Contextual<?> interceptor)
+    {
+        List<DependentCreationalContext<?>> dcs = getDependentInterceptors();
+        for(DependentCreationalContext<?> dc : dcs)
+        {
+            if(dc.getContextual().equals(interceptor))
+            {
+                return dc.getInstance();
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Gets bean decorator instance.
+     * @param decorator decorator bean
+     * @return bean decorator instance
+     */
+    public Object getDependentDecorator(Contextual<?> decorator)
+    {
+        List<DependentCreationalContext<?>> dcs = getDependentDecorators();
+        for(DependentCreationalContext<?> dc : dcs)
+        {
+            if(dc.getContextual().equals(decorator))
+            {
+                return dc.getInstance();
+            }
+        }
+        
+        return null;
+    }    
+    
+    /**
+     * Gets list of dependent interceptors context.
+     * @return list of dependent interceptors context
+     */
+    private List<DependentCreationalContext<?>> getDependentInterceptors()
+    {
+        List<DependentCreationalContext<?>> list = new ArrayList<DependentCreationalContext<?>>();
+        Collection<DependentCreationalContext<?>> values = this.dependentObjects.values();
+        if(values != null && values.size() > 0)
+        {
+            Iterator<DependentCreationalContext<?>> it = values.iterator();
+            while(it.hasNext())
+            {
+                DependentCreationalContext<?> dc = it.next();
+                if(dc.getDependentType().equals(DependentType.INTERCEPTOR))
+                {
+                    list.add(dc);
+                }
+            }
+        }
+        
+        return list;
+    }
+    
+    /**
+     * Gets list of dependent decorators context.
+     * @return list of dependent decorators context
+     */
+    private List<DependentCreationalContext<?>> getDependentDecorators()
+    {
+        List<DependentCreationalContext<?>> list = new ArrayList<DependentCreationalContext<?>>();
+        Collection<DependentCreationalContext<?>> values = this.dependentObjects.values();
+        if(values != null && values.size() > 0)
+        {
+            Iterator<DependentCreationalContext<?>> it = values.iterator();
+            while(it.hasNext())
+            {
+                DependentCreationalContext<?> dc = it.next();
+                if(dc.getDependentType().equals(DependentType.DECORATOR))
+                {
+                    list.add(dc);
+                }
+            }
+        }
+        
+        return list;
     }
     
     /**
@@ -124,6 +263,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         }
         
         this.dependentObjects.clear();
+        this.ejbInterceptors.clear();
     }
     
     /**
@@ -136,7 +276,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         
     }
     
-    
+    /**
+     * Gets owner bean.
+     * @return bean
+     */
     public Contextual<T> getBean()
     {
         return this.contextual;
@@ -160,6 +303,9 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         this.ownerCreational = ownerCreational;
     }
 
+    /**
+     * Write Object. 
+     */
     private synchronized void writeObject(ObjectOutputStream s)
     throws IOException
     {
@@ -184,6 +330,9 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     }
 
 
+    /**
+     * Read object. 
+     */
     @SuppressWarnings("unchecked")
     private synchronized void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException

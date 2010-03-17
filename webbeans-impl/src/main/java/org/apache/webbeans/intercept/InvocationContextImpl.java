@@ -26,13 +26,11 @@ import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Implementation of the {@link InvocationContext} interface.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
  */
 public class InvocationContextImpl implements InvocationContext
 {
@@ -57,6 +55,7 @@ public class InvocationContextImpl implements InvocationContext
     /** Used for numbering interceptors */
     private int currentMethod = 1;
     
+    /**Bean creational context*/
     private CreationalContext<?> creationalContext;
     
     /**
@@ -85,12 +84,20 @@ public class InvocationContextImpl implements InvocationContext
         }
     }
     
-    public void setCreationalContext(CreationalContext<?> creationalContext)
+    /**
+     * Sets owner bean creational context.
+     * @param ownerCreationalContext owner creational context
+     */
+    public void setCreationalContext(CreationalContext<?> ownerCreationalContext)
     {
-        this.creationalContext = creationalContext;
+        this.creationalContext = ownerCreationalContext;
     }
 
     
+    /**
+     * Gets target instance for given bean.
+     * @param bean bean instance
+     */
     @SuppressWarnings("unchecked")
     private void configureTarget(OwbBean<?> bean)
     {
@@ -100,45 +107,40 @@ public class InvocationContextImpl implements InvocationContext
         
     }
     
-    /*
-     * (non-Javadoc)
-     * @see javax.interceptor.InvocationContext#getContextData()
+    /**
+     * {@inheritDoc}
      */
     public Map<String, Object> getContextData()
     {
         return this.contextData;
     }
-
-    /*
-     * (non-Javadoc)
-     * @see javax.interceptor.InvocationContext#getMethod()
+    
+    /**
+     * {@inheritDoc}
      */
     public Method getMethod()
     {
         return this.method;
     }
-
-    /*
-     * (non-Javadoc)
-     * @see javax.interceptor.InvocationContext#getParameters()
+    
+    /**
+     * {@inheritDoc}
      */
     public Object[] getParameters()
     {
         return this.parameters;
     }
-
-    /*
-     * (non-Javadoc)
-     * @see javax.interceptor.InvocationContext#getTarget()
+    
+    /**
+     * {@inheritDoc}
      */
     public Object getTarget()
     {
         return this.target;
     }
-
-    /*
-     * (non-Javadoc)
-     * @see javax.interceptor.InvocationContext#proceed()
+    
+    /**
+     * {@inheritDoc}
      */
     public Object proceed() throws Exception
     {
@@ -177,9 +179,12 @@ public class InvocationContextImpl implements InvocationContext
             throw e;
         }
     }
-
-    /*
-     * Around invoke chain.
+    
+    /**
+     * AroundInvoke operations on stack.
+     * @param datas interceptor stack
+     * @return final result
+     * @throws Exception for exceptions
      */
     private Object proceedAroundInvokes(List<InterceptorData> datas) throws Exception
     {
@@ -197,7 +202,7 @@ public class InvocationContextImpl implements InvocationContext
                 method.setAccessible(true);
             }
             
-            Object t = intc.getInterceptorInstance();
+            Object t = intc.createNewInstance((CreationalContextImpl<?>)this.creationalContext);
             
             if (t == null)
             {
@@ -232,9 +237,14 @@ public class InvocationContextImpl implements InvocationContext
 
         return result;
     }
-
-    /*
-     * PreDestroy and PostConstruct chain
+    
+    /**
+     * Post construct and predestroy 
+     * callback operations.
+     * @param datas interceptor stack
+     * @param type interceptor type
+     * @return final result
+     * @throws Exception for any exception
      */
     private Object proceedCommonAnnots(List<InterceptorData> datas, InterceptorType type) throws Exception
     {
@@ -261,7 +271,7 @@ public class InvocationContextImpl implements InvocationContext
 
             currentMethod++;
 
-            Object t = intc.getInterceptorInstance();
+            Object t = intc.createNewInstance((CreationalContextImpl<?>)this.creationalContext);
             
             //In bean class
             if (t == null)
@@ -283,11 +293,9 @@ public class InvocationContextImpl implements InvocationContext
 
         return result;
     }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * javax.interceptor.InvocationContext#setParameters(java.lang.Object[])
+    
+    /**
+     * {@inheritDoc}
      */
     public void setParameters(Object[] params)
     {
@@ -346,6 +354,9 @@ public class InvocationContextImpl implements InvocationContext
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getTimer()
     {

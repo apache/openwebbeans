@@ -21,6 +21,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.intercept.InterceptorData;
@@ -202,6 +203,7 @@ public final class EJBInterceptorConfig
         }
 
         WebBeansUtil.configureInterceptorMethods(null, clazz, AroundInvoke.class, true, isMethod, stack, m, false);
+        WebBeansUtil.configureInterceptorMethods(null, clazz, AroundTimeout.class, true, isMethod, stack, m, false);
         WebBeansUtil.configureInterceptorMethods(null, clazz, PostConstruct.class, true, isMethod, stack, m, false);
         WebBeansUtil.configureInterceptorMethods(null, clazz, PreDestroy.class, true, isMethod, stack, m, false);
 
@@ -242,6 +244,7 @@ public final class EJBInterceptorConfig
 
         // 3- Bean itself
         WebBeansUtil.configureInterceptorMethods(null, clazz, AroundInvoke.class, false, false, stack, null, false);
+        WebBeansUtil.configureInterceptorMethods(null, clazz, AroundTimeout.class, false, false, stack, null, false);
         WebBeansUtil.configureInterceptorMethods(null, clazz, PostConstruct.class, false, false, stack, null, false);
         WebBeansUtil.configureInterceptorMethods(null, clazz, PreDestroy.class, false, false, stack, null, false);
 
@@ -262,6 +265,7 @@ public final class EJBInterceptorConfig
             if (!clazz.equals(Object.class))
             {
                 WebBeansUtil.configureInterceptorMethods(null, clazz, AroundInvoke.class, false, false, stack, null, false);
+                WebBeansUtil.configureInterceptorMethods(null, clazz, AroundTimeout.class, false, false, stack, null, false);
                 WebBeansUtil.configureInterceptorMethods(null, clazz, PostConstruct.class, false, false, stack, null, false);
                 WebBeansUtil.configureInterceptorMethods(null, clazz, PreDestroy.class, false, false, stack, null, false);
             }

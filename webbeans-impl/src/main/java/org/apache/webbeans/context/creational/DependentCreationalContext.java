@@ -37,6 +37,60 @@ class DependentCreationalContext<S> implements Serializable
     
     private Contextual<S> contextual;
     
+    private DependentType dependentType;
+    
+    private Object instance;
+    
+    /**
+     * @return the instance
+     */
+    public Object getInstance()
+    {
+        return instance;
+    }
+
+
+    /**
+     * @param instance the instance to set
+     */
+    public void setInstance(Object instance)
+    {
+        this.instance = instance;
+    }
+
+
+    public enum DependentType
+    {
+        DECORATOR,
+        INTERCEPTOR,
+        BEAN
+    }
+    
+    public DependentCreationalContext(CreationalContext<S> cc, Contextual<S> contextual)
+    {
+        this.contextual = contextual;
+        this.creationalContext = cc;
+    }
+    
+    
+    /**
+     * @return the dependentType
+     */
+    public DependentType getDependentType()
+    {
+        return dependentType;
+    }
+
+
+
+    /**
+     * @param dependentType the dependentType to set
+     */
+    public void setDependentType(DependentType dependentType)
+    {
+        this.dependentType = dependentType;
+    }
+
     /**
      * @return the creationalContext
      */
@@ -67,12 +121,6 @@ class DependentCreationalContext<S> implements Serializable
     public void setContextual(Contextual<S> contextual)
     {
         this.contextual = contextual;
-    }
-
-    public DependentCreationalContext(CreationalContext<S> cc, Contextual<S> contextual)
-    {
-        this.contextual = contextual;
-        this.creationalContext = cc;
     }
     
     private synchronized void writeObject(ObjectOutputStream s)

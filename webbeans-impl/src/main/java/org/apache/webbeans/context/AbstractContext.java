@@ -32,6 +32,7 @@ import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.type.ContextTypes;
+import org.apache.webbeans.util.Asserts;
 
 /**
  * Abstract implementation of the {@link WebBeansContext} interfaces.
@@ -58,7 +59,7 @@ public abstract class AbstractContext implements WebBeansContext
     protected Class<? extends Annotation> scopeType;
     
     /**Contextual to CreationalContext Map*/
-    protected Map<Contextual<?>, CreationalContext<?>> creationalContextMap = new ConcurrentHashMap<Contextual<?>, CreationalContext<?>>();
+    protected final Map<Contextual<?>, CreationalContext<?>> creationalContextMap = new ConcurrentHashMap<Contextual<?>, CreationalContext<?>>();
 
     /**
      * Creates a new context instance
@@ -201,6 +202,21 @@ public abstract class AbstractContext implements WebBeansContext
 
         return  instance;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual)
+    {
+        Asserts.assertNotNull(contextual);
+        if(this.creationalContextMap.containsKey(contextual))
+        {
+            return (CreationalContext<T>)this.creationalContextMap.get(contextual);
+        }
+        
+        return null;
+    }
 
     /**
      * Destroy the given web beans component instance.
@@ -239,6 +255,7 @@ public abstract class AbstractContext implements WebBeansContext
         
         //Clear cache
         this.componentInstanceMap.clear();
+        //Clear creational context map
         this.creationalContextMap.clear();
         
     }

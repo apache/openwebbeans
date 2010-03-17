@@ -101,10 +101,13 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T>
             
             for(InterceptorData interceptorData : this.interceptorStack)
             {
-                Object interceptor = interceptorData.getInterceptorInstance();
-                if(interceptor != null && !(interceptor instanceof Serializable))
+                if(interceptorData.isDefinedInInterceptorClass())
                 {
-                    return false;
+                    Class<?> interceptor = interceptorData.getInterceptorClass();
+                    if(!Serializable.class.isAssignableFrom(interceptor))
+                    {
+                        return false;
+                    }                    
                 }
             }
             

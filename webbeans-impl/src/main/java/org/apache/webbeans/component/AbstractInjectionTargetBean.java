@@ -40,7 +40,6 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
@@ -273,9 +272,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             // Call Post Construct
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
             {
-                InterceptorHandler.injectInterceptorFields(getInterceptorStack(), (CreationalContextImpl<T>)ownerCreationalContext);
-                
                 InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
+                impl.setCreationalContext(ownerCreationalContext);
                 try
                 {
                     impl.proceed();
@@ -316,10 +314,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 getWebBeansType().equals(WebBeansType.DECORATOR))                
         {
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
-            {
-                InterceptorHandler.injectInterceptorFields(getInterceptorStack(),(CreationalContextImpl<T>) creationalContext);
-                
+            {                
                 InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
+                impl.setCreationalContext(creationalContext);
                 try
                 {
                     impl.proceed();
@@ -701,10 +698,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             }
             else
             {
-                Object interceptorInstance = interceptorData.getInterceptorInstance();
-                if(interceptorInstance != null)
+                if(interceptorData.isDefinedInInterceptorClass())
                 {
-                    Class<?> interceptorClass = interceptorInstance.getClass();
+                    Class<?> interceptorClass = interceptorData.getInterceptorClass();
                     if(!Serializable.class.isAssignableFrom(interceptorClass))
                     {
                         throw new WebBeansConfigurationException("Passivation bean : " + toString() + " interceptors must be passivating capable");
