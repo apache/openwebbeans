@@ -46,7 +46,7 @@ public class WithInheritedBindingTypeTest extends AbstractUnitTest
         beanClasses.add(SecureInterceptor.class);
         beanClasses.add(WithInheritedBindingTypeBean.class);
         
-        TransactionInterceptor.coount = 0;
+        TransactionInterceptor.count = 0;
         
         startContainer(beanClasses, beanXmls);       
         
@@ -76,7 +76,7 @@ public class WithInheritedBindingTypeTest extends AbstractUnitTest
         beanInstance = (WithInheritedBindingTypeBean)reference;
         beanInstance.business();
         
-        Assert.assertEquals(2, TransactionInterceptor.coount);
+        Assert.assertEquals(2, TransactionInterceptor.count);
         
         shutDownContainer();
         

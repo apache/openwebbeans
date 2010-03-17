@@ -25,13 +25,21 @@ public class TransactionInterceptor
 {
     public static boolean ECHO = false;
     
-    public static int coount = 0;
+    public static int count = 0;
+    
+    /** this counts how many interceptor instances got created */
+    public static int interceptorCount = 0;
+    
+    public TransactionInterceptor()
+    {
+        interceptorCount++;
+    }
     
     @AroundInvoke
     public Object invoke(InvocationContext context) throws Exception
     {
         ECHO = true;
-        coount++;
+        count++;
         return context.proceed();
     }
 }

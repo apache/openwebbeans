@@ -25,14 +25,14 @@ import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactio
 @ApplicationScoped
 public class ApplicationScopedBean {
 
-	private int j;
+    private int j;
 
-	public int getJ() {
-		return j;
-	}
+    public int getJ() {
+        return j;
+    }
 
-	public void setJ(int j) {
-		this.j = j;
-	}
-	
+    public void setJ(int j) {
+        this.j = j;
+    }
+
 }

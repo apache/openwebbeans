@@ -28,6 +28,13 @@ public class DependentInterceptor
 {
     public static boolean DEP_OK = false;
     
+    public static int refCount = 0;
+    
+    public DependentInterceptor()
+    {
+        refCount++;
+    }
+    
     public Object aroundInvoke(InvocationContext ctx) throws Exception
     {
         DEP_OK = true;

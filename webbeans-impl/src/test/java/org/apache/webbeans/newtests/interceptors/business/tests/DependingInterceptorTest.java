@@ -46,7 +46,7 @@ public class DependingInterceptorTest extends AbstractUnitTest
         beanClasses.add(ApplicationScopedBean.class);
         beanClasses.add(RequestScopedBean.class);
         
-        TransactionInterceptor.coount = 0;
+        TransactionInterceptor.count = 0;
         
         startContainer(beanClasses, beanXmls);       
         
@@ -63,14 +63,14 @@ public class DependingInterceptorTest extends AbstractUnitTest
 
         RequestScopedBean beanInstance1 = (RequestScopedBean)reference1;
         
-        TransactionInterceptor.coount = 0;
+        TransactionInterceptor.count = 0;
         
         beanInstance1.getMyService().getJ();
 
         RequestScopedBean realInstance1 = beanInstance1.getInstance();
         
         Assert.assertTrue(TransactionInterceptor.ECHO);
-        Assert.assertEquals(1, TransactionInterceptor.coount);
+        Assert.assertEquals(1, TransactionInterceptor.count);
 
         TransactionInterceptor.ECHO = false;
 
@@ -89,7 +89,7 @@ public class DependingInterceptorTest extends AbstractUnitTest
 
         Assert.assertTrue(TransactionInterceptor.ECHO);
 
-        Assert.assertEquals(2, TransactionInterceptor.coount);
+        Assert.assertEquals(2, TransactionInterceptor.count);
         
         Assert.assertNotSame(realInstance1, realInstance2);
         Assert.assertEquals(realInstance1.getMyService().getJ(), realInstance2.getMyService().getJ());
@@ -97,4 +97,40 @@ public class DependingInterceptorTest extends AbstractUnitTest
         shutDownContainer();
         
     }
+    
+    @Test
+    public void testInterceptorCreation() throws Exception 
+    {
+            Collection<URL> beanXmls = new ArrayList<URL>();
+            beanXmls.add(getXMLUrl(PACKAGE_NAME, "DependingInterceptorTest"));
+            
+            Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+            beanClasses.add(TransactionInterceptor.class);
+            beanClasses.add(ApplicationScopedBean.class);
+            
+            TransactionInterceptor.count = 0;
+            TransactionInterceptor.interceptorCount = 0;
+            
+            startContainer(beanClasses, beanXmls);
+
+            Set<Bean<?>> beans = getBeanManager().getBeans(ApplicationScopedBean.class);
+            Assert.assertNotNull(beans);        
+            Bean<ApplicationScopedBean> bean = (Bean<ApplicationScopedBean>)beans.iterator().next();                
+            
+            CreationalContext<ApplicationScopedBean> ctx = getBeanManager().createCreationalContext(bean);
+            
+            Object reference1 = getBeanManager().getReference(bean, ApplicationScopedBean.class, ctx);
+            Assert.assertNotNull(reference1);
+            
+            ApplicationScopedBean app = (ApplicationScopedBean) reference1;
+
+            app.getJ();
+            Assert.assertTrue(TransactionInterceptor.interceptorCount == 1);
+
+            app.getJ();
+            Assert.assertTrue(TransactionInterceptor.interceptorCount == 1);
+
+            app.getJ();
+            Assert.assertTrue(TransactionInterceptor.interceptorCount == 1);
+}
 }
