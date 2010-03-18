@@ -14,11 +14,12 @@
 package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextNotActiveException;
@@ -59,7 +60,8 @@ public abstract class AbstractContext implements WebBeansContext
     protected Class<? extends Annotation> scopeType;
     
     /**Contextual to CreationalContext Map*/
-    protected final Map<Contextual<?>, CreationalContext<?>> creationalContextMap = new ConcurrentHashMap<Contextual<?>, CreationalContext<?>>();
+    protected final Map<Contextual<?>, CreationalContext<?>> creationalContextMap = 
+        Collections.synchronizedMap(new WeakHashMap<Contextual<?>, CreationalContext<?>>());
 
     /**
      * Creates a new context instance
