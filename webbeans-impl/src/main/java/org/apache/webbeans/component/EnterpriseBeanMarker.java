@@ -19,7 +19,7 @@ package org.apache.webbeans.component;
  * @version $Rev$ $Date$
  *
  */
-public interface EnterpriseBeanMarker
+public interface EnterpriseBeanMarker extends InterceptedMarker
 {
 
 }

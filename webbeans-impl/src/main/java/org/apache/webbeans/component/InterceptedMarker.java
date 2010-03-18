@@ -16,26 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.decorator;
+package org.apache.webbeans.component;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Decorator;
-
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.InterceptedMarker;
-
-public interface OwbDecorator<T> extends Decorator<T>, InterceptedMarker
+/**
+ * Marker interface for beans that
+ * can be intercepted.
+ * @version $Rev$ $Date$
+ *
+ */
+public interface InterceptedMarker
 {
-    public boolean isDecoratorMatch(Set<Type> apiTypes, Set<Annotation> annotations);
-    
-    public void setDelegate(Object instance, Object delegate);
-    
-    public void setInjections(Object proxy, CreationalContext<?> cretionalContext);
-    
-    public AbstractOwbBean<T> getDelegateComponent();
-    
+
 }

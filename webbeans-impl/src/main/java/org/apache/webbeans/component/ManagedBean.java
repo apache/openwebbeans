@@ -28,7 +28,7 @@ import org.apache.webbeans.intercept.InterceptorData;
  * 
  * @version $Rev$ $Date$
  */
-public class ManagedBean<T> extends AbstractInjectionTargetBean<T>
+public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements InterceptedMarker
 {
     /** Constructor of the web bean component */
     private Constructor<T> constructor;

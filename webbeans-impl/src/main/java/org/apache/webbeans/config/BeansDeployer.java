@@ -35,6 +35,7 @@ import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
@@ -316,24 +317,22 @@ public class BeansDeployer
         {
             for (Bean<?> bean : beans)
             {
-                //Configure decorator and interceptor stack for Injection target beans
-                if((bean instanceof AbstractInjectionTargetBean) && 
-                        !(bean instanceof NewBean))
+                if(bean instanceof InjectionTargetBean)
                 {
-                    
-                    //Decorators not applied to interceptors/decorators
+                    //Decorators not applied to interceptors/decorators/@NewBean
                     if(!(bean instanceof Decorator) && 
-                            !(bean instanceof javax.enterprise.inject.spi.Interceptor))
+                            !(bean instanceof javax.enterprise.inject.spi.Interceptor) &&
+                            !(bean instanceof NewBean))
                     {
                         DefinitionUtil.defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);   
                     }
                     
-                    if(!(bean instanceof javax.enterprise.inject.spi.Interceptor) &&
-                            !(bean instanceof NewBean))
+                    //If intercepted marker
+                    if(bean instanceof InterceptedMarker)
                     {
                         DefinitionUtil.defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);   
-                    }                                        
-                }
+                    }                                                            
+                }                
                 
                 //Check passivation scope
                 checkPassivationScope(bean);
