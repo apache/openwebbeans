@@ -250,7 +250,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * Removes dependent objects.
      */
     @SuppressWarnings("unchecked")
-    private void  removeDependents()
+    public void  removeDependents()
     {
         Collection<?> values = this.dependentObjects.keySet();
         Iterator<?> iterator = values.iterator();

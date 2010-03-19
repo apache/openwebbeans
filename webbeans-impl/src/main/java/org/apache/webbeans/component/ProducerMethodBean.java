@@ -170,6 +170,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         T instance = null;
         Object parentInstance = null;
         CreationalContext<?> parentCreational = null;
+        InjectableMethods<T> m = null;
         try
         {
             parentCreational = getManager().createCreationalContext(this.ownerComponent);
@@ -179,8 +180,8 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                 parentInstance = getParentInstance(parentCreational);
             }
 
-            InjectableMethods<T> m = new InjectableMethods<T>(creatorMethod, parentInstance, this, creationalContext);
-
+            m = new InjectableMethods<T>(creatorMethod, parentInstance, this, creationalContext);
+            //Injection of parameters
             instance = m.doInjection();
 
         }
@@ -190,6 +191,9 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             {
                 destroyBean(getParent(), parentInstance, parentCreational);
             }
+            
+            //Remove any dependent objects
+            m.destroyDependentInjectionPoints();
         }
 
         return instance;
@@ -231,6 +235,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         {
             Object parentInstance = null;
             CreationalContext<?> parentCreational = null;
+            InjectableMethods<T> m = null;
             try
             {
                 parentCreational = getManager().createCreationalContext(this.ownerComponent);
@@ -240,7 +245,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                     parentInstance = getParentInstance(parentCreational);
                 }
 
-                InjectableMethods<T> m = new InjectableMethods<T>(disposalMethod, parentInstance, this.ownerComponent, creationalContext);
+                m = new InjectableMethods<T>(disposalMethod, parentInstance, this.ownerComponent, creationalContext);
                 m.setDisposable(true);
                 m.setProducerMethodInstance(instance);
 
@@ -252,8 +257,10 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                 if (getParent().getScope().equals(Dependent.class))
                 {
                     destroyBean(getParent(), parentInstance, parentCreational);
-
                 }
+                
+                //Remove any dependent objects
+                m.destroyDependentInjectionPoints();
             }
         }
     }

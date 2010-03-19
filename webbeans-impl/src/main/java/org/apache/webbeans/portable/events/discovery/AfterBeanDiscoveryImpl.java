@@ -74,6 +74,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             CustomInterceptor<?> interceptor = new CustomInterceptor(managedBean, (Interceptor<?>)bean);
             
             this.beanManager.addInterceptor(interceptor);
+            BeanManagerImpl.getManager().addCustomInterceptorClass(bean.getBeanClass());
         }
         
         else if(bean instanceof Decorator)
@@ -84,6 +85,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             managedBean = WebBeansUtil.defineManagedBean(managedBeanCreator, annotatedType);
             
             this.beanManager.addDecorator(new WebBeansDecorator(managedBean, (Decorator)bean));
+            BeanManagerImpl.getManager().addCustomInterceptorClass(bean.getBeanClass());            
         }
         else
         {

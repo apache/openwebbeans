@@ -45,12 +45,6 @@ public class InterceptorsManager
         if (!enabledInterceptors.contains(interceptorClazz))
         {
             getInstance().enabledInterceptors.add(interceptorClazz);
-
-            if(!interceptorClazz.isAnnotationPresent(Interceptor.class))
-            {
-                //Maybe custom
-                BeanManagerImpl.getManager().addCustomInterceptorClass(interceptorClazz);
-            }
         }
     }
 

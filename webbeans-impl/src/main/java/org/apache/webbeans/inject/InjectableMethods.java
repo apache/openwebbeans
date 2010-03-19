@@ -28,6 +28,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
 @SuppressWarnings("unchecked")
@@ -36,12 +37,15 @@ public class InjectableMethods<T> extends AbstractInjectable
     /** Injectable method */
     protected Method method;
 
-    /** Component instance that owns the method */
+    /** Bean parent instance that owns the method */
     protected Object instance;
     
+    /**If this method is dispose method*/
     private boolean disposable;
     
+    /**Used in dispose method, represents produces method parameter instance*/
     private Object producerMethodInstance = null;
+    
 
     /**
      * Constructs new instance.
@@ -121,6 +125,15 @@ public class InjectableMethods<T> extends AbstractInjectable
         {
             throw new WebBeansException(e);
         }
+    }
+    
+    /**
+     * Destroy dependent objects of the bean.
+     */
+    public void destroyDependentInjectionPoints()
+    {
+        CreationalContextImpl<?> ownerCreational = (CreationalContextImpl<?>) this.injectionOwnerCreationalContext;
+        ownerCreational.removeDependents();
     }
 
     /**

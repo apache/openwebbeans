@@ -235,7 +235,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             {
                 for(ObserverParams param : obargs)
                 {
-                    if(param.isBean)
+                    if(param.isBean && param.bean.getScope().equals(Dependent.class))
                     {
                         param.bean.destroy(param.instance, param.creational);
                     }

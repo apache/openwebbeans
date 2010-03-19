@@ -44,12 +44,6 @@ public class DecoratorsManager
         Asserts.assertNotNull(decoratorClazz, "decoratorClazz parameter can not be emtpy");
         if (!enabledDecorators.contains(decoratorClazz))
         {
-            if(!decoratorClazz.isAnnotationPresent(Decorator.class))
-            {
-                //Maybe custom
-                BeanManagerImpl.getManager().addCustomDecoratorClass(decoratorClazz);
-            }
-            
             enabledDecorators.add(decoratorClazz);
         }                
     }
