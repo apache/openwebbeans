@@ -28,13 +28,13 @@ import org.apache.webbeans.test.component.NonBindingComponent;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InjectedComponentTestWithMember extends TestContext
+public class InjectedComponentWithMemberTest extends TestContext
 {
     BeanManager container = null;
 
-    public InjectedComponentTestWithMember()
+    public InjectedComponentWithMemberTest()
     {
-        super(InjectedComponentTestWithMember.class.getSimpleName());
+        super(InjectedComponentWithMemberTest.class.getSimpleName());
     }
 
     @Before

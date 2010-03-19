@@ -37,7 +37,7 @@ import org.apache.webbeans.newtests.concepts.alternatives.common.IProducedBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.QualifierProducerBased;
 import org.junit.Test;
 
-public class AlternativeTest2  extends AbstractUnitTest {
+public class Alternative2Test  extends AbstractUnitTest {
 	
     @Test
     @SuppressWarnings("unchecked")

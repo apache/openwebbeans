@@ -39,12 +39,12 @@ import org.apache.webbeans.test.component.service.ServiceImpl1;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DecoratorTest1 extends TestContext
+public class Decorator1Test extends TestContext
 {
 
-    public DecoratorTest1()
+    public Decorator1Test()
     {
-        super(DecoratorTest1.class.getName());
+        super(Decorator1Test.class.getName());
     }
 
     @Before

@@ -31,13 +31,14 @@ import javax.enterprise.util.AnnotationLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeBeanProducer1;
-import org.apache.webbeans.newtests.concepts.alternatives.common.DefaultBeanProducer;
+import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeBeanProducer3;
+import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeBeanProducer4;
+import org.apache.webbeans.newtests.concepts.alternatives.common.DefaultBeanProducerWithoutDisposes;
 import org.apache.webbeans.newtests.concepts.alternatives.common.IProducedBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.QualifierProducerBased;
 import org.junit.Test;
 
-public class AlternativeTest1  extends AbstractUnitTest {
+public class Alternative4Test  extends AbstractUnitTest {
 	
     @Test
     @SuppressWarnings("unchecked")
@@ -46,8 +47,9 @@ public class AlternativeTest1  extends AbstractUnitTest {
         Collection<URL> beanXmls = new ArrayList<URL>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(DefaultBeanProducer.class);
-        beanClasses.add(AlternativeBeanProducer1.class);
+        beanClasses.add(DefaultBeanProducerWithoutDisposes.class);
+        beanClasses.add(AlternativeBeanProducer3.class);
+        beanClasses.add(AlternativeBeanProducer4.class);
         
         startContainer(beanClasses, beanXmls);        
 
@@ -57,16 +59,16 @@ public class AlternativeTest1  extends AbstractUnitTest {
         };
 
         Set beans = getBeanManager().getBeans(IProducedBean.class, anns);
-        System.out.print("Size of the bean set is " + beans.size());
+        System.out.println("Size of the bean set is " + beans.size());
         Bean<IProducedBean> bean = (Bean<IProducedBean>)beans.iterator().next();
         CreationalContext<IProducedBean> cc = getBeanManager().createCreationalContext(bean);
-        IProducedBean model = (IProducedBean) getBeanManager().getReference(bean, IProducedBean.class, cc);
-        System.out.println(model.getID());
+        IProducedBean producedBean = (IProducedBean) getBeanManager().getReference(bean, IProducedBean.class, cc);
+        System.out.println(producedBean.getID());
         
         shutDownContainer();
         
         Assert.assertTrue(Boolean.TRUE);
-        
-    	
+
     }
+
 }

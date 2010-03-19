@@ -22,12 +22,9 @@ import javax.inject.Inject;
 public class Decorator1 implements IOutputProvider
 {
 
-    @Inject
-    @Delegate
-    @Any
-    IOutputProvider op;
-    @Inject
-    RequestStringBuilder rsb;
+    @Inject @Delegate @Any IOutputProvider op;
+    
+    @Inject RequestStringBuilder rsb;
 
     public String getOutput()
     {

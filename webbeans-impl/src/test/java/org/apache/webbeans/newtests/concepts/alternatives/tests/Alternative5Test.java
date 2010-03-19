@@ -32,22 +32,28 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeBeanProducer3;
-import org.apache.webbeans.newtests.concepts.alternatives.common.DefaultBeanProducer;
+import org.apache.webbeans.newtests.concepts.alternatives.common.AlternativeBeanProducer4;
+import org.apache.webbeans.newtests.concepts.alternatives.common.DefaultBeanProducerWithoutDisposes;
 import org.apache.webbeans.newtests.concepts.alternatives.common.IProducedBean;
 import org.apache.webbeans.newtests.concepts.alternatives.common.QualifierProducerBased;
 import org.junit.Test;
 
-public class AlternativeTest3  extends AbstractUnitTest {
+public class Alternative5Test extends AbstractUnitTest  {
 	
+    private static final String PACKAGE_NAME = Alternative5Test.class.getPackage().getName();
+    
     @Test
     @SuppressWarnings("unchecked")
     public void testDisposerMethodInAlternativeBean()
     {
+     	
         Collection<URL> beanXmls = new ArrayList<URL>();
+        beanXmls.add(getXMLUrl(PACKAGE_NAME, "AlternativeTest5"));
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(DefaultBeanProducer.class);
+        beanClasses.add(DefaultBeanProducerWithoutDisposes.class);
         beanClasses.add(AlternativeBeanProducer3.class);
+        beanClasses.add(AlternativeBeanProducer4.class);
         
         startContainer(beanClasses, beanXmls);        
 

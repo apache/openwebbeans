@@ -23,16 +23,8 @@ import javax.inject.Named;
 @Decorator
 public class Decorator2 implements IOutputProvider
 {
-
-    @Inject
-    @Delegate
-    @Default
-    @Any
-    @Named
-    IOutputProvider op;
-    @Inject
-    @Default
-    RequestStringBuilder rsb;
+    @Inject @Delegate @Default @Any @Named IOutputProvider op;
+    @Inject @Default RequestStringBuilder rsb;
 
     public String getOutput()
     {
