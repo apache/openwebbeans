@@ -19,6 +19,8 @@
 package org.apache.webbeans.web.tomcat;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.naming.NamingException;
 
@@ -29,6 +31,8 @@ public class TomcatAnnotProcessor implements AnnotationProcessor
     private AnnotationProcessor processor;
 
     private ClassLoader loader;
+    
+    private Map<Object, Object> objects = new ConcurrentHashMap<Object, Object>();
     
     public TomcatAnnotProcessor(ClassLoader loader, AnnotationProcessor processor)
     {
@@ -45,6 +49,18 @@ public class TomcatAnnotProcessor implements AnnotationProcessor
     @Override
     public void preDestroy(Object obj) throws IllegalAccessException, InvocationTargetException
     {
+        Object injectorInstance = objects.get(obj);
+        if(injectorInstance != null)
+        {
+            try
+            {
+                TomcatUtil.destroy(injectorInstance, loader);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
         processor.preDestroy(obj);
     }
 
@@ -54,7 +70,11 @@ public class TomcatAnnotProcessor implements AnnotationProcessor
         processor.processAnnotations(obj);
         try
         {
-            TomcatUtil.inject(obj, loader);
+           Object injectorInstance = TomcatUtil.inject(obj, loader);
+           if(injectorInstance != null)
+           {
+               objects.put(obj, injectorInstance);   
+           }
         }
         catch (Exception e)
         {

@@ -24,9 +24,11 @@ import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.context.creational.EjbInterceptorContext;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -35,6 +37,9 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class InterceptorDataImpl implements InterceptorData
 {
+    //Logger instance
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorDataImpl.class);
+    
     /** Around invokes method */
     private Method aroundInvoke = null;
 
@@ -324,26 +329,35 @@ public class InterceptorDataImpl implements InterceptorData
         }
         else
         {
+            EjbInterceptorContext ctx = null;
             Object interceptor = null;       
             //control for this InterceptorData is defined by interceptor class
             if(this.definedInInterceptorClass)
             {
-                interceptor = ownerCreationalContext.getEjbInterceptor(this.interceptorClass);
-                
-                if(interceptor == null)
-                {
+                ctx = ownerCreationalContext.getEjbInterceptor(this.interceptorClass);                
+                if(ctx == null)
+                {                    
                     interceptor = WebBeansUtil.newInstanceForced(this.interceptorClass);
                     try
                     {
-                        OWBInjector.inject(interceptor);
+                        OWBInjector injector = new OWBInjector();
+                        injector.inject(interceptor);
+                        
+                        ctx = new EjbInterceptorContext();
+                        ctx.setInjectorInstance(injector);
+                        ctx.setInterceptorInstance(interceptor);
                     }
                     catch (Exception e)
                     {
-                        //No-op
+                        logger.error("Unable to inject dependencies of EJB interceptor instance with class : " + interceptorClass,e);
                     }          
                     
-                    ownerCreationalContext.addEjbInterceptor(interceptorClass, interceptor);
-                }                
+                    ownerCreationalContext.addEjbInterceptor(interceptorClass, ctx);
+                }
+                else
+                {
+                    interceptor = ctx.getInterceptorInstance();
+                }
             }
 
             return interceptor; 

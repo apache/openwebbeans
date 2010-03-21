@@ -50,7 +50,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private CreationalContextImpl<?> ownerCreational = null;
     
     /**Ejb interceptors*/
-    private Map<Class<?>, Object> ejbInterceptors = new HashMap<Class<?>, Object>();
+    private Map<Class<?>, EjbInterceptorContext> ejbInterceptors = new HashMap<Class<?>, EjbInterceptorContext>();
     
     /**
      * Package private
@@ -65,7 +65,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * @param clazz interceptor class
      * @param instance interceptor instance
      */
-    public void addEjbInterceptor(Class<?> clazz, Object instance)
+    public void addEjbInterceptor(Class<?> clazz, EjbInterceptorContext instance)
     {
         this.ejbInterceptors.put(clazz, instance);
     }
@@ -75,7 +75,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * @param clazz interceptor class
      * @return interceptor instance
      */
-    public Object getEjbInterceptor(Class<?> clazz)
+    public EjbInterceptorContext getEjbInterceptor(Class<?> clazz)
     {
         return this.ejbInterceptors.get(clazz);
     }
@@ -263,6 +263,16 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         }
         
         this.dependentObjects.clear();
+        
+        Collection<EjbInterceptorContext> interceptors = this.ejbInterceptors.values();
+        if(interceptors != null)
+        {
+            for(EjbInterceptorContext intereptor : interceptors)
+            {
+                intereptor.getInjectorInstance().destroy();
+            }
+        }
+        
         this.ejbInterceptors.clear();
     }
     

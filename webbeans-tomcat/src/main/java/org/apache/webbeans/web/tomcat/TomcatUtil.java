@@ -22,10 +22,21 @@ import java.lang.reflect.Method;
 
 public class TomcatUtil
 {
-    public static void inject(Object object, ClassLoader loader) throws Exception
+    public static Object inject(Object object, ClassLoader loader) throws Exception
     {
         Class<?> injector = loader.loadClass("org.apache.webbeans.inject.OWBInjector");
+        Object injectorInstance = injector.newInstance();
         Method method = injector.getDeclaredMethod("inject", new Class<?>[]{Object.class});
-        method.invoke(null, new Object[]{object});        
+        injectorInstance = method.invoke(injectorInstance, new Object[]{object});       
+        
+        return injectorInstance;
     }
+    
+    public static void destroy(Object injectorInstance, ClassLoader loader) throws Exception
+    {
+        Class<?> injector = loader.loadClass("org.apache.webbeans.inject.OWBInjector");
+        Method method = injector.getDeclaredMethod("destroy", new Class<?>[]{});
+        method.invoke(injectorInstance, new Object[]{});               
+    }
+
 }
