@@ -23,10 +23,10 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>openwebbeans-tomcat</artifactId>
-    <name>Apache OpenWebBeans :: Apache Tomcat Web Profile</name>
+    <artifactId>openwebbeans-tomcat6</artifactId>
+    <name>Apache OpenWebBeans :: Apache Tomcat 6 Web Profile</name>
     <packaging>jar</packaging>
-    <description>OpenWebBeans Apache Tomcat Web Profile</description>
+    <description>OpenWebBeans Apache Tomcat 6 Web Profile</description>
 
     <dependencies>
 
