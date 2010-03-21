@@ -20,6 +20,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 /**
  * Abstract implementation of {@link Producer} contract.
@@ -31,8 +33,11 @@ import org.apache.webbeans.component.OwbBean;
 public abstract class AbstractProducer<T> implements Producer<T> 
 {
     /**Bean instance*/
-    private OwbBean<T> bean;
+    protected OwbBean<T> bean;
 
+    /**Passing creational context*/
+    protected CreationalContext<T> creationalContext = null;
+    
     /**
      * Create a new producer with given bean.
      * 
@@ -56,9 +61,22 @@ public abstract class AbstractProducer<T> implements Producer<T>
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("unchecked")
     public T produce(CreationalContext<T> creationalContext)
     {
-        return bean.create(creationalContext);
+        T instance = null;
+        if(!(creationalContext instanceof CreationalContextImpl))
+        {
+            creationalContext = CreationalContextFactory.getInstance().wrappedCreationalContext(creationalContext, this.bean);
+        }
+        
+        //Save it
+        this.creationalContext = creationalContext;
+        
+        //Create an instance of the bean
+        instance = bean.createNewInstance(this.creationalContext);
+                
+        return instance; 
     }
     
     /**
@@ -66,7 +84,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
      */
     public void dispose(T instance)
     {
-        //Do nothing as default
+        this.bean.destroyCreatedInstance(instance, this.creationalContext);
     }
 
     /**

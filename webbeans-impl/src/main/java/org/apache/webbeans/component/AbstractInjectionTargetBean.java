@@ -28,7 +28,6 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
@@ -81,9 +80,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     /**Annotated type for bean*/
     private AnnotatedType<T> annotatedType;
     
-    /**Fully initialize, true as default*/
-    private boolean fullyInitialize = true;
-    
     /**
      * Holds the all of the interceptor related data, contains around-invoke,
      * post-construct and pre-destroy
@@ -95,15 +91,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     
     /**Bean inherited meta data*/
     protected IBeanInheritedMetaData inheritedMetaData;    
-    
-    
-    /**
-     * InjectionTargt instance. If this is not null, it is used for creating
-     * instance.
-     * 
-     * @see InjectionTarget
-     */
-    protected InjectionTarget<T> injectionTarget;
     
     /**
      * Creates a new observer owner component.
@@ -123,24 +110,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     {
         T instance = null;
 
-        //If injection target is set by Exntesion Observer, use it
-        if (isInjectionTargetSet())
-        {
-            //Create instance
-            instance = getInjectionTarget().produce(creationalContext);
-            
-            //Injection Operation
-            getInjectionTarget().inject(instance, creationalContext);
-            
-            //Call @PostConstrcut
-            postConstruct(instance, creationalContext);
-        }
-        //Default operations
-        else
-        {
-            //Default creation phases
-            instance = createDefaultInstance(creationalContext);
-        }
+        //Default creation phases
+        instance = createDefaultInstance(creationalContext);
 
         return instance;
     }
@@ -167,22 +138,12 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             //Means that Dependent Bean has interceptor/decorator
             if(JavassistProxyFactory.isProxyInstance(result))
             {
+                afterConstructor(instance, creationalContext);
                 dependentProxy = result;
                 isDependentProxy = true;
             }
         }
-        
-        //If not fully initialize instance
-        if(!isFullyInitialize())
-        {
-            if(isDependentProxy)
-            {
-                return dependentProxy;                
-            }
-            
-            return instance;
-        }
-                
+                        
         //Push instance into creational context, this is necessary because
         //Context objects look for instance in the interceptors. If we do not
         //push instance into cretional context, circular exception occurs.
@@ -192,18 +153,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         {
             CreationalContextImpl<T> cc = (CreationalContextImpl<T>)creationalContext;
             cc.push(instance);
-        }
-        
-        //After constructor
-        afterConstructor(instance, creationalContext);
-        
-        //Clear instance from creational context
-        if(creationalContext instanceof CreationalContextImpl)
-        {
-            CreationalContextImpl<?> cc = (CreationalContextImpl<?>)creationalContext;
-            cc.remove();
-            
-            cc.setProxyInstance(null);
         }
         
         //If dependent proxy
@@ -281,14 +230,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public void postConstruct(T instance, CreationalContext<T> cretionalContext)
     {
-        if (isInjectionTargetSet())
-        {
-            getInjectionTarget().postConstruct(instance);
-        }
-        else
-        {
-            postConstructDefault(instance, cretionalContext);
-        }
+        postConstructDefault(instance, cretionalContext);
     }
 
     /**
@@ -324,14 +266,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     public void preDestroy(T instance, CreationalContext<T> creationalContext)
     {
-        if (isInjectionTargetSet())
-        {
-            getInjectionTarget().preDestroy(instance);
-        }
-        else
-        {
-            preDestroyDefault(instance, creationalContext);
-        }
+        preDestroyDefault(instance, creationalContext);
     }
 
     /**
@@ -572,16 +507,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     }
     
     /**
-     * Sets injection target instance.
-     * 
-     * @param injectionTarget injection target instance
-     */
-    public void setInjectionTarget(InjectionTarget<T> injectionTarget)
-    {
-        this.injectionTarget = injectionTarget;
-    }
-        
-    /**
      * {@inheritDoc}
      */
     public List<InterceptorData> getInterceptorStack()
@@ -612,26 +537,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     
     
     /**
-     * Returns injection target.
-     * 
-     * @return injection target
-     */
-    public InjectionTarget<T> getInjectionTarget()
-    {
-        return this.injectionTarget;
-    }
-
-    /**
-     * Returns true if injection target instance set, false otherwise.
-     * 
-     * @return true if injection target instance set, false otherwise
-     */
-    protected boolean isInjectionTargetSet()
-    {
-        return this.injectionTarget != null ? true : false;
-    }
-
-    /**
      * Returns bean logger instance.
      * 
      * @return logger
@@ -647,11 +552,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
-        if (isInjectionTargetSet())
-        {
-            return getInjectionTarget().getInjectionPoints();
-        }
-
         return super.getInjectionPoints();
     }
     
@@ -673,24 +573,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         this.annotatedType = annotatedType;
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setFullyInitialize(boolean initialize)
-    {
-        this.fullyInitialize = initialize;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isFullyInitialize()
-    {
-        return this.fullyInitialize;
-    }
-
     /* (non-Javadoc)
      * @see org.apache.webbeans.component.AbstractOwbBean#validatePassivationDependencies()
      */

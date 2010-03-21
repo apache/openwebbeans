@@ -32,17 +32,5 @@ public class ProducerBeansProducer<T> extends AbstractProducer<T>
     public ProducerBeansProducer(AbstractProducerBean<T> bean)
     {
         super(bean);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public void dispose(T instance)
-    {
-        AbstractProducer<T> producer = getBean(AbstractProducer.class);
-        producer.dispose(instance);
-    }
-    
+    }    
 }

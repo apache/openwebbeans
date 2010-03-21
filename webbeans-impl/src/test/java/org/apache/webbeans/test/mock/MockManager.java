@@ -84,7 +84,7 @@ public class MockManager implements BeanManager
         manager.addBean(bean);
         return this;
     }
-
+    
     public BeanManager addContext(Context context)
     {
         return manager.addContext(context);

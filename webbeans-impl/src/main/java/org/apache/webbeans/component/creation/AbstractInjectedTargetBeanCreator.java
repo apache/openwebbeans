@@ -15,8 +15,6 @@ package org.apache.webbeans.component.creation;
 
 import java.util.Set;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
@@ -34,12 +32,6 @@ import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
  */
 public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanCreator<T> implements InjectedTargetBeanCreator<T>
 {    
-    /**Injection target instance. Null if not set by the ProcessInjectionTarget event*/
-    private InjectionTarget<T> injectionTarget; 
-
-    /**Set or not*/
-    private boolean injectionTargetSet = false;
-    
     /**
      * Creates a new instance.
      * 
@@ -50,15 +42,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
         super(bean, bean.getReturnType().getDeclaredAnnotations());
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isInjectionTargetSet()
-    {
-        return this.injectionTargetSet;
-    }
-    
+ 
     /**
      * {@inheritDoc}
      */
@@ -165,52 +149,4 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     {
         return (AbstractInjectionTargetBean<T>)super.getBean();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public InjectionTarget<T> getInjectedTarget()
-    {
-        return this.injectionTarget;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setInjectedTarget(InjectionTarget<T> injectionTarget)
-    {
-        this.injectionTarget = injectionTarget;
-        this.injectionTargetSet = true;
-        //super.setProducer(injectionTarget);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void inject(T instance, CreationalContext<T> ctx)
-    {
-        this.injectionTarget.inject(instance, ctx);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void postConstruct(T instance)
-    {
-        this.injectionTarget.postConstruct(instance);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void preDestroy(T instance)
-    {
-        this.injectionTarget.preDestroy(instance);
-    }
-
 }

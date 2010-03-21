@@ -14,7 +14,6 @@
 package org.apache.webbeans.component.creation;
 
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 
@@ -28,7 +27,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
  * @version $Rev$ $Date$
  *
  */
-public interface BeanCreator<T> extends Producer<T>
+public interface BeanCreator<T>
 {
     /**
      * MetaDataProvider. 
@@ -75,22 +74,7 @@ public interface BeanCreator<T> extends Producer<T>
      * @param metadataProvider metadata provider
      */
     public void setMetaDataProvider(MetaDataProvider metadataProvider);
-    
-    /**
-     * Returns producer instance.
-     * 
-     * @return producer instance
-     */
-    public Producer<T> getProducer();
-    
-    /**
-     * Sets producer. If set, it is responsible
-     * for creating bean instance.
-     * 
-     * @param producer set producer
-     */
-    public void setProducer(Producer<T> producer);
-    
+        
     /**
      * Define scope type of the bean.
      * 
@@ -117,12 +101,5 @@ public interface BeanCreator<T> extends Producer<T>
      * 
      * @return bean instance
      */
-    public AbstractOwbBean<T> getBean();
-    
-    /**
-     * Returns producer instance is set or not.
-     * 
-     * @return producer instance is set or not
-     */
-    public boolean isProducerSet();
+    public AbstractOwbBean<T> getBean();    
 }

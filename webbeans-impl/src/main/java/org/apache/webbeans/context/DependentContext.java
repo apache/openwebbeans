@@ -62,7 +62,7 @@ public class DependentContext extends AbstractContext
         }
         else
         {
-            object = component.create(creationalContext);
+            object = component.create(creationalContext);   
         }
         
 

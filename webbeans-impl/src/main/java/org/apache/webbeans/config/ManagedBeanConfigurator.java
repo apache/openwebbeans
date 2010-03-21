@@ -17,6 +17,7 @@ import java.util.Set;
 import javax.decorator.Decorator;
 import javax.interceptor.Interceptor;
 
+import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -24,6 +25,8 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorUtil;
+import org.apache.webbeans.portable.creation.InjectionTargetProducer;
+import org.apache.webbeans.portable.creation.ProducerBeansProducer;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -102,6 +105,7 @@ public final class ManagedBeanConfigurator
      * @throws WebBeansConfigurationException if any configuration exception occurs
      * @deprecated
      */
+    @SuppressWarnings("unchecked")
     public static <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
@@ -109,6 +113,7 @@ public final class ManagedBeanConfigurator
         checkManagedBeanCondition(clazz);
 
         ManagedBean<T> component = new ManagedBean<T>(clazz, type);
+        manager.putInjectionTargetWrapper(component, new InjectionTargetWrapper(new InjectionTargetProducer(component)));
         
         WebBeansUtil.setInjectionTargetBeanEnableFlag(component);   
         
@@ -136,6 +141,7 @@ public final class ManagedBeanConfigurator
         {
             // add them one after the other to enable serialization handling et al
             manager.addBean(producerMethod);
+            manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(new ProducerBeansProducer(producerMethod)));
         }
         
         Set<ProducerFieldBean<?>> producerFields = DefinitionUtil.defineProduerFields(component);
@@ -143,6 +149,7 @@ public final class ManagedBeanConfigurator
         {
             // add them one after the other to enable serialization handling et al
             manager.addBean(producerField);
+            manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(new ProducerBeansProducer(producerField)));
         }
         
 

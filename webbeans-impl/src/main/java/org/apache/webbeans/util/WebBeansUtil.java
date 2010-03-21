@@ -85,7 +85,6 @@ import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.ProcessSessionBean;
-import javax.enterprise.inject.spi.Producer;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -104,6 +103,7 @@ import org.apache.webbeans.annotation.RequestedScopeLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.component.ConversationBean;
@@ -150,6 +150,7 @@ import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
+import org.apache.webbeans.portable.creation.ProducerBeansProducer;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
@@ -2425,7 +2426,7 @@ public final class WebBeansUtil
     
     public static GProcessProducer fireProcessProducerEventForMethod(ProducerMethodBean<?> producerMethod,AnnotatedMethod<?> method)
     {         
-        GProcessProducer producerEvent = new GProcessProducer(method);
+        GProcessProducer producerEvent = new GProcessProducer(new ProducerBeansProducer(producerMethod),method);
         
         //Fires ProcessProducer for methods
         BeanManagerImpl.getManager().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
@@ -2435,7 +2436,7 @@ public final class WebBeansUtil
     
     public static GProcessProducer fireProcessProducerEventForField(ProducerFieldBean<?> producerField,AnnotatedField<?> field)
     {         
-        GProcessProducer producerEvent = new GProcessProducer(field);
+        GProcessProducer producerEvent = new GProcessProducer(new ProducerBeansProducer(producerField),field);
         
         //Fires ProcessProducer for fields
         BeanManagerImpl.getManager().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
@@ -2810,6 +2811,7 @@ public final class WebBeansUtil
  
     public static <T> ManagedBean<T> defineManagedBean(ManagedBeanCreatorImpl<T> managedBeanCreator,AnnotatedType<T> annotatedType)
     {
+        BeanManagerImpl manager = BeanManagerImpl.getManager();        
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         
         Class<T> clazz = annotatedType.getJavaClass();
@@ -2843,10 +2845,8 @@ public final class WebBeansUtil
         ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);    
         WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
         
-        if(processInjectionTargetEvent.isSet())
-        {
-            managedBeanCreator.setInjectedTarget(processInjectionTargetEvent.getInjectionTarget());
-        }
+        //Put final InjectionTarget instance
+        manager.putInjectionTargetWrapper(managedBean, new InjectionTargetWrapper(processInjectionTargetEvent.getInjectionTarget()));
         
         Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods = new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>(); 
         for(ProducerMethodBean<?> producerMethod : producerMethods)
@@ -2856,12 +2856,8 @@ public final class WebBeansUtil
             WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerMethods. Look at logs for further details");
 
             annotatedMethods.put(producerMethod, method);
-            
-            if(producerEvent.isProducerSet())
-            {
-                producerMethod.setProducer((Producer)managedBeanCreator);
-            }
-            
+            manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(producerEvent.getProducer()));
+                        
             producerEvent.setProducerSet(false);
         }
         
@@ -2873,11 +2869,7 @@ public final class WebBeansUtil
             WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerFields. Look at logs for further details");
             
             annotatedFields.put(producerField, field);
-            
-            if(producerEvent.isProducerSet())
-            {
-                producerField.setProducer((Producer) managedBeanCreator);
-            }
+            manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(producerEvent.getProducer()));
             
             producerEvent.setProducerSet(false);
         }
@@ -2910,12 +2902,6 @@ public final class WebBeansUtil
         WebBeansUtil.fireProcessObservableMethodBeanEvent(observerMethodsMap);
         WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for observer methods. Look at logs for further details");
         
-        //Set InjectionTarget that is used by the container to inject dependencies!
-        if(managedBeanCreator.isInjectionTargetSet())
-        {
-            managedBean.setInjectionTarget(managedBeanCreator);   
-        }
-
         if(!WebBeansAnnotatedTypeUtil.isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
         {
             beanManager.addBean(WebBeansUtil.createNewBean(managedBean));                
@@ -2992,6 +2978,5 @@ public final class WebBeansUtil
         }
         
         throw new RuntimeException(e);
-    }
-    
+    }    
 }

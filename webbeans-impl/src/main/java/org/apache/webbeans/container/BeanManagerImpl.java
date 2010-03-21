@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ import javax.naming.StringRefAddr;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
@@ -153,6 +155,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
      * This is used as a reference for serialization.
      */
     private ConcurrentHashMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>(); 
+    
+    private Map<Contextual<?>, InjectionTargetWrapper<?>> injectionTargetWrappers = 
+        Collections.synchronizedMap(new IdentityHashMap<Contextual<?>, InjectionTargetWrapper<?>>());
 
     /**
      * The parent Manager this child is depending from.
@@ -169,6 +174,20 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
         injectionResolver = new InjectionResolver(this);
         notificationManager = new NotificationManager();
     }    
+    
+    public <T> void putInjectionTargetWrapper(Contextual<T> contextual, InjectionTargetWrapper<T> wrapper)
+    {
+        Asserts.assertNotNull(contextual);
+        Asserts.assertNotNull(wrapper);
+        
+        this.injectionTargetWrappers.put(contextual, wrapper);
+    }
+    
+    public <T> InjectionTargetWrapper<T> getInjectionTargetWrapper(Contextual<T> contextual)
+    {
+        Asserts.assertNotNull(contextual);
+        return (InjectionTargetWrapper<T>)this.injectionTargetWrappers.get(contextual);
+    }
     
     public ErrorStack getErrorStack()
     {
@@ -1014,8 +1033,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
         InjectionTargetBean<T> bean = WebBeansAnnotatedTypeUtil.defineManagedBean(type);
-        bean.setFullyInitialize(false);
-        
+
         return new InjectionTargetProducer<T>(bean);
     }
 

@@ -15,7 +15,6 @@ package org.apache.webbeans.component.creation;
 
 import java.util.Set;
 
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -33,7 +32,7 @@ import org.apache.webbeans.component.ProducerMethodBean;
  *
  * @param <T> bean class info
  */
-public interface InjectedTargetBeanCreator<T> extends InjectionTarget<T>
+public interface InjectedTargetBeanCreator<T>
 {
     /**
      * Defines bean's producer methods.
@@ -67,32 +66,5 @@ public interface InjectedTargetBeanCreator<T> extends InjectionTarget<T>
     /**
      * Define observer methods, a.k.a method parameter with <code>@Observes</code>
      */
-    public Set<ObserverMethod<?>> defineObserverMethods();    
-    
-    /**
-     * Gets injection target.
-     * 
-     * @return injection target
-     */
-    public InjectionTarget<T> getInjectedTarget();
-    
-    /**
-     * Sets injection target.
-     * 
-     * @param injectionTarget injection target
-     */
-    public void setInjectedTarget(InjectionTarget<T> injectionTarget);
-    
-    /**
-     * Returns whether injection target set or not.
-     * 
-     * <p>
-     * If {@link InjectionTarget} instance is set, it is used
-     * for creating bean instance, calling post construct and pre-destroy
-     * methods.
-     * </p>
-     * 
-     * @return injection target set or not
-     */
-    public boolean isInjectionTargetSet();
+    public Set<ObserverMethod<?>> defineObserverMethods();        
 }

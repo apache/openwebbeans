@@ -21,8 +21,6 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.ProcessInjectionTarget;
 
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -90,21 +88,6 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
      */
     public void injectSuperMethods(T instance, CreationalContext<T> creationalContext);
         
-    /**
-     * Sets injection target for this bean. This
-     * is generally set by {@link ProcessInjectionTarget}
-     * event.
-     * @param injectionTarget injection target
-     */
-    public void setInjectionTarget(InjectionTarget<T> injectionTarget);
-    
-    /**
-     * Gets injection target or null if not
-     * set.
-     * @return injection target
-     */
-    public InjectionTarget<T> getInjectionTarget();
-    
     /**
      * Gets all injected fields of bean.
      * @return all injected fields
@@ -195,18 +178,5 @@ public interface InjectionTargetBean<T> extends OwbBean<T>
      * Gets annotated type.
      * @return annotated type
      */
-    public AnnotatedType<T> getAnnotatedType();    
-    
-    /**
-     * If fully initialize then fully initialize instance
-     * otherwise just create instance.
-     * @param initialize fully initialize
-     */
-    public void setFullyInitialize(boolean initialize);
-    
-    /**
-     * Gets fully initialize.
-     * @return fully initialize
-     */
-    public boolean isFullyInitialize();
+    public AnnotatedType<T> getAnnotatedType();        
 }

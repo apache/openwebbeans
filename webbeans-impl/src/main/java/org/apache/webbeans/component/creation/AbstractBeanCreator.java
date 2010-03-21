@@ -17,10 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.DefinitionUtil;
@@ -42,9 +39,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**Default metadata provider*/
     private MetaDataProvider metadataProvider = MetaDataProvider.DEFAULT;
     
-    /**Third party producer or null if not set*/
-    private Producer<T> producer;
-    
     /**Bean annotations*/
     private final Annotation[] beanAnnotations;
     
@@ -52,9 +46,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      * to define bean instance intead of using class artifacts.
      */
     private AnnotatedType<T> annotatedType;
-    
-    /**Producer set or not*/
-    private boolean producerSet = false;
     
     /**
      * Creates a bean instance.
@@ -68,15 +59,6 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         this.beanAnnotations = beanAnnotations;           
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isProducerSet()
-    {
-        return this.producerSet;
-    }
-    
     /**
      * {@inheritDoc}
      */
@@ -215,60 +197,12 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Producer<T> getProducer()
-    {
-        return this.producer;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setProducer(Producer<T> producer)
-    {
-        this.producer = producer;
-        this.producerSet = true;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
     public AbstractOwbBean<T> getBean()
     {
         return this.bean;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void dispose(T instance)
-    {
-        producer.dispose(instance);
-        
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Set<InjectionPoint> getInjectionPoints()
-    {
-        return producer.getInjectionPoints();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public T produce(CreationalContext<T> creationalContext)
-    {
-        return producer.produce(creationalContext);
-    }
-    
-    protected AnnotatedType<T> getAnnotatedType()
+   protected AnnotatedType<T> getAnnotatedType()
     {
         return this.annotatedType;
     }

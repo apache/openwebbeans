@@ -18,6 +18,7 @@ import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.*;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -53,7 +54,21 @@ public interface OwbBean<T> extends Bean<T>
      * @see WebBeansType
      */
     public WebBeansType getWebBeansType();
+    
+    /**
+     * Create an instance.
+     * @param creationalContext creaitonal context
+     * @return instance
+     */
+    public T createNewInstance(CreationalContext<T> creationalContext);
 
+    /**
+     * Destroys instance.
+     * @param instance instance
+     * @param creationalContext creational
+     */
+    public void destroyCreatedInstance(T instance, CreationalContext<T> creationalContext);
+    
     /**
      * Adds qualifier.
      * 

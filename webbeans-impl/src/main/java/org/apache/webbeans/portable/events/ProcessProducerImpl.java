@@ -38,9 +38,10 @@ public class ProcessProducerImpl<X,T> implements ProcessProducer<X, T>
     /**Set or not*/
     private boolean set;
 
-    public ProcessProducerImpl(AnnotatedMember<X> annotateMember)
+    public ProcessProducerImpl(Producer<T> producer,AnnotatedMember<X> annotateMember)
     {
         this.annotateMember = annotateMember;
+        this.producer = producer;
     }
     
     /**

@@ -41,6 +41,64 @@
             <exclude name="integration"></exclude>
          </run>
       </groups>
+      
+      <classes>
+     	<!-- ERROR IN CDI-TCK-134 -->
+     	<class name="org.jboss.jsr299.tck.tests.context.passivating.broken.decoratorWithNonPassivatingBeanConstructor.DecoratorWithNonPassivatingBeanConstructorTest">
+     		<methods>
+     			<exclude name="testPassivationCapableBeanWithNonPassivatingDecoratorBeanConstructorFails"></exclude>
+     		</methods>
+     	</class>     	
+     	
+     	<!-- ERROR IN CDI-TCK-134 -->
+     	<class name="org.jboss.jsr299.tck.tests.context.passivating.broken.decoratorWithNonPassivatingInitializerMethod.DecoratorWithNonPassivatingInitializerMethodTest">
+     		<methods>
+     			<exclude name="testPassivationCapableBeanWithNonPassivatingInitializerInDecoratorFails"></exclude>
+     		</methods>
+     	</class>     	
+
+     	<!-- ERROR IN CDI-TCK-134 -->
+     	<class name="org.jboss.jsr299.tck.tests.context.passivating.broken.decoratorWithNonPassivatingInjectedField.DecoratorWithNonPassivatingInjectedFieldTest">
+     		<methods>
+     			<exclude name="testPassivationCapableBeanWithNonPassivatingDecoratorInjectedFieldFails"></exclude>
+     		</methods>
+     	</class>     	
+     	
+     	<!-- ERROR IN CDI-TCK-137 -->
+     	<class name="org.jboss.jsr299.tck.tests.decorators.invocation.DecoratorInvocationTest">
+     		<methods>
+     			<exclude name="testChainedDecoratorInvocation"></exclude>
+     		</methods>
+     	</class>     	
+
+     	<!-- ERROR IN CDI-TCK-121 -->
+     	<class name="org.jboss.jsr299.tck.tests.extensions.beanManager.BeanManagerTest">
+     		<methods>
+     			<exclude name="testGetPassivationCapableBeanById"></exclude>
+     		</methods>
+     	</class>     
+     	
+     	<!-- ERROR IN CDITCK-138 -->
+     	<class name="org.jboss.jsr299.tck.tests.lookup.injectionpoint.InjectionPointTest">
+     		<methods>
+     			<exclude name="testIsDelegate"></exclude>
+     		</methods>
+     	</class>     
+
+     	<!-- ERROR IN CDITCK-139 -->
+     	<class name="org.jboss.jsr299.tck.tests.decorators.resolution.DecoratorResolutionTest">
+     		<methods>
+     			<exclude name="testDelegateTypeVariableBeanTypeVariable"></exclude>
+     		</methods>
+     	</class>     
+
+     	<!-- TODO EL-RESOLVER PROBLEM -->
+     	<class name="org.jboss.jsr299.tck.tests.context.dependent.DependentContextTest">
+     		<methods>
+     			<exclude name="testDependentsDestroyedWhenElEvaluationCompletes"></exclude>
+     		</methods>
+     	</class>     
+      </classes>
    
       <packages>         
          <package name="org.jboss.jsr299.tck.tests.*"></package>

@@ -51,16 +51,8 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
     protected T createInstance(CreationalContext<T> creationalContext)
     {
         T instance = null;
-
-        if (isProducerSet())
-        {
-            instance = producer.produce(creationalContext);
-        }
-        else
-        {
-            instance = createDefaultInstance(creationalContext);
-        }
-
+        
+        instance = createDefaultInstance(creationalContext);
         checkNullInstance(instance);
         checkScopeType();
 

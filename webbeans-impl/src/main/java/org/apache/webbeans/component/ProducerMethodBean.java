@@ -141,16 +141,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     protected T createInstance(CreationalContext<T> creationalContext)
     {
         T instance = null;
-
-        if (isProducerSet())
-        {
-            instance = getProducer().produce(creationalContext);
-        }
-        else
-        {
-            instance = createDefaultInstance(creationalContext);
-        }
-
+        instance = createDefaultInstance(creationalContext);
         // Check null instance
         checkNullInstance(instance);
 
@@ -214,14 +205,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      */
     public void dispose(T instance, CreationalContext<T> creationalContext)
     {
-        if (isProducerSet())
-        {
-            getProducer().dispose(instance);
-        }
-        else
-        {
-            disposeDefault(instance, creationalContext);
-        }
+        disposeDefault(instance, creationalContext);
     }
 
     /**

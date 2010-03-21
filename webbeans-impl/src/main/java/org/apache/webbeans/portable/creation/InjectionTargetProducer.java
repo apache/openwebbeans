@@ -17,6 +17,8 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 /**
  * InjectionTargetProducer implementation.
@@ -25,42 +27,56 @@ import org.apache.webbeans.component.InjectionTargetBean;
  *
  * @param <T> bean type info
  */
+@SuppressWarnings("unchecked")
 public class InjectionTargetProducer<T> extends AbstractProducer<T> implements InjectionTarget<T>
 {
+    /**
+     * Creates a new injection target producer.
+     * @param bean injection target bean
+     */
     public InjectionTargetProducer(InjectionTargetBean<T> bean)
     {
         super(bean);
     }
-    
-    
-    
+        
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void inject(T instance, CreationalContext<T> ctx)
     {
-        @SuppressWarnings("unchecked")
+        if(!(ctx instanceof CreationalContextImpl))
+        {
+            ctx = CreationalContextFactory.getInstance().wrappedCreationalContext(ctx, this.bean);
+        }
+        
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
         
         bean.injectResources(instance, ctx);
+        bean.injectSuperFields(instance, ctx);
+        bean.injectSuperMethods(instance, ctx);
         bean.injectFields(instance, ctx);
         bean.injectMethods(instance, ctx);
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void postConstruct(T instance)
     {
-        @SuppressWarnings("unchecked")
-        InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
-        
-        bean.postConstruct(instance,null);
+        InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);        
+        bean.postConstruct(instance,this.creationalContext);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void preDestroy(T instance)
     {
-        @SuppressWarnings("unchecked")
-        InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
-        
-        bean.preDestroy(instance,null);
+        InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);        
+        bean.preDestroy(instance,this.creationalContext);
     }
 
 }

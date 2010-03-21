@@ -20,7 +20,6 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -35,9 +34,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
 {
     /** Owner of the producer field component */
     protected InjectionTargetBean<?> ownerComponent;
-
-    /** Producer instance responsible for produce and dispose */
-    protected Producer<T> producer;
 
     /**
      * Create a new instance.
@@ -66,36 +62,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     public void dispose(T instance, CreationalContext<T> creationalContext)
     {
         // Do nothing
-    }
-
-    /**
-     * Sets producer instance.
-     * 
-     * @param producer producer instance
-     */
-    public void setProducer(Producer<T> producer)
-    {
-        this.producer = producer;
-    }
-
-    /**
-     * Gets producer instance.
-     * 
-     * @return producer instance
-     */
-    public Producer<T> getProducer()
-    {
-        return this.producer;
-    }
-
-    /**
-     * Returns true if producer is set.
-     * 
-     * @return true if producer instance is set
-     */
-    protected boolean isProducerSet()
-    {
-        return producer != null ? true : false;
     }
 
     /**
@@ -195,11 +161,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     @Override
     public Set<InjectionPoint> getInjectionPoints()
     {
-        if (isProducerSet())
-        {
-            return getProducer().getInjectionPoints();
-        }
-
         return super.getInjectionPoints();
     }
     

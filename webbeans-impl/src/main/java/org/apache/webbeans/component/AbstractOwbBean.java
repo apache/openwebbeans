@@ -27,7 +27,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -97,7 +96,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     private String passivatingId = null;
     
     /**Bean Manager*/
-    private final BeanManager manager;
+    private final BeanManagerImpl manager;
 
     
             
@@ -130,7 +129,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      * 
      * @return manager instance
      */
-    protected BeanManager getManager()
+    protected BeanManagerImpl getManager()
     {
         return manager;
     }
@@ -149,8 +148,24 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             {                
                 creationalContext = CreationalContextFactory.getInstance().wrappedCreationalContext(creationalContext, this); 
             }
+           
+            InjectionTargetWrapper<T> wrapper = getManager().getInjectionTargetWrapper(this);
+            //If wrapper not null
+            if(wrapper != null)
+            {
+                instance = wrapper.produce(creationalContext);
+                wrapper.inject(instance, creationalContext);
+                wrapper.postConstruct(instance);
+            }
+            else
+            {
+                instance = createInstance(creationalContext); 
+                if(this instanceof AbstractInjectionTargetBean)
+                {
+                    ((AbstractInjectionTargetBean<T>)this).afterConstructor(instance, creationalContext);
+                }
+            }
             
-            instance = createInstance(creationalContext);
         }
         catch (Exception re)
         {
@@ -174,6 +189,15 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      * @return instance of the bean
      */
     protected abstract T createInstance(CreationalContext<T> creationalContext);
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T createNewInstance(CreationalContext<T> creationalContext)
+    {
+        return createInstance(creationalContext);
+    }
 
     /*
      * (non-Javadoc)
@@ -183,13 +207,22 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void destroy(T instance, CreationalContext<T> creationalContext)
     {
         try
-        {            
-            //Destroy instance, call @PreDestroy
-            destroyInstance(instance,creationalContext);
+        {  
+            InjectionTargetWrapper<T> wrapper = getManager().getInjectionTargetWrapper(this);
+            if(wrapper != null)
+            {
+                wrapper.preDestroy(instance);
+                wrapper.dispose(instance);
+            }
+            else
+            {
+                //Destroy instance, call @PreDestroy
+                destroyInstance(instance,creationalContext);
+            }
             
             //Destory dependent instances
-            creationalContext.release();
-                        
+            creationalContext.release();                
+                                    
         }catch(Exception e)
         {
             logger.fatal(OWBLogConst.FATAL_0001, new Object[]{toString()});
@@ -207,6 +240,15 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
     {
         
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void destroyCreatedInstance(T instance, CreationalContext<T> creationalContext)
+    {
+        destroyInstance(instance, creationalContext);
     }
     
     /**
