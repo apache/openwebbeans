@@ -18,16 +18,21 @@
  */
 package org.apache.webbeans.inject;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.inject.Inject;
 
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -39,9 +44,20 @@ import org.apache.webbeans.util.ClassUtil;
  */
 public final class OWBInjector
 {
-    private OWBInjector()
+    private CreationalContextImpl<?> ownerCreationalContext = null;
+    
+    public OWBInjector()
     {
         
+    }
+    
+    public void destroy()
+    {
+        if(this.ownerCreationalContext != null)
+        {
+            this.ownerCreationalContext.release();
+            this.ownerCreationalContext = null;
+        }
     }
     
     @SuppressWarnings("unchecked")
@@ -56,9 +72,11 @@ public final class OWBInjector
             Set<InjectionPoint> injectionPoints = injectionTarget.getInjectionPoints();
             if(injectionPoints != null && injectionPoints.size() > 0)
             {
+                CreationalContextImpl<?> ownerCreationalContext = (CreationalContextImpl<?>) beanManager.createCreationalContext((Bean<?>)injectionTarget);
+                
                 for(InjectionPoint injectionPoint : injectionPoints)
                 {
-                    Object object = beanManager.getInjectableReference(injectionPoint, beanManager.createCreationalContext(injectionPoint.getBean()));
+                    Object object = beanManager.getInjectableReference(injectionPoint, ownerCreationalContext);                    
                     if(injectionPoint.getMember() instanceof Method)
                     {
                         Method method = (Method)injectionPoint.getMember();
@@ -77,5 +95,24 @@ public final class OWBInjector
         {
             throw e;
         }
+    }
+    
+    public static boolean checkInjectionPointForInterceptorPassivation(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        Field[] fields = clazz.getDeclaredFields();
+        for(Field field : fields)
+        {
+            if(field.getAnnotation(Inject.class) != null)
+            {
+                Class<?> type = field.getType();
+                if(!Serializable.class.isAssignableFrom(type))
+                {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
     }
 }

@@ -22,6 +22,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -67,7 +68,9 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
+import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -140,7 +143,7 @@ public final class DefinitionUtil
             
             for(Type apiType : apiTypes)
             {
-                if(ClassUtil.getClazz(apiType).equals(type))
+                if(ClassUtil.getClazz(apiType) == type)
                 {
                     foundType = apiType;
                     break;
@@ -1024,6 +1027,22 @@ public final class DefinitionUtil
         if(!(bean instanceof EnterpriseBeanMarker))
         {
             EJBInterceptorConfig.configure(((AbstractOwbBean)bean).getReturnType(), bean.getInterceptorStack());   
+        }
+        else
+        {
+            //Check for injected fields in EJB @Interceptors
+            List<InterceptorData> stack = new ArrayList<InterceptorData>();
+            EJBInterceptorConfig.configure(bean.getBeanClass(), stack);
+            for(InterceptorData data : stack)
+            {
+                if(data.isDefinedInInterceptorClass())
+                {
+                    if(!OWBInjector.checkInjectionPointForInterceptorPassivation(data.getInterceptorClass()))
+                    {
+                        throw new WebBeansConfigurationException("Enterprise bean : " + bean.toString() + " interceptors must have serializable injection points");
+                    }
+                }
+            }
         }
 
         // For every injection target bean

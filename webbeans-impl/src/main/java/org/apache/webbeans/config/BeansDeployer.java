@@ -21,7 +21,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.Stack;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -34,6 +36,7 @@ import javax.interceptor.Interceptor;
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.ManagedBean;
@@ -44,6 +47,7 @@ import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.deployment.StereoTypeManager;
@@ -315,8 +319,24 @@ public class BeansDeployer
         
         if (beans != null && beans.size() > 0)
         {
+           Stack<String> beanNames = new Stack<String>();
             for (Bean<?> bean : beans)
             {
+                String beanName = null;
+                if((beanName = bean.getName()) != null)
+                {
+                    beanNames.push(beanName);
+                }
+                
+                if((bean instanceof Decorator) || 
+                        (bean instanceof javax.enterprise.inject.spi.Interceptor))
+                {
+                    if(!bean.getScope().equals(Dependent.class))
+                    {
+                        logger.warn("Bean " + bean.toString() + "has not DependentScope. If an interceptor or decorator has any scope other than @Dependent, non-portable behaviour results.");
+                    }
+                }
+                
                 if(bean instanceof InjectionTargetBean)
                 {
                     //Decorators not applied to interceptors/decorators/@NewBean
@@ -360,9 +380,50 @@ public class BeansDeployer
                     }                    
                 }
             }
+            
+            //Validate Bean names
+            validateBeanNames(beanNames);
         }
         
     }
+    
+    private void validateBeanNames(Stack<String> beanNames)
+    {
+        if(beanNames.size() > 0)
+        {
+            String beanName = beanNames.pop();
+            String part = null;
+            int i = beanName.indexOf('.');
+            if(i != -1)
+            {
+                part = beanName.substring(0,i);                
+            }
+            
+            for(String other : beanNames)
+            {
+                if(beanName.equals(other))
+                {
+                    Set<Bean<?>> beans = InjectionResolver.getInstance().implResolveByName(beanName);
+                    if(beans.size() > 1)
+                    {
+                        throw new WebBeansConfigurationException("There are two different beans with name : " + beanName + " in the deployment archieve");   
+                    }
+                }
+                else
+                {
+                    if(part != null)
+                    {
+                        if(part.equals(other))
+                        {
+                            throw new WebBeansConfigurationException("EL name of one bean is of the form x.y, where y is a valid bean EL name, and " +
+                                    "x is the EL name of the other bean for the bean name : " + beanName);
+                        }                        
+                    }
+                }
+            }
+        }
+    }
+    
     
     /**
      * Discovers and deploys classes from class path.
@@ -544,7 +605,17 @@ public class BeansDeployer
      */
     protected void checkPassivationScope(Bean<?> beanObj)
     {
-        if(BeanManagerImpl.getManager().isPassivatingScope(beanObj.getScope()))
+        boolean validate = false;
+        
+        if(EnterpriseBeanMarker.class.isAssignableFrom(beanObj.getClass()))
+        {
+            EnterpriseBeanMarker marker = (EnterpriseBeanMarker)beanObj;
+            if(marker.isPassivationCapable())
+            {
+                validate = true;   
+            }
+        }        
+        else if(BeanManagerImpl.getManager().isPassivatingScope(beanObj.getScope()))
         {
             if(WebBeansUtil.isPassivationCapable(beanObj) == null)
             {
@@ -555,12 +626,17 @@ public class BeansDeployer
                 }
                 else
                 {
-                    ((OwbBean<?>)beanObj).validatePassivationDependencies();
+                    validate = true;
                 }
             }            
             
-            ((OwbBean<?>)beanObj).validatePassivationDependencies();
+            validate = true;
         } 
+        
+        if(validate)
+        {
+            ((OwbBean<?>)beanObj).validatePassivationDependencies();
+        }
     }
 
     /**

@@ -1674,6 +1674,12 @@ public final class WebBeansUtil
                 	return;
                	}
                 
+                //Check types of the beans
+                if(comp.getClass() != superBean.getClass())
+                {
+                    throw new DefinitionException("@Specialized Class : " + specializedClass.getName() + " and its super class may be the same type of bean,i.e, ManagedBean, SessionBean etc.");
+                }
+                
                 if(superBean.getName() != null)
                 {
                     if(comp.getName() != null)

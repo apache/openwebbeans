@@ -21,5 +21,5 @@ package org.apache.webbeans.component;
  */
 public interface EnterpriseBeanMarker extends InterceptedMarker
 {
-
+    public boolean isPassivationCapable();
 }

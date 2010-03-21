@@ -816,9 +816,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
                 return instance;
             }
             
-            
+            //Get dependent from DependentContex that create contextual instance
             instance = context.get((Bean<Object>)bean, (CreationalContext<Object>)creationalContext);     
-            instance = JavassistProxyFactory.createDependentScopedBeanProxy((AbstractOwbBean<Object>)bean, instance, (CreationalContext<Object>)creationalContext);
         }
         
         return instance;

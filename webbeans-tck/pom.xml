@@ -55,8 +55,8 @@
             <version>${webbeans.tck.version}</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>jsr299-api</artifactId>
-                    <groupId>org.jboss.webbeans</groupId>
+                    <artifactId>cdi-api</artifactId>
+                    <groupId>javax.enterprise</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -74,17 +74,7 @@
         	<artifactId>openwebbeans-ejb</artifactId>
         	<version>${project.version}</version>
         </dependency>
-
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
-		</dependency>
-
-		<dependency>
-               <groupId>org.apache.geronimo.specs</groupId>
-               <artifactId>geronimo-atinject_1.0_spec</artifactId>
-        </dependency>
-
+		
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
 			<artifactId>openwebbeans-spi</artifactId>
@@ -326,7 +316,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>jsr299-tck-impl-1.0.0-SNAPSHOT-suite.xml</suiteXmlFile>
+                        <suiteXmlFile>standalone-suite.xml</suiteXmlFile>
                     </suiteXmlFiles>
                     
                     <systemProperties>

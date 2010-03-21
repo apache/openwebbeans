@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Delegate;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -39,11 +40,13 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.ClassUtil;
@@ -148,14 +151,35 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      * @param creationalContext creational context
      * @return bean instance
      */
+    @SuppressWarnings("unchecked")
     protected T createDefaultInstance(CreationalContext<T> creationalContext)
     {
         beforeConstructor();
-
-        T instance = createComponentInstance(creationalContext);
         
+        //Create actual bean instance
+        T instance = createComponentInstance(creationalContext);
+        //For dependent instance checks
+        T dependentProxy = null;
+        boolean isDependentProxy = false;
+        if(getScope() == Dependent.class)
+        {
+            T result = (T)JavassistProxyFactory.createDependentScopedBeanProxy(this, instance, creationalContext);
+            //Means that Dependent Bean has interceptor/decorator
+            if(JavassistProxyFactory.isProxyInstance(result))
+            {
+                dependentProxy = result;
+                isDependentProxy = true;
+            }
+        }
+        
+        //If not fully initialize instance
         if(!isFullyInitialize())
         {
+            if(isDependentProxy)
+            {
+                return dependentProxy;                
+            }
+            
             return instance;
         }
                 
@@ -170,6 +194,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             cc.push(instance);
         }
         
+        //After constructor
         afterConstructor(instance, creationalContext);
         
         //Clear instance from creational context
@@ -179,6 +204,12 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             cc.remove();
             
             cc.setProxyInstance(null);
+        }
+        
+        //If dependent proxy
+        if(isDependentProxy)
+        {
+            return dependentProxy;
         }
         
         return instance;
@@ -704,7 +735,15 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                     if(!Serializable.class.isAssignableFrom(interceptorClass))
                     {
                         throw new WebBeansConfigurationException("Passivation bean : " + toString() + " interceptors must be passivating capable");
-                    }                    
+                    }               
+                    else
+                    {
+                        if(!OWBInjector.checkInjectionPointForInterceptorPassivation(interceptorClass))
+                        {
+                            throw new WebBeansConfigurationException("Passivation bean : " + toString() + " interceptor :  " + interceptorClass+  " must have " +
+                            		"serializable injection points");
+                        }
+                    }
                 }
             }
         }

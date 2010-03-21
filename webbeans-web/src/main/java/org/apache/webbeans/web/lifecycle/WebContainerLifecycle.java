@@ -102,7 +102,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             logger.debug("Application is configured as JSP. Adding EL Resolver.");
             
             JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext((ServletContext)startupObject);
-            applicationCtx.addELResolver(new WebBeansELResolver());            
+            applicationCtx.addELResolver(new WebBeansELResolver());  
         }        
     }
     

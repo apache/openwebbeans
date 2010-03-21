@@ -1020,6 +1020,10 @@ public final class ClassUtil
                     return true;
                 }
             }
+            else if((beanTypeArg instanceof Class) && (ClassUtil.isTypeVariable(requiredTypeArg)))
+            {
+                return checkRequiredTypeIsTypeVariableAndBeanTypeIsClass(beanTypeArg, requiredTypeArg);
+            }
         }
         
         return false;
@@ -1134,6 +1138,27 @@ public final class ClassUtil
         
         return false;
     }
+    
+    public static boolean checkRequiredTypeIsTypeVariableAndBeanTypeIsClass(Type beanTypeArg, Type requiredTypeArg)
+    {
+        Class<?> clazzBeanType = (Class<?>)beanTypeArg;
+        
+        TypeVariable<?> tvRequiredTypeArg = (TypeVariable<?>)requiredTypeArg;
+        Type tvBound = tvRequiredTypeArg.getBounds()[0];
+        
+        if(tvBound instanceof Class)
+        {
+            Class<?> clazzTvBound = (Class<?>)tvBound;
+            
+            if(clazzTvBound.isAssignableFrom(clazzBeanType))
+            {
+                return true;
+            }                    
+        }
+        
+        return false;
+    }
+    
 
     public static boolean checkBeanTypeAndRequiredIsTypeVariable(Type beanTypeArg, Type requiredTypeArg)
     {

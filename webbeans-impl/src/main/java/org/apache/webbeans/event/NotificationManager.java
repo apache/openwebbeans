@@ -194,61 +194,64 @@ public final class NotificationManager
             Class<?> beanClass = null;
             Class<?> observerClass = ClassUtil.getClazz(type);
             
-            if(observerClass.isAssignableFrom(eventType))
+            if(observerClass != null)
             {
-                //ProcessBean,ProcessAnnotateType, ProcessInjectionTarget
-                if(WebBeansUtil.isExtensionBeanEventType(eventType))
+                if(observerClass.isAssignableFrom(eventType))
                 {
-                    if(WebBeansUtil.isDefaultExtensionBeanEventType(observerClass))
-                    {                
-                        GenericBeanEvent genericBeanEvent = (GenericBeanEvent)event;
-                        beanClass = genericBeanEvent.getBeanClass();
-                        
-                        if(ClassUtil.isParametrizedType(type))
-                        {
-                            addToMathingWithParametrizedForBeans(type,beanClass,matching);
-                        }
-                        else
-                        {
-                            addToMatching(type, matching);
-                        }
-                    }
-                }
-                //ProcessProducer, ProcessProducerMethod, ProcessProducerField,ProcessObserverMEthod
-                else if(WebBeansUtil.isExtensionProducerOrObserverEventType(eventType))
-                {
-                    if(WebBeansUtil.isDefaultExtensionProducerOrObserverEventType(observerClass))
+                    //ProcessBean,ProcessAnnotateType, ProcessInjectionTarget
+                    if(WebBeansUtil.isExtensionBeanEventType(eventType))
                     {
-
-                        GenericProducerObserverEvent genericBeanEvent = (GenericProducerObserverEvent)event;
-                        beanClass = genericBeanEvent.getBeanClass();
-                        Class<?> producerOrObserverReturnClass = genericBeanEvent.getProducerOrObserverType();
-        
-                        if(ClassUtil.isParametrizedType(type))
-                        {
-                            boolean isObserverMethod = false;
-                            if(observerClass.equals(ProcessObserverMethod.class))
-                            {
-                                isObserverMethod = true;
-                            }
+                        if(WebBeansUtil.isDefaultExtensionBeanEventType(observerClass))
+                        {                
+                            GenericBeanEvent genericBeanEvent = (GenericBeanEvent)event;
+                            beanClass = genericBeanEvent.getBeanClass();
                             
-                            addToMathingWithParametrizedForProducers(isObserverMethod,type, beanClass, producerOrObserverReturnClass, matching);
+                            if(ClassUtil.isParametrizedType(type))
+                            {
+                                addToMathingWithParametrizedForBeans(type,beanClass,matching);
+                            }
+                            else
+                            {
+                                addToMatching(type, matching);
+                            }
                         }
-                        else
+                    }
+                    //ProcessProducer, ProcessProducerMethod, ProcessProducerField,ProcessObserverMEthod
+                    else if(WebBeansUtil.isExtensionProducerOrObserverEventType(eventType))
+                    {
+                        if(WebBeansUtil.isDefaultExtensionProducerOrObserverEventType(observerClass))
                         {
+
+                            GenericProducerObserverEvent genericBeanEvent = (GenericProducerObserverEvent)event;
+                            beanClass = genericBeanEvent.getBeanClass();
+                            Class<?> producerOrObserverReturnClass = genericBeanEvent.getProducerOrObserverType();
+            
+                            if(ClassUtil.isParametrizedType(type))
+                            {
+                                boolean isObserverMethod = false;
+                                if(observerClass.equals(ProcessObserverMethod.class))
+                                {
+                                    isObserverMethod = true;
+                                }
+                                
+                                addToMathingWithParametrizedForProducers(isObserverMethod,type, beanClass, producerOrObserverReturnClass, matching);
+                            }
+                            else
+                            {
+                                addToMatching(type, matching);
+                            }
+                        }
+                    }
+                    //BeforeBeanDiscovery,AfterBeanDiscovery,AfterDeploymentValidation
+                    //BeforeShutDown Events
+                    else
+                    {
+                        if(observerClass.isAssignableFrom(eventType))
+                        {                
                             addToMatching(type, matching);
                         }
-                    }
-                }
-                //BeforeBeanDiscovery,AfterBeanDiscovery,AfterDeploymentValidation
-                //BeforeShutDown Events
-                else
-                {
-                    if(observerClass.isAssignableFrom(eventType))
-                    {                
-                        addToMatching(type, matching);
-                    }
-                }                
+                    }                
+                }                            
             }            
         }            
         
