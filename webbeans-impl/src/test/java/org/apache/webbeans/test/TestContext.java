@@ -33,7 +33,6 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
-import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.xml.XMLManagedBean;
@@ -53,7 +52,6 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMustImplementAllDecoratedTypes;
