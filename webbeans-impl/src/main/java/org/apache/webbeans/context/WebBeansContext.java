@@ -51,6 +51,8 @@ public interface WebBeansContext extends javax.enterprise.context.spi.Context
      * @param <T> type info
      * @param contextual contextual 
      * @return creational context info for given contextual
+     * 
+     * @deprecated A context must not rely on this information!
      */
     public <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual);
         

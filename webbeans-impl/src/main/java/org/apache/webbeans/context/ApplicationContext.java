@@ -13,8 +13,7 @@
  */
 package org.apache.webbeans.context;
 
-import java.util.Collections;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.Contextual;
 
@@ -34,7 +33,7 @@ public class ApplicationContext extends AbstractContext
     @Override
     public void setComponentInstanceMap()
     {
-        this.componentInstanceMap = Collections.synchronizedMap(new WeakHashMap<Contextual<?>, Object>());
+        this.componentInstanceMap = new ConcurrentHashMap<Contextual<?>, Object>();
 
     }
 
