@@ -97,7 +97,10 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         if((webbeansInstance=webbeansContext.get(bean)) != null)
         {
             CreationalContext<Object> creational = ((AbstractContext)webbeansContext).getCreationalContext(bean);
-            this.creationalContext = creational;
+            if (creational != null)
+            {
+                this.creationalContext = creational;
+            }
         }
 
         //create a new instance
