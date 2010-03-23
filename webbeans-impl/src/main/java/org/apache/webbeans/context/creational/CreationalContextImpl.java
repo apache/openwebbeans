@@ -35,7 +35,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private static final long serialVersionUID = -3416834742959340960L;
 
     /**Actual bean instance*/
-    private Object incompleteInstance = null;
+    private transient Object incompleteInstance = null;
     
     /**Bean proxy*/
     private Object proxyInstance = null;
@@ -319,7 +319,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private synchronized void writeObject(ObjectOutputStream s)
     throws IOException
     {
-        s.writeObject(incompleteInstance);
         s.writeObject(proxyInstance);
 
         // we have to remap into a standard HashMap because WeakHashMap is not serializable
@@ -347,7 +346,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private synchronized void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
-        incompleteInstance = s.readObject();
         proxyInstance = s.readObject();
 
         HashMap<Object, DependentCreationalContext<?>> depo = (HashMap<Object, DependentCreationalContext<?>>)s.readObject();
