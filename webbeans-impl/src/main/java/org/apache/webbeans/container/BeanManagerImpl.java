@@ -714,9 +714,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
         Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
         CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);
         
-        injectedCreational.setOwnerCreational(ownerCreationalContextImpl);
         if(WebBeansUtil.isDependent(injectedBean))
         {        
+            // this must only be added for dependent beans, otherwise we register @NormalScoped beans as dependent!
+            injectedCreational.setOwnerCreational(ownerCreationalContextImpl);
+            
             //Creating a new creational context for target bean instance
             instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
             
@@ -836,7 +838,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
             }
             
             //Get dependent from DependentContex that create contextual instance
-            instance = context.get((Bean<Object>)bean, (CreationalContext<Object>)creationalContext);     
+            instance = context.get((Bean<Object>)bean, (CreationalContext<Object>)creationalContext);
         }
         
         return instance;
