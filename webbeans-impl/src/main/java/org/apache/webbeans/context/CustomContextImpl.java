@@ -22,7 +22,7 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
-class CustomContextImpl extends AbstractContext implements Context
+class CustomContextImpl implements Context
 {
     private Context context;
     
@@ -38,9 +38,6 @@ class CustomContextImpl extends AbstractContext implements Context
 
     public <T> T get(Contextual<T> component, CreationalContext<T> crreationalContext)
     {
-        //Adding creational context into creational context map
-        this.creationalContextMap.put(component, crreationalContext);
-        
         return this.context.get(component, crreationalContext);
     }
 
@@ -52,12 +49,6 @@ class CustomContextImpl extends AbstractContext implements Context
     public boolean isActive()
     {
         return this.context.isActive();
-    }
-
-    @Override
-    protected void setComponentInstanceMap()
-    {
-        //No-operation        
     }
 
 }

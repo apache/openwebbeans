@@ -37,7 +37,7 @@ class WrappedCreationalContext<T> extends CreationalContextImpl<T> implements Cr
     public void push(T instance)
     {
         super.push(instance);
-        wrapped.push(instance);        
+        wrapped.push(instance);
     }
 
     @Override

@@ -16,9 +16,9 @@ package org.apache.webbeans.context;
 import java.util.Map;
 
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.context.type.ContextTypes;
+
 
 /**
  * Defines spi for contexts.
@@ -45,15 +45,4 @@ public interface WebBeansContext extends javax.enterprise.context.spi.Context
      * @return instance map
      */
     public Map<Contextual<?>, Object> getComponentInstanceMap();
-    
-    /**
-     * Gets creational context info for given contextual instance.
-     * @param <T> type info
-     * @param contextual contextual 
-     * @return creational context info for given contextual
-     * 
-     * @deprecated A context must not rely on this information!
-     */
-    public <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual);
-        
 }
