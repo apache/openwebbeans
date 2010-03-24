@@ -26,7 +26,7 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.context.AbstractContext;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 /**
@@ -41,7 +41,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     private static final long serialVersionUID = 1L;
     
     /**Creational context*/
-    private CreationalContext<?> creationalContext;
+    private transient CreationalContext<?> creationalContext;
 
     /**
      * Creates a new bean instance
@@ -93,17 +93,21 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         //Context of the bean
         Context webbeansContext = getBeanManager().getContext(bean.getScope());
         
-        //Already saved in context
-        if((webbeansInstance=webbeansContext.get(bean)) != null)
+        //Already saved in context?
+        webbeansInstance=webbeansContext.get(bean);
+        if (webbeansInstance != null)
         {
-            CreationalContext<Object> creational = ((AbstractContext)webbeansContext).getCreationalContext(bean);
-            if (creational != null)
-            {
-                this.creationalContext = creational;
-            }
+            // voila, we are finished if we found an existing contextual instance
+            return webbeansInstance;
         }
-
-        //create a new instance
+        
+        if (creationalContext == null)
+        {
+            // if there was no CreationalContext set from external, we create a new one
+            creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
+        }
+        
+        // finally, we create a new contextual instance
         webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, (CreationalContext<Object>) creationalContext);
         
         return webbeansInstance;

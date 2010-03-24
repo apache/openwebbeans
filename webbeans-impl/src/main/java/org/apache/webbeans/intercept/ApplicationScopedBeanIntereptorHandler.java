@@ -37,7 +37,7 @@ public class ApplicationScopedBeanIntereptorHandler extends NormalScopedBeanInte
     private static final long serialVersionUID = 1L;
 
     /**Cached bean instance*/
-    private Object cachedInstance = null;
+    private transient Object cachedInstance = null;
     
     /**
      * Creates a new handler.
