@@ -17,7 +17,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.annotation.ApplicationScopeLiteral;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectableBeanManager;
 
 public class BeanManagerBean extends AbstractOwbBean<BeanManager>
 {
@@ -34,7 +34,7 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
     {
         if (this.manager == null)
         {
-            manager = BeanManagerImpl.getManager();
+            manager = new InjectableBeanManager();
         }
 
         return manager;
@@ -46,7 +46,7 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
         this.manager = null;
     }
     
-    /* (non-Javadoc)
+    /**
      * @see org.apache.webbeans.component.AbstractOwbBean#isPassivationCapable()
      */
     @Override
