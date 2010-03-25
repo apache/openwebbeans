@@ -33,7 +33,7 @@ public class ContextsImpl implements Contexts<AbstractContext>
             ContextFactory.initRequestContext(null);   
         }
         
-        return (AbstractContext) ContextFactory.getStandartContext(ContextTypes.REQUEST);
+        return (AbstractContext) ContextFactory.getStandardContext(ContextTypes.REQUEST);
     }
 
     public void setActive(AbstractContext context)
@@ -48,7 +48,7 @@ public class ContextsImpl implements Contexts<AbstractContext>
     }
 
     public AbstractContext getDependentContext() {
-        return (AbstractContext) ContextFactory.getStandartContext(ContextTypes.DEPENDENT);
+        return (AbstractContext) ContextFactory.getStandardContext(ContextTypes.DEPENDENT);
     }
 
     public void destroyContext(AbstractContext context)
