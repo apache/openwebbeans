@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
@@ -198,7 +199,17 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             {
                 BeanManagerImpl manager = BeanManagerImpl.getManager();
                 specializedComponent = (AbstractOwbBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
-                Context context = manager.getContext(specializedComponent.getScope());
+                Context context = null;
+                try
+                {
+                    context = manager.getContext(specializedComponent.getScope());
+                }
+                catch (ContextNotActiveException cnae)
+                {
+                    // this may happen if we try to e.g. send an event to a @ConversationScoped bean from a ServletListener
+                    logger.info("cannot send event to bean in non active context: " + bean.toString());
+                    return;
+                }
                 
                 creationalContext = manager.createCreationalContext(specializedComponent);
                 
@@ -225,9 +236,9 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         finally
         {
             //Destory bean instance
-            if (baseComponent.getScope().equals(Dependent.class))
+            if (baseComponent.getScope().equals(Dependent.class) && object != null)
             {
-                baseComponent.destroy(object,(CreationalContext<Object>)creationalContext);
+                baseComponent.destroy(object,creationalContext);
             }
             
             //Destroy observer method dependent instances
