@@ -19,7 +19,6 @@
 package org.apache.webbeans.container;
 
 import java.io.InputStream;
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
