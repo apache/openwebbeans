@@ -13,6 +13,9 @@
  */
 package org.apache.webbeans.jsf;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.enterprise.context.Conversation;
 import javax.faces.application.ViewHandler;
 import javax.faces.application.ViewHandlerWrapper;
@@ -50,6 +53,30 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
         return url;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getRedirectURL(FacesContext context, String viewId,
+            Map<String, List<String>> parameters, boolean includeViewParams)
+    {
+        String url = delegate.getRedirectURL(context, viewId, parameters, includeViewParams);
+        int indexOfQuery = url.indexOf('?');
+        if (indexOfQuery > 0) 
+        {
+        	String queryString = url.substring(indexOfQuery);
+        	// If the query string already has a cid parameter, return url directly.
+        	if (queryString.contains("?cid=") || queryString.contains("&cid="))
+        		return url;
+        }
+        Conversation conversation = conversationManager.getConversationBeanReference();
+        if (conversation != null && !conversation.isTransient())
+        {
+            url = JSFUtil.getRedirectViewIdWithCid(url, conversation.getId());
+        }
+        return url;
+    }
+    
     /**
      * {@inheritDoc}
      */
