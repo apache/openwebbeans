@@ -103,7 +103,7 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
  * @see BeanManager 
  */
 @SuppressWarnings("unchecked")
-public class BeanManagerImpl implements BeanManager, Referenceable, Serializable
+public class BeanManagerImpl implements BeanManager, Referenceable
 {
     private static final long serialVersionUID = 1L;
 
