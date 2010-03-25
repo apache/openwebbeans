@@ -21,6 +21,8 @@ package org.apache.webbeans.newtests.contexts;
 
 import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.container.SerializableBeanVault;
+import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.contexts.serialize.AppScopedBean;
 import org.apache.webbeans.newtests.contexts.serialize.SessScopedBean;
@@ -46,6 +48,7 @@ import org.junit.Test;
 
 import javassist.util.proxy.ProxyObject;
 
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -61,6 +64,7 @@ import java.util.Set;
 public class SerializationTest extends AbstractUnitTest
 {
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCreationalContextSerialization() throws Exception
     {
@@ -79,8 +83,8 @@ public class SerializationTest extends AbstractUnitTest
         Assert.assertNotNull(pdbCreational);
 
         // oki, now let's serializeBean the CreationalContext
-        byte[] serial = serializeCreationalContext(pdbCreational);
-        CreationalContext<?> cc2 = deSerializeCreationalContext(serial);
+        byte[] serial = serializeObject(pdbCreational);
+        CreationalContext<?> cc2 = (CreationalContext<?>) deSerializeObject(serial);
         Assert.assertNotNull(cc2);
     }
 
@@ -124,9 +128,21 @@ public class SerializationTest extends AbstractUnitTest
 
                 Assert.assertEquals(((SerializableBean<?>)bean).getBean(), ((SerializableBean<?>)b2).getBean());
                 
-            }            
+            }
         }
-
+        
+        // and now we are keen and try to serialize the whole passivatable Contexts!
+        PersonalDataBean pdb = getInstance(PersonalDataBean.class);
+        pdb.business();
+        
+        // first we need to actually create a few instances
+        
+        Context sessionContext = ContextFactory.getStandardContext(ContextTypes.SESSION);
+        Assert.assertNotNull(sessionContext);
+        byte[] ba = serializeObject(sessionContext);
+        Assert.assertNotNull(ba);
+        Context sessContext2 = (Context) deSerializeObject(ba);
+        Assert.assertNotNull(sessContext2);
     }
     
     //X TODO this will work after JASSIST-97 got fixed @Test
@@ -171,31 +187,27 @@ public class SerializationTest extends AbstractUnitTest
 
     private byte[] serializeBean(Bean<?> bean) throws IOException
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(bean);
-        return baos.toByteArray();
+        return serializeObject(bean);
     }
-
-    private Bean<?> deSerializeBean(byte[] serial) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bais = new ByteArrayInputStream(serial);
-        ObjectInputStream ois = new ObjectInputStream(bais);
-        return (Bean<?>) ois.readObject();
-    }
-
-    private byte[] serializeCreationalContext(CreationalContext<?> cc) throws IOException
+    
+    private byte[] serializeObject(Object o) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(cc);
+        oos.writeObject(o);
         return baos.toByteArray();
     }
 
-    private CreationalContext<?> deSerializeCreationalContext(byte[] serial) throws IOException, ClassNotFoundException {
+    private Bean<?> deSerializeBean(byte[] serial) throws IOException, ClassNotFoundException
+    {
+        return (Bean<?>) deSerializeObject(serial);
+    }
+    
+    private Object deSerializeObject(byte[] serial) throws IOException, ClassNotFoundException
+    {
         ByteArrayInputStream bais = new ByteArrayInputStream(serial);
         ObjectInputStream ois = new ObjectInputStream(bais);
-        return (CreationalContext<?>) ois.readObject();
+        return ois.readObject();
     }
-
 
 }

@@ -158,34 +158,34 @@ public final class ContextFactory
      * @throws ContextNotActiveException if context is not active
      * @throws IllegalArgumentException if the type is not a standard context
      */
-    public static Context getStandartContext(ContextTypes type) throws ContextNotActiveException
+    public static Context getStandardContext(ContextTypes type) throws ContextNotActiveException
     {
         Context context = null;
 
         switch (type.getCardinal())
         {
             case 0:
-                context = (Context)contextService.getCurrentContext(RequestScoped.class);
+                context = contextService.getCurrentContext(RequestScoped.class);
                 break;
     
             case 1:
-                context = (Context)contextService.getCurrentContext(SessionScoped.class);
+                context = contextService.getCurrentContext(SessionScoped.class);
                 break;
     
             case 2:
-                context = (Context)contextService.getCurrentContext(ApplicationScoped.class);
+                context = contextService.getCurrentContext(ApplicationScoped.class);
                 break;
     
             case 3:
-                context = (Context)contextService.getCurrentContext(ConversationScoped.class);
+                context = contextService.getCurrentContext(ConversationScoped.class);
                 break;
                 
             case 4:
-                context = (Context)contextService.getCurrentContext(Dependent.class);
+                context = contextService.getCurrentContext(Dependent.class);
                 break;
 
             case 5:
-                context = (Context)contextService.getCurrentContext(Singleton.class);
+                context = contextService.getCurrentContext(Singleton.class);
                 break;
                 
             default:
@@ -206,28 +206,28 @@ public final class ContextFactory
 
         if (scopeType.equals(RequestScoped.class))
         {
-            context = getStandartContext(ContextTypes.REQUEST);
+            context = getStandardContext(ContextTypes.REQUEST);
         }
         else if (scopeType.equals(SessionScoped.class))
         {
-            context = getStandartContext(ContextTypes.SESSION);
+            context = getStandardContext(ContextTypes.SESSION);
         }
         else if (scopeType.equals(ApplicationScoped.class))
         {
-            context = getStandartContext(ContextTypes.APPLICATION);
+            context = getStandardContext(ContextTypes.APPLICATION);
         }
         else if (scopeType.equals(ConversationScoped.class))
         {
-            context = getStandartContext(ContextTypes.CONVERSATION);
+            context = getStandardContext(ContextTypes.CONVERSATION);
 
         }
         else if (scopeType.equals(Dependent.class))
         {
-            context = getStandartContext(ContextTypes.DEPENDENT);
+            context = getStandardContext(ContextTypes.DEPENDENT);
         }
         else if (scopeType.equals(Singleton.class))
         {
-            context = getStandartContext(ContextTypes.SINGLETON);
+            context = getStandardContext(ContextTypes.SINGLETON);
         }
         
         return context;

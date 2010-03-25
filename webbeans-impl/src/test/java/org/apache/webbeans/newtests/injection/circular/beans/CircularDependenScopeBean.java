@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.newtests.injection.circular.beans;
 
+import java.io.Serializable;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -27,7 +29,7 @@ import org.apache.webbeans.test.component.event.normal.Transactional;
 
 @Dependent
 @Named(value="org.apache.webbeans.newtests.injection.circular.beans.CircularDependenScopeBean")
-public class CircularDependenScopeBean
+public class CircularDependenScopeBean implements Serializable
 {
     @Inject CircularApplicationScopedBean app;
     

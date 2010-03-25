@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.context;
 
+import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.Contextual;
@@ -22,8 +23,10 @@ import org.apache.webbeans.context.type.ContextTypes;
 /**
  * Session context implementation.
  */
-public class SessionContext extends AbstractContext
+public class SessionContext extends AbstractContext implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     public SessionContext()
     {
         super(ContextTypes.SESSION);

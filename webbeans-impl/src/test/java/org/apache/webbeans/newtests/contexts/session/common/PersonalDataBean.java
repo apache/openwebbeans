@@ -20,10 +20,14 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
+import org.apache.webbeans.test.component.event.normal.Transactional;
+
 @Named("org.apache.webbeans.newtests.contexts.session.common.PersonalDataBean")
 @SessionScoped
 public class PersonalDataBean implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     public static boolean POST_CONSTRUCT = false;
     
     public static boolean PRE_DESTROY = false;
@@ -33,6 +37,8 @@ public class PersonalDataBean implements Serializable
         
     }
     
+    
+    @Transactional
     public void business(){}
     
     @PostConstruct
