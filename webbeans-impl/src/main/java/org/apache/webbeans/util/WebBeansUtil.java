@@ -2640,16 +2640,15 @@ public final class WebBeansUtil
             throw new IllegalArgumentException("Creational context is null");
         }
         
-        if(cc.getBean().equals(bean))
+        final Contextual<?> existing = cc.getBean();
+        if(existing != null && existing.equals(bean))
         {
-            return cc.getProxyInstance();   
-        }            
-        else
+            return cc.getProxyInstance();
+        }
+
+        if(cc.getOwnerCreational() != null)
         {
-            if(cc.getOwnerCreational() != null)
-            {
-                return getObjectFromCreationalContext(bean, cc.getOwnerCreational());   
-            }
+            return getObjectFromCreationalContext(bean, cc.getOwnerCreational());
         }
         
         return null;
