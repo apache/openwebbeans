@@ -18,14 +18,44 @@
  */
 package org.apache.webbeans.component.creation;
 
+import java.lang.reflect.Constructor;
+
+import javax.enterprise.inject.spi.AnnotatedConstructor;
+
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
 public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
 {
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(AnnotatedTypeBeanCreatorImpl.class);
 
     public AnnotatedTypeBeanCreatorImpl(ManagedBean<T> managedBean)
     {
         super(managedBean);
         setMetaDataProvider(MetaDataProvider.THIRDPARTY);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void defineConstructor()
+    {
+        Constructor<T> constructor = null;
+        try
+        {
+            AnnotatedConstructor<T> annotated = WebBeansAnnotatedTypeUtil.getBeanConstructor(getAnnotatedType());
+            constructor = annotated.getJavaMember();
+            WebBeansAnnotatedTypeUtil.addConstructorInjectionPointMetaData(getBean(), annotated);
+            
+            getBean().setConstructor(constructor);
+            
+        }catch(Exception e)
+        {
+            logger.warn("No suitable constructor found for injection target class : " + getAnnotatedType().getJavaClass()+" ." +
+            		"produce() method does not work!");
+        }
+    }
+    
 }
