@@ -30,12 +30,12 @@
     <description>Implementation of the Web Beans API</description>
 
     <dependencies>
-
+<!--
         <dependency>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
         </dependency>
-
+-->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-el_2.2_spec</artifactId>
