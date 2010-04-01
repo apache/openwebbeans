@@ -30,7 +30,9 @@ import org.apache.webbeans.exception.definition.NonexistentTypeException;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.xml.XMLUtil;
-import org.dom4j.Element;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @SuppressWarnings("unchecked")
 public class XMLStereoTypeModel implements IStereoTypeModel
@@ -59,105 +61,105 @@ public class XMLStereoTypeModel implements IStereoTypeModel
 
     private void configure(Element stereoTypeDecleration, String errorMessage)
     {
-        List<Element> childs = stereoTypeDecleration.elements();
-        if (childs != null && childs.size() > 0)
+        boolean scopeTypeFound = false;
+        Node node; Element child;
+        NodeList ns = stereoTypeDecleration.getChildNodes();
+        for(int i=0; i<ns.getLength(); i++)
         {
-            boolean scopeTypeFound = false;
-
-            for (Element child : childs)
+        	node = ns.item(i);
+        	if (!(node instanceof Element)) continue;
+        	child = (Element)node;
+            Class<?> clazz = XMLUtil.getElementJavaType(child);
+            if (clazz == null)
             {
-                Class<?> clazz = XMLUtil.getElementJavaType(child);
-                if (clazz == null)
+                throw new NonexistentTypeException(errorMessage + "Type is not exist with class name : " + XMLUtil.getElementJavaClassName(child) + " in namespace : " + XMLUtil.getElementNameSpace(child) );
+            }
+
+            Class<? extends Annotation> annClazz = null;
+            if (!clazz.isAnnotation())
+            {
+                throw new WebBeansConfigurationException(errorMessage + "Type is not annotation type with class name : " + XMLUtil.getElementJavaClassName(child) +  " in namespace : " + XMLUtil.getElementNameSpace(child));
+            }
+
+            annClazz = (Class<? extends Annotation>) clazz;
+            Annotation defaultAnn = JavassistProxyFactory.createNewAnnotationProxy(annClazz);
+
+            if (clazz.isAnnotationPresent(NormalScope.class) || clazz.isAnnotationPresent(Scope.class))
+            {
+                if (scopeTypeFound)
                 {
-                    throw new NonexistentTypeException(errorMessage + "Type is not exist with class name : " + XMLUtil.getElementJavaClassName(child) + " in namespace : " + XMLUtil.getElementNameSpace(child) );
+                    throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not contain more than one @Scope/@NormalScope annotation");
                 }
 
-                Class<? extends Annotation> annClazz = null;
-                if (!clazz.isAnnotation())
+                defaultScopeType = defaultAnn;
+                scopeTypeFound = true;
+            }                
+            else if (AnnotationUtil.isInterceptorBindingAnnotation(annClazz))
+            {
+                Target target = clazz.getAnnotation(Target.class);
+                ElementType[] type = target.value();
+
+                if (type.length != 1 && !type[0].equals(ElementType.TYPE))
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "Type is not annotation type with class name : " + XMLUtil.getElementJavaClassName(child) +  " in namespace : " + XMLUtil.getElementNameSpace(child));
+                    throw new WebBeansConfigurationException(errorMessage + "Stereotype with @InterceptorBinding must be defined as @Target{TYPE}");
                 }
 
-                annClazz = (Class<? extends Annotation>) clazz;
-                Annotation defaultAnn = JavassistProxyFactory.createNewAnnotationProxy(annClazz);
-
-                if (clazz.isAnnotationPresent(NormalScope.class) || clazz.isAnnotationPresent(Scope.class))
+                interceptorBindingTypes.add(XMLUtil.getXMLDefinedAnnotationMember(child, annClazz, errorMessage));
+            }
+            else if (clazz.equals(Named.class))
+            {
+                defaultName = defaultAnn;
+                Named name = (Named) defaultName;
+                if (!name.value().equals(""))
                 {
-                    if (scopeTypeFound)
+                    throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not define @Named annotation with value");
+                }
+            }
+            else if (AnnotationUtil.isQualifierAnnotation(annClazz))
+            {
+                throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not define @Qualifier annotation");
+            }
+
+            else if (AnnotationUtil.isStereoTypeAnnotation(annClazz))
+            {
+                Target innerStereo = clazz.getAnnotation(Target.class);
+                Class<?> outerStereoClass = XMLUtil.getElementJavaType(stereoTypeDecleration);
+                Target outerStereo = outerStereoClass.getAnnotation(Target.class);
+
+                ElementType[] innerValues = innerStereo.value();
+                ElementType[] outerValues = outerStereo.value();
+
+                for (ElementType innerValue : innerValues)
+                {
+                    if (innerValue.equals(ElementType.METHOD) || innerValue.equals(ElementType.FIELD))
                     {
-                        throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not contain more than one @Scope/@NormalScope annotation");
-                    }
-
-                    defaultScopeType = defaultAnn;
-                    scopeTypeFound = true;
-                }                
-                else if (AnnotationUtil.isInterceptorBindingAnnotation(annClazz))
-                {
-                    Target target = clazz.getAnnotation(Target.class);
-                    ElementType[] type = target.value();
-
-                    if (type.length != 1 && !type[0].equals(ElementType.TYPE))
-                    {
-                        throw new WebBeansConfigurationException(errorMessage + "Stereotype with @InterceptorBinding must be defined as @Target{TYPE}");
-                    }
-
-                    interceptorBindingTypes.add(XMLUtil.getXMLDefinedAnnotationMember(child, annClazz, errorMessage));
-                }
-                else if (clazz.equals(Named.class))
-                {
-                    defaultName = defaultAnn;
-                    Named name = (Named) defaultName;
-                    if (!name.value().equals(""))
-                    {
-                        throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not define @Named annotation with value");
-                    }
-                }
-                else if (AnnotationUtil.isQualifierAnnotation(annClazz))
-                {
-                    throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not define @Qualifier annotation");
-                }
-
-                else if (AnnotationUtil.isStereoTypeAnnotation(annClazz))
-                {
-                    Target innerStereo = clazz.getAnnotation(Target.class);
-                    Class<?> outerStereoClass = XMLUtil.getElementJavaType(stereoTypeDecleration);
-                    Target outerStereo = outerStereoClass.getAnnotation(Target.class);
-
-                    ElementType[] innerValues = innerStereo.value();
-                    ElementType[] outerValues = outerStereo.value();
-
-                    for (ElementType innerValue : innerValues)
-                    {
-                        if (innerValue.equals(ElementType.METHOD) || innerValue.equals(ElementType.FIELD))
+                        for (ElementType outerValue : outerValues)
                         {
-                            for (ElementType outerValue : outerValues)
+                            if (outerValue.equals(ElementType.TYPE))
                             {
-                                if (outerValue.equals(ElementType.TYPE))
-                                {
-                                    throw new WebBeansConfigurationException(errorMessage + "Inherited StereoType with class name : " + clazz.getName() + " must have compatible @Target annotation with Stereotype class name : " + outerStereoClass.getName());
-                                }
-                            }
-                        }
-                        else if (innerValue.equals(ElementType.TYPE))
-                        {
-                            for (ElementType outerValue : outerValues)
-                            {
-                                if (outerValue.equals(ElementType.METHOD) || outerValue.equals(ElementType.FIELD))
-                                {
-                                    throw new WebBeansConfigurationException(errorMessage + "Inherited StereoType with class name : " + clazz.getName() + " must have compatible @Target annotation with Stereotype class name : " + outerStereoClass.getName());
-                                }
+                                throw new WebBeansConfigurationException(errorMessage + "Inherited StereoType with class name : " + clazz.getName() + " must have compatible @Target annotation with Stereotype class name : " + outerStereoClass.getName());
                             }
                         }
                     }
-
-                    this.inherits.add(defaultAnn);
-
+                    else if (innerValue.equals(ElementType.TYPE))
+                    {
+                        for (ElementType outerValue : outerValues)
+                        {
+                            if (outerValue.equals(ElementType.METHOD) || outerValue.equals(ElementType.FIELD))
+                            {
+                                throw new WebBeansConfigurationException(errorMessage + "Inherited StereoType with class name : " + clazz.getName() + " must have compatible @Target annotation with Stereotype class name : " + outerStereoClass.getName());
+                            }
+                        }
+                    }
                 }
 
-                else
-                {
-                    throw new WebBeansConfigurationException(errorMessage + "Type with class name : " + XMLUtil.getElementJavaClassName(child) + " is not applicable for stereotype");
-                }
+                this.inherits.add(defaultAnn);
+
+            }
+
+            else
+            {
+                throw new WebBeansConfigurationException(errorMessage + "Type with class name : " + XMLUtil.getElementJavaClassName(child) + " is not applicable for stereotype");
             }
         }
     }

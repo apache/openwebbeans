@@ -25,7 +25,7 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.XMLStereoTypeModel;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.dom4j.Element;
+import org.w3c.dom.Element;
 
 public class XMLAnnotationTypeManager
 {

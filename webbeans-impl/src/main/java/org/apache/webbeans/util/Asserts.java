@@ -14,8 +14,7 @@
 package org.apache.webbeans.util;
 
 import java.lang.reflect.Method;
-
-import org.dom4j.Element;
+import org.w3c.dom.Element;
 
 /**
  * Simple utility classes with some assertions methods.

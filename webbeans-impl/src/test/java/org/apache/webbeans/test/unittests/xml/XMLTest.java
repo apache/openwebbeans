@@ -19,7 +19,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.xml.XMLUtil;
-import org.dom4j.Element;
+import org.w3c.dom.Element;
 import org.junit.Test;
 
 public class XMLTest extends TestContext

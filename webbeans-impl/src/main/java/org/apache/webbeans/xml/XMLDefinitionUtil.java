@@ -61,7 +61,9 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.dom4j.Element;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @SuppressWarnings("unchecked")
 public final class XMLDefinitionUtil
@@ -265,11 +267,16 @@ public final class XMLDefinitionUtil
 
     public static <T> void defineXMLMethodLevelInterceptorType(XMLManagedBean<T> component, Method interceptorMethod, Element interceptorMethodElement, String errorMessage)
     {
-        List<Element> bindingTypes = interceptorMethodElement.elements();
         Set<Annotation> bindingTypesSet = new HashSet<Annotation>();
-        for (Element bindingType : bindingTypes)
+        Node node; Element bindingType;
+        NodeList ns = interceptorMethodElement.getChildNodes();
+        for(int i=0; i<ns.getLength(); i++)
         {
-            Class<? extends Annotation> annot = (Class<? extends Annotation>) XMLUtil.getElementJavaType(bindingType);
+        	node = ns.item(i);
+        	if (!(node instanceof Element)) continue;
+        	bindingType = (Element)node;
+
+        	Class<? extends Annotation> annot = (Class<? extends Annotation>) XMLUtil.getElementJavaType(bindingType);
             Annotation bindingAnnot = XMLUtil.getXMLDefinedAnnotationMember(bindingType, annot, errorMessage);
 
             bindingTypesSet.add(bindingAnnot);
@@ -405,19 +412,24 @@ public final class XMLDefinitionUtil
 
         if (found)
         {
-            List<Element> childs = decoratorDecleration.elements();
-            for (Element child : childs)
+            Node node; Element child;
+            NodeList ns = decoratorDecleration.getChildNodes();
+
+            for(int i=0; i<ns.getLength(); i++)
             {
+            	node = ns.item(i);
+            	if (!(node instanceof Element)) continue;
+            	child = (Element)node;
                 if (XMLUtil.getElementNameSpace(child).equals(XMLUtil.getElementNameSpace(decoratorDecleration)) && XMLUtil.isElementHasDecoratesChild(child))
                 {
-                    Field field = ClassUtil.getFieldWithName(component.getReturnType(), child.getName());
+                    Field field = ClassUtil.getFieldWithName(component.getReturnType(), child.getLocalName());
                     if (field == null)
                     {
-                        throw new NonexistentFieldException(errorMessage + "Field with name : " + child.getName() + " not found in the decorator class : " + component.getReturnType().getName());
+                        throw new NonexistentFieldException(errorMessage + "Field with name : " + child.getLocalName() + " not found in the decorator class : " + component.getReturnType().getName());
                     }
-
-                    Element decorates = child.element(WebBeansConstants.WEB_BEANS_XML_DECORATES_ELEMENT);
-                    Element type = (Element) decorates.elements().get(0);
+                    Element type;
+                    NodeList ns1 = child.getElementsByTagName(WebBeansConstants.WEB_BEANS_XML_DECORATES_ELEMENT);
+                    type = (Element)ns1.item(0);
 
                     Class<?> apType = XMLUtil.getElementJavaType(type);
 
@@ -451,7 +463,6 @@ public final class XMLDefinitionUtil
     public static <T> XMLProducerBean<T> defineXMLProducerMethod(WebBeansXMLConfigurator configurator, XMLManagedBean<T> component, Method producesMethod, Element producerMethodElement, String errorMessage)
     {
         boolean producesDefined = false;
-        List<Element> childElements = producerMethodElement.elements();
         Class<T> type = null;
         Element typeElement = null;
         Element arrayElement = null;
@@ -459,8 +470,13 @@ public final class XMLDefinitionUtil
         List<Element> memberLevelElement = new ArrayList<Element>();
         List<XMLInjectionPointModel> injectedParameters = new ArrayList<XMLInjectionPointModel>();
 
-        for (Element childElement : childElements)
+        Node node; Element childElement;
+        NodeList ns = producerMethodElement.getChildNodes();
+        for(int i=0; i<ns.getLength(); i++)
         {
+        	node = ns.item(i);
+        	if (!(node instanceof Element)) continue;
+        	childElement = (Element)node;
             if (XMLUtil.isElementInWebBeansNameSpaceWithName(childElement, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT))
             {
                 if (producesDefined == false)
@@ -472,12 +488,16 @@ public final class XMLDefinitionUtil
                     throw new WebBeansConfigurationException(errorMessage + "More than one <Produces> element is defined");
                 }
 
-                List<Element> producesElementChilds = childElement.elements();
                 boolean definedType = false;
 
-                for (Element producesElementChild : producesElementChilds)
+                Node producerNode; Element producesElementChild;
+                NodeList nsProducer = childElement.getChildNodes();
+                for(int j=0; j<nsProducer.getLength(); j++)
                 {
-                    if (producesElementChild.getName().equals(WebBeansConstants.WEB_BEANS_XML_ARRAY_ELEMENT))
+                	producerNode = nsProducer.item(j);
+                	if (!(producerNode instanceof Element)) continue;
+                	producesElementChild= (Element)producerNode;
+                	if (producesElementChild.getLocalName().equals(WebBeansConstants.WEB_BEANS_XML_ARRAY_ELEMENT))
                     {
                         arrayElement = producesElementChild;
                         definedType = true;
@@ -638,8 +658,6 @@ public final class XMLDefinitionUtil
      */
     public static <T> void defineXMLDisposalMethod(XMLManagedBean<T> component, Method disposalMethod, Element disposalMethodElement, String errorMessage)
     {
-        /* Disposal method element childs */
-        List<Element> disposalChildElements = disposalMethodElement.elements();
 
         /* Multiple <Disposes> element control parameter */
         boolean disposalDefined = false;
@@ -649,8 +667,14 @@ public final class XMLDefinitionUtil
 
         XMLProducerBean<?> producerComponent = null;
 
-        for (Element childElement : disposalChildElements)
+        /* Disposal method element childs */
+        Node node; Element childElement;
+        NodeList ns = disposalMethodElement.getChildNodes();
+        for(int i=0; i<ns.getLength(); i++)
         {
+        	node = ns.item(i);
+        	if (!(node instanceof Element)) continue;
+        	childElement = (Element)node;
             if (XMLUtil.isElementInWebBeansNameSpaceWithName(childElement, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT))
             {
                 if (disposalDefined == false)
@@ -662,7 +686,8 @@ public final class XMLDefinitionUtil
                     throw new WebBeansConfigurationException(errorMessage + "More than one <Disposal> element is defined for defining disposal method : " + disposalMethod.getName());
                 }
 
-                Element typeElement = (Element) childElement.elements().get(0);
+                //TODO: verify the first node is element.
+                Element typeElement = (Element) childElement.getChildNodes().item(0);
 
                 /* Find disposal method model */
                 XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(typeElement, errorMessage);
@@ -707,8 +732,6 @@ public final class XMLDefinitionUtil
     {
         component.addObservableMethod(observesMethod);
 
-        /* Observes method element childs */
-        List<Element> observesChildElements = observesMethodElement.elements();
 
         /* Other parameter elements other than @Observes */
         List<Element> otherParameterElements = new ArrayList<Element>();
@@ -717,11 +740,19 @@ public final class XMLDefinitionUtil
 
         Class<K> eventType = null;
 
-        for (Element childElement : observesChildElements)
+        /* Observes method element childs */
+        Node node; Element childElement;
+        NodeList ns = observesMethodElement.getChildNodes();
+
+        for(int i=0; i<ns.getLength(); i++)
         {
+        	node = ns.item(i);
+        	if (!(node instanceof Element)) continue;
+        	childElement = (Element)node;
             if (XMLUtil.isElementInWebBeansNameSpaceWithName(childElement, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT))
             {
-                Element typeElement = (Element) childElement.elements().get(0);
+            	//TODO: verify the first node is Element.
+                Element typeElement = (Element) childElement.getChildNodes().item(0);
 
                 eventType = (Class<K>) XMLUtil.getElementJavaType(typeElement);
 

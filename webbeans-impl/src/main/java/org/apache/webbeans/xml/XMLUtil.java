@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -40,24 +39,18 @@ import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.ElementHandler;
-import org.dom4j.ElementPath;
-import org.dom4j.Namespace;
-import org.dom4j.io.SAXReader;
 
-/**
- * Used for getting information contained in the file web-beans.xml.
- * 
- * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
- * @since 1.0
- */
-@SuppressWarnings("unchecked")
-public final class XMLUtil
-{
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Attr; 
+import org.w3c.dom.NodeList;
+
+
+public class XMLUtil {
 
     private XMLUtil()
     {
@@ -65,77 +58,80 @@ public final class XMLUtil
 
     private static WebBeansLogger log = WebBeansLogger.getLogger(XMLUtil.class);
 
-    /**
-     * Gets new {@link SAXReader} instance.
-     * 
-     * @return sax reader instance
-     */
-    public static SAXReader getSaxReader()
+    protected static boolean verifyNameSpace(Element element)
     {
-        return new SAXReader();
+    	boolean ret;
+    	if (element.getNamespaceURI() == null)
+    	{
+    		return false;
+    	}
+    	Node node;
+    	NodeList ns = element.getChildNodes();
+    	for(int i=0; i<ns.getLength(); i++) 
+    	{
+    		node = ns.item(i);
+    		if (!(node instanceof Element)) continue;
+    		ret = verifyNameSpace((Element)node);
+    		if (!ret) return false;
+    	}
+    	return true;
     }
-
-    /**
-     * Gets the root element of the parsed document.
-     * 
-     * @param stream parsed document
-     * @return root element of the document
-     * @throws WebBeansException if any runtime exception occurs
-     */
+	
+	protected static void updateNameSpacePackageMapping(Element root) 
+	{
+		if (!verifyNameSpace(root)) 
+		{
+            throw new WebBeansConfigurationException(log.getTokenString(OWBLogConst.EXCEPT_0012));			
+		}
+		if (root.getNamespaceURI() != null)
+		{
+			WebBeansNameSpaceContainer.getInstance().
+			addNewPackageNameSpace(root.getNamespaceURI());
+		} else {
+			String attr = root.getAttribute("xmlns");
+			if (attr != null) {
+				WebBeansNameSpaceContainer.getInstance().
+				addNewPackageNameSpace(root.getNamespaceURI());
+			} 
+		}
+		NamedNodeMap attrs = root.getAttributes();
+		for(int i=0; i<attrs.getLength(); i++)
+		{
+			// hack the code here, since I did'nt find NameSpace support
+			// in Java DOM.
+			Attr attr = (Attr)attrs.item(i);
+			if (attr.getName().toLowerCase().startsWith("xmlns")) 
+			{
+                WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(attr.getValue());
+			}
+		}
+	}
+	
     public static Element getRootElement(InputStream stream) throws WebBeansException
     {
-        try
-        {  
-            SAXReader saxReader = getSaxReader();
-            saxReader.setMergeAdjacentText(true);
-            saxReader.setStripWhitespaceText(true);
-            saxReader.setErrorHandler(new WebBeansErrorHandler());
-            saxReader.setEntityResolver(new WebBeansResolver());
-            saxReader.setValidation(false);
-            saxReader.setDefaultHandler(new ElementHandler()
-            {
-                public void onEnd(ElementPath path)
-                {
-
-                }
-
-                public void onStart(ElementPath path)
-                {
-                    Element element = path.getCurrent();
-                    if (element.getNamespaceURI() == null || element.getNamespaceURI().equals(""))
-                    {
-                        throw new WebBeansConfigurationException(log.getTokenString(OWBLogConst.EXCEPT_0012));
-                    }
-                    else
-                    {
-                        if (element.isRootElement())
-                        {
-                            WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(element.getNamespace().getURI());
-
-                            List allNs = element.declaredNamespaces();
-                            Iterator itNs = allNs.iterator();
-
-                            while (itNs.hasNext())
-                            {
-                                Namespace namespace = (Namespace)itNs.next();
-                                WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(namespace.getURI());
-                            }
-                        }
-                    }
-                }
-
-            });
-
-            Document document = saxReader.read(stream);
-
-            return document.getRootElement();
-
-        }
-        catch (DocumentException e)
-        {
+    	
+    	try 
+    	{
+	    	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setCoalescing(false);
+			factory.setExpandEntityReferences(true);
+			factory.setIgnoringComments(true);
+			factory.setIgnoringElementContentWhitespace(true);
+			factory.setNamespaceAware(true);
+			factory.setValidating(false);
+			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+			documentBuilder.setErrorHandler(new WebBeansErrorHandler());
+			documentBuilder.setEntityResolver(new WebBeansResolver());
+	    	
+			Document doc = documentBuilder.parse(stream);
+			Element root = doc.getDocumentElement();
+			updateNameSpacePackageMapping(root);
+			return root;
+    	} catch (Exception e)
+    	{
             log.fatal(OWBLogConst.FATAL_0002, e);
             throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
-        }
+    	}
     }
     
     /**
@@ -147,42 +143,34 @@ public final class XMLUtil
      */
     public static Element getSpecStrictRootElement(InputStream stream) throws WebBeansException
     {
-        try
-        {  
-            SAXReader saxReader = getSaxReader();
-            saxReader.setMergeAdjacentText(true);
-            saxReader.setStripWhitespaceText(true);
-            saxReader.setErrorHandler(new WebBeansErrorHandler());
-            saxReader.setEntityResolver(new WebBeansResolver());
-            saxReader.setValidation(false);
-            Document document = saxReader.read(stream);
-
-            return document.getRootElement();
-
-        }
-        catch (DocumentException e)
-        {
+    	try 
+    	{
+	    	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setCoalescing(false);
+			factory.setExpandEntityReferences(true);
+			factory.setIgnoringComments(true);
+			factory.setIgnoringElementContentWhitespace(true);
+			factory.setNamespaceAware(true);
+			factory.setValidating(false);
+			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+			documentBuilder.setErrorHandler(new WebBeansErrorHandler());
+			documentBuilder.setEntityResolver(new WebBeansResolver());
+	    	
+			Element root = documentBuilder.parse(stream).getDocumentElement();
+			return root;
+    	} catch (Exception e)
+    	{
             log.fatal(OWBLogConst.FATAL_0002, e);
             throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
-        }
-    }
-    
+    	}    	
+    }    
 
     public static boolean isElementInNamespace(Element element, String namespace)
     {
         Asserts.assertNotNull(element, "element parameter can not be null");
         Asserts.assertNotNull(namespace, "namespace parameter can not be null");
-
-        Namespace ns = element.getNamespace();
-        if (!Namespace.NO_NAMESPACE.equals(ns))
-        {
-            if (ns.getURI().equals(namespace))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        String nsURI = element.getNamespaceURI();
+        return nsURI.equals(namespace);
     }
 
     public static boolean isElementInWebBeansNameSpace(Element element)
@@ -197,15 +185,14 @@ public final class XMLUtil
 
         return false;
     }
-
+    
     public static boolean isElementInWebBeansNameSpaceWithName(Element element, String name)
     {
         nullCheckForElement(element);
 
         if (isElementInWebBeansNameSpace(element))
         {
-            String txtName = element.getName();
-
+            String txtName = element.getLocalName();
             if (name.equals(txtName))
             {
                 return true;
@@ -214,20 +201,14 @@ public final class XMLUtil
 
         return false;
     }
-
+    
     public static String getElementNameSpace(Element element)
     {
         nullCheckForElement(element);
 
-        Namespace ns = element.getNamespace();
-        if (!Namespace.NO_NAMESPACE.equals(ns))
-        {
-            return ns.getURI();
-        }
-
-        return null;
+        return element.getNamespaceURI();
     }
-
+    
     public static boolean isElementWebBeanDeclaration(Element element)
     {
         nullCheckForElement(element);
@@ -244,7 +225,7 @@ public final class XMLUtil
 
         return false;
 
-    }
+    }    
 
     /**
      * Returns true if element has a bindingtype child element in webbeans
@@ -388,10 +369,13 @@ public final class XMLUtil
     {
         nullCheckForElement(element);
 
-        List<Element> childs = element.elements();
-
-        for (Element child : childs)
+        Node node; Element child;
+        NodeList ns = element.getChildNodes();
+        for(int i=0; i<ns.getLength(); i++)
         {
+        	node = ns.item(i);
+        	if (!(node instanceof Element)) continue;
+        	child = (Element)node;
             if (!isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_INITIALIZER_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DESTRUCTOR_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DECORATES_ELEMENT))
             {
 
@@ -429,12 +413,15 @@ public final class XMLUtil
      */
     public static boolean isElementMethod(Element element)
     {
-        Asserts.nullCheckForDomElement(element);
+    	nullCheckForElement(element);
 
-        List<Element> childs = element.elements();
-
-        for (Element child : childs)
+        Node node; Element child;
+        NodeList ns = element.getChildNodes();
+        for(int i=0; i<ns.getLength(); i++)
         {
+        	node = ns.item(i);
+        	if (!(node instanceof Element)) continue;
+        	child = (Element)node;
             if (isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_INITIALIZER_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DESTRUCTOR_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT))
             {
                 return true;
@@ -466,7 +453,7 @@ public final class XMLUtil
     {
         nullCheckForElement(element);
 
-        return element.getName();
+        return element.getLocalName();
     }
 
     public static Class<?> getElementJavaType(Element element)
@@ -503,7 +490,7 @@ public final class XMLUtil
         
         return foundClazz;
     }
-
+    
     public static String getElementJavaClassName(Element element)
     {
         Class<?> clazz = getElementJavaType(element);
@@ -515,20 +502,29 @@ public final class XMLUtil
         
         return getName(element);
     }
-
+    
     private static void nullCheckForElement(Element element)
     {
-        Asserts.nullCheckForDomElement(element);
+        Asserts.assertNotNull(element, "element argument can not be null");
     }
-
+    
+    
     public static boolean hasChildElement(Element parent, String childName)
-    {
+    {Node node;
         Asserts.assertNotNull(parent, "parent parameter can not be null");
         Asserts.assertNotNull(childName, "childName parameter can not be null");
-
-        return parent.element(childName) != null ? true : false;
+        NodeList nl = parent.getChildNodes();
+        for(int i=0; i<nl.getLength(); i++)
+        {
+        	node = nl.item(i);
+        	if (node instanceof Element) 
+        	{
+	        	if (node.getNodeName().equals(childName)) return true;
+        	}
+        }
+        return false;
     }
-
+    
     /**
      * Return child element within webbeans namespace with given child name.
      * 
@@ -541,8 +537,21 @@ public final class XMLUtil
     {
         Asserts.assertNotNull(parent, "parent parameter can not be null");
         Asserts.assertNotNull(childName, "childName parameter can not be null");
-
-        Element child = parent.element(childName);
+        Node node; 
+        Element child = null;
+        NodeList nl = parent.getChildNodes();
+        for(int i=0; i<nl.getLength(); i++)
+        {
+        	node = nl.item(i);
+        	if (node instanceof Element) 
+        	{
+	        	if (node.getNodeName().equals(childName)) 
+	        	{
+	        		child = (Element)node;
+	        	}
+        	}
+        }
+        
         if (child == null)
         {
             return false;
@@ -551,7 +560,6 @@ public final class XMLUtil
         {
             return isElementInWebBeansNameSpace(child);
         }
-
     }
 
     /**
@@ -566,7 +574,7 @@ public final class XMLUtil
         Asserts.assertNotNull(typeElement, "typeElement parameter can not be null");
 
         /* Element <Array> */
-        if (typeElement.getName().equals(WebBeansConstants.WEB_BEANS_XML_ARRAY_ELEMENT))
+        if (typeElement.getLocalName().equals(WebBeansConstants.WEB_BEANS_XML_ARRAY_ELEMENT))
         {
             return getArrayInjectionPointModel(typeElement, errorMessage);
         }
@@ -577,7 +585,7 @@ public final class XMLUtil
         }
 
     }
-
+    
     /**
      * Injection point with Java type.
      * 
@@ -604,14 +612,18 @@ public final class XMLUtil
         {
             TypeVariable[] typeVariables = clazz.getTypeParameters();
             int actualTypeArgument = typeVariables.length;
-            List<Element> childElements = typeElement.elements();
             List<Type> typeArguments = new ArrayList<Type>();
             List<Annotation> bindingAnnots = new ArrayList<Annotation>();
 
             Class<? extends Annotation> definedBindingType = null;
-            for (Element childElement : childElements)
+            Node node; Element childElement;
+            NodeList ns = typeElement.getChildNodes();
+            for(int i=0; i<ns.getLength(); i++)
             {
-                Type actualType = getElementJavaType(childElement);
+            	node = ns.item(i);
+            	if (!(node instanceof Element)) continue;
+            	childElement = (Element)node;
+            	Type actualType = getElementJavaType(childElement);
                 if (actualType == null)
                 {
                     throw new NonexistentTypeException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not found in the deployment");
@@ -686,6 +698,7 @@ public final class XMLUtil
         return model;
     }
 
+    
     /**
      * Creates new annotation with configured members values.
      * 
@@ -696,12 +709,13 @@ public final class XMLUtil
      */
     public static Annotation getXMLDefinedAnnotationMember(Element annotationElement, Class<? extends Annotation> annotClazz, String errorMessage)
     {
-        String value = annotationElement.getTextTrim();
-        List<Attribute> attrs = annotationElement.attributes();
+        String value = annotationElement.getTextContent().trim();
+        NamedNodeMap attrs = annotationElement.getAttributes();
         List<String> attrsNames = new ArrayList<String>();
-
-        for (Attribute attr : attrs)
+        
+        for(int i=0; i<attrs.getLength(); i++)
         {
+        	Attr attr = (Attr)attrs.item(i);
             attrsNames.add(attr.getName());
         }
 
@@ -779,12 +793,13 @@ public final class XMLUtil
      * @param errorMessage error message
      * @return new annotation
      */
-    private static WebBeansAnnotation createInjectionPointAnnotation(List<Attribute> attrs, Class<? extends Annotation> annotClazz, String valueText, String errorMessage)
+    private static WebBeansAnnotation createInjectionPointAnnotation(NamedNodeMap attrs, Class<? extends Annotation> annotClazz, String valueText, String errorMessage)
     {
         WebBeansAnnotation annotation = JavassistProxyFactory.createNewAnnotationProxy(annotClazz);
         boolean isValueAttrDefined = false;
-        for (Attribute attr : attrs)
+        for(int i=0; i<attrs.getLength(); i++)
         {
+        	Attr attr = (Attr)attrs.item(i);
             String attrName = attr.getName();
             String attrValue = attr.getValue();
 
@@ -853,6 +868,7 @@ public final class XMLUtil
         return annotation;
     }
 
+    
     /**
      * Injection point with array type.
      * 
@@ -864,13 +880,17 @@ public final class XMLUtil
     {
         XMLInjectionPointModel model = null;
 
-        List<Element> childElements = typeElement.elements();
         boolean isElementTypeDefined = false;
-
         Set<Annotation> anns = new HashSet<Annotation>();
-        for (Element childElement : childElements)
+        Node node; Element childElement;
+        NodeList ns = typeElement.getChildNodes();
+
+        for(int i=0; i<ns.getLength(); i++)
         {
-            Class<?> clazz = XMLUtil.getElementJavaType(childElement);
+        	node = ns.item(i);
+        	if (!(node instanceof Element)) continue;
+        	childElement = (Element)node;
+        	Class<?> clazz = XMLUtil.getElementJavaType(childElement);
 
             if (clazz == null)
             {
@@ -911,15 +931,18 @@ public final class XMLUtil
 
         return model;
     }
-
+    
     public static <T> void defineXMLProducerApiTypeFromArrayElement(XMLProducerBean<T> component, Element typeElement, String errorMessage)
     {
-        List<Element> childElements = typeElement.elements();
         boolean isElementTypeDefined = false;
-
         Set<Annotation> anns = new HashSet<Annotation>();
-        for (Element childElement : childElements)
+        Node node; Element childElement;
+        NodeList ns = typeElement.getChildNodes();
+        for(int i=0; i<ns.getLength(); i++)
         {
+        	node = ns.item(i);
+        	if (!(node instanceof Element)) continue;
+        	childElement = (Element)node;
             Class<?> clazz = XMLUtil.getElementJavaType(childElement);
 
             if (clazz == null)
@@ -960,5 +983,6 @@ public final class XMLUtil
         }
 
     }
-
+    
 }
+

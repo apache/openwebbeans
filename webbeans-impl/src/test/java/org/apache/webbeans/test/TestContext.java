@@ -74,7 +74,10 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.apache.webbeans.xml.XMLUtil;
-import org.dom4j.Element;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 
 /**
  * Superclass of all the unit test classes. It defines some methods for
@@ -353,9 +356,16 @@ public abstract class TestContext implements ITestContext
         InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
         Assert.assertNotNull(stream);
 
+        Element beanElement = null;
         Element rootElement = XMLUtil.getRootElement(stream);
-        Element beanElement = (Element) rootElement.elements().get(0);
-
+        NodeList ns = rootElement.getChildNodes();
+        for(int i = 0; i<=ns.getLength(); i++)
+        {
+        	Node node = ns.item(i);
+        	if (!(node instanceof Element)) continue;
+        	beanElement = (Element)node;
+        	break;
+        }
         Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
 
         XMLManagedBean<?> def = defineXMLSimpleWebBeans(clazz, beanElement);
@@ -378,10 +388,16 @@ public abstract class TestContext implements ITestContext
         InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
         Assert.assertNotNull(stream);
 
+        Element beanElement;
         Element rootElement = XMLUtil.getRootElement(stream);
-
-        for (Element beanElement : (List<Element>) rootElement.elements())
+        NodeList nodes = rootElement.getChildNodes();
+        for(int i=0; i<nodes.getLength(); i++)
         {
+        	Node node = nodes.item(i);
+        	if (!(node instanceof Element)) {
+        		continue;
+        	}
+        	beanElement = (Element)node;
             Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
 
             defineXMLSimpleWebBeans(clazz, beanElement);
