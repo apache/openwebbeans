@@ -600,7 +600,7 @@
           <geronimo_el.version>1.0-beta</geronimo_el.version>
           <scannatation.version>1.0.2</scannatation.version>
           <geronimo_annotation.version>1.1</geronimo_annotation.version>
-          <geronimo_jpa.version>1.0-PFD2</geronimo_jpa.version>
+          <geronimo_jpa.version>1.0</geronimo_jpa.version>
           <geronimo_jta.version>1.1.1</geronimo_jta.version>
           <geronimo_jsp.version>1.0.1</geronimo_jsp.version>
           <geronimo_cdi.version>1.0-beta</geronimo_cdi.version>
