@@ -408,6 +408,9 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         {
             logger.warn("Trying to deserialize not passivated capable bean proxy : " + this.bean);
         }
+        
+        // restore transient interceptorMethodMap
+        interceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
     }
 
 }
