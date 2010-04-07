@@ -18,6 +18,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -393,6 +395,73 @@ public final class InterceptorUtil
             }
         }
 
+    }
+
+    /**
+     * Gets list of interceptors with the given type.
+     * 
+     * @param stack interceptor stack
+     * @param type interceptor type
+     * @return list of interceptor
+     */
+    
+    public static List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptorType type)
+    {
+        List<InterceptorData> ai = new ArrayList<InterceptorData>();
+        List<InterceptorData> pc = new ArrayList<InterceptorData>();
+        List<InterceptorData> pd = new ArrayList<InterceptorData>();
+    
+        Iterator<InterceptorData> it = stack.iterator();
+        while (it.hasNext())
+        {
+            Method m = null;
+            InterceptorData data = it.next();
+    
+            if (type.equals(InterceptorType.AROUND_INVOKE))
+            {
+                m = data.getAroundInvoke();
+                if (m != null)
+                {
+                    ai.add(data);
+                }
+    
+            }
+            else if (type.equals(InterceptorType.POST_CONSTRUCT))
+            {
+                m = data.getPostConstruct();
+                if (m != null)
+                {
+                    pc.add(data);
+                }
+    
+            }
+            else if (type.equals(InterceptorType.PRE_DESTROY))
+            {
+                m = data.getPreDestroy();
+                if (m != null)
+                {
+                    pd.add(data);
+                }
+    
+            }
+    
+        }
+    
+        if (type.equals(InterceptorType.AROUND_INVOKE))
+        {
+            return ai;
+        }
+        else if (type.equals(InterceptorType.POST_CONSTRUCT))
+        {
+            return pc;
+    
+        }
+        else if (type.equals(InterceptorType.PRE_DESTROY))
+        {
+            return pd;
+        }
+    
+        return Collections.EMPTY_LIST;
     }
 
 }

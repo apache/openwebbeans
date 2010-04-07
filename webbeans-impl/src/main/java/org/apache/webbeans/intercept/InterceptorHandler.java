@@ -245,7 +245,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         // Call Around Invokes
                         if (WebBeansUtil.isContainsInterceptorMethod(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE))
                         {
-                            return callAroundInvokes(method, arguments, WebBeansUtil.getInterceptorMethods(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE));
+                            return callAroundInvokes(method, arguments, InterceptorUtil.getInterceptorMethods(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE));
                         }
                         
                     }

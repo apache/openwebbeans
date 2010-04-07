@@ -42,6 +42,7 @@ import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorType;
+import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -245,7 +246,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             // Call Post Construct
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
             {
-                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
+                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, InterceptorUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
                 impl.setCreationalContext(ownerCreationalContext);
                 try
                 {
@@ -281,7 +282,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         {
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
             {                
-                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, WebBeansUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
+                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, InterceptorUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
                 impl.setCreationalContext(creationalContext);
                 try
                 {

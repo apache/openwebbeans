@@ -54,7 +54,7 @@ public interface InterceptorData
     public Method getPostConstruct();
 
     /**
-     * Gets the list of {@link PreDestroy} annotated method
+     * Gets the {@link PreDestroy} annotated method
      * if exist, returns null otherwise. 
      * @return pre-destroy method
      */
