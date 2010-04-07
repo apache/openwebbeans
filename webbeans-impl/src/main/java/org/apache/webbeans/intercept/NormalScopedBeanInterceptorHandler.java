@@ -26,8 +26,10 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.context.AbstractContext;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+
 
 /**
  * Normal scoped beans interceptor handler.
@@ -103,8 +105,15 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         
         if (creationalContext == null)
         {
-            // if there was no CreationalContext set from external, we create a new one
-            creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
+            if (webbeansContext instanceof AbstractContext)
+            {
+                creationalContext = ((AbstractContext)webbeansContext).getCreationalContext(bean);
+            }
+            if (creationalContext == null)
+            {
+                // if there was no CreationalContext set from external, we create a new one
+                creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
+            }
         }
         
         // finally, we create a new contextual instance

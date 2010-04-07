@@ -209,7 +209,7 @@ public abstract class AbstractContext implements WebBeansContext
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    protected <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual)
+    public <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual)
     {
         Asserts.assertNotNull(contextual);
         if(this.creationalContextMap.containsKey(contextual))
