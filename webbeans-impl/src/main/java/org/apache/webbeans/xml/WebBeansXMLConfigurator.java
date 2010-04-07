@@ -42,7 +42,6 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Scope;
 import javax.interceptor.Interceptor;
-import javax.lang.model.util.Elements;
 
 import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.annotation.DefaultLiteral;
