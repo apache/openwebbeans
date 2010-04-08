@@ -76,7 +76,7 @@ public class InjectableBeanManager implements BeanManager, Serializable
     @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
-        return createInjectionTarget(type);
+        return bm.createInjectionTarget(type);
     }
 
     @Override

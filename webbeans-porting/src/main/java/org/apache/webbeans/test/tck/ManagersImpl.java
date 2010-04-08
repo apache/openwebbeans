@@ -15,19 +15,28 @@ package org.apache.webbeans.test.tck;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.jboss.jsr299.tck.spi.Managers;
 import org.jboss.testharness.api.DeploymentException;
 
 public class ManagersImpl implements Managers
 {
-
+    private static InjectableBeanManager beanManager;
+    
+    public static void cleanUp()
+    {
+        beanManager = null;
+    }
+    
     public BeanManager getManager()
     {
-        BeanManagerImpl impl = BeanManagerImpl.getManager();
+        if(beanManager == null)
+        {
+            beanManager = new InjectableBeanManager();
+        }
         
-        return impl;
+        return beanManager; 
     }
 
     public boolean isDefinitionError(DeploymentException deploymentException)

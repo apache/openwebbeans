@@ -140,6 +140,7 @@ public class TomcatConnector extends AbstractContainerConnector implements Conta
       finally
       {
          get.releaseConnection();
+         ManagersImpl.cleanUp();
       }
    }
 

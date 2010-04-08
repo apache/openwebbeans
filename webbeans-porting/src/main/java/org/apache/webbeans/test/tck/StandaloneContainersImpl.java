@@ -141,8 +141,15 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
     public void undeploy()
     {
-        this.lifeCycle.stopApplication(null);
-        this.lifeCycle = null;
+        try
+        {
+            this.lifeCycle.stopApplication(null);
+            this.lifeCycle = null;   
+        }        
+        finally
+        {
+            ManagersImpl.cleanUp();   
+        }
      }
 
     public DeploymentException getDeploymentException()
