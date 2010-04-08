@@ -41,7 +41,7 @@ public class OpenWebBeansEjbInterceptor
     }
     
     @PostConstruct
-    public void afterConstruct(InvocationContext context) throws Exception
+    public void afterConstruct(InvocationContext context)
     {
         Object instance = context.getTarget();
 
