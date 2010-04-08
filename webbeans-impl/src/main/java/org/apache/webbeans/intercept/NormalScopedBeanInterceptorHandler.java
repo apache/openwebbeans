@@ -103,17 +103,18 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
             return webbeansInstance;
         }
         
+        if (webbeansContext instanceof AbstractContext)
+        {
+            CreationalContext<?> cc = ((AbstractContext)webbeansContext).getCreationalContext(bean);
+            if (cc != null)
+            {
+                creationalContext = cc;
+            }
+        }
         if (creationalContext == null)
         {
-            if (webbeansContext instanceof AbstractContext)
-            {
-                creationalContext = ((AbstractContext)webbeansContext).getCreationalContext(bean);
-            }
-            if (creationalContext == null)
-            {
-                // if there was no CreationalContext set from external, we create a new one
-                creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
-            }
+            // if there was no CreationalContext set from external, we create a new one
+            creationalContext = CreationalContextFactory.getInstance().getCreationalContext(bean);
         }
         
         // finally, we create a new contextual instance
