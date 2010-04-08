@@ -31,7 +31,7 @@ import org.apache.webbeans.spi.TransactionService;
 public class UserTransactionBean extends AbstractOwbBean<UserTransaction>
 {
 
-    protected UserTransactionBean()
+    public UserTransactionBean()
     {
         super(WebBeansType.USERTRANSACTION, UserTransaction.class);
         addApiType(Object.class);
