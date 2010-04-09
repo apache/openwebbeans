@@ -240,7 +240,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             }
                             
                             this.interceptedMethodMap.put(method, filteredInterceptorStack);
-                        }    
+                        }
                         
                         // Call Around Invokes
                         if (WebBeansUtil.isContainsInterceptorMethod(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE))
@@ -363,7 +363,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             {
                 it.remove();
             }
-        }        
+        }
     }
         
     /**

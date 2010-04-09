@@ -150,10 +150,7 @@ public class InvocationContextImpl implements InvocationContext
             {
                 return proceedAroundInvokes(this.interceptorDatas);
             }
-            else
-            {
-                return proceedCommonAnnots(this.interceptorDatas, this.type);
-            }
+            return proceedCommonAnnots(this.interceptorDatas, this.type);
 
         }
         catch (InvocationTargetException ite)
@@ -167,10 +164,7 @@ public class InvocationContextImpl implements InvocationContext
             {
                 throw (Exception) t;
             }
-            else
-            {
-                throw ite;
-            }
+            throw ite;
         }
         catch (Exception e)
         {
