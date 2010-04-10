@@ -64,5 +64,31 @@ public abstract class AbstractContextsService implements ContextsService
     {        
         return false;
     }
-
+    
+    @Override
+    public void activateContext(Class<? extends Annotation> scopeType)
+    {
+        if(supportsContext(scopeType))
+        {
+            Context context = getCurrentContext(scopeType);
+            if(context instanceof AbstractContext)
+            {
+                ((AbstractContext)context).setActive(true);
+            }
+        }
+    }
+    
+    @Override
+    public void deActivateContext(Class<? extends Annotation> scopeType)
+    {
+        if(supportsContext(scopeType))
+        {
+            Context context = getCurrentContext(scopeType);
+            if(context instanceof AbstractContext)
+            {
+                ((AbstractContext)context).setActive(false);
+            }
+        }        
+    }
+    
 }

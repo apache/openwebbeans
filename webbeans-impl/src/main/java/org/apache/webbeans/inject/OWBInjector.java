@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -59,8 +60,13 @@ public final class OWBInjector
         }
     }
     
-    @SuppressWarnings("unchecked")
     public  OWBInjector inject(Object javaEeComponentInstance) throws Exception
+    {
+        return inject(javaEeComponentInstance,null);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public  OWBInjector inject(Object javaEeComponentInstance, CreationalContext<?> creationalContext) throws Exception
     {
         BeanManager beanManager = BeanManagerImpl.getManager();
         try
@@ -71,7 +77,10 @@ public final class OWBInjector
             Set<InjectionPoint> injectionPoints = injectionTarget.getInjectionPoints();
             if(injectionPoints != null && injectionPoints.size() > 0)
             {
-                this.ownerCreationalContext = (CreationalContextImpl<?>) beanManager.createCreationalContext(null);
+                if(creationalContext == null)
+                {
+                    this.ownerCreationalContext = (CreationalContextImpl<?>) beanManager.createCreationalContext(null);   
+                }
                 
                 for(InjectionPoint injectionPoint : injectionPoints)
                 {
@@ -99,6 +108,7 @@ public final class OWBInjector
         
         return null;
     }
+    
     
     public static boolean checkInjectionPointForInterceptorPassivation(Class<?> clazz)
     {

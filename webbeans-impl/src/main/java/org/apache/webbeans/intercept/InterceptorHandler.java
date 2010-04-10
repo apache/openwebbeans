@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -28,8 +27,6 @@ import java.util.WeakHashMap;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-
-import javax.interceptor.ExcludeClassInterceptors;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -46,7 +43,6 @@ import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -225,7 +221,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
         
                             // Filter both EJB and WebBeans interceptors
-                            filterCommonInterceptorStackList(filteredInterceptorStack, method, ownerCreationalContext);
+                            InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method, ownerCreationalContext);
         
                             // If there are both interceptors and decorators, add hook
                             // point to the end of the interceptor stack.
@@ -310,62 +306,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     {
         return BeanManagerImpl.getManager();
     }
-    
-    
-    /**
-     * Returns true if this interceptor data is not related
-     * false othwewise.
-     * @param id interceptor data
-     * @param method called method
-     * @return true if this interceptor data is not related
-     */
-    private boolean shouldRemoveInterceptorCommon(InterceptorData id, Method method)
-    {
-        boolean isMethodAnnotatedWithExcludeInterceptorClass = false;
-        if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
-        {
-            isMethodAnnotatedWithExcludeInterceptorClass = true;
-        }
-
-        if (isMethodAnnotatedWithExcludeInterceptorClass)
-        {
-            // If the interceptor is defined at the class level it should be
-            // removed due to ExcludeClassInterceptors method annotation
-            if (!id.isDefinedInMethod() && id.isDefinedInInterceptorClass())
-            {
-                return true;
-            }
-        }
-
-        // If the interceptor is defined in a different method, remove it
-        if (id.isDefinedInMethod() && !id.getInterceptorBindingMethod().equals(method))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Filter bean interceptor stack.
-     * @param stack interceptor stack
-     * @param method called method on proxy
-     * @param ownerCreationalContext bean creational context
-     */
-    private void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method, CreationalContextImpl<?> ownerCreationalContext)
-    {
-        Iterator<InterceptorData> it = stack.iterator();
-        while (it.hasNext())
-        {
-            InterceptorData data = it.next();
-
-            if (shouldRemoveInterceptorCommon(data, method))
-            {
-                it.remove();
-            }
-        }
-    }
-        
+                
     /**
      * Write to stream.
      * @param s stream

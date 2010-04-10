@@ -92,13 +92,13 @@ public final class ContextFactory
     /**
      * Creates the application context at the application startup
      * 
-     * @param servletContext servlet context object
+     * @param parameter parameter object
      */
-    public static void initApplicationContext(Object servletContext)
+    public static void initApplicationContext(Object parameter)
     {
         try
         {
-            contextService.startContext(ApplicationScoped.class, servletContext);
+            contextService.startContext(ApplicationScoped.class, parameter);
         }
         catch (Exception e)
         {
@@ -110,18 +110,18 @@ public final class ContextFactory
      * Destroys the application context and all of its components at the end of
      * the application.
      * 
-     * @param servletContext servlet context object
+     * @param parameter parameter object
      */
-    public static void destroyApplicationContext(Object servletContext)
+    public static void destroyApplicationContext(Object parameter)
     {
-        contextService.endContext(ApplicationScoped.class, servletContext);
+        contextService.endContext(ApplicationScoped.class, parameter);
     }
     
-    public static void initSingletonContext(Object servletContext)
+    public static void initSingletonContext(Object parameter)
     {
         try
         {
-            contextService.startContext(Singleton.class, servletContext);
+            contextService.startContext(Singleton.class, parameter);
         }
         catch (Exception e)
         {
@@ -129,9 +129,9 @@ public final class ContextFactory
         }
     }
     
-    public static void destroySingletonContext(Object servletContext)
+    public static void destroySingletonContext(Object parameter)
     {
-        contextService.endContext(Singleton.class, servletContext);
+        contextService.endContext(Singleton.class, parameter);
     }
 
     public static void initConversationContext(Object context)
@@ -232,4 +232,21 @@ public final class ContextFactory
         
         return context;
     }
+    
+    /**
+     * Activate context. 
+     */
+    public static void activateContext(Class<? extends Annotation> scopeType)
+    {
+        contextService.activateContext(scopeType);
+    }
+    
+    /**
+     * Deactivate context.
+     */
+    public static void deActivateContext(Class<? extends Annotation> scopeType)
+    {
+        contextService.deActivateContext(scopeType);
+    }
+    
 }

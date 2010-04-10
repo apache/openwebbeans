@@ -35,8 +35,11 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
+import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.InvocationContext;
 
+import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -404,7 +407,7 @@ public final class InterceptorUtil
      * @param type interceptor type
      * @return list of interceptor
      */
-    
+    @SuppressWarnings("unchecked")
     public static List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptorType type)
     {
         List<InterceptorData> ai = new ArrayList<InterceptorData>();
@@ -462,6 +465,71 @@ public final class InterceptorUtil
         }
     
         return Collections.EMPTY_LIST;
+    }
+    
+    /**
+     * Returns true if this interceptor data is not related
+     * false othwewise.
+     * @param id interceptor data
+     * @param method called method
+     * @return true if this interceptor data is not related
+     */
+    private static boolean shouldRemoveInterceptorCommon(InterceptorData id, Method method)
+    {
+        boolean isMethodAnnotatedWithExcludeInterceptorClass = false;
+        if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
+        {
+            isMethodAnnotatedWithExcludeInterceptorClass = true;
+        }
+
+        if (isMethodAnnotatedWithExcludeInterceptorClass)
+        {
+            // If the interceptor is defined at the class level it should be
+            // removed due to ExcludeClassInterceptors method annotation
+            if (!id.isDefinedInMethod() && id.isDefinedInInterceptorClass())
+            {
+                return true;
+            }
+        }
+
+        // If the interceptor is defined in a different method, remove it
+        if (id.isDefinedInMethod() && !id.getInterceptorBindingMethod().equals(method))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Filter bean interceptor stack.
+     * @param stack interceptor stack
+     * @param method called method on proxy
+     * @param ownerCreationalContext bean creational context
+     */
+    public static void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method, CreationalContextImpl<?> ownerCreationalContext)
+    {
+        Iterator<InterceptorData> it = stack.iterator();
+        while (it.hasNext())
+        {
+            InterceptorData data = it.next();
+
+            if (shouldRemoveInterceptorCommon(data, method))
+            {
+                it.remove();
+            }
+        }
+    }
+    
+    public static Object callAroundInvokes(InjectionTargetBean<?> bean,Object instance, CreationalContextImpl<?> creationalContext,
+            Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
+    {
+        InvocationContextImpl impl = new InvocationContextImpl(bean, instance,
+                                                               proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+        impl.setCreationalContext(creationalContext);
+
+        return impl.proceed();
+
     }
 
 }

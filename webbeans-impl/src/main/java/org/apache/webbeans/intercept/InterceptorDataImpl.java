@@ -120,7 +120,7 @@ public class InterceptorDataImpl implements InterceptorData
      * org.apache.webbeans.intercept.InterceptorData#addAroundInvoke(java.lang
      * .reflect.Method)
      */
-    protected void setAroundInvoke(Method m)
+    public void setAroundInvoke(Method m)
     {
         this.aroundInvoke = m;
     }
