@@ -90,4 +90,21 @@ public interface ContextsService
      */
     public void endContext(Class<? extends Annotation> scopeType, Object endParameters);
     
+    /**
+     * Activate the context with the given scope type. If 
+     * given scope type is not supported, there is no action.
+     * Any exception thrown by the operation is catched and 
+     * logged by the container.
+     * @param scopeType scope type
+     */
+    public void activateContext(Class<? extends Annotation> scopeType);
+    
+    /**
+     * Deactivates the context with the given scope type. If 
+     * given scope type is not supported, there is no action.
+     * Any exception thrown by the operation is catched and 
+     * logged by the container.
+     * @param scopeType scope type
+     */    
+    public void deActivateContext(Class<? extends Annotation> scopeType);
 }
