@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.context.AbstractContextsService;
 import org.apache.webbeans.context.ApplicationContext;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.DependentContext;
@@ -44,7 +45,7 @@ import org.apache.webbeans.spi.ContextsService;
  * Web container {@link ContextsService}
  * implementation.
  */
-public class WebContextsService implements ContextsService
+public class WebContextsService extends AbstractContextsService
 {
     /**Current request context*/
     private static ThreadLocal<RequestContext> requestContext = null;
