@@ -45,6 +45,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Provider;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -1624,9 +1625,17 @@ public final class ClassUtil
             set.add(new OwbParametrizedTypeImpl(raw));
         }
 
-        Type sc = raw.getGenericSuperclass();
+		Type sc = null;
+		try
+		{
+			sc = raw.getGenericSuperclass();
+		}
+		catch (Exception e)
+		{
+			logger.warn(OWBLogConst.WARN_0008, raw.getName(), e.getClass().getName(), e.getMessage());
+		}
 
-        if (sc != null)
+		if (sc != null)
         {
             setTypeHierarchy(set, sc);
         }

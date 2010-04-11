@@ -56,6 +56,7 @@ public class OWBLogConst
     public final static String WARN_0005 = "WARN_0005"; // OpenWebBeans Container is already stopped.
     public final static String WARN_0006 = "WARN_0006"; // Conversation already started with cid : [{1}]
     public final static String WARN_0007 = "WARN_0007"; // Conversation already ended with cid : [{1}]
+    public final static String WARN_0008 = "WARN_0008"; // Problems processing type {0}. Type will be ignored. (Exception: {1} {2})
 
     public final static String ERROR_0001 = "ERROR_0001"; // Unable to inject resource for : [{1}]
     public final static String ERROR_0002 = "ERROR_0002"; // Initialization of the WebBeans container has failed.
