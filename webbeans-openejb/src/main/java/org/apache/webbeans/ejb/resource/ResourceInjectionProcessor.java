@@ -61,7 +61,7 @@ class ResourceInjectionProcessor
         else if(resourceReference.supports(EJB.class))
         {
             EJB annotation = resourceReference.getAnnotation(EJB.class);
-            resource = lookupFieldResource(context, annotation.name(), resourceReference.getResourceType());
+            resource = lookupFieldResource(context, "openejb/Deployment/"+annotation.name(), resourceReference.getResourceType());
         }
         else if(resourceReference.supports(WebServiceRef.class))
         {
