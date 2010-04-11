@@ -75,34 +75,33 @@ public class OpenEjbBean<T> extends BaseEjbBean<T>
     @SuppressWarnings("unchecked")
     protected T getInstance(CreationalContext<T> creationalContext)
     {
-        if(this.instance == null)
+        T instance = null;
+        
+        ContainerSystem containerSystem =  SystemInstance.get().getComponent(ContainerSystem.class);
+        Context jndiContext = containerSystem.getJNDIContext();
+        DeploymentInfo deploymentInfo = this.getDeploymentInfo();
+        try
         {
-            ContainerSystem containerSystem =  SystemInstance.get().getComponent(ContainerSystem.class);
-            Context jndiContext = containerSystem.getJNDIContext();
-            DeploymentInfo deploymentInfo = this.getDeploymentInfo();
-            try
+            if(iface != null)
             {
-                if(iface != null)
+                InterfaceType type = deploymentInfo.getInterfaceType(iface);
+                if(!type.equals(InterfaceType.BUSINESS_LOCAL))
                 {
-                    InterfaceType type = deploymentInfo.getInterfaceType(iface);
-                    if(!type.equals(InterfaceType.BUSINESS_LOCAL))
-                    {
-                        throw new IllegalArgumentException("Interface type is not legal business local interface for session bean class : " + getReturnType().getName());
-                    }   
-                }    
-                else
-                {
-                    iface = this.deploymentInfo.getBusinessLocalInterface();
-                }
-                
-                String jndiName = "java:openejb/Deployment/" + JndiBuilder.format(deploymentInfo.getDeploymentID(), this.iface.getName()); 
-                this.instance = (T)this.iface.cast(jndiContext.lookup(jndiName));                             
-                
-            }catch(NamingException e)
+                    throw new IllegalArgumentException("Interface type is not legal business local interface for session bean class : " + getReturnType().getName());
+                }   
+            }    
+            else
             {
-                throw new RuntimeException(e);
-            }        
-        }
+                iface = this.deploymentInfo.getBusinessLocalInterface();
+            }
+            
+            String jndiName = "java:openejb/Deployment/" + JndiBuilder.format(deploymentInfo.getDeploymentID(), this.iface.getName()); 
+            instance = (T)this.iface.cast(jndiContext.lookup(jndiName));                             
+            
+        }catch(NamingException e)
+        {
+            throw new RuntimeException(e);
+        }        
 
         return instance;
     }
