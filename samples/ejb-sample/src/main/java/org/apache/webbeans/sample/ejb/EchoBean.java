@@ -24,6 +24,7 @@ import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 @Interceptors(value=OpenWebBeansEjbInterceptor.class)
 public class EchoBean implements Echo
 {
+    @LogInterceptorBinding
     public String echo(String name)
     {
         return "Hello " + name; 
