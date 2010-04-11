@@ -18,10 +18,14 @@
  */
 package org.apache.webbeans.context.creational;
 
+import java.io.Serializable;
+
 import org.apache.webbeans.inject.OWBInjector;
 
-public class EjbInterceptorContext
+public class EjbInterceptorContext implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     private Object interceptorInstance;
     
     private OWBInjector injectorInstance;

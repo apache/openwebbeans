@@ -42,8 +42,10 @@ import org.apache.webbeans.util.ClassUtil;
  * @version $Rev$ $Date$
  *
  */
-public final class OWBInjector
+public final class OWBInjector implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+    
     private CreationalContextImpl<?> ownerCreationalContext = null;
     
     public OWBInjector()

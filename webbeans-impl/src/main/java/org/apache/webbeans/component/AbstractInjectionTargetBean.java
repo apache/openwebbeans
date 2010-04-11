@@ -133,7 +133,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         //For dependent instance checks
         T dependentProxy = null;
         boolean isDependentProxy = false;
-        if(getScope() == Dependent.class)
+        if(getScope() == Dependent.class && !(this instanceof EnterpriseBeanMarker))
         {
             T result = (T)JavassistProxyFactory.createDependentScopedBeanProxy(this, instance, creationalContext);
             //Means that Dependent Bean has interceptor/decorator

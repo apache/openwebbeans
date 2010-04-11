@@ -17,7 +17,6 @@
 package org.apache.webbeans.context.creational;
 
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -31,7 +30,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 class DependentCreationalContext<S> implements Serializable
 {
-    private static final long serialVersionUID = 7107949019995422165L;
+    private static final long serialVersionUID = 1L;
 
     private CreationalContext<S> creationalContext;
     
@@ -126,10 +125,10 @@ class DependentCreationalContext<S> implements Serializable
     private synchronized void writeObject(ObjectOutputStream s)
     throws IOException
     {
-        s.writeLong(serialVersionUID);
-        
-        s.writeObject(creationalContext);
+        //Default write
+        s.defaultWriteObject();
 
+        //Write for contextual
         String id = null;
         if (contextual != null)
         {
@@ -154,14 +153,10 @@ class DependentCreationalContext<S> implements Serializable
     private synchronized void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
-        long svId = s.readLong();
-        if (svId != serialVersionUID)
-        {
-            throw new InvalidClassException(this.getClass().getSimpleName());
-        }
+        //Default read
+        s.defaultReadObject();
         
-        creationalContext = (CreationalContext<S>) s.readObject();
-
+        //Read for contextual
         String id = (String) s.readObject();
         if (id != null)
         {

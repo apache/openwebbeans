@@ -175,21 +175,27 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
      */
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments, CreationalContextImpl<?> ownerCreationalContext) throws Exception
     {
+        //Result of invocation
         Object result = null;
         
         try
         {
-            if (bean instanceof InjectionTargetBean<?>)
+            //Calling method name on Proxy
+            String methodName = method.getName();
+            
+            if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
+            {
+                logger.warn("Calling method on proxy is restricted except Object.toString(), but current method is Object." + methodName);
+            }
+            
+            else if (bean instanceof InjectionTargetBean<?>)
             {
                 InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) this.bean;
 
-                // toString is supported but no other object method names!!!
-                if ((!ClassUtil.isObjectMethod(method.getName()) || method.getName().equals("toString")) 
-                    && InterceptorUtil.isWebBeansBusinessMethod(method))
+                //Check method is business method
+                if (InterceptorUtil.isWebBeansBusinessMethod(method))
                 {
-
                     List<Object> decorators = null;
-
                     if (injectionTarget.getDecoratorStack().size() > 0 && this.decorators == null)
                     {
                         Class<?> proxyClass = JavassistProxyFactory.getInterceptorProxyClasses().get(bean);
@@ -200,7 +206,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             JavassistProxyFactory.getInterceptorProxyClasses().put(bean, proxyClass);
                         }
                         Object delegate = proxyClass.newInstance();
-                        this.delegateHandler = new DelegateHandler();
+                        this.delegateHandler = new DelegateHandler(this.bean);
                         ((ProxyObject)delegate).setHandler(this.delegateHandler);
 
                         // Gets component decorator stack

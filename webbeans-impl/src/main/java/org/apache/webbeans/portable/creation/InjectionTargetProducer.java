@@ -16,6 +16,7 @@ package org.apache.webbeans.portable.creation;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionTarget;
 
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -52,11 +53,14 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
         
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
         
-        bean.injectResources(instance, ctx);
-        bean.injectSuperFields(instance, ctx);
-        bean.injectSuperMethods(instance, ctx);
-        bean.injectFields(instance, ctx);
-        bean.injectMethods(instance, ctx);
+        if(!(bean instanceof EnterpriseBeanMarker))
+        {
+            bean.injectResources(instance, ctx);
+            bean.injectSuperFields(instance, ctx);
+            bean.injectSuperMethods(instance, ctx);
+            bean.injectFields(instance, ctx);
+            bean.injectMethods(instance, ctx);            
+        }        
     }
     
     /**
@@ -65,8 +69,11 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     @Override
     public void postConstruct(T instance)
     {
-        InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);        
-        bean.postConstruct(instance,this.creationalContext);
+        InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);    
+        if(!(bean instanceof EnterpriseBeanMarker))
+        {
+            bean.postConstruct(instance,this.creationalContext);   
+        }
     }
 
     /**
@@ -76,7 +83,10 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     public void preDestroy(T instance)
     {
         InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);        
-        bean.preDestroy(instance,this.creationalContext);
+        if(!(bean instanceof EnterpriseBeanMarker))
+        {
+            bean.preDestroy(instance,this.creationalContext);   
+        }
     }
 
 }

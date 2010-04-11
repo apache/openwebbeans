@@ -24,6 +24,7 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.interceptor.InvocationContext;
 
+import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -58,6 +59,8 @@ public class InvocationContextImpl implements InvocationContext
     /**Bean creational context*/
     private CreationalContext<?> creationalContext;
     
+    private OwbBean<?> owbBean;
+    
     /**
      * Initializes the context.
      * 
@@ -69,6 +72,7 @@ public class InvocationContextImpl implements InvocationContext
      */
     public InvocationContextImpl(OwbBean<?> bean, Object instance, Method method, Object[] parameters, List<InterceptorData> datas, InterceptorType type)
     {
+        this.owbBean = bean;
         this.method = method;
         this.parameters = parameters;
         this.interceptorDatas = datas;
@@ -215,17 +219,20 @@ public class InvocationContextImpl implements InvocationContext
         }
         else
         {
-            boolean accessible = this.method.isAccessible();
-            if(!accessible)
-            {                
-                this.method.setAccessible(true);
-            }
-            
-            result = this.method.invoke(target, parameters);
-            
-            if(!accessible)
+            if(!(this.owbBean instanceof EnterpriseBeanMarker))
             {
-                this.method.setAccessible(false);   
+                boolean accessible = this.method.isAccessible();
+                if(!accessible)
+                {                
+                    this.method.setAccessible(true);
+                }
+                
+                result = this.method.invoke(target, parameters);
+                
+                if(!accessible)
+                {
+                    this.method.setAccessible(false);   
+                }                
             }
         }
 
@@ -270,12 +277,14 @@ public class InvocationContextImpl implements InvocationContext
             //In bean class
             if (t == null)
             {
-                t = target;                
-                result = method.invoke(t, new Object[] {});
-                
-                //Continue to call others
-                proceedCommonAnnots(datas, type);                
-                
+                if(!(this.owbBean instanceof EnterpriseBeanMarker))
+                {
+                    t = target;                
+                    result = method.invoke(t, new Object[] {});
+                    
+                    //Continue to call others
+                    proceedCommonAnnots(datas, type);                                    
+                }                
             }
             //In interceptor class
             else
