@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.sample.bean;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -32,7 +33,9 @@ import org.apache.webbeans.sample.injection.InjectionTargetBean;
 public class EchoManaged
 {
     private @Inject @Default Echo echo;
-        
+    
+    private @EJB(name="EchoBean/org.apache.webbeans.sample.ejb.Echo") Echo nonContextual;
+    
     private String text;
     
     private String name;
@@ -57,7 +60,10 @@ public class EchoManaged
         
         System.out.println("EMF --> " + bean.getFactory().equals(this.emf));
         
+        //Call for contextual
         this.text = echo.echo(name);
+        //Call for noncontextual
+        this.nonContextual.echo(name);
         
         return null;
     }
