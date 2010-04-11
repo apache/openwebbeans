@@ -49,14 +49,21 @@ public final class EjbDefinitionUtility
         try
         {
             bean.setIface(iface);
-            ProxyFactory factory = new ProxyFactory();
             
-            EjbBeanProxyHandler handler = new EjbBeanProxyHandler(bean,creationalContext);
+            Class<?> clazz = JavassistProxyFactory.getEjbBeanProxyClass(bean);
+            if(clazz != null)
+            {
+                return (T)clazz.newInstance();
+            }
             
+            //Proxy factory instance
+            ProxyFactory factory = new ProxyFactory();            
+            
+            EjbBeanProxyHandler handler = new EjbBeanProxyHandler(bean,creationalContext);            
             factory.setHandler(handler);
             factory.setInterfaces(new Class[]{iface});
          
-            return (T)(JavassistProxyFactory.getProxyClass(factory).newInstance());
+            return (T)(JavassistProxyFactory.defineEjbBeanProxyClass(bean, factory).newInstance());
             
         }catch(Exception e)
         {

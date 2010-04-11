@@ -16,6 +16,9 @@
  */
 package org.apache.webbeans.ejb.common.proxy;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -26,8 +29,11 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.context.AbstractContext;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
+import org.apache.webbeans.logger.WebBeansLogger;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -39,10 +45,14 @@ import javassist.util.proxy.MethodHandler;
 @SuppressWarnings("unchecked")
 public class EjbBeanProxyHandler implements MethodHandler
 {
+    //Logger instance
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(EjbBeanProxyHandler.class);
+    
     /**Proxy ejb bean instance*/
     private BaseEjbBean<?> ejbBean;
     
-    private CreationalContext<?> creationalContext;
+    /**Creational Context*/
+    private transient CreationalContext<?> creationalContext;
     
     /**
      * Creates a new instance.
@@ -73,13 +83,40 @@ public class EjbBeanProxyHandler implements MethodHandler
         
         try
         {
+            //Set Ejb bean on thread local
             OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean, this.creationalContext);
+
+            Object webbeansInstance = null;
             
             //Context of the bean
-            Context webbeansContext = BeanManagerImpl.getManager().getContext(ejbBean.getScope());
+            Context webbeansContext = BeanManagerImpl.getManager().getContext(this.ejbBean.getScope());
             
-            //Get bean instance from context
-            Object webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, (CreationalContext<Object>)this.creationalContext);            
+            //Already saved in context?
+            webbeansInstance=webbeansContext.get(this.ejbBean);
+            if (webbeansInstance != null)
+            {
+                // voila, we are finished if we found an existing contextual instance
+                return webbeansInstance;
+            }
+            
+            if (webbeansContext instanceof AbstractContext)
+            {
+                CreationalContext<?> cc = ((AbstractContext)webbeansContext).getCreationalContext(this.ejbBean);
+                if (cc != null)
+                {
+                    creationalContext = cc;
+                }
+            }
+            if (creationalContext == null)
+            {
+                // if there was no CreationalContext set from external, we create a new one
+                creationalContext = CreationalContextFactory.getInstance().getCreationalContext(this.ejbBean);
+            }
+            
+            // finally, we create a new contextual instance
+            webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, (CreationalContext<Object>) creationalContext);
+            
+            //Call actual method
             result = method.invoke(webbeansInstance, arguments);            
             
         }finally
@@ -88,7 +125,7 @@ public class EjbBeanProxyHandler implements MethodHandler
         }                
         
         return result;
-    }
+    }    
     
     /**
      * Check stateful bean remove method control.
@@ -112,4 +149,41 @@ public class EjbBeanProxyHandler implements MethodHandler
         
         return false;
     }
+    
+    /**
+     * Write to stream.
+     * @param s stream
+     * @throws IOException
+     */
+    private  void writeObject(ObjectOutputStream s) throws IOException
+    {
+        // we have to write the ids for all beans, not only PassivationCapable
+        // since this gets serialized along with the Bean proxy.
+        String passivationId = this.ejbBean.getId();
+        if (passivationId!= null)
+        {
+            s.writeObject(passivationId);
+        }
+        else
+        {
+            s.writeObject(null);
+            logger.warn("Trying to serialize not passivated capable bean proxy : " + this.ejbBean);
+        }
+    }
+    
+    /**
+     * Read from stream.
+     * @param s stream
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private  void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
+    {
+        String passivationId = (String) s.readObject();
+        if (passivationId != null)
+        {
+            this.ejbBean = (BaseEjbBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(passivationId);
+        }
+    }
+    
 }

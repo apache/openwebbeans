@@ -36,9 +36,6 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     /**Session bean type*/
     protected SessionBeanType ejbType;
     
-    /**Current bean instance*/
-    protected T instance = null;
-    
     /**Injected reference local interface type*/
     protected Class<?> iface = null;
     
@@ -124,13 +121,7 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     @Override
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
-        if(this.instance == null)
-        {
-            //Create instance
-            this.instance = getInstance(creationalContext);
-        }
-
-        return instance;
+        return getInstance(creationalContext);
     }
     
     /**
@@ -149,9 +140,7 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
         if(removeStatefulInstance && getEjbType().equals(SessionBeanType.STATEFUL))
         {
             //Call remove method
-        }
-        
-        this.instance = null;
+        }        
     }
     
     /**
