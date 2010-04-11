@@ -21,8 +21,10 @@ import java.io.ObjectInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import javassist.util.proxy.ProxyFactory;
@@ -34,11 +36,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
@@ -80,7 +84,10 @@ public class OpenWebBeansEjbInterceptor
     
     /**Intercepted methods*/
     protected transient Map<Method, List<InterceptorData>> interceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
-    
+
+    /**Non contextual Intercepted methods*/
+    protected transient Map<Method, List<InterceptorData>> nonCtxInterceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
+
     /**Bean decorator objects*/
     protected transient List<Object> decorators = null;
     
@@ -89,6 +96,9 @@ public class OpenWebBeansEjbInterceptor
     
     /**Injector*/
     private transient OWBInjector injector;
+    
+    /**Resolved ejb beans for non-contexctual interceptors*/
+    private transient Map<Class<?>, BaseEjbBean<?>> resolvedBeans = new HashMap<Class<?>, BaseEjbBean<?>>();
     
     /**
      * Creates a new instance.
@@ -152,10 +162,18 @@ public class OpenWebBeansEjbInterceptor
             {
                 applicationAlreadyActive = true;
             }
-
-            //Calls OWB interceptors and decorators
-            callInterceptorsAndDecorators(context.getMethod(), context.getTarget(), context.getParameters());
-
+            
+            if(threadLocal.get() != null)
+            {
+                //Calls OWB interceptors and decorators
+                callInterceptorsAndDecorators(context.getMethod(), context.getTarget(), context.getParameters());    
+            }
+            else
+            {
+                //Call OWB interceptors
+                callInterceptorsForNonContextuals(context.getMethod(), context.getTarget(), context.getParameters());
+            }
+            
         }finally
         {
             if(!requestAlreadyActive)
@@ -180,20 +198,23 @@ public class OpenWebBeansEjbInterceptor
     {
         InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
         
-        if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
-        {                
-            InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
-                    InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
-            impl.setCreationalContext(threadLocalCreationalContext.get());
-            try
-            {
-                impl.proceed();
-            }
-            catch (Exception e)
-            {
-                logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PostConstruct."}, e);                
-            }
-        }            
+        if(injectionTarget != null)
+        {
+            if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
+            {                
+                InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
+                        InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
+                impl.setCreationalContext(threadLocalCreationalContext.get());
+                try
+                {
+                    impl.proceed();
+                }
+                catch (Exception e)
+                {
+                    logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PostConstruct."}, e);                
+                }
+            }                        
+        }
         
         Object instance = context.getTarget();
         this.injector = new OWBInjector();
@@ -217,20 +238,23 @@ public class OpenWebBeansEjbInterceptor
     {
         InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
         
-        if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.PRE_DESTROY))
-        {                
-            InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
-                    InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
-            impl.setCreationalContext(threadLocalCreationalContext.get());
-            try
-            {
-                impl.proceed();
-            }
-            catch (Exception e)
-            {
-                logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PreDestroy."}, e);
-            }
-        }            
+        if(injectionTarget != null)
+        {
+            if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.PRE_DESTROY))
+            {                
+                InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
+                        InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
+                impl.setCreationalContext(threadLocalCreationalContext.get());
+                try
+                {
+                    impl.proceed();
+                }
+                catch (Exception e)
+                {
+                    logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PreDestroy."}, e);
+                }
+            }                        
+        }
         
         if(this.injector != null)
         {
@@ -240,6 +264,8 @@ public class OpenWebBeansEjbInterceptor
             {
                 decorators.clear();
             }
+            this.resolvedBeans.clear();
+            this.nonCtxInterceptedMethodMap.clear();
         }
     }
     
@@ -314,6 +340,51 @@ public class OpenWebBeansEjbInterceptor
             }            
         }                
     }
+
+    /**
+     * Calls OWB related interceptors.
+     * @param method business method
+     * @param instance bean instance
+     * @param arguments method arguments
+     * @return result of operation
+     * @throws Exception for any exception
+     */    
+    private Object callInterceptorsForNonContextuals(Method method, Object instance, Object[] arguments) throws Exception
+    {
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        
+        //Try to resolve ejb bean
+        BaseEjbBean<?> ejbBean = this.resolvedBeans.get(instance.getClass());
+        
+        //Not found
+        if(ejbBean == null)
+        {
+            Set<Bean<?>> beans = manager.getComponents();
+            for(Bean<?> bean : beans)
+            {
+                if(bean instanceof BaseEjbBean)
+                {
+                    if(bean.getBeanClass() == instance.getClass())
+                    {
+                        ejbBean = (BaseEjbBean<?>)bean;
+                        break;
+                    }
+                }
+            }
+        }        
+        
+        if(ejbBean == null)
+        {
+            logger.warn("Unable to find EJB bean with class : " + instance.getClass());
+        }
+        else
+        {
+            CreationalContext<?> cc = manager.createCreationalContext(null);
+            return runInterceptorStack(ejbBean.getInterceptorStack(), method, instance, arguments, ejbBean, cc);
+        }
+        
+        return null;
+    }
     
     /**
      * Calls OWB related interceptors and decorators.
@@ -370,7 +441,7 @@ public class OpenWebBeansEjbInterceptor
                     List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
 
                     // Filter both EJB and WebBeans interceptors
-                    InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method, (CreationalContextImpl<?>)threadLocalCreationalContext.get());
+                    InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
 
                     // If there are both interceptors and decorators, add hook
                     // point to the end of the interceptor stack.
@@ -407,12 +478,42 @@ public class OpenWebBeansEjbInterceptor
         return null;
     }
     
+    private Object runInterceptorStack(List<InterceptorData> interceptorStack, Method method, Object instance, 
+                                        Object[] arguments, BaseEjbBean<?> bean, CreationalContext<?> creationalContext) throws Exception
+    {
+        if (interceptorStack.size() > 0)
+        {
+            if(this.nonCtxInterceptedMethodMap.get(method) == null)
+            {
+                //Holds filtered interceptor stack
+                List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
+
+                // Filter both EJB and WebBeans interceptors
+                InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);                
+                this.nonCtxInterceptedMethodMap.put(method, filteredInterceptorStack);
+            }
+            
+            // Call Around Invokes
+            if (WebBeansUtil.isContainsInterceptorMethod(this.nonCtxInterceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE))
+            {
+                 return InterceptorUtil.callAroundInvokes(bean, instance, (CreationalContextImpl<?>)creationalContext, method, 
+                        arguments, InterceptorUtil.getInterceptorMethods(this.nonCtxInterceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE));
+            }
+            
+        }
+        
+        
+        return null;
+        
+    }
+    
     //Read object
     private  void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
     {
         threadLocal = new ThreadLocal<BaseEjbBean<?>>();
         threadLocalCreationalContext = new ThreadLocal<CreationalContext<?>>();
         interceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
+        nonCtxInterceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
     }
  
     
