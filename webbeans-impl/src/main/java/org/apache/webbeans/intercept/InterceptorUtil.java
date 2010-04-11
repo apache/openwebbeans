@@ -507,7 +507,7 @@ public final class InterceptorUtil
      * @param method called method on proxy
      * @param ownerCreationalContext bean creational context
      */
-    public static void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method, CreationalContextImpl<?> ownerCreationalContext)
+    public static void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method)
     {
         Iterator<InterceptorData> it = stack.iterator();
         while (it.hasNext())

@@ -227,7 +227,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
         
                             // Filter both EJB and WebBeans interceptors
-                            InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method, ownerCreationalContext);
+                            InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
         
                             // If there are both interceptors and decorators, add hook
                             // point to the end of the interceptor stack.
