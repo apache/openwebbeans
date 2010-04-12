@@ -28,6 +28,7 @@ import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.events.ExtensionLoader;
@@ -150,12 +151,15 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             //Clear extensions
             ExtensionLoader.getInstance().clear();
             
+            //Delete Resolutions Cache
+            InjectionResolver.getInstance().clearCaches();
+            
             //Clear singleton list
             WebBeansFinder.clearInstances();
 
             //Delte proxies
             JavassistProxyFactory.clear();
-
+            
             //After Stop
             afterStopApplication(endObject);
                         

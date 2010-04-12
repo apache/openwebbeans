@@ -14,12 +14,12 @@
 package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextNotActiveException;
@@ -48,7 +48,7 @@ import org.apache.webbeans.util.Asserts;
 public abstract class AbstractContext implements WebBeansContext
 {
     /**Context status, active or not*/
-    protected boolean active;
+    protected volatile boolean active;
 
     /**Context type*/
     protected ContextTypes type;
@@ -60,8 +60,9 @@ public abstract class AbstractContext implements WebBeansContext
     protected Class<? extends Annotation> scopeType;
     
     /**Contextual to CreationalContext Map*/
-    protected final Map<Contextual<?>, CreationalContext<?>> creationalContextMap = 
-        Collections.synchronizedMap(new WeakHashMap<Contextual<?>, CreationalContext<?>>());
+    protected final ConcurrentMap<Contextual<?>, CreationalContext<?>> creationalContextMap = 
+        new ConcurrentHashMap<Contextual<?>, CreationalContext<?>>();
+       
 
     /**
      * Creates a new context instance
@@ -195,8 +196,21 @@ public abstract class AbstractContext implements WebBeansContext
 
                 if (instance != null)
                 {
-                    this.componentInstanceMap.put(component, instance);
-                    this.creationalContextMap.put(component, creationalContext);
+                    if(this.componentInstanceMap instanceof ConcurrentMap)
+                    {
+                        T exist = (T) ((ConcurrentMap) this.componentInstanceMap).putIfAbsent(component, instance);
+                        //no instance
+                        if(exist == null)
+                        {
+                            this.componentInstanceMap.put(component, instance);
+                        }
+                    }
+                    else
+                    {
+                        this.componentInstanceMap.put(component, instance);
+                    }
+                                           
+                    this.creationalContextMap.putIfAbsent(component, creationalContext);
                 }
                 
             }            

@@ -18,6 +18,8 @@ package org.apache.webbeans.context.creational;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -35,22 +37,23 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private static final long serialVersionUID = -3416834742959340960L;
 
     /**Actual bean instance*/
-    private transient Object incompleteInstance = null;
+    private transient volatile Object incompleteInstance = null;
     
     /**Bean proxy*/
-    private Object proxyInstance = null;
+    private volatile Object proxyInstance = null;
     
     /**Contextual bean dependent instances*/
-    private Map<Object, DependentCreationalContext<?>> dependentObjects = new WeakHashMap<Object, DependentCreationalContext<?>>();
+    private Map<Object, DependentCreationalContext<?>> dependentObjects = 
+        Collections.synchronizedMap(new WeakHashMap<Object, DependentCreationalContext<?>>());
      
     /**Owner bean*/
-    private Contextual<T> contextual = null;
+    private volatile Contextual<T> contextual = null;
     
     /**Owner creational context*/
-    private CreationalContextImpl<?> ownerCreational = null;
+    private volatile CreationalContextImpl<?> ownerCreational = null;
     
     /**Ejb interceptors*/
-    private Map<Class<?>, EjbInterceptorContext> ejbInterceptors = new HashMap<Class<?>, EjbInterceptorContext>();
+    private ConcurrentMap<Class<?>, EjbInterceptorContext> ejbInterceptors = new ConcurrentHashMap<Class<?>, EjbInterceptorContext>();
     
     /**
      * Package private
@@ -67,7 +70,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     public void addEjbInterceptor(Class<?> clazz, EjbInterceptorContext instance)
     {
-        this.ejbInterceptors.put(clazz, instance);
+        this.ejbInterceptors.putIfAbsent(clazz, instance);
     }
     
     /**
@@ -88,7 +91,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     public void push(T incompleteInstance)
     {
-        this.incompleteInstance = incompleteInstance;
+        if(this.incompleteInstance != null)
+        {
+            this.incompleteInstance = incompleteInstance;   
+        }
         
     }
     
@@ -98,7 +104,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     public void setProxyInstance(Object proxyInstance)
     {
-        this.proxyInstance = proxyInstance;
+        if(this.proxyInstance != null)
+        {
+            this.proxyInstance = proxyInstance;   
+        }
     }
     
     /**
@@ -283,7 +292,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     public void release()
     {
         removeDependents();
-        this.incompleteInstance = null;        
+        this.incompleteInstance = null;
     }
     
     /**
@@ -310,7 +319,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     public void setOwnerCreational(CreationalContextImpl<?> ownerCreational)
     {
-        this.ownerCreational = ownerCreational;
+        if(this.ownerCreational != null)
+        {
+            this.ownerCreational = ownerCreational;   
+        }
     }
 
     /**

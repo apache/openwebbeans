@@ -82,6 +82,15 @@ public class InjectionResolver
         this.manager = manager;
 
     }
+    
+    /**
+     * Clear caches.
+     */
+    public void clearCaches()
+    {
+        this.resolvedBeansByName.clear();
+        this.resolvedBeansByType.clear();
+    }
 
     /**
      * Returns bean manager injection resolver.
