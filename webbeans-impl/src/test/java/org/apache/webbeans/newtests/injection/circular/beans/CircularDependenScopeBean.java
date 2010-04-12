@@ -45,7 +45,9 @@ public class CircularDependenScopeBean implements Serializable
     @PostConstruct
     public void postConstruct()
     {
-        app.hello();
+        // removed! This is not allowed in JSR-299 according to mbg because it causes a 
+        // cyclic reference in the creation of the beans! 
+        // app.hello();
         success = true;
     }
 }

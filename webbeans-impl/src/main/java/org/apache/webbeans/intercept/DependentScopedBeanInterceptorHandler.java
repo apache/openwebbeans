@@ -67,10 +67,12 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
     /**
      * {@inheritDoc}
      */
-    protected Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
+    protected Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack,
+                                       CreationalContextImpl<?> cc)
+    throws Exception
     {
         InvocationContextImpl impl = new InvocationContextImpl(this.bean, this.actualInstance ,proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
-        impl.setCreationalContext(creationalContext);
+        impl.setCreationalContext(cc);
         
         return impl.proceed();
     }

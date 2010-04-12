@@ -50,12 +50,12 @@ public class CircularInjectionTest extends AbstractUnitTest
         beanClasses.add(CircularDependenScopeBean.class);
         beanClasses.add(CircularApplicationScopedBean.class);
         
-        startContainer(beanClasses, beanXmls);        
+        startContainer(beanClasses, beanXmls);
         
         Set<Bean<?>> beans = getBeanManager().getBeans("org.apache.webbeans.newtests.injection.circular.beans.CircularApplicationScopedBean");
-        Assert.assertNotNull(beans);        
+        Assert.assertNotNull(beans);
         
-        Bean<CircularApplicationScopedBean> dependentBean = (Bean<CircularApplicationScopedBean>)beans.iterator().next();        
+        Bean<CircularApplicationScopedBean> dependentBean = (Bean<CircularApplicationScopedBean>)beans.iterator().next();
         CreationalContext<CircularApplicationScopedBean> ctx = getBeanManager().createCreationalContext(dependentBean);
         
         Object reference = getBeanManager().getReference(dependentBean, CircularApplicationScopedBean.class, ctx);
@@ -81,10 +81,10 @@ public class CircularInjectionTest extends AbstractUnitTest
         beanClasses.add(CircularDependenScopeBean.class);
         beanClasses.add(CircularApplicationScopedBean.class);
         
-        startContainer(beanClasses, beanXmls);        
+        startContainer(beanClasses, beanXmls);
         
         Set<Bean<?>> beans = getBeanManager().getBeans("org.apache.webbeans.newtests.injection.circular.beans.CircularDependenScopeBean");
-        Assert.assertNotNull(beans);        
+        Assert.assertNotNull(beans);
         
         Bean<CircularDependenScopeBean> dependentBean = (Bean<CircularDependenScopeBean>)beans.iterator().next();        
         CreationalContext<CircularDependenScopeBean> ctx = getBeanManager().createCreationalContext(dependentBean);
