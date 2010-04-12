@@ -91,6 +91,15 @@
      			<exclude name="testDelegateTypeVariableBeanTypeVariable"></exclude>
      		</methods>
      	</class>     
+     	
+     	<!-- ERROR IN CDITCK-140 -->
+     	<class name="org.jboss.jsr299.tck.tests.lookup.circular.CircularDependencyTest">
+     		<methods>
+     			<exclude name="testCircularInjectionOnTwoNormalBeans"></exclude>
+     			<exclude name="testCircularInjectionOnOneNormalAndOneDependentBean"></exclude>
+     			<exclude name="testCircularInjectionOnOneDependentAndOneNormalBean"></exclude>
+     		</methods>
+     	</class>          	
 
      	<!-- TODO EL-RESOLVER PROBLEM -->
      	<class name="org.jboss.jsr299.tck.tests.context.dependent.DependentContextTest">
