@@ -169,13 +169,11 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
      * @param method business method
      * @param proceed proceed method
      * @param arguments method arguments
-     * @param creationalContext bean creational context
+     * @param ownerCreationalContext bean creational context
      * @return method result
      * @throws Exception for exception
      */
-    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments, 
-                         CreationalContextImpl<?> creationalContext)
-    throws Exception
+    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments, CreationalContextImpl<?> ownerCreationalContext) throws Exception
     {
         //Result of invocation
         Object result = null;
@@ -212,7 +210,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         ((ProxyObject)delegate).setHandler(this.delegateHandler);
 
                         // Gets component decorator stack
-                        decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, creationalContext);                        
+                        decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, ownerCreationalContext);                        
                         //Sets decorator stack of delegate
                         this.delegateHandler.setDecorators(decorators);
                         
@@ -249,10 +247,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         // Call Around Invokes
                         if (WebBeansUtil.isContainsInterceptorMethod(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE))
                         {
-                            return callAroundInvokes(method, arguments, 
-                                                    InterceptorUtil.getInterceptorMethods(this.interceptedMethodMap.get(method),
-                                                                                          InterceptorType.AROUND_INVOKE),
-                                                    creationalContext);
+                            return callAroundInvokes(method, arguments, InterceptorUtil.getInterceptorMethods(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE));
                         }
                         
                     }
@@ -307,9 +302,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
      * @return return of method
      * @throws Exception for any exception
      */
-    protected abstract Object callAroundInvokes(Method interceptedMethod, Object[] arguments, 
-                                                List<InterceptorData> stack, CreationalContextImpl<?> creationalContext)
-    throws Exception;
+    protected abstract Object callAroundInvokes(Method interceptedMethod, Object[] arguments, List<InterceptorData> stack) throws Exception;
     
     /**
      * 
