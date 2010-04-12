@@ -283,7 +283,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     public void release()
     {
         removeDependents();
-        
+        this.incompleteInstance = null;        
     }
     
     /**
