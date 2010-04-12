@@ -93,7 +93,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      * It will be created on the first use.
      * @see #getId()
      */
-    private String passivatingId = null;
+    protected String passivatingId = null;
     
     /**Bean Manager*/
     private final BeanManagerImpl manager;
