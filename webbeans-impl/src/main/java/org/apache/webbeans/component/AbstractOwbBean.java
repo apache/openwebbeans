@@ -166,6 +166,9 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                 }
             }
             
+            //Remove incmplete instance from creational Context
+            ((CreationalContextImpl)creationalContext).remove();
+            
         }
         catch (Exception re)
         {
