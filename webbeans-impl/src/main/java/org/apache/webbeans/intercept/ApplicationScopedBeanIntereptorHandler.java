@@ -21,6 +21,7 @@ package org.apache.webbeans.intercept;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 
 /**
@@ -42,7 +43,7 @@ public class ApplicationScopedBeanIntereptorHandler extends NormalScopedBeanInte
     /**
      * Creates a new handler.
      * @param bean bean
-     * @param creationalContext creaitonal context
+     * @param creationalContext creational context
      */
     public ApplicationScopedBeanIntereptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
@@ -52,11 +53,11 @@ public class ApplicationScopedBeanIntereptorHandler extends NormalScopedBeanInte
     /**
      * {@inheritDoc}
      */
-    protected Object getContextualInstance(OwbBean<Object> bean)
+    protected Object getContextualInstance(OwbBean<Object> bean, CreationalContextImpl<?> creationalContext)
     {
         if (cachedInstance == null) 
         {
-            cachedInstance = super.getContextualInstance(bean);
+            cachedInstance = super.getContextualInstance(bean, creationalContext);
         }
         
         return cachedInstance;
