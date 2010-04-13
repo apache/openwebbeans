@@ -348,6 +348,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             s.writeObject(null);
         }
         s.writeObject(ownerCreational);
+        s.writeObject(ejbInterceptors);
     }
 
 
@@ -369,6 +370,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             contextual = (Contextual<T>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
         }
         ownerCreational = (CreationalContextImpl<?>) s.readObject();
+        ejbInterceptors = (ConcurrentMap<Class<?>, EjbInterceptorContext>) s.readObject();
     }
 
 }
