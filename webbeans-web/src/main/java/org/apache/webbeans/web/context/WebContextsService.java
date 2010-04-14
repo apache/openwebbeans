@@ -116,24 +116,14 @@ public class WebContextsService extends AbstractContextsService
         endContext(Singleton.class, destroyObject);
         
         requestContext.remove();
-        requestContext = null;        
         dependentContext.remove();
-        dependentContext = null;
         sessionContext.remove();
-        sessionContext = null;
         conversationContext.remove();
-        conversationContext = null;
         applicationContext.remove();
-        applicationContext = null;
         singletonContext.remove();
-        singletonContext = null;
-        
+
         currentApplicationContexts.clear();
-        currentApplicationContexts = null;
         currentSingletonContexts.clear();
-        currentSingletonContexts = null;
-        sessionCtxManager = null;
-        conversationManager = null;
     }    
     
     
