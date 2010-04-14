@@ -31,9 +31,14 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneLifeCycle.class);
         
+    public StandaloneLifeCycle(Properties properties, WebBeansLogger logger)
+    {
+        super(properties, logger);        
+    }
+    
     public StandaloneLifeCycle()
     {
-        super(null, logger);        
+        this(null, logger);        
     }
     
     @Override
