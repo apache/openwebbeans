@@ -17,11 +17,21 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 
+import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.context.creational.DependentCreationalContext;
+import org.apache.webbeans.context.creational.DependentCreationalContext.DependentType;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -149,14 +159,17 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      * @param creationalContext creational context
      * @return producer method instance
      */
+    @SuppressWarnings("unchecked")
     protected T createDefaultInstance(CreationalContext<T> creationalContext)
     {
         T instance = null;
         Object parentInstance = null;
         CreationalContext<?> parentCreational = null;
         InjectableMethods<T> m = null;
+        List<DependentCreationalContext<Object>> oldDependents = AbstractInjectable.dependentInstanceOfProducerMethods.get();
         try
         {
+            AbstractInjectable.dependentInstanceOfProducerMethods.set(new ArrayList<DependentCreationalContext<Object>>());
             parentCreational = getManager().createCreationalContext(this.ownerComponent);
             
             if (!Modifier.isStatic(creatorMethod.getModifiers()))
@@ -167,6 +180,74 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             m = new InjectableMethods<T>(creatorMethod, parentInstance, this, creationalContext);
             //Injection of parameters
             instance = m.doInjection();
+            
+            boolean isInjectionToAnotherBean = false;
+            Contextual<?> contextual = null; 
+            if(creationalContext instanceof CreationalContextImpl)
+            {
+                contextual =  ((CreationalContextImpl)creationalContext).getBean();
+                isInjectionToAnotherBean = contextual == this ? false : true;
+            }
+            
+            Object injectionTargetInstance = AbstractInjectable.instanceUnderInjection;
+            if(isInjectionToAnotherBean)
+            {
+                if(oldDependents == null && injectionTargetInstance != null)
+                {
+                    ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance, this , instance);
+                }
+                else
+                {
+                    DependentCreationalContext<Object> dependentCreational = new DependentCreationalContext<Object>((Contextual<Object>)this);
+                    dependentCreational.setInstance(instance);
+                    dependentCreational.setDependentType(DependentType.BEAN);
+
+                    oldDependents.add(dependentCreational);                    
+                }                
+            }
+            else
+            {
+                List<DependentCreationalContext<Object>> dependents = AbstractInjectable.dependentInstanceOfProducerMethods.get();
+                if(dependents != null)
+                {
+                    for(DependentCreationalContext<Object> dependent : dependents)
+                    {
+                        ((CreationalContextImpl)creationalContext).addDependent(instance, dependent.getContextual() , dependent.getInstance());
+                    }
+                }
+            }
+            
+            //Adding dependents of producers
+            Map<Bean<?>, Object> dependents = m.getDependentBeanParameters();
+            if(dependents != null)
+            {
+                Set<Bean<?>> beans = dependents.keySet();
+                for(Bean<?> bean : beans)
+                {
+                    if(creationalContext instanceof CreationalContextImpl)
+                    {
+                        if(isInjectionToAnotherBean)
+                        {
+                            if(oldDependents == null && injectionTargetInstance != null)
+                            {
+                                ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance, this , instance);
+                            }
+                            else
+                            {
+                                DependentCreationalContext<Object> dependentCreational = new DependentCreationalContext<Object>((Contextual<Object>)bean);
+                                dependentCreational.setInstance(dependents.get(bean));
+                                dependentCreational.setDependentType(DependentType.BEAN);
+                                oldDependents.add(dependentCreational);                                                            
+                            }
+                        }
+                        else
+                        {
+                            ((CreationalContextImpl)creationalContext).addDependent(instance, bean , dependents.get(bean));   
+                        }
+                    }
+                }
+            }
+            
 
         }
         finally
@@ -176,8 +257,14 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                 destroyBean(getParent(), parentInstance, parentCreational);
             }
             
-            //Remove any dependent objects
-            m.destroyDependentInjectionPoints();
+            if(oldDependents != null)
+            {
+                AbstractInjectable.dependentInstanceOfProducerMethods.set(oldDependents);   
+            }
+            else
+            {
+                AbstractInjectable.dependentInstanceOfProducerMethods.remove();
+            }
         }
 
         return instance;
@@ -206,6 +293,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      * 
      * @param instance bean instance
      */
+    @SuppressWarnings("unchecked")
     protected void disposeDefault(T instance, CreationalContext<T> creationalContext)
     {
         if (disposalMethod != null)
@@ -235,9 +323,22 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                 {
                     destroyBean(getParent(), parentInstance, parentCreational);
                 }
+
+                //Destroy dependent parameters
+                Map<Bean<?>, Object> dependents = m.getDependentBeanParameters();
+                if(dependents != null)
+                {
+                    Set<Bean<?>> beans = dependents.keySet();
+                    for(Bean<?> bean : beans)
+                    {
+                        Bean<Object> beanTt = (Bean<Object>)bean;
+                        if(creationalContext instanceof CreationalContextImpl)
+                        {
+                            beanTt.destroy(dependents.get(beanTt), (CreationalContext<Object>)creationalContext);
+                        }
+                    }
+                }
                 
-                //Remove any dependent objects
-                m.destroyDependentInjectionPoints();
             }
         }
     }

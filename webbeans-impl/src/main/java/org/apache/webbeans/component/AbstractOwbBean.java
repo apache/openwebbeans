@@ -165,9 +165,9 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                     ((AbstractInjectionTargetBean<T>)this).afterConstructor(instance, creationalContext);
                 }
             }
-            
-            //Remove incmplete instance from creational Context
-            ((CreationalContextImpl)creationalContext).remove();
+                        
+            //Remove proxy instance
+            ((CreationalContextImpl)creationalContext).setProxyInstance(null);
             
         }
         catch (Exception re)
@@ -223,13 +223,19 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                 destroyInstance(instance,creationalContext);
             }
             
+            //Setting destroying instance
+            CreationalContextImpl.currentRemoveObject.set(instance);
+            
             //Destory dependent instances
             creationalContext.release();                
-                                    
+                                                
         }catch(Exception e)
         {
             logger.fatal(OWBLogConst.FATAL_0001, new Object[]{toString()});
             e.printStackTrace();
+        }finally
+        {
+            CreationalContextImpl.currentRemoveObject.remove();
         }
     }
 

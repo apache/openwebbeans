@@ -164,7 +164,7 @@ public interface InterceptorData
      * Creates and returns a new interceptor instance.
      * @return creates a new interceptor instance
      */
-    public Object createNewInstance(CreationalContextImpl<?> ownerBean);
+    public Object createNewInstance(Object ownerInstance,CreationalContextImpl<?> ownerBean);
     
     /**
      * if this interceptor data is defined by interceptor,

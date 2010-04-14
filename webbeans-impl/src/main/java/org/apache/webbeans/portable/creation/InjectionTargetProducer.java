@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.portable.creation;
 
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionTarget;
 
@@ -20,6 +21,7 @@ import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.inject.AbstractInjectable;
 
 /**
  * InjectionTargetProducer implementation.
@@ -51,16 +53,45 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
             ctx = CreationalContextFactory.getInstance().wrappedCreationalContext(ctx, this.bean);
         }
         
-        InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
-        
-        if(!(bean instanceof EnterpriseBeanMarker))
+        Object oldInstanceUnderInjection = AbstractInjectable.instanceUnderInjection.get();
+        boolean isInjectionToAnotherBean = false;
+        try
         {
-            bean.injectResources(instance, ctx);
-            bean.injectSuperFields(instance, ctx);
-            bean.injectSuperMethods(instance, ctx);
-            bean.injectFields(instance, ctx);
-            bean.injectMethods(instance, ctx);            
-        }        
+            Contextual<?> contextual = null;
+            if(ctx instanceof CreationalContextImpl)
+            {
+                contextual = ((CreationalContextImpl)ctx).getBean();
+                isInjectionToAnotherBean = contextual == getBean(InjectionTargetBean.class) ? false : true;
+            }
+            
+            if(!isInjectionToAnotherBean)
+            {
+                AbstractInjectable.instanceUnderInjection.set(instance);   
+            }
+                        
+            InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
+            
+            if(!(bean instanceof EnterpriseBeanMarker))
+            {
+                bean.injectResources(instance, ctx);
+                bean.injectSuperFields(instance, ctx);
+                bean.injectSuperMethods(instance, ctx);
+                bean.injectFields(instance, ctx);
+                bean.injectMethods(instance, ctx);            
+            }                    
+        }
+        finally
+        {
+            if(oldInstanceUnderInjection != null)
+            {
+                AbstractInjectable.instanceUnderInjection.set(oldInstanceUnderInjection);   
+            }
+            else
+            {
+                AbstractInjectable.instanceUnderInjection.remove();
+            }
+        }
+        
     }
     
     /**

@@ -33,6 +33,8 @@ import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.context.creational.DependentCreationalContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -60,6 +62,11 @@ public abstract class AbstractInjectable implements Injectable
     
     /**Field, method or constructor injection*/
     protected Member injectionMember;
+    
+    public static ThreadLocal<Object> instanceUnderInjection = new ThreadLocal<Object>();
+    
+    public static ThreadLocal<List<DependentCreationalContext<Object>>> dependentInstanceOfProducerMethods = 
+        new ThreadLocal<List<DependentCreationalContext<Object>>>();
 
     /**
      * Creates a new injectable.
@@ -81,9 +88,11 @@ public abstract class AbstractInjectable implements Injectable
     public <T> Object inject(InjectionPoint injectionPoint)
     {
         logger.debug("Injected into bean : " + this.injectionOwnerBean.toString() + " with injection point : " + injectionPoint);
-        Object injected = null;
-        Bean<?> injectedBean = (Bean<?>)InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);        
-        
+
+        Object injected = null;               
+
+        //Injected contextual beam
+        Bean<?> injectedBean = (Bean<?>)InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);                
         if(isInstanceProviderInjection(injectionPoint))
         {
             InstanceBean.local.set(injectionPoint);
@@ -115,6 +124,7 @@ public abstract class AbstractInjectable implements Injectable
             }
         }        
         
+        //Gets injectable reference for injected bean
         injected = BeanManagerImpl.getManager().getInjectableReference(injectionPoint, this.injectionOwnerCreationalContext);
         
         if(dependentProducer)
@@ -122,11 +132,19 @@ public abstract class AbstractInjectable implements Injectable
             if(!Serializable.class.isAssignableFrom(injected.getClass()))
             {
                 throw new IllegalProductException("If a producer method or field of scope @Dependent returns an serializable object for injection " +
-                		                                "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
+                                                        "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
             }
         }
         
-
+        // add this dependent into bean dependent list
+        if (!WebBeansUtil.isStaticInjection(injectionPoint) && WebBeansUtil.isDependent(injectedBean))
+        {
+            if(instanceUnderInjection.get() != null)
+            {
+                ((CreationalContextImpl<?>)this.injectionOwnerCreationalContext).addDependent(instanceUnderInjection.get(),injectedBean, injected);   
+            }   
+        }
+            
         return injected;
     }
     

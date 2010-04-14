@@ -30,10 +30,33 @@ public class EjbInterceptorContext implements Serializable
     
     private OWBInjector injectorInstance;
     
+    private Class<?> interceptorClass;
+    
     public EjbInterceptorContext()
     {
         
     }
+    
+    
+
+    /**
+     * @return the interceptorClass
+     */
+    public Class<?> getInterceptorClass()
+    {
+        return interceptorClass;
+    }
+
+
+    /**
+     * @param interceptorClass the interceptorClass to set
+     */
+    public void setInterceptorClass(Class<?> interceptorClass)
+    {
+        this.interceptorClass = interceptorClass;
+    }
+
+
 
     /**
      * @return the interceptorInstance

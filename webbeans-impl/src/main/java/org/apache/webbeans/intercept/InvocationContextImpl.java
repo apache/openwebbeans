@@ -200,7 +200,7 @@ public class InvocationContextImpl implements InvocationContext
                 method.setAccessible(true);
             }
             
-            Object t = intc.createNewInstance((CreationalContextImpl<?>)this.creationalContext);
+            Object t = intc.createNewInstance(this.target,(CreationalContextImpl<?>)this.creationalContext);
             
             if (t == null)
             {
@@ -272,7 +272,7 @@ public class InvocationContextImpl implements InvocationContext
 
             currentMethod++;
 
-            Object t = intc.createNewInstance((CreationalContextImpl<?>)this.creationalContext);
+            Object t = intc.createNewInstance(this.target,(CreationalContextImpl<?>)this.creationalContext);
             
             //In bean class
             if (t == null)

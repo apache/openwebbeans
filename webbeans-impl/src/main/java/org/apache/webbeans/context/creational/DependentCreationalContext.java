@@ -23,17 +23,14 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.WebBeansUtil;
 
-class DependentCreationalContext<S> implements Serializable
+public class DependentCreationalContext<S> implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    private CreationalContext<S> creationalContext;
-    
     private Contextual<S> contextual;
     
     private DependentType dependentType;
@@ -65,10 +62,9 @@ class DependentCreationalContext<S> implements Serializable
         BEAN
     }
     
-    public DependentCreationalContext(CreationalContext<S> cc, Contextual<S> contextual)
+    public DependentCreationalContext(Contextual<S> contextual)
     {
         this.contextual = contextual;
-        this.creationalContext = cc;
     }
     
     
@@ -88,22 +84,6 @@ class DependentCreationalContext<S> implements Serializable
     public void setDependentType(DependentType dependentType)
     {
         this.dependentType = dependentType;
-    }
-
-    /**
-     * @return the creationalContext
-     */
-    public CreationalContext<S> getCreationalContext()
-    {
-        return creationalContext;
-    }
-
-    /**
-     * @param creationalContext the creationalContext to set
-     */
-    public void setCreationalContext(CreationalContext<S> creationalContext)
-    {
-        this.creationalContext = creationalContext;
     }
 
     /**

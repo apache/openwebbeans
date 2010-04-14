@@ -15,8 +15,11 @@ package org.apache.webbeans.inject;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.AnnotatedParameter;
@@ -28,6 +31,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
@@ -46,6 +50,7 @@ public class InjectableMethods<T> extends AbstractInjectable
     /**Used in dispose method, represents produces method parameter instance*/
     private Object producerMethodInstance = null;
     
+    private Map<Bean<?>,Object> dependentParameters = new HashMap<Bean<?>, Object>();
 
     /**
      * Constructs new instance.
@@ -74,7 +79,7 @@ public class InjectableMethods<T> extends AbstractInjectable
         for(int i=0;i<injectedPoints.size();i++)
         {
             for(InjectionPoint point : injectedPoints)
-            {
+            {                
                 AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)point.getAnnotated();
                 if(parameter.getPosition() == i)
                 {
@@ -87,6 +92,7 @@ public class InjectableMethods<T> extends AbstractInjectable
                             Bean<?> injectionPointBean = manager.getBeans(InjectionPoint.class, new DefaultLiteral()).iterator().next();
                             Object reference = manager.getReference(injectionPointBean, InjectionPoint.class, manager.createCreationalContext(injectionPointBean));
                             
+                            this.dependentParameters.put(injectionPointBean, reference);
                             list.add(reference);
                             
                             injectionPoint = true;
@@ -102,7 +108,14 @@ public class InjectableMethods<T> extends AbstractInjectable
                         }
                         else
                         {
-                            list.add(inject(point));    
+                            Object instance = inject(point);
+                            Bean<?> injectedBean = (Bean<?>)InjectionResolver.getInstance().getInjectionPointBean(point);
+                            if(injectedBean.getScope() == Dependent.class)
+                            {
+                                this.dependentParameters.put(injectedBean, instance);
+                            }
+
+                            list.add(instance);    
                         }                        
                     }
                                         
@@ -130,10 +143,15 @@ public class InjectableMethods<T> extends AbstractInjectable
     /**
      * Destroy dependent objects of the bean.
      */
-    public void destroyDependentInjectionPoints()
+    public void destroyDependentInjectionPoints(Object ownerInstance)
     {
         CreationalContextImpl<?> ownerCreational = (CreationalContextImpl<?>) this.injectionOwnerCreationalContext;
-        ownerCreational.removeDependents();
+        ownerCreational.removeDependents(ownerInstance);
+    }
+    
+    public Map<Bean<?>,Object> getDependentBeanParameters()
+    {
+        return this.dependentParameters;
     }
 
     /**

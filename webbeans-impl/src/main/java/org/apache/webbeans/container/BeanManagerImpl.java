@@ -698,44 +698,20 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             return null;
         }
         
-        //Owner bean creational context
-        CreationalContextImpl<?> ownerCreationalContextImpl = null;
-        if(!(ownerCreationalContext instanceof CreationalContextImpl))
-        {
-            ownerCreationalContextImpl = (CreationalContextImpl<?>)CreationalContextFactory.getInstance().wrappedCreationalContext(ownerCreationalContext, injectionPoint.getBean());
-        }
-        else
-        {
-            ownerCreationalContextImpl = (CreationalContextImpl<?>)ownerCreationalContext;
-        }
-
         //Find the injection point Bean
         Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
-        CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);
-        
         if(WebBeansUtil.isDependent(injectedBean))
         {        
-            // this must only be added for dependent beans, otherwise we register @NormalScoped beans as dependent!
-            injectedCreational.setOwnerCreational(ownerCreationalContextImpl);
-            
-            //Creating a new creational context for target bean instance
-            instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
-            
-            // add this dependent into bean dependent list
-            if (!WebBeansUtil.isStaticInjection(injectionPoint))
-            {
-                ownerCreationalContextImpl.addDependent(injectedBean, instance, injectedCreational);
-            }
+            //Using owner creational context
+            //Dependents use parent creational context
+            instance = getReference(injectedBean, injectionPoint.getType(), ownerCreationalContext);            
         }
         
         else
-        {   //Look for creational stack
-            instance = WebBeansUtil.getObjectFromCreationalContext(injectedBean, ownerCreationalContextImpl);
-            //No in stack, create new
-            if(instance == null)
-            {
-                instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
-            }
+        {   
+            //New creational context for normal scoped beans
+            CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);            
+            instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
         }
 
         return instance;

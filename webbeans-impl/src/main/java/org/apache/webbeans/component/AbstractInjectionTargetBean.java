@@ -33,7 +33,6 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -145,16 +144,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             }
         }
                         
-        //Push instance into creational context, this is necessary because
-        //Context objects look for instance in the interceptors. If we do not
-        //push instance into cretional context, circular exception occurs.
-        //Context instance first look into creational context object whether
-        //Or not it exist.
-        if(creationalContext instanceof CreationalContextImpl)
-        {
-            CreationalContextImpl<T> cc = (CreationalContextImpl<T>)creationalContext;
-            cc.push(instance);
-        }
         
         //If dependent proxy
         if(isDependentProxy)

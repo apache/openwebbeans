@@ -31,7 +31,6 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.util.Asserts;
 
@@ -177,17 +176,8 @@ public abstract class AbstractContext implements WebBeansContext
             }
             
             else
-            {
-                //Check for incomplete instance, putting for circular references
-                if(creationalContext instanceof CreationalContextImpl)
-                {
-                    CreationalContextImpl<?> cc = (CreationalContextImpl<?>)creationalContext;
-                    if(cc.get() != null)
-                    {
-                        instance = (T)cc.get();
-                    }
-                }
-                
+            {                
+                //No instance
                 if(instance == null)
                 {
                     instance = component.create(creationalContext);    

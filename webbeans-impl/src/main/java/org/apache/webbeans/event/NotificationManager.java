@@ -411,10 +411,18 @@ public final class NotificationManager
             try
             {
                 TransactionPhase phase = observer.getTransactionPhase();
-                TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
-                if(transactionService != null)
+                
+                if(phase != null && !phase.equals(TransactionPhase.IN_PROGRESS))
                 {
-                    transactionService.registerTransactionSynchronization(phase, observer, event);
+                    TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
+                    if(transactionService != null)
+                    {
+                        transactionService.registerTransactionSynchronization(phase, observer, event);
+                    }
+                    else
+                    {
+                        observer.notify(event);
+                    }                    
                 }
                 else
                 {

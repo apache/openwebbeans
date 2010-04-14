@@ -102,7 +102,7 @@ public final class WebBeansDecoratorConfig
                 
                 if (ownerCreationalContext != null)
                 {
-                    ownerCreationalContext.addDependent(decorator, decoratorInstance, creationalContext);
+                    ownerCreationalContext.addDependent(instance, decorator, decoratorInstance);
                 }                
             }
             

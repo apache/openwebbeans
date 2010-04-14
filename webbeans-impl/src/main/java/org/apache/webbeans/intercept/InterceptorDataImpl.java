@@ -292,7 +292,7 @@ public class InterceptorDataImpl implements InterceptorData
     
     @Override
     @SuppressWarnings("unchecked")
-    public Object createNewInstance(CreationalContextImpl<?> ownerCreationalContext)
+    public Object createNewInstance(Object ownerInstance,CreationalContextImpl<?> ownerCreationalContext)
     {
         //check for this InterceptorData is defined by interceptor class
         if(this.isDefinedWithWebBeansInterceptor && this.definedInInterceptorClass)
@@ -305,7 +305,7 @@ public class InterceptorDataImpl implements InterceptorData
                 return this.decoratorInterceptor; 
             }
             
-            interceptor = ownerCreationalContext.getDependentInterceptor(this.webBeansInterceptor);
+            interceptor = ownerCreationalContext.getDependentInterceptor(ownerInstance,this.webBeansInterceptor);
             //There is no define interceptor, define and add it into dependent
             if(interceptor == null)
             {
@@ -317,7 +317,7 @@ public class InterceptorDataImpl implements InterceptorData
                 
                 actualInterceptor.setInjections(interceptor, creationalContext);
 
-                ownerCreationalContext.addDependent((WebBeansInterceptor<Object>)this.webBeansInterceptor, interceptor, creationalContext);
+                ownerCreationalContext.addDependent(ownerInstance, (WebBeansInterceptor<Object>)this.webBeansInterceptor, interceptor);
             }
             
             return interceptor;
@@ -328,7 +328,7 @@ public class InterceptorDataImpl implements InterceptorData
         //control for this InterceptorData is defined by interceptor class
         if(this.definedInInterceptorClass)
         {
-            ctx = ownerCreationalContext.getEjbInterceptor(this.interceptorClass);                
+            ctx = ownerCreationalContext.getEjbInterceptor(ownerInstance, this.interceptorClass);                
             if(ctx == null)
             {                    
                 interceptor = WebBeansUtil.newInstanceForced(this.interceptorClass);

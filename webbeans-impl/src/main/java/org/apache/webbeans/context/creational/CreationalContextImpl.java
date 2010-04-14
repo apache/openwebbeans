@@ -34,26 +34,28 @@ import org.apache.webbeans.util.WebBeansUtil;
 /** {@inheritDoc} */
 public class CreationalContextImpl<T> implements CreationalContext<T>, Serializable
 {
-    private static final long serialVersionUID = -3416834742959340960L;
+    //Default serial id
+    private static final long serialVersionUID = 1L;
 
-    /**Actual bean instance*/
-    private transient volatile Object incompleteInstance = null;
-    
     /**Bean proxy*/
+    //This will be set to null after instance creations
     private volatile Object proxyInstance = null;
     
     /**Contextual bean dependent instances*/
-    private Map<Object, DependentCreationalContext<?>> dependentObjects = 
-        Collections.synchronizedMap(new WeakHashMap<Object, DependentCreationalContext<?>>());
+    //contextual instance --> dependents
+    private Map<Object, List<DependentCreationalContext<?>>> dependentObjects = 
+        Collections.synchronizedMap(new WeakHashMap<Object, List<DependentCreationalContext<?>>>());
      
-    /**Owner bean*/
+    /**Contextual bean*/
     private volatile Contextual<T> contextual = null;
-    
-    /**Owner creational context*/
-    private volatile CreationalContextImpl<?> ownerCreational = null;
-    
+        
     /**Ejb interceptors*/
-    private ConcurrentMap<Class<?>, EjbInterceptorContext> ejbInterceptors = new ConcurrentHashMap<Class<?>, EjbInterceptorContext>();
+    //contextual instance --> interceptors
+    private ConcurrentMap<Object, List<EjbInterceptorContext>> ejbInterceptors = 
+            new ConcurrentHashMap<Object, List<EjbInterceptorContext>>();
+    
+    /**When bean object is destroyed it is set*/
+    public static ThreadLocal<Object> currentRemoveObject = new ThreadLocal<Object>();
     
     /**
      * Package private
@@ -68,9 +70,24 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * @param clazz interceptor class
      * @param instance interceptor instance
      */
-    public void addEjbInterceptor(Class<?> clazz, EjbInterceptorContext instance)
+    public void addEjbInterceptor(Object ownerInstance, EjbInterceptorContext instance)
     {
-        this.ejbInterceptors.putIfAbsent(clazz, instance);
+        Asserts.assertNotNull(ownerInstance,"Owner instance parameter can not be null");
+        Asserts.assertNotNull(instance,"Instance parameter can not be null");
+        
+        List<EjbInterceptorContext> list = this.ejbInterceptors.get(ownerInstance);
+        if(list == null)
+        {
+            list = new ArrayList<EjbInterceptorContext>();
+            List<EjbInterceptorContext> oldList = this.ejbInterceptors.putIfAbsent(ownerInstance, list);
+            if(oldList != null)
+            {
+                list = oldList;
+            }
+        }
+        
+        
+        list.add(instance);
     }
     
     /**
@@ -78,9 +95,23 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * @param clazz interceptor class
      * @return interceptor instance
      */
-    public EjbInterceptorContext getEjbInterceptor(Class<?> clazz)
+    public EjbInterceptorContext getEjbInterceptor(Object ownerInstance,Class<?> clazz)
     {
-        return this.ejbInterceptors.get(clazz);
+        Asserts.assertNotNull(ownerInstance,"Owner instance can not be null");
+        
+        List<EjbInterceptorContext> ejbInterceptors = this.ejbInterceptors.get(ownerInstance);
+        if(ejbInterceptors != null)
+        {
+            for(EjbInterceptorContext ejbInterceptor : ejbInterceptors)
+            {
+                if(ejbInterceptor.getInterceptorClass() == clazz)
+                {
+                    return ejbInterceptor;
+                }
+            }            
+        }
+        
+        return null;
     }
     
     
@@ -91,11 +122,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     public void push(T incompleteInstance)
     {
-        if(this.incompleteInstance != null)
-        {
-            this.incompleteInstance = incompleteInstance;   
-        }
-        
+        //No-action
     }
     
     /**
@@ -104,7 +131,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     public void setProxyInstance(Object proxyInstance)
     {
-        if(this.proxyInstance != null)
+        if(this.proxyInstance == null)
         {
             this.proxyInstance = proxyInstance;   
         }
@@ -125,13 +152,16 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * @param dependent dependent contextual
      * @param instance dependent instance
      */
-    public <K> void addDependent(Contextual<K> dependent, Object instance, CreationalContext<K> cc)
+    public <K> void addDependent(Object ownerInstance, Contextual<K> dependent, Object instance)
     {
+        Asserts.assertNotNull(dependent,"ownerInstance parameter cannot be null");
         Asserts.assertNotNull(dependent,"dependent parameter cannot be null");
+        Asserts.assertNotNull(dependent,"instance parameter cannot be null");
+        Asserts.assertNotNull(dependent,"cc parameter cannot be null");
         
         if(instance != null)
         {
-           DependentCreationalContext<K> dependentCreational = new DependentCreationalContext<K>(cc,dependent);
+           DependentCreationalContext<K> dependentCreational = new DependentCreationalContext<K>(dependent);
            if(dependent instanceof Interceptor)
            {
                dependentCreational.setDependentType(DependentType.INTERCEPTOR);
@@ -146,7 +176,14 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
            }
            
            dependentCreational.setInstance(instance);
-           this.dependentObjects.put(instance, dependentCreational);   
+           List<DependentCreationalContext<?>> dependentList = this.dependentObjects.get(ownerInstance);
+           if(dependentList == null)
+           {
+               dependentList = new ArrayList<DependentCreationalContext<?>>();
+               this.dependentObjects.put(ownerInstance, dependentList);
+           }
+           
+           dependentList.add(dependentCreational);   
         }
     }
     
@@ -155,15 +192,20 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * @param interceptor interceptor bean
      * @return bean interceptor instance
      */
-    public Object getDependentInterceptor(Contextual<?> interceptor)
+    public Object getDependentInterceptor(Object ownerInstance, Contextual<?> interceptor)
     {
-        List<DependentCreationalContext<?>> dcs = getDependentInterceptors();
-        for(DependentCreationalContext<?> dc : dcs)
+        Asserts.assertNotNull(interceptor,"Interceptor parameter can not be null");
+        
+        if(ownerInstance != null)
         {
-            if(dc.getContextual().equals(interceptor))
+            List<DependentCreationalContext<?>> dcs = getDependentInterceptors(ownerInstance);
+            for(DependentCreationalContext<?> dc : dcs)
             {
-                return dc.getInstance();
-            }
+                if(dc.getContextual().equals(interceptor))
+                {
+                    return dc.getInstance();
+                }
+            }            
         }
         
         return null;
@@ -176,6 +218,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     public Object getDependentDecorator(Contextual<?> decorator)
     {
+        Asserts.assertNotNull(decorator, "Decorator parameter can not be null");
         List<DependentCreationalContext<?>> dcs = getDependentDecorators();
         for(DependentCreationalContext<?> dc : dcs)
         {
@@ -192,21 +235,25 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * Gets list of dependent interceptors context.
      * @return list of dependent interceptors context
      */
-    private List<DependentCreationalContext<?>> getDependentInterceptors()
+    private List<DependentCreationalContext<?>> getDependentInterceptors(Object ownerInstance)
     {
         List<DependentCreationalContext<?>> list = new ArrayList<DependentCreationalContext<?>>();
-        Collection<DependentCreationalContext<?>> values = this.dependentObjects.values();
-        if(values != null && values.size() > 0)
+        
+        if(ownerInstance != null)
         {
-            Iterator<DependentCreationalContext<?>> it = values.iterator();
-            while(it.hasNext())
+            List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
+            if(values != null && values.size() > 0)
             {
-                DependentCreationalContext<?> dc = it.next();
-                if(dc.getDependentType().equals(DependentType.INTERCEPTOR))
+                Iterator<DependentCreationalContext<?>> it = values.iterator();
+                while(it.hasNext())
                 {
-                    list.add(dc);
+                    DependentCreationalContext<?> dc = it.next();
+                    if(dc.getDependentType().equals(DependentType.INTERCEPTOR))
+                    {
+                        list.add(dc);
+                    }
                 }
-            }
+            }            
         }
         
         return list;
@@ -219,7 +266,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private List<DependentCreationalContext<?>> getDependentDecorators()
     {
         List<DependentCreationalContext<?>> list = new ArrayList<DependentCreationalContext<?>>();
-        Collection<DependentCreationalContext<?>> values = this.dependentObjects.values();
+        List<DependentCreationalContext<?>> values = new ArrayList<DependentCreationalContext<?>>();
         if(values != null && values.size() > 0)
         {
             Iterator<DependentCreationalContext<?>> it = values.iterator();
@@ -237,43 +284,30 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     }
     
     /**
-     * Returns incomplete instance.
-     * 
-     * @return incomplete instance
-     */
-    public Object get()
-    {
-        return this.incompleteInstance;
-    }
-    
-    
-    /**
-     * Removes from creational context.
-     */
-    public void  remove()
-    {
-        this.incompleteInstance = null;
-    }
-    
-    /**
      * Removes dependent objects.
      */
     @SuppressWarnings("unchecked")
-    public void  removeDependents()
+    public void  removeDependents(Object ownerInstance)
     {
-        Collection<?> values = this.dependentObjects.keySet();
-        Iterator<?> iterator = values.iterator();
-        
-        while(iterator.hasNext())
+        if(ownerInstance == null)
         {
-            T instance = (T)iterator.next();
-            DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)this.dependentObjects.get(instance);
-            dependent.getContextual().destroy(instance, dependent.getCreationalContext());
+            return;
         }
         
-        this.dependentObjects.clear();
+        List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
+        if(values != null)
+        {
+            Iterator<?> iterator = values.iterator();        
+            while(iterator.hasNext())
+            {
+                DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)iterator.next();
+                dependent.getContextual().destroy((T)dependent.getInstance(), CreationalContextFactory.getInstance().getCreationalContext(dependent.getContextual()));
+            }
+
+            this.dependentObjects.remove(ownerInstance);                        
+        }
         
-        Collection<EjbInterceptorContext> interceptors = this.ejbInterceptors.values();
+        List<EjbInterceptorContext> interceptors = this.ejbInterceptors.get(ownerInstance);
         if(interceptors != null)
         {
             for(EjbInterceptorContext intereptor : interceptors)
@@ -282,7 +316,48 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             }
         }
         
+        this.ejbInterceptors.remove(ownerInstance);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void removeAllDependents()
+    {
+        Collection<List<DependentCreationalContext<?>>> values = this.dependentObjects.values();
+        if(values != null)
+        {
+            for(List<DependentCreationalContext<?>> value : values)
+            {
+                if(values != null)
+                {
+                    Iterator<?> iterator = value.iterator();        
+                    while(iterator.hasNext())
+                    {
+                        DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)iterator.next();
+                        dependent.getContextual().destroy((T)dependent.getInstance(), CreationalContextFactory.getInstance().getCreationalContext(dependent.getContextual()));
+                    }                        
+                }                
+            }
+        }
+        
+        this.dependentObjects.clear();
+        
+        Collection<List<EjbInterceptorContext>> interceptorValues = this.ejbInterceptors.values();
+        if(interceptorValues != null)
+        {
+            for(List<EjbInterceptorContext> interceptors : interceptorValues)
+            {
+                if(interceptors != null)
+                {
+                    for(EjbInterceptorContext intereptor : interceptors)
+                    {
+                        intereptor.getInjectorInstance().destroy();
+                    }
+                }                
+            }
+        }
+        
         this.ejbInterceptors.clear();
+        
     }
     
     /**
@@ -291,8 +366,14 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     @Override
     public void release()
     {
-        removeDependents();
-        this.incompleteInstance = null;
+        if(currentRemoveObject.get() == null)
+        {
+            removeAllDependents();
+        }
+        else
+        {
+            removeDependents(currentRemoveObject.get());   
+        }
     }
     
     /**
@@ -306,36 +387,14 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
 
     /**
-     * @return the ownerCreational
-     */
-    public CreationalContextImpl<?> getOwnerCreational()
-    {
-        return ownerCreational;
-    }
-
-
-    /**
-     * @param ownerCreational the ownerCreational to set
-     */
-    public void setOwnerCreational(CreationalContextImpl<?> ownerCreational)
-    {
-        if(this.ownerCreational != null)
-        {
-            this.ownerCreational = ownerCreational;   
-        }
-    }
-
-    /**
      * Write Object. 
      */
     private synchronized void writeObject(ObjectOutputStream s)
     throws IOException
     {
-        s.writeObject(proxyInstance);
-
         // we have to remap into a standard HashMap because WeakHashMap is not serializable
-        HashMap<Object, DependentCreationalContext<?>> depo
-                = new HashMap<Object, DependentCreationalContext<?>>(dependentObjects);
+        HashMap<Object, List<DependentCreationalContext<?>>> depo
+                = new HashMap<Object, List<DependentCreationalContext<?>>>(dependentObjects);
         s.writeObject(depo);
 
         String id = null;
@@ -347,7 +406,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         {
             s.writeObject(null);
         }
-        s.writeObject(ownerCreational);
         s.writeObject(ejbInterceptors);
     }
 
@@ -359,18 +417,16 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private synchronized void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
-        proxyInstance = s.readObject();
-
-        HashMap<Object, DependentCreationalContext<?>> depo = (HashMap<Object, DependentCreationalContext<?>>)s.readObject();
-        dependentObjects = new WeakHashMap<Object, DependentCreationalContext<?>>(depo);
+        HashMap<Object, List<DependentCreationalContext<?>>> depo = (HashMap<Object, List<DependentCreationalContext<?>>>)s.readObject();
+        dependentObjects = new WeakHashMap<Object, List<DependentCreationalContext<?>>>(depo);
 
         String id = (String) s.readObject();
         if (id != null)
         {
             contextual = (Contextual<T>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
         }
-        ownerCreational = (CreationalContextImpl<?>) s.readObject();
-        ejbInterceptors = (ConcurrentMap<Class<?>, EjbInterceptorContext>) s.readObject();
+                
+        ejbInterceptors = (ConcurrentMap<Object, List<EjbInterceptorContext>>) s.readObject();
     }
 
 }
