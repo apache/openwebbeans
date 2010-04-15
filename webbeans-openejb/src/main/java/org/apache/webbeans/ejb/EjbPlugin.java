@@ -30,9 +30,13 @@ import org.apache.openejb.spi.ContainerSystem;
 import org.apache.webbeans.ejb.common.util.EjbDefinitionUtility;
 import org.apache.webbeans.ejb.common.util.EjbUtility;
 import org.apache.webbeans.ejb.component.OpenEjbBean;
+import org.apache.webbeans.ejb.service.OpenEJBSecurityService;
+import org.apache.webbeans.ejb.service.OpenEJBTransactionService;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
+import org.apache.webbeans.spi.SecurityService;
+import org.apache.webbeans.spi.TransactionService;
 
 /**
  * EJB related stuff.
@@ -51,6 +55,10 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     private Map<Class<?>,DeploymentInfo> statefullBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
     
     private Map<Class<?>,DeploymentInfo> singletonBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
+    
+    private static final TransactionService TRANSACTION_SERVICE = new OpenEJBTransactionService();
+    
+    private static final SecurityService SECURITY_SERVICE = new OpenEJBSecurityService();
 
     public EjbPlugin()
     {
@@ -174,6 +182,34 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext)
     {
         return EjbDefinitionUtility.defineEjbBeanProxy((OpenEjbBean<?>)bean,iface, creationalContext);
+    }
+    
+    
+    @Override    
+    public <T> T getSupportedService(Class<T> serviceClass)
+    {
+        if(serviceClass == TransactionService.class)
+        {
+            return serviceClass.cast(TRANSACTION_SERVICE);    
+        }
+        else if(serviceClass == SecurityService.class)
+        {
+            return serviceClass.cast(SECURITY_SERVICE);
+        }
+        
+        return null;
+    }
+
+    @Override
+    public boolean supportService(Class<?> serviceClass)
+    {
+        if((serviceClass == TransactionService.class) ||
+                serviceClass == SecurityService.class)
+        {
+            return true;
+        }
+        
+        return false;
     }
        
 }
