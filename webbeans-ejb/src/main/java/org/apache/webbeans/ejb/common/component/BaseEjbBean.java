@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.SessionBeanType;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Defines bean contract for the session beans.
@@ -140,6 +141,11 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
         if(removeStatefulInstance && getEjbType().equals(SessionBeanType.STATEFUL))
         {
             //Call remove method
+            List<Method> methods = getRemoveMethods();
+            for(Method method : methods)
+            {
+                ClassUtil.callInstanceMethod(method, instance, ClassUtil.OBJECT_EMPTY);
+            }
         }        
     }
     

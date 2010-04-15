@@ -95,8 +95,7 @@ public class EjbBeanProxyHandler implements MethodHandler
             webbeansInstance=webbeansContext.get(this.ejbBean);
             if (webbeansInstance != null)
             {
-                // voila, we are finished if we found an existing contextual instance
-                return webbeansInstance;
+                return method.invoke(webbeansInstance, arguments);
             }
             
             if (webbeansContext instanceof AbstractContext)
