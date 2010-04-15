@@ -13,7 +13,11 @@
  */
 package org.apache.webbeans.ejb;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -22,6 +26,12 @@ import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.openejb.Container;
 import org.apache.openejb.DeploymentInfo;
+import org.apache.openejb.assembler.classic.AppInfo;
+import org.apache.openejb.assembler.classic.Assembler;
+import org.apache.openejb.assembler.classic.DeploymentListener;
+import org.apache.openejb.assembler.classic.EjbJarInfo;
+import org.apache.openejb.assembler.classic.EnterpriseBeanInfo;
+import org.apache.openejb.core.CoreContainerSystem;
 import org.apache.openejb.core.singleton.SingletonContainer;
 import org.apache.openejb.core.stateful.StatefulContainer;
 import org.apache.openejb.core.stateless.StatelessContainer;
@@ -33,6 +43,7 @@ import org.apache.webbeans.ejb.component.OpenEjbBean;
 import org.apache.webbeans.ejb.service.OpenEJBSecurityService;
 import org.apache.webbeans.ejb.service.OpenEJBTransactionService;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.SecurityService;
@@ -46,13 +57,22 @@ import org.apache.webbeans.spi.TransactionService;
  * @version $Rev$ $Date$
  *
  */
-public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugin
+public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugin, DeploymentListener
 {
     private ContainerSystem containerSystem = null;
     
+    // OpenEJB assembler
+    private Assembler assembler;
+    
+    private WebBeansLogger logger = WebBeansLogger.getLogger(EjbPlugin.class);
+
+    // List of deployed applications
+    private final Set<AppInfo> deployedApplications = new HashSet<AppInfo>();
+    
+    // TODO it should be Map<Class<?>,DeploymentInfo[]>
     private Map<Class<?>,DeploymentInfo> statelessBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
     
-    private Map<Class<?>,DeploymentInfo> statefullBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
+    private Map<Class<?>,DeploymentInfo> statefulBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
     
     private Map<Class<?>,DeploymentInfo> singletonBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
     
@@ -65,7 +85,90 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         
     }
         
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.plugins.AbstractOwbPlugin#shutDown()
+     */
     @Override
+    public void shutDown() throws WebBeansConfigurationException {
+        try {
+            super.shutDown();
+        } catch (Exception e) {
+            throw new WebBeansConfigurationException(e);
+        }
+    }
+
+
+
+    /* (non-Javadoc)
+     * @see org.apache.webbeans.plugins.AbstractOwbPlugin#startUp()
+     */
+    @Override
+    public void startUp() throws WebBeansConfigurationException {
+        try {
+            super.startUp();
+        } catch (Exception e) {
+            throw new WebBeansConfigurationException(e);
+        }
+        
+        // Get container and assembler from OpenEJB
+        containerSystem = (CoreContainerSystem) SystemInstance.get().getComponent(ContainerSystem.class);
+        assembler = SystemInstance.get().getComponent(Assembler.class);
+
+        // We register ourselves as a listener to the deployment
+        if (assembler != null) {
+            assembler.addDeploymentListener(this);
+            for (AppInfo appInfo : assembler.getDeployedApplications()) {
+                afterApplicationCreated(appInfo);
+            }
+        }
+    }
+
+    /**
+     * OpenEJB call back method
+     * It is used to get the list of deployed application and store the Stateless 
+     * and Stateful pools localy.
+     * 
+     * @param appInfo applications informations
+     */
+    public void afterApplicationCreated(AppInfo appInfo) {
+        logger.debug("Retrieving deployed EJB modules");
+        if (deployedApplications.add(appInfo)) {
+            List<DeploymentInfo> statelessList = new ArrayList<DeploymentInfo>();
+            List<DeploymentInfo> statefulList = new ArrayList<DeploymentInfo>();
+            List<DeploymentInfo> singletonList = new ArrayList<DeploymentInfo>();
+            
+            for (EjbJarInfo ejbJar : appInfo.ejbJars) {
+                for (EnterpriseBeanInfo bean : ejbJar.enterpriseBeans) {
+                    switch (bean.type) {
+                    case EnterpriseBeanInfo.STATELESS:
+                        statelessList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
+                        break;
+                    case EnterpriseBeanInfo.STATEFUL:
+                        statefulList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
+                        break;
+                    case EnterpriseBeanInfo.SINGLETON:
+                        singletonList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            }
+            
+            addBeanDeploymentInfos(statelessList.toArray(new DeploymentInfo[statelessList.size()]), SessionBeanType.STATELESS);
+            addBeanDeploymentInfos(statefulList.toArray(new DeploymentInfo[statefulList.size()]), SessionBeanType.STATEFUL);
+            addBeanDeploymentInfos(singletonList.toArray(new DeploymentInfo[singletonList.size()]), SessionBeanType.SINGLETON);
+        }
+
+    }
+
+    /**
+     * OpenEJB callback method
+     * Not used.
+     */
+    public void beforeApplicationDestroyed(AppInfo appInfo) {
+    }
+    
     public <T> Bean<T> defineSessionBean(Class<T> clazz)
     {
         if(!isSessionBean(clazz))
@@ -82,7 +185,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         }
         else if(isStatefulBean(clazz))
         {
-            info = this.statefullBeans.get(clazz);
+            info = this.statefulBeans.get(clazz);
             type = SessionBeanType.STATEFUL;
         }
         else if(isSingletonBean(clazz))
@@ -104,7 +207,6 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         return bean;
     }
 
-    @Override
     public boolean isSessionBean(Class<?> clazz)
     {
         if(this.containerSystem == null)
@@ -143,7 +245,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
             }
             else if(type.equals(SessionBeanType.STATEFUL))
             {
-                this.statefullBeans.put(deployment.getBeanClass(),deployment);
+                this.statefulBeans.put(deployment.getBeanClass(),deployment);
             }
             else if(type.equals(SessionBeanType.SINGLETON))
             {
@@ -160,25 +262,21 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         }
     }
 
-    @Override
     public boolean isSingletonBean(Class<?> clazz)
     {
         return this.singletonBeans.containsKey(clazz);
     }
 
-    @Override
     public boolean isStatefulBean(Class<?> clazz)
     {
-        return this.statefullBeans.containsKey(clazz);
+        return this.statefulBeans.containsKey(clazz);
     }
 
-    @Override
     public boolean isStatelessBean(Class<?> clazz)
     {
         return this.statelessBeans.containsKey(clazz);
     }
 
-    @Override
     public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext)
     {
         return EjbDefinitionUtility.defineEjbBeanProxy((OpenEjbBean<?>)bean,iface, creationalContext);
