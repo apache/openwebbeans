@@ -121,6 +121,21 @@
      			<exclude name="testCircularInjectionOnOneDependentAndOneNormalBean"></exclude>
      		</methods>
      	</class>     
+     	
+     	<!-- ERROR IN CDITCK-142 -->
+     	<class name="org.jboss.jsr299.tck.tests.context.dependent.DependentContextTest">
+     		<methods>
+     			<exclude name="testDependentsDestroyedWhenProducerMethodCompletes"></exclude>
+     		</methods>
+     	</class>          
+     	
+     	<!-- ERROR IN CDITCK-143 -->
+     	<class name="org.jboss.jsr299.tck.tests.implementation.simple.lifecycle.SimpleBeanLifecycleTest">
+     		<methods>
+     			<exclude name="testBeanCreateInjectsDependenciesAndInvokesInitializerToInstantiateInstance"></exclude>
+     			<exclude name="testCreateReturnsSameBeanPushed"></exclude>
+     		</methods>
+     	</class>         
 
      	<!-- TODO EL-RESOLVER PROBLEM -->
      	<class name="org.jboss.jsr299.tck.tests.context.dependent.DependentContextTest">
