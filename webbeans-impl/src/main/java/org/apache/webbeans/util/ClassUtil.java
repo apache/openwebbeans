@@ -67,6 +67,8 @@ public final class ClassUtil
 
     public static final String WEBBEANS_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
     
+    public static final Object[] OBJECT_EMPTY = new Object[0];
+    
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ClassUtil.class);
 
     static
