@@ -25,6 +25,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
+import org.apache.openejb.core.CoreUserTransaction;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.webbeans.ee.event.TransactionalEventNotifier;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -67,7 +68,8 @@ public class OpenEJBTransactionService implements TransactionService
     @Override
     public UserTransaction getUserTransaction()
     {
-        return SystemInstance.get().getComponent(UserTransaction.class);
+        CoreUserTransaction ut = new CoreUserTransaction(getTransactionManager());
+        return ut;
     }
 
     @Override
