@@ -138,7 +138,7 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     @Override
     protected void destroyComponentInstance(T instance, CreationalContext<T> creational)
     {
-        if(removeStatefulInstance && getEjbType().equals(SessionBeanType.STATEFUL))
+        if(!removeStatefulInstance && getEjbType().equals(SessionBeanType.STATEFUL))
         {
             //Call remove method
             List<Method> methods = getRemoveMethods();

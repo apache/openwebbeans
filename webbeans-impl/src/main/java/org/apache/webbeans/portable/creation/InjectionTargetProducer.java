@@ -113,11 +113,8 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     @Override
     public void preDestroy(T instance)
     {
-        InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);        
-        if(!(bean instanceof EnterpriseBeanMarker))
-        {
-            bean.preDestroy(instance,this.creationalContext);   
-        }
+        InjectionTargetBean<T> bean = getBean(InjectionTargetBean.class);
+        bean.destroyCreatedInstance(instance, this.creationalContext);
     }
 
 }

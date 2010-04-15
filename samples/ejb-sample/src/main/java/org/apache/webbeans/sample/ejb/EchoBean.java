@@ -21,7 +21,7 @@ import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 
 @Stateless
 @Dependent
-@Interceptors(value=OpenWebBeansEjbInterceptor.class)
+//@Interceptors(value=OpenWebBeansEjbInterceptor.class)
 public class EchoBean implements Echo
 {
     @LogInterceptorBinding
