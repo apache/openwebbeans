@@ -37,10 +37,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     //Default serial id
     private static final long serialVersionUID = 1L;
 
-    /**Bean proxy*/
-    //This will be set to null after instance creations
-    private volatile Object proxyInstance = null;
-    
     /**Contextual bean dependent instances*/
     //contextual instance --> dependents
     private Map<Object, List<DependentCreationalContext<?>>> dependentObjects = 
@@ -124,28 +120,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         //No-action
     }
-    
-    /**
-     * Sets bean instance proxy.
-     * @param proxyInstance proxy
-     */
-    public void setProxyInstance(Object proxyInstance)
-    {
-        if(this.proxyInstance == null)
-        {
-            this.proxyInstance = proxyInstance;   
-        }
-    }
-    
-    /**
-     * Gets bean proxy.
-     * @return bean proxy
-     */
-    public Object getProxyInstance()
-    {
-        return this.proxyInstance;
-    }
-    
+        
     /**
      * Adds given dependent instance to the map.
      * 

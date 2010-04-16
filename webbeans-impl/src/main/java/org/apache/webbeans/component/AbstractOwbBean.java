@@ -164,11 +164,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                 {
                     ((AbstractInjectionTargetBean<T>)this).afterConstructor(instance, creationalContext);
                 }
-            }
-                        
-            //Remove proxy instance
-            ((CreationalContextImpl)creationalContext).setProxyInstance(null);
-            
+            }                                    
         }
         catch (Exception re)
         {

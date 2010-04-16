@@ -798,9 +798,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             //Create Managed Bean Proxy
             instance = JavassistProxyFactory.createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
             
-            //push this proxy instance into creational context
-            CreationalContextImpl<Object> temp = (CreationalContextImpl<Object>)creationalContext;
-            temp.setProxyInstance(instance);
         }
         //Create Pseudo-Scope Bean Instance
         else

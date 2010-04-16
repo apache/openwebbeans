@@ -147,9 +147,6 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     /**Intercepted methods*/
     protected transient Map<Method, List<InterceptorData>> interceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
     
-    /**Bean decorator objects*/
-    protected transient List<Object> decorators = null;
-    
     /**Delegate handler*/
     protected transient DelegateHandler delegateHandler;
 
@@ -196,7 +193,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 if (InterceptorUtil.isWebBeansBusinessMethod(method))
                 {
                     List<Object> decorators = null;
-                    if (injectionTarget.getDecoratorStack().size() > 0 && this.decorators == null)
+                    if (injectionTarget.getDecoratorStack().size() > 0)
                     {
                         Class<?> proxyClass = JavassistProxyFactory.getInterceptorProxyClasses().get(bean);
                         if (proxyClass == null)
@@ -214,7 +211,6 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         //Sets decorator stack of delegate
                         this.delegateHandler.setDecorators(decorators);
                         
-                        this.decorators = decorators;
                     }
 
                     // Run around invoke chain
@@ -254,7 +250,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                     
                     // If there are Decorators, allow the delegate handler to
                     // manage the stack
-                    if (this.decorators != null)
+                    if (decorators != null)
                     {
                         return delegateHandler.invoke(instance, method, proceed, arguments);
                     }
