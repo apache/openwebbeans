@@ -29,6 +29,7 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Implementation of the {@link InvocationContext} interface.
@@ -197,7 +198,7 @@ public class InvocationContextImpl implements InvocationContext
             
             if (!method.isAccessible())
             {
-                method.setAccessible(true);
+                SecurityUtil.doPrivilegedSetAccessible(method, true);
             }
             
             Object t = intc.createNewInstance(this.target,(CreationalContextImpl<?>)this.creationalContext);
@@ -213,7 +214,7 @@ public class InvocationContextImpl implements InvocationContext
             
             if(!accessible)
             {
-                method.setAccessible(false);
+                SecurityUtil.doPrivilegedSetAccessible(method, false);
             }
 
         }
@@ -224,14 +225,14 @@ public class InvocationContextImpl implements InvocationContext
                 boolean accessible = this.method.isAccessible();
                 if(!accessible)
                 {                
-                    this.method.setAccessible(true);
+                    SecurityUtil.doPrivilegedSetAccessible(method, true);
                 }
                 
                 result = this.method.invoke(target, parameters);
                 
                 if(!accessible)
                 {
-                    this.method.setAccessible(false);   
+                    SecurityUtil.doPrivilegedSetAccessible(method, false);
                 }                
             }
         }
@@ -267,7 +268,7 @@ public class InvocationContextImpl implements InvocationContext
 
             if (!method.isAccessible())
             {
-                method.setAccessible(true);
+                SecurityUtil.doPrivilegedSetAccessible(method, true);                
             }
 
             currentMethod++;

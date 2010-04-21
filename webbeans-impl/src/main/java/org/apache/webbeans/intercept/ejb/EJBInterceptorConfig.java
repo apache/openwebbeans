@@ -28,6 +28,7 @@ import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -221,7 +222,7 @@ public final class EJBInterceptorConfig
         // 3- Look bean around invoke
 
         // 1-
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
 
         for (Method method : methods)
         {

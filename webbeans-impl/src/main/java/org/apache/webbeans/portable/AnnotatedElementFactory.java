@@ -23,6 +23,8 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 
+import org.apache.webbeans.util.SecurityUtil;
+
 /**
  * Factory for {@link Annotated} elements.
  * 
@@ -47,10 +49,9 @@ public final class AnnotatedElementFactory
     {
         AnnotatedTypeImpl<X> annotatedType = new AnnotatedTypeImpl<X>(annotatedClass);
         
-        Field[] fields = annotatedClass.getDeclaredFields();
-        Method[] methods = annotatedClass.getDeclaredMethods();
-        Constructor<X>[] ctxs = (Constructor<X>[])annotatedClass.getDeclaredConstructors();
-        
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(annotatedClass);
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(annotatedClass);
+        Constructor<X>[] ctxs = (Constructor<X>[])SecurityUtil.doPrivilegedGetDeclaredConstructors(annotatedClass);
         for(Field f : fields)
         {
             AnnotatedField<X> af = new AnnotatedFieldImpl<X>(f, annotatedType);

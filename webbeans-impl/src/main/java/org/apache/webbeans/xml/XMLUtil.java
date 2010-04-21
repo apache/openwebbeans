@@ -39,6 +39,7 @@ import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -735,7 +736,7 @@ public class XMLUtil {
                 try
                 {
                     /* Contains value member method */
-                    annotClazz.getDeclaredMethod("value", new Class[] {});
+                    SecurityUtil.doPrivilegedGetDeclaredMethod(annotClazz, "value", new Class[] {});
 
                 }
                 catch (SecurityException e)
@@ -755,8 +756,7 @@ public class XMLUtil {
         {
             try
             {
-                annotClazz.getDeclaredMethod(attrName, new Class[] {});
-
+                SecurityUtil.doPrivilegedGetDeclaredMethod(annotClazz, attrName, new Class[] {});
             }
             catch (SecurityException e)
             {
@@ -770,7 +770,7 @@ public class XMLUtil {
         }
 
         /* Non-default members must defined in the xml */
-        Method[] members = annotClazz.getDeclaredMethods();
+        Method[] members = ClassUtil.getDeclaredMethods(annotClazz);
         for (Method member : members)
         {
             if (member.getDefaultValue() == null && value == null)
@@ -814,7 +814,7 @@ public class XMLUtil {
             Class returnType = null;
             try
             {
-                returnType = annotClazz.getDeclaredMethod(attrName, new Class[] {}).getReturnType();
+                returnType = SecurityUtil.doPrivilegedGetDeclaredMethod(annotClazz, attrName, new Class[] {}).getReturnType();
                 Object value = null;
                 if (returnType.isPrimitive())
                 {

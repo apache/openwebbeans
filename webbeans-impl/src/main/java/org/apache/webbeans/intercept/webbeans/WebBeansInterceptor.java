@@ -51,6 +51,7 @@ import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
@@ -107,7 +108,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
      */
     public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation annot)
     {
-        Method[] methods = binding.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(binding);
 
         for (Method method : methods)
         {

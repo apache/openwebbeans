@@ -60,6 +60,7 @@ import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -195,7 +196,7 @@ public final class XMLDefinitionUtil
             Class<? extends Annotation> temp = it.next();
             if (AnnotationUtil.isQualifierAnnotation(temp))
             {
-                Method[] methods = temp.getDeclaredMethods();
+                Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(temp);
 
                 for (Method method : methods)
                 {

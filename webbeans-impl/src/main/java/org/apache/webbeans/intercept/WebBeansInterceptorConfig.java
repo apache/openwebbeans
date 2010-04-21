@@ -39,6 +39,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -272,7 +273,7 @@ public final class WebBeansInterceptorConfig
         
         //GE : I added for private, protected etc. methods.
         //Not just for public methods.
-        methods = clazz.getDeclaredMethods();
+        methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
         for(Method m : methods)
         {
             set.add(m);

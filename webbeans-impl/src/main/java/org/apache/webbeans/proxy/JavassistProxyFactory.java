@@ -42,6 +42,7 @@ import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 
 public final class JavassistProxyFactory
 {
@@ -199,7 +200,7 @@ public final class JavassistProxyFactory
     	Class<?> proxyClass = null;
         try
         {
-        	proxyClass = factory.createClass();
+        	proxyClass = SecurityUtil.doPrivilegedCreateClass(factory);
         	
         }catch(Exception e)
         {
@@ -213,7 +214,7 @@ public final class JavassistProxyFactory
             	
             };
             
-            proxyClass = factory.createClass();        	
+            proxyClass = SecurityUtil.doPrivilegedCreateClass(factory);       	
         }                
             	
         return proxyClass;
