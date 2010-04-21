@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -31,6 +30,7 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
+import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.util.Asserts;
 
@@ -53,16 +53,11 @@ public abstract class AbstractContext implements WebBeansContext
     protected ContextTypes type;
 
     /**Context contextual instances*/
-    protected Map<Contextual<?>, Object> componentInstanceMap = null;
+    protected Map<Contextual<?>, BeanInstanceBag<?>> componentInstanceMap = null;
 
     /**Contextual Scope Type*/
     protected Class<? extends Annotation> scopeType;
     
-    /**Contextual to CreationalContext Map*/
-    protected final ConcurrentMap<Contextual<?>, CreationalContext<?>> creationalContextMap = 
-        new ConcurrentHashMap<Contextual<?>, CreationalContext<?>>();
-       
-
     /**
      * Creates a new context instance
      */
@@ -70,7 +65,33 @@ public abstract class AbstractContext implements WebBeansContext
     {
 
     }
+    
 
+    public <T> void initContextualBag(Contextual<T> contextual, CreationalContext<T> creationalContext)
+    {
+        createContextualBag(contextual, creationalContext);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> void createContextualBag(Contextual<T> contextual, CreationalContext<T> creationalContext)
+    {
+        BeanInstanceBag<T> bag = new BeanInstanceBag<T>(creationalContext);
+        
+        if(this.componentInstanceMap instanceof ConcurrentMap)
+        {
+            T exist = (T) ((ConcurrentMap) this.componentInstanceMap).putIfAbsent(contextual, bag);
+            //no instance
+            if(exist == null)
+            {
+                this.componentInstanceMap.put(contextual, bag);
+            }
+        }
+        else
+        {
+            this.componentInstanceMap.put(contextual , bag);
+        }                
+    }
+    
     /**
      * Creates a new context with given scope type.
      * 
@@ -132,6 +153,8 @@ public abstract class AbstractContext implements WebBeansContext
         }
 
     }
+    
+    
 
     /**
      * {@inheritDoc}
@@ -141,28 +164,41 @@ public abstract class AbstractContext implements WebBeansContext
     {
         checkActive();
         
-        return (T) componentInstanceMap.get(component);
+        if(componentInstanceMap.get(component) != null)
+        {
+            return (T) componentInstanceMap.get(component).getBeanInstance();    
+        }
+        
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T> T get(Contextual<T> component, CreationalContext<T> creationalContext)
+    public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
         checkActive();
         
-        return getInstance(component, creationalContext);
+        return getInstance(contextual, creationalContext);
     }
 
     /**
      * {@inheritDoc} 
      */
     @SuppressWarnings("unchecked")
-    protected <T> T getInstance(Contextual<T> component, CreationalContext<T> creationalContext)
+    protected <T> T getInstance(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
-        T instance = (T)componentInstanceMap.get(component);
-
+        T instance = null;
         
+        //Look for bag
+        BeanInstanceBag<T> bag = (BeanInstanceBag<T>)componentInstanceMap.get(contextual);        
+        if(bag == null)
+        {
+            createContextualBag(contextual, creationalContext);
+        }
+        
+        //Look for instance
+        instance = (T)componentInstanceMap.get(contextual).getBeanInstance();        
         if (instance != null)
         {
             return instance;
@@ -180,27 +216,14 @@ public abstract class AbstractContext implements WebBeansContext
                 //No instance
                 if(instance == null)
                 {
-                    instance = component.create(creationalContext);    
+                    instance = contextual.create(creationalContext);    
                 }
                 
-
+                //If succesfull creation
                 if (instance != null)
                 {
-                    if(this.componentInstanceMap instanceof ConcurrentMap)
-                    {
-                        T exist = (T) ((ConcurrentMap) this.componentInstanceMap).putIfAbsent(component, instance);
-                        //no instance
-                        if(exist == null)
-                        {
-                            this.componentInstanceMap.put(component, instance);
-                        }
-                    }
-                    else
-                    {
-                        this.componentInstanceMap.put(component, instance);
-                    }
-                                           
-                    this.creationalContextMap.putIfAbsent(component, creationalContext);
+                    bag = (BeanInstanceBag<T>)this.componentInstanceMap.get(contextual);
+                    bag.setBeanInstance(instance);
                 }
                 
             }            
@@ -216,9 +239,9 @@ public abstract class AbstractContext implements WebBeansContext
     public <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual)
     {
         Asserts.assertNotNull(contextual);
-        if(this.creationalContextMap.containsKey(contextual))
+        if(this.componentInstanceMap.containsKey(contextual))
         {
-            return (CreationalContext<T>)this.creationalContextMap.get(contextual);
+            return (CreationalContext<T>)this.componentInstanceMap.get(contextual).getBeanCreationalContext();
         }
         
         return null;
@@ -243,27 +266,24 @@ public abstract class AbstractContext implements WebBeansContext
     @SuppressWarnings("unchecked")
     public void destroy()
     {
-        Set<Entry<Contextual<?>, Object>> entrySet = componentInstanceMap.entrySet();
-        Iterator<Entry<Contextual<?>, Object>> it = entrySet.iterator();
+        Set<Entry<Contextual<?>, BeanInstanceBag<?>>> entrySet = componentInstanceMap.entrySet();
+        Iterator<Entry<Contextual<?>, BeanInstanceBag<?>>> it = entrySet.iterator();
 
-        Contextual<?> component = null;
+        Contextual<?> contextual = null;
         while (it.hasNext())
         {
-            component = it.next().getKey();
+            contextual = it.next().getKey();
             
-            Object instance = componentInstanceMap.get(component);
+            BeanInstanceBag<?> instance = componentInstanceMap.get(contextual);
             //Get creational context
-            CreationalContext<Object> cc = (CreationalContext<Object>)this.creationalContextMap.get(component);
+            CreationalContext<Object> cc = (CreationalContext<Object>)instance.getBeanCreationalContext();
 
             //Destroy instance
-            destroyInstance((Contextual<Object>) component, instance, cc);
+            destroyInstance((Contextual<Object>) contextual, instance.getBeanInstance(), cc);
         }
         
-        //Clear cache
-        this.componentInstanceMap.clear();
-        //Clear creational context map
-        this.creationalContextMap.clear();
-        
+        //Clear context map
+        this.componentInstanceMap.clear();        
     }
 
     /**
@@ -300,7 +320,7 @@ public abstract class AbstractContext implements WebBeansContext
     /**
      * {@inheritDoc}
      */
-    public Map<Contextual<?>, Object> getComponentInstanceMap()
+    public Map<Contextual<?>, BeanInstanceBag<?>> getComponentInstanceMap()
     {
         return componentInstanceMap;
     }

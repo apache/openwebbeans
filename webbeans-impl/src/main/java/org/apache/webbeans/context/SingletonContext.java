@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.Contextual;
 
+import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.context.type.ContextTypes;
 
 /**
@@ -33,6 +34,6 @@ public class SingletonContext extends AbstractContext
     @Override
     public void setComponentInstanceMap()
     {
-        this.componentInstanceMap = new ConcurrentHashMap<Contextual<?>, Object>();
+        this.componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
     }
 }

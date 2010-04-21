@@ -56,7 +56,7 @@ public class ApplicationScopedBeanIntereptorHandler extends NormalScopedBeanInte
     {
         if (cachedInstance == null) 
         {
-            cachedInstance = super.getContextualInstance(bean);
+            cachedInstance = super.getContextualInstance();
         }
         
         return cachedInstance;

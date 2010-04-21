@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.intercept;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -43,9 +42,6 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     /**Serial id*/
     private static final long serialVersionUID = 1L;
     
-    /**Creational context*/
-    private transient WeakReference<CreationalContext<?>> creationalContext = null;
-
     /**
      * Creates a new bean instance
      * @param bean bean 
@@ -53,8 +49,20 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
      */
     public NormalScopedBeanInterceptorHandler(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
-        super(bean);
-        this.creationalContext = new WeakReference<CreationalContext<?>>(creationalContext);
+        super(bean);    
+        
+        //Initiate bean for saving creational context instance
+        initiateBeanBag((OwbBean<Object>)bean, (CreationalContext<Object>)creationalContext);
+    }
+    
+    private void initiateBeanBag(OwbBean<Object> bean, CreationalContext<Object> creationalContext)
+    {
+        Context webbeansContext = getBeanManager().getContext(bean.getScope());
+        if (webbeansContext instanceof AbstractContext)
+        {
+            AbstractContext owbContext = (AbstractContext)webbeansContext;
+            owbContext.initContextualBag(bean, creationalContext);
+        }
     }
     
     /**
@@ -64,10 +72,10 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         //Get instance from context
-        Object webbeansInstance = getContextualInstance((OwbBean<Object>) this.bean);
+        Object webbeansInstance = getContextualInstance();
         
         //Call super
-        return super.invoke(webbeansInstance, method, proceed, arguments, (CreationalContextImpl<?>) this.creationalContext.get());
+        return super.invoke(webbeansInstance, method, proceed, arguments, (CreationalContextImpl<?>) getContextualCreationalContext());
     }
         
     /**
@@ -75,9 +83,9 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
      */
     protected Object callAroundInvokes(Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
     {
-        InvocationContextImpl impl = new InvocationContextImpl(this.bean, getContextualInstance((OwbBean<Object>) this.bean),
+        InvocationContextImpl impl = new InvocationContextImpl(this.bean, getContextualInstance(),
                                                                proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
-        impl.setCreationalContext(creationalContext.get());
+        impl.setCreationalContext(getContextualCreationalContext());
 
         return impl.proceed();
 
@@ -89,38 +97,53 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
      * @param bean bean instance
      * @return the underlying contextual instance, either cached or resolved from the context 
      */
-    protected Object getContextualInstance(OwbBean<Object> bean)
+    protected Object getContextualInstance()
     {
         Object webbeansInstance = null;
-        
+
         //Context of the bean
-        Context webbeansContext = getBeanManager().getContext(bean.getScope());
+        Context webbeansContext = getBeanManager().getContext(this.bean.getScope());
         
         //Already saved in context?
-        webbeansInstance=webbeansContext.get(bean);
+        webbeansInstance=webbeansContext.get(this.bean);
         if (webbeansInstance != null)
         {
             // voila, we are finished if we found an existing contextual instance
             return webbeansInstance;
         }
+        else
+        {
+            // finally, we create a new contextual instance
+            webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, getContextualCreationalContext());   
+        }
+                
+        return webbeansInstance;
+    }
+    
+    protected CreationalContext<Object> getContextualCreationalContext()
+    {
+        CreationalContext<Object> creationalContext = null;
         
+        OwbBean<Object> contextual = (OwbBean<Object>)this.bean;
+        //Context of the bean
+        Context webbeansContext = getBeanManager().getContext(bean.getScope());
         if (webbeansContext instanceof AbstractContext)
         {
-            CreationalContext<?> cc = ((AbstractContext)webbeansContext).getCreationalContext(bean);
-            if (cc != null)
+            AbstractContext owbContext = (AbstractContext)webbeansContext;
+            creationalContext = owbContext.getCreationalContext(contextual);
+
+            //No creational context means that no BeanInstanceBag
+            //Actually this can be occurs like scenarions
+            //@SessionScoped bean injected into @ApplicationScopedBean
+            //And session is destroyed and restarted but proxy still
+            //contained in @ApplicationScopedBean
+            if(creationalContext == null)
             {
-                creationalContext = new WeakReference<CreationalContext<?>>(cc);
-            }
+                creationalContext = CreationalContextFactory.getInstance().getCreationalContext(contextual);
+                owbContext.initContextualBag((OwbBean<Object>)this.bean, creationalContext);
+            }            
         }
-        if ((creationalContext == null) || creationalContext.get() == null)
-        {
-            // if there was no CreationalContext set from external, we create a new one
-            creationalContext = new WeakReference<CreationalContext<?>>(CreationalContextFactory.getInstance().getCreationalContext(bean));
-        }
-        
-        // finally, we create a new contextual instance
-        webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, (CreationalContext<Object>) creationalContext.get());
-        
-        return webbeansInstance;
+                
+        return creationalContext;
     }
 }

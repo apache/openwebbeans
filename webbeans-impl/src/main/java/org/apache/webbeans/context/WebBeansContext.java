@@ -16,7 +16,9 @@ package org.apache.webbeans.context;
 import java.util.Map;
 
 import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.context.spi.CreationalContext;
 
+import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.context.type.ContextTypes;
 
 
@@ -26,7 +28,20 @@ import org.apache.webbeans.context.type.ContextTypes;
  * @version $Rev$ $Date$
  */
 public interface WebBeansContext extends javax.enterprise.context.spi.Context
-{        
+{   
+    /**
+     * Initializes this contextual bag with
+     * given creational context.
+     * <p>
+     * Given creational context is used fot creating the
+     * bean instance.
+     * </p>
+     * @param <T> type
+     * @param contextual contextual bean
+     * @param creationalContext creational context
+     */
+    public <T> void initContextualBag(Contextual<T> contextual, CreationalContext<T> creationalContext);
+    
     /**
      * Destroys the context.
      */
@@ -44,5 +59,13 @@ public interface WebBeansContext extends javax.enterprise.context.spi.Context
      * 
      * @return instance map
      */
-    public Map<Contextual<?>, Object> getComponentInstanceMap();
+    public Map<Contextual<?>, BeanInstanceBag<?>> getComponentInstanceMap();
+    
+    /**
+     * Gets creational context of the given bean.
+     * @param <T> type
+     * @param contextual contextual bean
+     * @return creational context of the given bean
+     */
+    public <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual);
 }

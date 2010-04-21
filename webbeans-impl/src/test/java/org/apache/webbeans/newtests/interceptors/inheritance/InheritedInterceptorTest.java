@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
@@ -71,6 +72,34 @@ public class InheritedInterceptorTest extends AbstractUnitTest
     public void tearDown() { 
         shutDownContainer();
     }
+    
+    @Test
+    public void testNormalScopeNoNewInstance()
+    {
+        do_testNormalScopeNoNewInstance();
+    }
+    
+    @Test
+    public void testLoopNormalScopeNoNewInstance()
+    {
+        for (int i = 0; i<100; i++) 
+        {
+            do_testNormalScopeNoNewInstance();
+        }
+    }
+     
+    public void do_testNormalScopeNoNewInstance() 
+    { 
+        for (Bean<?> bean : beans)
+        {
+            CreationalContext<?> cc = getBeanManager().createCreationalContext(null);
+
+            DeckType d1 = (DeckType) getBeanManager().getReference(bean, DeckType.class, cc);
+            d1.shuffle();
+            // Can't reproduce in TC with this call
+            // cc.release();
+        }
+    }    
    
     @Test
     public void testStereotype()
