@@ -544,7 +544,7 @@ public final class AnnotationUtil
             return false;
         }
 
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
 
         List<String> list = new ArrayList<String>();
 
@@ -678,7 +678,7 @@ public final class AnnotationUtil
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotation, "Annotation argument can not be null");
 
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
         List<Method> list = new ArrayList<Method>();
         Method[] rMethod = null;
 
@@ -708,7 +708,7 @@ public final class AnnotationUtil
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotation, "Annotation argument can not be null");
 
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
         List<Method> list = new ArrayList<Method>();
         Method[] rMethod = null;
 
@@ -822,7 +822,7 @@ public final class AnnotationUtil
 
     public static Field[] getClazzFieldsWithGivenAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
     {
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
         List<Field> list = new ArrayList<Field>();
 
         if (fields.length != 0)
@@ -869,7 +869,7 @@ public final class AnnotationUtil
     }
 
     private static void checkQualifierConditions(Annotation ann) {
-        Method[] methods = ann.annotationType().getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(ann.annotationType());
 
         for (Method method : methods)
         {

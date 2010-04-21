@@ -267,7 +267,7 @@ public final class ClassUtil
     {
         Asserts.nullCheckForClass(clazz);
 
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
         for (Method m : methods)
         {
             if (isFinal(m.getModifiers()))
@@ -407,7 +407,7 @@ public final class ClassUtil
     public static Method[] getDeclaredMethods(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        return clazz.getDeclaredMethods();
+        return SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
     }
 
     /**
@@ -548,7 +548,7 @@ public final class ClassUtil
         List<String> list = new ArrayList<String>();
         Class<?> clazz = Object.class;
 
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
         for (Method method : methods)
         {
             list.add(method.getName());
@@ -568,7 +568,7 @@ public final class ClassUtil
         Asserts.assertNotNull(methodName, "methodName parameter can not be null");
         Asserts.nullCheckForClass(clazz);
 
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
         int i = 0;
         for (Method m : methods)
         {
@@ -592,7 +592,7 @@ public final class ClassUtil
         Asserts.nullCheckForClass(clazz);
         try
         {
-            return clazz.getDeclaredConstructor(new Class<?>[] {});
+            return SecurityUtil.doPrivilegedGetDeclaredConstructor(clazz, new Class<?>[] {});
 
         }
         catch (Exception e)
@@ -755,7 +755,7 @@ public final class ClassUtil
     {
         Asserts.nullCheckForClass(clazz);
         
-        return (Constructor<T>[]) clazz.getDeclaredConstructors();
+        return (Constructor<T>[])SecurityUtil.doPrivilegedGetDeclaredConstructors(clazz);
     }
 
     /**
@@ -771,8 +771,7 @@ public final class ClassUtil
         
         try
         {
-            clazz.getDeclaredConstructor(new Class<?>[] {});
-
+        	SecurityUtil.doPrivilegedGetDeclaredConstructor(clazz, new Class<?>[] {});
         }
         catch (SecurityException e)
         {
@@ -1193,7 +1192,7 @@ public final class ClassUtil
         try
         {
 
-            clazz.getDeclaredField(fieldName);
+        	SecurityUtil.doPrivilegedGetDeclaredField(clazz, fieldName);
 
         }
         catch (SecurityException e)
@@ -1214,7 +1213,7 @@ public final class ClassUtil
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(fieldName, "fieldName parameter can not be null");
 
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
         boolean ok = false;
         for (Field field : fields)
         {
@@ -1241,7 +1240,7 @@ public final class ClassUtil
         try
         {
 
-            return clazz.getDeclaredField(fieldName);
+            return SecurityUtil.doPrivilegedGetDeclaredField(clazz,fieldName);
 
         }
         catch (SecurityException e)
@@ -1271,7 +1270,7 @@ public final class ClassUtil
 
         List<Method> methodList = new ArrayList<Method>();
 
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
 
         int j = 0;
         for (Method method : methods)
@@ -1326,7 +1325,7 @@ public final class ClassUtil
         Asserts.assertNotNull(methodName, "methodName parameter can not be null");
         Asserts.assertNotNull(parameterTypes, "parameterTypes parameter can not be null");
 
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
 
         int j = 0;
         for (Method method : methods)
@@ -1376,7 +1375,7 @@ public final class ClassUtil
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(methodName, "methodName parameter can not be null");
 
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
 
         for (Method method : methods)
         {
@@ -1811,7 +1810,7 @@ public final class ClassUtil
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotation, "annotation parameter can not be null");
 
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
         for (Field field : fields)
         {
             if (AnnotationUtil.hasAnnotation(field.getAnnotations(), annotation))
@@ -1831,7 +1830,7 @@ public final class ClassUtil
         Asserts.assertNotNull(type, "type parameter can not be null");
 
         List<Field> fieldsWithType = new ArrayList<Field>();
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
         for (Field field : fields)
         {
             if(field.getType().equals(type))
@@ -1910,7 +1909,7 @@ public final class ClassUtil
         
         if(!field.isAccessible())
         {
-            field.setAccessible(true);
+            SecurityUtil.doPrivilegedSetAccessible(field, true);
         }
         
         try
@@ -1996,7 +1995,7 @@ public final class ClassUtil
     {
         try
         {
-            return clazz.getDeclaredMethod(methodName, parameters);
+            return SecurityUtil.doPrivilegedGetDeclaredMethod(clazz,methodName, parameters);
             
         }catch(NoSuchMethodException e)
         {

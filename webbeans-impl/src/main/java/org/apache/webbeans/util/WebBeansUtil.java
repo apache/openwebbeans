@@ -1233,7 +1233,7 @@ public final class WebBeansUtil
 
         if (!ct.isAccessible())
         {
-            ct.setAccessible(true);
+            SecurityUtil.doPrivilegedSetAccessible(ct, true);
         }
         
         try 
