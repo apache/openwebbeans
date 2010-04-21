@@ -76,6 +76,7 @@ import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -222,7 +223,7 @@ public final class DefinitionUtil
 
             if (AnnotationUtil.isQualifierAnnotation(type))
             {
-                Method[] methods = type.getDeclaredMethods();
+                Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(type);
 
                 for (Method method : methods)
                 {
@@ -559,7 +560,7 @@ public final class DefinitionUtil
     public static Set<ProducerFieldBean<?>> defineProduerFields(InjectionTargetBean<?> component)
     {
         Set<ProducerFieldBean<?>> producerFields = new HashSet<ProducerFieldBean<?>>();
-        Field[] fields = component.getReturnType().getDeclaredFields();
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(component.getReturnType());
         createProducerField(component, producerFields, fields);
 
         return producerFields;
@@ -610,7 +611,7 @@ public final class DefinitionUtil
         Set<ProducerMethodBean<?>> producerComponents = new HashSet<ProducerMethodBean<?>>();
 
         Class<?> clazz = component.getReturnType();
-        Method[] declaredMethods = clazz.getDeclaredMethods();
+        Method[] declaredMethods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
 
         // This methods defined in the class
         for (Method declaredMethod : declaredMethods)
@@ -838,7 +839,7 @@ public final class DefinitionUtil
     public static <T> void defineInternalInjectedFields(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromSuperClazz)
     {
 
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
         boolean useOwbSpecificInjection = OpenWebBeansConfiguration.getInstance().isOwbSpecificFieldInjection();
             
         if (fields.length != 0)
@@ -933,7 +934,7 @@ public final class DefinitionUtil
     private static <T> void defineInternalInjectedMethods(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromInherited)
     {
 
-        Method[] methods = clazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
         
         for (Method method : methods)
         {
@@ -963,7 +964,7 @@ public final class DefinitionUtil
                 }
                 else
                 {                    
-                    Method[] beanMethods = component.getReturnType().getDeclaredMethods();
+                    Method[] beanMethods = SecurityUtil.doPrivilegedGetDeclaredMethods(component.getReturnType());
                     boolean defined = false;
                     for (Method beanMethod : beanMethods)
                     {

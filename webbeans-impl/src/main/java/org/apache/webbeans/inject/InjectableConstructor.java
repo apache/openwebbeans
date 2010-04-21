@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Injects the parameters of the {@link ManagedBean} constructor and returns
@@ -79,7 +80,7 @@ public class InjectableConstructor<T> extends AbstractInjectable
         {
             if(!con.isAccessible())
             {
-                con.setAccessible(true);
+                SecurityUtil.doPrivilegedSetAccessible(con, true);
             }
             
             instance = con.newInstance(list.toArray());

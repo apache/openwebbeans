@@ -21,6 +21,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
+import org.apache.webbeans.util.SecurityUtil;
 
 public class XMLInjectableField extends InjectableField
 {
@@ -46,7 +47,7 @@ public class XMLInjectableField extends InjectableField
         {
             if (!field.isAccessible())
             {
-                field.setAccessible(true);
+                SecurityUtil.doPrivilegedSetAccessible(field, true);
             }
 
             

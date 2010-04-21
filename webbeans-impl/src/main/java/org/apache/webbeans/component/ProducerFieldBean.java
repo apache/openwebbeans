@@ -22,6 +22,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -78,7 +79,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
             
             if (!producerField.isAccessible())
             {
-                producerField.setAccessible(true);
+                SecurityUtil.doPrivilegedSetAccessible(producerField, true);
             }
 
             if (Modifier.isStatic(producerField.getModifiers()))

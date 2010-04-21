@@ -46,6 +46,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Defines decorators. It wraps the bean instance related
@@ -310,7 +311,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     {
         if (!delegateField.isAccessible())
         {
-            delegateField.setAccessible(true);
+            SecurityUtil.doPrivilegedSetAccessible(delegateField, true);
         }
 
         try

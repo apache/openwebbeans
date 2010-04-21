@@ -23,6 +23,7 @@ import javassist.util.proxy.MethodHandler;
 
 import org.apache.webbeans.exception.inject.ExecutionException;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Defines the {@link Annotation} implementation. It is used for creating
@@ -50,7 +51,7 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
     public WebBeansAnnotation(Class<? extends Annotation> annotationType)
     {
         this.annotationType = annotationType;
-        this.members = annotationType.getDeclaredMethods();
+        this.members = SecurityUtil.doPrivilegedGetDeclaredMethods(annotationType);
 
         /* Set default method values */
         setDefaultValues();

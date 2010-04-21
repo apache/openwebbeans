@@ -48,6 +48,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -177,7 +178,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         {
             if (!this.observerMethod.isAccessible())
             {
-                this.observerMethod.setAccessible(true);
+                SecurityUtil.doPrivilegedSetAccessible(observerMethod, true);
             }
             
             obargs = new ObserverParams[methodArgsMap.size()];

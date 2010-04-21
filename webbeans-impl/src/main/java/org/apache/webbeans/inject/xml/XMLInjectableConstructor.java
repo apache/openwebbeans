@@ -25,6 +25,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Defines the injectable constructor.
@@ -69,7 +70,7 @@ public class XMLInjectableConstructor<T> extends InjectableConstructor<T>
         {
             if(!con.isAccessible())
             {
-                con.setAccessible(true);
+                SecurityUtil.doPrivilegedSetAccessible(con, true);
             }
             
             instance = con.newInstance(list.toArray());

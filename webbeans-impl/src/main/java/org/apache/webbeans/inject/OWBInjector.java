@@ -34,6 +34,7 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Injects dependencies of the given Java EE component
@@ -115,7 +116,7 @@ public final class OWBInjector implements Serializable
     public static boolean checkInjectionPointForInterceptorPassivation(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
         for(Field field : fields)
         {
             if(field.getAnnotation(Inject.class) != null)

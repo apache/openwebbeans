@@ -22,6 +22,7 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.util.SecurityUtil;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -64,7 +65,7 @@ public class DelegateHandler implements MethodHandler
                 {
                     if (!decMethod.isAccessible())
                     {
-                        decMethod.setAccessible(true);
+                        SecurityUtil.doPrivilegedSetAccessible(decMethod, true);
                     }
 
                     Object returnValue = decMethod.invoke(decorator, arguments);
@@ -99,7 +100,7 @@ public class DelegateHandler implements MethodHandler
 
         if (!method.isAccessible())
         {
-            method.setAccessible(true);
+            SecurityUtil.doPrivilegedSetAccessible(method, true);
         }
 
         Object result = null;

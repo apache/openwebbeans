@@ -34,6 +34,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Decorator related utility class.
@@ -60,7 +61,7 @@ public final class DecoratorUtil
     {       
         Asserts.assertNotNull(decoratorClazz, "Decorator class is null");
         
-        Method[] methods = decoratorClazz.getDeclaredMethods();
+        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(decoratorClazz);
         for(Method method : methods)
         {
             if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
@@ -104,7 +105,7 @@ public final class DecoratorUtil
                 throw new WebBeansConfigurationException("Bean : " + bean.getReturnType().getName() + " can not be declared final, because it has one or more decorators");
             }
 
-            Method[] methods = clazz.getDeclaredMethods();
+            Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
             for (Method method : methods)
             {
                 int modifiers = method.getModifiers();

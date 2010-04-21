@@ -23,6 +23,7 @@ import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.inject.InjectableMethods;
+import org.apache.webbeans.util.SecurityUtil;
 
 public class XMLInjectableMethods<T> extends InjectableMethods<T>
 {
@@ -58,7 +59,7 @@ public class XMLInjectableMethods<T> extends InjectableMethods<T>
         {
             if (!method.isAccessible())
             {
-                method.setAccessible(true);
+                SecurityUtil.doPrivilegedSetAccessible(method, true);
             }
 
             return (T) method.invoke(instance, list.toArray());

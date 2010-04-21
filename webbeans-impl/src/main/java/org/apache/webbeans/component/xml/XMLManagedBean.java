@@ -33,6 +33,7 @@ import org.apache.webbeans.inject.xml.XMLInjectableMethods;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.SecurityUtil;
 
 public class XMLManagedBean<T> extends ManagedBean<T>
 {
@@ -121,7 +122,7 @@ public class XMLManagedBean<T> extends ManagedBean<T>
             Field field = itField.next();
             if (!field.isAccessible())
             {
-                field.setAccessible(true);
+                SecurityUtil.doPrivilegedSetAccessible(field, true);                
             }
 
             try
