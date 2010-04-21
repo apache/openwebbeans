@@ -30,6 +30,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.SecurityUtil;
 
 public class OpenEjbResourceInjectionService implements ResourceInjectionService
 {
@@ -58,7 +59,7 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
     @Override
     public void injectJavaEEResources(Object managedBeanInstance) throws Exception
     {
-        Field[] fields = managedBeanInstance.getClass().getDeclaredFields();
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(managedBeanInstance.getClass());
         for(Field field : fields)
         {
             if(!field.isAnnotationPresent(Produces.class))
@@ -73,7 +74,7 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
                         boolean acess = field.isAccessible();
                         try
                         {
-                            field.setAccessible(true);
+                        	SecurityUtil.doPrivilegedSetAccessible(field, true);
                             field.set(managedBeanInstance, getResourceReference(resourceRef));
                             
                         }catch(Exception e)
@@ -83,7 +84,7 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
                             
                         }finally
                         {
-                            field.setAccessible(acess);
+                            SecurityUtil.doPrivilegedSetAccessible(field, acess);
                         }                                            
                     }
                 }                

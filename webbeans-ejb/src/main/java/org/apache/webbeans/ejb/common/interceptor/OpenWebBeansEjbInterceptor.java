@@ -61,6 +61,7 @@ import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -450,7 +451,7 @@ public class OpenWebBeansEjbInterceptor
                         WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
                         InterceptorDataImpl data = new InterceptorDataImpl(true,lastInterceptor);
                         data.setDefinedInInterceptorClass(true);
-                        data.setAroundInvoke(lastInterceptor.getClass().getDeclaredMethods()[0]);
+                        data.setAroundInvoke(SecurityUtil.doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
                         //Add to last
                         filteredInterceptorStack.add(data);
                     }
