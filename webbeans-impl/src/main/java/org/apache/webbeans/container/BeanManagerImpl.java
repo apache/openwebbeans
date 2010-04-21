@@ -114,6 +114,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     /**Activity interceptors*/
     private Set<Interceptor<?>> webBeansInterceptors = new CopyOnWriteArraySet<Interceptor<?>>();
+    
+    /**Normal scoped cache proxies*/
+    private Map<Contextual<?>, Object> cacheProxies = new ConcurrentHashMap<Contextual<?>, Object>();
 
     /**Activity decorators*/
     private Set<Decorator<?>> webBeansDecorators = new CopyOnWriteArraySet<Decorator<?>>();
@@ -795,6 +798,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 return instance;
             }            
+            
+            if(this.cacheProxies.containsKey(bean))
+            {
+                return this.cacheProxies.get(bean);
+            }
+            
             //Create Managed Bean Proxy
             instance = JavassistProxyFactory.createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
             
