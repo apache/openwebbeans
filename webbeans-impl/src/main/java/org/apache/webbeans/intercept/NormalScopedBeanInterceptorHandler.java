@@ -112,7 +112,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
                 creationalContext = new WeakReference<CreationalContext<?>>(cc);
             }
         }
-        if (creationalContext == null)
+        if ((creationalContext == null) || creationalContext.get() == null)
         {
             // if there was no CreationalContext set from external, we create a new one
             creationalContext = new WeakReference<CreationalContext<?>>(CreationalContextFactory.getInstance().getCreationalContext(bean));
