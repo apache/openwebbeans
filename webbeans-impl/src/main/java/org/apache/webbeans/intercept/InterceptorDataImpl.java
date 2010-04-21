@@ -305,10 +305,6 @@ public class InterceptorDataImpl implements InterceptorData
                 return this.decoratorInterceptor; 
             }
             
-            if(ownerCreationalContext == null)
-            {
-                System.out.println("Null");
-            }
             interceptor = ownerCreationalContext.getDependentInterceptor(ownerInstance,this.webBeansInterceptor);
             //There is no define interceptor, define and add it into dependent
             if(interceptor == null)
