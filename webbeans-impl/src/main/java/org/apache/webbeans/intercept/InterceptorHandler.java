@@ -44,6 +44,7 @@ import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -229,7 +230,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                                 WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
                                 InterceptorDataImpl data = new InterceptorDataImpl(true,lastInterceptor);
                                 data.setDefinedInInterceptorClass(true);
-                                data.setAroundInvoke(lastInterceptor.getClass().getDeclaredMethods()[0]);
+                                data.setAroundInvoke(SecurityUtil.doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
                                 //Add to last
                                 filteredInterceptorStack.add(data);
                             }
@@ -258,14 +259,14 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             //If not interceptor or decorator calls
             //Do normal calling
             boolean access = method.isAccessible();
-            method.setAccessible(true);
+            SecurityUtil.doPrivilegedSetAccessible(method, true);
             try
             {
                 result = method.invoke(instance, arguments);
                 
             }finally
             {
-                method.setAccessible(access);
+                SecurityUtil.doPrivilegedSetAccessible(method, access);
             }
             
         }
