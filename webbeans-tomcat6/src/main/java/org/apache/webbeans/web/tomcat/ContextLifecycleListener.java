@@ -34,8 +34,11 @@ import org.apache.naming.ContextAccessController;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -360,8 +363,8 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
     {
         try
         {
-            Field field = ContainerBase.class.getDeclaredField("children");
-            field.setAccessible(true);
+            Field field = (Field)AccessController.doPrivileged(new PrivilegedActionForClass(ContainerBase.class, "children"));
+            AccessController.doPrivileged(new PrivilegedActionForAccessibleObject(field, true));
             Map<Object,Object> children = (Map<Object,Object>) field.get(containerBase);
             if (children instanceof ContextLifecycleListener.MoniterableHashMap)
             {
@@ -409,4 +412,52 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             return value;
         }
     }
+    
+	protected static class PrivilegedActionForAccessibleObject implements PrivilegedAction<Object> 
+	{
+		
+		AccessibleObject object;
+		
+		boolean flag;
+		
+		protected PrivilegedActionForAccessibleObject(AccessibleObject object, boolean flag) 
+		{
+			this.object = object;
+			this.flag = flag;
+		}
+		
+		public Object run() 
+		{
+			object.setAccessible(flag);
+			return null;
+		}
+	}
+	
+	protected static class PrivilegedActionForClass implements PrivilegedAction<Object> 
+	{
+		Class<?> clazz;
+		
+		Object parameters;
+		
+		protected PrivilegedActionForClass(Class<?> clazz, Object parameters) 
+		{
+			this.clazz = clazz;
+			this.parameters = parameters;
+		}
+		
+		public Object run()
+		{
+			try 
+			{
+				return clazz.getDeclaredField((String)parameters);
+			} 
+			catch (Exception exception) 
+			{
+				return exception;
+			}
+		}			
+		
+	}
+
+    
 }

@@ -86,7 +86,7 @@ public final class JavassistProxyFactory
         }
         else
         {
-            clazz = factory.createClass();
+            clazz = SecurityUtil.doPrivilegedCreateClass(factory);
             ejbProxyClasses.put(bean, clazz);
         }
         
