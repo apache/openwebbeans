@@ -28,12 +28,16 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.SessionBeanType;
 
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.AbstractContext;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -61,8 +65,16 @@ public class EjbBeanProxyHandler implements MethodHandler
     public EjbBeanProxyHandler(BaseEjbBean<?> ejbBean, CreationalContext<?> creationalContext)
     {
         this.ejbBean = ejbBean;
-        this.creationalContext = creationalContext;
-    }
+        
+        if(WebBeansUtil.isScopeTypeNormal(ejbBean.getScope()))
+        {
+            initiateBeanBag((OwbBean<Object>)ejbBean, (CreationalContext<Object>)creationalContext);
+        }
+        else
+        {
+            this.creationalContext = creationalContext;   
+        }
+    }    
     
     /**
      * {@inheritDoc}
@@ -70,24 +82,43 @@ public class EjbBeanProxyHandler implements MethodHandler
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
-        //Check ejb remove method
-        if(this.ejbBean.getEjbType().equals(SessionBeanType.STATEFUL))
-        {
-            if(checkEjbRemoveMethod(method))
-            {
-                this.ejbBean.setRemoveStatefulInstance(true);
-            }
-        }
-        
         Object result = null;
         
+        //Calling method name on Proxy
+        String methodName = method.getName();
+        
+        if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
+        {
+            logger.warn("Calling method on proxy is restricted except Object.toString(), but current method is Object." + methodName);
+            
+            boolean access = method.isAccessible();
+            SecurityUtil.doPrivilegedSetAccessible(method, true);
+            try
+            {
+                return proceed.invoke(instance, arguments);
+                
+            }finally
+            {
+                SecurityUtil.doPrivilegedSetAccessible(method, access);
+            }            
+        }
+                
         try
         {
-            //Set Ejb bean on thread local
-            OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean, this.creationalContext);
-
             Object webbeansInstance = null;
             
+            //Check ejb remove method
+            if(this.ejbBean.getEjbType().equals(SessionBeanType.STATEFUL))
+            {
+                if(checkEjbRemoveMethod(method))
+                {
+                    this.ejbBean.setRemoveStatefulInstance(true);
+                }
+            }
+            
+            //Set Ejb bean on thread local
+            OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean, getContextualCreationalContext());
+
             //Context of the bean
             Context webbeansContext = BeanManagerImpl.getManager().getContext(this.ejbBean.getScope());
             
@@ -95,28 +126,34 @@ public class EjbBeanProxyHandler implements MethodHandler
             webbeansInstance=webbeansContext.get(this.ejbBean);
             if (webbeansInstance != null)
             {
-                return method.invoke(webbeansInstance, arguments);
-            }
-            
-            if (webbeansContext instanceof AbstractContext)
-            {
-                CreationalContext<?> cc = ((AbstractContext)webbeansContext).getCreationalContext(this.ejbBean);
-                if (cc != null)
+                boolean access = method.isAccessible();
+                SecurityUtil.doPrivilegedSetAccessible(method, true);
+                try
                 {
-                    creationalContext = cc;
-                }
+                    return method.invoke(webbeansInstance, arguments);
+                    
+                }finally
+                {
+                    SecurityUtil.doPrivilegedSetAccessible(method, access);
+                }            
+                
             }
-            if (creationalContext == null)
+            
+            // Getting actual EJB Bean proxy instance
+            webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, getContextualCreationalContext());
+            
+            //Call actual method on proxy
+            //Actually it is called from OWB Proxy --> EJB Proxy --> Actual Bean Instance
+            boolean access = method.isAccessible();
+            SecurityUtil.doPrivilegedSetAccessible(method, true);
+            try
             {
-                // if there was no CreationalContext set from external, we create a new one
-                creationalContext = CreationalContextFactory.getInstance().getCreationalContext(this.ejbBean);
-            }
-            
-            // finally, we create a new contextual instance
-            webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, (CreationalContext<Object>) creationalContext);
-            
-            //Call actual method
-            result = method.invoke(webbeansInstance, arguments);            
+                result = method.invoke(webbeansInstance, arguments);
+                
+            }finally
+            {
+                SecurityUtil.doPrivilegedSetAccessible(method, access);
+            }            
             
         }finally
         {
@@ -148,6 +185,48 @@ public class EjbBeanProxyHandler implements MethodHandler
         
         return false;
     }
+       
+    protected CreationalContext<Object> getContextualCreationalContext()
+    {
+        CreationalContext<Object> creationalContext = null;
+        
+        if(this.creationalContext != null)
+        {
+            return (CreationalContext<Object>)this.creationalContext;
+        }
+        
+        OwbBean<Object> contextual = (OwbBean<Object>)this.ejbBean;
+        //Context of the bean
+        Context webbeansContext = BeanManagerImpl.getManager().getContext(this.ejbBean.getScope());
+        if (webbeansContext instanceof AbstractContext)
+        {
+            AbstractContext owbContext = (AbstractContext)webbeansContext;
+            creationalContext = owbContext.getCreationalContext(contextual);
+
+            //No creational context means that no BeanInstanceBag
+            //Actually this can be occurs like scenarions
+            //@SessionScoped bean injected into @ApplicationScopedBean
+            //And session is destroyed and restarted but proxy still
+            //contained in @ApplicationScopedBean
+            if(creationalContext == null)
+            {
+                creationalContext = CreationalContextFactory.getInstance().getCreationalContext(contextual);
+                owbContext.initContextualBag((OwbBean<Object>)this.ejbBean, creationalContext);
+            }            
+        }
+                
+        return creationalContext;
+    }
+    
+    private void initiateBeanBag(OwbBean<Object> bean, CreationalContext<Object> creationalContext)
+    {
+        Context webbeansContext =  BeanManagerImpl.getManager().getContext(bean.getScope());
+        if (webbeansContext instanceof AbstractContext)
+        {
+            AbstractContext owbContext = (AbstractContext)webbeansContext;
+            owbContext.initContextualBag(bean, creationalContext);
+        }
+    }    
     
     /**
      * Write to stream.
