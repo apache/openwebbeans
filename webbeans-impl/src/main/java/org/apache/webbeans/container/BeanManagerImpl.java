@@ -830,6 +830,15 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Create session bean proxy
         if(bean instanceof EnterpriseBeanMarker)
         {
+            if(WebBeansUtil.isScopeTypeNormal(bean.getScope()))
+            {
+                //Maybe it is cached
+                if(this.cacheProxies.containsKey(bean))
+                {
+                    return this.cacheProxies.get(bean);
+                }
+            }
+            
             OpenWebBeansEjbPlugin ejbPlugin = PluginLoader.getInstance().getEjbPlugin();
             if(ejbPlugin == null)
             {

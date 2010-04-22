@@ -25,16 +25,20 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 
+import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Injects dependencies of the given Java EE component
@@ -87,16 +91,43 @@ public final class OWBInjector implements Serializable
                 
                 for(InjectionPoint injectionPoint : injectionPoints)
                 {
-                    Object object = beanManager.getInjectableReference(injectionPoint, ownerCreationalContext);                    
-                    if(injectionPoint.getMember() instanceof Method)
+                    boolean injectionPointBeanSet = false;
+                    try
                     {
-                        Method method = (Method)injectionPoint.getMember();
-                        ClassUtil.callInstanceMethod(method, javaEeComponentInstance, new Object[]{object});                        
-                    }
-                    else if(injectionPoint.getMember() instanceof Field)
+                        if(injectionPoint.getMember() instanceof Field)
+                        {
+                            //Injected contextual beam
+                            Bean<?> injectedBean = (Bean<?>)InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);                
+                            
+                            if(WebBeansUtil.isDependent(injectedBean))
+                            {
+                                if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(injectionPoint.getType())))
+                                {
+                                    injectionPointBeanSet = true;
+                                    InjectionPointBean.local.set(injectionPoint);   
+                                }
+                            }
+                        }
+                        
+                        Object object = beanManager.getInjectableReference(injectionPoint, ownerCreationalContext);                    
+                        
+                        if(injectionPoint.getMember() instanceof Method)
+                        {
+                            Method method = (Method)injectionPoint.getMember();
+                            ClassUtil.callInstanceMethod(method, javaEeComponentInstance, new Object[]{object});
+                            
+                        }
+                        else if(injectionPoint.getMember() instanceof Field)
+                        {
+                            Field field = (Field)injectionPoint.getMember();
+                            ClassUtil.setField(javaEeComponentInstance, field, object);
+                        }                        
+                    }finally
                     {
-                        Field field = (Field)injectionPoint.getMember();
-                        ClassUtil.setField(javaEeComponentInstance, field, object);
+                        if(injectionPointBeanSet)
+                        {
+                            InjectionPointBean.local.remove();   
+                        }  
                     }
                 }
                 

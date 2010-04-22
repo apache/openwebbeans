@@ -207,6 +207,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         try
         {  
+            logger.debug("Destroying instance : " + this.toString());
+            
             InjectionTargetWrapper<T> wrapper = getManager().getInjectionTargetWrapper(this);
             if(wrapper != null)
             {
