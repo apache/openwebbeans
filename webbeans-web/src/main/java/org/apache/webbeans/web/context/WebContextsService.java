@@ -125,7 +125,15 @@ public class WebContextsService extends AbstractContextsService
         sessionContext.set(null);
         conversationContext.set(null);
         applicationContext.set(null);
-        singletonContext.set(null);        
+        singletonContext.set(null);
+        
+        requestContext.remove();
+        dependentContext.remove();
+        sessionContext.remove();
+        conversationContext.remove();
+        applicationContext.remove();
+        singletonContext.remove();        
+        
     }    
     
     
