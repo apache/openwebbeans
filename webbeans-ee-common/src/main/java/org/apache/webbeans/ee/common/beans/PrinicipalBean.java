@@ -26,8 +26,8 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.SecurityService;
-import org.apache.webbeans.spi.ServiceLoader;
 
 public class PrinicipalBean extends AbstractOwbBean<Principal>
 {

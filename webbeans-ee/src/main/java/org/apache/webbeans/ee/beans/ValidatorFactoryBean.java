@@ -25,7 +25,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.spi.ServiceLoader;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.ValidatorService;
 
 public class ValidatorFactoryBean extends AbstractOwbBean<ValidatorFactory>

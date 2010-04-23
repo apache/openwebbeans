@@ -16,7 +16,7 @@
  */
 package org.apache.webbeans.ejb.scanner;
 
-import org.apache.webbeans.spi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
 
 public class EJBMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
 {

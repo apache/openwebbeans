@@ -25,8 +25,8 @@ import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.spi.TransactionService;
 
 @SuppressWarnings("unchecked")
