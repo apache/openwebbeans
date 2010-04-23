@@ -234,6 +234,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         }finally
         {
             CreationalContextImpl.currentRemoveObject.set(null);
+            CreationalContextImpl.currentRemoveObject.remove();
         }
     }
 

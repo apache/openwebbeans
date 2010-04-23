@@ -84,6 +84,7 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
             finally
             {
                 local.set(null);
+                local.remove();
             }
             
         }

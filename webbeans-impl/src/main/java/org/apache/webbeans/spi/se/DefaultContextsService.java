@@ -217,6 +217,14 @@ public class DefaultContextsService extends AbstractContextsService
         conversationContext.set(null);
         dependentContext.set(null);
         singletonContext.set(null);
+        
+        requestContext.remove();
+        sessionContext.remove();
+        applicationContext.remove();
+        conversationContext.remove();
+        dependentContext.remove();
+        singletonContext.remove();
+        
     }
     
     

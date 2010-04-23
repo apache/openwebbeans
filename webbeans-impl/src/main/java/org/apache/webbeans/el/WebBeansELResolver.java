@@ -100,6 +100,7 @@ public class WebBeansELResolver extends ELResolver
                 {
                     store.destroy();
                     LOCAL_CONTEXT.set(null);
+                    LOCAL_CONTEXT.remove();
                 }
                 else
                 {

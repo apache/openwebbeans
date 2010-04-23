@@ -51,6 +51,7 @@ public class InstanceBean<T> extends AbstractOwbBean<Provider<T>>
         finally
         {
             local.set(null);
+            local.remove();
         }
     }
 
