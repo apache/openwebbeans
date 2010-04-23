@@ -48,6 +48,7 @@ import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.deployment.StereoTypeManager;
@@ -69,7 +70,6 @@ import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationIm
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
-import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
@@ -113,7 +113,7 @@ public class BeansDeployer
      * Deploys all the defined web beans components in the container startup.
      * <p>
      * It deploys from the web-beans.xml files and from the class files. It uses
-     * the {@link org.apache.webbeans.spi.ScannerService} to get classes.
+     * the {@link org.apache.webbeans.corespi.ScannerService} to get classes.
      * </p>
      * 
      * @throws WebBeansDeploymentException if any deployment exception occurs

@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.util.JSFUtil;
 
 public class WebBeansJSFFilter implements Filter
 {

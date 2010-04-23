@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.spi.scanner;
+package org.apache.webbeans.corespi.scanner;
 
 
 import java.net.URL;
@@ -104,7 +104,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     }
 
     /* (non-Javadoc)
-     * @see org.apache.webbeans.spi.ScannerService#getBeanClasses()
+     * @see org.apache.webbeans.corespi.ScannerService#getBeanClasses()
      */
     @Override
     public Set<Class<?>> getBeanClasses()
@@ -128,7 +128,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     }
 
     /* (non-Javadoc)
-     * @see org.apache.webbeans.spi.ScannerService#getBeanXmls()
+     * @see org.apache.webbeans.corespi.ScannerService#getBeanXmls()
      */
     @Override
     public Set<URL> getBeanXmls()

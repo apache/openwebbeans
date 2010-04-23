@@ -33,6 +33,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -47,7 +48,6 @@ import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ResourceInjectionService;
-import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 

@@ -21,9 +21,9 @@ import javax.inject.Singleton;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.type.ContextTypes;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContextsService;
-import org.apache.webbeans.spi.ServiceLoader;
 
 /**
  * JSR-299 based standard context

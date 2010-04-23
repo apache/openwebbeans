@@ -14,12 +14,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.webbeans.spi.conversation.jsf;
+package org.apache.webbeans.jsf;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.webbeans.spi.ConversationService;
-import org.apache.webbeans.util.JSFUtil;
 
 public class DefaultConversationService implements ConversationService
 {

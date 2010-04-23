@@ -35,7 +35,7 @@ import javax.faces.event.PreDestroyViewMapEvent;
 import javax.faces.event.SystemEvent;
 import javax.faces.event.SystemEventListener;
 
-import org.apache.webbeans.util.JSFUtil;
+import org.apache.webbeans.jsf.JSFUtil;
 
 /**
  * This class provides the contexts lifecycle for the 

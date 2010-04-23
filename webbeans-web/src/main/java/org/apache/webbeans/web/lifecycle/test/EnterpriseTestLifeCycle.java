@@ -22,8 +22,8 @@ package org.apache.webbeans.web.lifecycle.test;
 import java.util.Properties;
 
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.corespi.se.DefaultScannerService;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
-import org.apache.webbeans.spi.se.DefaultScannerService;
 
 /**
  * Ease the writing of the tests. Simulates container

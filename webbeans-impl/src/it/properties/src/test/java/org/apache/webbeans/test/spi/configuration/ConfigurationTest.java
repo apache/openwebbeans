@@ -28,12 +28,12 @@ public class ConfigurationTest
         // not overloaded
         String ts = cfg.getProperty("org.apache.webbeans.spi.TransactionService");
         Assert.assertNotNull(ts);
-        Assert.assertEquals("org.apache.webbeans.spi.ee.TransactionServiceJndiImpl", ts);
+        Assert.assertEquals("org.apache.webbeans.corespi.ee.TransactionServiceJndiImpl", ts);
         
         // overloaded version 1
         String wbf = cfg.getProperty("org.apache.webbeans.spi.JNDIService");
         Assert.assertNotNull(wbf);
-        Assert.assertEquals("org.apache.webbeans.spi.ee.JNDIServiceEnterpriseImpl", wbf);
+        Assert.assertEquals("org.apache.webbeans.corespi.ee.JNDIServiceEnterpriseImpl", wbf);
         
         // property which is only in the specialised openwebbeans.properties
         String testProperty = cfg.getProperty("test.property");

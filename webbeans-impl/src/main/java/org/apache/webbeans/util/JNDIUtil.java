@@ -24,7 +24,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
 
 /**
  * This is the internal helper class for low level access to JNDI
- * @see org.apache.webbeans.spi.JNDIService for transparent access over SPI 
+ * @see org.apache.webbeans.corespi.JNDIService for transparent access over SPI 
  */
 public final class JNDIUtil
 {

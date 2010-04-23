@@ -39,13 +39,13 @@ import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansCreationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.component.JmsBean;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.JNDIService;
-import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.util.Asserts;
 
 public final class JmsUtil

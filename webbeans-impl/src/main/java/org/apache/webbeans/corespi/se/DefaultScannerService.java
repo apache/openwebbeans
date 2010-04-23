@@ -11,13 +11,13 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.spi.se;
+package org.apache.webbeans.corespi.se;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 
-import org.apache.webbeans.spi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.scannotation.ClasspathUrlFinder;
 

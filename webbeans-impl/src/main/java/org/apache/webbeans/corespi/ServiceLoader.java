@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.spi;
+package org.apache.webbeans.corespi;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ import org.apache.webbeans.plugins.PluginLoader;
  * 
  * The Configuration for Services looks like
  * <pre>
- * org.apache.webbeans.spi.MyServiceInterface=my.package.webbeans.spi.MyServiceImplementation
+ * org.apache.webbeans.corespi.MyServiceInterface=my.package.webbeans.spi.MyServiceImplementation
  * </pre>
  * 
  * 

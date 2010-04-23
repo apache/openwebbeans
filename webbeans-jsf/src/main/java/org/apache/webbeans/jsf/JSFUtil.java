@@ -11,7 +11,7 @@
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.apache.webbeans.util;
+package org.apache.webbeans.jsf;
 
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
@@ -20,6 +20,8 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
+
+import org.apache.webbeans.util.Asserts;
 
 
 public final class JSFUtil

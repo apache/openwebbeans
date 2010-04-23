@@ -20,8 +20,8 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.spi.scanner.AbstractMetaDataDiscovery;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.scannotation.ClasspathUrlFinder;
 import org.scannotation.WarUrlFinder;

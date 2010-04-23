@@ -14,8 +14,8 @@
 package org.apache.webbeans.lifecycle;
 
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.ContainerLifecycle;
-import org.apache.webbeans.spi.ServiceLoader;
 
 public final class LifecycleFactory
 {

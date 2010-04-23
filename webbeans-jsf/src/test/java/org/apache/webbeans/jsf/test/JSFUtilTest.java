@@ -13,7 +13,7 @@
  */
 package org.apache.webbeans.jsf.test;
 
-import org.apache.webbeans.util.JSFUtil;
+import org.apache.webbeans.jsf.JSFUtil;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;

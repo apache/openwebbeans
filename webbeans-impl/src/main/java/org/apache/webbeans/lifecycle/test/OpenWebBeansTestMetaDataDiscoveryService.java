@@ -19,7 +19,7 @@ import java.util.Collection;
 
 import javassist.ClassPool;
 
-import org.apache.webbeans.spi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
 import org.apache.webbeans.util.Asserts;
 
 /**

@@ -22,7 +22,6 @@ import javax.faces.application.ViewHandlerWrapper;
 import javax.faces.context.FacesContext;
 
 import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.util.JSFUtil;
 
 public class ConversationAwareViewHandler extends ViewHandlerWrapper
 {

@@ -29,6 +29,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.events.ExtensionLoader;
@@ -38,7 +39,6 @@ import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
-import org.apache.webbeans.spi.ServiceLoader;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 public abstract class AbstractLifeCycle implements ContainerLifecycle

@@ -25,11 +25,11 @@ import javassist.util.proxy.ProxyFactory;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.api.ResourceReference;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.proxy.ResourceProxyHandler;
 import org.apache.webbeans.spi.ResourceInjectionService;
-import org.apache.webbeans.spi.ServiceLoader;
 
 public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
 {
