@@ -88,12 +88,6 @@ public class OpenWebBeansEjbInterceptor
 
     /**Non contextual Intercepted methods*/
     protected transient Map<Method, List<InterceptorData>> nonCtxInterceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
-
-    /**Bean decorator objects*/
-    protected transient List<Object> decorators = null;
-    
-    /**Delegate handler*/
-    protected transient DelegateHandler delegateHandler;
     
     /**Injector*/
     private transient OWBInjector injector;
@@ -125,8 +119,8 @@ public class OpenWebBeansEjbInterceptor
      */
     public static void unsetThreadLocal()
     {
-        threadLocal.remove();
-        threadLocalCreationalContext.remove();
+        threadLocal.set(null);
+        threadLocalCreationalContext.set(null);
     }
     
     /**
@@ -260,14 +254,11 @@ public class OpenWebBeansEjbInterceptor
         if(this.injector != null)
         {
             this.injector.destroy();
-            this.interceptedMethodMap.clear();
-            if(decorators != null)
-            {
-                decorators.clear();
-            }
-            this.resolvedBeans.clear();
-            this.nonCtxInterceptedMethodMap.clear();
         }
+        
+        this.interceptedMethodMap.clear();
+        this.resolvedBeans.clear();
+        this.nonCtxInterceptedMethodMap.clear();
     }
     
     /**
@@ -410,8 +401,8 @@ public class OpenWebBeansEjbInterceptor
         {
 
             List<Object> decorators = null;
-
-            if (injectionTarget.getDecoratorStack().size() > 0 && this.decorators == null)
+            DelegateHandler delegateHandler = null;
+            if (injectionTarget.getDecoratorStack().size() > 0)
             {
                 Class<?> proxyClass = JavassistProxyFactory.getInterceptorProxyClasses().get(injectionTarget);
                 if (proxyClass == null)
@@ -421,15 +412,14 @@ public class OpenWebBeansEjbInterceptor
                     JavassistProxyFactory.getInterceptorProxyClasses().put(injectionTarget, proxyClass);
                 }
                 Object delegate = proxyClass.newInstance();
-                this.delegateHandler = new DelegateHandler(threadLocal.get());
-                ((ProxyObject)delegate).setHandler(this.delegateHandler);
+                delegateHandler = new DelegateHandler(threadLocal.get());
+                ((ProxyObject)delegate).setHandler(delegateHandler);
 
                 // Gets component decorator stack
                 decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, (CreationalContextImpl<?>)threadLocalCreationalContext.get());                        
                 //Sets decorator stack of delegate
-                this.delegateHandler.setDecorators(decorators);
+                delegateHandler.setDecorators(decorators);
                 
-                this.decorators = decorators;
             }
 
             // Run around invoke chain
@@ -470,7 +460,7 @@ public class OpenWebBeansEjbInterceptor
             
             // If there are Decorators, allow the delegate handler to
             // manage the stack
-            if (this.decorators != null)
+            if (decorators != null)
             {
                 return delegateHandler.invoke(instance, method, null, arguments);
             }
