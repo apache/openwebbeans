@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.jsp.JspApplicationContext;
@@ -101,9 +102,15 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         {
             logger.debug("Application is configured as JSP. Adding EL Resolver.");
             
-            JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext((ServletContext)startupObject);
+            JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext((ServletContext)(startupObject));
             applicationCtx.addELResolver(new WebBeansELResolver());  
-        }        
+        }      
+        
+        
+        // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
+        ServletContext servletContext = (ServletContext)(startupObject); 
+        servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
+        
     }
     
     protected void beforeStartApplication(Object startupObject)
