@@ -61,6 +61,7 @@ public class InvocationContextImpl implements InvocationContext
     private CreationalContext<?> creationalContext;
     
     private OwbBean<?> owbBean;
+    private InvocationContext ejbInvocationContext;
     
     /**
      * Initializes the context.
@@ -96,6 +97,15 @@ public class InvocationContextImpl implements InvocationContext
     public void setCreationalContext(CreationalContext<?> ownerCreationalContext)
     {
         this.creationalContext = ownerCreationalContext;
+    }
+
+    /**
+     * Sets EJB invocation context
+     * @param c EJB containers invocation context
+     */
+    public void setEJBInvocationContext(InvocationContext c)
+    {
+        this.ejbInvocationContext = c;
     }
 
     
@@ -234,6 +244,13 @@ public class InvocationContextImpl implements InvocationContext
                 {
                     SecurityUtil.doPrivilegedSetAccessible(method, false);
                 }                
+            }
+            else 
+            { 
+                if (this.ejbInvocationContext != null)
+                {
+                    result = ejbInvocationContext.proceed();
+                }
             }
         }
 

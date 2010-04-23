@@ -125,13 +125,14 @@ public class OpenWebBeansEjbInterceptor
     
     /**
      * Called for every business methods.
-     * @param context invocation context
+     * @param ejbContext invocation context
      * @return instance
      * @throws Exception
      */
     @AroundInvoke
-    public Object callToOwbInterceptors(InvocationContext context) throws Exception
+    public Object callToOwbInterceptors(InvocationContext ejbContext) throws Exception
     {
+        Object rv = null;
         boolean requestCreated = false;
         boolean applicationCreated = false;
         boolean requestAlreadyActive = false;
@@ -161,12 +162,12 @@ public class OpenWebBeansEjbInterceptor
             if(threadLocal.get() != null)
             {
                 //Calls OWB interceptors and decorators
-                callInterceptorsAndDecorators(context.getMethod(), context.getTarget(), context.getParameters());    
+                rv = callInterceptorsAndDecorators(ejbContext.getMethod(), ejbContext.getTarget(), ejbContext.getParameters(), ejbContext);    
             }
             else
             {
                 //Call OWB interceptors
-                callInterceptorsForNonContextuals(context.getMethod(), context.getTarget(), context.getParameters());
+                rv = callInterceptorsForNonContextuals(ejbContext.getMethod(), ejbContext.getTarget(), ejbContext.getParameters(), ejbContext);
             }
             
         }finally
@@ -181,7 +182,7 @@ public class OpenWebBeansEjbInterceptor
             }
         }
         
-        return context.proceed();
+        return rv;
     }
     
     /**
@@ -341,7 +342,7 @@ public class OpenWebBeansEjbInterceptor
      * @return result of operation
      * @throws Exception for any exception
      */    
-    private Object callInterceptorsForNonContextuals(Method method, Object instance, Object[] arguments) throws Exception
+    private Object callInterceptorsForNonContextuals(Method method, Object instance, Object[] arguments, InvocationContext ejbContext) throws Exception
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
         
@@ -372,7 +373,7 @@ public class OpenWebBeansEjbInterceptor
         else
         {
             CreationalContext<?> cc = manager.createCreationalContext(null);
-            return runInterceptorStack(ejbBean.getInterceptorStack(), method, instance, arguments, ejbBean, cc);
+            return runInterceptorStack(ejbBean.getInterceptorStack(), method, instance, arguments, ejbBean, cc, ejbContext);
         }
         
         return null;
@@ -386,7 +387,7 @@ public class OpenWebBeansEjbInterceptor
      * @return result of operation
      * @throws Exception for any exception
      */
-    private Object callInterceptorsAndDecorators(Method method, Object instance, Object[] arguments) throws Exception
+    private Object callInterceptorsAndDecorators(Method method, Object instance, Object[] arguments, InvocationContext ejbContext) throws Exception
     {
         InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
         
@@ -453,7 +454,7 @@ public class OpenWebBeansEjbInterceptor
                 if (WebBeansUtil.isContainsInterceptorMethod(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE))
                 {
                      return InterceptorUtil.callAroundInvokes(threadLocal.get(), instance, (CreationalContextImpl<?>)threadLocalCreationalContext.get(), method, 
-                            arguments, InterceptorUtil.getInterceptorMethods(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE));
+                            arguments, InterceptorUtil.getInterceptorMethods(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE), ejbContext);
                 }
                 
             }
@@ -470,7 +471,7 @@ public class OpenWebBeansEjbInterceptor
     }
     
     private Object runInterceptorStack(List<InterceptorData> interceptorStack, Method method, Object instance, 
-                                        Object[] arguments, BaseEjbBean<?> bean, CreationalContext<?> creationalContext) throws Exception
+                                        Object[] arguments, BaseEjbBean<?> bean, CreationalContext<?> creationalContext, InvocationContext ejbContext) throws Exception
     {
         if (interceptorStack.size() > 0)
         {
@@ -488,7 +489,8 @@ public class OpenWebBeansEjbInterceptor
             if (WebBeansUtil.isContainsInterceptorMethod(this.nonCtxInterceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE))
             {
                  return InterceptorUtil.callAroundInvokes(bean, instance, (CreationalContextImpl<?>)creationalContext, method, 
-                        arguments, InterceptorUtil.getInterceptorMethods(this.nonCtxInterceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE));
+                        arguments, InterceptorUtil.getInterceptorMethods(this.nonCtxInterceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE),
+                        ejbContext);
             }
             
         }

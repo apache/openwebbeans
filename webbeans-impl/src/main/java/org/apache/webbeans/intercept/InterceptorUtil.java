@@ -523,14 +523,18 @@ public final class InterceptorUtil
     }
     
     public static Object callAroundInvokes(InjectionTargetBean<?> bean,Object instance, CreationalContextImpl<?> creationalContext,
-            Method proceed, Object[] arguments, List<InterceptorData> stack) throws Exception
+            Method proceed, Object[] arguments, List<InterceptorData> stack, InvocationContext ejbInvocationContext) throws Exception
     {
         InvocationContextImpl impl = new InvocationContextImpl(bean, instance,
                                                                proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
+        if (ejbInvocationContext != null) 
+        {
+            impl.setEJBInvocationContext(ejbInvocationContext);
+        }
+        
         impl.setCreationalContext(creationalContext);
-
+        
         return impl.proceed();
-
     }
 
 }
