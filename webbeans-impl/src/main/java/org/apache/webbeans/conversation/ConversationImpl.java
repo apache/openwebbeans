@@ -41,7 +41,7 @@ public class ConversationImpl implements Conversation
     /**Transient or not. Transient conversations are destroyed at the end of JSF request*/
     private boolean isTransient = true;
 
-    /**Default timeout is 3mins*/
+    /**Default timeout is 30mins*/
     private long timeout = 30 * 60 * 1000 ;
 
     /**Id of the session that this conversation is created*/
@@ -61,6 +61,7 @@ public class ConversationImpl implements Conversation
      */
     public ConversationImpl()
     {
+        
     }
 
     /**
@@ -72,7 +73,6 @@ public class ConversationImpl implements Conversation
     {
         Asserts.assertNotNull(sessionId);
         this.sessionId = sessionId;
-
     }
     
     /**

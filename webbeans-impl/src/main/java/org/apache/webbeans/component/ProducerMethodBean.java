@@ -263,7 +263,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             }
             else
             {
-                AbstractInjectable.dependentInstanceOfProducerMethods.remove();
+                AbstractInjectable.dependentInstanceOfProducerMethods.set(null);
             }
         }
 

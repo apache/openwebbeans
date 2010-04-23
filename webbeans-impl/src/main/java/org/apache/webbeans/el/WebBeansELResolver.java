@@ -99,7 +99,7 @@ public class WebBeansELResolver extends ELResolver
                 if(!oldContext.equals(context))
                 {
                     store.destroy();
-                    LOCAL_CONTEXT.remove();
+                    LOCAL_CONTEXT.set(null);
                 }
                 else
                 {

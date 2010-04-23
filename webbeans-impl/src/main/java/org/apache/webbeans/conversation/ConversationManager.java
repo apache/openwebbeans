@@ -13,8 +13,8 @@
  */
 package org.apache.webbeans.conversation;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -76,19 +76,16 @@ public class ConversationManager
      */
     public boolean isConversationExistWithGivenId(String conversationId)
     {
-        synchronized (conversations)
-        {
-            ConversationImpl conv = null;
-            Set<Conversation> set = conversations.keySet();
-            Iterator<Conversation> it = set.iterator();
+        ConversationImpl conv = null;
+        Set<Conversation> set = conversations.keySet();
+        Iterator<Conversation> it = set.iterator();
 
-            while (it.hasNext())
+        while (it.hasNext())
+        {
+            conv = (ConversationImpl) it.next();
+            if (conv.getId().equals(conversationId))
             {
-                conv = (ConversationImpl) it.next();
-                if (conv.getId().equals(conversationId))
-                {
-                    return true;
-                }
+                return true;
             }
         }
         
@@ -210,6 +207,7 @@ public class ConversationManager
                     {
                         ctx.destroy();
                     }
+
                     it.remove();
                 }
             }
@@ -221,19 +219,16 @@ public class ConversationManager
      */
     public void destroyAllConversations()
     {
-        synchronized(conversations)
+        Collection<ConversationContext> collection = this.conversations.values();
+        if(collection != null && collection.size() > 0)
         {
-            if (conversations != null)
+            for (ConversationContext context : collection) 
             {
-                Map<Conversation, ConversationContext> oldConversations = conversations;
-                conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
-                
-                for (ConversationContext ctx : oldConversations.values()) 
-                {
-                    ctx.destroy();
-                }
-                conversations.clear();
-            }
+                context.destroy();
+            }            
         }
+        
+        //Clear conversations
+        conversations.clear();
     }
 }

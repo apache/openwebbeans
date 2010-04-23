@@ -88,7 +88,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
             }
             else
             {
-                AbstractInjectable.instanceUnderInjection.remove();
+                AbstractInjectable.instanceUnderInjection.set(null);
             }
         }
         

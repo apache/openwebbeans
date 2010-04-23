@@ -211,12 +211,12 @@ public class DefaultContextsService extends AbstractContextsService
     @Override
     public void destroy(Object destroyObject)
     {
-        requestContext.remove();
-        sessionContext.remove();
-        applicationContext.remove();
-        conversationContext.remove();
-        dependentContext.remove();
-        singletonContext.remove();
+        requestContext.set(null);
+        sessionContext.set(null);
+        applicationContext.set(null);
+        conversationContext.set(null);
+        dependentContext.set(null);
+        singletonContext.set(null);
     }
     
     

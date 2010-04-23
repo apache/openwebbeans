@@ -233,7 +233,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             e.printStackTrace();
         }finally
         {
-            CreationalContextImpl.currentRemoveObject.remove();
+            CreationalContextImpl.currentRemoveObject.set(null);
         }
     }
 
