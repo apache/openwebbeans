@@ -89,7 +89,10 @@ public class WebContextsService extends AbstractContextsService
         dependentContext = new ThreadLocal<DependentContext>();
         singletonContext = new ThreadLocal<SingletonContext>();
     }
-
+    
+    /**
+     * Creates a new instance.
+     */
     public WebContextsService()
     {
         supportsConversation =  !OpenWebBeansConfiguration.getInstance().isJspApplication();
@@ -101,7 +104,6 @@ public class WebContextsService extends AbstractContextsService
     @Override
     public void init(Object initializeObject)
     {        
-        initializeThreadLocals();
         startContext(ApplicationScoped.class, initializeObject);
         startContext(Singleton.class, initializeObject);
     }    
@@ -112,18 +114,18 @@ public class WebContextsService extends AbstractContextsService
     @Override
     public void destroy(Object destroyObject)
     {
+        currentApplicationContexts.clear();
+        currentSingletonContexts.clear();
+
         endContext(ApplicationScoped.class, destroyObject);
         endContext(Singleton.class, destroyObject);
         
-        requestContext.remove();
-        dependentContext.remove();
-        sessionContext.remove();
-        conversationContext.remove();
-        applicationContext.remove();
-        singletonContext.remove();
-
-        currentApplicationContexts.clear();
-        currentSingletonContexts.clear();
+        requestContext.set(null);
+        dependentContext.set(null);
+        sessionContext.set(null);
+        conversationContext.set(null);
+        applicationContext.set(null);
+        singletonContext.set(null);        
     }    
     
     
@@ -257,25 +259,11 @@ public class WebContextsService extends AbstractContextsService
     }
     
     /**
-     * Initialize thread locals.
-     */
-    private void initializeThreadLocals()
-    {
-        requestContext.remove();
-        sessionContext.remove();
-        applicationContext.remove();
-        conversationContext.remove();
-        dependentContext.remove();
-        singletonContext.remove();
-    }
-
-    /**
      * Initialize requext context with the given request object.
      * @param event http servlet request event
      */
     private void initRequestContext(ServletRequestEvent event)
     {
-        initializeThreadLocals();
         
         RequestContext rq = new RequestContext();
         rq.setActive(true);
@@ -316,7 +304,7 @@ public class WebContextsService extends AbstractContextsService
                 context.destroy();
             }
 
-            requestContext.remove();
+            requestContext.set(null);
             
         }
     }
@@ -357,7 +345,7 @@ public class WebContextsService extends AbstractContextsService
                 context.destroy();
             }
 
-            sessionContext.remove();
+            sessionContext.set(null);
 
         }
 
@@ -409,7 +397,7 @@ public class WebContextsService extends AbstractContextsService
                 context.destroy();
             }
 
-            applicationContext.remove();
+            applicationContext.set(null);
 
         }
         
@@ -465,7 +453,7 @@ public class WebContextsService extends AbstractContextsService
                 context.destroy();
             }
             
-            singletonContext.remove();            
+            singletonContext.set(null);          
 
         }
         
@@ -517,7 +505,7 @@ public class WebContextsService extends AbstractContextsService
                 context.destroy();
             }
 
-            conversationContext.remove();
+            conversationContext.set(null);
         }
     }
 

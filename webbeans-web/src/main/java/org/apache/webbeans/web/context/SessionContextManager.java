@@ -13,31 +13,52 @@
  */
 package org.apache.webbeans.web.context;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.util.Asserts;
 
+/**
+ * Session context manager.
+ * <p>
+ * Each session is identified by the session id.
+ * </p>
+ * @version $Rev$ $Date$
+ *
+ */
 public class SessionContextManager
 {
+    /** Session id to SessionContext map*/
     private Map<String, SessionContext> sessionContexts = null;
 
+    
+    /**
+     * Creates a new session context manager.
+     */
     public SessionContextManager()
     {
         sessionContexts = new ConcurrentHashMap<String, SessionContext>();        
     }
-
+    
+    /**
+     * Gets singleton instance.
+     * @return instance of session context manager
+     */
     public static SessionContextManager getInstance()
     {
         SessionContextManager sessionContextManager = (SessionContextManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_SESSION_CONTEXT_MANAGER);        
         
         return sessionContextManager;
     }
-
+    
+    /**
+     * Adds new session context for the given session id.
+     * @param sessionId session id
+     * @param context session context
+     */
     public void addNewSessionContext(String sessionId, SessionContext context)
     {
         Asserts.assertNotNull(sessionId, "sessionId parameter can not be null");
@@ -46,30 +67,47 @@ public class SessionContextManager
         sessionContexts.put(sessionId, context);
     }
 
+    /**
+     * Gets session context related with given session id.
+     * @param sessionId session id
+     * @return session context related with given session id
+     */
     public SessionContext getSessionContextWithSessionId(String sessionId)
     {
         Asserts.assertNotNull(sessionId, "sessionId parameter can not be null");
 
         return sessionContexts.get(sessionId);
     }
-
+    
+    /**
+     * Destroy session context with given id.
+     * @param sessionId session id
+     */
     public void destroySessionContextWithSessionId(String sessionId)
     {
-        Set<String> keySet = sessionContexts.keySet();
-        Iterator<String> it = keySet.iterator();
-
-        while (it.hasNext())
+        SessionContext sessionContext = this.sessionContexts.remove(sessionId);
+        if(sessionContext != null)
         {
-            String id = it.next();
-            if (id.equals(sessionId))
-            {
-                it.remove();
-            }
+            sessionContext.destroy();
         }
     }
-
+    
+    /**
+     * Destroys all sessions.
+     */
     public void destroyAllSessions()
     {
+        //Destroy all contexts
+        Collection<SessionContext> sessionContexts = this.sessionContexts.values();
+        if(sessionContexts != null && sessionContexts.size() > 0)
+        {
+            for(SessionContext sessionContext : sessionContexts)
+            {
+                sessionContext.destroy();
+            }
+        }
+        
+        //Clear map
         sessionContexts.clear();
     }
 }
