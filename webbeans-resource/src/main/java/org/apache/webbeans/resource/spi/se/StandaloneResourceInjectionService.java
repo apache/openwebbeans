@@ -28,10 +28,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.xml.ws.WebServiceRef;
 
-import org.apache.webbeans.api.ResourceReference;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ResourceInjectionService;
+import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.SecurityUtil;
 
