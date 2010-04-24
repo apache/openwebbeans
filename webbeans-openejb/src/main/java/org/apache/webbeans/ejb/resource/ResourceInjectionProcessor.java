@@ -31,7 +31,7 @@ import javax.xml.ws.WebServiceRef;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.persistence.JtaEntityManager;
 import org.apache.openejb.persistence.JtaEntityManagerRegistry;
-import org.apache.webbeans.api.ResourceReference;
+import org.apache.webbeans.spi.api.ResourceReference;
 
 
 class ResourceInjectionProcessor

@@ -26,8 +26,8 @@ import javax.persistence.PersistenceUnit;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.apache.webbeans.api.ResourceReference;
 import org.apache.webbeans.ejb.resource.ResourceFactory;
+import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.junit.Test;
 

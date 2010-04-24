@@ -44,10 +44,10 @@ import org.apache.webbeans.ejb.service.OpenEJBSecurityService;
 import org.apache.webbeans.ejb.service.OpenEJBTransactionService;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.AbstractOwbPlugin;
-import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.TransactionService;
+import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
+import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 
 /**
  * EJB related stuff.

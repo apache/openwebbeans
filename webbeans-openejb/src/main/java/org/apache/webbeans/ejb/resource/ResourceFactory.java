@@ -20,8 +20,8 @@ import javax.naming.NamingException;
 
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
-import org.apache.webbeans.api.ResourceReference;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.api.ResourceReference;
 
 public class ResourceFactory
 {
