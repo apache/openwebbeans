@@ -27,6 +27,7 @@
     </parent>
     <artifactId>openwebbeans-impl</artifactId>
     <name>Apache OpenWebBeans :: OpenWebBeans Core</name>
+    <packaging>bundle</packaging>
     <description>Implementation of the Web Beans API</description>
 
     <dependencies>
@@ -100,6 +101,43 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.0.0</version>
+        		<extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            org.apache.webbeans.annotation*;version=1.0,                            
+                            org.apache.webbeans.boot*;version=1.0,
+                            org.apache.webbeans.component*;version=1.0,
+                            org.apache.webbeans.config*;version=1.0,
+                            org.apache.webbeans.container*;version=1.0,
+                            org.apache.webbeans.context*;version=1.0,
+                            org.apache.webbeans.conversation*;version=1.0,
+                            org.apache.webbeans.corespi*;version=1.0,
+                            org.apache.webbeans.decorator*;version=1.0,
+                            org.apache.webbeans.deployment*;version=1.0,
+                            org.apache.webbeans.el*;version=1.0,
+                            org.apache.webbeans.event*;version=1.0,
+                            org.apache.webbeans.exception*;version=1.0,
+                            org.apache.webbeans.inject*;version=1.0,
+                            org.apache.webbeans.intercept*;version=1.0,
+                            org.apache.webbeans.jms*;version=1.0,
+                            org.apache.webbeans.lifecycle*;version=1.0,
+                            org.apache.webbeans.logger*;version=1.0,
+                            org.apache.webbeans.plugins*;version=1.0,
+                            org.apache.webbeans.portable*;version=1.0,
+                            org.apache.webbeans.proxy*;version=1.0,
+                            org.apache.webbeans.util*;version=1.0,
+                            org.apache.webbeans.xml*;version=1.0
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+            
         </plugins>
     </build>
 

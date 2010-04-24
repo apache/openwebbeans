@@ -23,7 +23,6 @@ import java.util.Properties;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansFinder;
@@ -39,6 +38,7 @@ import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
+import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 public abstract class AbstractLifeCycle implements ContainerLifecycle

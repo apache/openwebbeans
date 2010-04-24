@@ -16,8 +16,8 @@ package org.apache.webbeans.xml;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;

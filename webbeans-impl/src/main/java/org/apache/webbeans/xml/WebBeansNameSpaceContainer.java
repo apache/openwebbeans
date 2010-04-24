@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.webbeans.WebBeansConstants;
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.util.WebBeansConstants;
 
 /**
  * Defines the web beans name space.
