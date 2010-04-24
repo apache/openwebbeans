@@ -144,7 +144,6 @@ import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
@@ -162,6 +161,7 @@ import org.apache.webbeans.portable.events.generics.GProcessProducer;
 import org.apache.webbeans.portable.events.generics.GProcessProducerField;
 import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
+import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
 /**
  * Contains some utility methods used in the all project.

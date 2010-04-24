@@ -16,8 +16,8 @@ package org.apache.webbeans.config;
 import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 
 public final class EJBWebBeansConfigurator
 {

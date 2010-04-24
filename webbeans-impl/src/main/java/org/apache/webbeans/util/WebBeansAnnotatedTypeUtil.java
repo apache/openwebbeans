@@ -53,7 +53,6 @@ import javax.inject.Named;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.api.ResourceReference;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -76,6 +75,7 @@ import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.api.ResourceReference;
 
 public final class WebBeansAnnotatedTypeUtil
 {

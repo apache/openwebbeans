@@ -21,7 +21,7 @@ import org.apache.webbeans.jms.component.JmsComponentFactory;
 import org.apache.webbeans.jms.component.JmsBean;
 import org.apache.webbeans.jms.util.JmsProxyHandler;
 import org.apache.webbeans.jms.util.JmsUtil;
-import org.apache.webbeans.plugins.AbstractOwbPlugin;
+import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 
 /**
  * JMS Plugin for JMS related components.

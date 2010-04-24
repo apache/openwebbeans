@@ -16,7 +16,7 @@ package org.apache.webbeans.jsf.plugin;
 import javax.faces.component.UIComponent;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.plugins.AbstractOwbPlugin;
+import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.util.ClassUtil;
 
 public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin 

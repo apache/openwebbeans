@@ -59,8 +59,6 @@ import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.OpenWebBeansJavaEEPlugin;
-import org.apache.webbeans.plugins.OpenWebBeansWebPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
@@ -70,6 +68,8 @@ import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationIm
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
+import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
+import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;

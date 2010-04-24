@@ -24,6 +24,10 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
+import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
+import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
+import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 
 /**
  * <p>OpenWebBeans plugins are used to extend 'core' functionality of the injection

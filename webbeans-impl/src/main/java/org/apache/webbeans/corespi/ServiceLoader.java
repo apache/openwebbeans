@@ -18,8 +18,8 @@ import java.util.List;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
 /**
  * Loads any Service Provider Interface implementation declared in the 
