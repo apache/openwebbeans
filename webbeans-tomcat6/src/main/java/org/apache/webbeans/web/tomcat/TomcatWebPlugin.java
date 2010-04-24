@@ -29,9 +29,9 @@ import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionListener;
 
-import org.apache.webbeans.plugins.AbstractOwbPlugin;
-import org.apache.webbeans.plugins.OpenWebBeansWebPlugin;
 import org.apache.webbeans.spi.SecurityService;
+import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
+import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 
 public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWebPlugin
 {
