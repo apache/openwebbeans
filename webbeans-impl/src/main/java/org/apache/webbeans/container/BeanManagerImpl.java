@@ -1008,7 +1008,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             {
                 if (!bean.getScope().equals(Dependent.class))
                 {
-                    throw new WebBeansConfigurationException("Bean " + bean + "scope can not define other scope except @Dependent to inject InjectionPoint");
+                    throw new WebBeansConfigurationException("Bean " + bean.getBeanClass() + "scope can not define other scope except @Dependent to inject InjectionPoint");
                 }
             }
         }
