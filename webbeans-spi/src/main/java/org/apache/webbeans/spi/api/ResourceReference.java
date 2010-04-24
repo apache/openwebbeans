@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.api;
+package org.apache.webbeans.spi.api;
 
 import java.lang.annotation.Annotation;
 

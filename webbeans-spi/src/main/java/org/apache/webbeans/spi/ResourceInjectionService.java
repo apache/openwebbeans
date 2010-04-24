@@ -21,7 +21,7 @@ package org.apache.webbeans.spi;
 import java.lang.annotation.Annotation;
 
 
-import org.apache.webbeans.api.ResourceReference;
+import org.apache.webbeans.spi.api.ResourceReference;
 
 /**
  * This service is responsible for injecting 

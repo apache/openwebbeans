@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.plugins;
+package org.apache.webbeans.spi.plugins;
 
 /**
  * In fully Java EE environments, it will be implemented
