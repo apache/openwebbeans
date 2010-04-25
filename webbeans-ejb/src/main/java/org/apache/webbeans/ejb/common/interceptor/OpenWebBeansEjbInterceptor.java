@@ -103,6 +103,12 @@ public class OpenWebBeansEjbInterceptor
         
     }
     
+    private static class CallReturnValue
+    {
+        public boolean INTERCEPTOR_OR_DECORATOR_CALL = false;
+        public Object RETURN_VALUE = null;
+    }
+    
     /**
      * Sets thread local.
      * @param ejbBean bean
@@ -121,6 +127,9 @@ public class OpenWebBeansEjbInterceptor
     {
         threadLocal.set(null);
         threadLocalCreationalContext.set(null);
+        
+        threadLocal.remove();
+        threadLocalCreationalContext.remove();
     }
     
     /**
@@ -132,7 +141,7 @@ public class OpenWebBeansEjbInterceptor
     @AroundInvoke
     public Object callToOwbInterceptors(InvocationContext ejbContext) throws Exception
     {
-        Object rv = null;
+        CallReturnValue rv = null;
         boolean requestCreated = false;
         boolean applicationCreated = false;
         boolean requestAlreadyActive = false;
@@ -182,7 +191,14 @@ public class OpenWebBeansEjbInterceptor
             }
         }
         
-        return rv;
+        //If bean has no interceptor or decorator
+        //Call ejb bean instance
+        if(!rv.INTERCEPTOR_OR_DECORATOR_CALL)
+        {
+            return ejbContext.proceed();
+        }
+        
+        return rv.RETURN_VALUE;
     }
     
     /**
@@ -342,7 +358,7 @@ public class OpenWebBeansEjbInterceptor
      * @return result of operation
      * @throws Exception for any exception
      */    
-    private Object callInterceptorsForNonContextuals(Method method, Object instance, Object[] arguments, InvocationContext ejbContext) throws Exception
+    private CallReturnValue callInterceptorsForNonContextuals(Method method, Object instance, Object[] arguments, InvocationContext ejbContext) throws Exception
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
         
@@ -366,17 +382,19 @@ public class OpenWebBeansEjbInterceptor
             }
         }        
         
+        CallReturnValue rv = new CallReturnValue();
+        rv.INTERCEPTOR_OR_DECORATOR_CALL = false;
         if(ejbBean == null)
         {
             logger.warn("Unable to find EJB bean with class : " + instance.getClass());
+            return rv;
         }
         else
         {
             CreationalContext<?> cc = manager.createCreationalContext(null);
             return runInterceptorStack(ejbBean.getInterceptorStack(), method, instance, arguments, ejbBean, cc, ejbContext);
         }
-        
-        return null;
+
     }
     
     /**
@@ -387,14 +405,15 @@ public class OpenWebBeansEjbInterceptor
      * @return result of operation
      * @throws Exception for any exception
      */
-    private Object callInterceptorsAndDecorators(Method method, Object instance, Object[] arguments, InvocationContext ejbContext) throws Exception
+    private CallReturnValue callInterceptorsAndDecorators(Method method, Object instance, Object[] arguments, InvocationContext ejbContext) throws Exception
     {
+        CallReturnValue rv = new CallReturnValue();
         InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
         
         String methodName = method.getName();
         if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
         {
-            logger.warn("Calling method on proxy is restricted except Object.toString(), but current method is Object." + methodName);
+            logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object." + methodName);
         }
                 
         if (InterceptorUtil.isWebBeansBusinessMethod(method) && 
@@ -413,7 +432,7 @@ public class OpenWebBeansEjbInterceptor
                     JavassistProxyFactory.getInterceptorProxyClasses().put(injectionTarget, proxyClass);
                 }
                 Object delegate = proxyClass.newInstance();
-                delegateHandler = new DelegateHandler(threadLocal.get());
+                delegateHandler = new DelegateHandler(threadLocal.get(),ejbContext);
                 ((ProxyObject)delegate).setHandler(delegateHandler);
 
                 // Gets component decorator stack
@@ -453,8 +472,11 @@ public class OpenWebBeansEjbInterceptor
                 // Call Around Invokes
                 if (WebBeansUtil.isContainsInterceptorMethod(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE))
                 {
-                     return InterceptorUtil.callAroundInvokes(threadLocal.get(), instance, (CreationalContextImpl<?>)threadLocalCreationalContext.get(), method, 
+                     rv.INTERCEPTOR_OR_DECORATOR_CALL = true;
+                     rv.RETURN_VALUE = InterceptorUtil.callAroundInvokes(threadLocal.get(), instance, (CreationalContextImpl<?>)threadLocalCreationalContext.get(), method, 
                             arguments, InterceptorUtil.getInterceptorMethods(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE), ejbContext);
+                     
+                     return rv;
                 }
                 
             }
@@ -463,16 +485,21 @@ public class OpenWebBeansEjbInterceptor
             // manage the stack
             if (decorators != null)
             {
-                return delegateHandler.invoke(instance, method, null, arguments);
+                rv.INTERCEPTOR_OR_DECORATOR_CALL = true;
+                rv.RETURN_VALUE = delegateHandler.invoke(instance, method, null, arguments); 
+                return rv;
             }
         }    
         
-        return null;
+        rv.INTERCEPTOR_OR_DECORATOR_CALL = false;
+        
+        return rv;
     }
     
-    private Object runInterceptorStack(List<InterceptorData> interceptorStack, Method method, Object instance, 
+    private CallReturnValue runInterceptorStack(List<InterceptorData> interceptorStack, Method method, Object instance, 
                                         Object[] arguments, BaseEjbBean<?> bean, CreationalContext<?> creationalContext, InvocationContext ejbContext) throws Exception
     {
+        CallReturnValue rv = new CallReturnValue();
         if (interceptorStack.size() > 0)
         {
             if(this.nonCtxInterceptedMethodMap.get(method) == null)
@@ -488,15 +515,19 @@ public class OpenWebBeansEjbInterceptor
             // Call Around Invokes
             if (WebBeansUtil.isContainsInterceptorMethod(this.nonCtxInterceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE))
             {
-                 return InterceptorUtil.callAroundInvokes(bean, instance, (CreationalContextImpl<?>)creationalContext, method, 
+                 rv.INTERCEPTOR_OR_DECORATOR_CALL = true;
+                 rv.RETURN_VALUE = InterceptorUtil.callAroundInvokes(bean, instance, (CreationalContextImpl<?>)creationalContext, method, 
                         arguments, InterceptorUtil.getInterceptorMethods(this.nonCtxInterceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE),
                         ejbContext);
+                 
+                 return rv;
             }
             
         }
         
+        rv.INTERCEPTOR_OR_DECORATOR_CALL = false;
         
-        return null;
+        return rv;
         
     }
     

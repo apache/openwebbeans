@@ -17,6 +17,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import javax.interceptor.InvocationContext;
+
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.OWBLogConst;
@@ -36,11 +38,19 @@ public class DelegateHandler implements MethodHandler
     private transient Object actualBean = null;
     
     private transient OwbBean<?> bean = null;
+    
+    private transient InvocationContext ejbContext;
 
     public DelegateHandler(OwbBean<?> bean)
     {
         this.bean = bean;
     }
+    
+    public DelegateHandler(OwbBean<?> bean, InvocationContext ejbContext)
+    {
+        this.bean = bean;
+        this.ejbContext = ejbContext;
+    }    
     
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
@@ -108,6 +118,13 @@ public class DelegateHandler implements MethodHandler
         if(!(bean instanceof EnterpriseBeanMarker))
         {
             result = method.invoke(actualBean, arguments);
+        }
+        else
+        {
+            if(ejbContext != null)
+            {
+                result = ejbContext.proceed();
+            }
         }
         
         return result;
