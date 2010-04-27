@@ -721,7 +721,7 @@ public class BeansDeployer
         //Decorator
         if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeDecorator(annotatedType))
         {
-            logger.info(OWBLogConst.INFO_0012, new Object[]{annotatedType.getJavaClass().getName()});
+            logger.debug(OWBLogConst.INFO_0012, new Object[]{annotatedType.getJavaClass().getName()});
             if(annotationTypeSet)
             {
                 WebBeansAnnotatedTypeUtil.defineDecorator(annotatedType);
@@ -734,7 +734,7 @@ public class BeansDeployer
         //Interceptor
         else if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeInterceptor(annotatedType))
         {
-            logger.info(OWBLogConst.INFO_0011, new Object[]{annotatedType.getJavaClass().getName()});
+            logger.debug(OWBLogConst.INFO_0011, new Object[]{annotatedType.getJavaClass().getName()});
             if(annotationTypeSet)
             {
                 WebBeansAnnotatedTypeUtil.defineInterceptor(annotatedType);
@@ -752,7 +752,7 @@ public class BeansDeployer
                 return;
             }
             
-            logger.info(OWBLogConst.INFO_0009, new Object[]{annotatedType.getJavaClass().getName()});
+            logger.debug(OWBLogConst.INFO_0009, new Object[]{annotatedType.getJavaClass().getName()});
             WebBeansUtil.defineManagedBean(managedBeanCreator, annotatedType);   
         }
     }
