@@ -63,7 +63,7 @@ public class WebContextsService extends AbstractContextsService
     private static ThreadLocal<SingletonContext> singletonContext = null;
 
     /**Current dependent context*/
-    private static ThreadLocal<DependentContext> dependentContext = null;
+    private static DependentContext dependentContext;
 
     /**Current application contexts*/
     private static Map<ServletContext, ApplicationContext> currentApplicationContexts = new ConcurrentHashMap<ServletContext, ApplicationContext>();
@@ -86,8 +86,12 @@ public class WebContextsService extends AbstractContextsService
         sessionContext = new ThreadLocal<SessionContext>();
         applicationContext = new ThreadLocal<ApplicationContext>();
         conversationContext = new ThreadLocal<ConversationContext>();
-        dependentContext = new ThreadLocal<DependentContext>();
         singletonContext = new ThreadLocal<SingletonContext>();
+        
+        //Dependent context is always active
+        dependentContext = new DependentContext();
+        dependentContext.setActive(true);
+
     }
     
     /**
@@ -114,26 +118,34 @@ public class WebContextsService extends AbstractContextsService
     @Override
     public void destroy(Object destroyObject)
     {
+        //Destroy application context
+        endContext(ApplicationScoped.class, destroyObject);
+        
+        //Destroy singleton context
+        endContext(Singleton.class, destroyObject);
+     
+        //Clear saved contexts related with 
+        //this servlet context
         currentApplicationContexts.clear();
         currentSingletonContexts.clear();
-
-        endContext(ApplicationScoped.class, destroyObject);
-        endContext(Singleton.class, destroyObject);
         
+        //Thread local values to null
         requestContext.set(null);
-        dependentContext.set(null);
         sessionContext.set(null);
         conversationContext.set(null);
         applicationContext.set(null);
         singletonContext.set(null);
         
+        //Remove thread locals
+        //for preventing memory leaks
         requestContext.remove();
-        dependentContext.remove();
         sessionContext.remove();
         conversationContext.remove();
         applicationContext.remove();
         singletonContext.remove();        
         
+        //remove dependent context
+        dependentContext = null;        
     }    
     
     
@@ -165,6 +177,7 @@ public class WebContextsService extends AbstractContextsService
             else if(scopeType.equals(Dependent.class))
             {
                 //Do nothing
+                dependentContext = null;
             }
             else
             {
@@ -200,7 +213,7 @@ public class WebContextsService extends AbstractContextsService
             }
             else if(scopeType.equals(Dependent.class))
             {
-                return getDependentContext();
+                return dependentContext;
             }
             else
             {
@@ -311,9 +324,8 @@ public class WebContextsService extends AbstractContextsService
             {
                 context.destroy();
             }
-
-            requestContext.set(null);
             
+            requestContext.set(null);            
         }
     }
 
@@ -396,25 +408,35 @@ public class WebContextsService extends AbstractContextsService
      */
     private void destroyApplicationContext(ServletContext servletContext)
     {
-        if (applicationContext != null)
+        //look for thread local
+        //this can be set by initRequestContext
+        ApplicationContext context = applicationContext.get();
+        
+        //no context set
+        //look for saved application context
+        if(context == null)
         {
-            ApplicationContext context = getApplicationContext();
-
-            if (context != null)
+            if(servletContext != null)
             {
-                context.destroy();
+                context = currentApplicationContexts.get(servletContext);   
             }
-
-            applicationContext.set(null);
-
         }
         
+        //Destroy context
+        if(context != null)
+        {
+            context.destroy();
+        }
+        
+        //Remove from saved contexts
         if(servletContext != null)
         {
             currentApplicationContexts.remove(servletContext);   
         }
         
+        //destroy all sessions
         sessionCtxManager.destroyAllSessions();
+        //destroy all conversations
         conversationManager.destroyAllConversations();
     }
     
@@ -440,8 +462,7 @@ public class WebContextsService extends AbstractContextsService
                 
             }
             
-            singletonContext.set(context);
-   
+            singletonContext.set(context);   
         }
                         
     }
@@ -452,19 +473,26 @@ public class WebContextsService extends AbstractContextsService
      */
     private void destroySingletonContext(ServletContext servletContext)
     {
-        if (singletonContext != null)
+        SingletonContext context = getSingletonContext();
+        
+        //no context set by initRequestContext
+        if(context == null)
         {
-            SingletonContext context = getSingletonContext();
-
-            if (context != null)
+            //look for saved context
+            if(servletContext != null)
             {
-                context.destroy();
+                context = currentSingletonContexts.get(servletContext);
             }
-            
-            singletonContext.set(null);          
-
         }
         
+        //context is not null
+        //destroy it
+        if(context != null)
+        {
+            context.destroy();
+        }
+
+        //remove it from saved contexts
         if(servletContext != null)
         {
             currentSingletonContexts.remove(servletContext);   
@@ -561,22 +589,4 @@ public class WebContextsService extends AbstractContextsService
     {
         return conversationContext.get();
     }
-
-    /**
-     * Gets dependent context.
-     * @return dependent context
-     */
-    private DependentContext getDependentContext()
-    {
-        DependentContext dependentCtx = dependentContext.get();
-
-        if (dependentCtx == null)
-        {
-            dependentCtx = new DependentContext();
-            dependentContext.set(dependentCtx);
-        }
-
-        return dependentCtx;
-    }
-    
 }
