@@ -180,7 +180,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             
             if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
             {
-                logger.warn("Calling method on proxy is restricted except Object.toString(), but current method is Object." + methodName);
+                logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object." + methodName);
             }
             
             else if (bean instanceof InjectionTargetBean<?>)

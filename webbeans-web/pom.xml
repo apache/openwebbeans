@@ -25,7 +25,6 @@
 
     <artifactId>openwebbeans-web</artifactId>
     <name>Apache OpenWebBeans :: Java EE Web Utility</name>
-    <packaging>bundle</packaging>
     <description>OpenWebBeans Java EE Web Utility</description>
 
     <dependencies>
@@ -84,24 +83,5 @@
         
       
     </dependencies>
-    
-  <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.0.0</version>
-        		<extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>
-                            org.apache.webbeans.servlet*;version=1.0,                            
-                            org.apache.webbeans.web*;version=1.0
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>    
     
 </project>

@@ -25,7 +25,6 @@
 
     <artifactId>openwebbeans-ee</artifactId>
     <name>Apache OpenWebBeans :: Java EE Utility</name>
-    <packaging>bundle</packaging>
     <description>OpenWebBeans Java EE Utility</description>
 
     <dependencies>
@@ -95,25 +94,4 @@
 		</dependency>		
               
     </dependencies>
-    
-   <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.0.0</version>
-        		<extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>
-                            org.apache.webbeans.ee.beans*;version=1.0,
-                            org.apache.webbeans.ee.event*;version=1.0                            
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    
-    
 </project>
