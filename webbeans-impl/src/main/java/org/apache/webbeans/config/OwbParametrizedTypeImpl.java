@@ -22,18 +22,29 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * Custom parametrized type implementation.
+ * @version $Rev$ $Date$
+ *
+ */
 public class OwbParametrizedTypeImpl implements ParameterizedType
 {
+    /**Owner type*/
     private final Type owner;
     
+    /**Raw type*/
     private final Type rawType;
     
+    /**Actual type arguments*/
     private final List<Type> types = new ArrayList<Type>();
     
+    /**
+     * New instance.
+     * @param owner owner
+     * @param raw raw
+     */
     public OwbParametrizedTypeImpl(Type owner, Type raw)
     {
         this.owner = owner;

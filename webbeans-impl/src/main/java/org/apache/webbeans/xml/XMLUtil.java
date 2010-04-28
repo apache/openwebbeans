@@ -51,6 +51,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.NodeList;
 
 
+@SuppressWarnings("unchecked")
 public class XMLUtil {
 
     private XMLUtil()
