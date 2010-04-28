@@ -28,6 +28,7 @@ import javax.inject.Named;
 import javax.enterprise.inject.Produces;
 import javax.faces.application.FacesMessage;
 
+import org.apache.webbeans.sample.bindings.AppScopeBinding;
 import org.apache.webbeans.sample.bindings.LoggedInUser;
 import org.apache.webbeans.sample.dependent.LoginCheck;
 import org.apache.webbeans.sample.event.LoggedInEvent;
@@ -49,6 +50,8 @@ public class LoginBean
 	private @Inject @Default FacesMessageUtil messageUtil;
 	
 	private @Inject @Any Event<LoggedInEvent> event;
+	
+	private @Inject @AppScopeBinding AppObject applicationScopedString;
 	
 	public LoginBean()
 	{
@@ -77,6 +80,7 @@ public class LoginBean
 	public void afterLoggedIn(@Observes LoggedInEvent event)
 	{
 		messageUtil.addMessage(FacesMessage.SEVERITY_INFO, "Login Successfull", "Login Successfull");
+		System.out.println("Application scoped string : " + applicationScopedString);
 	}
 	
 	
