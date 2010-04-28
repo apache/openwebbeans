@@ -429,9 +429,16 @@ public class WebContextsService extends AbstractContextsService
         ApplicationContext context = null;
         
         //Looking the context from saved context
+        //This is used in real web applications
         if(servletContext != null)
         {
             context = currentApplicationContexts.get(servletContext);   
+        }
+        
+        //using in tests
+        if(context == null)
+        {
+            context = getApplicationContext();
         }
         
         //Destroy context
@@ -493,6 +500,12 @@ public class WebContextsService extends AbstractContextsService
         {
             context = currentSingletonContexts.get(servletContext);
         }
+        
+        //using in tests
+        if(context == null)
+        {
+            context = getSingletonContext();
+        }        
         
         //context is not null
         //destroy it
