@@ -20,34 +20,51 @@ package org.apache.webbeans.config;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class OwbParametrizedTypeImpl implements ParameterizedType
 {
-    private final Class<?> clazz;
+    private final Type owner;
     
-    public OwbParametrizedTypeImpl(Class<?> clazz)
+    private final Type rawType;
+    
+    private final List<Type> types = new ArrayList<Type>();
+    
+    public OwbParametrizedTypeImpl(Type owner, Type raw)
     {
-        this.clazz = clazz;
+        this.owner = owner;
+        this.rawType = raw;
     }
     
     @Override
     public Type[] getActualTypeArguments()
     {
-        return clazz.getTypeParameters();
+        return this.types.toArray(new Type[0]);
+    }
+    
+    public void addTypeArgument(Type type)
+    {
+        this.types.add(type);
     }
 
     @Override
     public Type getOwnerType()
     {
-        return null;
+        return this.owner;
     }
 
     @Override
     public Type getRawType()
     {
-        return this.clazz;
+        return this.rawType;
     }
 
+    
+    
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -56,7 +73,9 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
+        result = prime * result + Arrays.hashCode(getActualTypeArguments());
+        result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+        result = prime * result + ((rawType == null) ? 0 : rawType.hashCode());
         return result;
     }
 
@@ -73,13 +92,46 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
         if (getClass() != obj.getClass())
             return false;
         OwbParametrizedTypeImpl other = (OwbParametrizedTypeImpl) obj;
-        if (clazz == null)
+        if (!Arrays.equals(getActualTypeArguments(), other.getActualTypeArguments()))
+            return false;
+        if (owner == null)
         {
-            if (other.clazz != null)
+            if (other.owner != null)
                 return false;
         }
-        else if (!clazz.equals(other.clazz))
+        else if (!owner.equals(other.owner))
+            return false;
+        if (rawType == null)
+        {
+            if (other.rawType != null)
+                return false;
+        }
+        else if (!rawType.equals(other.rawType))
             return false;
         return true;
+    }
+
+    public String toString()
+    {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(((Class<?>)this.rawType).getSimpleName());
+        Type[] actualTypes = getActualTypeArguments();
+        if(actualTypes.length > 0)
+        {
+            buffer.append("<");
+            int length = actualTypes.length;
+            for(int i=0;i<length;i++)
+            {
+                buffer.append(actualTypes[i].toString());
+                if(i != actualTypes.length-1)
+                {
+                    buffer.append(",");
+                }
+            }
+            
+            buffer.append(">");
+        }
+        
+        return buffer.toString();
     }
 }

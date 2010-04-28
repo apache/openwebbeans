@@ -30,7 +30,7 @@ public class ClazzTest
         Set<Type> set = new HashSet<Type>();
         ClassUtil.setTypeHierarchy(set, Student.class);
 
-        Assert.assertEquals(8, set.size());
+        Assert.assertEquals(5, set.size());
 
     }
 
@@ -41,7 +41,7 @@ public class ClazzTest
 
         ClassUtil.setTypeHierarchy(set, Student2.class);
 
-        Assert.assertEquals(6, set.size());
+        Assert.assertEquals(4, set.size());
 
     }
 

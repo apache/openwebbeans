@@ -16,34 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.newtests.concepts.apiTypes.tests;
+package org.apache.webbeans.newtests.promethods.beans;
 
-import java.lang.reflect.Type;
-import java.util.Set;
+import java.util.ArrayList;
 
-import junit.framework.Assert;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.concepts.apiTypes.common.ApiTypeBean;
-import org.junit.Test;
-
-public class ApiTypeTest extends AbstractUnitTest
+@Named
+public class InjectorofMethod1Bean
 {
-    public ApiTypeTest()
-    {
-        
-    }
+    public @Inject @Named("ProMethodParameterized3") ArrayList<String> pt3;
     
-    @Test
-    public void testApiType()
+    public ArrayList<String> getPt3()
     {
-        ManagedBean<ApiTypeBean> bean = new ManagedBean<ApiTypeBean>(ApiTypeBean.class);
-        DefinitionUtil.defineApiTypes(bean, ApiTypeBean.class);
-        
-        Set<Type> type = bean.getTypes();
-        Assert.assertEquals(5, type.size());
+        return this.pt3;
     }
-
 }

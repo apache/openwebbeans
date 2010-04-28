@@ -46,6 +46,7 @@ abstract class AbstractAnnotated implements Annotated
     protected AbstractAnnotated(Type baseType)
     {
         this.baseType = baseType;
+        this.typeClosures.add(Object.class);
         ClassUtil.setTypeHierarchy(this.typeClosures, this.baseType);
     }
 

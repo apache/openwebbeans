@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.service.ITyped;
 import org.apache.webbeans.test.component.service.TypedComponent;
@@ -51,9 +52,8 @@ public class TypedComponentTest extends TestContext
     {
         clear();
         defineManagedBean(TypedComponent.class);
-        List<AbstractOwbBean<?>> list = getComponents();
 
-        Set<Bean<?>> beans= getManager().resolveByType(TypedComponentTest.class.getDeclaredField("s").getType(), new Default()
+        Set<Bean<?>> beans= InjectionResolver.getInstance().implResolveByType(TypedComponentTest.class.getDeclaredField("s").getGenericType(), new Default()
         {
 
             public Class<? extends Annotation> annotationType()

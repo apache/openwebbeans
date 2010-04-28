@@ -45,8 +45,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Provider;
 
-import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OwbParametrizedTypeImpl;
+import org.apache.webbeans.config.BeanTypeSetResolver;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 
@@ -784,16 +783,24 @@ public final class ClassUtil
 
         return true;
     }
-
+    
+    /**
+     * See specification 5.2.3.
+     * @param beanType bean type
+     * @param requiredType required type
+     * @return true if assignable
+     */
     public static boolean isAssignable(Type beanType, Type requiredType)
     {
         Asserts.assertNotNull(beanType, "beanType parameter can not be null");
         Asserts.assertNotNull(requiredType, "requiredType parameter can not be null");
-
+        
+        //Bean abd required types are ParametrizedType
         if (beanType instanceof ParameterizedType && requiredType instanceof ParameterizedType)
         {
             return isAssignableForParametrized((ParameterizedType) beanType, (ParameterizedType) requiredType);
         }
+        //Both type is class type
         else if (beanType instanceof Class && requiredType instanceof Class)
         {
             Class<?> clzBeanType = (Class<?>)beanType;
@@ -811,6 +818,7 @@ public final class ClassUtil
             
             return clzReqType.equals(clzBeanType);
         }
+        //Bean type is Parametrized and required type is class type
         else if(beanType instanceof ParameterizedType && requiredType instanceof Class)
         {
             boolean ok = true;
@@ -853,6 +861,7 @@ public final class ClassUtil
             
             return ok;
         }
+        //Bean type is class and required type is parametrized
         else if(beanType instanceof Class && requiredType instanceof ParameterizedType)
         {
             Class<?> clazzBeanType = (Class<?>)beanType;
@@ -986,6 +995,12 @@ public final class ClassUtil
         return false;
     }
     
+    /**
+     * Check parametrized type actual type arguments.
+     * @param beanTypeArgs bean type actual type arguments
+     * @param requiredTypeArgs required type actual type arguments.
+     * @return true if assignment applicable
+     */
     private static boolean isAssignableForParametrizedCheckArguments(Type[] beanTypeArgs, Type[] requiredTypeArgs)
     {
         Type requiredTypeArg = null;
@@ -995,7 +1010,7 @@ public final class ClassUtil
             requiredTypeArg = requiredTypeArgs[i];
             beanTypeArg = beanTypeArgs[i];
             
-            //Required type is parametrized
+            //Required type is parametrized and bean type is parametrized
             if(ClassUtil.isParametrizedType(requiredTypeArg) && ClassUtil.isParametrizedType(beanTypeArg))
             {
                 return checkBeanAndRequiredTypeisParametrized(beanTypeArg, requiredTypeArg);
@@ -1005,16 +1020,18 @@ public final class ClassUtil
             {
                 return checkRequiredTypeisWildCard(beanTypeArg, requiredTypeArg);
             }
-            //Required type is actual type
+            //Required type is actual type and bean type is type variable
             else if(requiredTypeArg instanceof Class && ClassUtil.isTypeVariable(beanTypeArg))
             {
                 return checkRequiredTypeIsClassAndBeanTypeIsVariable(beanTypeArg, requiredTypeArg);
             }
-            //Required type is Type variable
+            //Required type is Type variable and bean type is type variable
             else if(ClassUtil.isTypeVariable(requiredTypeArg) && ClassUtil.isTypeVariable(beanTypeArg))
             {
                 return checkBeanTypeAndRequiredIsTypeVariable(beanTypeArg, requiredTypeArg);
             }      
+            
+            //Both type is actual type
             else if((beanTypeArg instanceof Class) && (requiredTypeArg instanceof Class))
             {
                 if(isClassAssignable((Class<?>)requiredTypeArg,(Class<?>)beanTypeArg))
@@ -1022,6 +1039,7 @@ public final class ClassUtil
                     return true;
                 }
             }
+            //Bean type is actual type and required type is type variable
             else if((beanTypeArg instanceof Class) && (ClassUtil.isTypeVariable(requiredTypeArg)))
             {
                 return checkRequiredTypeIsTypeVariableAndBeanTypeIsClass(beanTypeArg, requiredTypeArg);
@@ -1031,6 +1049,13 @@ public final class ClassUtil
         return false;
     }
     
+    /**
+     * Check parametrized bean type and parametrized
+     * required types.
+     * @param beanTypeArg parametrized bean type
+     * @param requiredTypeArg parametrized required type
+     * @return true if types are assignables
+     */
     public static boolean checkBeanAndRequiredTypeisParametrized(Type beanTypeArg, Type requiredTypeArg)
     {
         ParameterizedType ptRequiredTypeArg = (ParameterizedType)requiredTypeArg;
@@ -1056,6 +1081,15 @@ public final class ClassUtil
         return false;
     }
     
+    /**
+     * Check bean type and required type.
+     * <p>
+     * Required type is a wildcard type.
+     * </p>
+     * @param beanTypeArg bean type
+     * @param requiredTypeArg required type
+     * @return true if contdition satisfies
+     */
     public static boolean checkRequiredTypeisWildCard(Type beanTypeArg, Type requiredTypeArg)
     {
         WildcardType wctRequiredTypeArg = (WildcardType)requiredTypeArg;
@@ -1067,22 +1101,28 @@ public final class ClassUtil
             Class<?> clazzBeanTypeArg = (Class<?>)beanTypeArg;
             if(upperBoundRequiredTypeArg instanceof Class)
             {
-                Class<?> clazzUpperBoundTypeArg = (Class<?>)upperBoundRequiredTypeArg;
-                if(clazzUpperBoundTypeArg.isAssignableFrom(clazzBeanTypeArg))
-                {                                         
-                    if(lowerBoundRequiredTypeArgs.length > 0 &&  lowerBoundRequiredTypeArgs[0] instanceof Class)
-                    {
-                        Class<?> clazzLowerBoundTypeArg = (Class<?>)lowerBoundRequiredTypeArgs[0];
-                        if(clazzBeanTypeArg.isAssignableFrom(clazzLowerBoundTypeArg))
+                Class<?> clazzUpperBoundTypeArg = (Class<?>)upperBoundRequiredTypeArg;                
+                if(clazzUpperBoundTypeArg != Object.class)
+                {
+                    if(clazzUpperBoundTypeArg.isAssignableFrom(clazzBeanTypeArg))
+                    {                                         
+                        if(lowerBoundRequiredTypeArgs.length > 0 &&  lowerBoundRequiredTypeArgs[0] instanceof Class)
                         {
-                            return true;
+                            Class<?> clazzLowerBoundTypeArg = (Class<?>)lowerBoundRequiredTypeArgs[0];
+                            
+                            if(clazzLowerBoundTypeArg != Object.class)
+                            {
+                                if(!clazzBeanTypeArg.isAssignableFrom(clazzLowerBoundTypeArg))
+                                {
+                                    return false;
+                                }                                
+                            }
                         }
                     }
                     else
                     {
-                        return true;
+                        return false;
                     }
-                    
                 }
             }                    
         }
@@ -1097,30 +1137,46 @@ public final class ClassUtil
                 
                 if(upperBoundRequiredTypeArg instanceof Class)
                 {
-                    Class<?> clazzUpperBoundTypeArg = (Class<?>)upperBoundRequiredTypeArg;
-                    if(clazzUpperBoundTypeArg.isAssignableFrom(clazzTvBound))
-                    {                            
-                        if(lowerBoundRequiredTypeArgs.length > 0 &&  lowerBoundRequiredTypeArgs[0] instanceof Class)
-                        {
-                            Class<?> clazzLowerBoundTypeArg = (Class<?>)lowerBoundRequiredTypeArgs[0];
-                            if(clazzTvBound.isAssignableFrom(clazzLowerBoundTypeArg))
+                    Class<?> clazzUpperBoundTypeArg = (Class<?>)upperBoundRequiredTypeArg;                    
+                    if(clazzUpperBoundTypeArg != Object.class && clazzTvBound != Object.class)
+                    {
+                        if(clazzUpperBoundTypeArg.isAssignableFrom(clazzTvBound))
+                        {                            
+                            if(lowerBoundRequiredTypeArgs.length > 0 &&  lowerBoundRequiredTypeArgs[0] instanceof Class)
                             {
-                                return true;
+                                Class<?> clazzLowerBoundTypeArg = (Class<?>)lowerBoundRequiredTypeArgs[0];
+                                
+                                if(clazzLowerBoundTypeArg != Object.class)
+                                {
+                                    if(!clazzTvBound.isAssignableFrom(clazzLowerBoundTypeArg))
+                                    {
+                                        return false;
+                                    }                                    
+                                }
                             }
                         }
                         else
                         {
-                            return true;
+                            return false;
                         }
-                        
                     }
                 }                                    
             }
         }
          
-        return false;
+        return true;
     }
     
+    /**
+     * Checking bean type and required type.
+     * <p>
+     * Required type is class and bean type is
+     * a type variable.
+     * </p>
+     * @param beanTypeArg bean type 
+     * @param requiredTypeArg required type
+     * @return true if condition satisfy
+     */
     public static boolean checkRequiredTypeIsClassAndBeanTypeIsVariable(Type beanTypeArg, Type requiredTypeArg)
     {
         Class<?> clazzRequiredType = (Class<?>)requiredTypeArg;
@@ -1132,13 +1188,16 @@ public final class ClassUtil
         {
             Class<?> clazzTvBound = (Class<?>)tvBound;
             
-            if(clazzRequiredType.isAssignableFrom(clazzTvBound))
+            if(clazzTvBound != Object.class)
             {
-                return true;
-            }                    
+                if(!clazzTvBound.isAssignableFrom(clazzRequiredType))
+                {
+                    return false;
+                }                                    
+            }            
         }
         
-        return false;
+        return true;
     }
     
     public static boolean checkRequiredTypeIsTypeVariableAndBeanTypeIsClass(Type beanTypeArg, Type requiredTypeArg)
@@ -1175,7 +1234,7 @@ public final class ClassUtil
             Class<?> clazzTvBeanBound = (Class<?>)tvBeanBound;
             Class<?> clazzTvRequiredBound = (Class<?>)tvRequiredBound;
             
-            if(clazzTvRequiredBound.isAssignableFrom(clazzTvBeanBound))
+            if(clazzTvBeanBound.isAssignableFrom(clazzTvRequiredBound))
             {
                 return true;
             }                    
@@ -1613,42 +1672,13 @@ public final class ClassUtil
 
     public static Set<Type> setTypeHierarchy(Set<Type> set, Type clazz)
     {
-        Class<?> raw = getClazz(clazz);
+        BeanTypeSetResolver resolver = new BeanTypeSetResolver(clazz);
+        resolver.startConfiguration();
+        set.addAll(resolver.getHierarchy());
         
-        if (raw == null) 
-        {
-            return null;
-        }
-        
-        set.add(clazz);
-        if(ClassUtil.isDefinitionConstainsTypeVariables(raw))
-        {
-            set.add(new OwbParametrizedTypeImpl(raw));
-        }
-
-		Type sc = null;
-		try
-		{
-			sc = raw.getGenericSuperclass();
-		}
-		catch (Exception e)
-		{
-			logger.warn(OWBLogConst.WARN_0008, raw.getName(), e.getClass().getName(), e.getMessage());
-		}
-
-		if (sc != null)
-        {
-            setTypeHierarchy(set, sc);
-        }
-
-        Type[] interfaces = raw.getGenericInterfaces();
-        for (Type cl : interfaces)
-        {            
-            setTypeHierarchy(set, cl);
-        }
-
         return set;
     }
+
     
     
     /**
