@@ -108,7 +108,10 @@ public class WebContextsService extends AbstractContextsService
     @Override
     public void init(Object initializeObject)
     {        
+        //Start application context
         startContext(ApplicationScoped.class, initializeObject);
+        
+        //Start signelton context
         startContext(Singleton.class, initializeObject);
     }    
     
@@ -301,7 +304,10 @@ public class WebContextsService extends AbstractContextsService
                     initSessionContext(session);    
                 }
                             
-                initApplicationContext(event.getServletContext());                
+                //Init thread local application context
+                initApplicationContext(event.getServletContext());
+                
+                //Init thread local sigleton context
                 initSingletonContext(event.getServletContext());
             }            
         }
@@ -313,17 +319,26 @@ public class WebContextsService extends AbstractContextsService
      */
     private void destroyRequestContext(ServletRequestEvent request)
     {
-        if (requestContext != null)
-        {
-            RequestContext context = getRequestContext();
+        //Get context
+        RequestContext context = getRequestContext();
 
-            if (context != null)
-            {
-                context.destroy();
-            }
-            
-            requestContext.set(null);            
+        //Destroy context
+        if (context != null)
+        {
+            context.destroy();
         }
+        
+        //Clear thread locals
+        requestContext.set(null);
+        requestContext.remove();
+        
+        //Also clear application and singleton context
+        applicationContext.set(null);
+        applicationContext.remove();
+        
+        //Singleton context
+        singletonContext.set(null);
+        singletonContext.remove();
     }
 
     /**
@@ -333,16 +348,20 @@ public class WebContextsService extends AbstractContextsService
     private void initSessionContext(HttpSession session)
     {
         String sessionId = session.getId();
+        //Current context
         SessionContext currentSessionContext = sessionCtxManager.getSessionContextWithSessionId(sessionId);
-
+        
+        //No current context
         if (currentSessionContext == null)
         {
             currentSessionContext = new SessionContext();
             sessionCtxManager.addNewSessionContext(sessionId, currentSessionContext);
         }
 
+        //Activate
         currentSessionContext.setActive(true);
-
+        
+        //Set thread local
         sessionContext.set(currentSessionContext);
     }
 
@@ -353,19 +372,20 @@ public class WebContextsService extends AbstractContextsService
      */
     private void destroySessionContext(HttpSession session)
     {
-        if (sessionContext != null)
+        //Get current session context
+        SessionContext context = getSessionContext();
+        
+        //Destroy context
+        if (context != null)
         {
-            SessionContext context = getSessionContext();
-
-            if (context != null)
-            {
-                context.destroy();
-            }
-
-            sessionContext.set(null);
-
+            context.destroy();
         }
 
+        //Clear thread locals
+        sessionContext.set(null);
+        sessionContext.remove();
+        
+        //Remove session from manager
         sessionCtxManager.destroySessionContextWithSessionId(session.getId());
 
     }
@@ -394,7 +414,6 @@ public class WebContextsService extends AbstractContextsService
             }
             
             applicationContext.set(currentApplicationContext);
-   
         }
     }
 
@@ -407,16 +426,12 @@ public class WebContextsService extends AbstractContextsService
     {
         //look for thread local
         //this can be set by initRequestContext
-        ApplicationContext context = applicationContext.get();
+        ApplicationContext context = null;
         
-        //no context set
-        //look for saved application context
-        if(context == null)
+        //Looking the context from saved context
+        if(servletContext != null)
         {
-            if(servletContext != null)
-            {
-                context = currentApplicationContexts.get(servletContext);   
-            }
+            context = currentApplicationContexts.get(servletContext);   
         }
         
         //Destroy context
@@ -433,6 +448,7 @@ public class WebContextsService extends AbstractContextsService
         
         //destroy all sessions
         sessionCtxManager.destroyAllSessions();
+        
         //destroy all conversations
         conversationManager.destroyAllConversations();
     }
@@ -470,16 +486,12 @@ public class WebContextsService extends AbstractContextsService
      */
     private void destroySingletonContext(ServletContext servletContext)
     {
-        SingletonContext context = getSingletonContext();
-        
-        //no context set by initRequestContext
-        if(context == null)
+        SingletonContext context = null;
+
+        //look for saved context
+        if(servletContext != null)
         {
-            //look for saved context
-            if(servletContext != null)
-            {
-                context = currentSingletonContexts.get(servletContext);
-            }
+            context = currentSingletonContexts.get(servletContext);
         }
         
         //context is not null
@@ -529,17 +541,15 @@ public class WebContextsService extends AbstractContextsService
      */
     private void destroyConversationContext()
     {
-        if (conversationContext != null)
+        ConversationContext context = getConversationContext();
+
+        if (context != null)
         {
-            ConversationContext context = getConversationContext();
-
-            if (context != null)
-            {
-                context.destroy();
-            }
-
-            conversationContext.set(null);
+            context.destroy();
         }
+
+        conversationContext.set(null);
+        conversationContext.remove();
     }
 
     /**
