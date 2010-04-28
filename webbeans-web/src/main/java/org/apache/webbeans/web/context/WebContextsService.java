@@ -143,9 +143,7 @@ public class WebContextsService extends AbstractContextsService
         conversationContext.remove();
         applicationContext.remove();
         singletonContext.remove();        
-        
-        //remove dependent context
-        dependentContext = null;        
+                
     }    
     
     
@@ -177,7 +175,6 @@ public class WebContextsService extends AbstractContextsService
             else if(scopeType.equals(Dependent.class))
             {
                 //Do nothing
-                dependentContext = null;
             }
             else
             {
