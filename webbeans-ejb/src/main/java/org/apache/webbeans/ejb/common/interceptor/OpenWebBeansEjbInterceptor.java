@@ -42,6 +42,7 @@ import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -228,17 +229,19 @@ public class OpenWebBeansEjbInterceptor
             }                        
         }
         
-        Object instance = context.getTarget();
-        this.injector = new OWBInjector();
-        try
-        {
-            this.injector.inject(instance, threadLocalCreationalContext.get());
+        if (OpenWebBeansConfiguration.getInstance().isUseEJBInterceptorInjection()) 
+        { 
+            Object instance = context.getTarget();
+            this.injector = new OWBInjector();
+            try
+            {
+                this.injector.inject(instance, threadLocalCreationalContext.get());
+            }
+            catch (Exception e)
+            {
+                logger.error("Error is occured while injecting dependencies of bean : " + threadLocal.get(),e);
+            }
         }
-        catch (Exception e)
-        {
-            logger.error("Error is occured while injecting dependencies of bean : " + threadLocal.get(),e);
-        }
-        
     }
     
     /**

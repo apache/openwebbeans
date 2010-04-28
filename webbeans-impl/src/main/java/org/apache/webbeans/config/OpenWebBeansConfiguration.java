@@ -97,8 +97,11 @@ public class OpenWebBeansConfiguration
     /**Application is core JSP*/
     public static final String APPLICATION_IS_JSP = "org.apache.webbeans.application.jsp";
     
-    /**Use of JSF2 extnesions*/
+    /**Use of JSF2 extensions*/
     public static final String USE_JSF2_EXTENSIONS = "org.apache.webbeans.application.useJSF2Extensions";
+    
+    /**Use of EJB interceptor to inject EJBs*/
+    public static final String USE_EJBINTERCEPTOR_INJECTION = "org.apache.webbeans.application.useEJBInterceptorInjection";
     
     /**
      * Gets singleton instance.
@@ -134,6 +137,9 @@ public class OpenWebBeansConfiguration
         
         value = properties.getProperty(USE_EJB_DISCOVERY);
         setPropertyFromSystemProperty(USE_EJB_DISCOVERY, value);
+        
+        value = properties.getProperty(USE_EJBINTERCEPTOR_INJECTION);
+        setPropertyFromSystemProperty(USE_EJBINTERCEPTOR_INJECTION, value);
         
         value = properties.getProperty(CONTAINER_LIFECYCLE);
         setPropertyFromSystemProperty(CONTAINER_LIFECYCLE, value);
@@ -318,4 +324,14 @@ public class OpenWebBeansConfiguration
         return Boolean.valueOf(value);
     }
     
+    /**
+     * Gets EJB injection property.
+     * @return true if EJB interceptor should do injection
+     */
+    public boolean isUseEJBInterceptorInjection()
+    {
+        String value = getProperty(USE_EJBINTERCEPTOR_INJECTION);
+        
+        return Boolean.valueOf(value);
+    }
 }
