@@ -30,7 +30,7 @@ import org.apache.webbeans.util.ClassUtil;
 abstract class AbstractAnnotated implements Annotated
 {
     /**Base type of an annotated element*/
-    private Type baseType = null;
+    private final Type baseType;
     
     /**Type closures*/
     private Set<Type> typeClosures = new HashSet<Type>();

@@ -37,10 +37,10 @@ import org.apache.webbeans.util.ClassUtil;
 abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements AnnotatedMember<X>
 {
     /**Annotated type that owns this member*/
-    private AnnotatedType<X> declaringType;
+    private final AnnotatedType<X> declaringType;
     
     /**Member type*/
-    protected Member javaMember;
+    protected final Member javaMember;
     
     /**
      * Creates a new instance.

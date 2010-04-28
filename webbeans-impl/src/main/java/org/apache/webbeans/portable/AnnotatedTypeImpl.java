@@ -32,7 +32,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
 {
     /**Annotated class*/
-    private Class<X> annotatedClass;
+    private final Class<X> annotatedClass;
     
     /**Constructors*/
     private Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>();

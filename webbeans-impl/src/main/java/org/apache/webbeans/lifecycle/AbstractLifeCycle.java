@@ -31,6 +31,7 @@ import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
@@ -159,6 +160,9 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
 
             //Delte proxies
             JavassistProxyFactory.clear();
+            
+            //Delete AnnotateTypeCache
+            AnnotatedElementFactory.clear();
             
             //After Stop
             afterStopApplication(endObject);

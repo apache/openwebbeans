@@ -16,6 +16,8 @@ package org.apache.webbeans.portable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
@@ -23,6 +25,7 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.SecurityUtil;
 
 /**
@@ -32,6 +35,25 @@ import org.apache.webbeans.util.SecurityUtil;
  */
 public final class AnnotatedElementFactory
 {
+    //Cache of the AnnotatedType
+    private static ConcurrentMap<Class<?>, AnnotatedType<?>> annotatedTypeCache = 
+        new ConcurrentHashMap<Class<?>, AnnotatedType<?>>();
+    
+    //Cache of AnnotatedConstructor
+    private static ConcurrentMap<Constructor<?>, AnnotatedConstructor<?>> annotatedConstructorCache = 
+        new ConcurrentHashMap<Constructor<?>, AnnotatedConstructor<?>>();
+    
+    //Cache of AnnotatedMethod
+    private static ConcurrentMap<Method, AnnotatedMethod<?>> annotatedMethodCache = 
+        new ConcurrentHashMap<Method, AnnotatedMethod<?>>();
+    
+    //Cache of AnnotatedField
+    private static ConcurrentMap<Field, AnnotatedField<?>> annotatedFieldCache = 
+        new ConcurrentHashMap<Field, AnnotatedField<?>>();
+    
+    /**
+     * No instantiate.
+     */
     private AnnotatedElementFactory()
     {
         // Emtpty
@@ -47,27 +69,42 @@ public final class AnnotatedElementFactory
     @SuppressWarnings("unchecked")
     public static <X> AnnotatedType<X> newAnnotatedType(Class<X> annotatedClass)
     {
-        AnnotatedTypeImpl<X> annotatedType = new AnnotatedTypeImpl<X>(annotatedClass);
-        
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(annotatedClass);
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(annotatedClass);
-        Constructor<X>[] ctxs = (Constructor<X>[])SecurityUtil.doPrivilegedGetDeclaredConstructors(annotatedClass);
-        for(Field f : fields)
+        Asserts.assertNotNull(annotatedClass, "annotatedClass is null");
+        AnnotatedTypeImpl<X> annotatedType = null;
+        if(annotatedTypeCache.containsKey(annotatedClass))
         {
-            AnnotatedField<X> af = new AnnotatedFieldImpl<X>(f, annotatedType);
-            annotatedType.addAnnotatedField(af);
+            annotatedType = (AnnotatedTypeImpl<X>)annotatedTypeCache.get(annotatedClass);
         }
-        
-        for(Method m : methods)
+        else
         {
-            AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(m,annotatedType);
-            annotatedType.addAnnotatedMethod(am);
-        }
-        
-        for(Constructor<X> ct : ctxs)
-        {
-            AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(ct,annotatedType);
-            annotatedType.addAnnotatedConstructor(ac);
+            annotatedType = new AnnotatedTypeImpl<X>(annotatedClass);
+            
+            Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(annotatedClass);
+            Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(annotatedClass);
+            Constructor<X>[] ctxs = (Constructor<X>[])SecurityUtil.doPrivilegedGetDeclaredConstructors(annotatedClass);
+            for(Field f : fields)
+            {
+                AnnotatedField<X> af = new AnnotatedFieldImpl<X>(f, annotatedType);
+                annotatedType.addAnnotatedField(af);
+            }
+            
+            for(Method m : methods)
+            {
+                AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(m,annotatedType);
+                annotatedType.addAnnotatedMethod(am);
+            }
+            
+            for(Constructor<X> ct : ctxs)
+            {
+                AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(ct,annotatedType);
+                annotatedType.addAnnotatedConstructor(ac);
+            }        
+            
+            AnnotatedTypeImpl<X> oldType = (AnnotatedTypeImpl<X>)annotatedTypeCache.putIfAbsent(annotatedClass, annotatedType);
+            if(oldType != null)
+            {
+                annotatedType = oldType;
+            }
         }
                 
         return annotatedType;
@@ -80,9 +117,26 @@ public final class AnnotatedElementFactory
      * @param constructor constructor
      * @return new annotated constructor
      */
+    @SuppressWarnings("unchecked")
     public static <X> AnnotatedConstructor<X> newAnnotatedConstructor(Constructor<X> constructor)
     {
-        return new AnnotatedConstructorImpl<X>(constructor);
+        Asserts.assertNotNull(constructor, "constructor is null");
+        AnnotatedConstructorImpl<X> annConstructor = null;
+        if(annotatedConstructorCache.containsKey(constructor))
+        {
+            annConstructor = (AnnotatedConstructorImpl<X>)annotatedConstructorCache.get(constructor);
+        }
+        else
+        {
+            annConstructor = new AnnotatedConstructorImpl<X>(constructor);
+            AnnotatedConstructorImpl<X> old = (AnnotatedConstructorImpl<X>)annotatedConstructorCache.putIfAbsent(constructor, annConstructor);
+            if(old != null)
+            {
+                annConstructor = old;
+            }
+        }
+        
+        return annConstructor;
     }
 
     /**
@@ -93,9 +147,28 @@ public final class AnnotatedElementFactory
      * @param declaringClass declaring class
      * @return new annotated field
      */
+    @SuppressWarnings("unchecked")
     public static <X> AnnotatedField<X> newAnnotatedField(Field field, Class<X> declaringClass)
     {
-        return new AnnotatedFieldImpl<X>(field);
+        Asserts.assertNotNull(field, "field is null");
+        Asserts.assertNotNull(declaringClass, "declaringClass is null");
+        
+        AnnotatedFieldImpl<X> annotField = null;
+        if(annotatedFieldCache.containsKey(field))
+        {
+            annotField = (AnnotatedFieldImpl<X>)annotatedFieldCache.get(field);
+        }
+        else
+        {
+            annotField = new AnnotatedFieldImpl<X>(field);
+            AnnotatedFieldImpl<X> old = (AnnotatedFieldImpl<X>) annotatedFieldCache.putIfAbsent(field, annotField);
+            if(old != null)
+            {
+                annotField = old;
+            }
+        }
+        
+        return annotField; 
     }
 
     /**
@@ -106,9 +179,38 @@ public final class AnnotatedElementFactory
      * @param declaringClass declaring class info
      * @return new annotated method
      */
+    @SuppressWarnings("unchecked")
     public static <X> AnnotatedMethod<X> newAnnotatedMethod(Method method, Class<X> declaringClass)
     {
-        return new AnnotatedMethodImpl<X>(method);
+        Asserts.assertNotNull(method, "method is null");
+        Asserts.assertNotNull(declaringClass, "declaringClass is null");
+        
+        AnnotatedMethodImpl<X> annotMethod = null;
+        if(annotatedMethodCache.containsKey(method))
+        {
+            annotMethod = (AnnotatedMethodImpl<X>)annotatedMethodCache.get(method);
+        }
+        else
+        {
+            annotMethod = new AnnotatedMethodImpl<X>(method);
+            AnnotatedMethodImpl<X> old = (AnnotatedMethodImpl<X>) annotatedMethodCache.putIfAbsent(method, annotMethod);
+            if(old != null)
+            {
+                annotMethod = old;
+            }
+        }
+        
+        return annotMethod;          
     }
-
+    
+    /**
+     * Clear caches.
+     */
+    public static void clear()
+    {
+        annotatedTypeCache.clear();
+        annotatedConstructorCache.clear();
+        annotatedFieldCache.clear();
+        annotatedMethodCache.clear();
+    }
 }

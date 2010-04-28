@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 
 public class OwbParametrizedTypeImpl implements ParameterizedType
 {
-    private Class<?> clazz;
+    private final Class<?> clazz;
     
     public OwbParametrizedTypeImpl(Class<?> clazz)
     {

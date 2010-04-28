@@ -28,10 +28,10 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 class AnnotatedParameterImpl<X> extends AbstractAnnotated implements AnnotatedParameter<X>
 {
     /**Declaring callable*/
-    private AnnotatedCallable<X> declaringCallable;
+    private final AnnotatedCallable<X> declaringCallable;
     
     /**Parameter position*/
-    private int position;
+    private final int position;
     
     AnnotatedParameterImpl(Type baseType, AnnotatedCallable<X> declaringCallable, int position)
     {
