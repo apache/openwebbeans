@@ -71,6 +71,16 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
+        if (method.getName().equals("finalize") &&
+            method.getParameterTypes().length == 0
+        	&& method.getReturnType().equals(Void.TYPE)) 
+        {
+        	// we should NOT invoke the bean's finalize() from proxied 
+        	// finalize() method since JVM will invoke it directly. 
+        	// OWB-366
+        	return null;
+        }
+
         //Get instance from context
         Object webbeansInstance = getContextualInstance();
         
