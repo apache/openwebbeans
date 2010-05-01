@@ -24,8 +24,6 @@ import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
 
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.event.NotificationManager;
@@ -67,9 +65,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         if(bean instanceof Interceptor)
         {
             //Required for custom interceptors
-            ManagedBean managedBean = new ManagedBean(bean.getBeanClass(),WebBeansType.MANAGED);                  
-            ManagedBeanCreatorImpl managedBeanCreator = new ManagedBeanCreatorImpl(managedBean);
-            managedBean = WebBeansUtil.defineManagedBean(managedBeanCreator, annotatedType);
+            ManagedBean managedBean = WebBeansUtil.defineManagedBeanWithoutFireEvents(annotatedType);
             
             CustomInterceptor<?> interceptor = new CustomInterceptor(managedBean, (Interceptor<?>)bean);
             
@@ -80,9 +76,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         else if(bean instanceof Decorator)
         {
             //Required for custom decorators
-            ManagedBean managedBean = new ManagedBean(bean.getBeanClass(),WebBeansType.MANAGED);                  
-            ManagedBeanCreatorImpl managedBeanCreator = new ManagedBeanCreatorImpl(managedBean);
-            managedBean = WebBeansUtil.defineManagedBean(managedBeanCreator, annotatedType);
+            ManagedBean managedBean = WebBeansUtil.defineManagedBeanWithoutFireEvents(annotatedType);
             
             this.beanManager.addDecorator(new WebBeansDecorator(managedBean, (Decorator)bean));
             BeanManagerImpl.getManager().addCustomInterceptorClass(bean.getBeanClass());            

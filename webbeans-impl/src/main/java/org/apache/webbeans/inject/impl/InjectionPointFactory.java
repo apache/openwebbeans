@@ -31,6 +31,7 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
@@ -97,7 +98,9 @@ public class InjectionPointFactory
         
         if(!checkFieldApplicable(annots))
         {
-            return getGenericInjectionPoint(owner, annots, member.getGenericType(), member, AnnotatedElementFactory.newAnnotatedField(member, member.getDeclaringClass()));   
+            AnnotatedType<?> annotated = AnnotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
+            return getGenericInjectionPoint(owner, annots, member.getGenericType(), member, 
+                    AnnotatedElementFactory.newAnnotatedField(member, annotated));   
         }        
         else
         {
@@ -199,8 +202,9 @@ public class InjectionPointFactory
         Asserts.assertNotNull(member, "member parameter can not be null");
 
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
-
-        AnnotatedMethod method = AnnotatedElementFactory.newAnnotatedMethod(member, member.getDeclaringClass());
+        
+        AnnotatedType<?> annotated = AnnotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
+        AnnotatedMethod method = AnnotatedElementFactory.newAnnotatedMethod(member, annotated);
         List<AnnotatedParameter<?>> parameters = method.getParameters();
         
         InjectionPoint point = null;
@@ -301,7 +305,8 @@ public class InjectionPointFactory
 
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
 
-        AnnotatedConstructor constructor = AnnotatedElementFactory.newAnnotatedConstructor(member);
+        AnnotatedType<Object> annotated = (AnnotatedType<Object>)AnnotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
+        AnnotatedConstructor constructor = AnnotatedElementFactory.newAnnotatedConstructor((Constructor<Object>)member,annotated);
         List<AnnotatedParameter<?>> parameters = constructor.getParameters();
         
         InjectionPoint point = null;

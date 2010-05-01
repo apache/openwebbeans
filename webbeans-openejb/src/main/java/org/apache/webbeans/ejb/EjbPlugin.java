@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.openejb.Container;
@@ -169,7 +170,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     public void beforeApplicationDestroyed(AppInfo appInfo) {
     }
     
-    public <T> Bean<T> defineSessionBean(Class<T> clazz)
+    public <T> Bean<T> defineSessionBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent)
     {
         if(!isSessionBean(clazz))
         {
@@ -202,7 +203,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         bean.setDeploymentInfo(info);
         bean.setEjbType(type);
         
-        EjbUtility.fireEvents(clazz, bean);
+        EjbUtility.fireEvents(clazz, bean, processAnnotatedTypeEvent);
         
         return bean;
     }

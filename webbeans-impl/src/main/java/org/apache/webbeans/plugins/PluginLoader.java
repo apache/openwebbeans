@@ -204,6 +204,7 @@ public class PluginLoader
         return null;
     }
     
+    
     public OpenWebBeansJavaEEPlugin getJavaEEPlugin()
     {
         for(OpenWebBeansPlugin plugin : this.plugins)

@@ -31,12 +31,14 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.InterceptedMarker;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
@@ -62,6 +64,7 @@ import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
+import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
@@ -83,6 +86,7 @@ import org.apache.webbeans.xml.XMLSpecializesManager;
  * the scanner phase.
  */
 @SuppressWarnings("unchecked")
+//This class written as single threaded.
 public class BeansDeployer
 {
     //Logger instance
@@ -96,7 +100,7 @@ public class BeansDeployer
     
     /**Discover ejb or not*/
     protected boolean discoverEjb = false;
-
+    
     /**
      * Creates a new deployer with given xml configurator.
      * 
@@ -383,6 +387,9 @@ public class BeansDeployer
             
             //Validate Bean names
             validateBeanNames(beanNames);
+            
+            //Clear Names
+            beanNames.clear();
         }
         
     }
@@ -390,39 +397,47 @@ public class BeansDeployer
     private void validateBeanNames(Stack<String> beanNames)
     {
         if(beanNames.size() > 0)
-        {
-            String beanName = beanNames.pop();
-            String part = null;
-            int i = beanName.indexOf('.');
-            if(i != -1)
+        {   
+            for(String beanName : beanNames)
             {
-                part = beanName.substring(0,i);                
-            }
-            
-            for(String other : beanNames)
-            {
-                if(beanName.equals(other))
+                for(String other : beanNames)
                 {
-                    Set<Bean<?>> beans = InjectionResolver.getInstance().implResolveByName(beanName);
-                    if(beans.size() > 1)
+                    String part = null;
+                    int i = beanName.lastIndexOf('.');
+                    if(i != -1)
                     {
-                        throw new WebBeansConfigurationException("There are two different beans with name : " + beanName + " in the deployment archieve");   
+                        part = beanName.substring(0,i);                
                     }
-                }
-                else
-                {
-                    if(part != null)
+                    
+                    if(beanName.equals(other))
                     {
-                        if(part.equals(other))
+                        InjectionResolver resolver = InjectionResolver.getInstance();
+                        Set<Bean<?>> beans = resolver.implResolveByName(beanName);
+                        if(beans.size() > 1)
                         {
-                            throw new WebBeansConfigurationException("EL name of one bean is of the form x.y, where y is a valid bean EL name, and " +
-                                    "x is the EL name of the other bean for the bean name : " + beanName);
-                        }                        
+                            beans = resolver.findByAlternatives(beans);                            
+                            if(beans.size() > 1)
+                            {
+                                throw new WebBeansConfigurationException("There are two different beans with name : " + beanName + " in the deployment archieve");   
+                            }   
+                        }
                     }
-                }
-            }
+                    else
+                    {
+                        if(part != null)
+                        {
+                            if(part.equals(other))
+                            {
+                                throw new WebBeansConfigurationException("EL name of one bean is of the form x.y, where y is a valid bean EL name, and " +
+                                        "x is the EL name of the other bean for the bean name : " + beanName);
+                            }                        
+                        }
+                    }
+                }                
+            }            
         }
     }
+    
     
     
     /**
@@ -438,23 +453,35 @@ public class BeansDeployer
         // Start from the class
         Set<Class<?>> classIndex = scanner.getBeanClasses();
         
+        //Iterating over each class
         if (classIndex != null)
         {
             for(Class<?> implClass : classIndex)
-            {   
-                if (ManagedBeanConfigurator.isManagedBean(implClass))
+            {
+                //Define annotation type
+                AnnotatedType<?> annotatedType = AnnotatedElementFactory.newAnnotatedType(implClass);
+                
+                //Fires ProcessAnnotatedType
+                ProcessAnnotatedTypeImpl<?> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);     
+                
+                //if veto() is called
+                if(processAnnotatedEvent.isVeto())
                 {
-                    ManagedBeanConfigurator.checkManagedBeanCondition(implClass);
-                    defineManagedBean(implClass);
+                    return;
                 }
-                else if(this.discoverEjb)
+                
+                //Try class is Managed Bean
+                boolean isDefined = defineManagedBean((Class<Object>)implClass, (ProcessAnnotatedTypeImpl<Object>)processAnnotatedEvent);
+                
+                //Try class is EJB bean
+                if(!isDefined && this.discoverEjb)
                 {                    
                     if(EJBWebBeansConfigurator.isSessionBean(implClass))
                     {
                         logger.info(OWBLogConst.INFO_0010, new Object[]{implClass.getName()});
-                        defineEnterpriseWebBean(implClass);                        
+                        defineEnterpriseWebBean((Class<Object>)implClass, (ProcessAnnotatedTypeImpl<Object>)processAnnotatedEvent);                        
                     }
-                }
+                }                                     
             }
         }
 
@@ -692,69 +719,105 @@ public class BeansDeployer
      * Defines and configures managed bean.
      * @param <T> type info
      * @param clazz bean class
+     * @return true if given class is configured as a managed bean
      */
-    protected <T> void defineManagedBean(Class<T> clazz)
-    {
-        AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(clazz);
+    protected <T> boolean defineManagedBean(Class<T> clazz, ProcessAnnotatedTypeImpl<T> processAnnotatedEvent)
+    {   
+        //Bean manager
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
         
-        //Fires ProcessAnnotatedType
-        ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);      
-        
-        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);                  
-        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
-        
-        if(processAnnotatedEvent.isVeto())
+        //Create an annotated type
+        AnnotatedType<T> annotatedType = processAnnotatedEvent.getAnnotatedType();
+                                
+        //Fires ProcessInjectionTarget event for Java EE components instances
+        //That supports injections but not managed beans
+        ProcessInjectionTargetImpl<T> processInjectionTargetEvent = null;
+        if(WebBeansUtil.supportsJavaEeComponentInjections(clazz))
         {
-            return;
-        }
-        
-        boolean annotationTypeSet = false;
-        if(processAnnotatedEvent.isSet())
-        {
-            annotationTypeSet = true;
-            managedBean.setAnnotatedType(annotatedType);
-            annotatedType = processAnnotatedEvent.getAnnotatedType();
-            managedBeanCreator.setAnnotatedType(annotatedType);
-            managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
-        }
-        
-        //Decorator
-        if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeDecorator(annotatedType))
-        {
-            logger.debug(OWBLogConst.INFO_0012, new Object[]{annotatedType.getJavaClass().getName()});
-            if(annotationTypeSet)
+            //Fires ProcessInjectionTarget
+            processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEventForJavaEeComponents(clazz);    
+            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
+            
+            //Sets custom InjectionTarget instance
+            if(processInjectionTargetEvent.isSet())
             {
-                WebBeansAnnotatedTypeUtil.defineDecorator(annotatedType);
+                //Adding injection target
+                manager.putInjectionTargetWrapperForJavaEeComponents(clazz, new InjectionTargetWrapper<T>(processInjectionTargetEvent.getInjectionTarget()));                
+            }
+        }
+        
+        //Check for whether this class is candidate for Managed Bean
+        if (ManagedBeanConfigurator.isManagedBean(clazz))
+        {
+            //Check conditions
+            ManagedBeanConfigurator.checkManagedBeanCondition(clazz);
+            
+            //Temporary managed bean instance creationa
+            ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);                  
+            ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
+            
+            boolean annotationTypeSet = false;
+            if(processAnnotatedEvent.isSet())
+            {
+                annotationTypeSet = true;
+                managedBean.setAnnotatedType(annotatedType);
+                annotatedType = processAnnotatedEvent.getAnnotatedType();
+                managedBeanCreator.setAnnotatedType(annotatedType);
+                managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
+            }            
+            
+            //If ProcessInjectionTargetEvent is not set, set it
+            if(processInjectionTargetEvent == null)
+            {
+                processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);   
+            }    
+            
+            //Decorator
+            if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeDecorator(annotatedType))
+            {
+                logger.debug(OWBLogConst.INFO_0012, new Object[]{annotatedType.getJavaClass().getName()});
+                if(annotationTypeSet)
+                {
+                    WebBeansAnnotatedTypeUtil.defineDecorator(annotatedType);
+                }
+                else
+                {
+                    WebBeansUtil.defineDecorator(managedBeanCreator, processInjectionTargetEvent);
+                }
+            }
+            //Interceptor
+            else if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeInterceptor(annotatedType))
+            {
+                logger.debug(OWBLogConst.INFO_0011, new Object[]{annotatedType.getJavaClass().getName()});
+                if(annotationTypeSet)
+                {
+                    WebBeansAnnotatedTypeUtil.defineInterceptor(annotatedType);
+                }
+                else
+                {
+                    WebBeansUtil.defineInterceptor(managedBeanCreator, processInjectionTargetEvent);
+                }
             }
             else
             {
-                WebBeansUtil.defineDecorator(managedBeanCreator, annotatedType);
-            }
-        }
-        //Interceptor
-        else if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeInterceptor(annotatedType))
-        {
-            logger.debug(OWBLogConst.INFO_0011, new Object[]{annotatedType.getJavaClass().getName()});
-            if(annotationTypeSet)
-            {
-                WebBeansAnnotatedTypeUtil.defineInterceptor(annotatedType);
-            }
-            else
-            {
-                WebBeansUtil.defineInterceptor(managedBeanCreator, annotatedType);
-            }
-        }
-        else
-        {
-            if(BeanManagerImpl.getManager().containsCustomDecoratorClass(annotatedType.getJavaClass()) ||
-                    BeanManagerImpl.getManager().containsCustomInterceptorClass(annotatedType.getJavaClass()))
-            {
-                return;
+                if(BeanManagerImpl.getManager().containsCustomDecoratorClass(annotatedType.getJavaClass()) ||
+                        BeanManagerImpl.getManager().containsCustomInterceptorClass(annotatedType.getJavaClass()))
+                {
+                    return false;
+                }
+                
+                logger.debug(OWBLogConst.INFO_0009, new Object[]{annotatedType.getJavaClass().getName()});
+                WebBeansUtil.defineManagedBean(managedBeanCreator, processInjectionTargetEvent);   
             }
             
-            logger.debug(OWBLogConst.INFO_0009, new Object[]{annotatedType.getJavaClass().getName()});
-            WebBeansUtil.defineManagedBean(managedBeanCreator, annotatedType);   
+            return true;
         }
+        //Not a managed bean
+        else
+        {
+            return false;
+        }
+                                
     }
     
     /**
@@ -762,9 +825,9 @@ public class BeansDeployer
      * @param <T> bean class type
      * @param clazz bean class
      */
-    protected <T> void defineEnterpriseWebBean(Class<T> clazz)
+    protected <T> void defineEnterpriseWebBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent)
     {
-        InjectionTargetBean<T> bean = (InjectionTargetBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz);
+        InjectionTargetBean<T> bean = (InjectionTargetBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz, processAnnotatedTypeEvent);
         WebBeansUtil.setInjectionTargetBeanEnableFlag(bean);
     }
 }

@@ -70,6 +70,7 @@ import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.el.WebBeansELResolver;
+import org.apache.webbeans.el.WrappedExpressionFactory;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
@@ -160,6 +161,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     private Map<Contextual<?>, InjectionTargetWrapper<?>> injectionTargetWrappers = 
         Collections.synchronizedMap(new IdentityHashMap<Contextual<?>, InjectionTargetWrapper<?>>());
+    
+    /**InjectionTargets for Java EE component instances that supports injections*/
+    private Map<Class<?>, InjectionTargetWrapper<?>> injectionTargetForJavaEeComponents = 
+        new ConcurrentHashMap<Class<?>, InjectionTargetWrapper<?>>();
 
     /**
      * The parent Manager this child is depending from.
@@ -190,6 +195,20 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         Asserts.assertNotNull(contextual);
         return (InjectionTargetWrapper<T>)this.injectionTargetWrappers.get(contextual);
     }
+    
+    public <T> void putInjectionTargetWrapperForJavaEeComponents(Class<T> javaEeComponentClass, InjectionTargetWrapper<T> wrapper)
+    {
+        Asserts.assertNotNull(javaEeComponentClass);
+        Asserts.assertNotNull(wrapper);
+        
+        this.injectionTargetForJavaEeComponents.put(javaEeComponentClass, wrapper);
+    }
+    
+    public <T> InjectionTargetWrapper<T> getInjectionTargetWrapper(Class<T> javaEeComponentClass)
+    {
+        Asserts.assertNotNull(javaEeComponentClass);
+        return (InjectionTargetWrapper<T>)this.injectionTargetForJavaEeComponents.get(javaEeComponentClass);
+    }    
     
     public ErrorStack getErrorStack()
     {
@@ -1043,7 +1062,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
-        return null;
+        return new WrappedExpressionFactory(expressionFactory);
     }
 
     public void addAdditionalQualifier(Class<? extends Annotation> qualifier)

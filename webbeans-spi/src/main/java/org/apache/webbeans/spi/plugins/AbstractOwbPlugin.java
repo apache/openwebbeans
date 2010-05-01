@@ -38,6 +38,12 @@ public abstract class AbstractOwbPlugin implements OpenWebBeansPlugin
     public void isManagedBean(Class<?> clazz) throws Exception
     {
     }
+    
+    /** @{inheritDoc} */
+    public boolean supportsJavaEeComponentInjections(Class<?> targetClass)
+    {        
+        return false;
+    }
 
     /** @{inheritDoc} */
     public void shutDown() throws Exception

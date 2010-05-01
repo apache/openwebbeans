@@ -50,6 +50,11 @@ public class WebBeansELResolver extends ELResolver
 
     public static ThreadLocal<ELContextStore> LOCAL_CONTEXT = new ThreadLocal<ELContextStore>();
     
+    public WebBeansELResolver()
+    {
+        
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -84,61 +89,52 @@ public class WebBeansELResolver extends ELResolver
     @SuppressWarnings("unchecked")
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
+        //Manager instance
         BeanManagerImpl manager = BeanManagerImpl.getManager();
-        Object object = null;
-        Bean<Object> bean = null;
-        CreationalContext<Object> creationalContext = null;        
-        ELContextStore store = null;
-        boolean canBe = false;
         
+        //Bean instance
+        Object object = null;
+        
+        //Managed bean
+        Bean<Object> bean = null;
+        
+        //Creational context for creating instance
+        CreationalContext<Object> creationalContext = null;
+        
+        //Local store, set by the OwbELContextListener
+        ELContextStore store = LOCAL_CONTEXT.get();        
         if (obj == null)
-        {
-            if((store = LOCAL_CONTEXT.get()) != null)
-            {
-                ELContext oldContext = store.getELContext();
-                if(!oldContext.equals(context))
-                {
-                    store.destroy();
-                    LOCAL_CONTEXT.set(null);
-                    LOCAL_CONTEXT.remove();
-                }
-                else
-                {
-                    canBe = true;
-                }
-            }
-                        
-            String name = (String) property;            
+        {                      
+            //Name of the bean
+            String name = (String) property;
+            //Get beans
             Set<Bean<?>> beans = manager.getBeans(name);
             
+            //Found?
             if(beans != null && !beans.isEmpty())
             {
                 bean = (Bean<Object>)beans.iterator().next();
                 creationalContext = manager.createCreationalContext(bean);                    
-                
+                //Already registered in store
                 if(bean.getScope().equals(Dependent.class))
                 {
-                    if(canBe)
-                    {
-                       object = store.getDependent(bean);
-                    }
+                    object = store.getDependent(bean);
                 }                    
             }
             
-            
+            //If no object found on the store
             if(object == null)
             {
-                object = manager.getInstanceByName(name,creationalContext);
-                
+                //Getting object
+                object = manager.getInstanceByName(name,creationalContext);                
                 if (object != null)
                 {                    
-                    context.setPropertyResolved(true);
-                    
-                    store = new ELContextStore(context);
+                    context.setPropertyResolved(true);   
+                    //Adding into store
                     store.addDependent(bean, object, creationalContext);
-                    LOCAL_CONTEXT.set(store);
                 }                    
             }
+            //Object found on the store
             else
             {
                 context.setPropertyResolved(true);                    

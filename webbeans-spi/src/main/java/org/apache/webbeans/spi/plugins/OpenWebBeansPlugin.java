@@ -65,6 +65,15 @@ public interface OpenWebBeansPlugin
     public boolean supportService(Class<?> serviceClass);
     
     /**
+     * Returns true if given class supports injections,
+     * false otherwise.
+     * @param targetClass any target class
+     * @return true if given class supports injections
+     */
+    public boolean supportsJavaEeComponentInjections(Class<?> targetClass);
+    
+    
+    /**
      * Gets service instance.
      * @param <T> type
      * @param serviceClass service class

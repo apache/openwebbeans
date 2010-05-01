@@ -34,6 +34,7 @@ import javax.enterprise.inject.spi.Decorator;
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.ApplicationScopedBeanIntereptorHandler;
@@ -166,6 +167,26 @@ public final class JavassistProxyFactory
         //No need to return proxy
         if(!notInInterceptorClassAndLifecycle && decorators.isEmpty())
         {
+            //Adding this dependent instance into creational context
+            //This occurs when no owner of this dependent instance
+            if(creastionalContext instanceof CreationalContextImpl)
+            {
+                //If this creational context is owned by itself, add it
+                //For example, getting it directly BeanManager#getReference(bean,creational context)
+                CreationalContextImpl<?> ccImpl = (CreationalContextImpl<?>)creastionalContext;
+                
+                //Non contextual instance --> Bean --> Null
+                //See OWBInjector
+                if(ccImpl.getBean() != null)
+                {
+                    if(ccImpl.getBean().equals(bean))
+                    {
+                        //Owner of the dependent is itself
+                        ccImpl.addDependent(actualInstance, bean, actualInstance);
+                    }                                
+                }
+            }
+            
             return actualInstance;
         }
         

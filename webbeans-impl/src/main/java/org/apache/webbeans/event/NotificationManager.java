@@ -35,6 +35,7 @@ import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.util.TypeLiteral;
@@ -465,27 +466,63 @@ public final class NotificationManager
         Asserts.assertNotNull(component, "component parameter can not be null");
         Set<Method> observableMethods = component.getObservableMethods();
         Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
-
-        for (Method observableMethod : observableMethods)
+        
+        //check for null
+        if(observableMethods != null)
         {
-            Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observableMethod, Observes.class);
-
-            boolean ifExist = false;
-
-            if (observes.notifyObserver().equals(Reception.IF_EXISTS))
+            for (Method observableMethod : observableMethods)
             {
-                ifExist = true;
-            }
+                Observes observes = AnnotationUtil.getMethodFirstParameterAnnotation(observableMethod, Observes.class);
 
-            ObserverMethodImpl<T> observer = new ObserverMethodImpl(component, observableMethod, ifExist);
+                boolean ifExist = false;
 
-            Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(observableMethod, Observes.class);
+                if (observes.notifyObserver().equals(Reception.IF_EXISTS))
+                {
+                    ifExist = true;
+                }
 
-            addObserver(observer, type);
-            
-            observerMethods.add(observer);
+                ObserverMethodImpl<T> observer = new ObserverMethodImpl(component, observableMethod, ifExist);
+
+                Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(observableMethod, Observes.class);
+
+                addObserver(observer, type);
+                
+                observerMethods.add(observer);
+            }            
         }
 
         return observerMethods;
     }
+    
+    /**
+     * Gets observer method from given annotated method.
+     * @param <T> bean type info
+     * @param annotatedMethod annotated method for observer
+     * @param bean bean instance 
+     * @return ObserverMethod
+     */
+    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedMethod<?> annotatedMethod, InjectionTargetBean<T> bean)
+    {
+        Asserts.assertNotNull(annotatedMethod, "annotatedMethod parameter can not be null");
+
+        Observes observes = AnnotationUtil.getAnnotatedMethodFirstParameterAnnotation(annotatedMethod, Observes.class);
+        boolean ifExist = false;
+        if(observes != null)
+        {
+            if (observes.notifyObserver().equals(Reception.IF_EXISTS))
+            {
+                ifExist = true;
+            }            
+        }
+
+        ObserverMethodImpl<T> observer = new ObserverMethodImpl(bean, annotatedMethod.getJavaMember(), ifExist);
+        Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Observes.class);
+        
+        //Adds this observer
+        addObserver(observer, type);
+        
+
+        return observer;
+    }
+
 }

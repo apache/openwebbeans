@@ -170,6 +170,7 @@ public final class WebBeansAnnotatedTypeUtil
     @SuppressWarnings("unchecked")
     public static <X> Set<ObserverMethod<?>> defineObserverMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
     {
+        Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
         Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();    
         for (AnnotatedMethod<? super X> annotatedMethod : annotatedMethods)
         {
@@ -201,14 +202,22 @@ public final class WebBeansAnnotatedTypeUtil
                      }
                 }
                 
-                
+                //Add method
                 bean.addObservableMethod(annotatedMethod.getJavaMember());
 
-                addMethodInjectionPointMetaData(bean, annotatedMethod);                
+                //Add injection point data
+                addMethodInjectionPointMetaData(bean, annotatedMethod);
+                
+                //Looking for ObserverMethod
+                ObserverMethod<?> definedObserver = NotificationManager.getInstance().getObservableMethodForAnnotatedMethod(annotatedMethod, bean);
+                if(definedObserver != null)
+                {
+                    definedObservers.add(definedObserver);
+                }
             }
         }
         
-        return NotificationManager.getInstance().addObservableComponentMethods(bean);
+        return definedObservers;
     }
     
     @SuppressWarnings("unchecked")

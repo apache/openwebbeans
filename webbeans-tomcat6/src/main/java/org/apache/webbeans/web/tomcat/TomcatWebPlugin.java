@@ -33,19 +33,27 @@ import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 
+/**
+ * Tomcat plugin for OWB.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
 public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWebPlugin
 {
+    //Security service implementation.
     private final TomcatSecurityService securityService = new TomcatSecurityService();
     
+    /**
+     * Default constructor.
+     */
     public TomcatWebPlugin()
     {
         
     }
     
-    
-
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.plugins.AbstractOwbPlugin#getSupportedService(java.lang.Class)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public <T> T getSupportedService(Class<T> serviceClass)
@@ -59,7 +67,9 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWe
     }
 
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void isManagedBean(Class<?> clazz) throws Exception
     {
@@ -77,9 +87,33 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWe
             throw new Exception("Given class  : " + clazz.getName() + " is not managed bean");
         }
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.webbeans.plugins.AbstractOwbPlugin#supportService(java.lang.Class)
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean supportsJavaEeComponentInjections(Class<?> clazz)
+    {
+        if(Servlet.class.isAssignableFrom(clazz) ||
+                Filter.class.isAssignableFrom(clazz) ||
+                ServletContextListener.class.isAssignableFrom(clazz) ||
+                ServletContextAttributeListener.class.isAssignableFrom(clazz) ||
+                HttpSessionActivationListener.class.isAssignableFrom(clazz) ||
+                HttpSessionAttributeListener.class.isAssignableFrom(clazz) ||
+                HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
+                HttpSessionListener.class.isAssignableFrom(clazz) ||
+                ServletRequestListener.class.isAssignableFrom(clazz) ||
+                ServletRequestAttributeListener.class.isAssignableFrom(clazz) )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * {@inheritDoc}
      */
     @Override
     public boolean supportService(Class<?> serviceClass)

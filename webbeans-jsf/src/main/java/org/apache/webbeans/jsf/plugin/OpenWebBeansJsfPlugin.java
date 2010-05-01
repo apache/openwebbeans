@@ -19,7 +19,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.util.ClassUtil;
 
-public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin 
+public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin
 {
 
     /** {@inheritDoc} */
@@ -31,5 +31,4 @@ public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin
                                                      + " can not implement JSF UIComponent");
         }
     }
-
 }

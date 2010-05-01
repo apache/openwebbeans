@@ -72,6 +72,7 @@ import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.PassivationCapable;
@@ -149,7 +150,6 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.creation.ProducerBeansProducer;
 import org.apache.webbeans.portable.events.ProcessBeanImpl;
-import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
@@ -161,6 +161,7 @@ import org.apache.webbeans.portable.events.generics.GProcessProducer;
 import org.apache.webbeans.portable.events.generics.GProcessProducerField;
 import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
+import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
 /**
@@ -364,6 +365,36 @@ public final class WebBeansUtil
                 PluginLoader.throwsException(e);
             }
         }
+    }
+    
+    /**
+     * Returns true if given class supports injections,
+     * false otherwise.
+     * <p>
+     * Each plugin is asked with given class that supports
+     * injections or not. 
+     * </p>
+     * @param clazz scanned class
+     * @return  true if given class supports injections
+     */
+    public static boolean supportsJavaEeComponentInjections(Class<?> clazz)
+    {
+        // and finally call all checks which are defined in plugins like JSF, JPA, etc
+        List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+        for (OpenWebBeansPlugin plugin : plugins)
+        {
+            //Ejb plugin handles its own events
+            //Also EJb beans supports injections
+            if(!(plugin instanceof OpenWebBeansEjbPlugin))
+            {
+                if(plugin.supportsJavaEeComponentInjections(clazz))
+                {
+                    return true;
+                }                
+            }
+        }
+        
+        return false;
     }
 
     /**
@@ -2122,15 +2153,15 @@ public final class WebBeansUtil
         return true;
     }
     
-    public static <T> void defineInterceptor(ManagedBeanCreatorImpl<T> managedBeanCreator, AnnotatedType<T> annotatedType)
+    public static <T> void defineInterceptor(ManagedBeanCreatorImpl<T> managedBeanCreator, ProcessInjectionTarget<T> injectionTargetEvent)
     {
-        Class<?> clazz = annotatedType.getJavaClass();
+        Class<?> clazz = injectionTargetEvent.getAnnotatedType().getJavaClass();
         if (InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
         {
             ManagedBean<T> component = null;
 
             InterceptorUtil.checkInterceptorConditions(clazz);
-            component = defineManagedBean(managedBeanCreator, annotatedType);
+            component = defineManagedBean(managedBeanCreator, injectionTargetEvent);
 
             if (component != null)
             {
@@ -2147,15 +2178,15 @@ public final class WebBeansUtil
      * @param <T> type info
      * @param clazz decorator class
      */
-    public static <T> void defineDecorator(ManagedBeanCreatorImpl<T> creator, AnnotatedType<T> annotatedType)
+    public static <T> void defineDecorator(ManagedBeanCreatorImpl<T> creator, ProcessInjectionTarget<T> processInjectionTargetEvent)
     {
-        Class<T> clazz = annotatedType.getJavaClass();
+        Class<T> clazz = processInjectionTargetEvent.getAnnotatedType().getJavaClass();
         if (DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
         {
             ManagedBean<T> delegate = null;
 
             DecoratorUtil.checkDecoratorConditions(clazz);
-            delegate = defineManagedBean(creator, annotatedType);
+            delegate = defineManagedBean(creator, processInjectionTargetEvent);
 
             if (delegate != null)
             {
@@ -2355,6 +2386,26 @@ public final class WebBeansUtil
         
     }
     
+    /**
+     * Returns <code>ProcessInjectionTarget</code> event.
+     * @param <T> bean type
+     * @param bean bean instance
+     * @return event
+     */
+    public static <T> GProcessInjectionTarget fireProcessInjectionTargetEventForJavaEeComponents(Class<T> componentClass)
+    {
+        AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(componentClass);
+        InjectionTarget<T> injectionTarget = BeanManagerImpl.getManager().createInjectionTarget(annotatedType);
+        GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,annotatedType);
+        
+        //Fires ProcessInjectionTarget
+        BeanManagerImpl.getManager().fireEvent(processInjectionTargetEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        
+        return processInjectionTargetEvent;
+        
+    }
+    
+    
     public static GProcessProducer fireProcessProducerEventForMethod(ProducerMethodBean<?> producerMethod,AnnotatedMethod<?> method)
     {         
         GProcessProducer producerEvent = new GProcessProducer(new ProducerBeansProducer(producerMethod),method);
@@ -2375,7 +2426,7 @@ public final class WebBeansUtil
         return producerEvent;
     }
     
-    public static void fireProcessProducerMethodBeanEvent(Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods)
+    public static void fireProcessProducerMethodBeanEvent(Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods, AnnotatedType<?> annotatedType)
     {
         for(ProducerMethodBean<?> bean : annotatedMethods.keySet())
         {
@@ -2386,7 +2437,7 @@ public final class WebBeansUtil
             GProcessProducerMethod processProducerMethodEvent = null;
             if(disposal != null)
             {
-                disposalAnnotated = AnnotatedElementFactory.newAnnotatedMethod(disposal, bean.getParent().getReturnType());
+                disposalAnnotated = AnnotatedElementFactory.newAnnotatedMethod(disposal, annotatedType);
                 processProducerMethodEvent = new GProcessProducerMethod(bean,annotatedMethod,disposalAnnotated.getParameters().get(0));                
             }
             else
@@ -2718,13 +2769,15 @@ public final class WebBeansUtil
     }
     
  
-    public static <T> ManagedBean<T> defineManagedBean(ManagedBeanCreatorImpl<T> managedBeanCreator,AnnotatedType<T> annotatedType)
+    public static <T> ManagedBean<T> defineManagedBean(ManagedBeanCreatorImpl<T> managedBeanCreator,ProcessInjectionTarget<T> processInjectionTargetEvent)
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();        
+        
+        //Annotated type
+        AnnotatedType<T> annotatedType = processInjectionTargetEvent.getAnnotatedType();
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
-        
-        Class<T> clazz = annotatedType.getJavaClass();
-        
+        Class<T> clazz = annotatedType.getJavaClass();        
+                                
         managedBeanCreator.defineSerializable();
 
         //Define meta-data
@@ -2751,8 +2804,8 @@ public final class WebBeansUtil
         }
                                 
         //Fires ProcessInjectionTarget
-        ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);    
-        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
+        //ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);    
+        //WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
         
         //Put final InjectionTarget instance
         manager.putInjectionTargetWrapper(managedBean, new InjectionTargetWrapper(processInjectionTargetEvent.getInjectionTarget()));
@@ -2760,7 +2813,7 @@ public final class WebBeansUtil
         Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods = new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>(); 
         for(ProducerMethodBean<?> producerMethod : producerMethods)
         {
-            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), producerMethod.getParent().getReturnType());
+            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
             ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForMethod(producerMethod,method);                
             WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerMethods. Look at logs for further details");
 
@@ -2773,7 +2826,7 @@ public final class WebBeansUtil
         Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields = new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
         for(ProducerFieldBean<?> producerField : producerFields)
         {
-            AnnotatedField<?> field = AnnotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), producerField.getParent().getReturnType());
+            AnnotatedField<?> field = AnnotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), annotatedType);
             ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForField(producerField, field);
             WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerFields. Look at logs for further details");
             
@@ -2787,7 +2840,7 @@ public final class WebBeansUtil
         for(ObserverMethod<?> observerMethod : observerMethods)
         {
             ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
-            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(impl.getObserverMethod(), impl.getBeanClass());
+            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(impl.getObserverMethod(), annotatedType);
             
             observerMethodsMap.put(observerMethod, method);
         }
@@ -2800,7 +2853,7 @@ public final class WebBeansUtil
         WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for managed beans. Look at logs for further details");
         
         //Fires ProcessProducerMethod
-        WebBeansUtil.fireProcessProducerMethodBeanEvent(annotatedMethods);            
+        WebBeansUtil.fireProcessProducerMethodBeanEvent(annotatedMethods, annotatedType);            
         WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerMethod event observers for producer method beans. Look at logs for further details");            
         
         //Fires ProcessProducerField
@@ -2830,6 +2883,43 @@ public final class WebBeansUtil
         
         return managedBean;
     }
+    
+    public static <T> ManagedBean<T>  defineManagedBeanWithoutFireEvents(AnnotatedType<T> type)
+    {
+        Class<T> clazz = type.getJavaClass();
+        
+        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);    
+        managedBean.setAnnotatedType(type);
+        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);            
+        managedBeanCreator.setAnnotatedType(type);
+        
+        managedBeanCreator.defineSerializable();
+
+        //Define meta-data
+        managedBeanCreator.defineStereoTypes();
+
+        //Scope type
+        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                        
+        //Check for Enabled via Alternative
+        WebBeansUtil.setInjectionTargetBeanEnableFlag(managedBean);        
+        managedBeanCreator.defineApiType();
+        managedBeanCreator.checkCreateConditions();
+        managedBeanCreator.defineQualifier();
+        managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
+        managedBeanCreator.defineConstructor();            
+        managedBeanCreator.defineProducerMethods();       
+        managedBeanCreator.defineProducerFields();           
+        managedBeanCreator.defineInjectedFields();
+        managedBeanCreator.defineInjectedMethods();
+        managedBeanCreator.defineObserverMethods();
+        DefinitionUtil.defineDecoratorStack(managedBean);
+        DefinitionUtil.defineBeanInterceptorStack(managedBean);
+                                        
+        managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
+        
+        return managedBean;
+    }
+    
 
     /**
      * Determines if the injection is to be performed into a static field.

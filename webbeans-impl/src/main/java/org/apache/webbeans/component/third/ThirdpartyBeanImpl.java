@@ -27,8 +27,9 @@ import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.inject.AlternativesManager;
 
-public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T>
+public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
 {
     private Bean<T> bean = null;
     
@@ -132,6 +133,47 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T>
     {
         throw new UnsupportedOperationException();
         
+    }
+
+    @Override
+    public Class<?> getBeanClass()
+    {
+        return this.bean.getBeanClass();
+    }
+
+    @Override
+    public Set<Class<? extends Annotation>> getStereotypes()
+    {
+        return this.bean.getStereotypes();
+    }
+
+    @Override
+    public boolean isAlternative()
+    {
+        boolean alternative = this.bean.isAlternative();
+        if(alternative)
+        {
+            AlternativesManager manager = AlternativesManager.getInstance();
+            //Class alternative
+            if(manager.isClassAlternative(getBeanClass()))
+            {
+                return true;
+            }
+            
+            Set<Class<? extends Annotation>> stereoTypes = this.bean.getStereotypes();
+            if(stereoTypes != null)
+            {
+                for(Class<? extends Annotation> stereo : stereoTypes)
+                {
+                    if(manager.isStereoAlternative(stereo))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
 
 }

@@ -32,6 +32,7 @@ import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
@@ -192,7 +193,9 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             Field field = ClassUtil.getFieldWithName(beanClass, fieldName);
             
             this.injectionMember = field;
-            this.annotated = AnnotatedElementFactory.newAnnotatedField(field, beanClass);
+            
+            AnnotatedType<?> annotated = AnnotatedElementFactory.newAnnotatedType(beanClass);
+            this.annotated = AnnotatedElementFactory.newAnnotatedField(field, annotated);
             this.injectionType = field.getGenericType();
             
         }
@@ -204,7 +207,9 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             Method method = ClassUtil.getDeclaredMethod(beanClass, methodName, parameters);
             this.injectionMember = method;
             
-            AnnotatedMethod<Object> am =  (AnnotatedMethod<Object>)AnnotatedElementFactory.newAnnotatedMethod((Method)this.injectionMember ,beanClass);
+            AnnotatedType<?> annotated = AnnotatedElementFactory.newAnnotatedType(beanClass);
+            AnnotatedMethod<Object> am =  (AnnotatedMethod<Object>)AnnotatedElementFactory.
+                                    newAnnotatedMethod((Method)this.injectionMember ,annotated);
             List<AnnotatedParameter<Object>> annParameters = am.getParameters();
             
             this.annotated = annParameters.get(in.readByte());            
@@ -216,7 +221,9 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             Class<?>[] parameters = (Class<?>[])in.readObject();            
             this.injectionMember = ClassUtil.getConstructor(beanClass, parameters);
 
-            AnnotatedConstructor<Object> am =  (AnnotatedConstructor<Object>)AnnotatedElementFactory.newAnnotatedConstructor((Constructor<?>)this.injectionMember);
+            AnnotatedType<Object> annotated = (AnnotatedType<Object>)AnnotatedElementFactory.newAnnotatedType(beanClass);
+            AnnotatedConstructor<Object> am =  (AnnotatedConstructor<Object>)AnnotatedElementFactory
+                                            .newAnnotatedConstructor((Constructor<Object>)this.injectionMember,annotated);
             List<AnnotatedParameter<Object>> annParameters = am.getParameters();
             
             this.annotated = annParameters.get(in.readByte());            

@@ -85,7 +85,13 @@ public final class JSFUtil
 
     public static Application getApplication()
     {
-        return getCurrentFacesContext().getApplication();
+        FacesContext context = getCurrentFacesContext();
+        if(context != null)
+        {
+            return context.getApplication();
+        }
+        
+        return null;
     }
     
     public static void addInfoMessage(String message)

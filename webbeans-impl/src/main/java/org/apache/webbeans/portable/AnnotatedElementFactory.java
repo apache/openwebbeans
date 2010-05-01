@@ -118,9 +118,11 @@ public final class AnnotatedElementFactory
      * @return new annotated constructor
      */
     @SuppressWarnings("unchecked")
-    public static <X> AnnotatedConstructor<X> newAnnotatedConstructor(Constructor<X> constructor)
+    public static <X> AnnotatedConstructor<X> newAnnotatedConstructor(Constructor<X> constructor, AnnotatedType<X> declaringClass)
     {
         Asserts.assertNotNull(constructor, "constructor is null");
+        Asserts.assertNotNull(declaringClass, "declaringClass is null");
+        
         AnnotatedConstructorImpl<X> annConstructor = null;
         if(annotatedConstructorCache.containsKey(constructor))
         {
@@ -128,7 +130,7 @@ public final class AnnotatedElementFactory
         }
         else
         {
-            annConstructor = new AnnotatedConstructorImpl<X>(constructor);
+            annConstructor = new AnnotatedConstructorImpl<X>(constructor, declaringClass);
             AnnotatedConstructorImpl<X> old = (AnnotatedConstructorImpl<X>)annotatedConstructorCache.putIfAbsent(constructor, annConstructor);
             if(old != null)
             {
@@ -148,7 +150,7 @@ public final class AnnotatedElementFactory
      * @return new annotated field
      */
     @SuppressWarnings("unchecked")
-    public static <X> AnnotatedField<X> newAnnotatedField(Field field, Class<X> declaringClass)
+    public static <X> AnnotatedField<X> newAnnotatedField(Field field, AnnotatedType<X> declaringClass)
     {
         Asserts.assertNotNull(field, "field is null");
         Asserts.assertNotNull(declaringClass, "declaringClass is null");
@@ -160,7 +162,7 @@ public final class AnnotatedElementFactory
         }
         else
         {
-            annotField = new AnnotatedFieldImpl<X>(field);
+            annotField = new AnnotatedFieldImpl<X>(field, declaringClass);
             AnnotatedFieldImpl<X> old = (AnnotatedFieldImpl<X>) annotatedFieldCache.putIfAbsent(field, annotField);
             if(old != null)
             {
@@ -180,10 +182,10 @@ public final class AnnotatedElementFactory
      * @return new annotated method
      */
     @SuppressWarnings("unchecked")
-    public static <X> AnnotatedMethod<X> newAnnotatedMethod(Method method, Class<X> declaringClass)
+    public static <X> AnnotatedMethod<X> newAnnotatedMethod(Method method, AnnotatedType<X> declaringType)
     {
         Asserts.assertNotNull(method, "method is null");
-        Asserts.assertNotNull(declaringClass, "declaringClass is null");
+        Asserts.assertNotNull(declaringType, "declaringType is null");
         
         AnnotatedMethodImpl<X> annotMethod = null;
         if(annotatedMethodCache.containsKey(method))
@@ -192,7 +194,7 @@ public final class AnnotatedElementFactory
         }
         else
         {
-            annotMethod = new AnnotatedMethodImpl<X>(method);
+            annotMethod = new AnnotatedMethodImpl<X>(method, declaringType);
             AnnotatedMethodImpl<X> old = (AnnotatedMethodImpl<X>) annotatedMethodCache.putIfAbsent(method, annotMethod);
             if(old != null)
             {

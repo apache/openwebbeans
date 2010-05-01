@@ -795,7 +795,7 @@ public final class ClassUtil
         Asserts.assertNotNull(beanType, "beanType parameter can not be null");
         Asserts.assertNotNull(requiredType, "requiredType parameter can not be null");
         
-        //Bean abd required types are ParametrizedType
+        //Bean and required types are ParametrizedType
         if (beanType instanceof ParameterizedType && requiredType instanceof ParameterizedType)
         {
             return isAssignableForParametrized((ParameterizedType) beanType, (ParameterizedType) requiredType);
@@ -885,8 +885,16 @@ public final class ClassUtil
         }
     }
 
+    /**
+     * Checks that event is applicable
+     * for the given observer type.
+     * @param eventType event type
+     * @param observerType observer type
+     * @return true if event is applicable
+     */
     public static boolean checkEventTypeAssignability(Type eventType, Type observerType)
     {
+        //Observer type is a TypeVariable
         if(isTypeVariable(observerType))
         {
             Class<?> eventClass = getClass(eventType);
@@ -896,18 +904,19 @@ public final class ClassUtil
             
             if(tvBound instanceof Class)
             {
-                Class<?> clazzTvBound = (Class<?>)tvBound;
-                
+                Class<?> clazzTvBound = (Class<?>)tvBound;                
                 if(clazzTvBound.isAssignableFrom(eventClass))
                 {
                     return true;
                 }                    
             }
         }
+        //Both of them are ParametrizedType
         else if(observerType instanceof ParameterizedType && eventType instanceof ParameterizedType)
         {
             return isAssignableForParametrized((ParameterizedType)eventType, (ParameterizedType)observerType);
         }
+        //Observer is class and Event type is Parametrized
         else if(observerType instanceof Class && eventType instanceof ParameterizedType)
         {
             Class<?> clazzBeanType = (Class<?>)observerType;
@@ -921,6 +930,7 @@ public final class ClassUtil
             
             return false;            
         }
+        //Both of them is class type
         else if(observerType instanceof Class && eventType instanceof Class)
         {
             return isClassAssignable((Class<?>)observerType, (Class<?>) eventType);
@@ -1101,27 +1111,27 @@ public final class ClassUtil
             Class<?> clazzBeanTypeArg = (Class<?>)beanTypeArg;
             if(upperBoundRequiredTypeArg instanceof Class)
             {
-                Class<?> clazzUpperBoundTypeArg = (Class<?>)upperBoundRequiredTypeArg;                
+                //Check upper bounds
+                Class<?> clazzUpperBoundTypeArg = (Class<?>)upperBoundRequiredTypeArg;
                 if(clazzUpperBoundTypeArg != Object.class)
                 {
-                    if(clazzUpperBoundTypeArg.isAssignableFrom(clazzBeanTypeArg))
-                    {                                         
-                        if(lowerBoundRequiredTypeArgs.length > 0 &&  lowerBoundRequiredTypeArgs[0] instanceof Class)
-                        {
-                            Class<?> clazzLowerBoundTypeArg = (Class<?>)lowerBoundRequiredTypeArgs[0];
-                            
-                            if(clazzLowerBoundTypeArg != Object.class)
-                            {
-                                if(!clazzBeanTypeArg.isAssignableFrom(clazzLowerBoundTypeArg))
-                                {
-                                    return false;
-                                }                                
-                            }
-                        }
-                    }
-                    else
-                    {
+                    if(!clazzUpperBoundTypeArg.isAssignableFrom(clazzBeanTypeArg))
+                    {                                       
                         return false;
+                    }
+                }
+                
+                //Check lower bounds
+                if(lowerBoundRequiredTypeArgs.length > 0 &&  lowerBoundRequiredTypeArgs[0] instanceof Class)
+                {
+                    Class<?> clazzLowerBoundTypeArg = (Class<?>)lowerBoundRequiredTypeArgs[0];
+                    
+                    if(clazzLowerBoundTypeArg != Object.class)
+                    {
+                        if(!clazzBeanTypeArg.isAssignableFrom(clazzLowerBoundTypeArg))
+                        {
+                            return false;
+                        }                                
                     }
                 }
             }                    
@@ -1140,26 +1150,25 @@ public final class ClassUtil
                     Class<?> clazzUpperBoundTypeArg = (Class<?>)upperBoundRequiredTypeArg;                    
                     if(clazzUpperBoundTypeArg != Object.class && clazzTvBound != Object.class)
                     {
-                        if(clazzUpperBoundTypeArg.isAssignableFrom(clazzTvBound))
-                        {                            
-                            if(lowerBoundRequiredTypeArgs.length > 0 &&  lowerBoundRequiredTypeArgs[0] instanceof Class)
-                            {
-                                Class<?> clazzLowerBoundTypeArg = (Class<?>)lowerBoundRequiredTypeArgs[0];
-                                
-                                if(clazzLowerBoundTypeArg != Object.class)
-                                {
-                                    if(!clazzTvBound.isAssignableFrom(clazzLowerBoundTypeArg))
-                                    {
-                                        return false;
-                                    }                                    
-                                }
-                            }
-                        }
-                        else
-                        {
+                        if(!clazzUpperBoundTypeArg.isAssignableFrom(clazzTvBound))
+                        {   
                             return false;
-                        }
+                        }                       
                     }
+                    
+                    //Check lower bounds
+                    if(lowerBoundRequiredTypeArgs.length > 0 &&  lowerBoundRequiredTypeArgs[0] instanceof Class)
+                    {
+                        Class<?> clazzLowerBoundTypeArg = (Class<?>)lowerBoundRequiredTypeArgs[0];
+                        
+                        if(clazzLowerBoundTypeArg != Object.class)
+                        {
+                            if(!clazzTvBound.isAssignableFrom(clazzLowerBoundTypeArg))
+                            {
+                                return false;
+                            }                                    
+                        }
+                    }                    
                 }                                    
             }
         }

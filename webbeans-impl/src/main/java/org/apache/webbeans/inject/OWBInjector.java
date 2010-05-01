@@ -26,12 +26,12 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 
 import org.apache.webbeans.component.InjectionPointBean;
+import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -53,18 +53,35 @@ public final class OWBInjector implements Serializable
     
     private CreationalContextImpl<?> ownerCreationalContext = null;
     
+    private Object javaEEInstance;
+    
     public OWBInjector()
     {
         
     }
     
+    @SuppressWarnings("unchecked")
     public void destroy()
     {
-        if(this.ownerCreationalContext != null)
+        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
+        
+        //Look for custom InjectionTarget
+        InjectionTargetWrapper<Object> wrapper = beanManager.getInjectionTargetWrapper((Class<Object>)javaEEInstance.getClass());
+        if(wrapper != null)
         {
-            this.ownerCreationalContext.release();
-            this.ownerCreationalContext = null;
+           wrapper.dispose(javaEEInstance);
+           this.javaEEInstance = null;
+           this.ownerCreationalContext = null;
         }
+        
+        else
+        {
+            if(this.ownerCreationalContext != null)
+            {
+                this.ownerCreationalContext.release();
+                this.ownerCreationalContext = null;
+            }            
+        }        
     }
     
     public  OWBInjector inject(Object javaEeComponentInstance) throws Exception
@@ -75,20 +92,31 @@ public final class OWBInjector implements Serializable
     @SuppressWarnings("unchecked")
     public  OWBInjector inject(Object javaEeComponentInstance, CreationalContext<?> creationalContext) throws Exception
     {
-        BeanManager beanManager = BeanManagerImpl.getManager();
+        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
         try
         {
-            Class<?> injectableComponentClass = javaEeComponentInstance.getClass();
+            this.javaEEInstance = javaEeComponentInstance;
+            if(creationalContext == null)
+            {
+                this.ownerCreationalContext = (CreationalContextImpl<?>) beanManager.createCreationalContext(null);   
+            }
+
+            Class<Object> injectableComponentClass = (Class<Object>)javaEeComponentInstance.getClass();
+            InjectionTarget<Object> injectionTarget = null;
+            
+            //Look for custom InjectionTarget
+            InjectionTargetWrapper<Object> wrapper = beanManager.getInjectionTargetWrapper(injectableComponentClass);
+            if(wrapper != null)
+            {
+                wrapper.inject(javaEeComponentInstance, (CreationalContext<Object>)this.ownerCreationalContext);
+                return this;
+            }
+            
             AnnotatedType<Object> annotated = (AnnotatedType<Object>) beanManager.createAnnotatedType(injectableComponentClass);
-            InjectionTarget<Object> injectionTarget = beanManager.createInjectionTarget(annotated);
+            injectionTarget = beanManager.createInjectionTarget(annotated);
             Set<InjectionPoint> injectionPoints = injectionTarget.getInjectionPoints();
             if(injectionPoints != null && injectionPoints.size() > 0)
             {
-                if(creationalContext == null)
-                {
-                    this.ownerCreationalContext = (CreationalContextImpl<?>) beanManager.createCreationalContext(null);   
-                }
-                
                 for(InjectionPoint injectionPoint : injectionPoints)
                 {
                     boolean injectionPointBeanSet = false;

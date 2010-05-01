@@ -20,6 +20,8 @@ import org.apache.openejb.OpenEJB;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.component.OpenEjbBean;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 
 public abstract class EjbTestContext
 {    
@@ -59,9 +61,11 @@ public abstract class EjbTestContext
         }
     }
     
+    @SuppressWarnings("unchecked")
     protected <T> OpenEjbBean<T> defineEjbBean(Class<T> ejbClass)
     {
         EjbPlugin plugin = new EjbPlugin();
-       return (OpenEjbBean<T>)plugin.defineSessionBean(ejbClass);
+       return (OpenEjbBean<T>)plugin.defineSessionBean(ejbClass, 
+               new GProcessAnnotatedType(AnnotatedElementFactory.newAnnotatedType(ejbClass)));
     }
 }

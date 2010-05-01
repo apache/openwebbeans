@@ -15,6 +15,7 @@ package org.apache.webbeans.spi.plugins;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
 
 /**
  * Session bean related plugin contract.
@@ -35,8 +36,9 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansJavaEEPlugin
      * Configures session bean and adds it into the container.
      * 
      * @param clazz session bean class
+     * @param processAnnotateTypeEvent process annotated type event
      */
-    public <T> Bean<T> defineSessionBean(Class<T> clazz);
+    public <T> Bean<T> defineSessionBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotateTypeEvent);
 
     /**
      * Returns true if given class is singleton session bean, false otherwise.

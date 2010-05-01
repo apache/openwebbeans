@@ -31,6 +31,7 @@ import javax.servlet.jsp.JspFactory;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.el.OwbElContextListener;
 import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
@@ -97,15 +98,21 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         service = Executors.newScheduledThreadPool(1);
         service.scheduleWithFixedDelay(new ConversationCleaner(), delay, delay, TimeUnit.MILLISECONDS);
         
+        WebBeansELResolver resolver = new WebBeansELResolver();
+        OwbElContextListener elContextListener = new OwbElContextListener();
         //Application is configured as JSP
         if(OpenWebBeansConfiguration.getInstance().isJspApplication())
         {
             logger.debug("Application is configured as JSP. Adding EL Resolver.");
             
             JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext((ServletContext)(startupObject));
-            applicationCtx.addELResolver(new WebBeansELResolver());  
-        }      
-        
+            applicationCtx.addELResolver(resolver);  
+            
+            logger.debug("Application is configured as JSP. Adding EL Listener.");
+            
+            //Adding listener
+            applicationCtx.addELContextListener(elContextListener);                        
+        }              
         
         // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
         ServletContext servletContext = (ServletContext)(startupObject); 
