@@ -434,7 +434,7 @@ Configuration Names and Their Default Values :
    Values        : Configured in millisecond
    Default       : 150000 ms
 
-- "org.apache.webbeans.spi.deployer.UseEjbMetaDataDiscoveryService"
+- "org.apache.webbeans.spi.deployer.useEjbMetaDataDiscoveryService"
    Description   : Use EJB functionality or not. If use OpenEJB configures to true
    Values        : false, true
    Default       : false
@@ -462,7 +462,7 @@ your EJB beans live within your "war" bundle.
 How to Develop EJB Applications
 ---------------------------------------------
 1* Add "META-INF/openwebbeans.properties" into your application classpath.
-2* Add "org.apache.webbeans.spi.deployer.UseEjbMetaDataDiscoveryService=true" to use EJB functionality.
+2* Add "org.apache.webbeans.spi.deployer.useEjbMetaDataDiscoveryService=true" to use EJB functionality.
    So OWB container looks for EJBs.
 3* Add "org.apache.webbeans.resource.spi.ResourceService=org.apache.webbeans.ejb.resource.OpenEjbResourceInjectionService to
 use OpenEJB Resource injections.
