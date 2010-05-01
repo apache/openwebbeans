@@ -64,27 +64,7 @@
      		</methods>
      	</class>
      	
-     	<!-- ERROR IN CDI-TCK-134 -->
-     	<class name="org.jboss.jsr299.tck.tests.context.passivating.broken.decoratorWithNonPassivatingBeanConstructor.DecoratorWithNonPassivatingBeanConstructorTest">
-     		<methods>
-     			<exclude name="testPassivationCapableBeanWithNonPassivatingDecoratorBeanConstructorFails"></exclude>
-     		</methods>
-     	</class>     	
-     	
-     	<!-- ERROR IN CDI-TCK-134 -->
-     	<class name="org.jboss.jsr299.tck.tests.context.passivating.broken.decoratorWithNonPassivatingInitializerMethod.DecoratorWithNonPassivatingInitializerMethodTest">
-     		<methods>
-     			<exclude name="testPassivationCapableBeanWithNonPassivatingInitializerInDecoratorFails"></exclude>
-     		</methods>
-     	</class>     	
-
-     	<!-- ERROR IN CDI-TCK-134 -->
-     	<class name="org.jboss.jsr299.tck.tests.context.passivating.broken.decoratorWithNonPassivatingInjectedField.DecoratorWithNonPassivatingInjectedFieldTest">
-     		<methods>
-     			<exclude name="testPassivationCapableBeanWithNonPassivatingDecoratorInjectedFieldFails"></exclude>
-     		</methods>
-     	</class>     	
-     	
+     	     	
      	<!-- ERROR IN CDI-TCK-137 -->
      	<class name="org.jboss.jsr299.tck.tests.decorators.invocation.DecoratorInvocationTest">
      		<methods>
@@ -92,12 +72,6 @@
      		</methods>
      	</class>     	
 
-     	<!-- ERROR IN CDI-TCK-121 -->
-     	<class name="org.jboss.jsr299.tck.tests.extensions.beanManager.BeanManagerTest">
-     		<methods>
-     			<exclude name="testGetPassivationCapableBeanById"></exclude>
-     		</methods>
-     	</class>     
      	
      	<!-- ERROR IN CDITCK-138 -->
      	<class name="org.jboss.jsr299.tck.tests.lookup.injectionpoint.InjectionPointTest">
@@ -116,35 +90,12 @@
      	<!-- ERROR IN CDITCK-140 -->
      	<class name="org.jboss.jsr299.tck.tests.lookup.circular.CircularDependencyTest">
      		<methods>
-     			<exclude name="testCircularInjectionOnTwoNormalBeans"></exclude>
      			<exclude name="testCircularInjectionOnOneNormalAndOneDependentBean"></exclude>
      			<exclude name="testCircularInjectionOnOneDependentAndOneNormalBean"></exclude>
      		</methods>
      	</class>     
      	
-     	<!-- ERROR IN CDITCK-142 -->
-     	<class name="org.jboss.jsr299.tck.tests.context.dependent.DependentContextTest">
-     		<methods>
-     			<exclude name="testDependentsDestroyedWhenProducerMethodCompletes"></exclude>
-     		</methods>
-     	</class>          
      	
-     	<!-- ERROR IN CDITCK-143 -->
-     	<class name="org.jboss.jsr299.tck.tests.implementation.simple.lifecycle.SimpleBeanLifecycleTest">
-     		<methods>
-     			<exclude name="testBeanCreateInjectsDependenciesAndInvokesInitializerToInstantiateInstance"></exclude>
-     			<exclude name="testCreateReturnsSameBeanPushed"></exclude>
-     		</methods>
-     	</class>         
-
-     	<!-- TODO EL-RESOLVER PROBLEM -->
-     	<class name="org.jboss.jsr299.tck.tests.context.dependent.DependentContextTest">
-     		<methods>
-     			<exclude name="testDependentsDestroyedWhenElEvaluationCompletes"></exclude>
-     		</methods>
-     	</class>     
-     		
-     	     	
      </classes>
      
       <packages>         

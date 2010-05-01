@@ -1,133 +1,89 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<!--
-	
-	Licensed to the Apache Software Foundation (ASF) under one or more
-	contributor license agreements. See the NOTICE file distributed with
-	this work for additional information regarding copyright ownership.
-	The ASF licenses this file to You under the Apache License, Version
-	2.0 (the "License"); you may not use this file except in compliance
-	with the License. You may obtain a copy of the License at
-	
-	http://www.apache.org/licenses/LICENSE-2.0 Unless required by
-	applicable law or agreed to in writing, software distributed under the
-	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-	CONDITIONS OF ANY KIND, either express or implied. See the License for
-	the specific language governing permissions and limitations under the
-	License.
--->
-<suite name="JSR-299 TCK" verbose="2"  >
-   <test name="JSR-299 TCK">
-      <method-selectors> 
-        
-         <method-selector>
-            <selector-class name="org.jboss.testharness.impl.testng.DisableIntegrationTestsMethodSelector" />
-         </method-selector>
-		
-		<!-- Used for Web Profiles-->
-		<method-selector>
-			<selector-class name="org.jboss.jsr299.tck.impl.WebProfileMethodSelector" />
-		</method-selector>
-		
-		
-         <method-selector>
-            <selector-class name="org.jboss.testharness.impl.testng.ExcludeIncontainerUnderInvestigationMethodSelector" />
-         </method-selector>
-      </method-selectors>
-      <groups>
-         <run>
-            <exclude name="ri-broken" />
-            <exclude name="jboss-as-broken" />
-            <exclude name="broken" />
-            <exclude name="integration"></exclude>
-         </run>
-      </groups>
-      
-      <classes>
-     	<!-- ERROR IN CDI-TCK-134 -->
-     	<class name="org.jboss.jsr299.tck.tests.context.passivating.broken.decoratorWithNonPassivatingBeanConstructor.DecoratorWithNonPassivatingBeanConstructorTest">
-     		<methods>
-     			<exclude name="testPassivationCapableBeanWithNonPassivatingDecoratorBeanConstructorFails"></exclude>
-     		</methods>
-     	</class>     	
-     	
-     	<!-- ERROR IN CDI-TCK-134 -->
-     	<class name="org.jboss.jsr299.tck.tests.context.passivating.broken.decoratorWithNonPassivatingInitializerMethod.DecoratorWithNonPassivatingInitializerMethodTest">
-     		<methods>
-     			<exclude name="testPassivationCapableBeanWithNonPassivatingInitializerInDecoratorFails"></exclude>
-     		</methods>
-     	</class>     	
+	<!--
 
-     	<!-- ERROR IN CDI-TCK-134 -->
-     	<class name="org.jboss.jsr299.tck.tests.context.passivating.broken.decoratorWithNonPassivatingInjectedField.DecoratorWithNonPassivatingInjectedFieldTest">
-     		<methods>
-     			<exclude name="testPassivationCapableBeanWithNonPassivatingDecoratorInjectedFieldFails"></exclude>
-     		</methods>
-     	</class>     	
-     	
-     	<!-- ERROR IN CDI-TCK-137 -->
-     	<class name="org.jboss.jsr299.tck.tests.decorators.invocation.DecoratorInvocationTest">
-     		<methods>
-     			<exclude name="testChainedDecoratorInvocation"></exclude>
-     		</methods>
-     	</class>     	
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to You under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
 
-     	<!-- ERROR IN CDI-TCK-121 -->
-     	<class name="org.jboss.jsr299.tck.tests.extensions.beanManager.BeanManagerTest">
-     		<methods>
-     			<exclude name="testGetPassivationCapableBeanById"></exclude>
-     		</methods>
-     	</class>     
-     	
-     	<!-- ERROR IN CDITCK-138 -->
-     	<class name="org.jboss.jsr299.tck.tests.lookup.injectionpoint.InjectionPointTest">
-     		<methods>
-     			<exclude name="testIsDelegate"></exclude>
-     		</methods>
-     	</class>     
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+<suite name="JSR-299 TCK" verbose="2">
+	<test name="JSR-299 TCK">
+		<method-selectors>
 
-     	<!-- ERROR IN CDITCK-139 -->
-     	<class name="org.jboss.jsr299.tck.tests.decorators.resolution.DecoratorResolutionTest">
-     		<methods>
-     			<exclude name="testDelegateTypeVariableBeanTypeVariable"></exclude>
-     		</methods>
-     	</class>     
-     	
-     	<!-- ERROR IN CDITCK-140 -->
-     	<class name="org.jboss.jsr299.tck.tests.lookup.circular.CircularDependencyTest">
-     		<methods>
-     			<exclude name="testCircularInjectionOnTwoNormalBeans"></exclude>
-     			<exclude name="testCircularInjectionOnOneNormalAndOneDependentBean"></exclude>
-     			<exclude name="testCircularInjectionOnOneDependentAndOneNormalBean"></exclude>
-     		</methods>
-     	</class>          	
-     	
-     	<!-- ERROR IN CDITCK-142 -->
-     	<class name="org.jboss.jsr299.tck.tests.context.dependent.DependentContextTest">
-     		<methods>
-     			<exclude name="testDependentsDestroyedWhenProducerMethodCompletes"></exclude>
-     		</methods>
-     	</class>          
-     	
-     	<!-- ERROR IN CDITCK-143 -->
-     	<class name="org.jboss.jsr299.tck.tests.implementation.simple.lifecycle.SimpleBeanLifecycleTest">
-     		<methods>
-     			<exclude name="testBeanCreateInjectsDependenciesAndInvokesInitializerToInstantiateInstance"></exclude>
-     			<exclude name="testCreateReturnsSameBeanPushed"></exclude>
-     		</methods>
-     	</class>         
-     	
+			<method-selector>
+				<selector-class
+					name="org.jboss.testharness.impl.testng.DisableIntegrationTestsMethodSelector" />
+			</method-selector>
 
-     	<!-- TODO EL-RESOLVER PROBLEM -->
-     	<class name="org.jboss.jsr299.tck.tests.context.dependent.DependentContextTest">
-     		<methods>
-     			<exclude name="testDependentsDestroyedWhenElEvaluationCompletes"></exclude>
-     		</methods>
-     	</class>     
-      </classes>
-   
-      <packages>         
-         <package name="org.jboss.jsr299.tck.tests.*"></package>
-      </packages>
-   </test>
-   
+			<!-- Used for Web Profiles-->
+			<method-selector>
+				<selector-class name="org.jboss.jsr299.tck.impl.WebProfileMethodSelector" />
+			</method-selector>
+
+
+			<method-selector>
+				<selector-class
+					name="org.jboss.testharness.impl.testng.ExcludeIncontainerUnderInvestigationMethodSelector" />
+			</method-selector>
+		</method-selectors>
+		<groups>
+			<run>
+				<exclude name="ri-broken" />
+				<exclude name="jboss-as-broken" />
+				<exclude name="broken" />
+				<exclude name="integration"></exclude>
+			</run>
+		</groups>
+
+		<classes>
+			<!-- ERROR IN CDI-TCK-137 -->
+			<class
+				name="org.jboss.jsr299.tck.tests.decorators.invocation.DecoratorInvocationTest">
+				<methods>
+					<exclude name="testChainedDecoratorInvocation"></exclude>
+				</methods>
+			</class>
+
+
+			<!-- ERROR IN CDITCK-138 -->
+			<class
+				name="org.jboss.jsr299.tck.tests.lookup.injectionpoint.InjectionPointTest">
+				<methods>
+					<exclude name="testIsDelegate"></exclude>
+				</methods>
+			</class>
+
+			<!-- ERROR IN CDITCK-139 -->
+			<class
+				name="org.jboss.jsr299.tck.tests.decorators.resolution.DecoratorResolutionTest">
+				<methods>
+					<exclude name="testDelegateTypeVariableBeanTypeVariable"></exclude>
+				</methods>
+			</class>
+
+			<!-- ERROR IN CDITCK-140 -->
+			<class
+				name="org.jboss.jsr299.tck.tests.lookup.circular.CircularDependencyTest">
+				<methods>
+					<exclude name="testCircularInjectionOnOneNormalAndOneDependentBean"></exclude>
+					<exclude name="testCircularInjectionOnOneDependentAndOneNormalBean"></exclude>
+				</methods>
+			</class>
+
+		</classes>
+
+		<packages>
+			<package name="org.jboss.jsr299.tck.tests.*"></package>
+		</packages>
+	</test>
+
 </suite>

@@ -18,6 +18,8 @@ import javax.el.ArrayELResolver;
 import javax.el.BeanELResolver;
 import javax.el.CompositeELResolver;
 import javax.el.ELContext;
+import javax.el.ELContextEvent;
+import javax.el.ELContextListener;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 import javax.el.FunctionMapper;
@@ -29,13 +31,17 @@ import javax.el.VariableMapper;
 import org.apache.el.ExpressionFactoryImpl;
 import org.apache.el.lang.FunctionMapperImpl;
 import org.apache.el.lang.VariableMapperImpl;
+import org.apache.webbeans.el.OwbElContextListener;
 import org.apache.webbeans.el.WebBeansELResolver;
+import org.apache.webbeans.el.WrappedExpressionFactory;
 import org.jboss.jsr299.tck.spi.EL;
 
 public class ELImpl implements EL
 {
-    private static ExpressionFactory EXPRESSION_FACTORY = new ExpressionFactoryImpl();
+    private static final ExpressionFactory EXPRESSION_FACTORY = new WrappedExpressionFactory(new ExpressionFactoryImpl());
     
+    public static final ELContextListener EL_CONTEXT_LISTENER = new OwbElContextListener();
+
     public ELImpl()
     {
     }
@@ -79,8 +85,7 @@ public class ELImpl implements EL
     @SuppressWarnings("unchecked")
     public <T> T evaluateMethodExpression(String expression, Class<T> expectedType, Class<?>[] expectedParamTypes, Object[] expectedParams)
     {   
-        ELContext context = createELContext();
-        
+        ELContext context = createELContext();        
         Object object = EXPRESSION_FACTORY.createMethodExpression(context, expression, expectedType, expectedParamTypes).invoke(context, expectedParams);
         
         return (T)object;
@@ -89,8 +94,7 @@ public class ELImpl implements EL
     @SuppressWarnings("unchecked")
     public <T> T evaluateValueExpression(String expression, Class<T> expectedType)
     {
-        ELContext context = createELContext();
-        
+        ELContext context = createELContext();        
         Object object = EXPRESSION_FACTORY.createValueExpression(context, expression, expectedType).getValue(context);
         
         return (T)object;
@@ -98,7 +102,11 @@ public class ELImpl implements EL
 
     @Override
     public ELContext createELContext()
-    {        
-        return new ELContextImpl();
+    {   
+        ELContext context = new ELContextImpl();
+        ELContextEvent event = new ELContextEvent(context);
+        EL_CONTEXT_LISTENER.contextCreated(event);
+        
+        return context;
     }
 }
