@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.web.tomcat;
 
+import javax.jws.WebService;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextAttributeListener;
@@ -103,7 +104,8 @@ public class TomcatWebPlugin extends AbstractOwbPlugin implements OpenWebBeansWe
                 HttpSessionBindingListener.class.isAssignableFrom(clazz) ||
                 HttpSessionListener.class.isAssignableFrom(clazz) ||
                 ServletRequestListener.class.isAssignableFrom(clazz) ||
-                ServletRequestAttributeListener.class.isAssignableFrom(clazz) )
+                ServletRequestAttributeListener.class.isAssignableFrom(clazz) ||
+                clazz.isAnnotationPresent(WebService.class))
         {
             return true;
         }
