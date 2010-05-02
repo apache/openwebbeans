@@ -1875,41 +1875,57 @@ public final class WebBeansUtil
         return beans;
     }
     
+    /**
+     * Checks the unproxiable condition.
+     * @param bean managed bean
+     * @param scopeType scope type
+     * @throws WebBeansConfigurationException if 
+     *  bean is not proxied by the container
+     */
     public static void checkUnproxiableApiType(Bean<?> bean, Class<? extends Annotation> scopeType)
     {
         Asserts.assertNotNull("bean", "bean parameter can not be null");
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
-
-        Set<Type> types = bean.getTypes();
-        Class<?> superClass = null;
-        for (Type t : types)
-        {
-            Class<?> type = ClassUtil.getClazz(t);
-            
-            if (!type.isInterface())
-            {
-                if ((superClass == null) || (superClass.isAssignableFrom(type) && type != Object.class))
-                {
-                    superClass = type;
-                }
-
-            }
-        }
         
-        if (superClass != null && !superClass.equals(Object.class))
+        //Unproxiable test for NormalScoped beans
+        if (WebBeansUtil.isScopeTypeNormal(scopeType))
         {
-            Constructor<?> cons = ClassUtil.isContaintNoArgConstructor(superClass);
-
-            if (ClassUtil.isPrimitive(superClass) || ClassUtil.isArray(superClass) || ClassUtil.isFinal(superClass.getModifiers()) || ClassUtil.hasFinalMethod(superClass) || (cons == null || ClassUtil.isPrivate(cons.getModifiers())))
+            Set<Type> types = bean.getTypes();
+            
+            for(Type type : types)
             {
-                if (scopeType.isAnnotationPresent(NormalScope.class))
+                Class<?> beanClass = ClassUtil.getClass(type);
+                
+                if(!beanClass.isInterface() && beanClass != Object.class)
                 {
-                    throw new UnproxyableResolutionException("WebBeans with api type with normal scope must be proxiable to inject, but class : " + superClass.getName() + " is not proxiable type");
-                }
+                    boolean throwException = false;
+                    if(ClassUtil.isPrimitive(beanClass) 
+                            || ClassUtil.isArray(beanClass))
+                    {
+                        throwException = true;
+                    }
+                    
+                    if(!throwException)
+                    {
+                        Constructor<?> cons = ClassUtil.isContaintNoArgConstructor(beanClass);
+
+                        if (ClassUtil.isFinal(beanClass.getModifiers()) 
+                                || ClassUtil.hasFinalMethod(beanClass) || 
+                                (cons == null || ClassUtil.isPrivate(cons.getModifiers())))
+                        {
+                            throwException = true;
+                        }
+                    }
+                    
+                    //Throw Exception
+                    if(throwException)
+                    {
+                        throw new UnproxyableResolutionException("WebBeans with api type with normal scope " +
+                                "must be proxiable to inject, but class : " + beanClass.getName() + " is not proxiable type");          
+                    }                                
+                }                
             }
-
-        }
-
+        }              
     }
 
     public static void checkNullable(Class<?> type, AbstractOwbBean<?> component)
