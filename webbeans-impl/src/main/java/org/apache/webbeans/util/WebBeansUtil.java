@@ -1786,7 +1786,9 @@ public final class WebBeansUtil
                             pLeft.getBeanClass().getSuperclass().equals(pb.getBeanClass()))
                     {
                         Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(), Arrays.asList(method.getParameterTypes()));
-                        if (superMethod != null)
+                        
+                        //Added by GE, method check is necessary otherwise getting wrong method qualifier annotations
+                        if (superMethod != null && superMethod.equals(pb.getCreatorMethod()))
                         {
                             producerBeanListHelper.add(pb);
                             pLeft = (pb.isSpecializedBean()) ? pb : null; 
@@ -1805,7 +1807,8 @@ public final class WebBeansUtil
                             pRight = null;
                         } else {
                             Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(), Arrays.asList(method.getParameterTypes()));
-                            if (superMethod != null)
+                            //Added by GE, method check is necessary otherwise getting wrong method qualifier annotations
+                            if (superMethod != null && superMethod.equals(pb.getCreatorMethod()))
                             {
                                 producerBeanListHelper.add(pb);
                                 pRight = pb;
