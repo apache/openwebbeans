@@ -70,7 +70,7 @@
 				</methods>
 			</class>
 
-			<!-- ERROR IN CDITCK-140 -->
+			<!-- ERROR IN CDITCK-145 -->
 			<class
 				name="org.jboss.jsr299.tck.tests.lookup.circular.CircularDependencyTest">
 				<methods>
