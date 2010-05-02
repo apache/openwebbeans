@@ -21,6 +21,7 @@ package org.apache.webbeans.intercept;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -57,11 +58,17 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     
     private void initiateBeanBag(OwbBean<Object> bean, CreationalContext<Object> creationalContext)
     {
-        Context webbeansContext = getBeanManager().getContext(bean.getScope());
-        if (webbeansContext instanceof AbstractContext)
+        try
         {
-            AbstractContext owbContext = (AbstractContext)webbeansContext;
-            owbContext.initContextualBag(bean, creationalContext);
+            Context webbeansContext = getBeanManager().getContext(bean.getScope());
+            if (webbeansContext instanceof AbstractContext)
+            {
+                AbstractContext owbContext = (AbstractContext)webbeansContext;
+                owbContext.initContextualBag(bean, creationalContext);
+            }            
+        }catch(ContextNotActiveException e)
+        {
+            //Nothing
         }
     }
     

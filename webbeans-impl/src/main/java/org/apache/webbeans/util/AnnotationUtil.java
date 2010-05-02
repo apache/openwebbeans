@@ -319,17 +319,28 @@ public final class AnnotationUtil
     {
         Asserts.assertNotNull(annotatedMethod, "annotatedMethod argument can not be null");
         Asserts.nullCheckForClass(clazz);
-
+        
+        List<Annotation> list = new ArrayList<Annotation>();
         List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
         for(AnnotatedParameter<X> parameter : parameters)
         {
             if(parameter.isAnnotationPresent(clazz))
             {
-                return getAnnotationsFromSet(parameter.getAnnotations());
+                Annotation[] anns = getAnnotationsFromSet(parameter.getAnnotations());
+                for(Annotation ann : anns)
+                {
+                    if(isQualifierAnnotation(ann.annotationType()))
+                    {
+                        list.add(ann);
+                    }
+                }
             }
         }
         
-        return null;
+        Annotation[] finalAnns = new Annotation[list.size()];
+        finalAnns = list.toArray(finalAnns);
+        
+        return finalAnns;
     }
     
 

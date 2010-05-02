@@ -36,7 +36,6 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.intercept.ApplicationScopedBeanIntereptorHandler;
 import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -44,6 +43,7 @@ import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 public final class JavassistProxyFactory
 {
@@ -123,7 +123,7 @@ public final class JavassistProxyFactory
         }
         catch (Exception e)
         {
-            throw new WebBeansException(e);
+            WebBeansUtil.throwRuntimeExceptions(e);
         }
 
         return result;
@@ -209,7 +209,7 @@ public final class JavassistProxyFactory
         }
         catch (Exception e)
         {
-            throw new WebBeansException(e);
+            WebBeansUtil.throwRuntimeExceptions(e);
         }
 
         return result;
@@ -298,7 +298,7 @@ public final class JavassistProxyFactory
         }
         catch (Exception e)
         {
-            throw new WebBeansException(e);
+            WebBeansUtil.throwRuntimeExceptions(e);
         }
 
         return result;

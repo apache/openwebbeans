@@ -39,7 +39,7 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     
     protected void setInheritedQualifiers()
     {
-        if(this.inheritedClazz != Object.class)
+        if(this.inheritedClazz != null && this.inheritedClazz != Object.class)
         {
             setInheritedTypes(getInheritedQualifiers(), this.inheritedClazz, Qualifier.class);
         }        
@@ -47,7 +47,7 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     
     protected void setInheritedInterceptorBindings()
     {
-        if(this.inheritedClazz != Object.class)
+        if(this.inheritedClazz != null && this.inheritedClazz != Object.class)
         {
             setInheritedTypes(getInheritedInterceptorBindings(), this.inheritedClazz, InterceptorBinding.class);
         }        
@@ -57,7 +57,7 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     
     protected void setInheritedScopeType()
     {
-        if(this.inheritedClazz != Object.class)
+        if(this.inheritedClazz != null && this.inheritedClazz != Object.class)
         {
             setInheritedType(this.inheritedClazz, NormalScope.class);
             setInheritedType(this.inheritedClazz, Scope.class);
@@ -68,7 +68,7 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     
     protected void setInheritedStereoTypes()
     {
-        if(this.inheritedClazz != Object.class)
+        if(this.inheritedClazz != null && this.inheritedClazz != Object.class)
         {
             setInheritedTypes(getInheritedStereoTypes(), this.inheritedClazz, Stereotype.class);
         }        
@@ -77,9 +77,14 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     
     private void setInheritedType(Class<?> inheritedClass, Class<? extends Annotation> annotationType)
     {
-        Annotation[] inheritedAnnotations = AnnotationUtil.getMetaAnnotations(inheritedClass.getDeclaredAnnotations(), annotationType);
+        Annotation[] inheritedAnnotations = null;
         
-        if(inheritedAnnotations.length > 0)
+        if(inheritedClass != null)
+        {
+           inheritedAnnotations =  AnnotationUtil.getMetaAnnotations(inheritedClass.getDeclaredAnnotations(), annotationType);
+        }
+        
+        if(inheritedAnnotations != null && inheritedAnnotations.length > 0)
         {
             if(inheritedAnnotations[0].annotationType().isAnnotationPresent(Inherited.class))
             {
@@ -103,17 +108,25 @@ public class BeanInheritedMetaData<T> extends AbstractBeanInheritedMetaData<T>
     
     private void setInheritedTypes(Set<Annotation> types, Class<?> inheritedClass, Class<? extends Annotation> annotationType)
     {
-        Annotation[] annotations = AnnotationUtil.getMetaAnnotations(inheritedClass.getDeclaredAnnotations(), annotationType);
+        Annotation[] annotations = null;
         
-        for(Annotation annotation : annotations)
+        if(inheritedClass != null)
         {
-            if(!types.contains(annotation))
+            annotations = AnnotationUtil.getMetaAnnotations(inheritedClass.getDeclaredAnnotations(), annotationType);
+        }
+        
+        if(annotations != null)
+        {
+            for(Annotation annotation : annotations)
             {
-                if(AnnotationUtil.hasClassAnnotation(annotation.annotationType(), Inherited.class))
+                if(!types.contains(annotation))
                 {
-                    types.add(annotation);   
+                    if(AnnotationUtil.hasClassAnnotation(annotation.annotationType(), Inherited.class))
+                    {
+                        types.add(annotation);   
+                    }
                 }
-            }
+            }            
         }
         
         if(hasSuperType(inheritedClass))

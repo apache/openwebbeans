@@ -220,13 +220,12 @@ public final class NotificationManager
                     //ProcessProducer, ProcessProducerMethod, ProcessProducerField,ProcessObserverMEthod
                     else if(WebBeansUtil.isExtensionProducerOrObserverEventType(eventType))
                     {
-                        if(WebBeansUtil.isDefaultExtensionProducerOrObserverEventType(observerClass))
-                        {
+                        GenericProducerObserverEvent genericBeanEvent = (GenericProducerObserverEvent)event;
+                        beanClass = genericBeanEvent.getBeanClass();
+                        Class<?> producerOrObserverReturnClass = genericBeanEvent.getProducerOrObserverType();
 
-                            GenericProducerObserverEvent genericBeanEvent = (GenericProducerObserverEvent)event;
-                            beanClass = genericBeanEvent.getBeanClass();
-                            Class<?> producerOrObserverReturnClass = genericBeanEvent.getProducerOrObserverType();
-            
+                        if(WebBeansUtil.isDefaultExtensionProducerOrObserverEventType(observerClass))
+                        {            
                             if(ClassUtil.isParametrizedType(type))
                             {
                                 boolean isObserverMethod = false;
@@ -241,6 +240,17 @@ public final class NotificationManager
                             {
                                 addToMatching(type, matching);
                             }
+                        }
+                        else if(observerClass.isAssignableFrom(eventType))
+                        {
+                            if(ClassUtil.isParametrizedType(type))
+                            {
+                                addToMathingWithParametrizedForBeans(type,beanClass,matching);
+                            }
+                            else
+                            {
+                                addToMatching(type, matching);
+                            }                            
                         }
                     }
                     //BeforeBeanDiscovery,AfterBeanDiscovery,AfterDeploymentValidation

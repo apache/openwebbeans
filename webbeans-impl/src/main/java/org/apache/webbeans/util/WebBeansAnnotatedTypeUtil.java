@@ -36,6 +36,7 @@ import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
@@ -898,5 +899,63 @@ public final class WebBeansAnnotatedTypeUtil
         }
 
     }    
+    
+    @SuppressWarnings("unchecked")
+    public static <X> Method getDisposalWithGivenAnnotatedMethod(AnnotatedType<X> annotatedType, Type beanType, Annotation[] qualifiers)
+    {
+        Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();  
+        
+        if(annotatedMethods != null)
+        {
+            for (AnnotatedMethod<? super X> annotatedMethod : annotatedMethods)
+            {
+                AnnotatedMethod<X> annt = (AnnotatedMethod<X>)annotatedMethod;
+                List<AnnotatedParameter<X>> parameters = annt.getParameters();
+                if(parameters != null)
+                {
+                    boolean found = false;                    
+                    for(AnnotatedParameter<X> parameter : parameters)
+                    {
+                        if(parameter.isAnnotationPresent(Disposes.class))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    
+                    if(found)
+                    {
+                        Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
+                        Annotation[] annots = AnnotationUtil.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
+                        
+                        if(type.equals(beanType))
+                        {
+                            for(Annotation qualifier : qualifiers)
+                            {
+                                if(qualifier.annotationType() != Default.class)
+                                {
+                                    for(Annotation ann :annots)
+                                    {
+                                        if(!AnnotationUtil.hasAnnotationMember(qualifier.annotationType(), qualifier, ann))
+                                        {
+                                            return null;
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            return annotatedMethod.getJavaMember();
+                        }                
+                    }                                
+                }
+            }            
+        }        
+        return null;
+        
+    }
     
 }

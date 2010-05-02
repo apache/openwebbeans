@@ -2450,7 +2450,7 @@ public final class WebBeansUtil
         for(ProducerMethodBean<?> bean : annotatedMethods.keySet())
         {
             AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(bean);                
-            Method disposal = bean.getDisposalMethod();
+            Method disposal = WebBeansAnnotatedTypeUtil.getDisposalWithGivenAnnotatedMethod(annotatedType, bean.getReturnType(), AnnotationUtil.getAnnotationsFromSet(bean.getQualifiers()));
             
             AnnotatedMethod<?> disposalAnnotated = null;
             GProcessProducerMethod processProducerMethodEvent = null;

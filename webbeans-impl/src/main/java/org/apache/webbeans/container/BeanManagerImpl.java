@@ -804,10 +804,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             creationalContext = CreationalContextFactory.getInstance().wrappedCreationalContext(creationalContext, bean);
         }        
         
-        
-        //Get bean context
-        context = getContext(bean.getScope());
-        
+                
         //Scope is normal
         if (WebBeansUtil.isScopeTypeNormal(bean.getScope()))
         {
@@ -830,6 +827,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Create Pseudo-Scope Bean Instance
         else
         {
+            //Get bean context
+            context = getContext(bean.getScope());
+            
+            //Get instance for ejb or jms
             instance = getEjbOrJmsProxyReference(bean, beanType, creationalContext);
             
             if(instance != null)

@@ -79,7 +79,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             ManagedBean managedBean = WebBeansUtil.defineManagedBeanWithoutFireEvents(annotatedType);
             
             this.beanManager.addDecorator(new WebBeansDecorator(managedBean, (Decorator)bean));
-            BeanManagerImpl.getManager().addCustomInterceptorClass(bean.getBeanClass());            
+            BeanManagerImpl.getManager().addCustomDecoratorClass(bean.getBeanClass());            
         }
         else
         {

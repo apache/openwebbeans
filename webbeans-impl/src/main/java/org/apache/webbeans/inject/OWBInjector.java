@@ -19,11 +19,13 @@
 package org.apache.webbeans.inject;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -35,6 +37,8 @@ import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
@@ -171,6 +175,25 @@ public final class OWBInjector implements Serializable
         return null;
     }
     
+    public static void checkInjectionPointForInjectInjectionPoint(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
+        for(Field field : fields)
+        {
+            if(field.getAnnotation(Inject.class) != null)
+            {
+                if(field.getType() == InjectionPoint.class)
+                {
+                    Annotation[] anns = AnnotationUtil.getQualifierAnnotations(field.getDeclaredAnnotations());
+                    if (AnnotationUtil.hasAnnotation(anns, Default.class))
+                    {
+                        throw new WebBeansConfigurationException("Java EE Component class :  " + clazz + " can not inject InjectionPoint");
+                    }                            
+                }                
+            }
+        }        
+    }
     
     public static boolean checkInjectionPointForInterceptorPassivation(Class<?> clazz)
     {

@@ -57,6 +57,7 @@ import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
+import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -744,6 +745,9 @@ public class BeansDeployer
                 //Adding injection target
                 manager.putInjectionTargetWrapperForJavaEeComponents(clazz, new InjectionTargetWrapper<T>(processInjectionTargetEvent.getInjectionTarget()));                
             }
+            
+            //Checks that not contains @Inject InjectionPoint
+            OWBInjector.checkInjectionPointForInjectInjectionPoint(clazz);
         }
         
         //Check for whether this class is candidate for Managed Bean
