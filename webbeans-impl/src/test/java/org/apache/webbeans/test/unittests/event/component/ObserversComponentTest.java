@@ -27,6 +27,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Check;
+import org.apache.webbeans.test.annotation.binding.NotAnyLiteral;
 import org.apache.webbeans.test.annotation.binding.Role;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
@@ -34,6 +35,10 @@ import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObservable1;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObserves1;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObserves2;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves3;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves4;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves5;
+import org.apache.webbeans.test.component.event.normal.ComponentWithObserves6;
 import org.apache.webbeans.test.component.event.normal.TransactionalInterceptor;
 import org.apache.webbeans.test.event.LoggedInEvent;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -91,6 +96,40 @@ public class ObserversComponentTest extends TestContext
         observable.afterLoggedIn();
 
         Assert.assertEquals("Gurkan", instance.getUserName());
+    }
+
+    @Test
+    public void testObservesIfExists()
+    {
+        clear();
+        
+        getManager().addBean(WebBeansUtil.getEventBean());
+
+        AbstractOwbBean<ComponentWithObserves3> component3 = defineManagedBean(ComponentWithObserves3.class);
+        AbstractOwbBean<ComponentWithObserves4> component4 = defineManagedBean(ComponentWithObserves4.class);
+        AbstractOwbBean<ComponentWithObserves5> component5 = defineManagedBean(ComponentWithObserves5.class);
+        AbstractOwbBean<ComponentWithObserves6> component6 = defineManagedBean(ComponentWithObserves6.class);
+
+        ContextFactory.initRequestContext(null);
+
+        /*
+         * DO NOT CALL getInstance FOR component3! IF_EXISTS NEEDS TO FAIL FOR THAT OBJECT.
+         */
+        ComponentWithObserves4 instance = getManager().getInstance(component4);
+        ComponentWithObserves5 instanceIE = getManager().getInstance(component5);
+        ComponentWithObserves6 outstance = getManager().getInstance(component6);
+        instanceIE.getUserName();  // This causes the observer to exist in the context, therefore IF_EXISTS is true.
+        
+        LoggedInEvent event = new LoggedInEvent("Gurkan");
+
+        Annotation[] anns = new Annotation[1];
+        anns[0] = new NotAnyLiteral();
+
+        getManager().fireEvent(event, anns);
+        
+        Assert.assertEquals("IEGurkan", outstance.getUserIEName());
+        Assert.assertEquals("Gurkan", outstance.getUserName());
+        Assert.assertNull(outstance.getUserNIEName());
     }
 
     @Test
