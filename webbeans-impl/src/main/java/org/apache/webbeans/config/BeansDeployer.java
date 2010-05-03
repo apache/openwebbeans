@@ -468,7 +468,7 @@ public class BeansDeployer
                 //if veto() is called
                 if(processAnnotatedEvent.isVeto())
                 {
-                    return;
+                    continue;
                 }
                 
                 //Try class is Managed Bean
