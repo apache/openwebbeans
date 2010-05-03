@@ -379,6 +379,7 @@ public class OpenWebBeansEjbInterceptor
                     if(bean.getBeanClass() == instance.getClass())
                     {
                         ejbBean = (BaseEjbBean<?>)bean;
+                        this.resolvedBeans.put(instance.getClass(), ejbBean);
                         break;
                     }
                 }
