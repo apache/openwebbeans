@@ -58,6 +58,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
@@ -96,6 +97,7 @@ public final class WebBeansAnnotatedTypeUtil
         if(annConsts != null)
         {
             boolean found = false;
+            boolean noParamConsIsDefined = false;
             for(AnnotatedConstructor<T> annConst : annConsts)
             {
                 if(annConst.isAnnotationPresent(Inject.class))
@@ -110,10 +112,14 @@ public final class WebBeansAnnotatedTypeUtil
                 }
                 else
                 {
-                    List<AnnotatedParameter<T>> parameters = annConst.getParameters();
-                    if(parameters != null && parameters.isEmpty())
+                    if(!found && !noParamConsIsDefined)
                     {
-                        result = annConst;
+                        List<AnnotatedParameter<T>> parameters = annConst.getParameters();
+                        if(parameters != null && parameters.isEmpty())
+                        {
+                            result = annConst;
+                            noParamConsIsDefined = true;
+                        }                        
                     }
                 }
             }
@@ -153,7 +159,7 @@ public final class WebBeansAnnotatedTypeUtil
         }
     }
     
-    public static <T,X> void addMethodInjectionPointMetaData(InjectionTargetBean<T> owner, AnnotatedMethod<X> method)
+    public static <T,X> void addMethodInjectionPointMetaData(OwbBean<T> owner, AnnotatedMethod<X> method)
     {
         List<InjectionPoint> injectionPoints = InjectionPointFactory.getMethodInjectionPointData(owner, method);
         for (InjectionPoint injectionPoint : injectionPoints)
@@ -506,7 +512,7 @@ public final class WebBeansAnnotatedTypeUtil
                 DefinitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
                 DefinitionUtil.defineName(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()), WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
                 
-                addMethodInjectionPointMetaData(bean, annotatedMethod);
+                addMethodInjectionPointMetaData(producerMethodBean, annotatedMethod);
                 producerBeans.add(producerMethodBean);
                 
             }

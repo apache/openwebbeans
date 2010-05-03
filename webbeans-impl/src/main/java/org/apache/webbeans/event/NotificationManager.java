@@ -524,9 +524,16 @@ public final class NotificationManager
                 ifExist = true;
             }            
         }
-
-        ObserverMethodImpl<T> observer = new ObserverMethodImpl(bean, annotatedMethod.getJavaMember(), ifExist);
+        
+        //Looking for qualifiers
+        Annotation[] observerQualifiers = AnnotationUtil.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Observes.class);
+        
+        //Getting observer event type
         Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Observes.class);
+        
+        //Observer creation from annotated method
+        ObserverMethodImpl<T> observer = new ObserverMethodImpl(bean, annotatedMethod.getJavaMember(), ifExist, observerQualifiers, type);
+        observer.setAnnotatedMethod((AnnotatedMethod<T>)annotatedMethod);
         
         //Adds this observer
         addObserver(observer, type);

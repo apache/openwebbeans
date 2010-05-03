@@ -78,6 +78,49 @@
 					<exclude name="testCircularInjectionOnOneDependentAndOneNormalBean"></exclude>
 				</methods>
 			</class>
+			
+			<!-- ERROR IN CDITCK-147-->
+		      <class name="org.jboss.jsr299.tck.tests.context.ContextDestroysBeansTest">
+		        <methods>
+		          <exclude name="testContextDestroysBeansWhenDestroyed"/>
+		        </methods>
+		      </class>
+		     
+			<!-- ERROR IN CDITCK-148 -->
+			 <class name="org.jboss.jsr299.tck.tests.context.ContextTest">
+		        <methods>
+		          <exclude name="testGetContextWithTooManyActiveContextsFails"/>
+		          <exclude name="testGetContextWithNoRegisteredContextsFails"/>
+		          <exclude name="testBuiltInContexts"/>
+		        </methods>
+		      </class>
+		    
+			<!-- ERROR IN CDITCK-149 -->
+			  <class name="org.jboss.jsr299.tck.tests.context.NormalContextTest">
+		        <methods>
+		          <exclude name="testGetWithCreationalContextReturnsNewInstance"/>
+		          <exclude name="testGetMayNotReturnNullUnlessContextualCreateReturnsNull"/>
+		          <exclude name="testGetReturnsExistingInstance"/>
+		          <exclude name="testSameNormalScopeBeanInjectedEverywhere"/>
+		        </methods>
+		      </class>
+		      
+		 <!-- JSP PROBLEM, Actually this works but we are in Tomcat and adding JSF plugin
+		 	Therefore applications are handled as JSF application. In full Java EE this works-->
+	      <class name="org.jboss.jsr299.tck.tests.lookup.el.integration.IntegrationWithUnifiedELTest">
+	        <methods>
+	          <exclude name="testELResolverRegisteredWithServletContainer"/>
+	        </methods>
+	      </class>
+
+
+	     <!-- WS Integfration. Currently Tomcat has no Web service integration 
+	     In full Java EE, this works-->
+	 	<class name="org.jboss.jsr299.tck.tests.lookup.injection.non.contextual.ws.InjectionIntoWebServiceEndPointTest">
+	        <methods>
+	          <exclude name="testInjectionIntoWebServiceEndpoint"/>
+	        </methods>
+	      </class>		      
 
 		</classes>
 

@@ -32,7 +32,8 @@
 	<description>All TCK tests for the  OpenWebBeans Implementation</description>
 
     <properties>
-        <webbeans.tck.version>1.0.1-Final</webbeans.tck.version>
+        <!--  <webbeans.tck.version>1.0.1-Final</webbeans.tck.version> -->
+        <webbeans.tck.version>1.0.2-SNAPSHOT</webbeans.tck.version>
     </properties>
 
     <dependencies>
