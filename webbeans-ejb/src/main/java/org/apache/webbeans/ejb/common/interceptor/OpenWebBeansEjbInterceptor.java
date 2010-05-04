@@ -106,6 +106,7 @@ public class OpenWebBeansEjbInterceptor
     
     private static class CallReturnValue
     {
+        // true if OWB kicked off the interceptor/decorator stack, so the EJB method does not need to be separately invoked.
         public boolean INTERCEPTOR_OR_DECORATOR_CALL = false;
         public Object RETURN_VALUE = null;
     }
@@ -147,6 +148,9 @@ public class OpenWebBeansEjbInterceptor
         boolean applicationCreated = false;
         boolean requestAlreadyActive = false;
         boolean applicationAlreadyActive = false;
+        
+        logger.debug("Intercepting EJB method {0} ", ejbContext.getMethod());
+        
         try
         {
             int result = 1000;
@@ -168,7 +172,7 @@ public class OpenWebBeansEjbInterceptor
             {
                 applicationAlreadyActive = true;
             }
-            
+                        
             if(threadLocal.get() != null)
             {
                 //Calls OWB interceptors and decorators
@@ -379,18 +383,23 @@ public class OpenWebBeansEjbInterceptor
                     if(bean.getBeanClass() == instance.getClass())
                     {
                         ejbBean = (BaseEjbBean<?>)bean;
+                        logger.debug("Found managed bean for " + instance.getClass() + "{0}", ejbBean);
                         this.resolvedBeans.put(instance.getClass(), ejbBean);
                         break;
                     }
                 }
             }
         }        
+        else 
+        { 
+            logger.debug("Managed bean for " + instance.getClass() + " found in cache: {0}",  ejbBean);
+        }
         
         CallReturnValue rv = new CallReturnValue();
         rv.INTERCEPTOR_OR_DECORATOR_CALL = false;
         if(ejbBean == null)
         {
-            logger.warn("Unable to find EJB bean with class : " + instance.getClass());
+            logger.warn("Unable to find EJB bean with class : " + instance.getClass() + ": {0}", manager.getComponents());
             return rv;
         }
         else
@@ -458,6 +467,7 @@ public class OpenWebBeansEjbInterceptor
                     // Filter both EJB and WebBeans interceptors
                     InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
 
+                    logger.debug("Interceptor stack for method {0}: {1}", method, filteredInterceptorStack.toString());
                     // If there are both interceptors and decorators, add hook
                     // point to the end of the interceptor stack.
                     if (decorators != null && filteredInterceptorStack.size() > 0)
@@ -512,7 +522,8 @@ public class OpenWebBeansEjbInterceptor
                 List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
 
                 // Filter both EJB and WebBeans interceptors
-                InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);                
+                InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);  
+                logger.debug("Interceptor stack for method {0}: {1}", method, filteredInterceptorStack.toString());
                 this.nonCtxInterceptedMethodMap.put(method, filteredInterceptorStack);
             }
             
