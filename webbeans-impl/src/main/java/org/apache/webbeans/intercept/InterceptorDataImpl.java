@@ -356,5 +356,17 @@ public class InterceptorDataImpl implements InterceptorData
 
         return interceptor; 
     }
+    
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Class: [").append(webBeansInterceptor.getBeanClass()).append("]");
+        sb.append(" aroundInvoke [").append(aroundInvoke).append("]");
+        sb.append(" postConstruct [").append(postConstruct).append("]");
+        sb.append(" preDestroy [").append(preDestroy).append("]");
+
+        return sb.toString();
+    }
 
 }
