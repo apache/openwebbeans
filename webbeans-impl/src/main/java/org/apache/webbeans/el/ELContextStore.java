@@ -22,15 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.el.ELContext;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
 public class ELContextStore
 {
-    private ELContext elContext;
-    
     private Map<Bean<?>, CreationalStore> dependentObjects = new HashMap<Bean<?>, CreationalStore>();
     
     private static class CreationalStore
@@ -64,11 +61,11 @@ public class ELContextStore
         
     }
     
-    public ELContextStore(ELContext context)
+    public ELContextStore()
     {
-        this.elContext = context;
-    }
-
+        
+    }    
+    
     public void addDependent(Bean<?> bean, Object dependent, CreationalContext<?> creationalContext)
     {
         if(bean.getScope().equals(Dependent.class))
@@ -104,11 +101,6 @@ public class ELContextStore
         }
         
         this.dependentObjects.clear();
-        this.elContext = null;
     }
     
-    public ELContext getELContext()
-    {
-        return this.elContext;
-    }
 }

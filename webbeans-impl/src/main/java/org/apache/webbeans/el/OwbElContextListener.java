@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.el;
 
-import javax.el.ELContext;
 import javax.el.ELContextEvent;
 import javax.el.ELContextListener;
 
@@ -28,9 +27,7 @@ public class OwbElContextListener implements ELContextListener
     @Override
     public void contextCreated(ELContextEvent event)
     {
-        ELContext elContext = event.getELContext();
-        ELContextStore store = new ELContextStore(elContext);
-        
+        ELContextStore store = new ELContextStore();        
         WebBeansELResolver.LOCAL_CONTEXT.set(store);
     }
 

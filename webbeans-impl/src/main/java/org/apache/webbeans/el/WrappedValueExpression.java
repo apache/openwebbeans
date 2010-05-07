@@ -74,8 +74,6 @@ public class WrappedValueExpression extends ValueExpression
             if(store != null)
             {
                 store.destroy();
-                WebBeansELResolver.LOCAL_CONTEXT.set(null);
-                WebBeansELResolver.LOCAL_CONTEXT.remove();
             }
         }
         

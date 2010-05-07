@@ -224,6 +224,9 @@
 		                    <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
 		                    <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
 		                </manifestEntries>
+			        <!-- add the generated manifest to the war -->
+			        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+
 		            </archive>
 
                     </configuration>
@@ -243,10 +246,39 @@
 	                    <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
 	                    <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
 	                </manifestEntries>
+			<!-- Adding Manifest File -->
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
 	            </archive>
 	        </configuration>
             </plugin>
-           
+
+	<plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <supportedProjectTypes>
+            <supportedProjectType>jar</supportedProjectType>
+            <supportedProjectType>bundle</supportedProjectType>
+            <supportedProjectType>war</supportedProjectType>
+          </supportedProjectTypes>
+          <instructions>
+            <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${pom.version}</Bundle-Version>
+            <Export-Package>!org.apache.webbeans.internal.*,org.apache.webbeans.*;version="${pom.version}"</Export-Package>
+            <Private-Package>org.apache.webbeans..internal.*</Private-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-remote-resources-plugin</artifactId>
