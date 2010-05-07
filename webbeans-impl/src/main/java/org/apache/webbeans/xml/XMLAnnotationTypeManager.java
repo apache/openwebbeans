@@ -44,7 +44,7 @@ public class XMLAnnotationTypeManager
 
     public static XMLAnnotationTypeManager getInstance()
     {
-        XMLAnnotationTypeManager manager = (XMLAnnotationTypeManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_XML_ANNOTATION_TYPE_MANAGER);
+        XMLAnnotationTypeManager manager = (XMLAnnotationTypeManager) WebBeansFinder.getSingletonInstance(XMLAnnotationTypeManager.class.getName());
         return manager;
     }
 

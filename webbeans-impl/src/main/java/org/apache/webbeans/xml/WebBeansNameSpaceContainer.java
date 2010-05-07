@@ -37,7 +37,7 @@ public class WebBeansNameSpaceContainer
 
     public static WebBeansNameSpaceContainer getInstance()
     {
-        WebBeansNameSpaceContainer nameSpaceContainer = (WebBeansNameSpaceContainer)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_WEBBEANS_NAMESPACE_CONTAINER);
+        WebBeansNameSpaceContainer nameSpaceContainer = (WebBeansNameSpaceContainer)WebBeansFinder.getSingletonInstance(WebBeansNameSpaceContainer.class.getName());
         
         return nameSpaceContainer;
     }

@@ -23,6 +23,7 @@ import java.util.Properties;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Default LifeCycle for a standalone application without a ServletContainer.
@@ -44,7 +45,7 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
     @Override
     public void beforeInitApplication(Properties properties)
     {
-        WebBeansFinder.clearInstances();
+        WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
     }
     
     @Override

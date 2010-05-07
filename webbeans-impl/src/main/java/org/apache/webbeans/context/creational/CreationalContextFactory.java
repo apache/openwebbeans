@@ -45,7 +45,7 @@ public final class CreationalContextFactory<T>
     @SuppressWarnings("unchecked")
     public static CreationalContextFactory getInstance()
     {
-        return (CreationalContextFactory)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_CREATIONAL_CONTEXT_FACTORY);
+        return (CreationalContextFactory)WebBeansFinder.getSingletonInstance(CreationalContextFactory.class.getName());
     }
     
     /**

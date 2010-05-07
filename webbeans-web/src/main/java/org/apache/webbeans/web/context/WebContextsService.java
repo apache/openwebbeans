@@ -73,10 +73,10 @@ public class WebContextsService extends AbstractContextsService
     private static Map<ServletContext, SingletonContext> currentSingletonContexts = new ConcurrentHashMap<ServletContext, SingletonContext>();
 
     /**Session context manager*/
-    private static SessionContextManager sessionCtxManager = SessionContextManager.getInstance();
+    private final SessionContextManager sessionCtxManager = SessionContextManager.getInstance();
 
     /**Conversation context manager*/
-    private static ConversationManager conversationManager = ConversationManager.getInstance();
+    private final ConversationManager conversationManager = ConversationManager.getInstance();
     
     private boolean supportsConversation = false;
 

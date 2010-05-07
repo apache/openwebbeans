@@ -47,7 +47,7 @@ public class StereoTypeManager
      */
     public static StereoTypeManager getInstance()
     {
-        StereoTypeManager instance = (StereoTypeManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_STEREOTYPE_MANAGER);
+        StereoTypeManager instance = (StereoTypeManager) WebBeansFinder.getSingletonInstance(StereoTypeManager.class.getName());
         
         return instance;
     }

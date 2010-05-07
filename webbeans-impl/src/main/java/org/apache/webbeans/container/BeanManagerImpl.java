@@ -253,7 +253,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public static BeanManagerImpl getManager()
     {
-        BeanManagerImpl currentManager = (BeanManagerImpl) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_MANAGER);
+        BeanManagerImpl currentManager = (BeanManagerImpl) WebBeansFinder.getSingletonInstance(BeanManagerImpl.class.getName());
         
         return currentManager;
     }

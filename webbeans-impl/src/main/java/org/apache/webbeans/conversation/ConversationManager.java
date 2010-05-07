@@ -54,7 +54,7 @@ public class ConversationManager
      */
     public static ConversationManager getInstance()
     {
-        ConversationManager manager = (ConversationManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_CONVERSATION_MANAGER);
+        ConversationManager manager = (ConversationManager) WebBeansFinder.getSingletonInstance(ConversationManager.class.getName());
         
         return manager;
     }

@@ -34,7 +34,7 @@ public class DecoratorsManager
 
     public static DecoratorsManager getInstance()
     {
-        DecoratorsManager instance = (DecoratorsManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_DECORATORS_MANAGER);
+        DecoratorsManager instance = (DecoratorsManager) WebBeansFinder.getSingletonInstance(DecoratorsManager.class.getName());
 
         return instance;
     }

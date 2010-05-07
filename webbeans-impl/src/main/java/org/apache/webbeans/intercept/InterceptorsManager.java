@@ -34,7 +34,7 @@ public class InterceptorsManager
 
     public static InterceptorsManager getInstance()
     {
-        InterceptorsManager instance = (InterceptorsManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_INTERCEPTORS_MANAGER);
+        InterceptorsManager instance = (InterceptorsManager) WebBeansFinder.getSingletonInstance(InterceptorsManager.class.getName());
         return instance;
     }
 

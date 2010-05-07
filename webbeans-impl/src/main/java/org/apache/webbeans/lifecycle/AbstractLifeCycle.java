@@ -40,6 +40,7 @@ import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.WebBeansConstants;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 public abstract class AbstractLifeCycle implements ContainerLifecycle
@@ -74,7 +75,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     {
         beforeInitApplication(properties);
         
-        this.beanManager = (BeanManagerImpl) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_MANAGER);
+        this.beanManager = (BeanManagerImpl) WebBeansFinder.getSingletonInstance(BeanManagerImpl.class.getName());
         this.xmlDeployer = new WebBeansXMLConfigurator();
         this.deployer = new BeansDeployer(xmlDeployer);
         this.jndiService = ServiceLoader.getService(JNDIService.class);    
@@ -156,7 +157,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             InjectionResolver.getInstance().clearCaches();
             
             //Clear singleton list
-            WebBeansFinder.clearInstances();
+            WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
 
             //Delte proxies
             JavassistProxyFactory.clear();

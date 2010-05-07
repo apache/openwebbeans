@@ -49,7 +49,7 @@ public class MockManager implements BeanManager
 
     public MockManager()
     {
-        WebBeansFinder.clearInstances();
+        WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
         this.manager = BeanManagerImpl.getManager();
         manager.addBean(WebBeansUtil.getManagerBean());
     }
@@ -59,7 +59,7 @@ public class MockManager implements BeanManager
     {
         componentList.clear();        
         
-        WebBeansFinder.clearInstances();
+        WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
         
         this.manager = BeanManagerImpl.getManager();        
     }

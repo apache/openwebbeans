@@ -31,7 +31,7 @@ public class XMLSpecializesManager
 
     public static XMLSpecializesManager getInstance()
     {
-        XMLSpecializesManager instance = (XMLSpecializesManager) WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_XML_SPECIALIZES_MANAGER);
+        XMLSpecializesManager instance = (XMLSpecializesManager) WebBeansFinder.getSingletonInstance(XMLSpecializesManager.class.getName());
         return instance;
     }
 

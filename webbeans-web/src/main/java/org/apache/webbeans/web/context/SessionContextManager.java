@@ -49,7 +49,7 @@ public class SessionContextManager
      */
     public static SessionContextManager getInstance()
     {
-        SessionContextManager sessionContextManager = (SessionContextManager)WebBeansFinder.getSingletonInstance(WebBeansFinder.SINGLETON_SESSION_CONTEXT_MANAGER);        
+        SessionContextManager sessionContextManager = (SessionContextManager)WebBeansFinder.getSingletonInstance(SessionContextManager.class.getName());        
         
         return sessionContextManager;
     }

@@ -16,71 +16,71 @@ package org.apache.webbeans.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
-import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.decorator.DecoratorsManager;
-import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.intercept.InterceptorsManager;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.xml.WebBeansNameSpaceContainer;
-import org.apache.webbeans.xml.XMLAnnotationTypeManager;
-import org.apache.webbeans.xml.XMLSpecializesManager;
 
-public class WebBeansFinder
-{
-    public static final String SINGLETON_MANAGER = BeanManagerImpl.class.getName();
+/**
+ * Holds singletons based on the deployment
+ * class loader.
+ * 
+ * @version $Rev$ $Date$
+ *
+ */
+public final class WebBeansFinder
+{   
+    /**
+     * Keys --> ClassLoaders
+     * Values --> Maps of singleton class name with object
+     */
+    private static Map<ClassLoader, Map<String, Object>> singletonMap = new HashMap<ClassLoader, Map<String,Object>>();
 
-    public static final String SINGLETON_DECORATORS_MANAGER = DecoratorsManager.class.getName();
-
-    public static final String SINGLETON_STEREOTYPE_MANAGER = StereoTypeManager.class.getName();
-
-    public static final String SINGLETON_INTERCEPTORS_MANAGER = InterceptorsManager.class.getName();
-
-    public static final String SINGLETON_CONVERSATION_MANAGER = ConversationManager.class.getName();
-
-    public static final String SINGLETON_XML_ANNOTATION_TYPE_MANAGER = XMLAnnotationTypeManager.class.getName();
-
-    public static final String SINGLETON_XML_SPECIALIZES_MANAGER = XMLSpecializesManager.class.getName();
-
-    public static final String SINGLETON_CREATIONAL_CONTEXT_FACTORY = CreationalContextFactory.class.getName();
+    /**
+     * No instantiate.
+     */
+    private WebBeansFinder()
+    {
+        //No action
+    }
     
-    public static final String SINGLETON_SESSION_CONTEXT_MANAGER = "org.apache.webbeans.web.context.SessionContextManager";
-    
-    public static final String SINGLETON_WEBBEANS_NAMESPACE_CONTAINER = WebBeansNameSpaceContainer.class.getName();
-
-    private static Map<String, Map<ClassLoader, Object>> singletonMap = new HashMap<String, Map<ClassLoader, Object>>();
-
+    /**
+     * Gets signelton instance.
+     * @param singletonName singleton class name
+     * @return singleton instance
+     */
     public static Object getSingletonInstance(String singletonName)
     {
        return getSingletonInstance(singletonName, WebBeansUtil.getCurrentClassLoader());
     }
     
-    public static Object getSingletonInstance(String singletonName, ClassLoader cl)
+    public static Object getSingletonInstance(String singletonName, ClassLoader classLoader)
     {
         Object object = null;
 
         synchronized (singletonMap)
         {
-            Map<ClassLoader, Object> managerMap = singletonMap.get(singletonName);
+            Map<String, Object> managerMap = singletonMap.get(classLoader);
 
             if (managerMap == null)
             {
-                managerMap = new HashMap<ClassLoader, Object>();
-                singletonMap.put(singletonName, managerMap);
+                managerMap = new HashMap<String, Object>();
+                singletonMap.put(classLoader, managerMap);
             }
-            object = managerMap.get(cl);
+            
+            object = managerMap.get(singletonName);
             /* No singleton for this application, create one */
             if (object == null)
             {
                 try
                 {
-
-                    Class<?> clazz = cl.loadClass(singletonName);
+                    //Load class
+                    Class<?> clazz = classLoader.loadClass(singletonName);
                     
+                    //Create instance
                     object = clazz.newInstance();
-                    managerMap.put(cl, object);
+                    
+                    //Save it
+                    managerMap.put(singletonName, object);
 
                 }
                 catch (InstantiationException e)
@@ -102,17 +102,14 @@ public class WebBeansFinder
     
     /**
      * Clear all deployment instances when the application is undeployed.
+     * @param classloader of the deployment
      */
-    public static void clearInstances()
+    public static void clearInstances(ClassLoader classLoader)
     {
-        if(singletonMap != null)
+        Asserts.assertNotNull(classLoader, "classloader is null");
+        synchronized (singletonMap)
         {
-            singletonMap.clear();   
+            singletonMap.remove(classLoader);
         }
-    }
-    
-    public static void removeInstance(String name)
-    {
-        singletonMap.remove(name);
-    }
+    }    
 }
