@@ -53,6 +53,12 @@ public final class WebBeansFinder
        return getSingletonInstance(singletonName, WebBeansUtil.getCurrentClassLoader());
     }
     
+    /**
+     * Gets singleton instance for deployment.
+     * @param singletonName singleton class name
+     * @param classLoader classloader of the deployment
+     * @return signelton instance for this deployment
+     */
     public static Object getSingletonInstance(String singletonName, ClassLoader classLoader)
     {
         Object object = null;
