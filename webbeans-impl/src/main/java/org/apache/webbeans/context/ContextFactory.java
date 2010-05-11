@@ -34,9 +34,6 @@ public final class ContextFactory
     /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ContextFactory.class);
     
-    /**Underlying context service*/
-    private static ContextsService contextService = ServiceLoader.getService(ContextsService.class);
-    
     /**
      * Not-instantiate
      */
@@ -49,6 +46,7 @@ public final class ContextFactory
     {
         try
         {
+            ContextsService contextService = ServiceLoader.getService(ContextsService.class);
             contextService.startContext(RequestScoped.class, request);
         }
         catch (Exception e)
@@ -69,13 +67,15 @@ public final class ContextFactory
     
     public static void destroyRequestContext(Object request)
     {
-        contextService.endContext(RequestScoped.class, request);
+    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
+    	contextService.endContext(RequestScoped.class, request);
     }
 
     public static void initSessionContext(Object session)
     {
         try
         {
+            ContextsService contextService = ServiceLoader.getService(ContextsService.class);
             contextService.startContext(SessionScoped.class, session);
         }
         catch (Exception e)
@@ -86,6 +86,7 @@ public final class ContextFactory
 
     public static void destroySessionContext(Object session)
     {
+    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.endContext(SessionScoped.class, session);
     }
 
@@ -98,6 +99,7 @@ public final class ContextFactory
     {
         try
         {
+            ContextsService contextService = ServiceLoader.getService(ContextsService.class);
             contextService.startContext(ApplicationScoped.class, parameter);
         }
         catch (Exception e)
@@ -114,6 +116,7 @@ public final class ContextFactory
      */
     public static void destroyApplicationContext(Object parameter)
     {
+    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.endContext(ApplicationScoped.class, parameter);
     }
     
@@ -121,6 +124,7 @@ public final class ContextFactory
     {
         try
         {
+            ContextsService contextService = ServiceLoader.getService(ContextsService.class);
             contextService.startContext(Singleton.class, parameter);
         }
         catch (Exception e)
@@ -131,6 +135,7 @@ public final class ContextFactory
     
     public static void destroySingletonContext(Object parameter)
     {
+    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.endContext(Singleton.class, parameter);
     }
 
@@ -138,6 +143,7 @@ public final class ContextFactory
     {
         try
         {
+            ContextsService contextService = ServiceLoader.getService(ContextsService.class);
             contextService.startContext(ConversationScoped.class, context);
         }
         catch (Exception e)
@@ -148,6 +154,7 @@ public final class ContextFactory
 
     public static void destroyConversationContext()
     {
+    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.endContext(ConversationScoped.class, null);
     }
 
@@ -161,7 +168,7 @@ public final class ContextFactory
     public static Context getStandardContext(ContextTypes type) throws ContextNotActiveException
     {
         Context context = null;
-
+        ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         switch (type.getCardinal())
         {
             case 0:
@@ -238,6 +245,7 @@ public final class ContextFactory
      */
     public static void activateContext(Class<? extends Annotation> scopeType)
     {
+    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.activateContext(scopeType);
     }
     
@@ -246,6 +254,7 @@ public final class ContextFactory
      */
     public static void deActivateContext(Class<? extends Annotation> scopeType)
     {
+    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.deActivateContext(scopeType);
     }
     
