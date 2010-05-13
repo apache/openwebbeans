@@ -24,10 +24,7 @@ import javax.faces.context.FacesContext;
 import org.apache.webbeans.conversation.ConversationManager;
 
 public class ConversationAwareViewHandler extends ViewHandlerWrapper
-{
-	/** Conversation manager */
-	private static final ConversationManager conversationManager = ConversationManager.getInstance();
-	
+{	
     private final ViewHandler delegate;
 
     public ConversationAwareViewHandler(ViewHandler delegate)
@@ -43,6 +40,7 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
     {
         String url = delegate.getActionURL(context, viewId);
 
+        ConversationManager conversationManager = ConversationManager.getInstance();
         Conversation conversation = conversationManager.getConversationBeanReference();
         if (conversation != null && !conversation.isTransient())
         {
@@ -68,6 +66,7 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
         	if (queryString.contains("?cid=") || queryString.contains("&cid="))
         		return url;
         }
+        ConversationManager conversationManager = ConversationManager.getInstance();
         Conversation conversation = conversationManager.getConversationBeanReference();
         if (conversation != null && !conversation.isTransient())
         {

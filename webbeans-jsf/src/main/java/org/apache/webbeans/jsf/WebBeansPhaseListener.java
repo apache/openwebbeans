@@ -39,9 +39,6 @@ public class WebBeansPhaseListener implements PhaseListener
 
     /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansPhaseListener.class);
-
-    /**Conversation manager*/
-    private static final ConversationManager conversationManager = ConversationManager.getInstance();
     
     /**
      * {@inheritDoc}
@@ -51,6 +48,7 @@ public class WebBeansPhaseListener implements PhaseListener
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE) ||
                 JSFUtil.getCurrentFacesContext().getResponseComplete())
         {
+        	ConversationManager conversationManager = ConversationManager.getInstance();
         	Conversation conversation = conversationManager.getConversationBeanReference();
         	
             if (conversation.isTransient())
@@ -79,6 +77,7 @@ public class WebBeansPhaseListener implements PhaseListener
             //It looks for cid parameter in the JSF request.
             //If request contains cid, then it must restore conversation
             //Otherwise create NonexistentException
+        	ConversationManager conversationManager = ConversationManager.getInstance();
         	Conversation conversation = conversationManager.getConversationBeanReference();
         	String cid = JSFUtil.getConversationId();
         	
