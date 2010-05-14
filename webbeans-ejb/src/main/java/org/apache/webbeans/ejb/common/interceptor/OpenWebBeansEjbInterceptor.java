@@ -232,7 +232,10 @@ public class OpenWebBeansEjbInterceptor
                 }
             }                        
         }
-        
+        else { 
+            runPrePostForNonContextual(context, InterceptorType.POST_CONSTRUCT);
+        }
+  
         if (OpenWebBeansConfiguration.getInstance().isUseEJBInterceptorInjection()) 
         { 
             Object instance = context.getTarget();
@@ -273,6 +276,9 @@ public class OpenWebBeansEjbInterceptor
                     logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PreDestroy."}, e);
                 }
             }                        
+        }
+        else { 
+            runPrePostForNonContextual(context, InterceptorType.PRE_DESTROY);
         }
         
         if(this.injector != null)
@@ -358,18 +364,19 @@ public class OpenWebBeansEjbInterceptor
     }
 
     /**
-     * Calls OWB related interceptors.
-     * @param method business method
-     * @param instance bean instance
-     * @param arguments method arguments
-     * @return result of operation
-     * @throws Exception for any exception
-     */    
-    private CallReturnValue callInterceptorsForNonContextuals(Method method, Object instance, Object[] arguments, InvocationContext ejbContext) throws Exception
+     * Find the ManagedBean that corresponds to an instance of an EJB class
+     * @param instance an instance of a class whose corresponding Managed Bean is to be searched for
+     * @return the correspondin BaseEjbBean, null if not found
+     */
+    private BaseEjbBean<?> findTargetBean(Object instance) 
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
-        
-        //Try to resolve ejb bean
+        if (instance == null) { 
+            logger.warn("null instance ");
+            return null;
+        }
+        logger.debug("looking up bean for instance " + instance.getClass());
+
         BaseEjbBean<?> ejbBean = this.resolvedBeans.get(instance.getClass());
         
         //Not found
@@ -395,6 +402,23 @@ public class OpenWebBeansEjbInterceptor
             logger.debug("Managed bean for " + instance.getClass() + " found in cache: {0}",  ejbBean);
         }
         
+        return ejbBean;
+    }
+    /**
+     * Calls OWB related interceptors.
+     * @param method business method
+     * @param instance bean instance
+     * @param arguments method arguments
+     * @return result of operation
+     * @throws Exception for any exception
+     */    
+    private CallReturnValue callInterceptorsForNonContextuals(Method method, Object instance, Object[] arguments, InvocationContext ejbContext) throws Exception
+    {
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        
+        //Try to resolve ejb bean
+        BaseEjbBean<?> ejbBean =  findTargetBean(instance);
+            
         CallReturnValue rv = new CallReturnValue();
         rv.INTERCEPTOR_OR_DECORATOR_CALL = false;
         if(ejbBean == null)
@@ -545,6 +569,62 @@ public class OpenWebBeansEjbInterceptor
         return rv;
         
     }
+   
+    /**
+     * Run @PostConstruct or @PreDestroy for a non-contextual EJB
+     * @param ejbContext the EJB containers InvocationContext
+     * @param interceptorType PreDestroy or PostConstruct
+     */
+    public void runPrePostForNonContextual(InvocationContext ejbContext, InterceptorType interceptorType) 
+    {
+        CreationalContext<?> localcc = null;
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        Object instance = ejbContext.getTarget();
+        
+        BaseEjbBean<?> bean = findTargetBean(instance);
+        if (bean == null) { 
+            logger.debug("no bean for instance " + instance);
+            return;
+        }
+        
+        List<InterceptorData> interceptorStack = bean.getInterceptorStack();
+        
+        if (interceptorStack.size() > 0 && WebBeansUtil.isContainsInterceptorMethod(interceptorStack, interceptorType)) 
+        {
+            localcc = manager.createCreationalContext(null);
+            
+            InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, 
+                    InterceptorUtil.getInterceptorMethods(interceptorStack, interceptorType), interceptorType);
+            impl.setCreationalContext(localcc);
+            
+            try
+            {
+                impl.proceed();
+            }
+            catch (Exception e)
+            {
+                logger.error(OWBLogConst.ERROR_0008, new Object[]{interceptorType}, e);                
+            }    
+        }       
+        else 
+        { 
+            logger.debug("No lifecycle interceptors for " + instance);
+        }
+
+        try 
+        { 
+           ejbContext.proceed();
+        }
+        catch (Exception e) 
+        { 
+            logger.warn("Exception in ejbContext.proceed() " + e.toString());
+            throw new RuntimeException(e);
+        }
+        finally 
+        { 
+          if (localcc != null) localcc.release();
+        }
+    } 
     
     //Read object
     private  void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
