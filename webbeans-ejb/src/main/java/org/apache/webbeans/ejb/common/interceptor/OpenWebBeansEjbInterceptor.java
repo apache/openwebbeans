@@ -429,7 +429,13 @@ public class OpenWebBeansEjbInterceptor
         else
         {
             CreationalContext<?> cc = manager.createCreationalContext(null);
-            return runInterceptorStack(ejbBean.getInterceptorStack(), method, instance, arguments, ejbBean, cc, ejbContext);
+            try 
+            { 
+                return runInterceptorStack(ejbBean.getInterceptorStack(), method, instance, arguments, ejbBean, cc, ejbContext);
+            }
+            finally { 
+                cc.release();
+            }
         }
 
     }
