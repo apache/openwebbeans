@@ -479,7 +479,7 @@ public class BeansDeployer
                 {                    
                     if(EJBWebBeansConfigurator.isSessionBean(implClass))
                     {
-                        logger.info(OWBLogConst.INFO_0010, new Object[]{implClass.getName()});
+                        logger.debug(OWBLogConst.INFO_0010, new Object[]{implClass.getName()});
                         defineEnterpriseWebBean((Class<Object>)implClass, (ProcessAnnotatedTypeImpl<Object>)processAnnotatedEvent);                        
                     }
                 }                                     
