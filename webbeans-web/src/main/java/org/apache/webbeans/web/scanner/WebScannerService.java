@@ -35,7 +35,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
 
     private boolean configure = false;
 
-    private ServletContext servletContext = null;
+    protected ServletContext servletContext = null;
 
     public WebScannerService()
     {
@@ -86,7 +86,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
     }
 
     /* Creates URLs from the marker file */
-    private Set<URL> createURLFromMarkerFile() throws Exception
+    protected Set<URL> createURLFromMarkerFile() throws Exception
     {
         Set<URL> listURL = new HashSet<URL>();
         URL[] urls = null;
@@ -127,7 +127,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
      * @return <code>URL</code> of the web application class path
      * @throws Exception if any exception occurs
      */
-    private URL createURLFromWARFile() throws Exception
+    protected URL createURLFromWARFile() throws Exception
     {
         if (servletContext == null)
         {
