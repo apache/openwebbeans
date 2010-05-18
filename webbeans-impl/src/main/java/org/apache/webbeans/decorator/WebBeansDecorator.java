@@ -321,13 +321,13 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         }
         catch (IllegalArgumentException e)
         {
-            logger.error(OWBLogConst.ERROR_0007, new Object[]{instance.getClass().getName()}, e);
+            logger.error(OWBLogConst.ERROR_0007, e, instance.getClass().getName());
             throw new WebBeansException(e);
 
         }
         catch (IllegalAccessException e)
         {
-            logger.error(OWBLogConst.ERROR_0015, new Object[]{delegateField.getName(), instance.getClass().getName()}, e);
+            logger.error(OWBLogConst.ERROR_0015, e, delegateField.getName(), instance.getClass().getName());
         }
 
     }

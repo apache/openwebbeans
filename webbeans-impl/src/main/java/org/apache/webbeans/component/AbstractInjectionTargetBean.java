@@ -244,7 +244,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
 
                 catch (Exception e)
                 {
-                    logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PostConstruct."}, e);
+                    logger.error(OWBLogConst.ERROR_0008, e, "@PostConstruct.");
                     throw new WebBeansException(e);
                 }
             }            
@@ -279,7 +279,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 }
                 catch (Exception e)
                 {
-                    getLogger().error(OWBLogConst.ERROR_0008, new Object[]{"@PreDestroy."}, e);
+                    getLogger().error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
                     throw new WebBeansException(e);
                 }
             }            

@@ -132,13 +132,13 @@ public class XMLManagedBean<T> extends ManagedBean<T>
             }
             catch (IllegalArgumentException e)
             {
-                logger.error(OWBLogConst.ERROR_0016, new Object[]{field.getName(), instance.getClass().getName()});
+                logger.error(OWBLogConst.ERROR_0016, field.getName(), instance.getClass().getName());
                 throw new WebBeansException(e);
 
             }
             catch (IllegalAccessException e)
             {
-                logger.error(OWBLogConst.ERROR_0017, new Object[]{field.getName(), instance.getClass().getName()});
+                logger.error(OWBLogConst.ERROR_0017, field.getName(), instance.getClass().getName());
                 throw new WebBeansException(e);
             }
         }

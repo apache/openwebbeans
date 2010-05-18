@@ -84,7 +84,7 @@ public final class JNDIUtil
         }
         catch (NamingException e)
         {
-            LOGGER.error(OWBLogConst.ERROR_0005, new Object[]{name}, e);
+            LOGGER.error(OWBLogConst.ERROR_0005, e, name);
         }
     }
 
