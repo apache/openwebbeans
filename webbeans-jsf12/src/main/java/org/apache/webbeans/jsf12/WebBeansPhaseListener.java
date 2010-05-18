@@ -53,7 +53,7 @@ public class WebBeansPhaseListener implements PhaseListener
         	
             if (conversation.isTransient())
             {
-                logger.info(OWBLogConst.INFO_0014, new Object[]{conversation.getId()});
+                logger.debug(OWBLogConst.INFO_0014, new Object[]{conversation.getId()});
                 ContextFactory.destroyConversationContext();                                                    
             }
             else
