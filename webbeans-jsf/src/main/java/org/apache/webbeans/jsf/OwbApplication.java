@@ -52,7 +52,8 @@ import javax.faces.event.SystemEventListener;
 import javax.faces.validator.Validator;
 
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.el.OwbElContextListener;
+import org.apache.webbeans.corespi.ServiceLoader;
+import org.apache.webbeans.spi.adaptor.ELAdaptor;
 
 public class OwbApplication extends Application
 {
@@ -62,8 +63,9 @@ public class OwbApplication extends Application
     
     public OwbApplication(Application wrappedApplication)
     {
+        ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
         this.wrappedApplication = wrappedApplication;
-        this.wrappedApplication.addELContextListener(new OwbElContextListener());
+        this.wrappedApplication.addELContextListener(elAdaptor.getOwbELContextListener());
     }
 
     @Override

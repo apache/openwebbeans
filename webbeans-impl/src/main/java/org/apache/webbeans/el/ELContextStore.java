@@ -28,6 +28,8 @@ import javax.enterprise.inject.spi.Bean;
 
 public class ELContextStore
 {
+    public static ThreadLocal<ELContextStore> LOCAL_CONTEXT = new ThreadLocal<ELContextStore>();
+
     private Map<Bean<?>, CreationalStore> dependentObjects = new HashMap<Bean<?>, CreationalStore>();
     
     private static class CreationalStore

@@ -279,7 +279,7 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>!org.apache.webbeans.internal.*,org.apache.webbeans.*;version="${pom.version}"</Export-Package>
-                        <Private-Package>org.apache.webbeans..internal.*</Private-Package>
+                        <Private-Package>org.apache.webbeans.internal.*</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -399,8 +399,10 @@
         <module>webbeans-ee</module>
         <module>webbeans-openejb</module>
         <module>webbeans-tomcat6</module>
-        <module>webbeans-jms</module>
+        <module>webbeans-jms</module>       
         <module>webbeans-jsf</module>
+        <module>webbeans-jsf12</modulue>
+	<module>webbeans-el10</module>
         <module>webbeans-resource</module>
         <module>webbeans-porting</module>
         <module>webbeans-test</module>

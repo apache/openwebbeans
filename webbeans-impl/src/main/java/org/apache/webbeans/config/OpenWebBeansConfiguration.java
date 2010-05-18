@@ -103,6 +103,9 @@ public class OpenWebBeansConfiguration
     /**Use of EJB interceptor to inject EJBs*/
     public static final String USE_EJBINTERCEPTOR_INJECTION = "org.apache.webbeans.application.useEJBInterceptorInjection";
     
+    /**EL Adaptor*/
+    public static final String EL_ADAPTOR_CLASS = "org.apache.webbeans.spi.adaptor.ELAdaptor";
+    
     /**
      * Gets singleton instance.
      * @return singleton instance
@@ -173,6 +176,10 @@ public class OpenWebBeansConfiguration
 
         value = properties.getProperty(JNDI_SERVICE);
         setPropertyFromSystemProperty(JNDI_SERVICE, value);
+        
+        value = properties.getProperty(EL_ADAPTOR_CLASS);
+        setPropertyFromSystemProperty(EL_ADAPTOR_CLASS, value);
+        
     }
      
     private void setPropertyFromSystemProperty(String key, String value)

@@ -66,11 +66,10 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
-import org.apache.webbeans.el.WebBeansELResolver;
-import org.apache.webbeans.el.WrappedExpressionFactory;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.DefinitionException;
@@ -83,6 +82,7 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -700,7 +700,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public ELResolver getELResolver()
     {
-        return new WebBeansELResolver();
+        ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
+        return elAdaptor.getOwbELResolver();
     }
 
     /**
@@ -1063,7 +1064,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
-        return new WrappedExpressionFactory(expressionFactory);
+        ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
+        return elAdaptor.getOwbWrappedExpressionFactory(expressionFactory);
     }
 
     public void addAdditionalQualifier(Class<? extends Annotation> qualifier)

@@ -28,7 +28,7 @@ public class OwbElContextListener implements ELContextListener
     public void contextCreated(ELContextEvent event)
     {
         ELContextStore store = new ELContextStore();        
-        WebBeansELResolver.LOCAL_CONTEXT.set(store);
+        ELContextStore.LOCAL_CONTEXT.set(store);
     }
 
 }

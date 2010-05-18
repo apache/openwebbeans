@@ -22,6 +22,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.el.ELContextListener;
+import javax.el.ELResolver;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -31,11 +33,11 @@ import javax.servlet.jsp.JspFactory;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.el.OwbElContextListener;
-import org.apache.webbeans.el.WebBeansELResolver;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.adaptor.ELAdaptor;
 
 /**
  * Manages container lifecycle.
@@ -98,8 +100,9 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         service = Executors.newScheduledThreadPool(1);
         service.scheduleWithFixedDelay(new ConversationCleaner(), delay, delay, TimeUnit.MILLISECONDS);
         
-        WebBeansELResolver resolver = new WebBeansELResolver();
-        OwbElContextListener elContextListener = new OwbElContextListener();
+        ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
+        ELResolver resolver = elAdaptor.getOwbELResolver();
+        ELContextListener elContextListener = elAdaptor.getOwbELContextListener();
         //Application is configured as JSP
         if(OpenWebBeansConfiguration.getInstance().isJspApplication())
         {

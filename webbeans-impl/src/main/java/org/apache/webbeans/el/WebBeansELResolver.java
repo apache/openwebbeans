@@ -47,8 +47,6 @@ import org.apache.webbeans.container.BeanManagerImpl;
  */
 public class WebBeansELResolver extends ELResolver
 {    
-
-    public static ThreadLocal<ELContextStore> LOCAL_CONTEXT = new ThreadLocal<ELContextStore>();
     
     public WebBeansELResolver()
     {
@@ -102,7 +100,7 @@ public class WebBeansELResolver extends ELResolver
         CreationalContext<Object> creationalContext = null;
         
         //Local store, set by the OwbELContextListener
-        ELContextStore store = LOCAL_CONTEXT.get();        
+        ELContextStore store = ELContextStore.LOCAL_CONTEXT.get();        
         if (obj == null)
         {                      
             //Name of the bean
