@@ -48,12 +48,12 @@ public class WebBeansPhaseListener implements PhaseListener
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE) ||
                 JSFUtil.getCurrentFacesContext().getResponseComplete())
         {
-        	ConversationManager conversationManager = ConversationManager.getInstance();
-        	Conversation conversation = conversationManager.getConversationBeanReference();
-        	
+            ConversationManager conversationManager = ConversationManager.getInstance();
+            Conversation conversation = conversationManager.getConversationBeanReference();
+
             if (conversation.isTransient())
             {
-                logger.debug(OWBLogConst.INFO_0014, new Object[]{conversation.getId()});
+                logger.debug(OWBLogConst.INFO_0014, conversation.getId());
                 ContextFactory.destroyConversationContext();                                                    
             }
             else
@@ -77,39 +77,39 @@ public class WebBeansPhaseListener implements PhaseListener
             //It looks for cid parameter in the JSF request.
             //If request contains cid, then it must restore conversation
             //Otherwise create NonexistentException
-        	ConversationManager conversationManager = ConversationManager.getInstance();
-        	Conversation conversation = conversationManager.getConversationBeanReference();
-        	String cid = JSFUtil.getConversationId();
-        	
-			if (conversation.isTransient())
-			{
-				logger.debug(OWBLogConst.INFO_0016, new Object[]{conversation.getId()});
-				ContextFactory.initConversationContext(null);
-				
-	            //Not restore, throw exception
-				if(cid != null && !cid.equals(""))
-				{
-				    throw new NonexistentConversationException("Propogated conversation with cid=" + cid + " is not restored. It creates a new transient conversation.");
-				}
-			}
-			else
-			{
-				logger.debug(OWBLogConst.INFO_0015, new Object[]{conversation.getId()});
-				
-				//Conversation must be used by one thread at a time
-				ConversationImpl owbConversation = (ConversationImpl)conversation;
-				if(!owbConversation.getInUsed().compareAndSet(false, true))
-				{				    
-				    ContextFactory.initConversationContext(null);
-				    //Throw Busy exception
-				    throw new BusyConversationException("Propogated conversation with cid=" + cid + " is used by other request. It creates a new transient conversation");
-				}
-				else
-				{
-	               ConversationContext conversationContext = conversationManager.getConversationContext(conversation);
-	               ContextFactory.initConversationContext(conversationContext);
-				}				
-			}
+            ConversationManager conversationManager = ConversationManager.getInstance();
+            Conversation conversation = conversationManager.getConversationBeanReference();
+            String cid = JSFUtil.getConversationId();
+
+            if (conversation.isTransient())
+            {
+                logger.debug(OWBLogConst.INFO_0016, conversation.getId());
+                ContextFactory.initConversationContext(null);
+
+                //Not restore, throw exception
+                if(cid != null && !cid.equals(""))
+                {
+                    throw new NonexistentConversationException("Propogated conversation with cid=" + cid + " is not restored. It creates a new transient conversation.");
+                }
+            }
+            else
+            {
+                logger.debug(OWBLogConst.INFO_0015, conversation.getId());
+
+                //Conversation must be used by one thread at a time
+                ConversationImpl owbConversation = (ConversationImpl)conversation;
+                if(!owbConversation.getInUsed().compareAndSet(false, true))
+                {
+                    ContextFactory.initConversationContext(null);
+                    //Throw Busy exception
+                    throw new BusyConversationException("Propogated conversation with cid=" + cid + " is used by other request. It creates a new transient conversation");
+                }
+                else
+                {
+                    ConversationContext conversationContext = conversationManager.getConversationContext(conversation);
+                    ContextFactory.initConversationContext(conversationContext);
+                }
+            }
         }
     }
 
