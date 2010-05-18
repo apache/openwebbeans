@@ -93,7 +93,14 @@
 		<!-- JSF Plugin -->
 		<dependency>
 			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>openwebbeans-jsf</artifactId>
+			<artifactId>openwebbeans-jsf12</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- EL Plugin -->
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-el10</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 				
