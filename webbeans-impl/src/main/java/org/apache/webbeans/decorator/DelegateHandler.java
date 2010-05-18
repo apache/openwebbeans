@@ -86,7 +86,7 @@ public class DelegateHandler implements MethodHandler
             }
             catch (SecurityException e)
             {
-                logger.error(OWBLogConst.ERROR_0011, new Object[] { method.getName(), decorator.getClass().getName() });
+                logger.error(OWBLogConst.ERROR_0011, method.getName(), decorator.getClass().getName());
                 throw new WebBeansException(e);
 
             }
@@ -96,13 +96,13 @@ public class DelegateHandler implements MethodHandler
             }
             catch (InvocationTargetException e)
             {
-                logger.error(OWBLogConst.ERROR_0012, new Object[] { method.getName(), decorator.getClass().getName() }, e.getTargetException());
+                logger.error(OWBLogConst.ERROR_0012, e.getTargetException(), method.getName(), decorator.getClass().getName());
 
                 throw new WebBeansException(e);
             }
             catch (IllegalAccessException e)
             {
-                logger.error(OWBLogConst.ERROR_0014, new Object[] { method.getName(), decorator.getClass().getName() });
+                logger.error(OWBLogConst.ERROR_0014, method.getName(), decorator.getClass().getName());
                 throw new WebBeansException(e);
             }
 

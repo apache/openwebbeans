@@ -129,7 +129,7 @@ public final class DecoratorUtil
                         }
                         catch (SecurityException e)
                         {
-                            logger.error(OWBLogConst.ERROR_0006, new Object[]{decClazz.getName(),method.getName()}, e);
+                            logger.error(OWBLogConst.ERROR_0006, e, decClazz.getName(),method.getName());
                             throw new WebBeansException(e);
 
                         }

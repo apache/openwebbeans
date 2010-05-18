@@ -82,7 +82,7 @@ public class PluginLoader
             while(pluginIter.hasNext()) 
             {
               OpenWebBeansPlugin plugin = pluginIter.next();
-              logger.info(OWBLogConst.INFO_0013, new Object[]{plugin.getClass().getSimpleName()});
+              logger.info(OWBLogConst.INFO_0013, plugin.getClass().getSimpleName());
               try
             {
                 plugin.startUp();
@@ -144,7 +144,7 @@ public class PluginLoader
                 {
                     // we catch ALL exceptions, since we like to continue shutting down all other plugins!
                     String pluginName = plugin.getClass().getSimpleName();
-                    logger.error(OWBLogConst.ERROR_0009, new Object[]{pluginName}, e);
+                    logger.error(OWBLogConst.ERROR_0009, e, pluginName);
                     failedShutdown.add(pluginName);
                 }
             }

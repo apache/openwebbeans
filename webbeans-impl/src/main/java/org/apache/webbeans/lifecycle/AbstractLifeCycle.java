@@ -125,7 +125,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         //Start actual starting on sub-classes
         afterStartApplication(startupObject);
         
-        logger.info(OWBLogConst.INFO_0002, new Object[]{Long.toString(System.currentTimeMillis() - begin)});        
+        logger.info(OWBLogConst.INFO_0002, Long.toString(System.currentTimeMillis() - begin));        
     }
 
     @Override

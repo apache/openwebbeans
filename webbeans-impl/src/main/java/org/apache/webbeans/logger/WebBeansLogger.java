@@ -55,7 +55,7 @@ public final class WebBeansLogger
     /** Private constructor */
     private WebBeansLogger()
     {
-    	wbBundle = ResourceBundle.getBundle("openwebbeans/Messages");
+        wbBundle = ResourceBundle.getBundle("openwebbeans/Messages");
     }
 
     /**
@@ -163,7 +163,7 @@ public final class WebBeansLogger
 
     public void info(String messageKey)
     {
-    	this.wblLog(WebBeansLogger.WBL_INFO, messageKey);
+        this.wblLog(WebBeansLogger.WBL_INFO, messageKey);
     }
 
     public void info(String messageKey, Object... args)
@@ -208,13 +208,13 @@ public final class WebBeansLogger
 
     private String constructMessage(String messageKey, Object... args)
     {
-    	MessageFormat msgFrmt;
-    	String formattedString;
-    	
-    	msgFrmt = new MessageFormat(getTokenString(messageKey), Locale.getDefault());
-    	formattedString = msgFrmt.format(args);
-    	
-    	return formattedString;
+        MessageFormat msgFrmt;
+        String formattedString;
+
+        msgFrmt = new MessageFormat(getTokenString(messageKey), Locale.getDefault());
+        formattedString = msgFrmt.format(args);
+
+        return formattedString;
     }
 
     public String getTokenString(String messageKey)
@@ -223,7 +223,7 @@ public final class WebBeansLogger
 
         if (this.wbBundle == null)
         {
-        	throw new NullPointerException("ResourceBundle can not be null");
+            throw new NullPointerException("ResourceBundle can not be null");
         }
         try
         {
@@ -231,7 +231,7 @@ public final class WebBeansLogger
         }
         catch (MissingResourceException mre)
         {
-        	strVal = null;
+            strVal = null;
         }
         if (strVal == null)
         {

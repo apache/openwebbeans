@@ -36,7 +36,7 @@ public class WebBeansResolver implements EntityResolver
      */
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
     {
-        logger.debug("Resolving systemId with : ", new Object[]{systemId});
+        logger.debug("Resolving systemId with : ",systemId);
 
         if (systemId.equals(WebBeansConstants.WEB_BEANS_XML_SYSID))
         {
@@ -44,7 +44,7 @@ public class WebBeansResolver implements EntityResolver
 
             if (stream != null)
             {
-                logger.debug("Resolving is successful with systemId : ", new Object[]{systemId});
+                logger.debug("Resolving is successful with systemId : ",systemId);
                 return createInputSource(stream, publicId, systemId);
             }
         }
@@ -56,12 +56,12 @@ public class WebBeansResolver implements EntityResolver
 
             if (stream != null)
             {
-                logger.debug("Resolving is successful with systemId : ", new Object[]{systemId});
+                logger.debug("Resolving is successful with systemId : ", systemId);
                 return createInputSource(stream, publicId, systemId);
             }
         }
 
-        logger.debug("Resolving failed using default SAXResolver for systemId : ", new Object[]{systemId});
+        logger.debug("Resolving failed using default SAXResolver for systemId : ", systemId);
         return null;
     }
 

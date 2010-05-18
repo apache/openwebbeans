@@ -338,7 +338,7 @@ public class BeansDeployer
                 {
                     if(!bean.getScope().equals(Dependent.class))
                     {
-                        logger.warn("Bean " + bean.toString() + "has not DependentScope. If an interceptor or decorator has any scope other than @Dependent, non-portable behaviour results.");
+                        logger.warn(OWBLogConst.WARN_0009, bean.toString());
                     }
                 }
                 
@@ -479,7 +479,7 @@ public class BeansDeployer
                 {                    
                     if(EJBWebBeansConfigurator.isSessionBean(implClass))
                     {
-                        logger.debug(OWBLogConst.INFO_0010, new Object[]{implClass.getName()});
+                        logger.debug(OWBLogConst.INFO_0010, implClass.getName());
                         defineEnterpriseWebBean((Class<Object>)implClass, (ProcessAnnotatedTypeImpl<Object>)processAnnotatedEvent);                        
                     }
                 }                                     
@@ -619,7 +619,8 @@ public class BeansDeployer
             {
                 if (superClass.equals(specialClass.getSuperclass()))
                 {
-                    throw new InconsistentSpecializationException(logger.getTokenString(OWBLogConst.EXCEPT_XML) + logger.getTokenString(OWBLogConst.EXCEPT_0005)
+                    throw new InconsistentSpecializationException(logger.getTokenString(OWBLogConst.EXCEPT_XML) 
+                                                                 + logger.getTokenString(OWBLogConst.EXCEPT_0005)
                                                                  + superClass.getName());
                 }
             }
@@ -779,7 +780,7 @@ public class BeansDeployer
             //Decorator
             if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeDecorator(annotatedType))
             {
-                logger.debug(OWBLogConst.INFO_0012, new Object[]{annotatedType.getJavaClass().getName()});
+                logger.debug(OWBLogConst.INFO_0012, annotatedType.getJavaClass().getName());
                 if(annotationTypeSet)
                 {
                     WebBeansAnnotatedTypeUtil.defineDecorator(annotatedType);
@@ -792,7 +793,7 @@ public class BeansDeployer
             //Interceptor
             else if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeInterceptor(annotatedType))
             {
-                logger.debug(OWBLogConst.INFO_0011, new Object[]{annotatedType.getJavaClass().getName()});
+                logger.debug(OWBLogConst.INFO_0011, annotatedType.getJavaClass().getName());
                 if(annotationTypeSet)
                 {
                     WebBeansAnnotatedTypeUtil.defineInterceptor(annotatedType);
@@ -810,7 +811,7 @@ public class BeansDeployer
                     return false;
                 }
                 
-                logger.debug(OWBLogConst.INFO_0009, new Object[]{annotatedType.getJavaClass().getName()});
+                logger.debug(OWBLogConst.INFO_0009, annotatedType.getJavaClass().getName());
                 WebBeansUtil.defineManagedBean(managedBeanCreator, processInjectionTargetEvent);   
             }
             
