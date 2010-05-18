@@ -52,7 +52,7 @@ import org.apache.webbeans.spi.adaptor.ELAdaptor;
  */
 public final class WebContainerLifecycle extends AbstractLifeCycle
 {
-	//Logger instance
+    //Logger instance
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebContainerLifecycle.class);
 
     /**Manages unused conversations*/
@@ -156,7 +156,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             servletContext = getServletContext(stopObject);
         }
         
-        logger.info(OWBLogConst.INFO_0003, new Object[]{servletContext != null ? servletContext.getContextPath() : null});
+        logger.info(OWBLogConst.INFO_0003, servletContext != null ? servletContext.getContextPath() : null);
     }
     
     /**
