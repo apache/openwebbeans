@@ -13,6 +13,8 @@
  */
 package org.apache.webbeans.sample.ejb;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.interceptor.Interceptors;
@@ -30,4 +32,15 @@ public class EchoBean implements Echo
         return "Hello " + name; 
     }    
 
+    @PostConstruct
+    public void postConstruct()
+    {
+        System.out.println("Post construct call in " + EchoBean.class.getName() + " via EJB interceptor");
+    }
+    
+    @PreDestroy
+    public void preDestroy()
+    {
+        System.out.println("PreDestroy construct call in " + EchoBean.class.getName() + " via EJB interceptor");
+    }
 }

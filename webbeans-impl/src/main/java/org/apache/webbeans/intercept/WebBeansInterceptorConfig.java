@@ -383,10 +383,21 @@ public final class WebBeansInterceptorConfig
                 while (it.hasNext())
                 {
                     WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
-    
-                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, AroundInvoke.class, true, true, stack, method);
-                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PostConstruct.class, true, true, stack, method);
-                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PreDestroy.class, true, true, stack, method);
+                    
+                    AnnotatedType<?> interAnnoType = interceptor.getAnnotatedType();
+                    
+                    if(interAnnoType == null)
+                    {
+                        WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), AroundInvoke.class, true, true, stack, method, true);
+                        WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PostConstruct.class, true, true, stack, method, true);
+                        WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PreDestroy.class, true, true, stack, method, true);                        
+                    }
+                    else
+                    {
+                        WebBeansUtil.configureInterceptorMethods(interceptor, interAnnoType, AroundInvoke.class, true, true, stack, method);
+                        WebBeansUtil.configureInterceptorMethods(interceptor, interAnnoType, PostConstruct.class, true, true, stack, method);
+                        WebBeansUtil.configureInterceptorMethods(interceptor, interAnnoType, PreDestroy.class, true, true, stack, method);                        
+                    }
                 }
             }            
         }

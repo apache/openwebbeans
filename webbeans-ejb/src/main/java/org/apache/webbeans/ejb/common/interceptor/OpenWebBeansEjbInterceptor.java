@@ -224,15 +224,21 @@ public class OpenWebBeansEjbInterceptor
                 impl.setCreationalContext(threadLocalCreationalContext.get());
                 try
                 {
+                    //run OWB interceptors
                     impl.proceed();
+                    
+                    //run EJB interceptors
+                    context.proceed();
                 }
                 catch (Exception e)
                 {
-                    logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PostConstruct."}, e);                
+                    logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PostConstruct."}, e);    
+                    throw new RuntimeException(e);
                 }
             }                        
         }
-        else { 
+        else 
+        { 
             runPrePostForNonContextual(context, InterceptorType.POST_CONSTRUCT);
         }
   
@@ -269,15 +275,21 @@ public class OpenWebBeansEjbInterceptor
                 impl.setCreationalContext(threadLocalCreationalContext.get());
                 try
                 {
+                    //Call OWB interceptord
                     impl.proceed();
+                    
+                    //Call EJB interceptors
+                    context.proceed();
                 }
                 catch (Exception e)
                 {
                     logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PreDestroy."}, e);
+                    throw new RuntimeException(e);
                 }
             }                        
         }
-        else { 
+        else 
+        { 
             runPrePostForNonContextual(context, InterceptorType.PRE_DESTROY);
         }
         

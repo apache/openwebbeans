@@ -40,13 +40,13 @@ public class LogInterceptor
     @PostConstruct
     public void postConstruct(InvocationContext context)
     {
-        System.out.println("Post Construct");
+        System.out.println("Post Construct with OWB interceptor");
     }
     
     @PreDestroy
     public void preDestroy(InvocationContext context)
     {
-        System.out.println("Pre Destroy");
+        System.out.println("Pre Destroy with OWB interceptor");
     }
     
 }
