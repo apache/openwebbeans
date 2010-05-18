@@ -78,6 +78,12 @@
 			<scope>provided</scope>
 		</dependency>			
 
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-el10</artifactId>
+			<version>${project.version}</version>
+		</dependency>			
+
 	</dependencies>
 	
 	<build>
