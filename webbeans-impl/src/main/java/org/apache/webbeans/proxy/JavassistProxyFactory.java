@@ -32,9 +32,10 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.WebBeansAnnotation;
-import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.intercept.ApplicationScopedBeanIntereptorHandler;
 import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandler;
@@ -92,6 +93,24 @@ public final class JavassistProxyFactory
         }
         
         return clazz;
+    }
+    
+    public static Class<?> createAbstractDecoratorProxyClass(OwbBean<?> bean){
+        //Will only get called once while defining the bean, so no need to cache
+        Class<?> clazz = null;
+        try
+        {
+            ProxyFactory fact = createProxyFactory(bean);
+            AbstractDecoratorMethodHandler handler = new AbstractDecoratorMethodHandler();
+            fact.setHandler(handler);
+            clazz = SecurityUtil.doPrivilegedCreateClass(fact);
+        }
+        catch(Exception e)
+        {
+            WebBeansUtil.throwRuntimeExceptions(e);
+        }
+        return clazz;
+        
     }
     
     public static Object createNormalScopedBeanProxy(OwbBean<?> bean, CreationalContext<?> creationalContext)

@@ -96,6 +96,12 @@ public class DelegateHandler implements MethodHandler
             }
             catch (InvocationTargetException e)
             {
+                //If the wrapped exception tells us the method didn't exist, continue
+                if(e.getCause() instanceof NoSuchMethodException)
+                {
+                    continue;
+                }
+                
                 logger.error(OWBLogConst.ERROR_0012, e.getTargetException(), method.getName(), decorator.getClass().getName());
 
                 throw new WebBeansException(e);

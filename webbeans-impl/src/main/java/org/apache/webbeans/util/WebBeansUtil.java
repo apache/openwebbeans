@@ -30,13 +30,13 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Comparator;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -100,11 +100,9 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.annotation.RequestedScopeLiteral;
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
-import org.apache.webbeans.component.InjectionTargetWrapper;
-import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.component.ConversationBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
@@ -112,9 +110,11 @@ import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
@@ -161,6 +161,7 @@ import org.apache.webbeans.portable.events.generics.GProcessProducer;
 import org.apache.webbeans.portable.events.generics.GProcessProducerField;
 import org.apache.webbeans.portable.events.generics.GProcessProducerMethod;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
@@ -2205,7 +2206,15 @@ public final class WebBeansUtil
             ManagedBean<T> delegate = null;
 
             DecoratorUtil.checkDecoratorConditions(clazz);
-            delegate = defineManagedBean(creator, processInjectionTargetEvent);
+            
+            if(Modifier.isAbstract(clazz.getModifiers()))
+            {
+                delegate = defineAbstractDecorator(creator, processInjectionTargetEvent);
+            } 
+            else
+            {
+                delegate = defineManagedBean(creator, processInjectionTargetEvent);
+            }
 
             if (delegate != null)
             {
@@ -2785,6 +2794,15 @@ public final class WebBeansUtil
         }
         
         return null;
+    }
+    
+    public static <T> ManagedBean<T> defineAbstractDecorator(ManagedBeanCreatorImpl<T> managedBeanCreator,ProcessInjectionTarget<T> processInjectionTargetEvent)
+    {
+        
+        ManagedBean<T> bean = defineManagedBean(managedBeanCreator, processInjectionTargetEvent);
+        Class clazz = JavassistProxyFactory.createAbstractDecoratorProxyClass(bean);
+        bean.setConstructor(WebBeansUtil.defineConstructor(clazz));
+        return bean;
     }
     
  

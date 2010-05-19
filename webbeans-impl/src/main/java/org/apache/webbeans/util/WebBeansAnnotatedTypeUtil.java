@@ -49,6 +49,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.interceptor.Interceptor;
@@ -64,6 +65,7 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
+import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
@@ -77,6 +79,7 @@ import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.api.ResourceReference;
 
 public final class WebBeansAnnotatedTypeUtil
@@ -750,6 +753,15 @@ public final class WebBeansAnnotatedTypeUtil
         }
     }
     
+    public static <T> ManagedBean<T> defineAbstractDecorator(AnnotatedType<T> type)
+    {
+        
+        ManagedBean<T> bean = defineManagedBean(type);
+        Class clazz = JavassistProxyFactory.createAbstractDecoratorProxyClass(bean);
+        bean.setConstructor(WebBeansUtil.defineConstructor(clazz));
+        return bean;
+    }
+    
     public static <T> ManagedBean<T>  defineManagedBean(AnnotatedType<T> type)
     {
         Class<T> clazz = type.getJavaClass();
@@ -870,7 +882,14 @@ public final class WebBeansAnnotatedTypeUtil
                 
             }
             
-            delegate = defineManagedBean(annotatedType);
+            if(Modifier.isAbstract(annotatedType.getJavaClass().getModifiers()))
+            {
+                delegate = defineAbstractDecorator(annotatedType);
+            } 
+            else 
+            {
+                delegate = defineManagedBean(annotatedType);
+            }
 
             if (delegate != null)
             {
