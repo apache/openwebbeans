@@ -170,6 +170,11 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
      */
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments, CreationalContextImpl<?> ownerCreationalContext) throws Exception
     {
+        if (instance == null)
+        {
+            return null;
+        }
+        
         //Result of invocation
         Object result = null;
         

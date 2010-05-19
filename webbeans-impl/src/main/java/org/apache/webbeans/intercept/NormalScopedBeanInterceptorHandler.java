@@ -25,6 +25,7 @@ import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.UnproxyableResolutionException;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.context.AbstractContext;
@@ -66,7 +67,8 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
                 AbstractContext owbContext = (AbstractContext)webbeansContext;
                 owbContext.initContextualBag(bean, creationalContext);
             }            
-        }catch(ContextNotActiveException e)
+        }
+        catch(ContextNotActiveException e)
         {
             //Nothing
         }
@@ -79,13 +81,13 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         if (method.getName().equals("finalize") &&
-            method.getParameterTypes().length == 0
-        	&& method.getReturnType().equals(Void.TYPE)) 
+            method.getParameterTypes().length == 0 &&
+            method.getReturnType().equals(Void.TYPE))
         {
-        	// we should NOT invoke the bean's finalize() from proxied 
-        	// finalize() method since JVM will invoke it directly. 
-        	// OWB-366
-        	return null;
+            // we should NOT invoke the bean's finalize() from proxied
+            // finalize() method since JVM will invoke it directly.
+            // OWB-366
+            return null;
         }
 
         //Get instance from context
@@ -111,7 +113,6 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     
     /**
      * Gets instance from context.
-     * @param bean bean instance
      * @return the underlying contextual instance, either cached or resolved from the context 
      */
     protected Object getContextualInstance()
@@ -122,18 +123,20 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         Context webbeansContext = getBeanManager().getContext(this.bean.getScope());
         
         //Already saved in context?
-        webbeansInstance=webbeansContext.get(this.bean);
+        webbeansInstance = webbeansContext.get(this.bean);
         if (webbeansInstance != null)
         {
             // voila, we are finished if we found an existing contextual instance
             return webbeansInstance;
         }
-        else
+
+        // finally, we create a new contextual instance
+        webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, getContextualCreationalContext());
+
+        if (webbeansInstance == null)
         {
-            // finally, we create a new contextual instance
-            webbeansInstance = webbeansContext.get((Contextual<Object>)this.bean, getContextualCreationalContext());   
+            throw new UnproxyableResolutionException("Cannot find a contextual instance of bean " + bean.toString());
         }
-                
         return webbeansInstance;
     }
     
@@ -158,9 +161,19 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
             {
                 creationalContext = CreationalContextFactory.getInstance().getCreationalContext(contextual);
                 owbContext.initContextualBag((OwbBean<Object>)this.bean, creationalContext);
-            }            
+            }
         }
-                
+
+        // for 3rd party contexts (actually all contexts provided via portable extensions)
+        // we don't have all the stuff of AbstractContext available
+        // In this case we may safely simply create a fresh CreationalContext, because
+        // if an 'old' contextual instance exists, it would have been found by the
+        // preceding call to Context.get(Contextual) (without any CreationalContext)
+        if(creationalContext == null)
+        {
+            creationalContext = CreationalContextFactory.getInstance().getCreationalContext(contextual);
+        }
+
         return creationalContext;
     }
 }
