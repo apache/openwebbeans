@@ -123,7 +123,21 @@ public class DelegateHandler implements MethodHandler
         {
             if(ejbContext != null)
             {
-                result = ejbContext.proceed();
+                Method ejbMethod = ejbContext.getMethod();
+                
+                // don't use method.equals(), it may only differ by being abstract in the EJB proxy.
+                 
+                if (method.getName().equals(ejbMethod.getName()) && 
+                        method.getReturnType().equals(ejbMethod.getReturnType())) 
+                {
+                    result = ejbContext.proceed();
+                }
+
+                else 
+                {
+                    Object ejbInstance = ejbContext.getTarget();
+                    result = method.invoke(ejbInstance, arguments);
+                }
             }
         }
         
