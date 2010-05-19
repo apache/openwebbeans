@@ -260,6 +260,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.1.0</version>
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
@@ -643,7 +644,7 @@
         <geronimo_jta.version>1.1.1</geronimo_jta.version>
         <geronimo_jsp.version>1.0.1</geronimo_jsp.version>
         <geronimo_cdi.version>1.0-beta</geronimo_cdi.version>
-        <geronimo_atinject.version>1.0-beta</geronimo_atinject.version>
+        <geronimo_atinject.version>1.0</geronimo_atinject.version>
         <geronimo_interceptor.version>1.0.0-beta</geronimo_interceptor.version>
         <geronimo_validation.version>1.0</geronimo_validation.version>
         <javassist.version>3.11.0.GA</javassist.version>
