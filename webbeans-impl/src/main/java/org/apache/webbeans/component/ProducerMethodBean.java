@@ -189,12 +189,12 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                 isInjectionToAnotherBean = contextual == this ? false : true;
             }
             
-            Object injectionTargetInstance = AbstractInjectable.instanceUnderInjection;
+            ThreadLocal<Object> injectionTargetInstance = AbstractInjectable.instanceUnderInjection;
             if(isInjectionToAnotherBean)
             {
                 if(oldDependents == null && injectionTargetInstance != null)
                 {
-                    ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance, this , instance);
+                    ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance.get(), this , instance);
                 }
                 else
                 {
@@ -230,7 +230,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                         {
                             if(oldDependents == null && injectionTargetInstance != null)
                             {
-                                ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance, this , instance);
+                                ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance.get(), this , instance);
                             }
                             else
                             {
