@@ -28,8 +28,8 @@ import javax.inject.Named;
 import org.apache.webbeans.test.component.event.normal.Transactional;
 
 @Dependent
-@Named(value="org.apache.webbeans.newtests.injection.circular.beans.CircularDependenScopeBean")
-public class CircularDependenScopeBean implements Serializable
+@Named(value="org.apache.webbeans.newtests.injection.circular.beans.CircularDependentScopedBean")
+public class CircularDependentScopedBean implements Serializable
 {
     @Inject CircularApplicationScopedBean app;
     

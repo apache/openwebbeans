@@ -29,6 +29,8 @@ import junit.framework.Assert;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.contexts.session.common.AppScopedBean;
 import org.apache.webbeans.newtests.contexts.session.common.PersonalDataBean;
+import org.apache.webbeans.newtests.injection.circular.beans.CircularApplicationScopedBean;
+import org.apache.webbeans.newtests.injection.circular.beans.CircularDependentScopedBean;
 import org.junit.Test;
 
 public class SessionContextTest extends AbstractUnitTest
@@ -43,6 +45,8 @@ public class SessionContextTest extends AbstractUnitTest
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(PersonalDataBean.class);
+        classes.add(CircularDependentScopedBean.class);
+        classes.add(CircularApplicationScopedBean.class);
         
         startContainer(classes);
         
@@ -67,7 +71,9 @@ public class SessionContextTest extends AbstractUnitTest
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(PersonalDataBean.class);
         classes.add(AppScopedBean.class);
-        
+        classes.add(CircularDependentScopedBean.class);
+        classes.add(CircularApplicationScopedBean.class);
+
         startContainer(classes);
         
         AppScopedBean appBeanInstance = getInstance(AppScopedBean.class);

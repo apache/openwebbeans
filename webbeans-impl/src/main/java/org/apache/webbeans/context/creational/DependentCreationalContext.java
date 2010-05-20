@@ -105,8 +105,8 @@ public class DependentCreationalContext<S> implements Serializable
     private synchronized void writeObject(ObjectOutputStream s)
     throws IOException
     {
-        //Default write
-        s.defaultWriteObject();
+        s.writeObject(dependentType);
+        s.writeObject(instance);
 
         //Write for contextual
         String id = null;
@@ -133,9 +133,9 @@ public class DependentCreationalContext<S> implements Serializable
     private synchronized void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
-        //Default read
-        s.defaultReadObject();
-        
+        dependentType = (DependentType) s.readObject();
+        instance = s.readObject();
+
         //Read for contextual
         String id = (String) s.readObject();
         if (id != null)

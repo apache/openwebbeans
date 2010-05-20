@@ -13,7 +13,9 @@
  */
 package org.apache.webbeans.context;
 
+import java.io.*;
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +32,8 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
+import org.apache.webbeans.container.SerializableBean;
+import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.util.Asserts;
@@ -44,7 +48,7 @@ import org.apache.webbeans.util.Asserts;
  * @see ApplicationContext
  * @see ConversationContext
  */
-public abstract class AbstractContext implements WebBeansContext
+public abstract class AbstractContext implements WebBeansContext, Serializable
 {
     /**Context status, active or not*/
     protected volatile boolean active;
@@ -350,4 +354,71 @@ public abstract class AbstractContext implements WebBeansContext
         }        
     }
 
+    /**
+     * Write Object.
+     */
+    private synchronized void writeObject(ObjectOutputStream s)
+    throws IOException
+    {
+        s.writeObject(type);
+        s.writeObject(scopeType);
+
+        // we need to repack the Contextual<T> from the componentInstanceMap into Serializable ones
+        if (componentInstanceMap != null)
+        {
+            SerializableBeanVault sbv = SerializableBeanVault.getInstance();
+
+            Map<Contextual<?>, BeanInstanceBag<?>> serializableInstanceMap =
+                    new HashMap<Contextual<?>, BeanInstanceBag<?>>();
+
+            for (Map.Entry<Contextual<?>, BeanInstanceBag<?>> componentInstanceMapEntry : componentInstanceMap.entrySet())
+            {
+                serializableInstanceMap.put(sbv.getSerializableBean(componentInstanceMapEntry.getKey()),
+                                            componentInstanceMapEntry.getValue());
+            }
+            
+            s.writeObject(serializableInstanceMap);
+        }
+        else
+        {
+            s.writeObject(null);
+        }
+
+    }
+
+    /**
+     * Read object.
+     */
+    @SuppressWarnings("unchecked")
+    private synchronized void readObject(ObjectInputStream s)
+    throws IOException, ClassNotFoundException
+    {
+        type = (ContextTypes) s.readObject();
+        scopeType = (Class<? extends Annotation>) s.readObject();
+
+        HashMap<Contextual<?>, BeanInstanceBag<?>> serializableInstanceMap =
+                (HashMap<Contextual<?>, BeanInstanceBag<?>>) s.readObject();
+
+        if (serializableInstanceMap != null)
+        {
+            setComponentInstanceMap();
+            if (componentInstanceMap == null)
+            {
+                throw new NotSerializableException("componentInstanceMap not initialized!");
+            }
+
+            for (Map.Entry<Contextual<?>, BeanInstanceBag<?>> serializableInstanceMapEntry : serializableInstanceMap.entrySet())
+            {
+                Contextual<?> bean = serializableInstanceMapEntry.getKey();
+                if (bean instanceof SerializableBean)
+                {
+                    componentInstanceMap.put(((SerializableBean<?>)bean).getBean(), serializableInstanceMapEntry.getValue());
+                }
+                else
+                {
+                    componentInstanceMap.put(bean, serializableInstanceMapEntry.getValue());
+                }
+            }
+        }
+    }
 }

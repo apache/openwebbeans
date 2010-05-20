@@ -27,7 +27,8 @@ import javax.inject.Named;
 @Named(value="org.apache.webbeans.newtests.injection.circular.beans.CircularApplicationScopedBean")
 public class CircularApplicationScopedBean
 {
-    private @Inject CircularDependenScopeBean dependent;
+    private @Inject
+    CircularDependentScopedBean dependent;
     
     public static boolean success = false;
     

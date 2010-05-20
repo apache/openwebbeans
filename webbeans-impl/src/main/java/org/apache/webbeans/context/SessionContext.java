@@ -37,7 +37,6 @@ public class SessionContext extends AbstractContext implements Serializable
     public void setComponentInstanceMap()
     {
         this.componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
-
     }
 
 }

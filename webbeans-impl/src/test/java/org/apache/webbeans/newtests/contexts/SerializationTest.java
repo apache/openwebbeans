@@ -32,7 +32,7 @@ import org.apache.webbeans.newtests.decorators.multiple.OutputProvider;
 import org.apache.webbeans.newtests.decorators.multiple.RequestStringBuilder;
 import org.apache.webbeans.newtests.injection.circular.beans.CircularApplicationScopedBean;
 import org.apache.webbeans.newtests.injection.circular.beans.CircularConstructorOrProducerMethodParameterBean;
-import org.apache.webbeans.newtests.injection.circular.beans.CircularDependenScopeBean;
+import org.apache.webbeans.newtests.injection.circular.beans.CircularDependentScopedBean;
 import org.apache.webbeans.newtests.injection.circular.beans.CircularNormalInConstructor;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
@@ -72,6 +72,8 @@ public class SerializationTest extends AbstractUnitTest
 
         // add a few random classes
         classes.add(PersonalDataBean.class);
+        classes.add(CircularDependentScopedBean.class);
+        classes.add(CircularApplicationScopedBean.class);
         startContainer(classes);
 
         BeanManager bm = getLifecycle().getBeanManager();
@@ -98,9 +100,10 @@ public class SerializationTest extends AbstractUnitTest
         classes.add(OutputProvider.class);
         classes.add(Decorator1.class);
         classes.add(CircularApplicationScopedBean.class);
+        classes.add(CircularDependentScopedBean.class);
         classes.add(RequestStringBuilder.class);
         classes.add(CircularConstructorOrProducerMethodParameterBean.class);
-        classes.add(CircularDependenScopeBean.class);
+        classes.add(CircularDependentScopedBean.class);
         classes.add(CircularNormalInConstructor.class);
         classes.add(TransactionalInterceptor.class);
         classes.add(ComponentWithObserves1.class);

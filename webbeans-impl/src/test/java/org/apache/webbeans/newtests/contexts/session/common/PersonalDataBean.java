@@ -23,8 +23,10 @@ import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.webbeans.newtests.injection.circular.beans.CircularDependentScopedBean;
 import org.apache.webbeans.test.component.event.normal.Transactional;
 
 @Named("org.apache.webbeans.newtests.contexts.session.common.PersonalDataBean")
@@ -36,12 +38,13 @@ public class PersonalDataBean implements Serializable
     public static boolean POST_CONSTRUCT = false;
     
     public static boolean PRE_DESTROY = false;
-    
+
+    private @Inject CircularDependentScopedBean dependentInstance;
+
     public PersonalDataBean()
     {
         
     }
-    
     
     @Transactional
     public void business(){}
@@ -61,5 +64,15 @@ public class PersonalDataBean implements Serializable
     public PersonalDataBean getInstance()
     {
         return this;
+    }
+
+    public CircularDependentScopedBean getDependentInstance()
+    {
+        return dependentInstance;
+    }
+
+    public void setDependentInstance(CircularDependentScopedBean dependentInstance)
+    {
+        this.dependentInstance = dependentInstance;
     }
 }

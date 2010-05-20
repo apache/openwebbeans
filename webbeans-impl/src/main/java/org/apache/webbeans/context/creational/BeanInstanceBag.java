@@ -19,8 +19,9 @@
 package org.apache.webbeans.context.creational;
 
 import javax.enterprise.context.spi.CreationalContext;
+import java.io.Serializable;
 
-public class BeanInstanceBag<T>
+public class BeanInstanceBag<T> implements Serializable
 {
     private final CreationalContext<T> beanCreationalContext;
     
