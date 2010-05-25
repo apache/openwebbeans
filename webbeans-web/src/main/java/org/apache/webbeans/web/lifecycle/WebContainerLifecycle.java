@@ -156,7 +156,10 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             servletContext = getServletContext(stopObject);
         }
         
-        logger.info(OWBLogConst.INFO_0003, servletContext != null ? servletContext.getContextPath() : null);
+        if (logger.wblWillLogInfo())
+        {
+            logger.info(OWBLogConst.INFO_0002, servletContext != null ? servletContext.getContextPath() : "null");
+        }
     }
     
     /**

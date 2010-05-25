@@ -53,7 +53,7 @@ public class WebBeansPhaseListener implements PhaseListener
 
             if (conversation.isTransient())
             {
-                logger.debug(OWBLogConst.INFO_0014, conversation.getId());
+                logger.debug("Destroying the conversation context with cid : [{0}]", conversation.getId());
                 ContextFactory.destroyConversationContext();                                                    
             }
             else
@@ -83,7 +83,7 @@ public class WebBeansPhaseListener implements PhaseListener
 
             if (conversation.isTransient())
             {
-                logger.debug(OWBLogConst.INFO_0016, conversation.getId());
+                logger.debug("Creating a new transitional conversation with cid : [{0}]", conversation.getId());
                 ContextFactory.initConversationContext(null);
 
                 //Not restore, throw exception
@@ -94,7 +94,7 @@ public class WebBeansPhaseListener implements PhaseListener
             }
             else
             {
-                logger.debug(OWBLogConst.INFO_0015, conversation.getId());
+                logger.debug("Restoring conversation with cid : [{0}]", conversation.getId());
 
                 //Conversation must be used by one thread at a time
                 ConversationImpl owbConversation = (ConversationImpl)conversation;

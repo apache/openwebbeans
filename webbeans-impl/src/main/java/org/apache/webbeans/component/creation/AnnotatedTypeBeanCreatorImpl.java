@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
@@ -53,8 +54,7 @@ public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
             
         }catch(Exception e)
         {
-            logger.warn("No suitable constructor found for injection target class : " + getAnnotatedType().getJavaClass()+" ." +
-            		"produce() method does not work!");
+            logger.warn(OWBLogConst.WARN_0012, getAnnotatedType().getJavaClass());
         }
     }
     

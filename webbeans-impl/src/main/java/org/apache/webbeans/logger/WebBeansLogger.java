@@ -74,6 +74,23 @@ public final class WebBeansLogger
         return wbLogger;
     }
 
+    /**
+     * Gets the new web beans logger instance.
+     * 
+     * @param clazz own the return logger
+     * @param desiredLocale Locale used to select the Message resource bundle. 
+     * @return new logger
+     */
+    public static WebBeansLogger getLogger(Class<?> clazz, Locale desiredLocale)
+    {
+        WebBeansLogger wbLogger = new WebBeansLogger();
+        wbLogger.caller = clazz;
+        Logger inLogger = Logger.getLogger(clazz.getName(), ResourceBundle.getBundle("openwebbeans/Messages", desiredLocale).toString());
+        wbLogger.setLogger(inLogger);
+
+        return wbLogger;
+    }
+
     private void wblLog(Level level, String messageKey)
     {
         if (logger.isLoggable(level))
@@ -111,7 +128,7 @@ public final class WebBeansLogger
         this.wblLog(WebBeansLogger.WBL_FATAL, messageKey);
     }
 
-    public void fatal(String messageKey, Object args[])
+    public void fatal(String messageKey, Object... args)
     {
         this.wblLog(WebBeansLogger.WBL_FATAL, messageKey, args);
     }
@@ -249,6 +266,36 @@ public final class WebBeansLogger
     public void setLogger(Logger logger)
     {
         this.logger = logger;
+    }
+
+    public boolean wblWillLogFatal()
+    {
+        return (logger.isLoggable(WebBeansLogger.WBL_FATAL));
+    }
+    
+    public boolean wblWillLogError()
+    {
+        return (logger.isLoggable(WebBeansLogger.WBL_ERROR));
+    }
+    
+    public boolean wblWillLogWarn()
+    {
+        return (logger.isLoggable(WebBeansLogger.WBL_WARN));
+    }
+    
+    public boolean wblWillLogInfo()
+    {
+        return (logger.isLoggable(WebBeansLogger.WBL_INFO));
+    }
+    
+    public boolean wblWillLogDebug()
+    {
+        return (logger.isLoggable(WebBeansLogger.WBL_DEBUG));
+    }
+    
+    public boolean wblWillLogTrace()
+    {
+        return (logger.isLoggable(WebBeansLogger.WBL_TRACE));
     }
 
 }

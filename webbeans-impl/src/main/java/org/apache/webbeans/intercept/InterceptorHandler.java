@@ -33,6 +33,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.DefinitionUtil;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
@@ -185,7 +186,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             
             if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
             {
-                logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object." + methodName);
+                logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);
             }
             
             else if (bean instanceof InjectionTargetBean<?>)
@@ -330,7 +331,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         else
         {
             s.writeObject(null);
-            logger.warn("Trying to serialize not passivated capable bean proxy : " + this.bean);
+            logger.warn(OWBLogConst.WARN_0010, this.bean);
         }
     }
     
@@ -352,7 +353,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         }
         else
         {
-            logger.warn("Trying to deserialize not passivated capable bean proxy : " + this.bean);
+            logger.warn(OWBLogConst.WARN_0011, this.bean);
         }
         
         // restore transient interceptorMethodMap

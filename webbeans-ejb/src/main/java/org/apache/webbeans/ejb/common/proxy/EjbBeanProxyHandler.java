@@ -29,6 +29,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.AbstractContext;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -89,7 +90,7 @@ public class EjbBeanProxyHandler implements MethodHandler
         
         if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
         {
-            logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object." + methodName);
+            logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);
             
             boolean access = method.isAccessible();
             SecurityUtil.doPrivilegedSetAccessible(method, true);
@@ -245,7 +246,7 @@ public class EjbBeanProxyHandler implements MethodHandler
         else
         {
             s.writeObject(null);
-            logger.warn("Trying to serialize not passivated capable bean proxy : " + this.ejbBean);
+            logger.warn(OWBLogConst.WARN_0015, this.ejbBean);
         }
     }
     

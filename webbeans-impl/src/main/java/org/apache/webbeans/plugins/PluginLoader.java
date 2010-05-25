@@ -82,7 +82,10 @@ public class PluginLoader
             while(pluginIter.hasNext()) 
             {
               OpenWebBeansPlugin plugin = pluginIter.next();
-              logger.info(OWBLogConst.INFO_0013, plugin.getClass().getSimpleName());
+              if (logger.wblWillLogInfo())
+              {
+                  logger.info(OWBLogConst.INFO_0004, plugin.getClass().getSimpleName());
+              }
               try
             {
                 plugin.startUp();

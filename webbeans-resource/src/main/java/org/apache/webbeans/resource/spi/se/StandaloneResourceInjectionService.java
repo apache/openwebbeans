@@ -21,6 +21,7 @@ package org.apache.webbeans.resource.spi.se;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.text.MessageFormat;
 
 import javax.annotation.Resource;
 import javax.enterprise.inject.Produces;
@@ -28,6 +29,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.xml.ws.WebServiceRef;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ResourceInjectionService;
@@ -95,8 +97,8 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
                             
                         }catch(Exception e)
                         {
-                            logger.error("Unable to inject field : " + field,e);
-                            throw new WebBeansException("Unable to inject field : " + field,e);
+                            logger.error(OWBLogConst.ERROR_0025, e, field);
+                            throw new WebBeansException(MessageFormat.format(logger.getTokenString(OWBLogConst.ERROR_0025), field), e);
                             
                         }finally
                         {

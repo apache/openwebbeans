@@ -87,7 +87,7 @@ public abstract class AbstractInjectable implements Injectable
      */
     public <T> Object inject(InjectionPoint injectionPoint)
     {
-        logger.debug("Injected into bean : " + this.injectionOwnerBean.toString() + " with injection point : " + injectionPoint);
+        logger.debug("Injected into bean : [{0}] with injection point : [{1}]", this.injectionOwnerBean, injectionPoint);
 
         Object injected = null;               
 

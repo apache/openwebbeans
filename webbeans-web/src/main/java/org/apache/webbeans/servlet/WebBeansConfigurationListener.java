@@ -67,7 +67,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
         catch (Exception e)
         {
-             logger.error("Error is occured while starting application context path : " + event.getServletContext().getContextPath());
+             logger.error(OWBLogConst.ERROR_0018, event.getServletContext().getContextPath());
              WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
@@ -86,7 +86,10 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
 	 */
     public void requestDestroyed(ServletRequestEvent event)
     {
-        logger.debug("Destroying a request : " + event.getServletRequest().getRemoteAddr());
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("Destroying a request : [{0}]", event.getServletRequest().getRemoteAddr());
+        }
         this.lifeCycle.getContextService().endContext(RequestScoped.class, event);        
     }
 
@@ -97,7 +100,10 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     {
         try
         {
-            logger.debug("Starting a new request : " + event.getServletRequest().getRemoteAddr());
+            if (logger.wblWillLogDebug())
+            {
+                logger.debug("Starting a new request : [{0}]", event.getServletRequest().getRemoteAddr());
+            }
             
             this.lifeCycle.getContextService().startContext(RequestScoped.class, event);
             
@@ -123,7 +129,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
         catch (Exception e)
         {
-            logger.error("Error is occured while starting request : " + event.getServletRequest());
+            logger.error(OWBLogConst.ERROR_0019, event.getServletRequest());
             WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
@@ -135,12 +141,15 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     {
         try
         {
-            logger.debug("Starting a session with session id : " + event.getSession().getId());
+            if (logger.wblWillLogDebug())
+            {
+                logger.debug("Starting a session with session id : [{0}]", event.getSession().getId());
+            }
             this.lifeCycle.getContextService().startContext(SessionScoped.class, event.getSession());
         }
         catch (Exception e)
         {
-            logger.error("Error is occured while starting session : " + event.getSession());
+            logger.error(OWBLogConst.ERROR_0020, event.getSession());
             WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
@@ -150,7 +159,10 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
 	 */
     public void sessionDestroyed(HttpSessionEvent event)
     {
-        logger.debug("Destroying a session with session id : " + event.getSession().getId());
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("Destroying a session with session id : [{0}]", event.getSession().getId());
+        }
         this.lifeCycle.getContextService().endContext(SessionScoped.class, event.getSession());
 
         ConversationManager conversationManager = ConversationManager.getInstance();

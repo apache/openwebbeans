@@ -148,8 +148,11 @@ public class OpenWebBeansEjbInterceptor
         boolean applicationCreated = false;
         boolean requestAlreadyActive = false;
         boolean applicationAlreadyActive = false;
-        
-        logger.debug("Intercepting EJB method {0} ", ejbContext.getMethod());
+       
+        if (logger.wblWillLogDebug())
+        { 
+            logger.debug("Intercepting EJB method {0} ", ejbContext.getMethod());
+        }
         
         try
         {
@@ -232,7 +235,7 @@ public class OpenWebBeansEjbInterceptor
                 }
                 catch (Exception e)
                 {
-                    logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PostConstruct."}, e);    
+                    logger.error(OWBLogConst.ERROR_0008, e, "@PostConstruct.");    
                     throw new RuntimeException(e);
                 }
             }                        
@@ -252,7 +255,7 @@ public class OpenWebBeansEjbInterceptor
             }
             catch (Exception e)
             {
-                logger.error("Error is occured while injecting dependencies of bean : " + threadLocal.get(),e);
+                logger.error(OWBLogConst.ERROR_0026, e, threadLocal.get());
             }
         }
     }
@@ -283,7 +286,7 @@ public class OpenWebBeansEjbInterceptor
                 }
                 catch (Exception e)
                 {
-                    logger.error(OWBLogConst.ERROR_0008, new Object[]{"@PreDestroy."}, e);
+                    logger.error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
                     throw new RuntimeException(e);
                 }
             }                        
@@ -384,10 +387,13 @@ public class OpenWebBeansEjbInterceptor
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
         if (instance == null) { 
-            logger.warn("null instance ");
+            logger.debug("findTargetBean was passed a null instance.");
             return null;
         }
-        logger.debug("looking up bean for instance " + instance.getClass());
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("looking up bean for instance [{0}]", instance.getClass());
+        }
 
         BaseEjbBean<?> ejbBean = this.resolvedBeans.get(instance.getClass());
         
@@ -402,7 +408,10 @@ public class OpenWebBeansEjbInterceptor
                     if(bean.getBeanClass() == instance.getClass())
                     {
                         ejbBean = (BaseEjbBean<?>)bean;
-                        logger.debug("Found managed bean for " + instance.getClass() + "{0}", ejbBean);
+                        if (logger.wblWillLogDebug())
+                        {
+                            logger.debug("Found managed bean for [{0}] [{1}]", instance.getClass(), ejbBean);
+                        }
                         this.resolvedBeans.put(instance.getClass(), ejbBean);
                         break;
                     }
@@ -410,8 +419,11 @@ public class OpenWebBeansEjbInterceptor
             }
         }        
         else 
-        { 
-            logger.debug("Managed bean for " + instance.getClass() + " found in cache: {0}",  ejbBean);
+        {
+            if (logger.wblWillLogDebug())
+            {
+                logger.debug("Managed bean for [{0}] found in cache: [{1}]", instance.getClass(),  ejbBean);
+            }
         }
         
         return ejbBean;
@@ -435,7 +447,10 @@ public class OpenWebBeansEjbInterceptor
         rv.INTERCEPTOR_OR_DECORATOR_CALL = false;
         if(ejbBean == null)
         {
-            logger.warn("Unable to find EJB bean with class : " + instance.getClass() + ": {0}", manager.getComponents());
+            if (logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0008,  instance.getClass(), manager.getComponents());
+            }
             return rv;
         }
         else
@@ -468,7 +483,7 @@ public class OpenWebBeansEjbInterceptor
         String methodName = method.getName();
         if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
         {
-            logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object." + methodName);
+            logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);
         }
                 
         if (InterceptorUtil.isWebBeansBusinessMethod(method) && 
@@ -509,7 +524,7 @@ public class OpenWebBeansEjbInterceptor
                     // Filter both EJB and WebBeans interceptors
                     InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
 
-                    logger.debug("Interceptor stack for method {0}: {1}", method, filteredInterceptorStack.toString());
+                    logger.debug("Interceptor stack for method {0}: {1}", method, filteredInterceptorStack);
                     // If there are both interceptors and decorators, add hook
                     // point to the end of the interceptor stack.
                     if (decorators != null && filteredInterceptorStack.size() > 0)
@@ -565,7 +580,7 @@ public class OpenWebBeansEjbInterceptor
 
                 // Filter both EJB and WebBeans interceptors
                 InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);  
-                logger.debug("Interceptor stack for method {0}: {1}", method, filteredInterceptorStack.toString());
+                logger.debug("Interceptor stack for method {0}: {1}", method, filteredInterceptorStack);
                 this.nonCtxInterceptedMethodMap.put(method, filteredInterceptorStack);
             }
             
@@ -601,7 +616,7 @@ public class OpenWebBeansEjbInterceptor
         
         BaseEjbBean<?> bean = findTargetBean(instance);
         if (bean == null) { 
-            logger.debug("no bean for instance " + instance);
+            logger.debug("No bean for instance [{0}]", instance);
             return;
         }
         
@@ -621,12 +636,12 @@ public class OpenWebBeansEjbInterceptor
             }
             catch (Exception e)
             {
-                logger.error(OWBLogConst.ERROR_0008, new Object[]{interceptorType}, e);                
+                logger.error(OWBLogConst.ERROR_0008, e, interceptorType);                
             }    
         }       
         else 
         { 
-            logger.debug("No lifecycle interceptors for " + instance);
+            logger.debug("No lifecycle interceptors for [{0}]", instance);
         }
 
         try 
@@ -635,7 +650,7 @@ public class OpenWebBeansEjbInterceptor
         }
         catch (Exception e) 
         { 
-            logger.warn("Exception in ejbContext.proceed() " + e.toString());
+            logger.warn(OWBLogConst.WARN_0007, e);
             throw new RuntimeException(e);
         }
         finally 

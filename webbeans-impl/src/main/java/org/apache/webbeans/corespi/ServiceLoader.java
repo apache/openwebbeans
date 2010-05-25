@@ -15,6 +15,7 @@ package org.apache.webbeans.corespi;
 
 import java.util.List;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -62,7 +63,10 @@ public class ServiceLoader
                 }
             }
             
-            logger.warn("Unable to find service with class name : " + serviceInterface.getName());
+            if (logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0009, serviceInterface.getName());
+            }
             return null;
         }
         return (T) WebBeansFinder.getSingletonInstance(implName);
@@ -94,7 +98,10 @@ public class ServiceLoader
                 }
             }            
             
-            logger.warn("Unable to find service with class name : " + serviceInterface.getName());
+            if (logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0009, serviceInterface.getName());
+            }
             return null;
         }
         return (T) WebBeansFinder.getSingletonInstance(implName, cl);

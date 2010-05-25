@@ -600,7 +600,10 @@ public final class WebBeansXMLConfigurator
             }
             else
             {
-                logger.warn(OWBLogConst.WARN_0002, new Object[]{XMLUtil.getName(child)});
+                if (logger.wblWillLogWarn())
+                {
+                    logger.warn(OWBLogConst.WARN_0002, XMLUtil.getName(child));
+                }
             }            
         }
     }

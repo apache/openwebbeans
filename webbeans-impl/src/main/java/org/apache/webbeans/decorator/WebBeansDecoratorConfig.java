@@ -46,14 +46,14 @@ public final class WebBeansDecoratorConfig
 
     public static <T> void configureDecoratorClass(AbstractInjectionTargetBean<T> delegate)
     {
-        logger.debug("Configuring decorator class : " + delegate.getReturnType());
+        logger.debug("Configuring decorator class : [{0}]", delegate.getReturnType());
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
         BeanManagerImpl.getManager().addDecorator(decorator);
     }
 
     public static <T> void configureXMLDecoratorClass(AbstractInjectionTargetBean<T> delegate, XMLInjectionPointModel model)
     {
-        logger.debug("Configuring XML decorator class : " + delegate.getReturnType());
+        logger.debug("Configuring XML decorator class : [{0}]", delegate.getReturnType());
         WebBeansXMLDecorator<T> decorator = new WebBeansXMLDecorator<T>(delegate, model);
         BeanManagerImpl.getManager().addDecorator(decorator);
     }

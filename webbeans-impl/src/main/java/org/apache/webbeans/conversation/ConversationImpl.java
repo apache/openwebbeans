@@ -105,7 +105,7 @@ public class ConversationImpl implements Conversation
         //Already started conversation.
         else
         {
-            logger.warn(OWBLogConst.WARN_0006, new Object[]{id});
+            logger.warn(OWBLogConst.WARN_0003, id);
             throw new IllegalStateException();
         }
     }
@@ -146,7 +146,7 @@ public class ConversationImpl implements Conversation
         }
         else
         {
-            logger.warn(OWBLogConst.WARN_0007, new Object[]{id});
+            logger.warn(OWBLogConst.WARN_0004, id);
             throw new IllegalStateException();
         }
     }

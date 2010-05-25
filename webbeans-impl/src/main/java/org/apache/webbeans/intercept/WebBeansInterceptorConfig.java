@@ -69,7 +69,7 @@ public final class WebBeansInterceptorConfig
      */
     public static <T> void configureInterceptorClass(AbstractInjectionTargetBean<T> delegate, Annotation[] interceptorBindingTypes)
     {
-        logger.debug("Configuring interceptor class : " + delegate.getReturnType());
+        logger.debug("Configuring interceptor class : [{0}]", delegate.getReturnType());
         WebBeansInterceptor<T> interceptor = new WebBeansInterceptor<T>(delegate);
 
         List<Annotation> anns = Arrays.asList(interceptorBindingTypes);

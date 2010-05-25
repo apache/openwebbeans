@@ -207,7 +207,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         try
         {  
-            logger.debug("Destroying instance : " + this.toString());
+            logger.debug("Destroying instance : [{0}]", this);
             
             InjectionTargetWrapper<T> wrapper = getManager().getInjectionTargetWrapper(this);
             if(wrapper != null)
@@ -229,7 +229,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                                                 
         }catch(Exception e)
         {
-            logger.fatal(OWBLogConst.FATAL_0001, new Object[]{toString()});
+            logger.fatal(OWBLogConst.FATAL_0001, this);
             e.printStackTrace();
         }finally
         {

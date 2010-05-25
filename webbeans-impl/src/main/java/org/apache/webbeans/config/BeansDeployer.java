@@ -310,7 +310,7 @@ public class BeansDeployer
         //Validate Others
         validate(beans);                
 
-        logger.info(OWBLogConst.INFO_0008);
+        logger.info(OWBLogConst.INFO_0003);
     }
     
     /**
@@ -338,7 +338,7 @@ public class BeansDeployer
                 {
                     if(!bean.getScope().equals(Dependent.class))
                     {
-                        logger.warn(OWBLogConst.WARN_0009, bean.toString());
+                        logger.warn(OWBLogConst.WARN_0005, bean);
                     }
                 }
                 
@@ -479,7 +479,7 @@ public class BeansDeployer
                 {                    
                     if(EJBWebBeansConfigurator.isSessionBean(implClass))
                     {
-                        logger.debug(OWBLogConst.INFO_0010, implClass.getName());
+                        logger.debug("Found Enterprise Bean with class name : [{0}]", implClass.getName());
                         defineEnterpriseWebBean((Class<Object>)implClass, (ProcessAnnotatedTypeImpl<Object>)processAnnotatedEvent);                        
                     }
                 }                                     
@@ -780,7 +780,10 @@ public class BeansDeployer
             //Decorator
             if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeDecorator(annotatedType))
             {
-                logger.debug(OWBLogConst.INFO_0012, annotatedType.getJavaClass().getName());
+                if (logger.wblWillLogDebug())
+                {
+                    logger.debug("Found Managed Bean Decorator with class name : [{0}]", annotatedType.getJavaClass().getName());
+                }
                 if(annotationTypeSet)
                 {
                     WebBeansAnnotatedTypeUtil.defineDecorator(annotatedType);
@@ -793,7 +796,10 @@ public class BeansDeployer
             //Interceptor
             else if(WebBeansAnnotatedTypeUtil.isAnnotatedTypeInterceptor(annotatedType))
             {
-                logger.debug(OWBLogConst.INFO_0011, annotatedType.getJavaClass().getName());
+                if (logger.wblWillLogDebug())
+                {
+                    logger.debug("Found Managed Bean Interceptor with class name : [{0}]", annotatedType.getJavaClass().getName());
+                }
                 if(annotationTypeSet)
                 {
                     WebBeansAnnotatedTypeUtil.defineInterceptor(annotatedType);
@@ -811,7 +817,10 @@ public class BeansDeployer
                     return false;
                 }
                 
-                logger.debug(OWBLogConst.INFO_0009, annotatedType.getJavaClass().getName());
+                if (logger.wblWillLogDebug())
+                {
+                    logger.debug("Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
+                }
                 WebBeansUtil.defineManagedBean(managedBeanCreator, processInjectionTargetEvent);   
             }
             

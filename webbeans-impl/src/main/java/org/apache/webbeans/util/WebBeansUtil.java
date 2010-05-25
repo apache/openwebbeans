@@ -2222,7 +2222,7 @@ public final class WebBeansUtil
             }
             else
             {
-                logger.trace("Unable to configure decorator with class : " + clazz);
+                logger.trace("Unable to configure decorator with class : [{0}]", clazz);
             }
         }
     }

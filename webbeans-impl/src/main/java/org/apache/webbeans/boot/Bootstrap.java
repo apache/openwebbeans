@@ -21,6 +21,7 @@ package org.apache.webbeans.boot;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.lifecycle.LifecycleFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContainerLifecycle;
@@ -37,13 +38,13 @@ public class Bootstrap
     
     public void init(Properties properties)
     {
-        logger.info("Initializing OpenWebBeans Container");
+        logger.info(OWBLogConst.INFO_0006);
         this.containerLifecycle = LifecycleFactory.getInstance().getLifecycle();
     }
     
     public void start() throws Exception
     {
-        logger.info("Starting OpenWebBeans Container...");
+        logger.info(OWBLogConst.INFO_0005);
         long begin = System.currentTimeMillis();
         
         containerLifecycle.startApplication(this.properties);
@@ -56,14 +57,14 @@ public class Bootstrap
             
         });
         
-        logger.info("OpenWebBeans Container has started within " + Long.toString(System.currentTimeMillis() - begin) + " mseconds.");
+        logger.info(OWBLogConst.INFO_0001, Long.toString(System.currentTimeMillis() - begin));
         this.latch.await();
         
-        logger.info("Stopping OpenWebBeans Container...");
+        logger.info(OWBLogConst.INFO_0008);
         
         containerLifecycle.stopApplication(this.properties);
         
-        logger.info("OpenWebBeans Container has stopped.");
+        logger.info(OWBLogConst.INFO_0009);
     }
     
     public static void main(String []args) throws Exception

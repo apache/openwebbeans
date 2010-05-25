@@ -897,7 +897,10 @@ public final class WebBeansAnnotatedTypeUtil
             }
             else
             {
-                logger.trace("Unable to configure decorator with class : " + annotatedType.getJavaClass());
+                if (logger.wblWillLogTrace())
+                {
+                    logger.trace("Unable to configure decorator with class : [{0}]", annotatedType.getJavaClass());
+                }
             }
         }
     }
@@ -919,7 +922,10 @@ public final class WebBeansAnnotatedTypeUtil
             }
             else
             {
-                logger.trace("Unable to configure interceptor with class : " + annotatedType.getJavaClass());
+                if (logger.wblWillLogTrace())
+                {
+                    logger.trace("Unable to configure interceptor with class : [{0}]", annotatedType.getJavaClass());
+                }
             }
         }
 

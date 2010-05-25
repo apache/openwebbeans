@@ -22,6 +22,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.creational.EjbInterceptorContext;
@@ -343,7 +344,7 @@ public class InterceptorDataImpl implements InterceptorData
                 }
                 catch (Exception e)
                 {
-                    logger.error("Unable to inject dependencies of EJB interceptor instance with class : " + interceptorClass,e);
+                    logger.error(OWBLogConst.ERROR_0022, e, interceptorClass);
                 }          
                 
                 ownerCreationalContext.addEjbInterceptor(interceptorClass, ctx);

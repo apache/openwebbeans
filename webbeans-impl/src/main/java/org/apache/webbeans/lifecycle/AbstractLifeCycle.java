@@ -97,7 +97,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     public void startApplication(Object startupObject) throws Exception
     {
         // Initalize Application Context
-        logger.info("OpenWebBeans Container is starting...");
+        logger.info(OWBLogConst.INFO_0005);
         
         long begin = System.currentTimeMillis();
         
@@ -125,7 +125,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         //Start actual starting on sub-classes
         afterStartApplication(startupObject);
         
-        logger.info(OWBLogConst.INFO_0002, Long.toString(System.currentTimeMillis() - begin));        
+        logger.info(OWBLogConst.INFO_0001, Long.toString(System.currentTimeMillis() - begin));        
     }
 
     @Override
@@ -171,7 +171,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         }
         catch (Exception e)
         {
-            logger.error("Error is occured while stopping the container",e);
+            logger.error(OWBLogConst.ERROR_0021, e);
         }
         
     }

@@ -18,6 +18,7 @@ import java.lang.annotation.Annotation;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -79,7 +80,7 @@ public class ResourceFactory
         }
         catch (NamingException e)
         {
-            logger.warn("Unable to clear ResourceFactory",e);
+            logger.warn(OWBLogConst.WARN_0013, e);
         }
     }
 

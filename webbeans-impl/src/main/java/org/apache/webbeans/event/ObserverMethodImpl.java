@@ -46,6 +46,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansException;
@@ -183,7 +184,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     public void notify(T event)
     {
-        logger.trace("Notifying with event payload : ", new Object[]{event.toString()});
+        logger.trace("Notifying with event payload : [{0}]", event);
         
         AbstractOwbBean<Object> baseComponent = (AbstractOwbBean<Object>) bean;
         AbstractOwbBean<Object> specializedComponent = null;
@@ -235,7 +236,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 catch (ContextNotActiveException cnae)
                 {
                     // this may happen if we try to e.g. send an event to a @ConversationScoped bean from a ServletListener
-                    logger.info("cannot send event to bean in non active context: " + bean.toString());
+                    logger.info(OWBLogConst.INFO_0010, bean);
                     return;
                 }
                 

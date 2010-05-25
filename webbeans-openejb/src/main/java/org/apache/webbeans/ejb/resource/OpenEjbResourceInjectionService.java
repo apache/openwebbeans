@@ -21,9 +21,11 @@ package org.apache.webbeans.ejb.resource;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.text.MessageFormat;
 
 import javax.enterprise.inject.Produces;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -51,8 +53,8 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
             
         }catch(Exception e)
         {
-            logger.error("Unable to get resource with class " + resourceReference.getResourceType() + " in " + resourceReference.getOwnerClass() + " with name " + resourceReference.getName(),e);
-            throw new WebBeansConfigurationException("Unable to get resource with class " + resourceReference.getResourceType() + " in " + resourceReference.getOwnerClass() + " with name " + resourceReference.getName(),e);
+            logger.error(OWBLogConst.ERROR_0024, e, resourceReference.getResourceType(), resourceReference.getOwnerClass(), resourceReference.getName());
+            throw new WebBeansConfigurationException(MessageFormat.format(logger.getTokenString(OWBLogConst.ERROR_0024), resourceReference.getResourceType(), resourceReference.getOwnerClass(), resourceReference.getName()), e);
         }
     }
 
@@ -79,8 +81,8 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
                             
                         }catch(Exception e)
                         {
-                            logger.error("Unable to inject field : " + field);
-                            throw new WebBeansException("Unable to inject field : " + field,e);
+                            logger.error(OWBLogConst.ERROR_0025, e, field);
+                            throw new WebBeansException(MessageFormat.format(logger.getTokenString(OWBLogConst.ERROR_0025), field), e);
                             
                         }finally
                         {

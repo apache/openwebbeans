@@ -16,6 +16,7 @@ package org.apache.webbeans.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Properties;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -220,13 +221,11 @@ public class OpenWebBeansConfiguration
         URL configUrl = loader.getResource(CONFIG_PROPERTIES_NAME);
         if (configUrl == null)
         {
-            logger.info(logger.getTokenString(OWBLogConst.TEXT_CONFIG_PROP) + CONFIG_PROPERTIES_NAME + logger.getTokenString(OWBLogConst.TEXT_CONFIG_NOT_FOUND));
+            logger.info(OWBLogConst.TEXT_CONFIG_NOT_FOUND, CONFIG_PROPERTIES_NAME);
         }
         else
         {
-            logger.info(logger.getTokenString(OWBLogConst.TEXT_CONFIG_PROP) + CONFIG_PROPERTIES_NAME + logger.getTokenString(OWBLogConst.TEXT_CONFIG_FOUND)
-                        + configUrl.toString()
-                        + logger.getTokenString(OWBLogConst.TEXT_OVERRIDING));
+            logger.info(OWBLogConst.TEXT_CONFIG_FOUND,  CONFIG_PROPERTIES_NAME, configUrl);
 
             is = loader.getResourceAsStream(CONFIG_PROPERTIES_NAME);
             load(is, newConfigProperties);

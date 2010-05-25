@@ -64,7 +64,7 @@ public class StandaloneResourceProcessor
         EntityManager obj = getPersistenceContext(persistenceContext.unitName());
         if (obj == null) 
         {
-            logger.warn("Could not find @PersistenceContext with unit name " + persistenceContext.unitName());
+            logger.warn(OWBLogConst.WARN_0014, "@PersistenceContext", persistenceContext.unitName());
         }
         
         return clazz.cast(obj);
@@ -75,7 +75,7 @@ public class StandaloneResourceProcessor
         EntityManagerFactory factory = getPersistenceUnit(persistenceUnit.unitName());
         if (factory == null) 
         {
-            logger.warn("Could not find @PersistenceUnit with unit name " + persistenceUnit.unitName());
+            logger.warn(OWBLogConst.WARN_0014, "@PersistenceUnit", persistenceUnit.unitName());
         }
         
         return clazz.cast(factory);
@@ -89,13 +89,13 @@ public class StandaloneResourceProcessor
             obj = context.lookup("java:/comp/env/"+ resource.name()); 
             if (obj == null) 
             {
-                logger.info("Could not find @Resource with name " + resource.name());
+                logger.warn(OWBLogConst.WARN_0014, "@Resource", resource.name());
             }
 
         }
         catch(Exception e)
         {
-            logger.error(OWBLogConst.ERROR_0001, new Object[] {resource.toString()});
+            logger.error(OWBLogConst.ERROR_0001, resource);
         }   
         
         return resourceType.cast(obj);
@@ -109,13 +109,13 @@ public class StandaloneResourceProcessor
             obj = context.lookup("java:/comp/env/"+ resource.name()); 
             if (obj == null) 
             {
-                logger.info("Could not find @Resource with name " + resource.name());
+                logger.warn(OWBLogConst.WARN_0014, "@WebServiceRef", resource.name());
             }
 
         }
         catch(Exception e)
         {
-            logger.error(OWBLogConst.ERROR_0001, new Object[] {resource.toString()});
+            logger.error(OWBLogConst.ERROR_0001, resource);
         }   
         
         return resourceType.cast(obj);
@@ -163,7 +163,7 @@ public class StandaloneResourceProcessor
                 
             }catch(Exception e)
             {
-                logger.warn("Unable to close entity manager factory with name : " + key,e);
+                logger.warn(OWBLogConst.WARN_0006, e, key);
             }
         }
     }

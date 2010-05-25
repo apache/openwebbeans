@@ -16,6 +16,7 @@ package org.apache.webbeans.component;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -279,7 +280,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 }
                 catch (Exception e)
                 {
-                    getLogger().error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
+                    logger.error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
                     throw new WebBeansException(e);
                 }
             }            
@@ -393,8 +394,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             }
             catch (Exception e)
             {
-                logger.error("Error is occured while injection Java EE Resources for the bean instance : " + instance);
-                throw new WebBeansException("Error is occured while injection Java EE Resources for the bean instance : " + instance,e);
+                logger.error(OWBLogConst.ERROR_0023, instance);
+                throw new WebBeansException(MessageFormat.format(logger.getTokenString(OWBLogConst.ERROR_0023), instance), e);
             }
         }
     }
@@ -577,7 +578,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             WebBeansDecorator<?> decorator = (WebBeansDecorator<?>)dec;
             if(!decorator.isPassivationCapable())
             {
-                throw new WebBeansConfigurationException("Passivation bean : " + toString() + " decorators must be passivating capable");
+                throw new WebBeansConfigurationException(MessageFormat.format(logger.getTokenString(OWBLogConst.EXCEPT_0015), toString()));
             }
             else
             {
@@ -592,7 +593,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>)interceptorData.getWebBeansInterceptor();
                 if(!interceptor.isPassivationCapable())
                 {
-                    throw new WebBeansConfigurationException("Passivation bean : " + toString() + " interceptors must be passivating capable");
+                    throw new WebBeansConfigurationException(MessageFormat.format(logger.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
                 }
                 else
                 {
@@ -606,14 +607,13 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                     Class<?> interceptorClass = interceptorData.getInterceptorClass();
                     if(!Serializable.class.isAssignableFrom(interceptorClass))
                     {
-                        throw new WebBeansConfigurationException("Passivation bean : " + toString() + " interceptors must be passivating capable");
+                        throw new WebBeansConfigurationException(MessageFormat.format(logger.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
                     }               
                     else
                     {
                         if(!OWBInjector.checkInjectionPointForInterceptorPassivation(interceptorClass))
                         {
-                            throw new WebBeansConfigurationException("Passivation bean : " + toString() + " interceptor :  " + interceptorClass+  " must have " +
-                            		"serializable injection points");
+                            throw new WebBeansConfigurationException(MessageFormat.format(logger.getTokenString(OWBLogConst.EXCEPT_0017), toString(), interceptorClass));
                         }
                     }
                 }
