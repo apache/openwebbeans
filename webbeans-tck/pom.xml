@@ -33,7 +33,7 @@
 
     <properties>
         <!--  <webbeans.tck.version>1.0.1-Final</webbeans.tck.version> -->
-        <webbeans.tck.version>1.0.2-SNAPSHOT</webbeans.tck.version>
+        <webbeans.tck.version>1.0.2.CR1</webbeans.tck.version>
     </properties>
 
     <dependencies>
