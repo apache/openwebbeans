@@ -139,7 +139,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             //Means that Dependent Bean has interceptor/decorator
             if(JavassistProxyFactory.isProxyInstance(result))
             {
-                afterConstructor(instance, creationalContext);
+                //afterConstructor(instance, creationalContext);
                 dependentProxy = result;
                 isDependentProxy = true;
             }
