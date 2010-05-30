@@ -97,7 +97,10 @@ public class OpenWebBeansConfiguration
     
     /**Application is core JSP*/
     public static final String APPLICATION_IS_JSP = "org.apache.webbeans.application.jsp";
-    
+
+    /**Supports conversations*/
+    public static final String APPLICATION_SUPPORTS_CONVERSATION = "org.apache.webbeans.application.supportsConversation";
+
     /**Use of JSF2 extensions*/
     public static final String USE_JSF2_EXTENSIONS = "org.apache.webbeans.application.useJSF2Extensions";
     
@@ -326,6 +329,17 @@ public class OpenWebBeansConfiguration
     public boolean isJspApplication()
     {
         String value = getProperty(APPLICATION_IS_JSP);
+        
+        return Boolean.valueOf(value);
+    }
+    
+    /**
+     * Gets conversation supports property.
+     * @return true if supports
+     */
+    public boolean supportsConversation()
+    {
+        String value = getProperty(APPLICATION_SUPPORTS_CONVERSATION);
         
         return Boolean.valueOf(value);
     }

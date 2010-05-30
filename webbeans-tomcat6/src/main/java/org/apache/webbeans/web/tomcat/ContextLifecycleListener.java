@@ -83,6 +83,9 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                     URL url = scontext.getResource("/WEB-INF/beans.xml");
                     if (url != null)
                     {
+                        //Registering ELResolver with JSP container
+                        System.setProperty("org.apache.webbeans.application.jsp", "true");
+                        
                         String[] oldListeners = context.findApplicationListeners();
                         LinkedList<String> listeners = new LinkedList<String>();
                         listeners.addFirst("org.apache.webbeans.servlet.WebBeansConfigurationListener");

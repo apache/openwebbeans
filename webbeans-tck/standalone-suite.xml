@@ -78,23 +78,7 @@
      		<methods>
      			<exclude name="testIsDelegate"></exclude>
      		</methods>
-     	</class>     
-
-     	<!-- ERROR IN CDITCK-139 -->
-     	<class name="org.jboss.jsr299.tck.tests.decorators.resolution.DecoratorResolutionTest">
-     		<methods>
-     			<exclude name="testDelegateTypeVariableBeanTypeVariable"></exclude>
-     		</methods>
-     	</class>     
-
-     	<!-- ERROR IN CDITCK-145 -->
-     	<class name="org.jboss.jsr299.tck.tests.lookup.circular.CircularDependencyTest">
-     		<methods>
-     			<exclude name="testCircularInjectionOnOneNormalAndOneDependentBean"></exclude>
-     			<exclude name="testCircularInjectionOnOneDependentAndOneNormalBean"></exclude>
-     		</methods>
-     	</class>     
-     	
+     	</class>          	
      	
      </classes>
      

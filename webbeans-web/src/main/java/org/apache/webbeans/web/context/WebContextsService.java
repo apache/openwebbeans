@@ -100,7 +100,7 @@ public class WebContextsService extends AbstractContextsService
      */
     public WebContextsService()
     {
-        supportsConversation =  !OpenWebBeansConfiguration.getInstance().isJspApplication();
+        supportsConversation =  OpenWebBeansConfiguration.getInstance().supportsConversation();
     }
     
     /**

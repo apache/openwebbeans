@@ -131,11 +131,21 @@
 									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
 								</artifactItem>
 							
-								<!-- OWB JSF Plugin Package -->
+								<!-- OWB JSF 1.2 Plugin Package -->
 								<artifactItem>
 									<groupId>org.apache.openwebbeans</groupId>
-									<artifactId>openwebbeans-jsf</artifactId>
+									<artifactId>openwebbeans-jsf12</artifactId>
 									<overWrite>true</overWrite>
+									<version>${project.version}</version>
+									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
+								</artifactItem>
+
+								<!-- OWB EL 1.0 Plugin Package -->
+								<artifactItem>
+									<groupId>org.apache.openwebbeans</groupId>
+									<artifactId>openwebbeans-el10</artifactId>
+									<overWrite>true</overWrite>
+									<version>${project.version}</version>
 									<outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
 								</artifactItem>
 								

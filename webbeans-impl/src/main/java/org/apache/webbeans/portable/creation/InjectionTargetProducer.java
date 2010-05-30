@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.portable.creation;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionTarget;
@@ -22,6 +23,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.AbstractInjectable;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 
 /**
  * InjectionTargetProducer implementation.
@@ -73,6 +75,16 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
             
             if(!(bean instanceof EnterpriseBeanMarker))
             {
+                //GE: Currently we have a proxy for DependentScoped beans
+                //that has an interceptor or decroator. This means that
+                //injection will be occured on Proxy instances that are 
+                //not correct. Injection must be on actual dependent
+                //instance,so not necessary to inject on proxy
+                if(bean.getScope() == Dependent.class && JavassistProxyFactory.isProxyInstance(instance))
+                {
+                    return;
+                }
+                
                 bean.injectResources(instance, ctx);
                 bean.injectSuperFields(instance, ctx);
                 bean.injectSuperMethods(instance, ctx);

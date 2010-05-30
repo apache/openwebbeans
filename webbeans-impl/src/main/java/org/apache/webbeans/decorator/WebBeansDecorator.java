@@ -251,7 +251,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         boolean ok = false;
         for (Type apiType : apiTypes)
         {
-            if (ClassUtil.isAssignable(apiType, getDelegateType()))
+            if (DecoratorResolverRules.compareType(getDelegateType(), apiType))
             {
                 ok = true;
                 break;

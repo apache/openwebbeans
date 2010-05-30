@@ -139,8 +139,19 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             //Means that Dependent Bean has interceptor/decorator
             if(JavassistProxyFactory.isProxyInstance(result))
             {
-                //afterConstructor(instance, creationalContext);
+                //This is a dependent scoped bean instance,
+                //Therefore we inject dependencies of this instance
+                //Otherwise we loose injection
+                injectResources(instance, creationalContext);
+                injectSuperFields(instance, creationalContext);
+                injectSuperMethods(instance, creationalContext);
+                injectFields(instance, creationalContext);
+                injectMethods(instance, creationalContext);            
+                
+                //Dependent proxy
                 dependentProxy = result;
+                
+                //This is a dependent
                 isDependentProxy = true;
             }
         }
