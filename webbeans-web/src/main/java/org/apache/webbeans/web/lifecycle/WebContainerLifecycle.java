@@ -37,6 +37,7 @@ import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 
 /**
@@ -154,6 +155,13 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         else
         {
             servletContext = getServletContext(stopObject);
+        }
+        
+        //Clear the resource injection service
+        ResourceInjectionService injectionServices = ServiceLoader.getService(ResourceInjectionService.class);
+        if(injectionServices != null)
+        {
+            injectionServices.clear();
         }
         
         if (logger.wblWillLogInfo())
