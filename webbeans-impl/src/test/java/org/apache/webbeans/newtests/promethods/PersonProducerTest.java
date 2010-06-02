@@ -68,4 +68,30 @@ public class PersonProducerTest extends AbstractUnitTest
         
         shutDownContainer();
     }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testNullPersonProducer()
+    {
+        Collection<URL> beanXmls = new ArrayList<URL>();
+        
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(Person.class);
+        beanClasses.add(PersonProducerBean.class);
+        
+        startContainer(beanClasses, beanXmls);      
+        
+        Set<Bean<?>> beans = getBeanManager().getBeans("nullInjectedPersonProducer");
+        Assert.assertNotNull(beans);        
+        Bean<Person> bean = (Bean<Person>)beans.iterator().next();
+        
+        Assert.assertTrue(bean instanceof ProducerMethodBean);
+        
+        CreationalContext<Person> ctx = getBeanManager().createCreationalContext(bean);
+        
+        Object reference = getBeanManager().getReference(bean, Person.class, ctx);
+        Assert.assertNull(reference);
+        
+        shutDownContainer();
+    }
 }

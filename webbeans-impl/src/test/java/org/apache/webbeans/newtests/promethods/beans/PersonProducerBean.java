@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.newtests.promethods.beans;
 
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
@@ -27,9 +27,20 @@ import org.apache.webbeans.newtests.promethods.common.Person;
 public class PersonProducerBean
 {
     
-    @Produces @SessionScoped @Named("personProducer")
+    @Produces @Named("personProducer")
     public Person producer()
     {
         return new Person();
+    }
+    
+    @Produces @Dependent @Named("nullPersonProducer")
+    public Person nullProducer()
+    {
+        return null;
+    }
+    
+    @Produces @Dependent @Named("nullInjectedPersonProducer")
+    public Person nullInjectedPersonProducer(@Named("nullPersonProducer") Person p){
+        return p;
     }
 }
