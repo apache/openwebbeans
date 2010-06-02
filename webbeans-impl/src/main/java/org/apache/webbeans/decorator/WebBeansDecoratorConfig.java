@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
@@ -29,6 +30,7 @@ import javax.enterprise.inject.spi.Decorator;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
@@ -46,6 +48,31 @@ public final class WebBeansDecoratorConfig
 
     public static <T> void configureDecoratorClass(AbstractInjectionTargetBean<T> delegate)
     {
+        if(delegate.getScope() != Dependent.class)
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0005_1, delegate.getBeanClass().getName());                
+            }
+        }
+        
+        if(delegate.getName() != null)
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0005_2, delegate.getBeanClass().getName());                
+            }
+        }       
+        
+        if(delegate.isAlternative())
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0005_3, delegate.getBeanClass().getName());                
+            }                
+        }            
+
+        
         logger.debug("Configuring decorator class : [{0}]", delegate.getReturnType());
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
         BeanManagerImpl.getManager().addDecorator(decorator);

@@ -1478,11 +1478,7 @@ public final class WebBeansUtil
                 {
                     throw new WebBeansConfigurationException("@StereoType annotation can not define @Named annotation with value");
                 }
-            }
-            else if (AnnotationUtil.isQualifierAnnotation(annotType))
-            {
-                throw new WebBeansConfigurationException("@StereoType annotation can not define @Qualifier annotation");
-            }
+            }            
             else if (AnnotationUtil.isInterceptorBindingAnnotation(annotType))
             {
                 Target target = clazz.getAnnotation(Target.class);

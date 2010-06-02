@@ -20,10 +20,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Default;
+import javax.enterprise.inject.Typed;
+import javax.inject.Named;
 import javax.inject.Scope;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 
 /**
@@ -48,6 +53,8 @@ public class StereoTypeModel implements IStereoTypeModel
 
     /**Inherit StereoType annotations*/
     private Set<Annotation> inherits = new HashSet<Annotation>();
+    
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(StereoTypeModel.class);
 
     /**
      * Creates a new instance of the stereotype model for
@@ -69,6 +76,35 @@ public class StereoTypeModel implements IStereoTypeModel
     
     private void configAnnotations(Class<? extends Annotation> clazz, Annotation...annotations)
     {
+        if(clazz.getAnnotation(Typed.class) != null)
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0016, clazz.getName());
+            }            
+        }
+        
+        Annotation[] qualifiers = AnnotationUtil.getQualifierAnnotations(annotations);
+        
+        if(qualifiers != null)
+        {
+            for(Annotation qualifier : qualifiers)
+            {
+                if(qualifier.annotationType() == Default.class)
+                {
+                    return;
+                }
+                
+                if(qualifier.annotationType() != Named.class)
+                {
+                    if(logger.wblWillLogWarn())
+                    {
+                        logger.warn(OWBLogConst.WARN_0017, new Object[]{clazz.getName(),qualifier.annotationType().getName()});
+                    }
+                }
+            }            
+        }
+        
         if (AnnotationUtil.hasMetaAnnotation(annotations, NormalScope.class))
         {
             this.defaultScopeType = AnnotationUtil.getMetaAnnotations(annotations, NormalScope.class)[0];

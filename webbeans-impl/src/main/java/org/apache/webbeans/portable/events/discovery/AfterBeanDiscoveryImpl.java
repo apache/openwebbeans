@@ -13,6 +13,7 @@
  */
 package org.apache.webbeans.portable.events.discovery;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -24,10 +25,12 @@ import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
 
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.intercept.custom.CustomInterceptor;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
@@ -43,6 +46,8 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
 {
     private BeanManagerImpl beanManager = null;
+    
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(AfterBeanDiscoveryImpl.class); 
     
     public AfterBeanDiscoveryImpl()
     {
@@ -68,6 +73,29 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             ManagedBean managedBean = WebBeansUtil.defineManagedBeanWithoutFireEvents(annotatedType);
             
             CustomInterceptor<?> interceptor = new CustomInterceptor(managedBean, (Interceptor<?>)bean);
+            if(interceptor.getScope() != Dependent.class)
+            {
+                if(logger.wblWillLogWarn())
+                {
+                    logger.warn(OWBLogConst.WARN_0005_1, interceptor.getBeanClass().getName());
+                }
+            }
+            
+            if(interceptor.getName() != null)
+            {
+                if(logger.wblWillLogWarn())
+                {
+                    logger.warn(OWBLogConst.WARN_0005_2, interceptor.getBeanClass().getName());
+                }
+            }
+            
+            if(interceptor.isAlternative())
+            {
+                if(logger.wblWillLogWarn())
+                {
+                    logger.warn(OWBLogConst.WARN_0005_3, interceptor.getBeanClass().getName());
+                }                
+            }
             
             this.beanManager.addInterceptor(interceptor);
             BeanManagerImpl.getManager().addCustomInterceptorClass(bean.getBeanClass());
@@ -77,6 +105,30 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         {
             //Required for custom decorators
             ManagedBean managedBean = WebBeansUtil.defineManagedBeanWithoutFireEvents(annotatedType);
+            if(managedBean.getScope() != Dependent.class)
+            {
+                if(logger.wblWillLogWarn())
+                {
+                    logger.warn(OWBLogConst.WARN_0005_1, managedBean.getBeanClass().getName());
+                }
+            }
+            
+            if(managedBean.getName() != null)
+            {
+                if(logger.wblWillLogWarn())
+                {
+                    logger.warn(OWBLogConst.WARN_0005_2, managedBean.getBeanClass().getName());
+                }
+            }
+            
+            if(managedBean.isAlternative())
+            {
+                if(logger.wblWillLogWarn())
+                {
+                    logger.warn(OWBLogConst.WARN_0005_3, managedBean.getBeanClass().getName());
+                }                
+            }            
+            
             
             this.beanManager.addDecorator(new WebBeansDecorator(managedBean, (Decorator)bean));
             BeanManagerImpl.getManager().addCustomDecoratorClass(bean.getBeanClass());            

@@ -333,14 +333,6 @@ public class BeansDeployer
                     beanNames.push(beanName);
                 }
                 
-                if((bean instanceof Decorator) || 
-                        (bean instanceof javax.enterprise.inject.spi.Interceptor))
-                {
-                    if(!bean.getScope().equals(Dependent.class))
-                    {
-                        logger.warn(OWBLogConst.WARN_0005, bean);
-                    }
-                }
                 
                 if(bean instanceof InjectionTargetBean)
                 {

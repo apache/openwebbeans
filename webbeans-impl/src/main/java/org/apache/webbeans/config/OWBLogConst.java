@@ -42,7 +42,9 @@ public class OWBLogConst
     public final static String WARN_0002 = "WARN_0002"; // Alternative XML content is wrong. Child of <alternatives> must be <class>,<stereotype> but found : 
     public final static String WARN_0003 = "WARN_0003"; // Conversation already started with cid : [{0}]
     public final static String WARN_0004 = "WARN_0004"; // Conversation already ended with cid \: [{0}]
-    public final static String WARN_0005 = "WARN_0005"; // Bean {0} has not DependentScope. If an interceptor or decorator has any scope other than @Dependent, non-portable behaviour results.
+    public final static String WARN_0005_1 = "WARN_0005_1"; // [{0}] has not DependentScope. If an interceptor or decorator has any scope other than @Dependent, non-portable behaviour results.
+    public final static String WARN_0005_2 = "WARN_0005_2"; // [{0}] has a name. If an interceptor or decorator has name, non-portable behaviour results.
+    public final static String WARN_0005_3 = "WARN_0005_3"; // [{0}] is Alternative. If an interceptor or decorator is @Alternative, non-portable behaviour results.
     public final static String WARN_0006 = "WARN_0006"; // Unable to close entity manager factory with name \: [{0}]
     public final static String WARN_0007 = "WARN_0007"; // Exception in ejbContext.proceed().
     public final static String WARN_0008 = "WARN_0008"; // Unable to find EJB bean with class \: [{0}] \: [{1}]
@@ -53,6 +55,8 @@ public class OWBLogConst
     public final static String WARN_0013 = "WARN_0013"; // Unable to clear ResourceFactory.
     public final static String WARN_0014 = "WARN_0014"; // Could not find {0} with name [{1}].
     public final static String WARN_0015 = "WARN_0015"; // Trying to serialize non-passivation capable bean proxy \: [{0}]
+    public final static String WARN_0016 = "WARN_0016"; // Stereotypes can not annotated with @Typed but stereotype \: [{0}] has annotated, non-portable behaviour results.
+    public final static String WARN_0017 = "WARN_0017"; // Stereotypes can not define qualifier other than @Named but stereotype \: [{0}] has defined [{1}] , non-portable behaviour results.
 
 
     public final static String ERROR_0001 = "ERROR_0001"; // Unable to inject resource for : [{0}]

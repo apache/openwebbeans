@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -33,6 +34,7 @@ import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -69,6 +71,29 @@ public final class WebBeansInterceptorConfig
      */
     public static <T> void configureInterceptorClass(AbstractInjectionTargetBean<T> delegate, Annotation[] interceptorBindingTypes)
     {
+        if(delegate.getScope() != Dependent.class)
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0005_1, delegate.getBeanClass().getName());
+            }
+        }
+        
+        if(delegate.getName() != null)
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0005_2, delegate.getBeanClass().getName());            }   
+        }   
+        
+        if(delegate.isAlternative())
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0005_3, delegate.getBeanClass().getName());
+            }                
+        }        
+        
         logger.debug("Configuring interceptor class : [{0}]", delegate.getReturnType());
         WebBeansInterceptor<T> interceptor = new WebBeansInterceptor<T>(delegate);
 
