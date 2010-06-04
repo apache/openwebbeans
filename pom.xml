@@ -156,7 +156,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-remote-resources-plugin</artifactId>
-                    <version>1.0</version>
+                    <version>1.1</version>
                     <executions>
                         <execution>
                             <goals>
@@ -174,7 +174,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>2.0-beta-7</version>
+                    <version>2.1.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -182,52 +182,8 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.0.2</version>
-                <configuration>
-                    <archiveClasses>true</archiveClasses>
-                    <archive>
-                        <!-- Do not include META-INF/maven to avoid long file problems on windows -->
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                    </archive>
-
-                    <!--
-                    HACK: Include legal files explicity, otherwise they will end up in the wrong path
-                          or in another jar file in the war.
-
-                    NOTE: targetPath is broken for webResources (as documented)
-                    -->
-                    <webResources>
-                        <resource>
-                            <directory>.</directory>
-                            <targetPath>META-INF</targetPath>
-                            <includes>
-                                <include>LICENCE.txt</include>
-                                <include>NOTICE.txt</include>
-                            </includes>
-                        </resource>
-                    </webResources>
-                    <archive>
-                        <manifestEntries>
-                            <Specification-Title>${project.name}</Specification-Title>
-                            <Specification-Version>${project.version}</Specification-Version>
-                            <Specification-Vendor>${project.organization.name}</Specification-Vendor>
-                            <Implementation-Title>${project.name}</Implementation-Title>
-                            <Implementation-Version>${project.version}</Implementation-Version>
-                            <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-                            <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
-                        </manifestEntries>
-                        <!-- add the generated manifest to the war -->
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-
-                    </archive>
-
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.1</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
@@ -265,9 +221,9 @@
                         <supportedProjectType>war</supportedProjectType>
                     </supportedProjectTypes>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>${pom.version}</Bundle-Version>
-                        <Export-Package>!org.apache.webbeans.internal.*,org.apache.webbeans.*;version="${pom.version}"</Export-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Export-Package>!org.apache.webbeans.internal.*,org.apache.webbeans.*;version="${project.version}"</Export-Package>
                         <Private-Package>org.apache.webbeans.internal.*</Private-Package>
                     </instructions>
                 </configuration>
@@ -280,10 +236,10 @@
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
-
                 </configuration>
             </plugin>
             <plugin>
@@ -302,6 +258,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
                 <executions>
                     <execution>
                         <goals>
@@ -340,7 +297,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.1</version>
+                <version>2.2</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -358,12 +315,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.7</version>
                 <configuration>
                     <quiet>true</quiet>
                     <links>
-                        <link>http://java.sun.com/j2ee/1.4/docs/api</link>
-                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://java.sun.com/javaee/6/docs/api/index.html</link>
+                        <link>http://java.sun.com/j2se/1.6.0/docs/api</link>
                         <link>http://myfaces.apache.org/core20/myfaces-api/apidocs/</link>
                     </links>
                 </configuration>
@@ -598,25 +555,12 @@
         </dependencies>
     </dependencyManagement>
 
-    <!--
-        <distributionManagement>
-            <site>
-                <id>apache.openwebbeans.site</id>
-                <url>scp://minotaur.apache.org/www/openwebbeans.apache.org/${project.version}</url>
-            </site>
-        <repository>
-            <id>apache.openwebbeans.stage</id>
-            <url>scp://people.apache.org/home/gerdogdu/public_html/staging-repo/${siteId}</url>
-        </repository>
-        <snapshotRepository>
-                <uniqueVersion>false</uniqueVersion>
-                <id>apache.incubating</id>
-                <name>Apache Incubating Repository</name>
-                <url>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</url>
-            </snapshotRepository>
-
+    <distributionManagement>
+        <site>
+            <id>apache.openwebbeans.site</id>
+            <url>scp://minotaur.apache.org/www/openwebbeans.apache.org/${project.version}</url>
+        </site>
     </distributionManagement>
-    -->
 
     <properties>
         <openwebbeans.version>1.0.0-SNAPSHOT</openwebbeans.version>
@@ -643,6 +587,114 @@
     </properties>
 
     <profiles>
+        <profile>
+            <id>reporting</id>
+            <activation>
+                <property>
+                    <name>skipReports</name>
+                    <value>!true</value>
+                </property>
+            </activation>
+            <reporting>
+                <plugins>
+                    <!-- Apache plugins in alphabetical order -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <version>2.2</version>
+                        <configuration>
+                            <configLocation>
+                                config/maven_checks.xml
+                            </configLocation>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jxr-plugin</artifactId>
+                        <version>2.1</version>
+                        <configuration>
+                            <inputEncoding>
+                                ${project.build.sourceEncoding}
+                            </inputEncoding>
+                            <outputEncoding>
+                                ${project.build.sourceEncoding}
+                            </outputEncoding>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <version>2.4</version>
+                        <configuration>
+                            <targetJdk>1.5</targetJdk>
+                            <rulesets>
+                                <ruleset>
+                                    http://svn.codehaus.org/mojo/trunk/mojo/mojo-parent/src/main/config/pmd/mojo_rules.xml
+                                </ruleset>
+                            </rulesets>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>
+                            maven-project-info-reports-plugin
+                        </artifactId>
+                        <version>2.1</version>
+                        <reportSets>
+                            <reportSet>
+                                <reports>
+                                    <report>cim</report>
+                                    <report>dependencies</report>
+                                    <report>dependency-convergence</report>
+                                    <report>dependency-management</report>
+                                    <report>index</report>
+                                    <report>issue-tracking</report>
+                                    <report>license</report>
+                                    <report>mailing-list</report>
+                                    <report>plugin-management</report>
+                                    <report>project-team</report>
+                                    <report>scm</report>
+                                    <report>summary</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-report-plugin</artifactId>
+                        <version>2.4.3</version>
+                        <reportSets>
+                            <reportSet>
+                                <reports>
+                                    <report>report</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+                    <!-- Codehaus plugins in alphabetical order -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>cobertura-maven-plugin</artifactId>
+                        <version>2.2</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>taglist-maven-plugin</artifactId>
+                        <version>2.2</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                        <version>1.2</version>
+                        <configuration>
+                            <threshold>Low</threshold>
+                        </configuration>
+                    </plugin>
+
+                </plugins>
+            </reporting>
+        </profile>
+
         <!-- START release profile -->
         <profile>
             <id>release</id>
@@ -652,6 +704,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-release-plugin</artifactId>
+                        <version>2.0</version>
                         <configuration>
                             <useReleaseProfile>false</useReleaseProfile>
                             <goals>deploy</goals>
@@ -662,6 +715,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-install-plugin</artifactId>
+                        <version>2.3.1</version>
                         <configuration>
                             <createChecksum>true</createChecksum>
                         </configuration>
@@ -670,6 +724,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.1</version>
                         <configuration>
                             <passphrase>${gpg.passphrase}</passphrase>
                         </configuration>
