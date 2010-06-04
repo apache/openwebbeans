@@ -17,6 +17,7 @@
     specific language governing permissions and limitations
     under the License.
 -->
+
 <project name="OpenWebBeans">
     <bannerLeft>
         <name>Apache OpenWebBeans</name>
@@ -35,8 +36,8 @@
     
     <body>
         <breadcrumbs>
-            <item name="Apache" href="http://www.apache.org"/>
-            <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
+        <item name="Apache" href="http://www.apache.org"/>
+        <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
         </breadcrumbs>
 
         <menu name="Overview">
@@ -63,3 +64,4 @@
         <menu ref="reports"/>
     </body>
 </project>
+
