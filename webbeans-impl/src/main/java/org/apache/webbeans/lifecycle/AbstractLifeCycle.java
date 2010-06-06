@@ -156,9 +156,6 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             //Delete Resolutions Cache
             InjectionResolver.getInstance().clearCaches();
             
-            //Clear singleton list
-            WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
-
             //Delte proxies
             JavassistProxyFactory.clear();
             
@@ -167,6 +164,9 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             
             //After Stop
             afterStopApplication(endObject);
+            
+            //Clear singleton list
+            WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
                         
         }
         catch (Exception e)
