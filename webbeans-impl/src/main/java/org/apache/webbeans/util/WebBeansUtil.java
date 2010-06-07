@@ -172,14 +172,14 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
 /**
  * Contains some utility methods used in the all project.
- * 
+ *
  * @version $Rev$ $Date$ 
  */
 @SuppressWarnings("unchecked")
 public final class WebBeansUtil
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansUtil.class);
-    
+
     // No instantiate
     private WebBeansUtil()
     {
@@ -188,7 +188,7 @@ public final class WebBeansUtil
 
     /**
      * Gets current classloader with current thread.
-     * 
+     *
      * @return Current class loader instance
      */
     public static ClassLoader getCurrentClassLoader()
@@ -221,7 +221,7 @@ public final class WebBeansUtil
 
     /**
      * Checks the generic type requirements.
-     * 
+     *
      * @param bean managed bean instance
      */
     public static void checkGenericType(Bean<?> bean)
@@ -234,7 +234,8 @@ public final class WebBeansUtil
         {
             if(!bean.getScope().equals(Dependent.class))
             {
-                throw new WebBeansConfigurationException("Generic type may only defined with scope @Dependent for ManagedBean class : " + clazz.getName());
+                throw new WebBeansConfigurationException("Generic type may only defined with scope @Dependent " +
+                        "for ManagedBean class : " + clazz.getName());
             }
         }
     }
@@ -264,7 +265,8 @@ public final class WebBeansUtil
             throw new IllegalArgumentException("Bean must be Producer Field or Method Bean instance : " + bean);
         }
 
-        String message = "Producer Field/Method Bean with name : " + member.getName() + " in bean class : " + member.getDeclaringClass().getName(); 
+        String message = "Producer Field/Method Bean with name : " + member.getName()
+                         + " in bean class : " + member.getDeclaringClass().getName();
 
         if(checkGenericForProducers(type, message))
         {
@@ -297,55 +299,61 @@ public final class WebBeansUtil
 
             if(actualTypes.length == 0)
             {
-                throw new WebBeansConfigurationException(message + " return type must define actual type arguments or type variable");
+                throw new WebBeansConfigurationException(message +
+                        " return type must define actual type arguments or type variable");
             }
 
             for(Type actualType : actualTypes)
             {
                 if(ClassUtil.isWildCardType(actualType))
                 {
-                    throw new WebBeansConfigurationException(message + " return type can not define wildcard actual type argument");
+                    throw new WebBeansConfigurationException(message +
+                            " return type can not define wildcard actual type argument");
                 }
 
                 if(ClassUtil.isTypeVariable(actualType))
                 {
-                    result = true; 
+                    result = true;
                 }
-            }    		
+            }
         }
 
         return result;
     }
-    
+
     /**
      * Return <code>true</code> if the given class is ok for manage bean conditions,
      * <code>false</code> otherwise.
-     * 
+     *
      * @param clazz class in hand
      * @return <code>true</code> if the given class is ok for simple web bean conditions.
      */
     public static void isManagedBeanClass(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz, "Class is null");
-        
+
         int modifier = clazz.getModifiers();
-        
+
         if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
-            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() + " can not be non-static inner class");
+            throw new WebBeansConfigurationException("Bean implementation class : "
+                                                     + clazz.getName() + " can not be non-static inner class");
 
         if (!ClassUtil.isConcrete(clazz) && !AnnotationUtil.hasClassAnnotation(clazz, Decorator.class))
-            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() + " have to be concrete if not defines as @Decorator");
-                
+            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName()
+                                                     + " have to be concrete if not defines as @Decorator");
+
         if (!isConstructureOk(clazz))
         {
-            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName() + " must define at least one Constructor");   
+            throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName()
+                                                     + " must define at least one Constructor");
         }
-        
+
         if(Extension.class.isAssignableFrom(clazz))
         {
-            throw new WebBeansConfigurationException("Bean implementation class can not implement javax.enterprise.inject.spi.Extension.!");
+            throw new WebBeansConfigurationException("Bean implementation class can not implement "
+                                                     + "javax.enterprise.inject.spi.Extension.!");
         }
-        
+
         Class<?>[] interfaces = clazz.getInterfaces();
         if(interfaces != null && interfaces.length > 0)
         {
@@ -353,11 +361,12 @@ public final class WebBeansUtil
             {
                 if(intr.getName().equals("javax.ejb.EnterpriseBean"))
                 {
-                    throw new WebBeansConfigurationException("Bean implementation class can not implement javax.ejb.EnterpriseBean");
+                    throw new WebBeansConfigurationException("Bean implementation class can not implement "
+                                                             + "javax.ejb.EnterpriseBean");
                 }
             }
         }
-            
+
         // and finally call all checks which are defined in plugins like JSF, JPA, etc
         List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
         for (OpenWebBeansPlugin plugin : plugins)
@@ -372,7 +381,7 @@ public final class WebBeansUtil
             }
         }
     }
-    
+
     /**
      * Returns true if given class supports injections,
      * false otherwise.
@@ -396,10 +405,10 @@ public final class WebBeansUtil
                 if(plugin.supportsJavaEeComponentInjections(clazz))
                 {
                     return true;
-                }                
+                }
             }
         }
-        
+
         return false;
     }
 
@@ -414,16 +423,16 @@ public final class WebBeansUtil
     {
         Asserts.nullCheckForClass(clazz);
         Constructor<T>[] constructors = ClassUtil.getConstructors(clazz);
-        
+
         return defineConstructor(constructors, clazz);
-        
+
     }
-    
-    
+
+
     public static <T>  Constructor<T> defineConstructor(Constructor<T>[] constructors, Class<T> clazz)
     {
         Constructor<T> result = null;
-        
+
         boolean inAnnotation = false;
         int j = 0;
 
@@ -435,24 +444,25 @@ public final class WebBeansUtil
             {
                 if (inAnnotation == true)// duplicate @In
                 {
-                    throw new WebBeansConfigurationException("There are more than one Constructor with Initializer annotation in class " + clazz.getName());
+                    throw new WebBeansConfigurationException("There are more than one Constructor with "
+                                                             + "Initializer annotation in class " + clazz.getName());
                 }
                 inAnnotation = true;
                 result = constructor;
             }
         }
-        
+
         if (result == null)
         {
             result = ClassUtil.isContaintNoArgConstructor(clazz);
-            
+
             if(result == null)
             {
                 throw new WebBeansConfigurationException("No constructor is found for the class : " + clazz.getName());
             }
         }
-        
-        
+
+
         Annotation[][] parameterAnns = result.getParameterAnnotations();
         for (Annotation[] parameters : parameterAnns)
         {
@@ -460,19 +470,21 @@ public final class WebBeansUtil
             {
                 if (param.annotationType().equals(Disposes.class))
                 {
-                    throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Disposes annotation in class : " + clazz.getName());
+                    throw new WebBeansConfigurationException("Constructor parameter annotations can not contain " +
+                            "@Disposes annotation in class : " + clazz.getName());
                 }
-                
+
                 if(param.annotationType().equals(Observes.class))
                 {
-                    throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Observes annotation in class : " + clazz.getName());
+                    throw new WebBeansConfigurationException("Constructor parameter annotations can not contain " +
+                            "@Observes annotation in class : " + clazz.getName());
                 }
             }
 
         }
 
-        return result;        
-        
+        return result;
+
     }
 
     /**
@@ -505,10 +517,10 @@ public final class WebBeansUtil
 
         return false;
     }
-    
+
     /**
      * Check producer method is ok for deployment.
-     * 
+     *
      * @param method producer method
      * @param parentImplClazzName parent class name
      */
@@ -516,12 +528,17 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull(method, "Method argument can not be null");
 
-        if (AnnotationUtil.hasMethodAnnotation(method, Inject.class) || AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class) || AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
+        if (AnnotationUtil.hasMethodAnnotation(method, Inject.class) ||
+            AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class) ||
+            AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
         {
-            throw new WebBeansConfigurationException("Producer Method Bean with name : " + method.getName() + " in bean class : " + parentImplClazzName + " can not be annotated with" + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
+            throw new WebBeansConfigurationException("Producer Method Bean with name : " + method.getName()
+                                                     + " in bean class : " + parentImplClazzName
+                                                     + " can not be annotated with @Initializer/@Destructor annotation "
+                                                     + "or has a parameter annotated with @Disposes/@Observes");
         }
     }
-    
+
     /**
      * CheckProducerMethodDisposal.
      * @param disposalMethod disposal method
@@ -531,12 +548,19 @@ public final class WebBeansUtil
     {
         if (AnnotationUtil.hasMethodMultipleParameterAnnotation(disposalMethod, Disposes.class))
         {
-            throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in class " + definedBeanClassName + " has multiple @Disposes annotation parameter");
+            throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in class "
+                                                     + definedBeanClassName
+                                                     + " has multiple @Disposes annotation parameter");
         }
 
-        if (AnnotationUtil.hasMethodAnnotation(disposalMethod, Inject.class) || AnnotationUtil.hasMethodParameterAnnotation(disposalMethod, Observes.class) || AnnotationUtil.hasMethodAnnotation(disposalMethod, Produces.class))
+        if (AnnotationUtil.hasMethodAnnotation(disposalMethod, Inject.class) ||
+            AnnotationUtil.hasMethodParameterAnnotation(disposalMethod, Observes.class) ||
+            AnnotationUtil.hasMethodAnnotation(disposalMethod, Produces.class))
         {
-            throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName() + " in the class : " + definedBeanClassName + " can not be annotated with" + " @Initializer/@Destructor/@Produces annotation or has a parameter annotated with @Observes");
+            throw new WebBeansConfigurationException("Disposal method : " + disposalMethod.getName()
+                                                     + " in the class : " + definedBeanClassName
+                                                     + " can not be annotated with @Initializer/@Destructor/@Produces "
+                                                     + "annotation or has a parameter annotated with @Observes");
         }
 
     }
@@ -547,7 +571,8 @@ public final class WebBeansUtil
      * @return Annotation[] with all binding annotations
      * @throws WebBeansConfigurationException if New plus any other binding annotation is set         
      */
-    public static Annotation[] checkForNewQualifierForDeployment(Type type, Class<?> clazz, String name, Annotation[] annotations)
+    public static Annotation[] checkForNewQualifierForDeployment(Type type, Class<?> clazz, String name,
+                                                                 Annotation[] annotations)
     {
         Asserts.assertNotNull(type, "Type argument can not be null");
         Asserts.nullCheckForClass(clazz);
@@ -560,17 +585,19 @@ public final class WebBeansUtil
             {
                 if (as.length > 1)
                 {
-                    throw new WebBeansConfigurationException("@New binding annotation can not have any binding annotation in class : " + clazz.getName() + " in field/method : " + name);
+                    throw new WebBeansConfigurationException("@New binding annotation can not have any binding "
+                                                             + "annotation in class : " + clazz.getName()
+                                                             + " in field/method : " + name);
                 }
             }
         }
-        
+
         return as;
     }
-    
+
     /**
      * Returns true if src scope encloses the target.
-     * 
+     *
      * @param src src scope
      * @param target target scope
      * @return true if src scope encloses the target
@@ -595,7 +622,9 @@ public final class WebBeansUtil
         }
         else if (src.equals(SessionScoped.class))
         {
-            if (target.equals(ConversationScoped.class) || target.equals(ApplicationScoped.class) || target.equals(SessionScoped.class))
+            if (target.equals(ConversationScoped.class) ||
+                target.equals(ApplicationScoped.class) ||
+                target.equals(SessionScoped.class))
             {
                 return false;
             }
@@ -615,7 +644,7 @@ public final class WebBeansUtil
 
     /**
      * New WebBeans component class.
-     * 
+     *
      * @param <T>
      * @param clazz impl. class
      * @return the new component
@@ -643,28 +672,29 @@ public final class WebBeansUtil
         }
         else
         {
-            throw new WebBeansConfigurationException("@New annotation on type : " + clazz.getName() + " must defined as a simple or an enterprise web bean");
+            throw new WebBeansConfigurationException("@New annotation on type : " + clazz.getName()
+                                                     + " must defined as a simple or an enterprise web bean");
         }
 
         comp.addQualifier(new NewLiteral(clazz));
         comp.setName(null);
         if(apiType == null)
         {
-            comp.addApiType(clazz);   
+            comp.addApiType(clazz);
         }
         else
         {
             comp.getTypes().add(apiType);
         }
-        
+
         comp.addApiType(Object.class);
 
         return comp;
     }
-    
+
     /**
      * Creates a new extension bean.
-     * 
+     *
      * @param <T> extension service class
      * @param clazz impl. class
      * @return a new extension service bean
@@ -676,21 +706,21 @@ public final class WebBeansUtil
         ExtensionBean<T> comp = null;
         comp = new ExtensionBean<T>(clazz);
         comp.setEnabled(true);
-        
+
         DefinitionUtil.defineApiTypes(comp, clazz);
-        
+
         comp.setImplScopeType(new ApplicationScopeLiteral());
         comp.addQualifier(new DefaultLiteral());
-        
+
         DefinitionUtil.defineObserverMethods(comp, clazz);
 
         return comp;
     }
-    
+
 
     /**
      * Returns a new managed bean from given bean.
-     * 
+     *
      * @param <T> bean type parameter
      * @param bean bean instance
      * @return the new bean from given managed bean
@@ -702,63 +732,43 @@ public final class WebBeansUtil
         NewBean<T> comp = null;
 
         comp = new NewBean<T>(bean.getReturnType(), WebBeansType.NEW);
-        
+
         comp.getTypes().addAll(bean.getTypes());
-        
+
         if(bean instanceof ManagedBean)
         {
-            comp.setConstructor(((ManagedBean)bean).getConstructor());   
+            comp.setConstructor(((ManagedBean)bean).getConstructor());
         }
-        
+
         for(Field injectedField : bean.getInjectedFields())
         {
             comp.addInjectedField(injectedField);
         }
-        
+
         for(Method injectedMethod : bean.getInjectedMethods())
         {
             comp.addInjectedMethod(injectedMethod);
         }
-        
+
         List<InterceptorData> interceptorList = bean.getInterceptorStack();
         if(!interceptorList.isEmpty())
         {
-            comp.getInterceptorStack().addAll(interceptorList);   
+            comp.getInterceptorStack().addAll(interceptorList);
         }
-        
-        
+
+
         comp.setImplScopeType(new DependentScopeLiteral());
         comp.addQualifier(new NewLiteral(bean.getBeanClass()));
         comp.setName(null);
-        
+
         Set<InjectionPoint> injectionPoints = bean.getInjectionPoints();
         for(InjectionPoint injectionPoint : injectionPoints)
         {
             comp.addInjectionPoint(injectionPoint);
-        }        
+        }
 
         return comp;
-    }    
-    
-//    /**
-//     * Creates a new event bean instance.
-//     * @param <T> type info
-//     * @param returnType bean api type
-//     * @param eventType event type
-//     * @param annotations event binding annotations
-//     * @return new event bean instance
-//     */
-//    public static <T> EventBean<T> createObservableImplicitComponent(Class<T> returnType, Type eventType, Annotation... annotations)
-//    {
-//        EventBean<T> component = new EventBean<T>(returnType, eventType, WebBeansType.OBSERVABLE);
-//
-//        DefinitionUtil.defineApiTypes(component, returnType);
-//        DefinitionUtil.defineQualifiers(component, annotations);
-//
-//        component.setImplScopeType(new DependentScopeLiteral());                      
-//
-//        return component;
-//    }
+    }
 
     /**
      * Creates a new manager bean instance.
@@ -776,7 +786,7 @@ public final class WebBeansUtil
 
         return managerComponent;
     }
-    
+
     /**
      * Creates a new instance bean.
      * @return new instance bean
@@ -785,18 +795,18 @@ public final class WebBeansUtil
     public static <T> InstanceBean<T> getInstanceBean()
     {
         InstanceBean<T> instanceBean = new InstanceBean<T>();
-        
+
         instanceBean.getTypes().add(new TypeLiteral<Instance<?>>(){}.getRawType());
         instanceBean.getTypes().add(new TypeLiteral<Provider<?>>(){}.getRawType());
         instanceBean.addApiType(Object.class);
-        
+
         instanceBean.addQualifier(new AnyLiteral());
         instanceBean.setImplScopeType(new DependentScopeLiteral());
         instanceBean.setName(null);
-                
+
         return instanceBean;
     }
-    
+
     /**
      * Creates a new event bean.
      * @return new event bean
@@ -805,17 +815,17 @@ public final class WebBeansUtil
     public static <T> EventBean<T> getEventBean()
     {
         EventBean<T> eventBean = new EventBean<T>();
-        
+
         eventBean.getTypes().add(new TypeLiteral<Event<?>>(){}.getRawType());
         eventBean.addApiType(Object.class);
-        
+
         eventBean.addQualifier(new AnyLiteral());
         eventBean.setImplScopeType(new DependentScopeLiteral());
         eventBean.setName(null);
-                
+
         return eventBean;
     }
-    
+
 
     /**
      * Returns new conversation bean instance.
@@ -832,12 +842,12 @@ public final class WebBeansUtil
         conversationComp.addQualifier(new DefaultLiteral());
         conversationComp.addQualifier(new AnyLiteral());
         conversationComp.setName("javax.enterprise.context.conversation");
-        
+
         WebBeansDecoratorConfig.configureDecarotors(conversationComp);
-        
+
         return conversationComp;
     }
-    
+
     /**
      * Returns a new injected point bean instance.
      * @return new injected point bean
@@ -855,16 +865,17 @@ public final class WebBeansUtil
      * destroy annotation if the web beans component is not an EJB components,
      * in this case EJB container is responsible for this.
      * </p>
-     * 
+     *
      * @param clazz checked class
      * @param commonAnnotation post construct or predestroy annotation
      * @param invocationContext whether the takes an invocationContext, as in
      *            interceptors defiend outside of the bean class.
      * @return post construct or predestroy method
      */
-    public static Method checkCommonAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> commonAnnotation, boolean invocationContext)
+    public static Method checkCommonAnnotationCriterias(Class<?> clazz, Class<? extends Annotation> commonAnnotation,
+                                                        boolean invocationContext)
     {
-        Asserts.nullCheckForClass(clazz);        
+        Asserts.nullCheckForClass(clazz);
 
         Method[] methods = ClassUtil.getDeclaredMethods(clazz);
         Method result = null;
@@ -880,9 +891,10 @@ public final class WebBeansUtil
 
                 if (found == true)
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotation is declared more than one method in the class : " + clazz.getName());
+                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                            + " annotation is declared more than one method in the class : " + clazz.getName());
                 }
-                
+
                 found = true;
                 result = method;
 
@@ -893,7 +905,9 @@ public final class WebBeansUtil
                     Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
                     if (params.length != 1 || !params[0].equals(InvocationContext.class))
                     {
-                        throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not take any formal arguments other than InvocationContext");
+                        throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                                + " annotated method : " + method.getName() + " in class : " + clazz.getName()
+                                + " can not take any formal arguments other than InvocationContext");
                     }
                 }
                 else if(invocationContext)
@@ -904,27 +918,35 @@ public final class WebBeansUtil
 
                 if (!ClassUtil.getReturnType(method).equals(Void.TYPE))
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must return void type");
+                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                            + " annotated method : " + method.getName() + " in class : " + clazz.getName()
+                            + " must return void type");
                 }
 
                 if (ClassUtil.isMethodHasCheckedException(method))
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not throw any checked exception");
+                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                            + " annotated method : " + method.getName() + " in class : " + clazz.getName()
+                            + " can not throw any checked exception");
                 }
 
                 if (ClassUtil.isStatic(method.getModifiers()))
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not be static");
+                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                            + " annotated method : " + method.getName() + " in class : "
+                            + clazz.getName() + " can not be static");
                 }
             }
         }
 
         return result;
     }
-    
-    public static <T> Method checkCommonAnnotationCriterias(AnnotatedType<T> annotatedType, Class<? extends Annotation> commonAnnotation, boolean invocationContext)
+
+    public static <T> Method checkCommonAnnotationCriterias(AnnotatedType<T> annotatedType,
+                                                            Class<? extends Annotation> commonAnnotation,
+                                                            boolean invocationContext)
     {
-        Class<?> clazz = annotatedType.getJavaClass();        
+        Class<?> clazz = annotatedType.getJavaClass();
 
         Method result = null;
         boolean found = false;
@@ -942,7 +964,8 @@ public final class WebBeansUtil
 
                 if (found == true)
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotation is declared more than one method in the class : " + clazz.getName());
+                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                            + " annotation is declared more than one method in the class : " + clazz.getName());
                 }
                 found = true;
                 result = method;
@@ -952,48 +975,60 @@ public final class WebBeansUtil
                 {
                     if (!invocationContext)
                     {
-                        throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not take any formal arguments");   
+                        throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                                + " annotated method : " + method.getName() + " in class : " + clazz.getName()
+                                + " can not take any formal arguments");
                     }
-                    
+
                     List<AnnotatedParameter<T>> parameters = methodB.getParameters();
                     List<Class<?>> clazzParameters = new ArrayList<Class<?>>();
                     for(AnnotatedParameter<T> parameter : parameters)
                     {
                         clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
                     }
-                    
+
                     Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
                     if (params.length != 1 || !params[0].equals(InvocationContext.class))
                     {
-                        throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not take any formal arguments other than InvocationContext");
+                        throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                                + " annotated method : " + method.getName() + " in class : " + clazz.getName()
+                                + " can not take any formal arguments other than InvocationContext");
                     }
                 }
                 else if(invocationContext)
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must take a parameter with class type javax.interceptor.InvocationContext.");                        
+                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                            + " annotated method : " + method.getName() + " in class : " + clazz.getName()
+                            + " must take a parameter with class type javax.interceptor.InvocationContext.");
                 }
 
                 if (!ClassUtil.getReturnType(method).equals(Void.TYPE))
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must return void type");
+                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                            + " annotated method : " + method.getName() + " in class : " + clazz.getName()
+                            + " must return void type");
                 }
 
                 if (ClassUtil.isMethodHasCheckedException(method))
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not throw any checked exception");
+                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                            + " annotated method : " + method.getName() + " in class : " + clazz.getName()
+                            + " can not throw any checked exception");
                 }
 
                 if (ClassUtil.isStatic(method.getModifiers()))
                 {
-                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not be static");
+                    throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
+                            + " annotated method : " + method.getName() + " in class : " + clazz.getName()
+                            + " can not be static");
                 }
             }
-            
+
         }
-        
-        
+
+
         return result;
-    }    
+    }
 
     /**
      * Check the {@link AroundInvoke} annotated method criterias, and return
@@ -1003,7 +1038,7 @@ public final class WebBeansUtil
      * if the web beans component is not an EJB components, in this case EJB
      * container is responsible for this.
      * </p>
-     * 
+     *
      * @param clazz checked class
      * @return around invoke method
      */
@@ -1026,38 +1061,45 @@ public final class WebBeansUtil
 
                 if (found == true)
                 {
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotation is declared more than one method in the class : " + clazz.getName());
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName()
+                            + " annotation is declared more than one method in the class : " + clazz.getName());
                 }
-                
+
                 found = true;
                 result = method;
 
                 // Check method criterias
                 Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
                 if (params.length != 1 || !params[0].equals(InvocationContext.class))
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not take any formal arguments other than InvocationContext");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
+                            + method.getName() + " in class : " + clazz.getName()
+                            + " can not take any formal arguments other than InvocationContext");
 
                 if (!ClassUtil.getReturnType(method).equals(Object.class))
                 {
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must return Object type");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
+                            + method.getName() + " in class : " + clazz.getName() + " must return Object type");
                 }
 
                 if (!ClassUtil.isMethodHasException(method))
                 {
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " must throw Exception");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
+                            + method.getName() + " in class : " + clazz.getName() + " must throw Exception");
                 }
 
                 if (ClassUtil.isStatic(method.getModifiers()) || ClassUtil.isFinal(method.getModifiers()))
                 {
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getName() + " in class : " + clazz.getName() + " can not be static or final");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
+                            + method.getName() + " in class : " + clazz.getName() + " can not be static or final");
                 }
             }
         }
 
         return result;
     }
-    
-    public static <T> Method checkAroundInvokeAnnotationCriterias(AnnotatedType<T> annotatedType, Class<? extends Annotation> annot)
+
+    public static <T> Method checkAroundInvokeAnnotationCriterias(AnnotatedType<T> annotatedType,
+                                                                  Class<? extends Annotation> annot)
     {
         Method result = null;
         boolean found = false;
@@ -1065,20 +1107,23 @@ public final class WebBeansUtil
         for(AnnotatedMethod<? super T> methodA : methods)
         {
             AnnotatedMethod<T> method = (AnnotatedMethod<T>)methodA;
-         
+
             if (method.isAnnotationPresent(annot))
             {
                 // Overriden methods
-                if (ClassUtil.isMoreThanOneMethodWithName(method.getJavaMember().getName(), annotatedType.getJavaClass()))
+                if (ClassUtil.isMoreThanOneMethodWithName(method.getJavaMember().getName(),
+                                                          annotatedType.getJavaClass()))
                 {
                     continue;
                 }
 
                 if (found == true)
                 {
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotation is declared more than one method in the class : " + annotatedType.getJavaClass().getName());
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName()
+                            + " annotation is declared more than one method in the class : "
+                            + annotatedType.getJavaClass().getName());
                 }
-                
+
                 found = true;
                 result = method.getJavaMember();
 
@@ -1088,36 +1133,45 @@ public final class WebBeansUtil
                 {
                     clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
                 }
-                
+
                 Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
-                
+
                 if (params.length != 1 || !params[0].equals(InvocationContext.class))
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getJavaMember().getName() + " in class : " + annotatedType.getJavaClass().getName() + " can not take any formal arguments other than InvocationContext");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
+                            + method.getJavaMember().getName() + " in class : " + annotatedType.getJavaClass().getName()
+                            + " can not take any formal arguments other than InvocationContext");
 
                 if (!ClassUtil.getReturnType(method.getJavaMember()).equals(Object.class))
                 {
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getJavaMember().getName()+ " in class : " + annotatedType.getJavaClass().getName() + " must return Object type");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
+                            + method.getJavaMember().getName()+ " in class : " + annotatedType.getJavaClass().getName()
+                            + " must return Object type");
                 }
 
                 if (!ClassUtil.isMethodHasException(method.getJavaMember()))
                 {
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName() + " must throw Exception");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
+                            + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName()
+                            + " must throw Exception");
                 }
 
-                if (ClassUtil.isStatic(method.getJavaMember().getModifiers()) || ClassUtil.isFinal(method.getJavaMember().getModifiers()))
+                if (ClassUtil.isStatic(method.getJavaMember().getModifiers()) ||
+                    ClassUtil.isFinal(method.getJavaMember().getModifiers()))
                 {
-                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : " + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName() + " can not be static or final");
+                    throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
+                            + method.getJavaMember().getName( )+ " in class : " + annotatedType.getJavaClass().getName()
+                            + " can not be static or final");
                 }
-            }   
+            }
         }
 
         return result;
     }
-    
+
 
     /**
      * Configures the interceptor stack of the web beans component.
-     * 
+     *
      * @param interceptorClass interceptor class
      * @param interceptorType annotation type
      * @param definedInInterceptorClass check if annotation is defined in
@@ -1130,13 +1184,18 @@ public final class WebBeansUtil
      * @param defineWithInterceptorBinding if interceptor is defined with WebBeans
      *            spec, not EJB spec
      */
-    public static void configureInterceptorMethods(Interceptor<?> webBeansInterceptor, Class<?> interceptorClass, Class<? extends Annotation> interceptorType, 
-                                                    boolean definedInInterceptorClass, boolean definedInMethod, List<InterceptorData> stack, 
-                                                    Method annotatedInterceptorClassMethod, boolean defineWithInterceptorBinding)
+    public static void configureInterceptorMethods(Interceptor<?> webBeansInterceptor,
+                                                   Class<?> interceptorClass,
+                                                   Class<? extends Annotation> interceptorType,
+                                                   boolean definedInInterceptorClass,
+                                                   boolean definedInMethod,
+                                                   List<InterceptorData> stack,
+                                                   Method annotatedInterceptorClassMethod,
+                                                   boolean defineWithInterceptorBinding)
     {
         InterceptorData intData = null;
         Method method = null;
-        
+
         //Check for default constructor of EJB based interceptor
         if(webBeansInterceptor == null)
         {
@@ -1145,8 +1204,9 @@ public final class WebBeansUtil
                 Constructor<?> ct = ClassUtil.isContaintNoArgConstructor(interceptorClass);
                 if (ct == null)
                 {
-                    throw new WebBeansConfigurationException("class : " + interceptorClass.getName() + " must have no-arg constructor");
-                }                
+                    throw new WebBeansConfigurationException("class : " + interceptorClass.getName()
+                            + " must have no-arg constructor");
+                }
             }
         }
 
@@ -1195,12 +1255,15 @@ public final class WebBeansUtil
             stack.add(intData);
         }
     }
-    
-    
-    public static <T> void configureInterceptorMethods(Interceptor<?> webBeansInterceptor, AnnotatedType<T> annotatedType, 
-                                                        Class<? extends Annotation> annotation, boolean definedInInterceptorClass, 
-                                                        boolean definedInMethod, List<InterceptorData> stack, 
-                                                        Method annotatedInterceptorClassMethod)
+
+
+    public static <T> void configureInterceptorMethods(Interceptor<?> webBeansInterceptor,
+                                                       AnnotatedType<T> annotatedType,
+                                                       Class<? extends Annotation> annotation,
+                                                       boolean definedInInterceptorClass,
+                                                       boolean definedInMethod,
+                                                       List<InterceptorData> stack,
+                                                       Method annotatedInterceptorClassMethod)
     {
         InterceptorData intData = null;
         Method method = null;
@@ -1246,20 +1309,20 @@ public final class WebBeansUtil
             stack.add(intData);
         }
     }
-    
+
 
     /**
      * Create a new instance of the given class using it's default constructor
      * regardless if the constructor is visible or not.
      * This is needed to construct some package scope classes in the TCK.
-     * 
+     *
      * @param <T>
      * @param clazz
      * @return
      * @throws WebBeansConfigurationException
      */
-    public static <T> T newInstanceForced(Class<T> clazz) 
-    throws WebBeansConfigurationException 
+    public static <T> T newInstanceForced(Class<T> clazz)
+            throws WebBeansConfigurationException
     {
         // FIXME: This new instance should have JCDI injection performed
         Constructor<T> ct = ClassUtil.isContaintNoArgConstructor(clazz);
@@ -1272,24 +1335,24 @@ public final class WebBeansUtil
         {
             SecurityUtil.doPrivilegedSetAccessible(ct, true);
         }
-        
-        try 
+
+        try
         {
             return ct.newInstance();
-        } 
+        }
         catch( IllegalArgumentException e )
         {
             throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
-        } 
-        catch( IllegalAccessException e ) 
+        }
+        catch( IllegalAccessException e )
         {
             throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
-        } 
-        catch( InvocationTargetException e ) 
+        }
+        catch( InvocationTargetException e )
         {
             throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
-        } 
-        catch( InstantiationException e ) 
+        }
+        catch( InstantiationException e )
         {
             throw new WebBeansConfigurationException("class : " + clazz.getName() + " is not constructable", e);
         }
@@ -1297,7 +1360,7 @@ public final class WebBeansUtil
 
     /**
      * Returns true if interceptor stack contains interceptor with given type.
-     * 
+     *
      * @param stack interceptor stack
      * @param type interceptor type
      * @return true if stack contains the interceptor with given type
@@ -1336,7 +1399,7 @@ public final class WebBeansUtil
 
     /**
      * Returns true if array contains the StereoType meta annotation
-     * 
+     *
      * @param anns annotation array
      * @return true if array contains the StereoType meta annotation
      */
@@ -1383,7 +1446,7 @@ public final class WebBeansUtil
     public static boolean hasNamedOnStereoTypes(OwbBean<?> bean)
     {
         Annotation[] types = getComponentStereoTypes(bean);
-        
+
         for (Annotation ann : types)
         {
             if (AnnotationUtil.hasClassAnnotation(ann.annotationType(), Named.class))
@@ -1398,42 +1461,42 @@ public final class WebBeansUtil
     public static String getManagedBeanDefaultName(String clazzName)
     {
         Asserts.assertNotNull(clazzName);
-        
+
         if(clazzName.length() > 0)
         {
             StringBuffer name = new StringBuffer(clazzName);
             name.setCharAt(0, Character.toLowerCase(name.charAt(0)));
 
-            return name.toString();            
+            return name.toString();
         }
-        
+
         return clazzName;
     }
 
     public static String getProducerDefaultName(String methodName)
     {
         StringBuffer buffer = new StringBuffer(methodName);
-            
-        if (buffer.length() > 3 &&  (buffer.substring(0, 3).equals("get") || buffer.substring(0, 3).equals("set")))                
+
+        if (buffer.length() > 3 &&  (buffer.substring(0, 3).equals("get") || buffer.substring(0, 3).equals("set")))
         {
-            
+
             if(Character.isUpperCase(buffer.charAt(3)))
             {
-                buffer.setCharAt(3, Character.toLowerCase(buffer.charAt(3)));   
+                buffer.setCharAt(3, Character.toLowerCase(buffer.charAt(3)));
             }
 
             return buffer.substring(3);
         }
-        else if ((buffer.length() > 2 &&  buffer.substring(0, 2).equals("is")))                
-        {            
+        else if ((buffer.length() > 2 &&  buffer.substring(0, 2).equals("is")))
+        {
             if(Character.isUpperCase(buffer.charAt(2)))
             {
-                buffer.setCharAt(2, Character.toLowerCase(buffer.charAt(2)));   
+                buffer.setCharAt(2, Character.toLowerCase(buffer.charAt(2)));
             }
 
             return buffer.substring(2);
         }
-        
+
         else
         {
             buffer.setCharAt(0, Character.toLowerCase(buffer.charAt(0)));
@@ -1450,7 +1513,7 @@ public final class WebBeansUtil
     {
         checkStereoTypeClass(clazz, clazz.getDeclaredAnnotations());
     }
-    
+
     /**
      * Validates that given class obeys stereotype model
      * defined by the specification.
@@ -1469,7 +1532,8 @@ public final class WebBeansUtil
             {
                 if (scopeTypeFound == true)
                 {
-                    throw new WebBeansConfigurationException("@StereoType annotation can not contain more than one @Scope/@NormalScope annotation");
+                    throw new WebBeansConfigurationException("@StereoType annotation can not contain more " +
+                            "than one @Scope/@NormalScope annotation");
                 }
                 else
                 {
@@ -1481,9 +1545,10 @@ public final class WebBeansUtil
                 Named name = (Named) annotation;
                 if (!name.value().equals(""))
                 {
-                    throw new WebBeansConfigurationException("@StereoType annotation can not define @Named annotation with value");
+                    throw new WebBeansConfigurationException("@StereoType annotation can not define @Named " +
+                            "annotation with value");
                 }
-            }            
+            }
             else if (AnnotationUtil.isInterceptorBindingAnnotation(annotType))
             {
                 Target target = clazz.getAnnotation(Target.class);
@@ -1491,59 +1556,60 @@ public final class WebBeansUtil
 
                 if (type.length != 1 && !type[0].equals(ElementType.TYPE))
                 {
-                    throw new WebBeansConfigurationException("Stereotype with @InterceptorBinding must be defined as @Target{TYPE}");
+                    throw new WebBeansConfigurationException("Stereotype with @InterceptorBinding must be " +
+                            "defined as @Target{TYPE}");
                 }
 
             }
         }
     }
-    
+
     /**
      * Return true if a list of beans are directly specialized/extended each other.
-     * 
+     *
      * @param beans, a set of specialized beans.
-     * 
+     *
      * @return
      */
     protected static boolean isDirectlySpecializedBeanSet(Set<Bean<?>> beans) {
-    	
-    	ArrayList<AbstractOwbBean<?>> beanList = new ArrayList<AbstractOwbBean<?>>();
 
-    	for(Bean<?> bb : beans) 
-    	{
-    		AbstractOwbBean<?>bean = (AbstractOwbBean<?>)bb;
-    		beanList.add(bean);
-    	}
-    	
-    	java.util.Collections.sort(beanList, new java.util.Comparator() 
-    	{
-    		public int compare(Object o1, Object o2) 
-    		{
-    			AbstractOwbBean<?> b1 = (AbstractOwbBean<?>)o1;
-    			AbstractOwbBean<?> b2 = (AbstractOwbBean<?>)o2;
-    			Class c1 = b1.getReturnType();
-    			Class c2 = b2.getReturnType();
-    			if (c2.isAssignableFrom(c1)) return 1;
-    			if (c1.isAssignableFrom(c2)) return -1;
-    			throw new InconsistentSpecializationException(c1 + " and " + c2 + "are not assignable to each other." );
-    		}
-    	});
+        ArrayList<AbstractOwbBean<?>> beanList = new ArrayList<AbstractOwbBean<?>>();
 
-    	for(int i=0; i<beanList.size() - 1; i++) 
-    	{
-    		if (!beanList.get(i).getReturnType().equals(beanList.get(i+1).getReturnType().getSuperclass()))
-    				return false;
-    	}
-    	return true;
+        for(Bean<?> bb : beans)
+        {
+            AbstractOwbBean<?>bean = (AbstractOwbBean<?>)bb;
+            beanList.add(bean);
+        }
+
+        java.util.Collections.sort(beanList, new java.util.Comparator()
+        {
+            public int compare(Object o1, Object o2)
+            {
+                AbstractOwbBean<?> b1 = (AbstractOwbBean<?>)o1;
+                AbstractOwbBean<?> b2 = (AbstractOwbBean<?>)o2;
+                Class c1 = b1.getReturnType();
+                Class c2 = b2.getReturnType();
+                if (c2.isAssignableFrom(c1)) return 1;
+                if (c1.isAssignableFrom(c2)) return -1;
+                throw new InconsistentSpecializationException(c1 + " and " + c2 + "are not assignable to each other." );
+            }
+        });
+
+        for(int i=0; i<beanList.size() - 1; i++)
+        {
+            if (!beanList.get(i).getReturnType().equals(beanList.get(i+1).getReturnType().getSuperclass()))
+                return false;
+        }
+        return true;
     }
 
     public static void configureSpecializations(List<Class<?>> beanClasses)
     {
-    	for(Class<?> clazz : beanClasses) 
-    	{
-    		configureSpecializations(clazz, beanClasses);
-    	}
-	}
+        for(Class<?> clazz : beanClasses)
+        {
+            configureSpecializations(clazz, beanClasses);
+        }
+    }
 
     /**
      * Configures the bean specializations.
@@ -1552,7 +1618,7 @@ public final class WebBeansUtil
      * from their parents. Specialized bean deployment priority
      * must be higher than its super class related bean.
      * </p>
-     * 
+     *
      * @param specializedClass specialized class
      * @throws DefinitionException if name is defined
      * @throws InconsistentSpecializationException related with priority
@@ -1566,158 +1632,169 @@ public final class WebBeansUtil
         Bean<?> specialized = null;
         Set<Bean<?>> resolvers = null;
         AlternativesManager altManager = AlternativesManager.getInstance();
-        
+
         if ((resolvers = isConfiguredWebBeans(specializedClass, true)) != null)
-        {            
+        {
             if(resolvers.isEmpty())
             {
-                throw new InconsistentSpecializationException("Specialized bean for class : " + specializedClass + " is not enabled in the deployment.");
+                throw new InconsistentSpecializationException("Specialized bean for class : " + specializedClass
+                        + " is not enabled in the deployment.");
             }
-            
+
             specialized = resolvers.iterator().next();
-            
+
             if(resolvers.size() > 1)
             {
-            	if (!isDirectlySpecializedBeanSet(resolvers)) 
-            	{
-            		throw new InconsistentSpecializationException("More than one specialized bean for class : " + specializedClass + " is enabled in the deployment.");
-            	}
-            	// find the widest bean which satisfies the specializedClass
-                for( Bean<?> sp : resolvers) {
-                	if (sp == specialized) continue;
-                	if (((AbstractOwbBean<?>)sp).getReturnType().isAssignableFrom(((AbstractOwbBean<?>)specialized).getReturnType())) 
-                	{
-                		specialized = sp;
-                	}
+                if (!isDirectlySpecializedBeanSet(resolvers))
+                {
+                    throw new InconsistentSpecializationException("More than one specialized bean for class : "
+                            + specializedClass + " is enabled in the deployment.");
+                }
+                // find the widest bean which satisfies the specializedClass
+                for( Bean<?> sp : resolvers)
+                {
+                    if (sp == specialized)
+                    {
+                        continue;
+                    }
+                    
+                    if (((AbstractOwbBean<?>)sp).getReturnType().
+                            isAssignableFrom(((AbstractOwbBean<?>)specialized).getReturnType()))
+                    {
+                        specialized = sp;
+                    }
                 }
             }
-            
+
             Class<?> superClass = specializedClass.getSuperclass();
-            
+
             resolvers = isConfiguredWebBeans(superClass,false);
-            
+
             for(Bean<?> candidates : resolvers)
             {
                 AbstractOwbBean<?> candidate = (AbstractOwbBean<?>)candidates;
-                
+
                 if(!(candidate instanceof NewBean))
                 {
                     if(candidate.getReturnType().equals(superClass))
                     {
                         superBean = candidates;
                         break;
-                    }                    
-                }                
+                    }
+                }
             }
-                        
+
             if (superBean != null)
             {
-            	// Recursively configure super class first if super class is also a special bean.
-            	// So the name and bean meta data could be populated to this beanclass.  
-            	if (beanClasses.contains(superClass) && ((AbstractOwbBean<?>)superBean).isEnabled()) 
-            	{
-            		configureSpecializations(superClass, beanClasses);
-            	}
-            	
-            	if (!AnnotationUtil.hasClassAnnotation(specializedClass, Alternative.class)) 
-            	{
-            		//disable superbean if the current bean is not an alternative 
-            		((AbstractOwbBean<?>)superBean).setEnabled(false);
-            	} 
-            	else if(altManager.isClassAlternative(specializedClass)) 
-            	{
-            		//disable superbean if the current bean is an enabled alternative 
-            		((AbstractOwbBean<?>)superBean).setEnabled(false);
-            	}
-                                
+                // Recursively configure super class first if super class is also a special bean.
+                // So the name and bean meta data could be populated to this beanclass.
+                if (beanClasses.contains(superClass) && ((AbstractOwbBean<?>)superBean).isEnabled())
+                {
+                    configureSpecializations(superClass, beanClasses);
+                }
+
+                if (!AnnotationUtil.hasClassAnnotation(specializedClass, Alternative.class))
+                {
+                    //disable superbean if the current bean is not an alternative
+                    ((AbstractOwbBean<?>)superBean).setEnabled(false);
+                }
+                else if(altManager.isClassAlternative(specializedClass))
+                {
+                    //disable superbean if the current bean is an enabled alternative
+                    ((AbstractOwbBean<?>)superBean).setEnabled(false);
+                }
+
                 AbstractOwbBean<?> comp = (AbstractOwbBean<?>)specialized;
                 if (comp.isSpecializedBean())
-               	{
-                	// This comp is already configured in previous invocation
-                	// return directly, else Exception might be fired when set
-                	// bean name again.
-                	return;
-               	}
-                
+                {
+                    // This comp is already configured in previous invocation
+                    // return directly, else Exception might be fired when set
+                    // bean name again.
+                    return;
+                }
+
                 //Check types of the beans
                 if(comp.getClass() != superBean.getClass())
                 {
-                    throw new DefinitionException("@Specialized Class : " + specializedClass.getName() + " and its super class may be the same type of bean,i.e, ManagedBean, SessionBean etc.");
+                    throw new DefinitionException("@Specialized Class : " + specializedClass.getName()
+                            + " and its super class may be the same type of bean,i.e, ManagedBean, SessionBean etc.");
                 }
-                
+
                 if(superBean.getName() != null)
                 {
                     if(comp.getName() != null)
                     {
-                        throw new DefinitionException("@Specialized Class : " + specializedClass.getName() + " may not explicitly declare a bean name");
-                    }                    
-                    
+                        throw new DefinitionException("@Specialized Class : " + specializedClass.getName()
+                                + " may not explicitly declare a bean name");
+                    }
+
                     comp.setName(superBean.getName());
                     comp.setSpecializedBean(true);
                 }
-                                
+
                 specialized.getQualifiers().addAll(superBean.getQualifiers());
             }
-            
+
             else
             {
-                throw new InconsistentSpecializationException("WebBean component class : " + specializedClass.getName() + " is not enabled for specialized by the " + specializedClass + " class");
+                throw new InconsistentSpecializationException("WebBean component class : " + specializedClass.getName()
+                        + " is not enabled for specialized by the " + specializedClass + " class");
             }
         }
 
     }
-    
+
     /**
      * Configure a list of producer method beans, which override the same method
      * and the bean classes are directly extended each other.
-     * 
+     *
      * @param sortedProducerBeans
      */
-    protected static void configSpecializedProducerMethodBeans(List<ProducerMethodBean> sortedProducerBeans) 
+    protected static void configSpecializedProducerMethodBeans(List<ProducerMethodBean> sortedProducerBeans)
     {
-    	if (sortedProducerBeans.isEmpty()) return;
+        if (sortedProducerBeans.isEmpty()) return;
         AlternativesManager altManager = AlternativesManager.getInstance();
-    	Method superMethod = sortedProducerBeans.get(0).getCreatorMethod();
+        Method superMethod = sortedProducerBeans.get(0).getCreatorMethod();
 
-    	for(int i=1; i<sortedProducerBeans.size(); i++) 
-    	{
-    		ProducerMethodBean bean = sortedProducerBeans.get(i);
-    		ProducerMethodBean superBean = sortedProducerBeans.get(i - 1);
-    		
-    		// inherit superbean qualifiers
-    		Set<Annotation> qualifiers = superBean.getQualifiers();
-    		for(Annotation an : qualifiers) 
-    		{
-    			bean.addQualifier(an);
-    		}
-    		// inherit name is super class has name
-    		boolean isSuperHasName = configuredProducerSpecializedName(bean, bean.getCreatorMethod(), superMethod);
-    		
-    		// disable super bean if needed
-        	if (bean.getCreatorMethod().getAnnotation(Alternative.class) == null) 
-        	{
-        		//disable superbean if the current bean is not an alternative 
-        		superBean.setEnabled(false);
-        	} 
-        	else if(altManager.isClassAlternative(bean.getBeanClass())) 
-        	{
-        		//disable superbean if the current bean is an enabled alternative 
-        		superBean.setEnabled(false);
-        	}
-        	
-        	//if no name defined, set superMethod to this bean since this
-        	//bean's method might have name defined.
-        	if (!isSuperHasName) 
-        	{
-        		superMethod = bean.getCreatorMethod();
-        	}
-    	}
+        for(int i=1; i<sortedProducerBeans.size(); i++)
+        {
+            ProducerMethodBean bean = sortedProducerBeans.get(i);
+            ProducerMethodBean superBean = sortedProducerBeans.get(i - 1);
+
+            // inherit superbean qualifiers
+            Set<Annotation> qualifiers = superBean.getQualifiers();
+            for(Annotation an : qualifiers)
+            {
+                bean.addQualifier(an);
+            }
+            // inherit name is super class has name
+            boolean isSuperHasName = configuredProducerSpecializedName(bean, bean.getCreatorMethod(), superMethod);
+
+            // disable super bean if needed
+            if (bean.getCreatorMethod().getAnnotation(Alternative.class) == null)
+            {
+                //disable superbean if the current bean is not an alternative
+                superBean.setEnabled(false);
+            }
+            else if(altManager.isClassAlternative(bean.getBeanClass()))
+            {
+                //disable superbean if the current bean is an enabled alternative
+                superBean.setEnabled(false);
+            }
+
+            //if no name defined, set superMethod to this bean since this
+            //bean's method might have name defined.
+            if (!isSuperHasName)
+            {
+                superMethod = bean.getCreatorMethod();
+            }
+        }
     }
 
     /**
      * Configure direct/indirect specialized producer method beans.
      */
-    public static void configureProducerMethodSpecializations() 
+    public static void configureProducerMethodSpecializations()
     {
         Method method;
         ProducerMethodBean pbean, pLeft, pRight;
@@ -1727,9 +1804,9 @@ public final class WebBeansUtil
         // collect all producer method beans
         Set<Bean<?>> beans = BeanManagerImpl.getManager().getBeans();
         List<ProducerMethodBean> producerBeans = new ArrayList<ProducerMethodBean>();
-        for(Bean b : beans) 
+        for(Bean b : beans)
         {
-            if (b instanceof ProducerMethodBean) 
+            if (b instanceof ProducerMethodBean)
             {
                 producerBeans.add((ProducerMethodBean)b);
             }
@@ -1737,34 +1814,34 @@ public final class WebBeansUtil
 
         // create sorted bean helper.
         SortedListHelper<ProducerMethodBean> producerBeanListHelper = new
-        SortedListHelper<ProducerMethodBean>(new ArrayList<ProducerMethodBean>(), 
-                new Comparator<ProducerMethodBean> () 
+                SortedListHelper<ProducerMethodBean>(new ArrayList<ProducerMethodBean>(),
+                new Comparator<ProducerMethodBean> ()
                 {
-            public int compare(ProducerMethodBean e1, ProducerMethodBean e2) 
-            {
-                if (e1.getBeanClass().isAssignableFrom(e2.getBeanClass())) 
-                {
-                    return -1;
-                } 
-                else if (e1.equals(e2)) 
-                {
-                    return 0;
-                }
-                return 1;
-            }
+                    public int compare(ProducerMethodBean e1, ProducerMethodBean e2)
+                    {
+                        if (e1.getBeanClass().isAssignableFrom(e2.getBeanClass()))
+                        {
+                            return -1;
+                        }
+                        else if (e1.equals(e2))
+                        {
+                            return 0;
+                        }
+                        return 1;
+                    }
                 });
 
-        while(true) 
+        while(true)
         {
             pbean = null;
             method = null;
             producerBeanListHelper.clear();
 
             //locate a specialized bean 
-            for(ProducerMethodBean pb : producerBeans) 
+            for(ProducerMethodBean pb : producerBeans)
             {
-                if (pb.isSpecializedBean()) 
-                {	
+                if (pb.isSpecializedBean())
+                {
                     pbean = pb;
                     method = pb.getCreatorMethod();
                     producerBeanListHelper.add(pb);
@@ -1781,45 +1858,47 @@ public final class WebBeansUtil
             while(pLeftContinue || pRightContinue)
             {
                 pLeftContinue = pRightContinue = false;
-                for(ProducerMethodBean pb : producerBeans) 
+                for(ProducerMethodBean pb : producerBeans)
                 {
                     //left
                     if (pLeft!= null &&
                             pLeft.getBeanClass().getSuperclass().equals(pb.getBeanClass()))
                     {
-                        Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(), Arrays.asList(method.getParameterTypes()));
-                        
+                        Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(),
+                                Arrays.asList(method.getParameterTypes()));
+
                         //Added by GE, method check is necessary otherwise getting wrong method qualifier annotations
                         if (superMethod != null && superMethod.equals(pb.getCreatorMethod()))
                         {
                             producerBeanListHelper.add(pb);
-                            pLeft = (pb.isSpecializedBean()) ? pb : null; 
-                        } 
+                            pLeft = (pb.isSpecializedBean()) ? pb : null;
+                        }
                         else {
                             pLeft = null;
                         }
-                        if (pLeft != null) pLeftContinue = true; 
+                        if (pLeft != null) pLeftContinue = true;
                     }
                     //right
-                    if (pRight != null && 
+                    if (pRight != null &&
                             pb.getBeanClass().getSuperclass().equals(pRight.getBeanClass()))
                     {
-                        if (!pb.isSpecializedBean()) 
+                        if (!pb.isSpecializedBean())
                         {
                             pRight = null;
                         } else {
-                            Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(), Arrays.asList(method.getParameterTypes()));
+                            Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(),
+                                    Arrays.asList(method.getParameterTypes()));
                             //Added by GE, method check is necessary otherwise getting wrong method qualifier annotations
                             if (superMethod != null && superMethod.equals(pb.getCreatorMethod()))
                             {
                                 producerBeanListHelper.add(pb);
                                 pRight = pb;
-                            } else 
+                            } else
                             {
                                 pRight = null;
                             }
                         }
-                        if (pRight != null) pRightContinue = true; 
+                        if (pRight != null) pRightContinue = true;
                     }
                 } // for
             } // while
@@ -1833,27 +1912,27 @@ public final class WebBeansUtil
             configSpecializedProducerMethodBeans(producerBeanListHelper.getList());
         }
     }
-    
+
 
     public static Set<Bean<?>> isConfiguredWebBeans(Class<?> clazz,boolean annotate)
-    {   
+    {
         Asserts.nullCheckForClass(clazz);
-        
+
         Set<Bean<?>> beans = new HashSet<Bean<?>>();
-        
+
         Set<Bean<?>> components = BeanManagerImpl.getManager().getComponents();
         Iterator<Bean<?>> it = components.iterator();
-        
+
         while (it.hasNext())
         {
             AbstractOwbBean<?> bean = (AbstractOwbBean<?>)it.next();
-            
+
             boolean enterprise = false;
             if(bean instanceof EnterpriseBeanMarker)
             {
                 enterprise = true;
             }
-            
+
             if (bean.getTypes().contains(clazz) ||
                     (enterprise && bean.getBeanClass().equals(clazz)))
             {
@@ -1864,8 +1943,8 @@ public final class WebBeansUtil
                         if(!(bean instanceof NewBean))
                         {
                             beans.add(bean);
-                        }                           
-                    }                                    
+                        }
+                    }
                 }
                 else
                 {
@@ -1876,7 +1955,7 @@ public final class WebBeansUtil
 
         return beans;
     }
-    
+
     /**
      * Checks the unproxiable condition.
      * @param bean managed bean
@@ -1888,46 +1967,47 @@ public final class WebBeansUtil
     {
         Asserts.assertNotNull("bean", "bean parameter can not be null");
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
-        
+
         //Unproxiable test for NormalScoped beans
         if (WebBeansUtil.isScopeTypeNormal(scopeType))
         {
             Set<Type> types = bean.getTypes();
-            
+
             for(Type type : types)
             {
                 Class<?> beanClass = ClassUtil.getClass(type);
-                
+
                 if(!beanClass.isInterface() && beanClass != Object.class)
                 {
                     boolean throwException = false;
-                    if(ClassUtil.isPrimitive(beanClass) 
+                    if(ClassUtil.isPrimitive(beanClass)
                             || ClassUtil.isArray(beanClass))
                     {
                         throwException = true;
                     }
-                    
+
                     if(!throwException)
                     {
                         Constructor<?> cons = ClassUtil.isContaintNoArgConstructor(beanClass);
 
-                        if (ClassUtil.isFinal(beanClass.getModifiers()) 
-                                || ClassUtil.hasFinalMethod(beanClass) || 
+                        if (ClassUtil.isFinal(beanClass.getModifiers())
+                                || ClassUtil.hasFinalMethod(beanClass) ||
                                 (cons == null || ClassUtil.isPrivate(cons.getModifiers())))
                         {
                             throwException = true;
                         }
                     }
-                    
+
                     //Throw Exception
                     if(throwException)
                     {
                         throw new UnproxyableResolutionException("WebBeans with api type with normal scope " +
-                                "must be proxiable to inject, but class : " + beanClass.getName() + " is not proxiable type");          
-                    }                                
-                }                
+                                "must be proxiable to inject, but class : " + beanClass.getName()
+                                + " is not proxiable type");
+                    }
+                }
             }
-        }              
+        }
     }
 
     public static void checkNullable(Class<?> type, AbstractOwbBean<?> component)
@@ -1939,14 +2019,15 @@ public final class WebBeansUtil
         {
             if (component.isNullable())
             {
-                throw new NullableDependencyException("Injection point for primitive type resolves webbeans component with return type : " + component.getReturnType().getName() + " with nullable");
+                throw new NullableDependencyException("Injection point for primitive type resolves webbeans component "
+                        + "with return type : " + component.getReturnType().getName() + " with nullable");
             }
         }
     }
 
     /**
      * Configures the producer method specialization.
-     * 
+     *
      * @param component producer method component
      * @param method specialized producer method
      * @param superClass bean super class that has overriden method
@@ -1959,12 +2040,15 @@ public final class WebBeansUtil
         Method superMethod = ClassUtil.getClassMethodWithTypes(superClass, method.getName(), Arrays.asList(method.getParameterTypes()));
         if (superMethod == null)
         {
-            throw new WebBeansConfigurationException("Producer method specialization is failed. Method " + method.getName() + " not found in super class : " + superClass.getName());
+            throw new WebBeansConfigurationException("Producer method specialization is failed. Method "
+                    + method.getName() + " not found in super class : " + superClass.getName());
         }
-        
+
         if (!AnnotationUtil.hasAnnotation(superMethod.getAnnotations(), Produces.class))
         {
-            throw new WebBeansConfigurationException("Producer method specialization is failed. Method " + method.getName() + " found in super class : " + superClass.getName() + " is not annotated with @Produces");
+            throw new WebBeansConfigurationException("Producer method specialization is failed. Method "
+                    + method.getName() + " found in super class : " + superClass.getName()
+                    + " is not annotated with @Produces");
         }
 
         /* To avoid multiple invocations of setBeanName(), following code is delayed to
@@ -1978,40 +2062,42 @@ public final class WebBeansUtil
         
         WebBeansUtil.configuredProducerSpecializedName(component, method, superMethod);
 		*/
-        
+
         component.setSpecializedBean(true);
-        
+
     }
-    
+
     /**
      * Configures the name of the producer method for specializing the parent.
-     * 
+     *
      * @param component producer method component
      * @param method specialized producer method
      * @param superMethod overriden super producer method
      */
-    public static boolean configuredProducerSpecializedName(AbstractOwbBean<?> component,Method method,Method superMethod)
+    public static boolean configuredProducerSpecializedName(AbstractOwbBean<?> component,
+                                                            Method method,
+                                                            Method superMethod)
     {
         Asserts.assertNotNull(component,"component parameter can not be null");
         Asserts.assertNotNull(method,"method parameter can not be null");
         Asserts.assertNotNull(superMethod,"superMethod parameter can not be null");
-        
+
         String name = null;
         boolean hasName = false;
         if(AnnotationUtil.hasMethodAnnotation(superMethod, Named.class))
         {
-          Named named =  superMethod.getAnnotation(Named.class);
-          hasName = true;
-          if(!named.value().equals(""))
-          {
-              name = named.value();
-          }
-          else
-          {
-              name = getProducerDefaultName(superMethod.getName());
-          }
+            Named named =  superMethod.getAnnotation(Named.class);
+            hasName = true;
+            if(!named.value().equals(""))
+            {
+                name = named.value();
+            }
+            else
+            {
+                name = getProducerDefaultName(superMethod.getName());
+            }
         }
-        else 
+        else
         {
             Annotation[] anns = AnnotationUtil.getStereotypeMetaAnnotations(superMethod.getAnnotations());
             for(Annotation ann : anns)
@@ -2022,35 +2108,38 @@ public final class WebBeansUtil
                     name = getProducerDefaultName(superMethod.getName());
                     break;
                 }
-            }                        
+            }
         }
-        
+
         if(hasName)
         {
             if(AnnotationUtil.hasMethodAnnotation(method, Named.class))
             {
-                throw new DefinitionException("Specialized method : " + method.getName() + " in class : " + component.getReturnType().getName() + " may not define @Named annotation");
+                throw new DefinitionException("Specialized method : " + method.getName() + " in class : "
+                        + component.getReturnType().getName() + " may not define @Named annotation");
             }
-            
+
             component.setName(name);
         }
-        
+
         return hasName;
 //        else
 //        {
 //            component.setName(name);
 //        }
-        
+
     }
-    
+
     public static void checkInjectedMethodParameterConditions(Method method, Class<?> clazz)
     {
         Asserts.assertNotNull(method, "method parameter can not be null");
         Asserts.nullCheckForClass(clazz);
 
-        if (AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class) || AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
+        if (AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class) ||
+            AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
         {
-            throw new WebBeansConfigurationException("Initializer method parameters in method : " + method.getName() + " in class : " + clazz.getName() + " can not be annotated with @Disposes or @Observers");
+            throw new WebBeansConfigurationException("Initializer method parameters in method : " + method.getName()
+                    + " in class : " + clazz.getName() + " can not be annotated with @Disposes or @Observers");
 
         }
 
@@ -2060,7 +2149,8 @@ public final class WebBeansUtil
     {
         if (interceptorBindings == null || interceptorBindings.length == 0)
         {
-            throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings array argument can not be empty");
+            throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings " +
+                    "array argument can not be empty");
         }
 
         Annotation old = null;
@@ -2068,9 +2158,10 @@ public final class WebBeansUtil
         {
             if (!AnnotationUtil.isInterceptorBindingAnnotation(interceptorBinding.annotationType()))
             {
-                throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings array can not contain other annotation that is not @InterceptorBinding");
+                throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor" +
+                        " bindings array can not contain other annotation that is not @InterceptorBinding");
             }
-            
+
             if (old == null)
             {
                 old = interceptorBinding;
@@ -2079,7 +2170,9 @@ public final class WebBeansUtil
             {
                 if (old.equals(interceptorBinding))
                 {
-                    throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings array argument can not define duplicate binding annotation with name : @" + old.getClass().getName());
+                    throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor " +
+                            "bindings array argument can not define duplicate binding annotation with name : @" +
+                            old.getClass().getName());
                 }
 
                 old = interceptorBinding;
@@ -2091,7 +2184,8 @@ public final class WebBeansUtil
     {
         if (apiTypes == null || apiTypes.size() == 0)
         {
-            throw new IllegalArgumentException("Manager.resolveDecorators() method parameter api types argument can not be empty");
+            throw new IllegalArgumentException("Manager.resolveDecorators() method parameter api types argument " +
+                    "can not be empty");
         }
 
         Annotation old = null;
@@ -2099,7 +2193,8 @@ public final class WebBeansUtil
         {
             if (!AnnotationUtil.isQualifierAnnotation(qualifier.annotationType()))
             {
-                throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array can not contain other annotation that is not @Qualifier");
+                throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array " +
+                        "can not contain other annotation that is not @Qualifier");
             }
             if (old == null)
             {
@@ -2109,7 +2204,9 @@ public final class WebBeansUtil
             {
                 if (old.annotationType().equals(qualifier.annotationType()))
                 {
-                    throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array argument can not define duplicate qualifier annotation with name : @" + old.annotationType().getName());
+                    throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers " +
+                            "array argument can not define duplicate qualifier annotation with name : @" +
+                            old.annotationType().getName());
                 }
 
                 old = qualifier;
@@ -2117,17 +2214,17 @@ public final class WebBeansUtil
         }
 
     }
-    
+
     /**
      * Returns true if instance injection point false otherwise.
-     * 
+     *
      * @param injectionPoint injection point definition
      * @return true if instance injection point
      */
     public static boolean checkObtainsInjectionPointConditions(InjectionPoint injectionPoint)
-    {        
+    {
         Type type = injectionPoint.getType();
-        
+
         Class<?> candidateClazz = null;
         if(type instanceof Class)
         {
@@ -2138,43 +2235,47 @@ public final class WebBeansUtil
             ParameterizedType pt = (ParameterizedType)type;
             candidateClazz = (Class<?>)pt.getRawType();
         }
-        
+
         if(!candidateClazz.isAssignableFrom(Instance.class))
         {
             return false;
-        }        
-        
+        }
+
         Class<?> rawType = null;
-        
+
         if(ClassUtil.isParametrizedType(injectionPoint.getType()))
         {
             ParameterizedType pt = (ParameterizedType)injectionPoint.getType();
-            
+
             rawType = (Class<?>) pt.getRawType();
-            
+
             Type[] typeArgs = pt.getActualTypeArguments();
-            
+
             if(!(rawType.isAssignableFrom(Instance.class)))
             {
-                throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must have type javax.inject.Instance");
-            }                
+                throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString()
+                        + " must have type javax.inject.Instance");
+            }
             else
-            {                       
+            {
                 if(typeArgs.length != 1)
                 {
-                    throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must not have more than one actual type argument");                    
+                    throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString()
+                            + " must not have more than one actual type argument");
                 }
-            }                                
+            }
         }
         else
         {
-            throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString() + " must be defined as ParameterizedType with one actual type argument");
-        }  
-        
+            throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString()
+                    + " must be defined as ParameterizedType with one actual type argument");
+        }
+
         return true;
     }
-    
-    public static <T> void defineInterceptor(ManagedBeanCreatorImpl<T> managedBeanCreator, ProcessInjectionTarget<T> injectionTargetEvent)
+
+    public static <T> void defineInterceptor(ManagedBeanCreatorImpl<T> managedBeanCreator,
+                                             ProcessInjectionTarget<T> injectionTargetEvent)
     {
         Class<?> clazz = injectionTargetEvent.getAnnotatedType().getJavaClass();
         if (InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
@@ -2186,20 +2287,22 @@ public final class WebBeansUtil
 
             if (component != null)
             {
-                WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component, 
-                		AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations()));
+                WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component,
+                        AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations()));
             }
         }
 
     }
 
-    
+
     /**
      * Define decorator bean.
      * @param <T> type info
-     * @param clazz decorator class
+     * @param creator bean creator
+     * @param processInjectionTargetEvent 
      */
-    public static <T> void defineDecorator(ManagedBeanCreatorImpl<T> creator, ProcessInjectionTarget<T> processInjectionTargetEvent)
+    public static <T> void defineDecorator(ManagedBeanCreatorImpl<T> creator,
+                                           ProcessInjectionTarget<T> processInjectionTargetEvent)
     {
         Class<T> clazz = processInjectionTargetEvent.getAnnotatedType().getJavaClass();
         if (DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
@@ -2207,11 +2310,11 @@ public final class WebBeansUtil
             ManagedBean<T> delegate = null;
 
             DecoratorUtil.checkDecoratorConditions(clazz);
-            
+
             if(Modifier.isAbstract(clazz.getModifiers()))
             {
                 delegate = defineAbstractDecorator(creator, processInjectionTargetEvent);
-            } 
+            }
             else
             {
                 delegate = defineManagedBean(creator, processInjectionTargetEvent);
@@ -2228,6 +2331,11 @@ public final class WebBeansUtil
         }
     }
 
+    /**
+     * @param scopeType
+     * @return <code>true</code> if the given scopeType represents a {@link javax.enterprise.context.NormalScope}d
+     *         bean
+     */
     public static boolean isScopeTypeNormal(Class<? extends Annotation> scopeType)
     {
         Asserts.assertNotNull(scopeType, "scopeType argument can not be null");
@@ -2236,7 +2344,7 @@ public final class WebBeansUtil
         {
             return true;
         }
-        
+
         if(scopeType.isAnnotationPresent(Scope.class))
         {
             return false;
@@ -2250,11 +2358,11 @@ public final class WebBeansUtil
                 return additionalScope.isNormal();
             }
         }
-        
+
         // no scopetype found so far -> kawumms
         throw new IllegalArgumentException("scopeType argument must be annotated with @Scope or @NormalScope");
     }
-    
+
     public static void checkNullInstance(Object instance,Class<?> scopeType, String errorMessage)
     {
         if (instance == null)
@@ -2264,10 +2372,11 @@ public final class WebBeansUtil
                 throw new IllegalProductException(errorMessage);
             }
         }
-        
+
     }
-    
-    public static void checkSerializableScopeType(Class<? extends Annotation> scopeType, boolean isSerializable, String errorMessage)
+
+    public static void checkSerializableScopeType(Class<? extends Annotation> scopeType, boolean isSerializable,
+                                                  String errorMessage)
     {
         if (BeanManagerImpl.getManager().isPassivatingScope(scopeType))
         {
@@ -2275,9 +2384,9 @@ public final class WebBeansUtil
             {
                 throw new IllegalProductException(errorMessage);
             }
-        }            
+        }
     }
-    
+
     public static boolean isManagedBean(AbstractOwbBean<?> component)
     {
         if(component.getWebBeansType().equals(WebBeansType.MANAGED) ||
@@ -2286,10 +2395,10 @@ public final class WebBeansUtil
         {
             return true;
         }
-        
+
         return false;
     }
-    
+
     public static boolean isProducerBean(AbstractOwbBean<?> bean)
     {
         if(bean.getWebBeansType().equals(WebBeansType.PRODUCERFIELD) ||
@@ -2297,10 +2406,10 @@ public final class WebBeansUtil
         {
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Returns true if bean is an enterprise bean, false otherwise.
      * @param bean bean instance
@@ -2309,15 +2418,15 @@ public final class WebBeansUtil
     public static boolean isEnterpriseBean(AbstractOwbBean<?> bean)
     {
         Asserts.assertNotNull(bean,"Bean is null");
-        
+
         if(bean.getWebBeansType().equals(WebBeansType.ENTERPRISE))
         {
             return true;
         }
-        
+
         return false;
     }
-    
+
 //    public static void addInjectedImplicitEventComponent(InjectionPoint injectionPoint)
 //    {
 //        Type type = injectionPoint.getType();
@@ -2344,8 +2453,8 @@ public final class WebBeansUtil
 //        Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, qualifiers);
 //        BeanManagerImpl.getManager().addBean(bean);                  
 //    }
-    
-    
+
+
 //    public static <T> void addInjectedImplicitInstanceComponent(InjectionPoint injectionPoint)
 //    {
 //        ParameterizedType genericType = (ParameterizedType)injectionPoint.getType();
@@ -2359,27 +2468,28 @@ public final class WebBeansUtil
 //        BeanManagerImpl.getManager().addBean(bean);
 //        
 //    }
-    
+
     public static Bean<?> getMostSpecializedBean(BeanManager manager, Bean<?> component)
     {
-        Set<Bean<?>> beans = manager.getBeans(component.getBeanClass(), AnnotationUtil.getAnnotationsFromSet(component.getQualifiers()));
-                
+        Set<Bean<?>> beans = manager.getBeans(component.getBeanClass(),
+                AnnotationUtil.getAnnotationsFromSet(component.getQualifiers()));
+
         for(Bean<?> bean : beans)
         {
             Bean<?> find = bean;
-            
+
             if(!find.equals(component))
             {
                 if(AnnotationUtil.hasClassAnnotation(find.getBeanClass(), Specializes.class))
                 {
                     return getMostSpecializedBean(manager, find);
-                }                
-            }            
+                }
+            }
         }
-        
+
         return component;
-    }      
-    
+    }
+
     /**
      * Returns <code>ProcessAnnotatedType</code> event. 
      * @param <T> bean type
@@ -2387,15 +2497,15 @@ public final class WebBeansUtil
      * @return event
      */
     public static <T> GProcessAnnotatedType fireProcessAnnotatedTypeEvent(AnnotatedType<T> annotatedType)
-    {                
+    {
         GProcessAnnotatedType processAnnotatedEvent = new GProcessAnnotatedType(annotatedType);
-        
+
         //Fires ProcessAnnotatedType
         BeanManagerImpl.getManager().fireEvent(processAnnotatedEvent,AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        
-        return processAnnotatedEvent;        
+
+        return processAnnotatedEvent;
     }
-    
+
     /**
      * Returns <code>ProcessInjectionTarget</code> event.
      * @param <T> bean type
@@ -2406,15 +2516,16 @@ public final class WebBeansUtil
     {
         AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(bean.getReturnType());
         InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(bean);
-        GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,annotatedType);
-        
+        GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,
+                                                                                          annotatedType);
+
         //Fires ProcessInjectionTarget
         BeanManagerImpl.getManager().fireEvent(processInjectionTargetEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        
+
         return processInjectionTargetEvent;
-        
+
     }
-    
+
     /**
      * Returns <code>ProcessInjectionTarget</code> event.
      * @param <T> bean type
@@ -2426,87 +2537,93 @@ public final class WebBeansUtil
         AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(componentClass);
         InjectionTarget<T> injectionTarget = BeanManagerImpl.getManager().createInjectionTarget(annotatedType);
         GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,annotatedType);
-        
+
         //Fires ProcessInjectionTarget
         BeanManagerImpl.getManager().fireEvent(processInjectionTargetEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        
+
         return processInjectionTargetEvent;
-        
+
     }
-    
-    
-    public static GProcessProducer fireProcessProducerEventForMethod(ProducerMethodBean<?> producerMethod,AnnotatedMethod<?> method)
-    {         
+
+
+    public static GProcessProducer fireProcessProducerEventForMethod(ProducerMethodBean<?> producerMethod,
+                                                                     AnnotatedMethod<?> method)
+    {
         GProcessProducer producerEvent = new GProcessProducer(new ProducerBeansProducer(producerMethod),method);
-        
+
         //Fires ProcessProducer for methods
         BeanManagerImpl.getManager().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        
+
         return producerEvent;
     }
-    
-    public static GProcessProducer fireProcessProducerEventForField(ProducerFieldBean<?> producerField,AnnotatedField<?> field)
-    {         
+
+    public static GProcessProducer fireProcessProducerEventForField(ProducerFieldBean<?> producerField,
+                                                                    AnnotatedField<?> field)
+    {
         GProcessProducer producerEvent = new GProcessProducer(new ProducerBeansProducer(producerField),field);
-        
+
         //Fires ProcessProducer for fields
         BeanManagerImpl.getManager().fireEvent(producerEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        
+
         return producerEvent;
     }
-    
-    public static void fireProcessProducerMethodBeanEvent(Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods, AnnotatedType<?> annotatedType)
+
+    public static void fireProcessProducerMethodBeanEvent(Map<ProducerMethodBean<?>,
+                                                          AnnotatedMethod<?>> annotatedMethods,
+                                                          AnnotatedType<?> annotatedType)
     {
         for(ProducerMethodBean<?> bean : annotatedMethods.keySet())
         {
-            AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(bean);                
-            Method disposal = WebBeansAnnotatedTypeUtil.getDisposalWithGivenAnnotatedMethod(annotatedType, bean.getReturnType(), AnnotationUtil.getAnnotationsFromSet(bean.getQualifiers()));
-            
+            AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(bean);
+            Method disposal = WebBeansAnnotatedTypeUtil.getDisposalWithGivenAnnotatedMethod(annotatedType,
+                    bean.getReturnType(), AnnotationUtil.getAnnotationsFromSet(bean.getQualifiers()));
+
             AnnotatedMethod<?> disposalAnnotated = null;
             GProcessProducerMethod processProducerMethodEvent = null;
             if(disposal != null)
             {
                 disposalAnnotated = AnnotatedElementFactory.newAnnotatedMethod(disposal, annotatedType);
-                processProducerMethodEvent = new GProcessProducerMethod(bean,annotatedMethod,disposalAnnotated.getParameters().get(0));                
+                processProducerMethodEvent = new GProcessProducerMethod(bean,annotatedMethod,
+                                                                        disposalAnnotated.getParameters().get(0));
             }
             else
             {
                 processProducerMethodEvent = new GProcessProducerMethod(bean,annotatedMethod,null);
             }
-            
+
 
             //Fires ProcessProducer
             BeanManagerImpl.getManager().fireEvent(processProducerMethodEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        }                
+        }
     }
-    
+
     public static void fireProcessObservableMethodBeanEvent(Map<ObserverMethod<?>,AnnotatedMethod<?>> annotatedMethods)
     {
         for(ObserverMethod<?> observableMethod : annotatedMethods.keySet())
         {
-            AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(observableMethod);                
-            
+            AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(observableMethod);
+
             GProcessObservableMethod event = new GProcessObservableMethod(annotatedMethod, observableMethod);
 
             //Fires ProcessProducer
             BeanManagerImpl.getManager().fireEvent(event, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        }                
+        }
     }
-    
-    
+
+
     public static void fireProcessProducerFieldBeanEvent(Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields)
     {
         for(ProducerFieldBean<?> bean : annotatedFields.keySet())
         {
             AnnotatedField<?> field = annotatedFields.get(bean);
-            
+
             GProcessProducerField processProducerFieldEvent = new GProcessProducerField(bean,field);
-            
+
             //Fire ProcessProducer
             BeanManagerImpl.getManager().fireEvent(processProducerFieldEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        }        
+        }
     }
-    
+
     /**
      * Returns true if bean instance is an enterprise bean instance
      * false otherwise.
@@ -2516,15 +2633,15 @@ public final class WebBeansUtil
     public static boolean isBeanHasEnterpriseMarker(Object beanInstance)
     {
         Asserts.assertNotNull(beanInstance,"Bean instance is null");
-        
+
         if(beanInstance instanceof EnterpriseBeanMarker)
         {
             return true;
         }
-        
+
         return false;
     }
-    
+
     public static void checkInjectionPointNamedQualifier(InjectionPoint injectionPoint)
     {
         Set<Annotation> qualifierset = injectionPoint.getQualifiers();
@@ -2537,23 +2654,24 @@ public final class WebBeansUtil
                 break;
             }
         }
-        
+
         if(namedQualifier != null)
         {
             String value = namedQualifier.value();
-            
+
             if(value == null || value.equals(""))
             {
                 Member member = injectionPoint.getMember();
                 if(!(member instanceof Field))
                 {
-                    throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " can not define @Named qualifier without value!");
+                    throw new WebBeansConfigurationException("Injection point type : " + injectionPoint
+                                                             + " can not define @Named qualifier without value!");
                 }
             }
-        }        
-        
+        }
+
     }
-    
+
     /**
      * Sets bean enabled flag.
      * @param bean bean instance
@@ -2561,7 +2679,7 @@ public final class WebBeansUtil
     public static void setInjectionTargetBeanEnableFlag(InjectionTargetBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean can not be null");
-        
+
         if(hasInjectionTargetBeanAnnotatedWithAlternative(bean))
         {
             if(!AlternativesManager.getInstance().isBeanHasAlternative(bean))
@@ -2570,19 +2688,19 @@ public final class WebBeansUtil
             }
         }
     }
-    
-   
+
+
     public static boolean hasInjectionTargetBeanAnnotatedWithAlternative(InjectionTargetBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean can not be null");
-        
+
         boolean alternative = false;
-        
+
         if(AnnotationUtil.hasClassAnnotation(bean.getBeanClass(), Alternative.class))
         {
-           alternative = true; 
+            alternative = true;
         }
-        
+
         if(!alternative)
         {
             Set<Class<? extends Annotation>> stereotypes = bean.getStereotypes();
@@ -2594,25 +2712,27 @@ public final class WebBeansUtil
                     break;
                 }
             }
-            
+
         }
-        
+
         return alternative;
-        
+
     }
-    
-    public static void setBeanEnableFlagForProducerBean(InjectionTargetBean<?> parent,AbstractProducerBean<?> producer, Annotation[] annotations)
+
+    public static void setBeanEnableFlagForProducerBean(InjectionTargetBean<?> parent,
+                                                        AbstractProducerBean<?> producer,
+                                                        Annotation[] annotations)
     {
         Asserts.assertNotNull(parent, "parent can not be null");
         Asserts.assertNotNull(producer, "producer can not be null");
-        
+
         boolean alternative = false;
-        
+
         if(AnnotationUtil.hasAnnotation(annotations, Alternative.class))
         {
-           alternative = true; 
+            alternative = true;
         }
-        
+
         if(!alternative)
         {
             Set<Class<? extends Annotation>> stereotypes = producer.getStereotypes();
@@ -2623,12 +2743,12 @@ public final class WebBeansUtil
                     alternative = true;
                     break;
                 }
-            }            
+            }
         }
-        
+
         if(alternative)
         {
-            if(hasInjectionTargetBeanAnnotatedWithAlternative(parent) && 
+            if(hasInjectionTargetBeanAnnotatedWithAlternative(parent) &&
                     AlternativesManager.getInstance().isBeanHasAlternative(parent))
             {
                 producer.setEnabled(true);
@@ -2642,8 +2762,8 @@ public final class WebBeansUtil
         {
             producer.setEnabled(parent.isEnabled());
         }
-    }    
-    
+    }
+
     public static boolean isExtensionEventType(Class<?> clazz)
     {
         if(clazz.equals(BeforeBeanDiscovery.class) ||
@@ -2663,10 +2783,10 @@ public final class WebBeansUtil
         {
             return true;
         }
-        
+
         return false;
     }
-    
+
     public static boolean isExtensionBeanEventType(Class<?> clazz)
     {
         if(clazz.equals(GProcessAnnotatedType.class) ||
@@ -2678,10 +2798,10 @@ public final class WebBeansUtil
         {
             return true;
         }
-        
-        return false;        
+
+        return false;
     }
-    
+
     public static boolean isDefaultExtensionBeanEventType(Class<?> clazz)
     {
         if(clazz.equals(ProcessAnnotatedType.class) ||
@@ -2693,10 +2813,10 @@ public final class WebBeansUtil
         {
             return true;
         }
-        
-        return false;        
-    }    
-    
+
+        return false;
+    }
+
     public static boolean isExtensionProducerOrObserverEventType(Class<?> clazz)
     {
         if(clazz.equals(GProcessProducer.class) ||
@@ -2707,11 +2827,11 @@ public final class WebBeansUtil
         {
             return true;
         }
-        
+
         return false;
 
     }
-    
+
     public static boolean isDefaultExtensionProducerOrObserverEventType(Class<?> clazz)
     {
         if(clazz.equals(ProcessProducer.class) ||
@@ -2722,11 +2842,11 @@ public final class WebBeansUtil
         {
             return true;
         }
-        
+
         return false;
 
-    }    
-    
+    }
+
     public static boolean isDependent(Bean<?> bean)
     {
         if(!(bean instanceof OwbBean))
@@ -2735,13 +2855,13 @@ public final class WebBeansUtil
             {
                 return true;
             }
-            
+
             return false;
         }
-        
+
         return ((OwbBean) bean).isDependent();
     }
-    
+
     public static void inspectErrorStack(String logMessage)
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
@@ -2753,11 +2873,11 @@ public final class WebBeansUtil
             {
                 stack.logErrors();
                 throw new WebBeansConfigurationException(logMessage);
-            }            
+            }
         }finally
         {
             stack.clear();
-        }        
+        }
     }
 
     /**
@@ -2776,11 +2896,11 @@ public final class WebBeansUtil
                     return ((AbstractOwbBean<?>)contextual).getId();
                 }
             }
-            
+
             else if(contextual instanceof PassivationCapable)
             {
                 PassivationCapable pc = (PassivationCapable)contextual;
-                
+
                 return pc.getId();
             }
         }
@@ -2789,122 +2909,139 @@ public final class WebBeansUtil
             if((contextual instanceof PassivationCapable) && (contextual instanceof Serializable))
             {
                 PassivationCapable pc = (PassivationCapable)contextual;
-                
+
                 return pc.getId();
             }
         }
-        
+
         return null;
     }
-    
-    public static <T> ManagedBean<T> defineAbstractDecorator(ManagedBeanCreatorImpl<T> managedBeanCreator,ProcessInjectionTarget<T> processInjectionTargetEvent)
+
+    public static <T> ManagedBean<T> defineAbstractDecorator(ManagedBeanCreatorImpl<T> managedBeanCreator,
+                                                             ProcessInjectionTarget<T> processInjectionTargetEvent)
     {
-        
+
         ManagedBean<T> bean = defineManagedBean(managedBeanCreator, processInjectionTargetEvent);
         Class clazz = JavassistProxyFactory.createAbstractDecoratorProxyClass(bean);
         bean.setConstructor(WebBeansUtil.defineConstructor(clazz));
         return bean;
     }
-    
- 
-    public static <T> ManagedBean<T> defineManagedBean(ManagedBeanCreatorImpl<T> managedBeanCreator,ProcessInjectionTarget<T> processInjectionTargetEvent)
+
+
+    public static <T> ManagedBean<T> defineManagedBean(ManagedBeanCreatorImpl<T> managedBeanCreator,
+                                                       ProcessInjectionTarget<T> processInjectionTargetEvent)
     {
-        BeanManagerImpl manager = BeanManagerImpl.getManager();        
-        
+        BeanManagerImpl manager = BeanManagerImpl.getManager();
+
         //Annotated type
         AnnotatedType<T> annotatedType = processInjectionTargetEvent.getAnnotatedType();
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
-        Class<T> clazz = annotatedType.getJavaClass();        
-                                
+        Class<T> clazz = annotatedType.getJavaClass();
+
         managedBeanCreator.defineSerializable();
 
         //Define meta-data
         managedBeanCreator.defineStereoTypes();
         //Scope type
-        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                                            
+        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
+                logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
         //Check for Enabled via Alternative
         WebBeansUtil.setInjectionTargetBeanEnableFlag(managedBean);
-        
+
         managedBeanCreator.defineApiType();
         managedBeanCreator.checkCreateConditions();
         managedBeanCreator.defineQualifier();
         managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
-        managedBeanCreator.defineConstructor();            
+        managedBeanCreator.defineConstructor();
         Set<ProducerMethodBean<?>> producerMethods = managedBeanCreator.defineProducerMethods();
         Set<ProducerFieldBean<?>> producerFields = managedBeanCreator.defineProducerFields();
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
-        
+
         Set<ObserverMethod<?>> observerMethods = new HashSet<ObserverMethod<?>>();
         if(managedBean.isEnabled())
         {
             observerMethods = managedBeanCreator.defineObserverMethods();
         }
-                                
-        //Fires ProcessInjectionTarget
-        //ProcessInjectionTargetImpl<T> processInjectionTargetEvent = WebBeansUtil.fireProcessInjectionTargetEvent(managedBean);    
-        //WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessInjectionTarget event observers. Look at logs for further details");
-        
+
         //Put final InjectionTarget instance
-        manager.putInjectionTargetWrapper(managedBean, new InjectionTargetWrapper(processInjectionTargetEvent.getInjectionTarget()));
-        
-        Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods = new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>(); 
+        manager.putInjectionTargetWrapper(managedBean,
+                new InjectionTargetWrapper(processInjectionTargetEvent.getInjectionTarget()));
+
+        Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods =
+                new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>();
+
         for(ProducerMethodBean<?> producerMethod : producerMethods)
         {
-            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
-            ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForMethod(producerMethod,method);                
-            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerMethods. Look at logs for further details");
+            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(),
+                                                                                   annotatedType);
+            ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForMethod(producerMethod,
+                                                                                                    method);
+            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for "
+                                           + "ProducerMethods. Look at logs for further details");
 
             annotatedMethods.put(producerMethod, method);
             manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(producerEvent.getProducer()));
-                        
-            producerEvent.setProducerSet(false);
-        }
-        
-        Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields = new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
-        for(ProducerFieldBean<?> producerField : producerFields)
-        {
-            AnnotatedField<?> field = AnnotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), annotatedType);
-            ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForField(producerField, field);
-            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerFields. Look at logs for further details");
-            
-            annotatedFields.put(producerField, field);
-            manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(producerEvent.getProducer()));
-            
+
             producerEvent.setProducerSet(false);
         }
 
-        Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap = new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>(); 
+        Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields =
+                new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
+
+        for(ProducerFieldBean<?> producerField : producerFields)
+        {
+            AnnotatedField<?> field = AnnotatedElementFactory.newAnnotatedField(producerField.getCreatorField(),
+                                                                                annotatedType);
+            ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForField(producerField,
+                                                                                                    field);
+            WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for"
+                                           + " ProducerFields. Look at logs for further details");
+
+            annotatedFields.put(producerField, field);
+            manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(producerEvent.getProducer()));
+
+            producerEvent.setProducerSet(false);
+        }
+
+        Map<ObserverMethod<?>,AnnotatedMethod<?>> observerMethodsMap =
+                new HashMap<ObserverMethod<?>, AnnotatedMethod<?>>();
+
         for(ObserverMethod<?> observerMethod : observerMethods)
         {
             ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
-            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(impl.getObserverMethod(), annotatedType);
-            
+            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(impl.getObserverMethod(),
+                                                                                   annotatedType);
+
             observerMethodsMap.put(observerMethod, method);
         }
-        
+
         BeanManagerImpl beanManager = BeanManagerImpl.getManager();
-        
+
         //Fires ProcessManagedBean
-        ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean,annotatedType);            
-        beanManager.fireEvent(processBeanEvent, new Annotation[0]);            
-        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for managed beans. Look at logs for further details");
-        
+        ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean,annotatedType);
+        beanManager.fireEvent(processBeanEvent, new Annotation[0]);
+        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
+                "managed beans. Look at logs for further details");
+
         //Fires ProcessProducerMethod
-        WebBeansUtil.fireProcessProducerMethodBeanEvent(annotatedMethods, annotatedType);            
-        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerMethod event observers for producer method beans. Look at logs for further details");            
-        
+        WebBeansUtil.fireProcessProducerMethodBeanEvent(annotatedMethods, annotatedType);
+        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerMethod event observers for " +
+                "producer method beans. Look at logs for further details");
+
         //Fires ProcessProducerField
         WebBeansUtil.fireProcessProducerFieldBeanEvent(annotatedFields);
-        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerField event observers for producer field beans. Look at logs for further details");            
-        
+        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducerField event observers for " +
+                "producer field beans. Look at logs for further details");
+
         //Fire ObservableMethods
         WebBeansUtil.fireProcessObservableMethodBeanEvent(observerMethodsMap);
-        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for observer methods. Look at logs for further details");
-        
+        WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
+                "observer methods. Look at logs for further details");
+
         if(!WebBeansAnnotatedTypeUtil.isAnnotatedTypeDecoratorOrInterceptor(annotatedType))
         {
-            beanManager.addBean(WebBeansUtil.createNewBean(managedBean));                
+            beanManager.addBean(WebBeansUtil.createNewBean(managedBean));
             beanManager.addBean(managedBean);
             for (ProducerMethodBean<?> producerMethod : producerMethods)
             {
@@ -2918,67 +3055,68 @@ public final class WebBeansUtil
                 beanManager.addBean(producerField);
             }
         }
-        
+
         return managedBean;
     }
-    
+
     public static <T> ManagedBean<T>  defineManagedBeanWithoutFireEvents(AnnotatedType<T> type)
     {
         Class<T> clazz = type.getJavaClass();
-        
-        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);    
+
+        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);
         managedBean.setAnnotatedType(type);
-        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);            
+        ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
         managedBeanCreator.setAnnotatedType(type);
-        
+
         managedBeanCreator.defineSerializable();
 
         //Define meta-data
         managedBeanCreator.defineStereoTypes();
 
         //Scope type
-        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                        
+        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
+                logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
         //Check for Enabled via Alternative
-        WebBeansUtil.setInjectionTargetBeanEnableFlag(managedBean);        
+        WebBeansUtil.setInjectionTargetBeanEnableFlag(managedBean);
         managedBeanCreator.defineApiType();
         managedBeanCreator.checkCreateConditions();
         managedBeanCreator.defineQualifier();
         managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
-        managedBeanCreator.defineConstructor();            
-        managedBeanCreator.defineProducerMethods();       
-        managedBeanCreator.defineProducerFields();           
+        managedBeanCreator.defineConstructor();
+        managedBeanCreator.defineProducerMethods();
+        managedBeanCreator.defineProducerFields();
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
         DefinitionUtil.defineDecoratorStack(managedBean);
         DefinitionUtil.defineBeanInterceptorStack(managedBean);
-                                        
+
         managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
-        
+
         return managedBean;
     }
-    
+
 
     /**
      * Determines if the injection is to be performed into a static field.
-     * 
+     *
      * @param injectionPoint
      * @return <code>true</code> if the injection is into a static field
      */
-    public static boolean isStaticInjection(InjectionPoint injectionPoint) 
+    public static boolean isStaticInjection(InjectionPoint injectionPoint)
     {
         if (injectionPoint != null)
         {
-            Member member = injectionPoint.getMember(); 
+            Member member = injectionPoint.getMember();
             if (member != null && Modifier.isStatic(member.getModifiers()))
             {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     public static boolean isPassivationCapableDependency(InjectionPoint injectionPoint)
     {
         Bean<?> bean = InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);
@@ -2992,11 +3130,11 @@ public final class WebBeansUtil
         {
             return true;
         }
-        
+
         else if(BeanManagerImpl.getManager().isNormalScope(bean.getScope()))
         {
             return true;
-        }        
+        }
         else
         {
             if(isPassivationCapable(bean) != null)
@@ -3006,14 +3144,14 @@ public final class WebBeansUtil
         }
         return false;
     }
-    
+
     public static void throwRuntimeExceptions(Exception e)
     {
         if(RuntimeException.class.isAssignableFrom(e.getClass()))
         {
             throw (RuntimeException)e;
         }
-        
+
         throw new RuntimeException(e);
-    }    
+    }
 }
