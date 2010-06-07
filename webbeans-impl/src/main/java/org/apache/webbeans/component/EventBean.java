@@ -41,10 +41,6 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
 
     /**
      * Creates a new instance of event bean.
-     * 
-     * @param returnType Event class
-     * @param eventType event type
-     * @param definedType webbeans type
      */
     @SuppressWarnings("serial")
     public EventBean()
@@ -84,7 +80,8 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
             }
             catch (Exception e)
             {
-                throw new WebBeansException("Exception in creating Event implicit component for event type : " + eventType);
+                throw new WebBeansException("Exception in creating Event implicit component for event type : "
+                                            + eventType);
             }           
             finally
             {

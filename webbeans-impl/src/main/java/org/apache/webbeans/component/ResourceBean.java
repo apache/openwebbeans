@@ -37,7 +37,8 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
     
     private ResourceReference<X,T> resourceReference = null;
     
-    public ResourceBean(Class<X> returnType, InjectionTargetBean<?> ownerBean, ResourceReference<X, T> resourceReference)
+    public ResourceBean(Class<X> returnType, InjectionTargetBean<?> ownerBean,
+                        ResourceReference<X, T> resourceReference)
     {
         super(ownerBean, returnType);
         this.resourceReference = resourceReference;

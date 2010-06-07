@@ -106,7 +106,10 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
     {
         if (this.disposalMethod != null)
         {
-            throw new WebBeansConfigurationException("There are multiple disposal method for producer method component with name : " + getName() + " with implementation class " + getParent().getReturnType().getName() + " with disposal method name : " + disposalMethod.getName());
+            throw new WebBeansConfigurationException("There are multiple disposal method for producer method " +
+                    "component with name : " + getName() + " with implementation class " +
+                    getParent().getReturnType().getName() + " with disposal method name : " +
+                    disposalMethod.getName());
         }
         this.disposalMethod = disposalMethod;
     }
@@ -171,9 +174,12 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         Object parentInstance = null;
         CreationalContext<?> parentCreational = null;
         InjectableMethods<T> m = null;
-        List<DependentCreationalContext<Object>> oldDependents = AbstractInjectable.dependentInstanceOfProducerMethods.get();
+        List<DependentCreationalContext<Object>> oldDependents =
+                AbstractInjectable.dependentInstanceOfProducerMethods.get();
+
         try
         {
+            //X TODO dependentInstanceOfProducerMethods MUST NOT be public! 
             AbstractInjectable.dependentInstanceOfProducerMethods.set(new ArrayList<DependentCreationalContext<Object>>());
             parentCreational = getManager().createCreationalContext(this.ownerComponent);
             
@@ -199,11 +205,13 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             {
                 if(oldDependents == null && injectionTargetInstance != null)
                 {
-                    ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance.get(), this , instance);
+                    ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance.get(),
+                                                                            this , instance);
                 }
                 else
                 {
-                    DependentCreationalContext<Object> dependentCreational = new DependentCreationalContext<Object>((Contextual<Object>)this);
+                    DependentCreationalContext<Object> dependentCreational =
+                            new DependentCreationalContext<Object>((Contextual<Object>)this);
                     dependentCreational.setInstance(instance);
                     dependentCreational.setDependentType(DependentType.BEAN);
 
@@ -212,12 +220,14 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             }
             else
             {
-                List<DependentCreationalContext<Object>> dependents = AbstractInjectable.dependentInstanceOfProducerMethods.get();
+                List<DependentCreationalContext<Object>> dependents =
+                        AbstractInjectable.dependentInstanceOfProducerMethods.get();
                 if(dependents != null)
                 {
                     for(DependentCreationalContext<Object> dependent : dependents)
                     {
-                        ((CreationalContextImpl)creationalContext).addDependent(instance, dependent.getContextual() , dependent.getInstance());
+                        ((CreationalContextImpl)creationalContext).addDependent(instance, dependent.getContextual(),
+                                                                                dependent.getInstance());
                     }
                 }
             }
@@ -235,11 +245,13 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                         {
                             if(oldDependents == null && injectionTargetInstance != null)
                             {
-                                ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance.get(), this , instance);
+                                ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance.get(),
+                                                                                        this , instance);
                             }
                             else
                             {
-                                DependentCreationalContext<Object> dependentCreational = new DependentCreationalContext<Object>((Contextual<Object>)bean);
+                                DependentCreationalContext<Object> dependentCreational =
+                                        new DependentCreationalContext<Object>((Contextual<Object>)bean);
                                 dependentCreational.setInstance(dependents.get(bean));
                                 dependentCreational.setDependentType(DependentType.BEAN);
                                 oldDependents.add(dependentCreational);                                                            
@@ -247,7 +259,8 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                         }
                         else
                         {
-                            ((CreationalContextImpl)creationalContext).addDependent(instance, bean , dependents.get(bean));   
+                            ((CreationalContextImpl)creationalContext).addDependent(instance, bean ,
+                                                                                    dependents.get(bean));   
                         }
                     }
                 }
@@ -356,7 +369,10 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      */
     protected void checkNullInstance(Object instance)
     {
-        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.ownerComponent.getReturnType().getName() + " scope type must be @Dependent to create null instance";
+        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() +
+                              " return type in the component implementation class : " +
+                              this.ownerComponent.getReturnType().getName() +
+                              " scope type must be @Dependent to create null instance";
         WebBeansUtil.checkNullInstance(instance, this.getScope(), errorMessage);
     }
 
@@ -365,7 +381,10 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
      */
     protected void checkScopeType()
     {
-        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() + " return type in the component implementation class : " + this.ownerComponent.getReturnType().getName() + " with passivating scope @" + this.getScope().getName() + " must be Serializable";
+        String errorMessage = "WebBeans producer method : " + creatorMethod.getName() +
+                              " return type in the component implementation class : " +
+                              this.ownerComponent.getReturnType().getName() + " with passivating scope @" +
+                              this.getScope().getName() + " must be Serializable";
         WebBeansUtil.checkSerializableScopeType(this.getScope(), this.isSerializable(), errorMessage);
 
     }

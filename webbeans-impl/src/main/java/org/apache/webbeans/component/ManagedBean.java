@@ -22,14 +22,13 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.intercept.InterceptorData;
 
 /**
- * Managed bean implementation of the {@link Bean}.
+ * Managed bean implementation of the {@link javax.enterprise.inject.spi.Bean}.
  * 
  * @version $Rev$ $Date$
  */

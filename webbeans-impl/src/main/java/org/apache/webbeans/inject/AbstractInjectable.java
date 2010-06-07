@@ -69,15 +69,16 @@ public abstract class AbstractInjectable implements Injectable
     protected Member injectionMember;
     
     public static ThreadLocal<Object> instanceUnderInjection = new ThreadLocal<Object>();
-    
+
+    //X TODO this MUST NOT be public! 
     public static ThreadLocal<List<DependentCreationalContext<Object>>> dependentInstanceOfProducerMethods = 
         new ThreadLocal<List<DependentCreationalContext<Object>>>();
 
     /**
      * Creates a new injectable.
      * 
-     * @param bean owner bean
-     * @param creaitonalContext creational context instance
+     * @param injectionOwnerBean owner bean
+     * @param injectionOwnerCreationalContext creational context instance
      */
     protected AbstractInjectable(OwbBean<?> injectionOwnerBean, CreationalContext<?> injectionOwnerCreationalContext)
     {

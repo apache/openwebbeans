@@ -97,7 +97,8 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
                 
                 instance = (T) producerField.get(parentInstance);
             }
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             throw new WebBeansException(e);
         }
@@ -161,7 +162,10 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      */
     protected void checkNullInstance(Object instance)
     {
-        String errorMessage = "WebBeans producer field : " + producerField.getName() + " return type in the component implementation class : " + this.ownerComponent.getReturnType().getName() + " scope must be @Dependent to create null instance";
+        String errorMessage = "WebBeans producer field : " + producerField.getName() +
+                              " return type in the component implementation class : " +
+                              this.ownerComponent.getReturnType().getName() +
+                              " scope must be @Dependent to create null instance";
         WebBeansUtil.checkNullInstance(instance, this.getScope(), errorMessage);
     }
 
@@ -170,7 +174,10 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
      */
     protected void checkScopeType()
     {
-        String errorMessage = "WebBeans producer method : " + producerField.getName() + " return type in the component implementation class : " + this.ownerComponent.getReturnType().getName() + " with passivating scope @" + this.getScope().getName() + " must be Serializable";
+        String errorMessage = "WebBeans producer method : " + producerField.getName() +
+                              " return type in the component implementation class : " +
+                              this.ownerComponent.getReturnType().getName() + " with passivating scope @" +
+                              this.getScope().getName() + " must be Serializable";
         WebBeansUtil.checkSerializableScopeType(this.getScope(), this.isSerializable(), errorMessage);
     }
     

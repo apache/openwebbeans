@@ -19,10 +19,9 @@
 package org.apache.webbeans.component;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.New;
 
 /**
- * Component definition with {@link New} binding annotation.
+ * Component definition with {@link javax.enterprise.inject.New} binding annotation.
  * 
  * <p>
  * It is defined as concrete java class component.
@@ -63,7 +62,8 @@ public class NewBean<T> extends ManagedBean<T>
      * always true for New qualifier
      */
     @Override
-    public boolean isDependent() {
+    public boolean isDependent()
+    {
         return true;
     }
 

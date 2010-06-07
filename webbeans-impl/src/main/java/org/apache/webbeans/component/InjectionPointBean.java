@@ -46,7 +46,8 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
         {
             return local.get();
             
-        }finally
+        }
+        finally
         {
             local.set(null);
             local.remove();
