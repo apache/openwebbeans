@@ -29,21 +29,22 @@ import javax.enterprise.util.AnnotationLiteral;
  */
 public class NewLiteral extends AnnotationLiteral<New> implements New
 {
-	private Class<?> clazz = null;
-	
-	public NewLiteral()
-	{
-		this.clazz = New.class;
-	}
-	
-	public NewLiteral(Class<?> clazz)
-	{
-		this.clazz = clazz;
-	}
+    private Class<?> clazz = null;
 
-	/** {@inheritDoc} */
+    public NewLiteral()
+    {
+        this.clazz = New.class;
+    }
+
+    public NewLiteral(Class<?> clazz)
+    {
+        this.clazz = clazz;
+    }
+
+    /** {@inheritDoc} */
     @Override
-    public Class<?> value() {
+    public Class<?> value()
+    {
         return clazz;
     }
 

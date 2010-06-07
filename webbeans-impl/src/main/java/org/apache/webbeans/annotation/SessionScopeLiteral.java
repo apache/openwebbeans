@@ -18,12 +18,11 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.util.AnnotationLiteral;
 
 /**
- * {@link RequestScoped} literal annotation.
+ * {@link javax.enterprise.context.RequestScoped} literal annotation.
  * 
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0

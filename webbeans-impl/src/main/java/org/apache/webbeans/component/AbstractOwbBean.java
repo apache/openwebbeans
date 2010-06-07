@@ -31,7 +31,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -49,8 +48,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * @version $Rev$ $Date$
  * 
- * @see OwbBean
- * @see Bean
+ * @see javax.enterprise.inject.spi.Bean
  */
 public abstract class AbstractOwbBean<T> implements OwbBean<T>
 {
@@ -151,7 +149,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         {  
             if(!(creationalContext instanceof CreationalContextImpl))
             {                
-                creationalContext = CreationalContextFactory.getInstance().wrappedCreationalContext(creationalContext, this); 
+                creationalContext = CreationalContextFactory.getInstance().wrappedCreationalContext(
+                        creationalContext, this); 
             }
            
             InjectionTargetWrapper<T> wrapper = getManager().getInjectionTargetWrapper(this);
@@ -232,11 +231,13 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             //Destory dependent instances
             creationalContext.release();                
                                                 
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             logger.fatal(OWBLogConst.FATAL_0001, this);
             e.printStackTrace();
-        }finally
+        }
+        finally
         {
             CreationalContextImpl.currentRemoveObject.set(null);
             CreationalContextImpl.currentRemoveObject.remove();
@@ -265,15 +266,15 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     }
     
     /**
-     * TODO there are probably other infos which must get added to make the id unique!
-     * If not, it will crash in {@link BeanManagerImpl#addPassivationInfo(javax.enterprise.inject.spi.Bean)}
-     * anyway. 
+     * get the unique Id of the bean. This will get used as reference on
+     * passivation.
      *
      * {@inheritDoc}
      */
     public String getId()
     {
-        if (!isEnabled() || returnType.equals(Object.class)) {
+        if (!isEnabled() || returnType.equals(Object.class))
+        {
             // if the Bean is disabled, either by rule, or by
             // annotating it @Typed() as Object, then it is not serializable
             return null;
@@ -412,9 +413,13 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void setName(String name)
     {
         if (this.name == null)
+        {
             this.name = name;
+        }
         else
+        {
             throw new UnsupportedOperationException("Component name is not null, is " + this.name);
+        }
     }
 
     /*
@@ -661,7 +666,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                         {
                             continue;
                         }
-                        throw new WebBeansConfigurationException("Passivation capable beans must satisfy passivation capable dependencies. " +
+                        throw new WebBeansConfigurationException(
+                                "Passivation capable beans must satisfy passivation capable dependencies. " +
                                 "Bean : " + toString() + " does not satisfy.");
                     }
                 }

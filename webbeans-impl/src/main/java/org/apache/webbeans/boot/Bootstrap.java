@@ -28,7 +28,7 @@ import org.apache.webbeans.spi.ContainerLifecycle;
 
 public class Bootstrap
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(Bootstrap.class);
+    private static final WebBeansLogger log = WebBeansLogger.getLogger(Bootstrap.class);
     
     private CountDownLatch latch = new CountDownLatch(1);
     
@@ -38,13 +38,13 @@ public class Bootstrap
     
     public void init(Properties properties)
     {
-        logger.info(OWBLogConst.INFO_0006);
+        log.info(OWBLogConst.INFO_0006);
         this.containerLifecycle = LifecycleFactory.getInstance().getLifecycle();
     }
     
     public void start() throws Exception
     {
-        logger.info(OWBLogConst.INFO_0005);
+        log.info(OWBLogConst.INFO_0005);
         long begin = System.currentTimeMillis();
         
         containerLifecycle.startApplication(this.properties);
@@ -57,14 +57,14 @@ public class Bootstrap
             
         });
         
-        logger.info(OWBLogConst.INFO_0001, Long.toString(System.currentTimeMillis() - begin));
+        log.info(OWBLogConst.INFO_0001, Long.toString(System.currentTimeMillis() - begin));
         this.latch.await();
         
-        logger.info(OWBLogConst.INFO_0008);
+        log.info(OWBLogConst.INFO_0008);
         
         containerLifecycle.stopApplication(this.properties);
         
-        logger.info(OWBLogConst.INFO_0009);
+        log.info(OWBLogConst.INFO_0009);
     }
     
     public static void main(String []args) throws Exception

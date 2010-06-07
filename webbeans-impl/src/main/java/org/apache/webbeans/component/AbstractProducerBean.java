@@ -111,7 +111,8 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         Annotation[] anns = new Annotation[this.ownerComponent.getQualifiers().size()];
         anns = this.ownerComponent.getQualifiers().toArray(anns);
 
-        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractOwbBean<T>) this.ownerComponent);
+        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(),
+                (AbstractOwbBean<T>) this.ownerComponent);
 
         if (specialize != null)
         {
@@ -135,15 +136,19 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         Annotation[] anns = new Annotation[this.ownerComponent.getQualifiers().size()];
         anns = this.ownerComponent.getQualifiers().toArray(anns);
 
-        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(), (AbstractOwbBean<T>) this.ownerComponent);
+        Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(),
+                (AbstractOwbBean<T>) this.ownerComponent);
 
         if (specialize != null)
         {
-            parentInstance = getManager().getContext(specialize.getScope()).get((Bean<Object>)specialize,(CreationalContext<Object>) creationalContext);
+            parentInstance = getManager().getContext(specialize.getScope()).
+                    get((Bean<Object>)specialize,(CreationalContext<Object>) creationalContext);
         }
         else
         {
-            parentInstance = getManager().getContext(this.ownerComponent.getScope()).get((Bean<Object>)this.ownerComponent,(CreationalContext<Object>) creationalContext);
+            parentInstance = getManager().getContext(
+                    ownerComponent.getScope()).get((Bean<Object>)ownerComponent,
+                                                   (CreationalContext<Object>) creationalContext);
         }
 
         return parentInstance;

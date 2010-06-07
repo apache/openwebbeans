@@ -66,7 +66,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> implements InjectionTargetBean<T>
 {
     /** Logger instance */
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
+    private final static WebBeansLogger log = WebBeansLogger.getLogger(AbstractInjectionTargetBean.class);
 
     /** Bean observable method */
     private Set<Method> observableMethods = new HashSet<Method>();
@@ -252,7 +252,10 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             // Call Post Construct
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
             {
-                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, InterceptorUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
+                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null,
+                        InterceptorUtil.getInterceptorMethods(getInterceptorStack(),
+                                                              InterceptorType.POST_CONSTRUCT),
+                                                              InterceptorType.POST_CONSTRUCT);
                 impl.setCreationalContext(ownerCreationalContext);
                 try
                 {
@@ -261,7 +264,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
 
                 catch (Exception e)
                 {
-                    logger.error(OWBLogConst.ERROR_0008, e, "@PostConstruct.");
+                    log.error(OWBLogConst.ERROR_0008, e, "@PostConstruct.");
                     throw new WebBeansException(e);
                 }
             }            
@@ -288,7 +291,10 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         {
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
             {                
-                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, InterceptorUtil.getInterceptorMethods(getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
+                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null,
+                        InterceptorUtil.getInterceptorMethods(getInterceptorStack(),
+                                                              InterceptorType.PRE_DESTROY),
+                                                              InterceptorType.PRE_DESTROY);
                 impl.setCreationalContext(creationalContext);
                 try
                 {
@@ -296,7 +302,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 }
                 catch (Exception e)
                 {
-                    logger.error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
+                    log.error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
                     throw new WebBeansException(e);
                 }
             }            
@@ -323,8 +329,10 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 //InjectionPoint.
                 else
                 {
-                    Bean<?> injectionPointBean = getManager().getBeans(InjectionPoint.class, new DefaultLiteral()).iterator().next();
-                    Object reference = getManager().getReference(injectionPointBean, InjectionPoint.class, getManager().createCreationalContext(injectionPointBean));
+                    Bean<?> injectionPointBean = getManager().getBeans(InjectionPoint.class, new DefaultLiteral())
+                                                              .iterator().next();
+                    Object reference = getManager().getReference(injectionPointBean, InjectionPoint.class,
+                                             getManager().createCreationalContext(injectionPointBean));
                     
                     ClassUtil.setField(instance, field, reference);
                 }
@@ -362,7 +370,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     }
 
     /**
-     * Injects all {@link Initializer} methods of the bean instance.
+     * Injects all {@link javax.inject.Inject} methods of the bean instance.
      * 
      * @param instance bean instance
      * @param creationalContext creational context instance
@@ -398,7 +406,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 {
                     service = ServiceLoader.getService(ResourceInjectionService.class);
                     
-                }catch(Exception e)
+                }
+                catch(Exception e)
                 {
                     // When running in tests
                 }
@@ -410,8 +419,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             }
             catch (Exception e)
             {
-                logger.error(OWBLogConst.ERROR_0023, instance);
-                throw new WebBeansException(MessageFormat.format(logger.getTokenString(OWBLogConst.ERROR_0023), instance), e);
+                log.error(OWBLogConst.ERROR_0023, instance);
+                throw new WebBeansException(MessageFormat.format(
+                        log.getTokenString(OWBLogConst.ERROR_0023), instance), e);
             }
         }
     }
@@ -486,7 +496,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     /**
      * Add new injected method.
      * 
-     * @param field new injected method
+     * @param method new injected method
      */
     public void addInjectedMethod(Method method)
     {
@@ -506,7 +516,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     /**
      * Add new injected method.
      * 
-     * @param field new injected method
+     * @param method new injected method
      */
     public void addInjectedMethodToSuper(Method method)
     {
@@ -550,7 +560,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     protected WebBeansLogger getLogger()
     {
-        return this.logger;
+        return this.log;
     }
 
     /**
@@ -594,7 +604,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             WebBeansDecorator<?> decorator = (WebBeansDecorator<?>)dec;
             if(!decorator.isPassivationCapable())
             {
-                throw new WebBeansConfigurationException(MessageFormat.format(logger.getTokenString(OWBLogConst.EXCEPT_0015), toString()));
+                throw new WebBeansConfigurationException(MessageFormat.format(
+                        log.getTokenString(OWBLogConst.EXCEPT_0015), toString()));
             }
             else
             {
@@ -609,7 +620,8 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>)interceptorData.getWebBeansInterceptor();
                 if(!interceptor.isPassivationCapable())
                 {
-                    throw new WebBeansConfigurationException(MessageFormat.format(logger.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
+                    throw new WebBeansConfigurationException(MessageFormat.format(
+                            log.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
                 }
                 else
                 {
@@ -623,13 +635,15 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                     Class<?> interceptorClass = interceptorData.getInterceptorClass();
                     if(!Serializable.class.isAssignableFrom(interceptorClass))
                     {
-                        throw new WebBeansConfigurationException(MessageFormat.format(logger.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
+                        throw new WebBeansConfigurationException(MessageFormat.format(
+                                log.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
                     }               
                     else
                     {
                         if(!OWBInjector.checkInjectionPointForInterceptorPassivation(interceptorClass))
                         {
-                            throw new WebBeansConfigurationException(MessageFormat.format(logger.getTokenString(OWBLogConst.EXCEPT_0017), toString(), interceptorClass));
+                            throw new WebBeansConfigurationException(MessageFormat.format(
+                                    log.getTokenString(OWBLogConst.EXCEPT_0017), toString(), interceptorClass));
                         }
                     }
                 }
