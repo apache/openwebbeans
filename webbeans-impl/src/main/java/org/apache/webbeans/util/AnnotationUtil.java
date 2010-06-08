@@ -942,18 +942,18 @@ public final class AnnotationUtil
      */
     public static boolean hasAnyQualifier(Bean<?> bean)
     {
-    	Asserts.assertNotNull(bean, "bean parameter can not be null");
-    	Set<Annotation> qualifiers = bean.getQualifiers();
-    	
-    	for(Annotation ann : qualifiers)
-    	{
-    		if(ann.annotationType().equals(Any.class))
-    		{
-    			return true;
-    		}
-    	}
-    	
-    	return false;
+        Asserts.assertNotNull(bean, "bean parameter can not be null");
+        Set<Annotation> qualifiers = bean.getQualifiers();
+
+        for(Annotation ann : qualifiers)
+        {
+            if(ann.annotationType().equals(Any.class))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     

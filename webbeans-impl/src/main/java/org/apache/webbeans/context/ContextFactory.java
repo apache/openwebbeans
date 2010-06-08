@@ -72,8 +72,8 @@ public final class ContextFactory
     
     public static void destroyRequestContext(Object request)
     {
-    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
-    	contextService.endContext(RequestScoped.class, request);
+        ContextsService contextService = ServiceLoader.getService(ContextsService.class);
+        contextService.endContext(RequestScoped.class, request);
     }
 
     public static void initSessionContext(Object session)
@@ -91,7 +91,7 @@ public final class ContextFactory
 
     public static void destroySessionContext(Object session)
     {
-    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
+        ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.endContext(SessionScoped.class, session);
     }
 
@@ -121,7 +121,7 @@ public final class ContextFactory
      */
     public static void destroyApplicationContext(Object parameter)
     {
-    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
+        ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.endContext(ApplicationScoped.class, parameter);
     }
     
@@ -140,7 +140,7 @@ public final class ContextFactory
     
     public static void destroySingletonContext(Object parameter)
     {
-    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
+        ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.endContext(Singleton.class, parameter);
     }
 
@@ -159,7 +159,7 @@ public final class ContextFactory
 
     public static void destroyConversationContext()
     {
-    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
+        ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.endContext(ConversationScoped.class, null);
     }
 
@@ -250,7 +250,7 @@ public final class ContextFactory
      */
     public static void activateContext(Class<? extends Annotation> scopeType)
     {
-    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
+        ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.activateContext(scopeType);
     }
     
@@ -259,7 +259,7 @@ public final class ContextFactory
      */
     public static void deActivateContext(Class<? extends Annotation> scopeType)
     {
-    	ContextsService contextService = ServiceLoader.getService(ContextsService.class);
+        ContextsService contextService = ServiceLoader.getService(ContextsService.class);
         contextService.deActivateContext(scopeType);
     }
     

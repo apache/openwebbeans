@@ -142,7 +142,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
                 else
                 {
                     throw new WebBeansConfigurationException("Decorators must have a one @Delegate injection point. " +
-                    		"But the decorator bean : " + toString() + " has more than one");
+                            "But the decorator bean : " + toString() + " has more than one");
                 }
             }            
         }
@@ -155,7 +155,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         }
         
         String message = new String("Error in decorator : "+ toString() + ". The delegate injection point must be an injected field, " +
-        		"initializer method parameter or bean constructor method parameter. ");
+                "initializer method parameter or bean constructor method parameter. ");
         
         if(!(ipFound.getMember() instanceof Constructor))
         {
@@ -534,27 +534,27 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         return this.wrappedBean.getBeanClass();
     }
 
-	@Override
-	public Set<Class<? extends Annotation>> getStereotypes() 
-	{
+    @Override
+    public Set<Class<? extends Annotation>> getStereotypes()
+    {
         if(this.customDecorator != null)
         {
             return this.customDecorator.getStereotypes();
         }
-	    
-		return this.wrappedBean.getStereotypes();
-	}
 
-	@Override
-	public Set<Type> getDecoratedTypes() 
-	{
+        return this.wrappedBean.getStereotypes();
+    }
+
+    @Override
+    public Set<Type> getDecoratedTypes()
+    {
         if(this.customDecorator != null)
         {
             return this.customDecorator.getDecoratedTypes();
         }
-	    
-		return this.decoratedTypes;
-	}
+
+        return this.decoratedTypes;
+    }
 
     @Override
     public boolean isAlternative()
@@ -566,11 +566,11 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
 
         return this.wrappedBean.isAlternative();
     }
-    
+
     @Override
     public void validatePassivationDependencies()
     {
         this.wrappedBean.validatePassivationDependencies();
-    }    
-    
+    }
+
 }

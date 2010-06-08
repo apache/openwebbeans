@@ -74,8 +74,8 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
  */
 public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInterceptor<T>
 {
-	private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptor.class);
-	
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptor.class);
+
     /** InterceptorBindingTypes exist on the interceptor class */
     private Map<Class<? extends Annotation>, Annotation> interceptorBindingSet = new HashMap<Class<? extends Annotation>, Annotation>();
 
@@ -156,18 +156,18 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         /* This interceptor is enabled if all of its interceptor bindings are present on the bean */
         for (Annotation ann : getInterceptorBindings())
         {
-            Class<? extends Annotation> bindingType = ann.annotationType(); 
-        	int index = bindingTypes.indexOf(bindingType);
-        	if (index < 0) 
-        	{
-        	    return false; /* at least one of this interceptors types is not in the beans bindingTypes */	
-        	}
-        	
-        	if (!AnnotationUtil.hasAnnotationMember(bindingTypes.get(index), annots.get(index), ann))
-        	
-        	{
-        		return false;
-        	}
+            Class<? extends Annotation> bindingType = ann.annotationType();
+            int index = bindingTypes.indexOf(bindingType);
+            if (index < 0)
+            {
+                return false; /* at least one of this interceptors types is not in the beans bindingTypes */
+            }
+
+            if (!AnnotationUtil.hasAnnotationMember(bindingTypes.get(index), annots.get(index), ann))
+
+            {
+                return false;
+            }
         }
         
         return true;
@@ -398,36 +398,36 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         return this.delegateBean.getBeanClass();
     }
 
-	@Override
-	public Set<Class<? extends Annotation>> getStereotypes() 
-	{ 
-		return this.delegateBean.getStereotypes();
-	}
+    @Override
+    public Set<Class<? extends Annotation>> getStereotypes()
+    {
+        return this.delegateBean.getStereotypes();
+    }
 
-	@Override
-	public Object intercept(InterceptionType type, T instance,InvocationContext ctx) 
-	{
-		Method method = getMethod(type);
-		try 
-		{
-			method.invoke(instance,new Object[]{ctx});
-		} 
-		catch (Exception e)
-		{
-			logger.error(e);
-			throw new WebBeansException(e);
-		}
-		
-		return null;
-	}
+    @Override
+    public Object intercept(InterceptionType type, T instance,InvocationContext ctx)
+    {
+        Method method = getMethod(type);
+        try
+        {
+            method.invoke(instance,new Object[]{ctx});
+        }
+        catch (Exception e)
+        {
+            logger.error(e);
+            throw new WebBeansException(e);
+        }
 
-	@Override
-	public boolean intercepts(InterceptionType type) 
-	{
-		Method method = getMethod(type);
-		
-		return method != null ? true : false;
-	}
+        return null;
+    }
+
+    @Override
+    public boolean intercepts(InterceptionType type)
+    {
+        Method method = getMethod(type);
+
+        return method != null ? true : false;
+    }
 
     @Override
     public boolean isAlternative()

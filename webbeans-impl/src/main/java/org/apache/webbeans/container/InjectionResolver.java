@@ -21,7 +21,6 @@ package org.apache.webbeans.container;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,7 +37,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -57,7 +55,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * </p>
  * 
  * @version $Rev$ $Date$
- * @see WebBeansFinder
+ * @see org.apache.webbeans.config.WebBeansFinder
  */
 public class InjectionResolver
 {
@@ -101,7 +99,7 @@ public class InjectionResolver
      * Returns bean manager injection resolver.
      * 
      * @return bean manager injection resolver
-     * @see WebBeansFinder
+     * @see org.apache.webbeans.config.WebBeansFinder
      */
     public static InjectionResolver getInstance()
     {
@@ -113,7 +111,7 @@ public class InjectionResolver
     /**
      * Check the type of the injection point.
      * <p>
-     * Injection point type can not be {@link TypeVariable}.
+     * Injection point type can not be {@link java.lang.reflect.TypeVariable}.
      * </p>
      * 
      * @param injectionPoint injection point
@@ -136,7 +134,7 @@ public class InjectionResolver
      * injection point definition.
      * 
      * @param injectionPoint injection point
-     * @throws If bean is not avialable in the current deployment for given injection
+     * @throws WebBeansConfigurationException If bean is not avialable in the current deployment for given injection
      */
     public void checkInjectionPoints(InjectionPoint injectionPoint)
     {        
@@ -389,9 +387,7 @@ public class InjectionResolver
     /**
      * Resolution by type.
      * 
-     * @param <T> bean type info
      * @param injectionPointType injection point api type
-     * @param injectionPointTypeArguments actual type arguments if parameterized type
      * @param qualifiers qualifiers of the injection point
      * @return set of resolved beans
      */
@@ -494,7 +490,6 @@ public class InjectionResolver
     /**
      * Returns specialized beans if exists, otherwise return input result
      * 
-     * @param <T> bean class type
      * @param result result beans
      * @return specialized beans if exists, otherwise return input result
      */
@@ -565,7 +560,6 @@ public class InjectionResolver
     /**
      * Returns filtered bean set according to the qualifiers.
      * 
-     * @param <T> bean class
      * @param remainingSet bean set for filtering by qualifier
      * @param annotations qualifiers on injection point
      * @return filtered bean set according to the qualifiers

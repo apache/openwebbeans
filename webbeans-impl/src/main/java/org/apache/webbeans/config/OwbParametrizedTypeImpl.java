@@ -97,28 +97,43 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
     public boolean equals(Object obj)
     {
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         OwbParametrizedTypeImpl other = (OwbParametrizedTypeImpl) obj;
         if (!Arrays.equals(getActualTypeArguments(), other.getActualTypeArguments()))
+        {
             return false;
+        }
         if (owner == null)
         {
             if (other.owner != null)
                 return false;
         }
         else if (!owner.equals(other.owner))
+        {
             return false;
+        }
         if (rawType == null)
         {
             if (other.rawType != null)
+            {
                 return false;
+            }
         }
         else if (!rawType.equals(other.rawType))
+        {
             return false;
+        }
+        
         return true;
     }
 

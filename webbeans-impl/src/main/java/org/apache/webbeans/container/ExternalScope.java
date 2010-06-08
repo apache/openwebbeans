@@ -20,16 +20,16 @@ package org.apache.webbeans.container;
 
 
 import java.lang.annotation.Annotation;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 
 import org.apache.webbeans.config.DefaultAnnotation;
 
 
 /**
  * A wrapper for an external scope which can be added by
- * {@link BeforeBeanDiscovery#addScope(Class, boolean, boolean)}.
+ * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)}.
  */
-public class ExternalScope {
+public class ExternalScope
+{
 
     private Class<? extends Annotation> scope;
     private boolean normal;
@@ -61,7 +61,7 @@ public class ExternalScope {
     
     /**
      * @return an instance of the annotation class we got set 
-     *         in {@link BeforeBeanDiscovery#addScope(Class, boolean, boolean)}
+     *         in {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)}
      */
     public Annotation getScopeAnnotation()
     {

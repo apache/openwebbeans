@@ -67,78 +67,78 @@ public class XMLUtil {
 
     protected static boolean verifyNameSpace(Element element)
     {
-    	boolean ret;
-    	if (element.getNamespaceURI() == null)
-    	{
-    		return false;
-    	}
-    	Node node;
-    	NodeList ns = element.getChildNodes();
-    	for(int i=0; i<ns.getLength(); i++) 
-    	{
-    		node = ns.item(i);
-    		if (!(node instanceof Element)) continue;
-    		ret = verifyNameSpace((Element)node);
-    		if (!ret) return false;
-    	}
-    	return true;
+        boolean ret;
+        if (element.getNamespaceURI() == null)
+        {
+            return false;
+        }
+        Node node;
+        NodeList ns = element.getChildNodes();
+        for(int i=0; i<ns.getLength(); i++)
+        {
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            ret = verifyNameSpace((Element)node);
+            if (!ret) return false;
+        }
+        return true;
     }
-	
-	protected static void updateNameSpacePackageMapping(Element root) 
-	{
-		if (!verifyNameSpace(root)) 
-		{
-            throw new WebBeansConfigurationException(log.getTokenString(OWBLogConst.EXCEPT_0012));			
-		}
-		if (root.getNamespaceURI() != null)
-		{
-			WebBeansNameSpaceContainer.getInstance().
-			addNewPackageNameSpace(root.getNamespaceURI());
-		} else {
-			String attr = root.getAttribute("xmlns");
-			if (attr != null) {
-				WebBeansNameSpaceContainer.getInstance().
-				addNewPackageNameSpace(root.getNamespaceURI());
-			} 
-		}
-		NamedNodeMap attrs = root.getAttributes();
-		for(int i=0; i<attrs.getLength(); i++)
-		{
-			// hack the code here, since I did'nt find NameSpace support
-			// in Java DOM.
-			Attr attr = (Attr)attrs.item(i);
-			if (attr.getName().toLowerCase().startsWith("xmlns")) 
-			{
+
+    protected static void updateNameSpacePackageMapping(Element root)
+    {
+        if (!verifyNameSpace(root))
+        {
+            throw new WebBeansConfigurationException(log.getTokenString(OWBLogConst.EXCEPT_0012));
+        }
+        if (root.getNamespaceURI() != null)
+        {
+            WebBeansNameSpaceContainer.getInstance().
+                    addNewPackageNameSpace(root.getNamespaceURI());
+        } else {
+            String attr = root.getAttribute("xmlns");
+            if (attr != null) {
+                WebBeansNameSpaceContainer.getInstance().
+                        addNewPackageNameSpace(root.getNamespaceURI());
+            }
+        }
+        NamedNodeMap attrs = root.getAttributes();
+        for(int i=0; i<attrs.getLength(); i++)
+        {
+            // hack the code here, since I did'nt find NameSpace support
+            // in Java DOM.
+            Attr attr = (Attr)attrs.item(i);
+            if (attr.getName().toLowerCase().startsWith("xmlns"))
+            {
                 WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(attr.getValue());
-			}
-		}
-	}
-	
+            }
+        }
+    }
+
     public static Element getRootElement(InputStream stream) throws WebBeansException
     {
-    	
-    	try 
-    	{
-	    	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setCoalescing(false);
-			factory.setExpandEntityReferences(true);
-			factory.setIgnoringComments(true);
-			factory.setIgnoringElementContentWhitespace(true);
-			factory.setNamespaceAware(true);
-			factory.setValidating(false);
-			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-			documentBuilder.setErrorHandler(new WebBeansErrorHandler());
-			documentBuilder.setEntityResolver(new WebBeansResolver());
-	    	
-			Document doc = documentBuilder.parse(stream);
-			Element root = doc.getDocumentElement();
-			updateNameSpacePackageMapping(root);
-			return root;
-    	} catch (Exception e)
-    	{
+
+        try
+        {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setCoalescing(false);
+            factory.setExpandEntityReferences(true);
+            factory.setIgnoringComments(true);
+            factory.setIgnoringElementContentWhitespace(true);
+            factory.setNamespaceAware(true);
+            factory.setValidating(false);
+            DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+            documentBuilder.setErrorHandler(new WebBeansErrorHandler());
+            documentBuilder.setEntityResolver(new WebBeansResolver());
+
+            Document doc = documentBuilder.parse(stream);
+            Element root = doc.getDocumentElement();
+            updateNameSpacePackageMapping(root);
+            return root;
+        } catch (Exception e)
+        {
             log.fatal(OWBLogConst.FATAL_0002, e);
             throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
-    	}
+        }
     }
     
     /**
@@ -150,27 +150,27 @@ public class XMLUtil {
      */
     public static Element getSpecStrictRootElement(InputStream stream) throws WebBeansException
     {
-    	try 
-    	{
-	    	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setCoalescing(false);
-			factory.setExpandEntityReferences(true);
-			factory.setIgnoringComments(true);
-			factory.setIgnoringElementContentWhitespace(true);
-			factory.setNamespaceAware(true);
-			factory.setValidating(false);
-			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-			documentBuilder.setErrorHandler(new WebBeansErrorHandler());
-			documentBuilder.setEntityResolver(new WebBeansResolver());
-	    	
-			Element root = documentBuilder.parse(stream).getDocumentElement();
-			return root;
-    	} catch (Exception e)
-    	{
+        try
+        {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setCoalescing(false);
+            factory.setExpandEntityReferences(true);
+            factory.setIgnoringComments(true);
+            factory.setIgnoringElementContentWhitespace(true);
+            factory.setNamespaceAware(true);
+            factory.setValidating(false);
+            DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+            documentBuilder.setErrorHandler(new WebBeansErrorHandler());
+            documentBuilder.setEntityResolver(new WebBeansResolver());
+
+            Element root = documentBuilder.parse(stream).getDocumentElement();
+            return root;
+        } catch (Exception e)
+        {
             log.fatal(OWBLogConst.FATAL_0002, e);
             throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
-    	}    	
-    }    
+        }
+    }
 
     public static boolean isElementInNamespace(Element element, String namespace)
     {
@@ -380,9 +380,9 @@ public class XMLUtil {
         NodeList ns = element.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            child = (Element)node;
             if (!isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_INITIALIZER_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DESTRUCTOR_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DECORATES_ELEMENT))
             {
 
@@ -420,15 +420,15 @@ public class XMLUtil {
      */
     public static boolean isElementMethod(Element element)
     {
-    	nullCheckForElement(element);
+        nullCheckForElement(element);
 
         Node node; Element child;
         NodeList ns = element.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            child = (Element)node;
             if (isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_INITIALIZER_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DESTRUCTOR_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT))
             {
                 return true;
@@ -549,14 +549,14 @@ public class XMLUtil {
         NodeList nl = parent.getChildNodes();
         for(int i=0; i<nl.getLength(); i++)
         {
-        	node = nl.item(i);
-        	if (node instanceof Element) 
-        	{
-	        	if (node.getNodeName().equals(childName)) 
-	        	{
-	        		child = (Element)node;
-	        	}
-        	}
+            node = nl.item(i);
+            if (node instanceof Element)
+            {
+                if (node.getNodeName().equals(childName))
+                {
+                    child = (Element)node;
+                }
+            }
         }
         
         if (child == null)
@@ -627,10 +627,10 @@ public class XMLUtil {
             NodeList ns = typeElement.getChildNodes();
             for(int i=0; i<ns.getLength(); i++)
             {
-            	node = ns.item(i);
-            	if (!(node instanceof Element)) continue;
-            	childElement = (Element)node;
-            	Type actualType = getElementJavaType(childElement);
+                node = ns.item(i);
+                if (!(node instanceof Element)) continue;
+                childElement = (Element)node;
+                Type actualType = getElementJavaType(childElement);
                 if (actualType == null)
                 {
                     throw new NonexistentTypeException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not found in the deployment");
@@ -722,7 +722,7 @@ public class XMLUtil {
         
         for(int i=0; i<attrs.getLength(); i++)
         {
-        	Attr attr = (Attr)attrs.item(i);
+            Attr attr = (Attr)attrs.item(i);
             attrsNames.add(attr.getName());
         }
 

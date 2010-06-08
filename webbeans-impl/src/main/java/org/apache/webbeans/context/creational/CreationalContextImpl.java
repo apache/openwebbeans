@@ -41,7 +41,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
     /**Contextual bean dependent instances*/
     //contextual instance --> dependents
-    private Map<Object, List<DependentCreationalContext<?>>> dependentObjects = 
+    private Map<Object, List<DependentCreationalContext<?>>> dependentObjects =
         Collections.synchronizedMap(new WeakHashMap<Object, List<DependentCreationalContext<?>>>());
      
     /**Contextual bean*/

@@ -104,7 +104,8 @@ public final class WebBeansFinder
                 }
                 catch (ClassNotFoundException e)
                 {
-                    throw new WebBeansException("Class not found exception in creating instance with class : " + singletonName, e);                }
+                    throw new WebBeansException("Class not found exception in creating instance with class : " + singletonName, e);
+                }
             }
         }
 
