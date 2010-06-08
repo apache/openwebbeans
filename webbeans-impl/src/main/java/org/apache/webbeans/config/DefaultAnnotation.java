@@ -26,7 +26,8 @@ import java.lang.reflect.Proxy;
 /**
  * A small helper class to create a Annotation instance of the given annotation class
  * via {@link java.lang.reflect.Proxy}. 
- * The annotation literal gets filled with the default values.  
+ * The annotation literal gets filled with the default values.
+ * TODO implement class caching!
  */
 public class DefaultAnnotation implements InvocationHandler{
     public static Annotation of(Class<? extends Annotation> annotation) 

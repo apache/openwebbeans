@@ -52,7 +52,8 @@ public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
             
             getBean().setConstructor(constructor);
             
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             logger.warn(OWBLogConst.WARN_0012, getAnnotatedType().getJavaClass());
         }

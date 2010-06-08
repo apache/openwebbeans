@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -51,7 +50,6 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.corespi.ServiceLoader;
@@ -88,7 +86,7 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 import org.apache.webbeans.xml.XMLSpecializesManager;
 
 /**
- * Deploys the all beans that are defined in the {@link WebBeansScanner} at
+ * Deploys the all beans that are defined in the {@link org.apache.webbeans.spi.ScannerService} at
  * the scanner phase.
  */
 @SuppressWarnings("unchecked")
@@ -123,7 +121,7 @@ public class BeansDeployer
      * Deploys all the defined web beans components in the container startup.
      * <p>
      * It deploys from the web-beans.xml files and from the class files. It uses
-     * the {@link org.apache.webbeans.corespi.ScannerService} to get classes.
+     * the {@link org.apache.webbeans.spi.ScannerService} to get classes.
      * </p>
      * 
      * @throws WebBeansDeploymentException if any deployment exception occurs
@@ -376,7 +374,9 @@ public class BeansDeployer
                             if(!bean.getBeanClass().isAnnotationPresent(javax.decorator.Decorator.class) 
                                     && !BeanManagerImpl.getManager().containsCustomDecoratorClass(bean.getBeanClass()))
                             {
-                                throw new WebBeansConfigurationException("Delegate injection points can not defined by beans that are not decorator. Injection point : " + injectionPoint);
+                                throw new WebBeansConfigurationException(
+                                        "Delegate injection points can not defined by beans that are not decorator. Injection point : "
+                                        + injectionPoint);
                             }
                         }
                     }                    
@@ -524,9 +524,10 @@ public class BeansDeployer
                     try
                     {
                         fis.close();
-                    } catch (IOException e)
+                    }
+                    catch (IOException e)
                     {
-                        // all ok, ignore this!
+                        ;// all ok, ignore this!
                     }
                 }
             }

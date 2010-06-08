@@ -107,7 +107,8 @@ public final class WebBeansAnnotatedTypeUtil
                 {
                     if (found == true)
                     {
-                        throw new WebBeansConfigurationException("There are more than one constructor with @Inject annotation in annotation type : " + type);
+                        throw new WebBeansConfigurationException("There are more than one constructor with @Inject annotation in annotation type : "
+                                                                 + type);
                     }
                     
                     found = true;
@@ -138,7 +139,8 @@ public final class WebBeansAnnotatedTypeUtil
         {
             if (parameter.isAnnotationPresent(Disposes.class))
             {
-                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Disposes annotation in annotated constructor : " + result);
+                throw new WebBeansConfigurationException("Constructor parameter annotations can not contain @Disposes annotation in annotated constructor : "
+                                                         + result);
             }
             
             if(parameter.isAnnotationPresent(Observes.class))
@@ -267,7 +269,8 @@ public final class WebBeansAnnotatedTypeUtil
 
                 if (foundBean == null || !(foundBean instanceof ProducerMethodBean))
                 {
-                    throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + annotatedMethod.getDeclaringType().getJavaClass() + "is not found");
+                    throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : "
+                                                             + annotatedMethod.getDeclaringType().getJavaClass() + "is not found");
                 }
 
                 pr = (ProducerMethodBean<?>) foundBean;
@@ -281,7 +284,8 @@ public final class WebBeansAnnotatedTypeUtil
                     // multiple same producer
                     if (previous.equals(pr))
                     {
-                        throw new WebBeansConfigurationException("There are multiple disposal method for the producer method : " + pr.getCreatorMethod().getName() + " in class : " + annotatedMethod.getDeclaringType().getJavaClass());
+                        throw new WebBeansConfigurationException("There are multiple disposal method for the producer method : " + pr.getCreatorMethod().getName() + " in class : "
+                                                                 + annotatedMethod.getDeclaringType().getJavaClass());
                     }
                 }
 
@@ -289,7 +293,8 @@ public final class WebBeansAnnotatedTypeUtil
                 //Disposer methods and producer methods must be in the same class
                 if(!producerMethod.getDeclaringClass().getName().equals(declaredMethod.getDeclaringClass().getName()))
                 {
-                    throw new WebBeansConfigurationException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + annotatedMethod.getDeclaringType().getJavaClass() + " must be in the same class!");
+                    throw new WebBeansConfigurationException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : "
+                                                             + annotatedMethod.getDeclaringType().getJavaClass() + " must be in the same class!");
                 }
                 
                 pr.setDisposalMethod(declaredMethod);
@@ -362,7 +367,8 @@ public final class WebBeansAnnotatedTypeUtil
             {
                 if(!bean.getScope().equals(Dependent.class))
                 {
-                    throw new WebBeansConfigurationException("Error in annotated field : " + annotatedField +" while definining injected field. If bean has a public modifier injection point, bean scope must be defined as @Dependent");
+                    throw new WebBeansConfigurationException("Error in annotated field : " + annotatedField
+                                                    +" while definining injected field. If bean has a public modifier injection point, bean scope must be defined as @Dependent");
                 }
             }                
             
@@ -509,11 +515,15 @@ public final class WebBeansAnnotatedTypeUtil
                 
                 Set<Type> types = annotatedMethod.getTypeClosure();
                 producerMethodBean.getTypes().addAll(types);
-                DefinitionUtil.defineScopeType(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()), "Annotated producer method : " + annotatedMethod +  "must declare default @Scope annotation");
+                DefinitionUtil.defineScopeType(producerMethodBean,
+                                               AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
+                                                                                    "Annotated producer method : " + annotatedMethod +  "must declare default @Scope annotation");
                 WebBeansUtil.checkUnproxiableApiType(producerMethodBean, producerMethodBean.getScope());
                 WebBeansUtil.checkProducerGenericType(producerMethodBean,annotatedMethod.getJavaMember());        
                 DefinitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
-                DefinitionUtil.defineName(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()), WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
+                DefinitionUtil.defineName(producerMethodBean,
+                                          AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
+                                                                               WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
                 
                 addMethodInjectionPointMetaData(producerMethodBean, annotatedMethod);
                 producerBeans.add(producerMethodBean);
@@ -529,8 +539,7 @@ public final class WebBeansAnnotatedTypeUtil
     /**
      * Check producer method is ok for deployment.
      * 
-     * @param method producer method
-     * @param parentImplClazzName parent class name
+     * @param annotatedMethod producer method
      */
     public static <X> void checkProducerMethodForDeployment(AnnotatedMethod<X> annotatedMethod)
     {
@@ -540,7 +549,8 @@ public final class WebBeansAnnotatedTypeUtil
                 annotatedMethod.isAnnotationPresent(Disposes.class) ||  
                 annotatedMethod.isAnnotationPresent(Observes.class))
         {
-            throw new WebBeansConfigurationException("Producer annotated method : " + annotatedMethod + " can not be annotated with" + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
+            throw new WebBeansConfigurationException("Producer annotated method : " + annotatedMethod + " can not be annotated with"
+                                                     + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
         }
     }
     
@@ -558,14 +568,16 @@ public final class WebBeansAnnotatedTypeUtil
                 annotatedMethod.getJavaMember().getName(), parameters);
         if (superMethod == null)
         {
-            throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName() + " not found in super class : " + 
-                    annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName() + " for annotated method : " + annotatedMethod);
+            throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName()
+                                                     + " not found in super class : " + annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName()
+                                                     + " for annotated method : " + annotatedMethod);
         }
         
         if (!AnnotationUtil.hasAnnotation(superMethod.getAnnotations(), Produces.class))
         {
-            throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName() + " found in super class : " + 
-                    annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName() + " is not annotated with @Produces" + " for annotated method : " + annotatedMethod);
+            throw new WebBeansConfigurationException("Anontated producer method specialization is failed : " + annotatedMethod.getJavaMember().getName()
+                                                     + " found in super class : " + annotatedMethod.getDeclaringType().getJavaClass().getSuperclass().getName()
+                                                     + " is not annotated with @Produces" + " for annotated method : " + annotatedMethod);
         }
 
         /* To avoid multiple invocations of setBeanName(), following code is delayed to
@@ -622,8 +634,7 @@ public final class WebBeansAnnotatedTypeUtil
     
     /**
      * CheckProducerMethodDisposal.
-     * @param disposalMethod disposal method
-     * @param definedBeanClassName bean class name 
+     * @param annotatedMethod disposal method
      */
     public static <X> void checkProducerMethodDisposal(AnnotatedMethod<X> annotatedMethod)
     {
@@ -662,26 +673,29 @@ public final class WebBeansAnnotatedTypeUtil
         
         if (AnnotationUtil.hasAnnotatedMethodMultipleParameterAnnotation(annotatedMethod, Observes.class))
         {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not define two parameters with annotated @Observes");
+            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName()
+                                                     + " can not define two parameters with annotated @Observes");
         }
 
         if (annotatedMethod.isAnnotationPresent(Produces.class) 
                 || annotatedMethod.isAnnotationPresent(Inject.class))
         {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
+            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName()
+                                                     + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
 
         }
 
         if (AnnotationUtil.hasAnnotatedMethodParameterAnnotation(annotatedMethod, Disposes.class))
         {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not annotated with annotation @Disposes");
+            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : "
+                                                     + clazz.getName() + " can not annotated with annotation @Disposes");
         }                
     }
      
     /**
      * Checks the implementation class for checking conditions.
      * 
-     * @param clazz implementation class
+     * @param type implementation class
      * @throws WebBeansConfigurationException if any configuration exception occurs
      */
     public static <X> void checkManagedBeanCondition(AnnotatedType<X> type) throws WebBeansConfigurationException
@@ -741,12 +755,14 @@ public final class WebBeansAnnotatedTypeUtil
             {
                 if (hasClassInterceptors)
                 {
-                    throw new WebBeansConfigurationException("Maanged bean class : " + clazz.getName() + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
+                    throw new WebBeansConfigurationException("Maanged bean class : " + clazz.getName()
+                                                    + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
                 }
 
                 if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(AnnotationUtil.getAnnotationsFromSet(methodA.getAnnotations())))
                 {
-                    throw new WebBeansConfigurationException("Method : " + method.getName() + "in managed bean class : " + clazz.getName() + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");
+                    throw new WebBeansConfigurationException("Method : " + method.getName() + "in managed bean class : " + clazz.getName()
+                                                    + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");
                 }
             }
             
@@ -858,7 +874,7 @@ public final class WebBeansAnnotatedTypeUtil
     /**
      * Define decorator bean.
      * @param <T> type info
-     * @param clazz decorator class
+     * @param annotatedType decorator class
      */
     public static <T> void defineDecorator(AnnotatedType<T> annotatedType)
     {
@@ -872,12 +888,14 @@ public final class WebBeansAnnotatedTypeUtil
                 Method method = methodA.getJavaMember();
                 if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
                 {
-                    throw new WebBeansConfigurationException("Decorator class : " + annotatedType.getJavaClass() + " can not have producer methods but it has one with name : " + method.getName());
+                    throw new WebBeansConfigurationException("Decorator class : " + annotatedType.getJavaClass() + " can not have producer methods but it has one with name : "
+                                                             + method.getName());
                 }
                 
                 if(AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
                 {
-                    throw new WebBeansConfigurationException("Decorator class : " + annotatedType.getJavaClass() + " can not have observer methods but it has one with name : " + method.getName());
+                    throw new WebBeansConfigurationException("Decorator class : " + annotatedType.getJavaClass() + " can not have observer methods but it has one with name : "
+                                                             + method.getName());
                 }
                 
             }

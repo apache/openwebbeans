@@ -96,10 +96,10 @@ import org.w3c.dom.Text;
 public final class WebBeansXMLConfigurator
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansXMLConfigurator.class);
-    
+
     /** Current configuration file name */
     private String CURRENT_SCAN_FILE_NAME = null;
-    
+
     /**OWB specific or not*/
     private boolean owbSpecificConfiguration = false;
 
@@ -114,7 +114,7 @@ public final class WebBeansXMLConfigurator
         String usage = OpenWebBeansConfiguration.getInstance().getProperty(OpenWebBeansConfiguration.USE_OWB_SPECIFIC_XML_CONFIGURATION);
         this.owbSpecificConfiguration = Boolean.parseBoolean(usage);
     }
-    
+
     /**
      * Configures XML configuration file.
      * @param xmlStream xml configuration file
@@ -128,22 +128,22 @@ public final class WebBeansXMLConfigurator
                 //Use OWB Specific XML Configuration
                 if(this.owbSpecificConfiguration)
                 {
-                    configureOwbSpecific(xmlStream, "No-name XML Stream");    
+                    configureOwbSpecific(xmlStream, "No-name XML Stream");
                 }
                 else
                 {
                     configureSpecSpecific(xmlStream, "No-name XML Stream");
                 }
-                    
+
             }
         }
         catch (IOException e)
         {
             throw new WebBeansConfigurationException(e);
         }
-        
+
     }
-    
+
     /**
      * Configures XML configuration file.
      * @param xmlStream xml configuration file
@@ -158,26 +158,26 @@ public final class WebBeansXMLConfigurator
                 //Use OWB Specific XML Configuration
                 if(this.owbSpecificConfiguration)
                 {
-                    configureOwbSpecific(xmlStream, fileName);    
+                    configureOwbSpecific(xmlStream, fileName);
                 }
                 else
                 {
                     configureSpecSpecific(xmlStream, fileName);
                 }
-                    
+
             }
         }
         catch (IOException e)
         {
             throw new WebBeansConfigurationException(e);
         }
-        
+
     }
-    
+
 
     /**
      * Configures the web beans from the given input stream.
-     * 
+     *
      * @param xmlStream xml file containing the web beans definitions.
      * @param fileName name of the configuration file
      */
@@ -189,14 +189,14 @@ public final class WebBeansXMLConfigurator
             {
                 Asserts.assertNotNull(xmlStream,"xmlStream parameter can not be null!");
                 Asserts.assertNotNull(fileName,"fileName parameter can not be null!");
-                
+
                 CURRENT_SCAN_FILE_NAME = fileName;
-                
+
                 //Get root element of the XML document
                 Element webBeansRoot = XMLUtil.getRootElement(xmlStream);
-                
+
                 //Start configuration
-                configureOwbSpecific(webBeansRoot);            
+                configureOwbSpecific(webBeansRoot);
             }
         }
         catch (IOException e)
@@ -204,10 +204,10 @@ public final class WebBeansXMLConfigurator
             throw new WebBeansConfigurationException(e);
         }
     }
-    
+
     /**
      * Configures the web beans from the given input stream.
-     * 
+     *
      * @param xmlStream xml file containing the web beans definitions.
      * @param fileName name of the configuration file
      */
@@ -219,14 +219,14 @@ public final class WebBeansXMLConfigurator
             {
                 Asserts.assertNotNull(xmlStream,"xmlStream parameter can not be null!");
                 Asserts.assertNotNull(fileName,"fileName parameter can not be null!");
-                
+
                 CURRENT_SCAN_FILE_NAME = fileName;
-                
+
                 //Get root element of the XML document
                 Element webBeansRoot = XMLUtil.getSpecStrictRootElement(xmlStream);
-                
+
                 //Start configuration
-                configureSpecSpecific(webBeansRoot);            
+                configureSpecSpecific(webBeansRoot);
             }
         }
         catch (IOException e)
@@ -234,11 +234,11 @@ public final class WebBeansXMLConfigurator
             throw new WebBeansConfigurationException(e);
         }
     }
-    
+
 
     /**
      * Configures the xml file root element.
-     * 
+     *
      * @param webBeansRoot root element of the configuration xml file
      */
     private void configureOwbSpecific(Element webBeansRoot)
@@ -249,9 +249,9 @@ public final class WebBeansXMLConfigurator
         NodeList ns = webBeansRoot.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            child = (Element)node;
 
             /* WebBean element decleration */
             if (XMLUtil.isElementWebBeanDeclaration(child))
@@ -275,16 +275,16 @@ public final class WebBeansXMLConfigurator
                 addNewBindingType(child);
 
             }
-            
+
             //X TODO <Resource> annotation element declaration */
-            
+
             /* <InterceptorBindingType> annotation element decleration */
             else if (XMLUtil.isElementInterceptorBindingTypeDecleration(child))
             {
                 addNewInterceptorBindingType(child);
 
             }
-            
+
             /* <Stereotype> annotation element decleration */
             else if (XMLUtil.isElementStereoTypeDecleration(child))
             {
@@ -294,7 +294,7 @@ public final class WebBeansXMLConfigurator
             {
                 configureAlternativesElement(child);
             }
-            
+
         }
 
         // Configures the WebBeans components
@@ -304,7 +304,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the xml file root element.
-     * 
+     *
      * @param webBeansRoot root element of the configuration xml file
      */
     private void configureSpecSpecific(Element webBeansRoot)
@@ -313,9 +313,9 @@ public final class WebBeansXMLConfigurator
         NodeList ns = webBeansRoot.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            child = (Element)node;
 
             /* <Interceptors> element decleration */
             if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT))
@@ -334,10 +334,10 @@ public final class WebBeansXMLConfigurator
         }
 
     }
-    
+
     /**
      * Configures the webbeans defined in the xml file.
-     * 
+     *
      * @param listOfWebBeanDecleration list of element that specifies new
      *            webbean decleration
      */
@@ -365,7 +365,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configure and add new binding type annotation.
-     * 
+     *
      * @param bindingTypeElement new binding type element
      */
     private void addNewBindingType(Element bindingTypeElement)
@@ -396,7 +396,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures and adds new interceptor binding type annotation.
-     * 
+     *
      * @param interceptorBindingTypeElement new interceptor binding type element
      */
     private void addNewInterceptorBindingType(Element interceptorBindingTypeElement)
@@ -426,9 +426,9 @@ public final class WebBeansXMLConfigurator
         NodeList ns = interceptorBindingTypeElement.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            child = (Element)node;
             Class<?> clz = XMLUtil.getElementJavaType(child);
             if (clz == null)
             {
@@ -448,7 +448,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures and adds new stereotype annotation.
-     * 
+     *
      * @param stereoTypeElement new stereotype annotation element
      */
     private void addNewStereoTypeType(Element stereoTypeElement)
@@ -480,21 +480,21 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures enablements of the interceptors.
-     * 
+     *
      * @param interceptorsElement interceptors element
      */
     private void configureInterceptorsElement(Element interceptorsElement)
     {
-    	InterceptorsManager manager = InterceptorsManager.getInstance();
+        InterceptorsManager manager = InterceptorsManager.getInstance();
         Node node; Element child;
         NodeList ns = interceptorsElement.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            child = (Element)node;
             Class<?> clazz = null;
-            
+
             if(this.owbSpecificConfiguration)
             {
                 clazz = XMLUtil.getElementJavaType(child);
@@ -506,22 +506,22 @@ public final class WebBeansXMLConfigurator
 
             if (clazz == null)
             {
-                throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + 
-                		(this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) + " not found");
+                throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " +
+                        (this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) + " not found");
             }
             else
             {
-                if (AnnotationUtil.hasAnnotation(clazz.getDeclaredAnnotations(), Interceptor.class) && 
+                if (AnnotationUtil.hasAnnotation(clazz.getDeclaredAnnotations(), Interceptor.class) &&
                         !AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
                 {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " + 
-                    		(this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) + " must have at least one @InterceptorBindingType");
+                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " +
+                            (this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) + " must have at least one @InterceptorBindingType");
                 }
 
                 if (manager.isInterceptorEnabled(clazz))
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " +
-                    		(this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) + " is already defined");
+                            (this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) + " is already defined");
                 }
 
                 manager.addNewInterceptor(clazz);
@@ -533,7 +533,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures enablements of the decorators.
-     * 
+     *
      * @param decoratorsElement decorators element
      */
     private void configureDecoratorsElement(Element decoratorsElement)
@@ -543,11 +543,11 @@ public final class WebBeansXMLConfigurator
         NodeList ns = decoratorsElement.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            child = (Element)node;
             Class<?> clazz = null;
-            
+
             if(this.owbSpecificConfiguration)
             {
                 clazz = XMLUtil.getElementJavaType(child);
@@ -559,8 +559,8 @@ public final class WebBeansXMLConfigurator
 
             if (clazz == null)
             {
-                   throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Decorator class : " +  
-                		   (this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) +  " not found");
+                throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Decorator class : " +
+                        (this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) +  " not found");
             }
             else
             {
@@ -568,7 +568,7 @@ public final class WebBeansXMLConfigurator
                 if (manager.isDecoratorEnabled(clazz))
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Decorator class : " +
-                    		(this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) + " is already defined");
+                            (this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) + " is already defined");
                 }
 
                 manager.addNewDecorator(clazz);
@@ -577,10 +577,10 @@ public final class WebBeansXMLConfigurator
         }
 
     }
-    
+
     /**
      * Configures enablements of the decorators.
-     * 
+     *
      * @param decoratorsElement decorators element
      */
     private void configureAlternativesElement(Element alternativesElement)
@@ -589,9 +589,9 @@ public final class WebBeansXMLConfigurator
         NodeList ns = alternativesElement.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            child = (Element)node;
 
             if(XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE) ||
                     XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_STEREOTYPE))
@@ -609,14 +609,14 @@ public final class WebBeansXMLConfigurator
                 {
                     logger.warn(OWBLogConst.WARN_0002, XMLUtil.getName(child));
                 }
-            }            
+            }
         }
     }
-    
+
     private void addAlternative(Element child, boolean isStereoType)
     {
         Class<?> clazz = null;
-        
+
         if(this.owbSpecificConfiguration)
         {
             clazz = XMLUtil.getElementJavaType(child);
@@ -641,12 +641,12 @@ public final class WebBeansXMLConfigurator
             {
                 manager.addClazzAlternative(clazz);
             }
-        }        
+        }
     }
-    
+
     /**
      * Configures new webbeans component from the given webbeans element.
-     * 
+     *
      * @param webBeanElement web beans element
      */
     private void configureNewWebBeanComponent(Element webBeanElement)
@@ -689,7 +689,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the simple webbean from the class.
-     * 
+     *
      * @param simpleClass concrete java class defined in XML
      * @param webBeanDecleration webbeans decleration root element
      */
@@ -732,7 +732,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the childs element of the given webbeans decleration element.
-     * 
+     *
      * @param component xml webbeans element
      * @param webBeanDecleration webbeans element
      */
@@ -752,16 +752,16 @@ public final class WebBeansXMLConfigurator
 
         boolean isConstructor = false;
         String fieldOrMethodName = null;
- 
+
         Node node; Element child;
         NodeList ns = webBeanDecleration.getChildNodes();
 
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
- 
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            child = (Element)node;
+
             Class<?> type = XMLUtil.getElementJavaType(child);
 
             boolean isElementApplicable = false;
@@ -865,7 +865,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the type level meta data of the webbeans component.
-     * 
+     *
      * @param component xml webbeans component
      * @param annotationSet type level annotation set
      * @param webBeanDecleration webbeans decleration element
@@ -923,7 +923,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the type level meta data of the webbeans component.
-     * 
+     *
      * @param component xml webbeans component
      * @param annotationSet type level annotation set
      * @param webBeanDecleration webbeans decleration element
@@ -946,7 +946,7 @@ public final class WebBeansXMLConfigurator
      * Configures the component constructor. When resolution dependency of the
      * constructor injection points, constructor parameter type defined in the
      * xml is used.
-     * 
+     *
      * @param component xml webbeans component
      * @param typeList list of the constructor parameter types
      * @param constructorParameterListElement parameter list element
@@ -1018,17 +1018,17 @@ public final class WebBeansXMLConfigurator
         {
             XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(element, createConfigurationFailedMessage());
             injectableConstructor.addInjectionPointModel(model);
-            
-            Annotation[] paramAnnos = constructor.getParameterAnnotations()[i++];            
-            
+
+            Annotation[] paramAnnos = constructor.getParameterAnnotations()[i++];
+
             for(Annotation paramAnno : paramAnnos)
             {
                 model.addAnnotation(paramAnno);
             }
-            
+
             model.setInjectionMember(constructor);
             model.setType(XMLInjectionModelType.CONSTRUCTOR);
-          
+
             component.addInjectionPoint(InjectionPointFactory.getXMLInjectionPointData(component, model));
         }
 
@@ -1038,7 +1038,7 @@ public final class WebBeansXMLConfigurator
     /**
      * Configures the field or method of the xml webbeans component. Checks for
      * the field or method definition and call corresponding method.
-     * 
+     *
      * @param component xml webbeans component
      * @param child field or method child element
      */
@@ -1057,18 +1057,18 @@ public final class WebBeansXMLConfigurator
 
     private boolean hasTextOnlyChild(Element element)
     {
-    	NodeList ns = element.getChildNodes();
-    	for(int i=0; i<ns.getLength(); i++)
-    	{
-    		if (ns.item(i) instanceof Text) continue;
-    		return false;
-    	}
-    	return true;
+        NodeList ns = element.getChildNodes();
+        for(int i=0; i<ns.getLength(); i++)
+        {
+            if (ns.item(i) instanceof Text) continue;
+            return false;
+        }
+        return true;
     }
-    
+
     /**
      * Configures the given child element as field of the webbeans component.
-     * 
+     *
      * @param component xml webbeans component
      * @param child field element
      * @throws NonexistentFieldException if field not exist
@@ -1110,10 +1110,10 @@ public final class WebBeansXMLConfigurator
         NodeList directChilds = child.getChildNodes();
         for(int i=0; i<directChilds.getLength(); i++)
         {
-        	node = directChilds.item(i);
-        	if (!(node instanceof Element)) continue;
-        	directChild = (Element)node;
-        	childElementNumber++;
+            node = directChilds.item(i);
+            if (!(node instanceof Element)) continue;
+            directChild = (Element)node;
+            childElementNumber++;
             if (XMLUtil.isElementInWebBeansNameSpaceWithName(directChild, WebBeansConstants.WEB_BEANS_XML_VALUE_ELEMENT))
             {
                 if (!isValueElement)
@@ -1134,13 +1134,13 @@ public final class WebBeansXMLConfigurator
                 {
                     XMLInjectionPointModel injectionPointModel = XMLUtil.getInjectionPointModel(directChild, createConfigurationFailedMessage());
                     component.addFieldInjectionPoint(field, injectionPointModel);
-                    
+
                     Annotation[] annots = field.getAnnotations();
                     for(Annotation annotation : annots)
                     {
                         injectionPointModel.addAnnotation(annotation);
                     }
-                    
+
                     injectionPointModel.setInjectionMember(field);
                     injectionPointModel.setType(XMLInjectionModelType.FIELD);
                     component.addInjectionPoint(InjectionPointFactory.getXMLInjectionPointData(component, injectionPointModel));
@@ -1173,14 +1173,14 @@ public final class WebBeansXMLConfigurator
 
         // configure field values if available.
         if (directChild != null)
-        	configureFieldValues(component, field, directChild, isValueElement);
-        else 
-        	configureFieldValues(component, field, child, isValueElement);
+            configureFieldValues(component, field, directChild, isValueElement);
+        else
+            configureFieldValues(component, field, child, isValueElement);
     }
 
     /**
      * Configures the method of the webbeans component.
-     * 
+     *
      * @param component xml webbeans component
      * @param child method element
      * @throws NonexistentMethodException if method with name does not exist
@@ -1215,9 +1215,9 @@ public final class WebBeansXMLConfigurator
         NodeList mns = child.getChildNodes();
         for(int j=0; j<mns.getLength(); j++)
         {
-        	node = mns.item(j);
-        	if (!(node instanceof Element)) continue;
-        	methodChild = (Element)node;
+            node = mns.item(j);
+            if (!(node instanceof Element)) continue;
+            methodChild = (Element)node;
             Class<?> childClazz = XMLUtil.getElementJavaType(methodChild);
 
             final String moreThanOneChildTypeErrorMesg = createConfigurationFailedMessage() + XMLUtil.getName(methodChild) + "method declaration can not contain more than one <Initializer>, <Destructor>, <Produces>, <Disposes> or <Observes> element";
@@ -1311,7 +1311,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the webbeans component methods that are defines in the xml.
-     * 
+     *
      * @param component xml webbeans component
      * @param annotatedMethod annotated method to configure
      * @param annotChild element child
@@ -1321,32 +1321,32 @@ public final class WebBeansXMLConfigurator
     {
         switch (type)
         {
-        case 0:
+            case 0:
 
-            configureMethodInitializeAnnotation(component, annotatedMethod, methodParameterElements);
-            break;
+                configureMethodInitializeAnnotation(component, annotatedMethod, methodParameterElements);
+                break;
 
-        case 1:
-            configureMethodProducesAnnotation(component, annotatedMethod, annotChild);
-            break;
+            case 1:
+                configureMethodProducesAnnotation(component, annotatedMethod, annotChild);
+                break;
 
-        case 2:
-            configureMethodDisposesAnnotation(component, annotatedMethod, annotChild);
-            break;
+            case 2:
+                configureMethodDisposesAnnotation(component, annotatedMethod, annotChild);
+                break;
 
-        case 3:
-            configureMethodObservesAnnotation(component, annotatedMethod, annotChild);
-            break;
+            case 3:
+                configureMethodObservesAnnotation(component, annotatedMethod, annotChild);
+                break;
 
-        case 5:
-            configureMethodInterceptorBindingTypeAnnotation(component, annotatedMethod, annotChild);
-            break;
+            case 5:
+                configureMethodInterceptorBindingTypeAnnotation(component, annotatedMethod, annotChild);
+                break;
         }
     }
 
     /**
      * Configures the initializor method of the webbeans component.
-     * 
+     *
      * @param component xml webbeans component
      * @param initializeMethod initialize method of the webbeans component
      * @param annotChild element child
@@ -1363,7 +1363,7 @@ public final class WebBeansXMLConfigurator
             {
                 XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(element, createConfigurationFailedMessage());
                 component.addMethodInjectionPoint(initializeMethod, model);
-                
+
                 component.addInjectionPoint(XMLDefinitionUtil.getXMLMethodInjectionPoint(component, model, initializeMethod));
             }
         }
@@ -1393,7 +1393,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Check method conditions for the webbeans component.
-     * 
+     *
      * @param component xml webbeans component
      * @param child method element
      * @param methodParameters method parameter types
@@ -1422,7 +1422,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the disposal method of the webbeans component.
-     * 
+     *
      * @param component xml webbeans component
      * @param disposes disposes element
      * @throws DefinitionException if disposes element can not contain exactly
@@ -1439,10 +1439,10 @@ public final class WebBeansXMLConfigurator
 
     }
 
-    
+
     /**
      * Configures the observer method of the webbeans component
-     * 
+     *
      * @param component xml webbeans component
      * @param observes observes element
      * @throws DefinitionException if disposes element can not contain exactly
@@ -1453,11 +1453,11 @@ public final class WebBeansXMLConfigurator
      */
     private <T> void checkConfigureObserves(AbstractOwbBean<T> component, Element observes)
     {
-    	int childElementCount = 0;
+        int childElementCount = 0;
         NodeList observesChilds = observes.getChildNodes();
         for(int i=0; i<observesChilds.getLength(); i++)
         {
-        	if (observesChilds.item(i) instanceof Element) childElementCount++;
+            if (observesChilds.item(i) instanceof Element) childElementCount++;
         }
         if (childElementCount != 1)
         {
@@ -1478,7 +1478,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the webbeans scope type.
-     * 
+     *
      * @param component xml defined web beans component
      * @param annotationSet all annotation defined in XML
      */
@@ -1488,11 +1488,11 @@ public final class WebBeansXMLConfigurator
 
         if(scopeType == null)
         {
-            scopeType = XMLDefinitionUtil.defineXMLTypeMetaData(component, annotationSet, Scope.class, createConfigurationFailedMessage() + "@Scope/@NormalScope annotation is not configured correctly");            
+            scopeType = XMLDefinitionUtil.defineXMLTypeMetaData(component, annotationSet, Scope.class, createConfigurationFailedMessage() + "@Scope/@NormalScope annotation is not configured correctly");
         }
-        
+
         if (scopeType == null)
-        { 
+        {
             // From stereotype
             DefinitionUtil.defineDefaultScopeType(component, createConfigurationFailedMessage() + "@Scope annotation is not configured correctly");
         }
@@ -1505,7 +1505,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the binding types of the web beans component.
-     * 
+     *
      * @param component web beans xml component
      * @param anns annotations defined in the xml documents
      */
@@ -1522,7 +1522,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the class level interceptor binding types.
-     * 
+     *
      * @param component web beans xml component
      * @param anns annotations defined in the xml documents
      */
@@ -1533,7 +1533,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Defines the component stereotypes.
-     * 
+     *
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      */
@@ -1544,7 +1544,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the webbeans name.
-     * 
+     *
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      * @param webBeanDecleration webbeans decleration element
@@ -1574,7 +1574,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the webbeans specializations.
-     * 
+     *
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      */
@@ -1585,7 +1585,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the interceptors simple webbeans.
-     * 
+     *
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      */
@@ -1597,7 +1597,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the decorators simple webbeans.
-     * 
+     *
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      */
@@ -1608,7 +1608,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the enterprise web bean from ejb class.
-     * 
+     *
      * @param ejbClass ejb class
      */
     private void configureEJBWebBean(Class<?> ejbClass)
@@ -1618,13 +1618,13 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures JMS endpoint.
-     * 
+     *
      * @param webBeanElement element
      */
     private void configureJMSEndpointComponent(Element webBeanElement)
     {
         Element resource = (Element)webBeanElement.getElementsByTagName(WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE).item(0);
-        
+
         if(resource == null)
         {
             throw new WebBeansConfigurationException("Topic or Queue resource mut be defined in the XML");
@@ -1632,33 +1632,33 @@ public final class WebBeansXMLConfigurator
 
         Element name = (Element)resource.getElementsByTagName(WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE_NAME).item(0);
         Element mappedName = (Element)resource.getElementsByTagName(WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE_MAPPED_NAME).item(0);
-        
+
         if(name== null && mappedName == null)
         {
             throw new WebBeansConfigurationException("Topic or Queue must define name or mapped name for the JNDI");
         }
-        
+
         List<Annotation> bindingTypes = new ArrayList<Annotation>();
         Node node; Element child;
         NodeList ns = webBeanElement.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            child = (Element)node;
             if(child.getLocalName() != WebBeansConstants.WEB_BEANS_XML_JMS_RESOURCE)
             {
                 Class<? extends Annotation> binding = (Class<Annotation>)XMLUtil.getElementJavaType(child);
-                
+
                 if(AnnotationUtil.isQualifierAnnotation(binding))
                 {
-                    bindingTypes.add(JavassistProxyFactory.createNewAnnotationProxy(binding));                
-                }                
-            }            
+                    bindingTypes.add(JavassistProxyFactory.createNewAnnotationProxy(binding));
+                }
+            }
         }
-                        
+
         JMSType type = null;
-        
+
         if(webBeanElement.getLocalName().equals(WebBeansConstants.WEB_BEANS_XML_TOPIC_ELEMENT))
         {
             type = JMSType.TOPIC;
@@ -1667,20 +1667,20 @@ public final class WebBeansXMLConfigurator
         {
             type = JMSType.QUEUE;
         }
-        
-        
+
+
         String jndiName = name == null ? null : name.getTextContent().trim();
         String mapName = mappedName== null ? null : mappedName.getTextContent().trim();
-        
-        
-        JMSModel model = new JMSModel(type,jndiName,mapName);        
+
+
+        JMSModel model = new JMSModel(type,jndiName,mapName);
         JMSManager.getInstance().addJmsModel(model);
-        
+
         for(Annotation ann : bindingTypes)
         {
             model.addBinding(ann);
         }
-        
+
         //Adding JMS Beans
         OpenWebBeansJmsPlugin plugin = PluginLoader.getInstance().getJmsPlugin();
         BeanManagerImpl.getManager().addBean(plugin.getJmsBean(model));
@@ -1688,7 +1688,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Cofigures the initial value of the given field.
-     * 
+     *
      * @param component webbeans component
      * @param field field of the webbean
      * @param child child element that declares field
@@ -1712,9 +1712,9 @@ public final class WebBeansXMLConfigurator
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Field type with field name : " + field.getName() + " is not compatible for initial value assignment");
                 }
-                
+
                 /*Primitive type*/
-                if (ClassUtil.isPrimitive(fieldType) || ClassUtil.isPrimitiveWrapper(fieldType)) 
+                if (ClassUtil.isPrimitive(fieldType) || ClassUtil.isPrimitiveWrapper(fieldType))
                 {
                     Object objVal = null;
 
@@ -1748,12 +1748,12 @@ public final class WebBeansXMLConfigurator
                     component.addFieldValue(field, value);
 
                 }
-                
+
                 /*
-                 * Date, Time, Sql Date,
-                 * Time stamp, Calendar
-                 * value
-                 */                
+                * Date, Time, Sql Date,
+                * Time stamp, Calendar
+                * value
+                */
                 else if (fieldType.equals(Date.class)
                         || fieldType.equals(java.sql.Date.class) || fieldType.equals(Time.class) || fieldType.equals(Timestamp.class))
                 {
@@ -1787,8 +1787,8 @@ public final class WebBeansXMLConfigurator
                  * BigDecimal
                  * or
                  * BigInteger
-                 */                
-                else if (fieldType.equals(BigDecimal.class) || fieldType.equals(BigInteger.class)) 
+                 */
+                else if (fieldType.equals(BigDecimal.class) || fieldType.equals(BigInteger.class))
                 {
                     Object bigValue = ClassUtil.isValueOkForBigDecimalOrInteger(fieldType, value);
 
@@ -1816,17 +1816,17 @@ public final class WebBeansXMLConfigurator
                         component.addFieldValue(field, clazz);
                     }
                 }
-                
+
                 /*
-                 * List value
-                 */
-                else if (List.class.isAssignableFrom(fieldType)) 
+                * List value
+                */
+                else if (List.class.isAssignableFrom(fieldType))
                 {
                     configureFieldListValue(component, field, child, errorMessage);
                 }
-                
+
                 /* Set value */
-                else if (Set.class.isAssignableFrom(fieldType)) 
+                else if (Set.class.isAssignableFrom(fieldType))
                 {
                     configureFieldSetValue(component, field, child, errorMessage);
                 }
@@ -1841,7 +1841,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the xml field with {@link List} type.
-     * 
+     *
      * @param component xml component
      * @param field list field
      * @param child list field xml element
@@ -1859,8 +1859,8 @@ public final class WebBeansXMLConfigurator
         /*
          * Type must be parametrized type
          * to mark type
-         */        
-        if (type instanceof ParameterizedType) 
+         */
+        if (type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType) type;
             Type arg = pt.getActualTypeArguments()[0];
@@ -1899,10 +1899,10 @@ public final class WebBeansXMLConfigurator
         Node valueNode;Text valueElement;
         NodeList valueElements = child.getChildNodes();
         for(int i=0; i<valueElements.getLength(); i++)
-        {	
-        	valueNode = valueElements.item(i);
-        	if (!(valueNode instanceof Text)) continue;
-        	valueElement = (Text)valueNode;
+        {
+            valueNode = valueElements.item(i);
+            if (!(valueNode instanceof Text)) continue;
+            valueElement = (Text)valueNode;
             String value = valueElement.getTextContent().trim();
             if (isString)
             {
@@ -1940,7 +1940,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Configures the xml field with {@link Set} type.
-     * 
+     *
      * @param component xml component
      * @param field list field
      * @param child list field xml element
@@ -1958,7 +1958,7 @@ public final class WebBeansXMLConfigurator
         /*
          * Type must be parametrized type
          * to mark type
-         */        
+         */
         if (type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType) type;
@@ -1998,10 +1998,10 @@ public final class WebBeansXMLConfigurator
         Node valueNode;Element valueElement;
         NodeList valueElements = child.getChildNodes();
         for(int i=0; i<valueElements.getLength(); i++)
-        {	
-        	valueNode = valueElements.item(i);
-        	if (!(valueNode instanceof Element)) continue;
-        	valueElement = (Element)valueNode;
+        {
+            valueNode = valueElements.item(i);
+            if (!(valueNode instanceof Element)) continue;
+            valueElement = (Element)valueNode;
             String value = valueElement.getTextContent().trim();
             if (isString)
             {
@@ -2039,7 +2039,7 @@ public final class WebBeansXMLConfigurator
 
     /**
      * Gets error message for XML parsing of the current XML file.
-     * 
+     *
      * @return the error messages
      */
     private String createConfigurationFailedMessage()

@@ -18,12 +18,11 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 
 /**
- * Contract for {@link Bean} creation.
+ * Contract for {@link javax.enterprise.inject.spi.Bean} creation.
  * 
  * <p>
  * Common operations on ManagedBean, ProducerField and ProducerMethods.

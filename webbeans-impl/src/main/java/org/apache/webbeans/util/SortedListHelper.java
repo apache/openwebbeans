@@ -21,7 +21,8 @@ package org.apache.webbeans.util;
 import java.util.List;
 import java.util.Comparator;
 
-public class SortedListHelper<E>  {
+public class SortedListHelper<E>
+{
 
     List<E> list;
     Comparator<E> comparator;
@@ -37,13 +38,15 @@ public class SortedListHelper<E>  {
         return list;
     }
 
-    public boolean add(E object) {
+    public boolean add(E object)
+    {
         if (list.isEmpty())
         {
             list.add(object);
             return true;
         }
-        for(int i=0; i<list.size(); i++) {
+        for(int i=0; i<list.size(); i++)
+        {
             E obj = list.get(i);
             if (comparator.compare(object, obj) < 0) 
             {

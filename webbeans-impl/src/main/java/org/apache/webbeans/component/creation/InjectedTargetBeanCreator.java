@@ -22,12 +22,11 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.ObserverMethod;
 
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 
 /**
- * Contract for {@link InjectionTargetBean} creation.
+ * Contract for {@link org.apache.webbeans.component.InjectionTargetBean} creation.
  * 
  * <p>
  * Common operations for ManagedBean.

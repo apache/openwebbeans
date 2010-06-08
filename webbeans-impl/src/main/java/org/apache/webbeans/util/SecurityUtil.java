@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import javassist.util.proxy.ProxyFactory;
+import org.apache.webbeans.exception.WebBeansException;
 
 public class SecurityUtil
 {
@@ -46,7 +47,10 @@ public class SecurityUtil
     {
         Object obj = AccessController.doPrivileged(
                 new PrivilegedActionForClass(clazz, parameterTypes, METHOD_CLASS_GETDECLAREDCONSTRUCTOR));
-        if (obj instanceof NoSuchMethodException) throw (NoSuchMethodException)obj;
+        if (obj instanceof NoSuchMethodException)
+        {
+            throw (NoSuchMethodException)obj;
+        }
         return (Constructor<T>)obj;
     }
 
@@ -62,7 +66,10 @@ public class SecurityUtil
     {
         Object obj = AccessController.doPrivileged(
                 new PrivilegedActionForClass(clazz, new Object[] {name, parameterTypes}, METHOD_CLASS_GETDECLAREDMETHOD));
-        if (obj instanceof NoSuchMethodException) throw (NoSuchMethodException)obj;
+        if (obj instanceof NoSuchMethodException)
+        {
+            throw (NoSuchMethodException)obj;
+        }
         return (Method)obj;
     }
 
@@ -77,7 +84,10 @@ public class SecurityUtil
     {
         Object obj = AccessController.doPrivileged(
                 new PrivilegedActionForClass(clazz, name, METHOD_CLASS_GETDECLAREDFIELD));
-        if (obj instanceof NoSuchFieldException) throw (NoSuchFieldException)obj;
+        if (obj instanceof NoSuchFieldException)
+        {
+            throw (NoSuchFieldException)obj;
+        }
         return (Field)obj;
     }
 
@@ -123,13 +133,15 @@ public class SecurityUtil
                         return clazz.getDeclaredField((String)parameters);
                     case METHOD_CLASS_GETDECLAREDFIELDS:
                         return clazz.getDeclaredFields();
+
+                    default:
+                        return new WebBeansException("unknown security method: " + method);
                 }
             }
             catch (Exception exception)
             {
                 return exception;
             }
-            return null;
         }
 
     }

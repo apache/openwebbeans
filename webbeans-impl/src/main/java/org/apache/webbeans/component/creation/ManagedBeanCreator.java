@@ -18,10 +18,8 @@
  */
 package org.apache.webbeans.component.creation;
 
-import org.apache.webbeans.component.ManagedBean;
-
 /**
- * Contract for {@link ManagedBean}.
+ * Contract for {@link org.apache.webbeans.component.ManagedBean}.
  * 
  * @version $Rev$ $Date$
  *

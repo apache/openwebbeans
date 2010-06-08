@@ -81,7 +81,7 @@ public final class XMLDefinitionUtil
 
     /**
      * Checks the conditions for simple webbeans class defined in the XML file.
-     * 
+     *
      * @param clazz simple webbeans class declared in XML
      * @throws WebBeansConfigurationException if check is fail
      */
@@ -133,14 +133,14 @@ public final class XMLDefinitionUtil
             while (it.hasNext())
             {
                 Class<? extends Annotation> clazz = it.next();
-                if (clazz.isAnnotationPresent(NormalScope.class) 
-                    || clazz.isAnnotationPresent(Scope.class)
-                    || AnnotationUtil.isQualifierAnnotation(clazz)
-                    || AnnotationUtil.isInterceptorBindingAnnotation(clazz) 
-                    || AnnotationUtil.isStereoTypeAnnotation(clazz) 
-                    || clazz.equals(Named.class) 
-                    || clazz.equals(Specializes.class) || clazz.equals(javax.interceptor.Interceptor.class) 
-                    || clazz.equals(Decorator.class))
+                if (clazz.isAnnotationPresent(NormalScope.class)
+                        || clazz.isAnnotationPresent(Scope.class)
+                        || AnnotationUtil.isQualifierAnnotation(clazz)
+                        || AnnotationUtil.isInterceptorBindingAnnotation(clazz)
+                        || AnnotationUtil.isStereoTypeAnnotation(clazz)
+                        || clazz.equals(Named.class)
+                        || clazz.equals(Specializes.class) || clazz.equals(javax.interceptor.Interceptor.class)
+                        || clazz.equals(Decorator.class))
                 {
                     continue;
                 }
@@ -156,7 +156,7 @@ public final class XMLDefinitionUtil
     /**
      * Gets applicable annotation class for given defineType parameter from the
      * given annotation set.
-     * 
+     *
      * @param component webbeans component
      * @param annotationSet type-level metadata annotation set
      * @param defineType annotation type class
@@ -278,11 +278,11 @@ public final class XMLDefinitionUtil
         NodeList ns = interceptorMethodElement.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	bindingType = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            bindingType = (Element)node;
 
-        	Class<? extends Annotation> annot = (Class<? extends Annotation>) XMLUtil.getElementJavaType(bindingType);
+            Class<? extends Annotation> annot = (Class<? extends Annotation>) XMLUtil.getElementJavaType(bindingType);
             Annotation bindingAnnot = XMLUtil.getXMLDefinedAnnotationMember(bindingType, annot, errorMessage);
 
             bindingTypesSet.add(bindingAnnot);
@@ -308,7 +308,7 @@ public final class XMLDefinitionUtil
 
     /**
      * Configures the webbeans component stereotype.
-     * 
+     *
      * @param component webbeans component
      * @param annotationSet set of type-level metadata annotation set
      */
@@ -423,9 +423,9 @@ public final class XMLDefinitionUtil
 
             for(int i=0; i<ns.getLength(); i++)
             {
-            	node = ns.item(i);
-            	if (!(node instanceof Element)) continue;
-            	child = (Element)node;
+                node = ns.item(i);
+                if (!(node instanceof Element)) continue;
+                child = (Element)node;
                 if (XMLUtil.getElementNameSpace(child).equals(XMLUtil.getElementNameSpace(decoratorDecleration)) && XMLUtil.isElementHasDecoratesChild(child))
                 {
                     Field field = ClassUtil.getFieldWithName(component.getReturnType(), child.getLocalName());
@@ -458,7 +458,7 @@ public final class XMLDefinitionUtil
 
     /**
      * Returns newly created and configures xml webbeans producer component.
-     * 
+     *
      * @param component webbeans component that defines producer method
      * @param producesMethod producer method
      * @param producerMethodElement produce method xml element
@@ -480,9 +480,9 @@ public final class XMLDefinitionUtil
         NodeList ns = producerMethodElement.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	childElement = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            childElement = (Element)node;
             if (XMLUtil.isElementInWebBeansNameSpaceWithName(childElement, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT))
             {
                 if (producesDefined == false)
@@ -500,10 +500,10 @@ public final class XMLDefinitionUtil
                 NodeList nsProducer = childElement.getChildNodes();
                 for(int j=0; j<nsProducer.getLength(); j++)
                 {
-                	producerNode = nsProducer.item(j);
-                	if (!(producerNode instanceof Element)) continue;
-                	producesElementChild= (Element)producerNode;
-                	if (producesElementChild.getLocalName().equals(WebBeansConstants.WEB_BEANS_XML_ARRAY_ELEMENT))
+                    producerNode = nsProducer.item(j);
+                    if (!(producerNode instanceof Element)) continue;
+                    producesElementChild= (Element)producerNode;
+                    if (producesElementChild.getLocalName().equals(WebBeansConstants.WEB_BEANS_XML_ARRAY_ELEMENT))
                     {
                         arrayElement = producesElementChild;
                         definedType = true;
@@ -564,7 +564,7 @@ public final class XMLDefinitionUtil
     /**
      * Configures and returns the newly created producer method webbeans
      * component.
-     * 
+     *
      * @param parentComponent producer method webbeans parent component
      * @param producesMethod producer method
      * @param injectedParameters injected parameters of the producer method
@@ -612,7 +612,7 @@ public final class XMLDefinitionUtil
         /* Configures producer method injected parameters */
         for (XMLInjectionPointModel injectionPointModel : injectedParameters)
         {
-            producerComponentImpl.addProducerMethodInjectionPointModel(injectionPointModel);            
+            producerComponentImpl.addProducerMethodInjectionPointModel(injectionPointModel);
             producerComponentImpl.addInjectionPoint(getXMLMethodInjectionPoint(producerComponentImpl, injectionPointModel, producesMethod));
         }
 
@@ -622,7 +622,7 @@ public final class XMLDefinitionUtil
 
     /**
      * Configures xml defined producer method webbeans type level metadatas.
-     * 
+     *
      * @param producerComponentImpl xml webbeans producer component
      * @param producesMethod producer method
      * @param producerMethodElement producer method xml element
@@ -652,7 +652,7 @@ public final class XMLDefinitionUtil
     /**
      * Configures the disposal method of the webbeans component using the xml
      * configuration.
-     * 
+     *
      * @param component producer method webbeans component
      * @param disposalMethod disposal method defined in the xml
      * @param disposalMethodElement disposal method xml element
@@ -678,9 +678,9 @@ public final class XMLDefinitionUtil
         NodeList ns = disposalMethodElement.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	childElement = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            childElement = (Element)node;
             if (XMLUtil.isElementInWebBeansNameSpaceWithName(childElement, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT))
             {
                 if (disposalDefined == false)
@@ -697,7 +697,7 @@ public final class XMLDefinitionUtil
 
                 /* Find disposal method model */
                 XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(typeElement, errorMessage);
-                
+
                 component.addInjectionPoint(getXMLMethodInjectionPoint(component, model, disposalMethod));
 
                 /* Binding types for disposal method */
@@ -741,7 +741,7 @@ public final class XMLDefinitionUtil
 
         /* Other parameter elements other than @Observes */
         List<Element> otherParameterElements = new ArrayList<Element>();
-        
+
         BeanObserverXMLImpl<K> beanObserver = null;
 
         Class<K> eventType = null;
@@ -752,19 +752,19 @@ public final class XMLDefinitionUtil
 
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	childElement = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            childElement = (Element)node;
             if (XMLUtil.isElementInWebBeansNameSpaceWithName(childElement, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT))
             {
-            	//TODO: verify the first node is Element.
+                //TODO: verify the first node is Element.
                 Element typeElement = (Element) childElement.getChildNodes().item(0);
 
                 eventType = (Class<K>) XMLUtil.getElementJavaType(typeElement);
 
                 /* Find observes method model */
                 XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(typeElement, errorMessage);
-                
+
                 component.addInjectionPoint(getXMLMethodInjectionPoint(component, model, observesMethod));
 
                 /* Binding types for disposal method */
@@ -772,8 +772,8 @@ public final class XMLDefinitionUtil
                 Annotation[] bindingAnns = new Annotation[bindingTypes.size()];
                 bindingAnns = bindingTypes.toArray(bindingAnns);
 
-                beanObserver = new BeanObserverXMLImpl<K>(component, observesMethod, false, 
-                                                                                 bindingAnns, null /** TODO Type! */);
+                beanObserver = new BeanObserverXMLImpl<K>(component, observesMethod, false,
+                        bindingAnns, null /** TODO Type! */);
 
                 beanObserver.addXMLInjectionObservesParameter(model);
 
@@ -797,22 +797,22 @@ public final class XMLDefinitionUtil
             }
         }
     }
-    
+
     public static InjectionPoint getXMLMethodInjectionPoint(AbstractOwbBean<?> component, XMLInjectionPointModel model, Method method)
     {
         Asserts.assertNotNull(model,"model parameter can not be null");
         Asserts.assertNotNull(method,"method parameter can not be null");
-        
+
         Annotation[] annots = method.getAnnotations();
         for(Annotation annotation : annots)
         {
             model.addAnnotation(annotation);
         }
-        
+
         model.setInjectionMember(method);
         model.setType(XMLInjectionModelType.METHOD);
-        
+
         return InjectionPointFactory.getXMLInjectionPointData(component, model);
-        
+
     }
 }

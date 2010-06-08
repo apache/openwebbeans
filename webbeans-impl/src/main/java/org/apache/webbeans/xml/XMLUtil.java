@@ -140,10 +140,10 @@ public class XMLUtil {
             throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
         }
     }
-    
+
     /**
      * Gets the root element of the parsed document.
-     * 
+     *
      * @param stream parsed document
      * @return root element of the document
      * @throws WebBeansException if any runtime exception occurs
@@ -192,7 +192,7 @@ public class XMLUtil {
 
         return false;
     }
-    
+
     public static boolean isElementInWebBeansNameSpaceWithName(Element element, String name)
     {
         nullCheckForElement(element);
@@ -208,21 +208,21 @@ public class XMLUtil {
 
         return false;
     }
-    
+
     public static String getElementNameSpace(Element element)
     {
         nullCheckForElement(element);
 
         return element.getNamespaceURI();
     }
-    
+
     public static boolean isElementWebBeanDeclaration(Element element)
     {
         nullCheckForElement(element);
 
-        if (!isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DEPLOY_ELEMENT) && 
-                !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTORS_ELEMENT) && 
-                !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT) && 
+        if (!isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DEPLOY_ELEMENT) &&
+                !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTORS_ELEMENT) &&
+                !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT) &&
                 !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE) &&
                 !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE) &&
                 !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
@@ -232,12 +232,12 @@ public class XMLUtil {
 
         return false;
 
-    }    
+    }
 
     /**
      * Returns true if element has a bindingtype child element in webbeans
      * namespace false otherwise.
-     * 
+     *
      * @param element parent element
      * @return true if element has a bindingtype child element in webbeans
      *         namespace
@@ -257,7 +257,7 @@ public class XMLUtil {
     /**
      * Returns true if element has a interceptor bindingtype child element in
      * webbeans namespace false otherwise.
-     * 
+     *
      * @param element parent element
      * @return true if element has a interceptor bindingtype child element in
      *         webbeans namespace
@@ -277,7 +277,7 @@ public class XMLUtil {
     /**
      * Returns true if element has a stereotype child element in webbeans
      * namespace false otherwise.
-     * 
+     *
      * @param element parent element
      * @return true if element has a stereotype child element in webbeans
      *         namespace
@@ -335,7 +335,7 @@ public class XMLUtil {
 
     /**
      * Returns true if this element defines JMS webbeans, false otherwise.
-     * 
+     *
      * @param element webbeans element decleration
      * @return true if this element defines JMS webbeans, false otherwise
      */
@@ -345,7 +345,7 @@ public class XMLUtil {
 
         if (isElementWebBeanDeclaration(element))
         {
-            if (isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_QUEUE_ELEMENT) 
+            if (isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_QUEUE_ELEMENT)
                     || isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_TOPIC_ELEMENT))
             {
                 return true;
@@ -368,7 +368,7 @@ public class XMLUtil {
 
     /**
      * Returns true if this element defines field, false otherwise.
-     * 
+     *
      * @param element webbeans decleration child element
      * @return true if this element defines field, false otherwise
      */
@@ -413,7 +413,7 @@ public class XMLUtil {
 
     /**
      * Checks that given element is a webbeans method or not.
-     * 
+     *
      * @param element dom element represents method decleration
      * @return true if the given element is a true element decleration false
      *         otherwise
@@ -467,8 +467,8 @@ public class XMLUtil {
     {
         String ns = getElementNameSpace(element);
         List<String> packageNames = WebBeansNameSpaceContainer.getInstance().getPackageNameFromNameSpace(ns);
-        
-        Class<?> clazz = null; 
+
+        Class<?> clazz = null;
         Class<?> foundClazz = null;
         if(packageNames != null)
         {
@@ -478,44 +478,44 @@ public class XMLUtil {
             {
                 String className = packageName + XMLUtil.getName(element);
                 clazz = ClassUtil.getClassFromName(className);
-                
+
                 if(clazz != null)
                 {
-                   if(found)
-                   {
-                       throw new DefinitionException(log.getTokenString(OWBLogConst.EXCEPT_0014) + clazz.getName());
-                   }
-                   else
-                   {
-                       foundClazz = clazz;
-                       found = true;
-                   }
+                    if(found)
+                    {
+                        throw new DefinitionException(log.getTokenString(OWBLogConst.EXCEPT_0014) + clazz.getName());
+                    }
+                    else
+                    {
+                        foundClazz = clazz;
+                        found = true;
+                    }
                 }
             }
-            
+
         }
-        
+
         return foundClazz;
     }
-    
+
     public static String getElementJavaClassName(Element element)
     {
         Class<?> clazz = getElementJavaType(element);
-        
+
         if(clazz != null)
         {
             return clazz.getName();
         }
-        
+
         return getName(element);
     }
-    
+
     private static void nullCheckForElement(Element element)
     {
         Asserts.assertNotNull(element, "element argument can not be null");
     }
-    
-    
+
+
     public static boolean hasChildElement(Element parent, String childName)
     {Node node;
         Asserts.assertNotNull(parent, "parent parameter can not be null");
@@ -523,18 +523,18 @@ public class XMLUtil {
         NodeList nl = parent.getChildNodes();
         for(int i=0; i<nl.getLength(); i++)
         {
-        	node = nl.item(i);
-        	if (node instanceof Element) 
-        	{
-	        	if (node.getNodeName().equals(childName)) return true;
-        	}
+            node = nl.item(i);
+            if (node instanceof Element)
+            {
+                if (node.getNodeName().equals(childName)) return true;
+            }
         }
         return false;
     }
-    
+
     /**
      * Return child element within webbeans namespace with given child name.
-     * 
+     *
      * @param parent parent element
      * @param childName child element name
      * @return if child element exist within webbeans namespace with given child
@@ -544,7 +544,7 @@ public class XMLUtil {
     {
         Asserts.assertNotNull(parent, "parent parameter can not be null");
         Asserts.assertNotNull(childName, "childName parameter can not be null");
-        Node node; 
+        Node node;
         Element child = null;
         NodeList nl = parent.getChildNodes();
         for(int i=0; i<nl.getLength(); i++)
@@ -558,7 +558,7 @@ public class XMLUtil {
                 }
             }
         }
-        
+
         if (child == null)
         {
             return false;
@@ -571,7 +571,7 @@ public class XMLUtil {
 
     /**
      * Creates new xml injection point model.
-     * 
+     *
      * @param typeElement injection point API type
      * @param errorMessage error message
      * @return new injection point model object
@@ -592,10 +592,10 @@ public class XMLUtil {
         }
 
     }
-    
+
     /**
      * Injection point with Java type.
-     * 
+     *
      * @param typeElement injection point API type
      * @param errorMessage error message
      * @return new injection point model
@@ -705,10 +705,10 @@ public class XMLUtil {
         return model;
     }
 
-    
+
     /**
      * Creates new annotation with configured members values.
-     * 
+     *
      * @param annotationElement annotation element
      * @param annotClazz annotation class
      * @param errorMessage error message
@@ -719,7 +719,7 @@ public class XMLUtil {
         String value = annotationElement.getTextContent().trim();
         NamedNodeMap attrs = annotationElement.getAttributes();
         List<String> attrsNames = new ArrayList<String>();
-        
+
         for(int i=0; i<attrs.getLength(); i++)
         {
             Attr attr = (Attr)attrs.item(i);
@@ -793,7 +793,7 @@ public class XMLUtil {
 
     /**
      * Creates new annotation with its member values.
-     * 
+     *
      * @param attrs list of annotation element attributes
      * @param annotClazz annotation class
      * @param errorMessage error message
@@ -805,7 +805,7 @@ public class XMLUtil {
         boolean isValueAttrDefined = false;
         for(int i=0; i<attrs.getLength(); i++)
         {
-        	Attr attr = (Attr)attrs.item(i);
+            Attr attr = (Attr)attrs.item(i);
             String attrName = attr.getName();
             String attrValue = attr.getValue();
 
@@ -874,10 +874,10 @@ public class XMLUtil {
         return annotation;
     }
 
-    
+
     /**
      * Injection point with array type.
-     * 
+     *
      * @param typeElement array element
      * @param errorMessage error message
      * @return new injection point model
@@ -893,10 +893,10 @@ public class XMLUtil {
 
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	childElement = (Element)node;
-        	Class<?> clazz = XMLUtil.getElementJavaType(childElement);
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            childElement = (Element)node;
+            Class<?> clazz = XMLUtil.getElementJavaType(childElement);
 
             if (clazz == null)
             {
@@ -937,7 +937,7 @@ public class XMLUtil {
 
         return model;
     }
-    
+
     public static <T> void defineXMLProducerApiTypeFromArrayElement(XMLProducerBean<T> component, Element typeElement, String errorMessage)
     {
         boolean isElementTypeDefined = false;
@@ -946,9 +946,9 @@ public class XMLUtil {
         NodeList ns = typeElement.getChildNodes();
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	childElement = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element)) continue;
+            childElement = (Element)node;
             Class<?> clazz = XMLUtil.getElementJavaType(childElement);
 
             if (clazz == null)
@@ -989,6 +989,6 @@ public class XMLUtil {
         }
 
     }
-    
+
 }
 
