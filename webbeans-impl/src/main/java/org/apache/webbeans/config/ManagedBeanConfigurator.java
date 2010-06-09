@@ -69,7 +69,8 @@ public final class ManagedBeanConfigurator
 
         if (AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
         {
-            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not annotated with both @Interceptor and @Decorator annotation");
+            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName()
+                                                     + " may not annotated with both @Interceptor and @Decorator annotation");
         }
 
         if (!AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && !AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
@@ -131,7 +132,8 @@ public final class ManagedBeanConfigurator
         Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
 
         DefinitionUtil.defineApiTypes(component, clazz);
-        DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName() + " stereotypes must declare same @Scope annotations");
+        DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName()
+                                                             + " stereotypes must declare same @Scope annotations");
         
         WebBeansUtil.checkGenericType(component);
         DefinitionUtil.defineQualifiers(component, clazzAnns);

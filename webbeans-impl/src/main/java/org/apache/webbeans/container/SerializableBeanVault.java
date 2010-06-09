@@ -23,7 +23,6 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.PassivationCapable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,13 +34,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * like e.g. the SessionContext, the ConversationContext or any 3-rd party Context
  * for a NormalScoped(passivating=true) and therefore PassivationCapable Scope needs to be Serializable.</p>
  * <p>Normal {@link Bean}s are not serializable because they contain non transportable information. But each
- * {@link PassivationCapable} {@link Bean} is uniquely identifyable via it's id and can be restored by
+ * {@link javax.enterprise.inject.spi.PassivationCapable} {@link Bean} is uniquely
+ * identifyable via it's id and can be restored by
  * {@link javax.enterprise.inject.spi.BeanManager#getPassivationCapableBean(String)}.</p>
  * <p>Since a custom Context implementation doesn't know when it gets passivated (for a Http Session
  * this is pretty seldom), the Contextual<T> handed over to the Context implementation must be
  * Serializable.</p>
  */
-public class SerializableBeanVault {
+public class SerializableBeanVault
+{
 
     private Map<String, SerializableBean<?>> serializableBeans = new ConcurrentHashMap<String, SerializableBean<?>>();
 
@@ -59,9 +60,9 @@ public class SerializableBeanVault {
             return bean;
         }
 
-        String id = null;
+        String id = WebBeansUtil.isPassivationCapable(bean);
         
-        if((id=WebBeansUtil.isPassivationCapable(bean)) != null) 
+        if(id != null) 
         {
             SerializableBean<T> sb = (SerializableBean<T>) serializableBeans.get(id);
             if (sb == null)

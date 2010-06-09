@@ -159,7 +159,8 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
     {
         String id = (String) s.readObject();
         Bean<T> b = (Bean<T>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
-        if (b == null) {
+        if (b == null)
+        {
             throw new DeploymentException("cannot deserialize Bean with PassivationCapable id=" + id);
         }
         if (b instanceof SerializableBean)
@@ -176,7 +177,8 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(Object other)
+    {
         if (other instanceof SerializableBean<?>)
         {
             return bean.equals(((SerializableBean<?>)other).getBean());
@@ -191,7 +193,8 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
      * @return hashCode of the underlying bean instance.
      */
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return bean.hashCode();
     }
 

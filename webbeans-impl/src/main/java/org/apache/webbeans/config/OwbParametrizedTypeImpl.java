@@ -116,7 +116,9 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
         if (owner == null)
         {
             if (other.owner != null)
+            {
                 return false;
+            }
         }
         else if (!owner.equals(other.owner))
         {

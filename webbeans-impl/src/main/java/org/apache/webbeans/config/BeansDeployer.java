@@ -330,8 +330,8 @@ public class BeansDeployer
            Stack<String> beanNames = new Stack<String>();
             for (Bean<?> bean : beans)
             {
-                String beanName = null;
-                if((beanName = bean.getName()) != null)
+                String beanName = bean.getName();
+                if(beanName != null)
                 {
                     beanNames.push(beanName);
                 }
@@ -527,7 +527,7 @@ public class BeansDeployer
                     }
                     catch (IOException e)
                     {
-                        ;// all ok, ignore this!
+                        // all ok, ignore this!
                     }
                 }
             }

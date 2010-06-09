@@ -81,9 +81,9 @@ public enum ContextTypes
             case 5:
                 return "singleton";
 
+            default:
+                return null;
         }
-
-        return null;
     }
 
 }

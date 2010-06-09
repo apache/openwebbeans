@@ -33,7 +33,6 @@ import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
@@ -46,7 +45,7 @@ import org.apache.webbeans.util.Asserts;
 /**
  * Abstract implementation of the {@link WebBeansContext} interfaces.
  * 
- * @see Context
+ * @see javax.enterprise.context.spi.Context
  * @see RequestContext
  * @see DependentContext
  * @see SessionContext

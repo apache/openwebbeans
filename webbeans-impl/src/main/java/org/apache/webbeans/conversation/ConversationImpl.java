@@ -101,7 +101,8 @@ public class ConversationImpl implements Conversation
                 //Sets at the beginning of each JSF request.
                 manager.addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));
                 
-            }catch(Exception e)
+            }
+            catch(Exception e)
             {
                 //TCK tests
                 manager.addConversationContext(this, new ConversationContext());
@@ -266,26 +267,44 @@ public class ConversationImpl implements Conversation
     public boolean equals(Object obj)
     {
         if (this == obj)
+        {
             return true;
+        }
+
         if (obj == null)
+        {
             return false;
+        }
+
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
+
         final ConversationImpl other = (ConversationImpl) obj;
         if (id == null)
         {
             if (other.id != null)
+            {
                 return false;
+            }
         }
         else if (!id.equals(other.id))
+        {
             return false;
+        }
         if (sessionId == null)
         {
             if (other.sessionId != null)
+            {
                 return false;
+            }
         }
         else if (!sessionId.equals(other.sessionId))
+        {
             return false;
+        }
+        
         return true;
     }
 

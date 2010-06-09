@@ -65,7 +65,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     
     /**
      * Add interceptor instance.
-     * @param clazz interceptor class
+     * @param ownerInstance
      * @param instance interceptor instance
      */
     public void addEjbInterceptor(Object ownerInstance, EjbInterceptorContext instance)
@@ -374,8 +374,8 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                 = new HashMap<Object, List<DependentCreationalContext<?>>>(dependentObjects);
         s.writeObject(depo);
 
-        String id = null;
-        if (contextual != null && (id = WebBeansUtil.isPassivationCapable(contextual)) != null)
+        String id = WebBeansUtil.isPassivationCapable(contextual);
+        if (contextual != null && id != null)
         {
             s.writeObject(id);
         }

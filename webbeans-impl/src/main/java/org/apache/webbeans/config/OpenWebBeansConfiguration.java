@@ -21,10 +21,8 @@ package org.apache.webbeans.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.Properties;
 
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
 
@@ -201,7 +199,7 @@ public class OpenWebBeansConfiguration
     
     /**
      * (re)read the configuration from the resources in the classpath.
-     * @see #DEFALULT_CONFIG_PROPERTIES_NAME
+     * @see #DEFAULT_CONFIG_PROPERTIES_NAME
      * @see #CONFIG_PROPERTIES_NAME 
      */
     public synchronized void parseConfiguration() throws WebBeansConfigurationException
@@ -263,7 +261,8 @@ public class OpenWebBeansConfiguration
                 try
                 {
                     is.close();
-                }catch(Exception e)
+                }
+                catch(Exception e)
                 {
                     
                 }

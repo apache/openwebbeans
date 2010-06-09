@@ -182,7 +182,7 @@ public class ConversationManager
     @SuppressWarnings("unchecked")
     public Conversation getConversationBeanReference()
     {
-    	BeanManager beanManager = BeanManagerImpl.getManager();
+        BeanManager beanManager = BeanManagerImpl.getManager();
         Bean<Conversation> bean = (Bean<Conversation>)beanManager.getBeans(Conversation.class, new DefaultLiteral()).iterator().next();
         Conversation conversation =(Conversation) beanManager.getReference(bean, Conversation.class, beanManager.createCreationalContext(bean));
 

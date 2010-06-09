@@ -237,7 +237,9 @@ public final class DefinitionUtil
                     {
                         if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), Nonbinding.class))
                         {
-                            throw new WebBeansConfigurationException("WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : " + annotation.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                            throw new WebBeansConfigurationException("WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : "
+                                                                     + annotation.annotationType().getName()
+                                                                     + " must have @NonBinding valued members for its array-valued and annotation valued members");
                         }
                     }
                 }
@@ -299,9 +301,9 @@ public final class DefinitionUtil
         //Add @Any support
         if(!AnnotationUtil.hasAnyQualifier(component))
         {
-        	component.addQualifier(new AnyLiteral());
+            component.addQualifier(new AnyLiteral());
         }
-        	 
+        
     }
 
     /**
@@ -603,7 +605,7 @@ public final class DefinitionUtil
 
     /**
      * Defines the {@link Bean} producer methods. Moreover, it configures the
-     * producer methods with using the {@link Realizes} annotations.
+     * producer methods with using the {@link Produces} annotations.
      * 
      * @param component
      * @return the set of producer components
@@ -627,7 +629,8 @@ public final class DefinitionUtil
         return producerComponents;
     }
 
-    private static <T> void createProducerComponents(InjectionTargetBean<T> component, Set<ProducerMethodBean<?>> producerComponents, Method declaredMethod, Class<?> clazz)
+    private static <T> void createProducerComponents(InjectionTargetBean<T> component, Set<ProducerMethodBean<?>> producerComponents,
+                                                     Method declaredMethod, Class<?> clazz)
     {
         boolean isSpecializes = false;
         
@@ -640,7 +643,8 @@ public final class DefinitionUtil
             {
                 if (ClassUtil.isStatic(declaredMethod.getModifiers()))
                 {
-                    throw new WebBeansConfigurationException("Specializing producer method : " + declaredMethod.getName() + " in class : " + clazz.getName() + " can not be static");
+                    throw new WebBeansConfigurationException("Specializing producer method : " + declaredMethod.getName() + " in class : " + clazz.getName()
+                                                             + " can not be static");
                 }
 
                 isSpecializes = true;
@@ -680,7 +684,8 @@ public final class DefinitionUtil
         WebBeansUtil.setBeanEnableFlagForProducerBean(parent, component, methodAnns);
 
         DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
-        DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
+        DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName()
+                                                              + " must declare default @Scope annotation");
         WebBeansUtil.checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,method);        
         DefinitionUtil.defineQualifiers(component, methodAnns);
@@ -735,7 +740,8 @@ public final class DefinitionUtil
         WebBeansUtil.setBeanEnableFlagForProducerBean(parent, component, fieldAnns);
 
         DefinitionUtil.defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
-        DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
+        DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName()
+                                                             + " must declare default @Scope annotation");
         WebBeansUtil.checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,field);
         DefinitionUtil.defineQualifiers(component, fieldAnns);
@@ -768,7 +774,8 @@ public final class DefinitionUtil
 
 
             Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
-            if (set.isEmpty()) {
+            if (set.isEmpty())
+            {
                 throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + 
                               " in class : " + clazz.getName() + ". Cannot find bean " + type + " with qualifier " + Arrays.toString(annot));
             }
@@ -778,7 +785,8 @@ public final class DefinitionUtil
 
             if (bean == null || !(bean instanceof ProducerMethodBean))
             {
-                throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + clazz.getName() + "is not found");
+                throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : "
+                                                         + clazz.getName() + "is not found");
             }
 
             else
@@ -795,7 +803,8 @@ public final class DefinitionUtil
                 // multiple same producer
                 if (previous.equals(pr))
                 {
-                    throw new WebBeansConfigurationException("There are multiple disposal method for the producer method : " + pr.getCreatorMethod().getName() + " in class : " + clazz.getName());
+                    throw new WebBeansConfigurationException("There are multiple disposal method for the producer method : " + pr.getCreatorMethod().getName()
+                                                             + " in class : " + clazz.getName());
                 }
             }
 
@@ -803,7 +812,8 @@ public final class DefinitionUtil
             //Disposer methods and producer methods must be in the same class
             if(!producerMethod.getDeclaringClass().getName().equals(declaredMethod.getDeclaringClass().getName()))
             {
-                throw new WebBeansConfigurationException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : " + clazz.getName() + " must be in the same class!");
+                throw new WebBeansConfigurationException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : "
+                                                         + clazz.getName() + " must be in the same class!");
             }
             
             pr.setDisposalMethod(declaredMethod);
@@ -856,7 +866,8 @@ public final class DefinitionUtil
                 {
                     if(BeanManagerImpl.getManager().isNormalScope(component.getScope()))
                     {
-                        throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Scope. Bean is : " + component.toString());
+                        throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Scope. Bean is : "
+                                                                 + component.toString());
                     }
                 }                
                                 
@@ -999,7 +1010,8 @@ public final class DefinitionUtil
         TypeVariable<?>[] args = method.getTypeParameters();
         if(args.length > 0)
         {
-            throw new WebBeansConfigurationException("Initializer methods must not be generic but method : " + method.getName() + " in bean class : " + clazz + " is defined as generic");
+            throw new WebBeansConfigurationException("Initializer methods must not be generic but method : " + method.getName() + " in bean class : "
+                                                     + clazz + " is defined as generic");
         }
         
         Annotation[][] anns = method.getParameterAnnotations();
@@ -1017,7 +1029,8 @@ public final class DefinitionUtil
         }
         else
         {
-            throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName() + " can not be annotated with @Produces");
+            throw new WebBeansConfigurationException("Initializer method : " + method.getName() + " in class : " + clazz.getName()
+                                                     + " can not be annotated with @Produces");
         }
     }
 
@@ -1170,7 +1183,8 @@ public final class DefinitionUtil
         return producerComponents;
     }
     
-    private static <X> void createProducerBeansFromAnnotatedType(InjectionTargetBean<X> bean, Set<ProducerMethodBean<?>> producerComponents, AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
+    private static <X> void createProducerBeansFromAnnotatedType(InjectionTargetBean<X> bean, Set<ProducerMethodBean<?>> producerComponents,
+                                                                 AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
     {
         Annotation[] anns = annotatedMethod.getAnnotations().toArray(new Annotation[0]);
         
@@ -1181,9 +1195,13 @@ public final class DefinitionUtil
             for(AnnotatedParameter<X> parameter : parameters)
             {
                 Annotation[] parameterAnns = parameter.getAnnotations().toArray(new Annotation[0]);
-                if (AnnotationUtil.hasAnnotation(anns, Inject.class) || AnnotationUtil.hasAnnotation(parameterAnns, Disposes.class) || AnnotationUtil.hasAnnotation(parameterAnns, Observes.class))
+                if (AnnotationUtil.hasAnnotation(anns, Inject.class) ||
+                    AnnotationUtil.hasAnnotation(parameterAnns, Disposes.class) ||
+                    AnnotationUtil.hasAnnotation(parameterAnns, Observes.class))
                 {
-                    throw new WebBeansConfigurationException("Producer Method Bean with name : " + annotatedMethod.getJavaMember().getName() + " in bean class : " + clazz + " can not be annotated with" + " @Initializer/@Destructor annotation or has a parameter annotated with @Disposes/@Observes");
+                    throw new WebBeansConfigurationException("Producer Method Bean with name : " + annotatedMethod.getJavaMember().getName() + " in bean class : " + clazz
+                                                             + " can not be annotated with @Initializer/@Destructor annotation "
+                                                             + "or has a parameter annotated with @Disposes/@Observes");
                 }
                 
             }
@@ -1192,13 +1210,15 @@ public final class DefinitionUtil
             {
                 if (ClassUtil.isStatic(annotatedMethod.getJavaMember().getModifiers()))
                 {
-                    throw new WebBeansConfigurationException("Specializing producer method : " + annotatedMethod.getJavaMember().getName() + " in class : " + clazz.getName() + " can not be static");
+                    throw new WebBeansConfigurationException("Specializing producer method : " + annotatedMethod.getJavaMember().getName() + " in class : " + clazz.getName()
+                                                             + " can not be static");
                 }
 
                 isSpecializes = true;
             }
 
-            ProducerMethodBean<?> newComponent = createProducerBeanFromAnnotatedType((Class<X>)annotatedMethod.getJavaMember().getReturnType(), annotatedMethod, bean, isSpecializes);
+            ProducerMethodBean<?> newComponent = createProducerBeanFromAnnotatedType((Class<X>)annotatedMethod.getJavaMember().getReturnType(),
+                                                                                     annotatedMethod, bean, isSpecializes);
             if (newComponent != null)
             {
                 producerComponents.add(newComponent);
@@ -1208,7 +1228,8 @@ public final class DefinitionUtil
 
     }
 
-    public static <X> ProducerMethodBean<X> createProducerBeanFromAnnotatedType(Class<X> returnType, AnnotatedMethod<X> method, InjectionTargetBean<?> parent, boolean isSpecializes)
+    public static <X> ProducerMethodBean<X> createProducerBeanFromAnnotatedType(Class<X> returnType, AnnotatedMethod<X> method,
+                                                                                InjectionTargetBean<?> parent, boolean isSpecializes)
     {
         ProducerMethodBean<X> bean = new ProducerMethodBean<X>(parent, returnType);
         bean.setCreatorMethod(method.getJavaMember());
@@ -1229,7 +1250,8 @@ public final class DefinitionUtil
         defineStereoTypes(bean, anns);
 
         DefinitionUtil.defineProducerMethodApiTypes(bean, method.getBaseType(), anns);
-        DefinitionUtil.defineScopeType(bean, anns, "Bean producer method : " + method.getJavaMember().getName() + " in class " + parent.getReturnType().getName() + " must declare default @Scope annotation");
+        DefinitionUtil.defineScopeType(bean, anns, "Bean producer method : " + method.getJavaMember().getName() + " in class "
+                                                   + parent.getReturnType().getName() + " must declare default @Scope annotation");
         WebBeansUtil.checkProducerGenericType(bean,method.getJavaMember());        
         DefinitionUtil.defineQualifiers(bean, anns);
         DefinitionUtil.defineName(bean, anns, WebBeansUtil.getProducerDefaultName(method.getJavaMember().getName()));

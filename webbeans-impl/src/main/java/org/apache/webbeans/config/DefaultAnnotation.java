@@ -29,7 +29,8 @@ import java.lang.reflect.Proxy;
  * The annotation literal gets filled with the default values.
  * TODO implement class caching!
  */
-public class DefaultAnnotation implements InvocationHandler{
+public class DefaultAnnotation implements InvocationHandler
+{
     public static Annotation of(Class<? extends Annotation> annotation) 
     {
         return (Annotation) Proxy.newProxyInstance(annotation.getClassLoader(), new Class[] {annotation}, new DefaultAnnotation());

@@ -111,10 +111,10 @@ public class DependentCreationalContext<S> implements Serializable
         s.writeObject(instance);
 
         //Write for contextual
-        String id = null;
         if (contextual != null)
         {
-            if ((id = WebBeansUtil.isPassivationCapable(contextual)) != null)
+            String id = WebBeansUtil.isPassivationCapable(contextual);
+            if (id != null)
             {
                 s.writeObject(id);
             }
