@@ -1418,6 +1418,9 @@ public final class WebBeansXMLConfigurator
             case 5:
                 configureMethodInterceptorBindingTypeAnnotation(component, annotatedMethod, annotChild);
                 break;
+
+            default:
+                throw new WebBeansConfigurationException("unknown MethodAnnotytionType " + type); 
         }
     }
 
@@ -1781,7 +1784,8 @@ public final class WebBeansXMLConfigurator
     {
         if (isValueElement)
         {
-            String errorMessage = createConfigurationFailedMessage() + "Field value of field name : " + field.getName() + " is not applicable for initial value assignment";
+            String errorMessage = createConfigurationFailedMessage() + "Field value of field name : " + field.getName()
+                                  + " is not applicable for initial value assignment";
 
             /* Field type */
             Class<?> fieldType = field.getType();
@@ -1794,15 +1798,16 @@ public final class WebBeansXMLConfigurator
                 if (!ClassUtil.isInValueTypes(fieldType))
                 {
                     throw new WebBeansConfigurationException(
-                            createConfigurationFailedMessage() + "Field type with field name : " + field.getName() + " is not compatible for initial value assignment");
+                            createConfigurationFailedMessage() + "Field type with field name : " + field.getName()
+                            + " is not compatible for initial value assignment");
                 }
 
                 /*Primitive type*/
                 if (ClassUtil.isPrimitive(fieldType) || ClassUtil.isPrimitiveWrapper(fieldType))
                 {
-                    Object objVal = null;
+                    Object objVal = ClassUtil.isValueOkForPrimitiveOrWrapper(fieldType, value);
 
-                    if ((objVal = ClassUtil.isValueOkForPrimitiveOrWrapper(fieldType, value)) != null)
+                    if (objVal != null)
                     {
                         component.addFieldValue(field, objVal);
 
