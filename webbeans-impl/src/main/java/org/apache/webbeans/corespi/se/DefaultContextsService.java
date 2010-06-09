@@ -175,7 +175,8 @@ public class DefaultContextsService extends AbstractContextsService
                     startSingletonContext(startParameter);
                 }
             }
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             if(e instanceof ContextException)
             {

@@ -97,18 +97,21 @@ public final class EventUtil
 
         if (AnnotationUtil.hasMethodMultipleParameterAnnotation(candidateObserverMethod, Observes.class))
         {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not define two parameters with annotated @Observes");
+            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName()
+                                                     + " can not define two parameters with annotated @Observes");
         }
 
         if (AnnotationUtil.hasMethodAnnotation(candidateObserverMethod, Produces.class) || AnnotationUtil.hasMethodAnnotation(candidateObserverMethod, Inject.class))
         {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
+            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : "
+                                                     + clazz.getName() + " can not annotated with annotation in the list {@Produces, @Initializer, @Destructor}");
 
         }
 
         if (AnnotationUtil.hasMethodParameterAnnotation(candidateObserverMethod, Disposes.class))
         {
-            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : " + clazz.getName() + " can not annotated with annotation @Disposes");
+            throw new WebBeansConfigurationException("Observer method : " + candidateObserverMethod.getName() + " in class : "
+                                                     + clazz.getName() + " can not annotated with annotation @Disposes");
         }                
     }
     
@@ -147,7 +150,8 @@ public final class EventUtil
 
         if (!ClassUtil.isParametrizedType(injectionPoint.getType()))
         {
-            throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint + " must be ParametrizedType with actual type argument");
+            throw new WebBeansConfigurationException("@Observable field injection " + injectionPoint
+                                                     + " must be ParametrizedType with actual type argument");
         }
         else
         {                        
@@ -182,13 +186,15 @@ public final class EventUtil
                     }
                     else
                     {
-                        throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " must not have more than one actual type argument");
+                        throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString()
+                                                           + " must not have more than one actual type argument");
                     }
                 }                                
             }
             else
             {
-                throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " must be defined as ParameterizedType with one actual type argument");
+                throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString()
+                                                   + " must be defined as ParameterizedType with one actual type argument");
             }        
         }
         

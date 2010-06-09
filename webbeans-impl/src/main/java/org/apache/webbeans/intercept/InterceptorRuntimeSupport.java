@@ -43,7 +43,7 @@ public class InterceptorRuntimeSupport {
      * 
      * <p>This will first check if we really need to apply subclassing and
      * if not will return <code>null</code> instead. We need subclassing 
-     * if the bean contains any {@link InterceptorType.AROUND_INVOKE}
+     * if the bean contains any {@link org.apache.webbeans.intercept.InterceptorType#AROUND_INVOKE}
      * or if there are any Decoraors</p>
      * 
      * 

@@ -97,12 +97,14 @@ public final class XMLDefinitionUtil
 
         if (ClassUtil.isDefinitionConstainsTypeVariables(clazz))
         {
-            throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " can not be parametrized type");
+            throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName()
+                                                     + " can not be parametrized type");
         }
 
         if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
         {
-            throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " can not be non-static inner class");
+            throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName()
+                                                     + " can not be non-static inner class");
         }
 
         if (clazz.isAnnotationPresent(javax.interceptor.Interceptor.class))
@@ -110,7 +112,9 @@ public final class XMLDefinitionUtil
             boolean found = XMLUtil.hasChildElementWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_ELEMENT);
             if (!found)
             {
-                throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " must be declared as <Interceptor> element in the XML");
+                throw new WebBeansConfigurationException(
+                        errorMessage + "Simple WebBeans component implementation class : " + clazz.getName()
+                        + " must be declared as <Interceptor> element in the XML");
             }
         }
 
@@ -119,7 +123,9 @@ public final class XMLDefinitionUtil
             boolean found = XMLUtil.hasChildElementWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_DECORATOR_ELEMENT);
             if (!found)
             {
-                throw new WebBeansConfigurationException(errorMessage + "Simple WebBeans component implementation class : " + clazz.getName() + " must be declared as <Decorator> element in the XML");
+                throw new WebBeansConfigurationException(
+                        errorMessage + "Simple WebBeans component implementation class : " + clazz.getName()
+                        + " must be declared as <Decorator> element in the XML");
             }
         }
 
@@ -134,19 +140,20 @@ public final class XMLDefinitionUtil
             {
                 Class<? extends Annotation> clazz = it.next();
                 if (clazz.isAnnotationPresent(NormalScope.class)
-                        || clazz.isAnnotationPresent(Scope.class)
-                        || AnnotationUtil.isQualifierAnnotation(clazz)
-                        || AnnotationUtil.isInterceptorBindingAnnotation(clazz)
-                        || AnnotationUtil.isStereoTypeAnnotation(clazz)
-                        || clazz.equals(Named.class)
-                        || clazz.equals(Specializes.class) || clazz.equals(javax.interceptor.Interceptor.class)
-                        || clazz.equals(Decorator.class))
+                    || clazz.isAnnotationPresent(Scope.class)
+                    || AnnotationUtil.isQualifierAnnotation(clazz)
+                    || AnnotationUtil.isInterceptorBindingAnnotation(clazz)
+                    || AnnotationUtil.isStereoTypeAnnotation(clazz)
+                    || clazz.equals(Named.class)
+                    || clazz.equals(Specializes.class) || clazz.equals(javax.interceptor.Interceptor.class)
+                    || clazz.equals(Decorator.class))
                 {
                     continue;
                 }
                 else
                 {
-                    throw new WebBeansConfigurationException(errorMessage + " TypeLevelMeta data configuration is failed because of the class : " + clazz.getName() + " is not applicable type");
+                    throw new WebBeansConfigurationException(
+                            errorMessage + " TypeLevelMeta data configuration is failed because of the class : " + clazz.getName() + " is not applicable type");
                 }
             }
         }
@@ -157,14 +164,15 @@ public final class XMLDefinitionUtil
      * Gets applicable annotation class for given defineType parameter from the
      * given annotation set.
      *
-     * @param component webbeans component
+     * @param component     webbeans component
      * @param annotationSet type-level metadata annotation set
-     * @param defineType annotation type class
-     * @param errorMessage error message for the operation
+     * @param defineType    annotation type class
+     * @param errorMessage  error message for the operation
      * @return applicable annotation class for given defineType parameter from
      *         the given set
      */
-    public static <T> Class<? extends Annotation> defineXMLTypeMetaData(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet, Class<? extends Annotation> defineType, String errorMessage)
+    public static <T> Class<? extends Annotation> defineXMLTypeMetaData(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet,
+                                                                        Class<? extends Annotation> defineType, String errorMessage)
     {
         // Found annotation for given defineType parameter
         Class<? extends Annotation> metaType = null;
@@ -191,7 +199,8 @@ public final class XMLDefinitionUtil
         return metaType;
     }
 
-    public static <T> boolean defineXMLBindingType(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
+    public static <T> boolean defineXMLBindingType(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet,
+                                                   List<Element> annotationElementList, String errorMessage)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         boolean found = false;
@@ -210,7 +219,9 @@ public final class XMLDefinitionUtil
                     {
                         if (!AnnotationUtil.hasAnnotation(method.getAnnotations(), Nonbinding.class))
                         {
-                            throw new WebBeansConfigurationException(errorMessage + "WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : " + temp.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                            throw new WebBeansConfigurationException(
+                                    errorMessage + "WebBeans definition class : " + component.getReturnType().getName() + " @Qualifier : " + temp.getName() +
+                                    " must have @NonBinding valued members for its array-valued and annotation valued members");
                         }
                     }
                 }
@@ -229,7 +240,8 @@ public final class XMLDefinitionUtil
         return found;
     }
 
-    public static <T> void defineXMLClassLevelInterceptorType(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
+    public static <T> void defineXMLClassLevelInterceptorType(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet,
+                                                              List<Element> annotationElementList, String errorMessage)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
 
@@ -271,16 +283,21 @@ public final class XMLDefinitionUtil
 
     }
 
-    public static <T> void defineXMLMethodLevelInterceptorType(XMLManagedBean<T> component, Method interceptorMethod, Element interceptorMethodElement, String errorMessage)
+    public static <T> void defineXMLMethodLevelInterceptorType(XMLManagedBean<T> component, Method interceptorMethod, Element interceptorMethodElement,
+                                                               String errorMessage)
     {
         Set<Annotation> bindingTypesSet = new HashSet<Annotation>();
-        Node node; Element bindingType;
+        Node node;
+        Element bindingType;
         NodeList ns = interceptorMethodElement.getChildNodes();
-        for(int i=0; i<ns.getLength(); i++)
+        for (int i = 0; i < ns.getLength(); i++)
         {
             node = ns.item(i);
-            if (!(node instanceof Element)) continue;
-            bindingType = (Element)node;
+            if (!(node instanceof Element))
+            {
+                continue;
+            }
+            bindingType = (Element) node;
 
             Class<? extends Annotation> annot = (Class<? extends Annotation>) XMLUtil.getElementJavaType(bindingType);
             Annotation bindingAnnot = XMLUtil.getXMLDefinedAnnotationMember(bindingType, annot, errorMessage);
@@ -309,7 +326,7 @@ public final class XMLDefinitionUtil
     /**
      * Configures the webbeans component stereotype.
      *
-     * @param component webbeans component
+     * @param component     webbeans component
      * @param annotationSet set of type-level metadata annotation set
      */
     public static <T> void defineXMLStereoType(AbstractOwbBean<T> component, List<Class<? extends Annotation>> annotationSet)
@@ -353,7 +370,8 @@ public final class XMLDefinitionUtil
         }
     }
 
-    public static <T> void defineXMLInterceptors(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet, List<Element> annotationElementList, String errorMessage)
+    public static <T> void defineXMLInterceptors(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet,
+                                                 List<Element> annotationElementList, String errorMessage)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         boolean found = false;
@@ -367,7 +385,8 @@ public final class XMLDefinitionUtil
             {
                 if (found)
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "More than one <Interceptor> element exist for class : " + component.getReturnType().getName());
+                    throw new WebBeansConfigurationException(errorMessage + "More than one <Interceptor> element exist for class : "
+                                                             + component.getReturnType().getName());
                 }
                 else
                 {
@@ -386,17 +405,21 @@ public final class XMLDefinitionUtil
 
         if (interceptorBindingTypes.size() == 0)
         {
-            throw new WebBeansConfigurationException(errorMessage + "<Interceptor> decleration must have one interceptor binding type for class : " + component.getReturnType().getName());
+            throw new WebBeansConfigurationException(
+                    errorMessage + "<Interceptor> decleration must have one interceptor binding type for class : " + component.getReturnType().getName());
         }
 
         Annotation[] anns = new Annotation[interceptorBindingTypes.size()];
         anns = interceptorBindingTypes.toArray(anns);
-        InterceptorUtil.checkLifecycleConditions(component.getReturnType(), anns, errorMessage + "Lifecycle interceptor : " + component.getReturnType().getName() + " interceptor binding type must be defined as @Target{TYPE}");
+        InterceptorUtil.checkLifecycleConditions(component.getReturnType(), anns, errorMessage + "Lifecycle interceptor : "
+                                                                                  + component.getReturnType().getName() +
+                                                                                  " interceptor binding type must be defined as @Target{TYPE}");
 
         WebBeansInterceptorConfig.configureInterceptorClass((XMLManagedBean<Object>) component, anns);
     }
 
-    public static <T> void defineXMLDecorators(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet, Element decoratorDecleration, String errorMessage)
+    public static <T> void defineXMLDecorators(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet,
+                                               Element decoratorDecleration, String errorMessage)
     {
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         boolean found = false;
@@ -418,30 +441,37 @@ public final class XMLDefinitionUtil
 
         if (found)
         {
-            Node node; Element child;
+            Node node;
+            Element child;
             NodeList ns = decoratorDecleration.getChildNodes();
 
-            for(int i=0; i<ns.getLength(); i++)
+            for (int i = 0; i < ns.getLength(); i++)
             {
                 node = ns.item(i);
-                if (!(node instanceof Element)) continue;
-                child = (Element)node;
+                if (!(node instanceof Element))
+                {
+                    continue;
+                }
+                child = (Element) node;
                 if (XMLUtil.getElementNameSpace(child).equals(XMLUtil.getElementNameSpace(decoratorDecleration)) && XMLUtil.isElementHasDecoratesChild(child))
                 {
                     Field field = ClassUtil.getFieldWithName(component.getReturnType(), child.getLocalName());
                     if (field == null)
                     {
-                        throw new NonexistentFieldException(errorMessage + "Field with name : " + child.getLocalName() + " not found in the decorator class : " + component.getReturnType().getName());
+                        throw new NonexistentFieldException(
+                                errorMessage + "Field with name : " + child.getLocalName() + " not found in the decorator class : "
+                                + component.getReturnType().getName());
                     }
                     Element type;
                     NodeList ns1 = child.getElementsByTagName(WebBeansConstants.WEB_BEANS_XML_DECORATES_ELEMENT);
-                    type = (Element)ns1.item(0);
+                    type = (Element) ns1.item(0);
 
                     Class<?> apType = XMLUtil.getElementJavaType(type);
 
                     if (!field.getType().isAssignableFrom(apType))
                     {
-                        throw new WebBeansConfigurationException(errorMessage + "Field name : " + field.getName() + " xml defined class type must be assignable to the field actual class type");
+                        throw new WebBeansConfigurationException(
+                                errorMessage + "Field name : " + field.getName() + " xml defined class type must be assignable to the field actual class type");
                     }
 
                     XMLInjectionPointModel model = XMLUtil.getInjectionPointModel(type, errorMessage);
@@ -459,14 +489,15 @@ public final class XMLDefinitionUtil
     /**
      * Returns newly created and configures xml webbeans producer component.
      *
-     * @param component webbeans component that defines producer method
-     * @param producesMethod producer method
+     * @param component             webbeans component that defines producer method
+     * @param producesMethod        producer method
      * @param producerMethodElement produce method xml element
-     * @param errorMessage error message
+     * @param errorMessage          error message
      * @return newly created and configures xml webbeans producer component.
      * @see XMLProducerBean
      */
-    public static <T> XMLProducerBean<T> defineXMLProducerMethod(WebBeansXMLConfigurator configurator, XMLManagedBean<T> component, Method producesMethod, Element producerMethodElement, String errorMessage)
+    public static <T> XMLProducerBean<T> defineXMLProducerMethod(WebBeansXMLConfigurator configurator, XMLManagedBean<T> component,
+                                                                 Method producesMethod, Element producerMethodElement, String errorMessage)
     {
         boolean producesDefined = false;
         Class<T> type = null;
@@ -476,13 +507,17 @@ public final class XMLDefinitionUtil
         List<Element> memberLevelElement = new ArrayList<Element>();
         List<XMLInjectionPointModel> injectedParameters = new ArrayList<XMLInjectionPointModel>();
 
-        Node node; Element childElement;
+        Node node;
+        Element childElement;
         NodeList ns = producerMethodElement.getChildNodes();
-        for(int i=0; i<ns.getLength(); i++)
+        for (int i = 0; i < ns.getLength(); i++)
         {
             node = ns.item(i);
-            if (!(node instanceof Element)) continue;
-            childElement = (Element)node;
+            if (!(node instanceof Element))
+            {
+                continue;
+            }
+            childElement = (Element) node;
             if (XMLUtil.isElementInWebBeansNameSpaceWithName(childElement, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT))
             {
                 if (producesDefined == false)
@@ -496,13 +531,17 @@ public final class XMLDefinitionUtil
 
                 boolean definedType = false;
 
-                Node producerNode; Element producesElementChild;
+                Node producerNode;
+                Element producesElementChild;
                 NodeList nsProducer = childElement.getChildNodes();
-                for(int j=0; j<nsProducer.getLength(); j++)
+                for (int j = 0; j < nsProducer.getLength(); j++)
                 {
                     producerNode = nsProducer.item(j);
-                    if (!(producerNode instanceof Element)) continue;
-                    producesElementChild= (Element)producerNode;
+                    if (!(producerNode instanceof Element))
+                    {
+                        continue;
+                    }
+                    producesElementChild = (Element) producerNode;
                     if (producesElementChild.getLocalName().equals(WebBeansConstants.WEB_BEANS_XML_ARRAY_ELEMENT))
                     {
                         arrayElement = producesElementChild;
@@ -513,7 +552,9 @@ public final class XMLDefinitionUtil
                         type = (Class<T>) XMLUtil.getElementJavaType(producesElementChild);
                         if (type == null)
                         {
-                            throw new NonexistentTypeException(errorMessage + "Java type : " + XMLUtil.getElementJavaClassName(producesElementChild) + " does not exist in the <Produces> element child");
+                            throw new NonexistentTypeException(
+                                    errorMessage + "Java type : " + XMLUtil.getElementJavaClassName(producesElementChild)
+                                    + " does not exist in the <Produces> element child");
                         }
 
                         else if (type.isAnnotation())
@@ -525,7 +566,10 @@ public final class XMLDefinitionUtil
                         {
                             if (!type.isAssignableFrom(producesMethod.getReturnType()) && !producesMethod.getReturnType().isAssignableFrom(type))
                             {
-                                throw new WebBeansConfigurationException(errorMessage + "Defined returned method type is not compatible for producer method name : " + producesMethod.getName() + " in class : " + component.getReturnType().getName());
+                                throw new WebBeansConfigurationException(
+                                        errorMessage + "Defined returned method type is not compatible for producer method name : "
+                                        + producesMethod.getName() + " in class : " +
+                                        component.getReturnType().getName());
                             }
 
                             if (definedType)
@@ -554,9 +598,12 @@ public final class XMLDefinitionUtil
             }
         }
 
-        XMLProducerBean<T> producerComponentImpl = configureProducerMethod(component, producesMethod, injectedParameters, type, arrayElement, typeElement, errorMessage);
+        XMLProducerBean<T> producerComponentImpl = configureProducerMethod(component, producesMethod, injectedParameters, type, arrayElement,
+                                                                           typeElement, errorMessage);
 
-        configureProducerTypeLevelMetaData(configurator, producerComponentImpl, producesMethod, producerMethodElement, memberLevelMetaData, memberLevelElement, component, errorMessage);
+        configureProducerTypeLevelMetaData(configurator, producerComponentImpl, producesMethod, producerMethodElement, memberLevelMetaData,
+                                           memberLevelElement, component,
+                                           errorMessage);
 
         return producerComponentImpl;
     }
@@ -565,20 +612,22 @@ public final class XMLDefinitionUtil
      * Configures and returns the newly created producer method webbeans
      * component.
      *
-     * @param parentComponent producer method webbeans parent component
-     * @param producesMethod producer method
+     * @param parentComponent    producer method webbeans parent component
+     * @param producesMethod     producer method
      * @param injectedParameters injected parameters of the producer method
-     * @param type java class type of the producer method return type, null if
-     *            the return type is defined as an Array element.
-     * @param arrayElement if the return type is array type, this parameter is
-     *            the Array element definition
-     * @param typeElement if the return type is a Java type, this parameter is
-     *            the Java type element
-     * @param errorMessage error message
+     * @param type               java class type of the producer method return type, null if
+     *                           the return type is defined as an Array element.
+     * @param arrayElement       if the return type is array type, this parameter is
+     *                           the Array element definition
+     * @param typeElement        if the return type is a Java type, this parameter is
+     *                           the Java type element
+     * @param errorMessage       error message
      * @return new xml defines producer method component
      * @see XMLProducerBean
      */
-    private static <T> XMLProducerBean<T> configureProducerMethod(InjectionTargetBean<?> parentComponent, Method producesMethod, List<XMLInjectionPointModel> injectedParameters, Class<T> type, Element arrayElement, Element typeElement, String errorMessage)
+    private static <T> XMLProducerBean<T> configureProducerMethod(InjectionTargetBean<?> parentComponent, Method producesMethod,
+                                                                  List<XMLInjectionPointModel> injectedParameters, Class<T> type,
+                                                                  Element arrayElement, Element typeElement, String errorMessage)
     {
         /* New producer webbeans component */
         XMLProducerBean<T> producerComponentImpl = new XMLProducerBean<T>(parentComponent, type);
@@ -624,23 +673,30 @@ public final class XMLDefinitionUtil
      * Configures xml defined producer method webbeans type level metadatas.
      *
      * @param producerComponentImpl xml webbeans producer component
-     * @param producesMethod producer method
+     * @param producesMethod        producer method
      * @param producerMethodElement producer method xml element
-     * @param memberLevelMetaData member level annotations
-     * @param memberLevelElement member level xml elements
-     * @param component parent component that defines producer method
-     * @param errorMessage error message
+     * @param memberLevelMetaData   member level annotations
+     * @param memberLevelElement    member level xml elements
+     * @param component             parent component that defines producer method
+     * @param errorMessage          error message
      * @return type level metadata configured webbeans
      * @see XMLProducerBean
      */
-    private static <T> XMLProducerBean<T> configureProducerTypeLevelMetaData(WebBeansXMLConfigurator configurator, XMLProducerBean<T> producerComponentImpl, Method producesMethod, Element producerMethodElement, List<Class<? extends Annotation>> memberLevelMetaData, List<Element> memberLevelElement, XMLManagedBean<T> component, String errorMessage)
+    private static <T> XMLProducerBean<T> configureProducerTypeLevelMetaData(WebBeansXMLConfigurator configurator, XMLProducerBean<T> producerComponentImpl,
+                                                                             Method producesMethod, Element producerMethodElement,
+                                                                             List<Class<? extends Annotation>> memberLevelMetaData,
+                                                                             List<Element> memberLevelElement, XMLManagedBean<T> component, String errorMessage)
     {
 
         for (Class<? extends Annotation> memberLevelMetaDataClass : memberLevelMetaData)
         {
-            if (!memberLevelMetaDataClass.isAnnotationPresent(NormalScope.class) && !AnnotationUtil.isStereoTypeAnnotation(memberLevelMetaDataClass) && !memberLevelMetaDataClass.equals(Named.class))
+            if (!memberLevelMetaDataClass.isAnnotationPresent(NormalScope.class) && !AnnotationUtil.isStereoTypeAnnotation(memberLevelMetaDataClass) &&
+                !memberLevelMetaDataClass.equals(Named.class))
             {
-                throw new WebBeansConfigurationException(errorMessage + "Defined annotations for producer method name : " + producesMethod.getName() + " in class : " + component.getReturnType().getName() + " is not correct");
+                throw new WebBeansConfigurationException(
+                        errorMessage + "Defined annotations for producer method name : " + producesMethod.getName() + " in class : "
+                        + component.getReturnType().getName() +
+                        " is not correct");
             }
         }
 
@@ -653,14 +709,14 @@ public final class XMLDefinitionUtil
      * Configures the disposal method of the webbeans component using the xml
      * configuration.
      *
-     * @param component producer method webbeans component
-     * @param disposalMethod disposal method defined in the xml
+     * @param component             producer method webbeans component
+     * @param disposalMethod        disposal method defined in the xml
      * @param disposalMethodElement disposal method xml element
-     * @param errorMessage error message used in exceptions
+     * @param errorMessage          error message used in exceptions
      * @throws WebBeansConfigurationException if more than one Disposal element
-     *             exist for the given disposal method element
+     *                                        exist for the given disposal method element
      * @throws UnsatisfiedResolutionException if no producer method found for
-     *             given disposal method
+     *                                        given disposal method
      */
     public static <T> void defineXMLDisposalMethod(XMLManagedBean<T> component, Method disposalMethod, Element disposalMethodElement, String errorMessage)
     {
@@ -674,13 +730,17 @@ public final class XMLDefinitionUtil
         XMLProducerBean<?> producerComponent = null;
 
         /* Disposal method element childs */
-        Node node; Element childElement;
+        Node node;
+        Element childElement;
         NodeList ns = disposalMethodElement.getChildNodes();
-        for(int i=0; i<ns.getLength(); i++)
+        for (int i = 0; i < ns.getLength(); i++)
         {
             node = ns.item(i);
-            if (!(node instanceof Element)) continue;
-            childElement = (Element)node;
+            if (!(node instanceof Element))
+            {
+                continue;
+            }
+            childElement = (Element) node;
             if (XMLUtil.isElementInWebBeansNameSpaceWithName(childElement, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT))
             {
                 if (disposalDefined == false)
@@ -689,7 +749,8 @@ public final class XMLDefinitionUtil
                 }
                 else
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "More than one <Disposal> element is defined for defining disposal method : " + disposalMethod.getName());
+                    throw new WebBeansConfigurationException(
+                            errorMessage + "More than one <Disposal> element is defined for defining disposal method : " + disposalMethod.getName());
                 }
 
                 //TODO: verify the first node is element.
@@ -710,7 +771,8 @@ public final class XMLDefinitionUtil
 
                 if (producerComponent == null)
                 {
-                    throw new UnsatisfiedResolutionException(errorMessage + "Producer method component of the disposal method : " + disposalMethod.getName() + "is not found");
+                    throw new UnsatisfiedResolutionException(errorMessage + "Producer method component of the disposal method : "
+                                                             + disposalMethod.getName() + "is not found");
                 }
 
                 producerComponent.setDisposalMethod(disposalMethod);
@@ -732,7 +794,7 @@ public final class XMLDefinitionUtil
     }
 
     /**
-     * TODO review the logic of this function. It is a bit unintuitive why the childElement loop exists 
+     * TODO review the logic of this function. It is a bit unintuitive why the childElement loop exists
      */
     public static <T, K> void defineXMLObservesMethod(XMLManagedBean<T> component, Method observesMethod, Element observesMethodElement, String errorMessage)
     {
@@ -747,14 +809,18 @@ public final class XMLDefinitionUtil
         Class<K> eventType = null;
 
         /* Observes method element childs */
-        Node node; Element childElement;
+        Node node;
+        Element childElement;
         NodeList ns = observesMethodElement.getChildNodes();
 
-        for(int i=0; i<ns.getLength(); i++)
+        for (int i = 0; i < ns.getLength(); i++)
         {
             node = ns.item(i);
-            if (!(node instanceof Element)) continue;
-            childElement = (Element)node;
+            if (!(node instanceof Element))
+            {
+                continue;
+            }
+            childElement = (Element) node;
             if (XMLUtil.isElementInWebBeansNameSpaceWithName(childElement, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT))
             {
                 //TODO: verify the first node is Element.
@@ -773,7 +839,7 @@ public final class XMLDefinitionUtil
                 bindingAnns = bindingTypes.toArray(bindingAnns);
 
                 beanObserver = new BeanObserverXMLImpl<K>(component, observesMethod, false,
-                        bindingAnns, null /** TODO Type! */);
+                                                          bindingAnns, null /** TODO Type! */);
 
                 beanObserver.addXMLInjectionObservesParameter(model);
 
@@ -800,11 +866,11 @@ public final class XMLDefinitionUtil
 
     public static InjectionPoint getXMLMethodInjectionPoint(AbstractOwbBean<?> component, XMLInjectionPointModel model, Method method)
     {
-        Asserts.assertNotNull(model,"model parameter can not be null");
-        Asserts.assertNotNull(method,"method parameter can not be null");
+        Asserts.assertNotNull(model, "model parameter can not be null");
+        Asserts.assertNotNull(method, "method parameter can not be null");
 
         Annotation[] annots = method.getAnnotations();
-        for(Annotation annotation : annots)
+        for (Annotation annotation : annots)
         {
             model.addAnnotation(annotation);
         }

@@ -335,12 +335,16 @@ public final class WebBeansUtil
         int modifier = clazz.getModifiers();
 
         if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
+        {
             throw new WebBeansConfigurationException("Bean implementation class : "
                                                      + clazz.getName() + " can not be non-static inner class");
+        }
 
         if (!ClassUtil.isConcrete(clazz) && !AnnotationUtil.hasClassAnnotation(clazz, Decorator.class))
+        {
             throw new WebBeansConfigurationException("Bean implementation class : " + clazz.getName()
                                                      + " have to be concrete if not defines as @Decorator");
+        }
 
         if (!isConstructureOk(clazz))
         {
@@ -1071,10 +1075,12 @@ public final class WebBeansUtil
                 // Check method criterias
                 Class<?>[] params = ClassUtil.getMethodParameterTypes(method);
                 if (params.length != 1 || !params[0].equals(InvocationContext.class))
+                {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
                             + method.getName() + " in class : " + clazz.getName()
                             + " can not take any formal arguments other than InvocationContext");
-
+                }
+                
                 if (!ClassUtil.getReturnType(method).equals(Object.class))
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
@@ -1571,7 +1577,8 @@ public final class WebBeansUtil
      *
      * @return
      */
-    protected static boolean isDirectlySpecializedBeanSet(Set<Bean<?>> beans) {
+    protected static boolean isDirectlySpecializedBeanSet(Set<Bean<?>> beans)
+    {
 
         ArrayList<AbstractOwbBean<?>> beanList = new ArrayList<AbstractOwbBean<?>>();
 
@@ -1589,8 +1596,16 @@ public final class WebBeansUtil
                 AbstractOwbBean<?> b2 = (AbstractOwbBean<?>)o2;
                 Class c1 = b1.getReturnType();
                 Class c2 = b2.getReturnType();
-                if (c2.isAssignableFrom(c1)) return 1;
-                if (c1.isAssignableFrom(c2)) return -1;
+                if (c2.isAssignableFrom(c1))
+                {
+                    return 1;
+                }
+
+                if (c1.isAssignableFrom(c2))
+                {
+                    return -1;
+                }
+
                 throw new InconsistentSpecializationException(c1 + " and " + c2 + "are not assignable to each other." );
             }
         });
@@ -1598,7 +1613,9 @@ public final class WebBeansUtil
         for(int i=0; i<beanList.size() - 1; i++)
         {
             if (!beanList.get(i).getReturnType().equals(beanList.get(i+1).getReturnType().getSuperclass()))
+            {
                 return false;
+            }
         }
         return true;
     }
@@ -1873,19 +1890,22 @@ public final class WebBeansUtil
                             producerBeanListHelper.add(pb);
                             pLeft = (pb.isSpecializedBean()) ? pb : null;
                         }
-                        else {
+                        else
+                        {
                             pLeft = null;
                         }
                         if (pLeft != null) pLeftContinue = true;
                     }
                     //right
                     if (pRight != null &&
-                            pb.getBeanClass().getSuperclass().equals(pRight.getBeanClass()))
+                        pb.getBeanClass().getSuperclass().equals(pRight.getBeanClass()))
                     {
                         if (!pb.isSpecializedBean())
                         {
                             pRight = null;
-                        } else {
+                        }
+                        else
+                        {
                             Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(),
                                     Arrays.asList(method.getParameterTypes()));
                             //Added by GE, method check is necessary otherwise getting wrong method qualifier annotations
@@ -1893,12 +1913,16 @@ public final class WebBeansUtil
                             {
                                 producerBeanListHelper.add(pb);
                                 pRight = pb;
-                            } else
+                            }
+                            else
                             {
                                 pRight = null;
                             }
                         }
-                        if (pRight != null) pRightContinue = true;
+                        if (pRight != null)
+                        {
+                            pRightContinue = true;
+                        }
                     }
                 } // for
             } // while
@@ -2050,18 +2074,6 @@ public final class WebBeansUtil
                     + method.getName() + " found in super class : " + superClass.getName()
                     + " is not annotated with @Produces");
         }
-
-        /* To avoid multiple invocations of setBeanName(), following code is delayed to
-         * configSpecializedProducerMethodBeans() when checkSpecializations.
-        Annotation[] anns = AnnotationUtil.getQualifierAnnotations(superMethod.getAnnotations());
-
-        for (Annotation ann : anns)
-        {
-        	component.addQualifier(ann);
-        }
-        
-        WebBeansUtil.configuredProducerSpecializedName(component, method, superMethod);
-		*/
 
         component.setSpecializedBean(true);
 
@@ -2874,7 +2886,8 @@ public final class WebBeansUtil
                 stack.logErrors();
                 throw new WebBeansConfigurationException(logMessage);
             }
-        }finally
+        }
+        finally
         {
             stack.clear();
         }

@@ -33,20 +33,14 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.config.BeansDeployer;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
-import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
-import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
-import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.ClassUtil;
@@ -59,11 +53,13 @@ import org.apache.webbeans.util.WebBeansUtil;
  * <ul>
  * <li><b>1- Configuration of decorators and interceptors</b>
  * <p>
- * Decorators and Interceptors are configured from {@link BeansDeployer}
+ * Decorators and Interceptors are configured from {@link org.apache.webbeans.config.BeansDeployer}
  * class via methods <code>defineManagedBean(class)</code> and Those methods further call
  * <code>defineInterceptor(interceptor class)</code> and <code>defineDecorator(decorator class)</code>
- * methods. Those methods finally call {@link WebBeansUtil#defineInterceptor(Class)} and
- * {@link WebBeansUtil#defineDecorator(Class)} methods for actual configuration.
+ * methods. Those methods finally call
+ * {@link WebBeansUtil#defineInterceptor(org.apache.webbeans.component.creation.ManagedBeanCreatorImpl, javax.enterprise.inject.spi.ProcessInjectionTarget)} and
+ * {@link WebBeansUtil#defineDecorator(org.apache.webbeans.component.creation.ManagedBeanCreatorImpl, javax.enterprise.inject.spi.ProcessInjectionTarget)}
+ * methods for actual configuration.
  * <p>
  * Let's look at the "WebBeansUtil's" methods; 
  * </p>
@@ -136,9 +132,9 @@ import org.apache.webbeans.util.WebBeansUtil;
  * 
  * @see WebBeansInterceptorConfig
  * @see WebBeansDecoratorConfig
- * @see WebBeansInterceptor
- * @see WebBeansDecorator
- * @see EJBInterceptorConfig
+ * @see org.apache.webbeans.intercept.webbeans.WebBeansInterceptor
+ * @see org.apache.webbeans.decorator.WebBeansDecorator
+ * @see org.apache.webbeans.intercept.ejb.EJBInterceptorConfig
  */
 public abstract class InterceptorHandler implements MethodHandler, Serializable
 {
@@ -252,7 +248,8 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         // Call Around Invokes
                         if (WebBeansUtil.isContainsInterceptorMethod(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE))
                         {
-                            return callAroundInvokes(method, arguments, InterceptorUtil.getInterceptorMethods(this.interceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE));
+                            return callAroundInvokes(method, arguments, InterceptorUtil.getInterceptorMethods(this.interceptedMethodMap.get(method),
+                                                                                                              InterceptorType.AROUND_INVOKE));
                         }
                         
                     }
@@ -275,7 +272,8 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             {
                 result = method.invoke(instance, arguments);
                 
-            }finally
+            }
+            finally
             {
                 SecurityUtil.doPrivilegedSetAccessible(method, access);
             }

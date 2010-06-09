@@ -21,11 +21,7 @@ package org.apache.webbeans.intercept;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.Interceptor;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptors;
 
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
@@ -35,7 +31,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
  * interceptor definition in the OWB Container. These are;
  * <p>
  * <ul>
- * <li>EJB related interceptors with {@link Interceptors} annotation</li>
+ * <li>EJB related interceptors with {@link javax.interceptor.Interceptors} annotation</li>
  * <li>WebBeans specific interceptor definition with using
  * {@link javax.interceptor.InterceptorBinding} and {@link Interceptor}</li>
  * </ul>
@@ -52,21 +48,21 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 public interface InterceptorData
 {
     /**
-     * Gets {@link PostConstruct} annotated method if exist
+     * Gets {@link javax.annotation.PostConstruct} annotated method if exist
      * return null otherwise. 
      * @return post-construct method
      */
     public Method getPostConstruct();
 
     /**
-     * Gets the {@link PreDestroy} annotated method
+     * Gets the {@link javax.annotation.PreDestroy} annotated method
      * if exist, returns null otherwise. 
      * @return pre-destroy method
      */
     public Method getPreDestroy();
 
     /**
-     * Gets {@link AroundInvoke} annotated method
+     * Gets {@link javax.interceptor.AroundInvoke} annotated method
      * if exist, returns null otherwise. 
      * @return around invoke method
      */
@@ -85,9 +81,9 @@ public interface InterceptorData
      * <p>
      * Annotation is in
      * <ul>
-     * <li>{@link PostConstruct}</li>
-     * <li>{@link PreDestroy}</li>
-     * <li>{@link AroundInvoke}</li> 
+     * <li>{@link javax.annotation.PostConstruct}</li>
+     * <li>{@link javax.annotation.PreDestroy}</li>
+     * <li>{@link javax.interceptor.AroundInvoke}</li>
      * </ul>
      * </p>
      * @param interceptorMethod interceptor method

@@ -84,7 +84,8 @@ public final class DecoratorUtil
         ClassUtil.setInterfaceTypeHierarchy(decoratorSet, decoratorClazz);
         
         //Per section 8.1 do no consider Serializable a decorated type
-        if(decoratorSet.contains(java.io.Serializable.class)){
+        if(decoratorSet.contains(java.io.Serializable.class))
+        {
             decoratorSet.remove(java.io.Serializable.class);
         }
         
@@ -127,8 +128,8 @@ public final class DecoratorUtil
                         {
                             if (decClazz.getMethod(method.getName(), method.getParameterTypes()) != null)
                             {
-                                throw new WebBeansConfigurationException("Bean : " + bean.getReturnType().getName() + " can not define non-private, non-static, final method : " + method.getName() + ", because one of its decorators implements this method");
-
+                                throw new WebBeansConfigurationException("Bean : " + bean.getReturnType().getName() + " can not define non-private, non-static, final method : "
+                                                                         + method.getName() + ", because one of its decorators implements this method");
                             }
 
                         }

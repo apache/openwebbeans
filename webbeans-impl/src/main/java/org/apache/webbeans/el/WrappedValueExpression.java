@@ -67,7 +67,8 @@ public class WrappedValueExpression extends ValueExpression
         {
            value = this.valueExpression.getValue(context);           
             
-        }finally
+        }
+        finally
         {
             //Destroy dependent store
             ELContextStore store = ELContextStore.LOCAL_CONTEXT.get();

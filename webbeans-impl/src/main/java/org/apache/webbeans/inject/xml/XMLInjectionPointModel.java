@@ -238,30 +238,48 @@ public class XMLInjectionPointModel
     public boolean equals(Object obj)
     {
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         final XMLInjectionPointModel other = (XMLInjectionPointModel) obj;
         if (!Arrays.equals(actualTypeArguments, other.actualTypeArguments))
+        {
             return false;
+        }
         if (bindingTypes == null)
         {
             if (other.bindingTypes != null)
+            {
                 return false;
+            }
         }
         else if (!bindingTypes.equals(other.bindingTypes))
+        {
             return false;
+        }
         if (injectionClassType == null)
         {
             if (other.injectionClassType != null)
+            {
                 return false;
+            }
         }
         else if (!injectionClassType.equals(other.injectionClassType))
+        {
             return false;
+        }
         if (parametrized != other.parametrized)
+        {
             return false;
+        }
         return true;
     }
  }

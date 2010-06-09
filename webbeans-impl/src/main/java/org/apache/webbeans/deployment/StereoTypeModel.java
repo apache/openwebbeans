@@ -149,7 +149,8 @@ public class StereoTypeModel implements IStereoTypeModel
                         {
                             if (outerValue.equals(ElementType.TYPE) && outerValues.length == 1)
                             {
-                                throw new WebBeansConfigurationException("Inherited StereoType with class name : " + clazz.getName() + " must have compatible @Target annotation with Stereotype class name : " + clazz.getName());
+                                throw new WebBeansConfigurationException("Inherited StereoType with class name : " + clazz.getName()
+                                                                         + " must have compatible @Target annotation with Stereotype class name : " + clazz.getName());
                             }
                         }
                     }
@@ -159,7 +160,8 @@ public class StereoTypeModel implements IStereoTypeModel
                         {
                             if (outerValue.equals(ElementType.METHOD) || outerValue.equals(ElementType.FIELD))
                             {
-                                throw new WebBeansConfigurationException("Inherited StereoType with class name : " + clazz.getName() + " must have compatible @Target annotation with Stereotype class name : " + clazz.getName());
+                                throw new WebBeansConfigurationException("Inherited StereoType with class name : " + clazz.getName()
+                                                                         + " must have compatible @Target annotation with Stereotype class name : " + clazz.getName());
                             }
                         }
                     }

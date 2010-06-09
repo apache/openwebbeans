@@ -66,23 +66,30 @@ public class XMLStereoTypeModel implements IStereoTypeModel
     private void configure(Element stereoTypeDecleration, String errorMessage)
     {
         boolean scopeTypeFound = false;
-        Node node; Element child;
+        Node node;
+        Element child;
         NodeList ns = stereoTypeDecleration.getChildNodes();
+
         for(int i=0; i<ns.getLength(); i++)
         {
-        	node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	child = (Element)node;
+            node = ns.item(i);
+            if (!(node instanceof Element))
+            {
+                continue;
+            }
+            child = (Element)node;
             Class<?> clazz = XMLUtil.getElementJavaType(child);
             if (clazz == null)
             {
-                throw new NonexistentTypeException(errorMessage + "Type is not exist with class name : " + XMLUtil.getElementJavaClassName(child) + " in namespace : " + XMLUtil.getElementNameSpace(child) );
+                throw new NonexistentTypeException(errorMessage + "Type is not exist with class name : " + XMLUtil.getElementJavaClassName(child)
+                                                   + " in namespace : " + XMLUtil.getElementNameSpace(child) );
             }
 
             Class<? extends Annotation> annClazz = null;
             if (!clazz.isAnnotation())
             {
-                throw new WebBeansConfigurationException(errorMessage + "Type is not annotation type with class name : " + XMLUtil.getElementJavaClassName(child) +  " in namespace : " + XMLUtil.getElementNameSpace(child));
+                throw new WebBeansConfigurationException(errorMessage + "Type is not annotation type with class name : "
+                                                         + XMLUtil.getElementJavaClassName(child) +  " in namespace : " + XMLUtil.getElementNameSpace(child));
             }
 
             annClazz = (Class<? extends Annotation>) clazz;
@@ -141,7 +148,8 @@ public class XMLStereoTypeModel implements IStereoTypeModel
                         {
                             if (outerValue.equals(ElementType.TYPE))
                             {
-                                throw new WebBeansConfigurationException(errorMessage + "Inherited StereoType with class name : " + clazz.getName() + " must have compatible @Target annotation with Stereotype class name : " + outerStereoClass.getName());
+                                throw new WebBeansConfigurationException(errorMessage + "Inherited StereoType with class name : " + clazz.getName()
+                                                                         + " must have compatible @Target annotation with Stereotype class name : " + outerStereoClass.getName());
                             }
                         }
                     }
@@ -151,7 +159,8 @@ public class XMLStereoTypeModel implements IStereoTypeModel
                         {
                             if (outerValue.equals(ElementType.METHOD) || outerValue.equals(ElementType.FIELD))
                             {
-                                throw new WebBeansConfigurationException(errorMessage + "Inherited StereoType with class name : " + clazz.getName() + " must have compatible @Target annotation with Stereotype class name : " + outerStereoClass.getName());
+                                throw new WebBeansConfigurationException(errorMessage + "Inherited StereoType with class name : " + clazz.getName()
+                                                                         + " must have compatible @Target annotation with Stereotype class name : " + outerStereoClass.getName());
                             }
                         }
                     }
@@ -163,7 +172,8 @@ public class XMLStereoTypeModel implements IStereoTypeModel
 
             else
             {
-                throw new WebBeansConfigurationException(errorMessage + "Type with class name : " + XMLUtil.getElementJavaClassName(child) + " is not applicable for stereotype");
+                throw new WebBeansConfigurationException(errorMessage + "Type with class name : " + XMLUtil.getElementJavaClassName(child)
+                                                         + " is not applicable for stereotype");
             }
         }
     }

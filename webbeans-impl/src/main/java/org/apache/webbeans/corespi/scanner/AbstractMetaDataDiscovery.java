@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
@@ -66,7 +65,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
      * Configure the Web Beans Container with deployment information and fills
      * annotation database and beans.xml stream database.
      * 
-     * @throws WebBeansConfigurationException if any run time exception occurs
+     * @throws org.apache.webbeans.exception.WebBeansConfigurationException if any run time exception occurs
      */
     public void scan() throws WebBeansDeploymentException
     {

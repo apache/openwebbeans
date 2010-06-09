@@ -269,20 +269,20 @@ public class InterceptorDataImpl implements InterceptorData
     
     public Method getInterceptorMethod()
     {
-        if(aroundInvoke != null)
+        if (aroundInvoke != null)
         {
             return aroundInvoke;
         }
-        else if(postConstruct != null)
+        else if (postConstruct != null)
         {
             return postConstruct;
         }
-        else if(preDestroy != null)
+        else if (preDestroy != null)
         {
             return preDestroy;
         }
-        
-        else return null;
+
+        return null;
     }
 
     @Override

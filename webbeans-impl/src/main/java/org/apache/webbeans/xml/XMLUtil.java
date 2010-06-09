@@ -57,7 +57,8 @@ import org.w3c.dom.NodeList;
 
 
 @SuppressWarnings("unchecked")
-public class XMLUtil {
+public class XMLUtil
+{
 
     private XMLUtil()
     {
@@ -74,12 +75,18 @@ public class XMLUtil {
         }
         Node node;
         NodeList ns = element.getChildNodes();
-        for(int i=0; i<ns.getLength(); i++)
+        for (int i = 0; i < ns.getLength(); i++)
         {
             node = ns.item(i);
-            if (!(node instanceof Element)) continue;
-            ret = verifyNameSpace((Element)node);
-            if (!ret) return false;
+            if (!(node instanceof Element))
+            {
+                continue;
+            }
+            ret = verifyNameSpace((Element) node);
+            if (!ret)
+            {
+                return false;
+            }
         }
         return true;
     }
@@ -94,19 +101,22 @@ public class XMLUtil {
         {
             WebBeansNameSpaceContainer.getInstance().
                     addNewPackageNameSpace(root.getNamespaceURI());
-        } else {
+        }
+        else
+        {
             String attr = root.getAttribute("xmlns");
-            if (attr != null) {
+            if (attr != null)
+            {
                 WebBeansNameSpaceContainer.getInstance().
                         addNewPackageNameSpace(root.getNamespaceURI());
             }
         }
         NamedNodeMap attrs = root.getAttributes();
-        for(int i=0; i<attrs.getLength(); i++)
+        for (int i = 0; i < attrs.getLength(); i++)
         {
             // hack the code here, since I did'nt find NameSpace support
             // in Java DOM.
-            Attr attr = (Attr)attrs.item(i);
+            Attr attr = (Attr) attrs.item(i);
             if (attr.getName().toLowerCase().startsWith("xmlns"))
             {
                 WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(attr.getValue());
@@ -134,7 +144,8 @@ public class XMLUtil {
             Element root = doc.getDocumentElement();
             updateNameSpacePackageMapping(root);
             return root;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             log.fatal(OWBLogConst.FATAL_0002, e);
             throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
@@ -165,7 +176,8 @@ public class XMLUtil {
 
             Element root = documentBuilder.parse(stream).getDocumentElement();
             return root;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             log.fatal(OWBLogConst.FATAL_0002, e);
             throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
@@ -221,11 +233,11 @@ public class XMLUtil {
         nullCheckForElement(element);
 
         if (!isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DEPLOY_ELEMENT) &&
-                !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTORS_ELEMENT) &&
-                !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT) &&
-                !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE) &&
-                !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE) &&
-                !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
+            !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTORS_ELEMENT) &&
+            !isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_DECORATORS_ELEMENT) &&
+            !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_BINDING_TYPE) &&
+            !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_BINDING_TYPE) &&
+            !hasChildElement(element, WebBeansConstants.WEB_BEANS_XML_STEREOTYPE))
         {
             return true;
         }
@@ -346,7 +358,7 @@ public class XMLUtil {
         if (isElementWebBeanDeclaration(element))
         {
             if (isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_QUEUE_ELEMENT)
-                    || isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_TOPIC_ELEMENT))
+                || isElementInWebBeansNameSpaceWithName(element, WebBeansConstants.WEB_BEANS_XML_TOPIC_ELEMENT))
             {
                 return true;
             }
@@ -376,14 +388,23 @@ public class XMLUtil {
     {
         nullCheckForElement(element);
 
-        Node node; Element child;
+        Node node;
+        Element child;
         NodeList ns = element.getChildNodes();
-        for(int i=0; i<ns.getLength(); i++)
+        for (int i = 0; i < ns.getLength(); i++)
         {
             node = ns.item(i);
-            if (!(node instanceof Element)) continue;
-            child = (Element)node;
-            if (!isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_INITIALIZER_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DESTRUCTOR_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT) && !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DECORATES_ELEMENT))
+            if (!(node instanceof Element))
+            {
+                continue;
+            }
+            child = (Element) node;
+            if (!isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_INITIALIZER_ELEMENT) &&
+                !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DESTRUCTOR_ELEMENT) &&
+                !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT) &&
+                !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT) &&
+                !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT) &&
+                !isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DECORATES_ELEMENT))
             {
 
                 Class<?> clazz = getElementJavaType(child);
@@ -422,14 +443,22 @@ public class XMLUtil {
     {
         nullCheckForElement(element);
 
-        Node node; Element child;
+        Node node;
+        Element child;
         NodeList ns = element.getChildNodes();
-        for(int i=0; i<ns.getLength(); i++)
+        for (int i = 0; i < ns.getLength(); i++)
         {
             node = ns.item(i);
-            if (!(node instanceof Element)) continue;
-            child = (Element)node;
-            if (isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_INITIALIZER_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DESTRUCTOR_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT) || isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT))
+            if (!(node instanceof Element))
+            {
+                continue;
+            }
+            child = (Element) node;
+            if (isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_INITIALIZER_ELEMENT) ||
+                isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DESTRUCTOR_ELEMENT) ||
+                isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_PRODUCES_ELEMENT) ||
+                isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_DISPOSES_ELEMENT) ||
+                isElementInWebBeansNameSpaceWithName(child, WebBeansConstants.WEB_BEANS_XML_OBSERVES_ELEMENT))
             {
                 return true;
 
@@ -470,18 +499,18 @@ public class XMLUtil {
 
         Class<?> clazz = null;
         Class<?> foundClazz = null;
-        if(packageNames != null)
+        if (packageNames != null)
         {
             boolean found = false;
 
-            for(String packageName : packageNames)
+            for (String packageName : packageNames)
             {
                 String className = packageName + XMLUtil.getName(element);
                 clazz = ClassUtil.getClassFromName(className);
 
-                if(clazz != null)
+                if (clazz != null)
                 {
-                    if(found)
+                    if (found)
                     {
                         throw new DefinitionException(log.getTokenString(OWBLogConst.EXCEPT_0014) + clazz.getName());
                     }
@@ -502,7 +531,7 @@ public class XMLUtil {
     {
         Class<?> clazz = getElementJavaType(element);
 
-        if(clazz != null)
+        if (clazz != null)
         {
             return clazz.getName();
         }
@@ -517,16 +546,20 @@ public class XMLUtil {
 
 
     public static boolean hasChildElement(Element parent, String childName)
-    {Node node;
+    {
+        Node node;
         Asserts.assertNotNull(parent, "parent parameter can not be null");
         Asserts.assertNotNull(childName, "childName parameter can not be null");
         NodeList nl = parent.getChildNodes();
-        for(int i=0; i<nl.getLength(); i++)
+        for (int i = 0; i < nl.getLength(); i++)
         {
             node = nl.item(i);
             if (node instanceof Element)
             {
-                if (node.getNodeName().equals(childName)) return true;
+                if (node.getNodeName().equals(childName))
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -535,7 +568,7 @@ public class XMLUtil {
     /**
      * Return child element within webbeans namespace with given child name.
      *
-     * @param parent parent element
+     * @param parent    parent element
      * @param childName child element name
      * @return if child element exist within webbeans namespace with given child
      *         name
@@ -547,14 +580,14 @@ public class XMLUtil {
         Node node;
         Element child = null;
         NodeList nl = parent.getChildNodes();
-        for(int i=0; i<nl.getLength(); i++)
+        for (int i = 0; i < nl.getLength(); i++)
         {
             node = nl.item(i);
             if (node instanceof Element)
             {
                 if (node.getNodeName().equals(childName))
                 {
-                    child = (Element)node;
+                    child = (Element) node;
                 }
             }
         }
@@ -572,7 +605,7 @@ public class XMLUtil {
     /**
      * Creates new xml injection point model.
      *
-     * @param typeElement injection point API type
+     * @param typeElement  injection point API type
      * @param errorMessage error message
      * @return new injection point model object
      */
@@ -596,7 +629,7 @@ public class XMLUtil {
     /**
      * Injection point with Java type.
      *
-     * @param typeElement injection point API type
+     * @param typeElement  injection point API type
      * @param errorMessage error message
      * @return new injection point model
      */
@@ -607,12 +640,14 @@ public class XMLUtil {
         Class<?> clazz = getElementJavaType(typeElement);
         if (clazz == null)
         {
-            throw new NonexistentTypeException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not found in the deployment");
+            throw new NonexistentTypeException(
+                    errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not found in the deployment");
         }
 
         else if (clazz.isAnnotation() || clazz.isArray() || clazz.isEnum())
         {
-            throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " must be class or interface type");
+            throw new WebBeansConfigurationException(
+                    errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " must be class or interface type");
         }
 
         else
@@ -623,28 +658,35 @@ public class XMLUtil {
             List<Annotation> bindingAnnots = new ArrayList<Annotation>();
 
             Class<? extends Annotation> definedBindingType = null;
-            Node node; Element childElement;
+            Node node;
+            Element childElement;
             NodeList ns = typeElement.getChildNodes();
-            for(int i=0; i<ns.getLength(); i++)
+            for (int i = 0; i < ns.getLength(); i++)
             {
                 node = ns.item(i);
-                if (!(node instanceof Element)) continue;
-                childElement = (Element)node;
+                if (!(node instanceof Element))
+                {
+                    continue;
+                }
+                childElement = (Element) node;
                 Type actualType = getElementJavaType(childElement);
                 if (actualType == null)
                 {
-                    throw new NonexistentTypeException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not found in the deployment");
+                    throw new NonexistentTypeException(
+                            errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not found in the deployment");
                 }
                 else if (((Class) actualType).isArray() || ((Class) actualType).isEnum())
                 {
-                    throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " must be class or interface type");
+                    throw new WebBeansConfigurationException(
+                            errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " must be class or interface type");
                 }
                 else if (((Class) actualType).isAnnotation())
                 {
                     Class<? extends Annotation> annotClazz = (Class<? extends Annotation>) actualType;
                     if (!AnnotationUtil.isQualifierAnnotation(annotClazz))
                     {
-                        throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not a @Qualifier");
+                        throw new WebBeansConfigurationException(
+                                errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is not a @Qualifier");
                     }
 
                     if (definedBindingType == null)
@@ -655,7 +697,8 @@ public class XMLUtil {
                     {
                         if (definedBindingType.equals(annotClazz))
                         {
-                            throw new IllegalArgumentException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is duplicated");
+                            throw new IllegalArgumentException(
+                                    errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " is duplicated");
                         }
                     }
 
@@ -669,7 +712,8 @@ public class XMLUtil {
 
             if (actualTypeArgument != typeArguments.size())
             {
-                throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " actual type parameters size are not equals defined in the xml");
+                throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) +
+                                                         " actual type parameters size are not equals defined in the xml");
             }
 
             int i = 0;
@@ -682,7 +726,8 @@ public class XMLUtil {
 
                 if (!clazzBound.isAssignableFrom((Class<?>) type))
                 {
-                    throw new WebBeansConfigurationException(errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " actual type parameter bounded exception");
+                    throw new WebBeansConfigurationException(
+                            errorMessage + log.getTokenString(OWBLogConst.TEXT_JAVA_TYPENAME) + getElementJavaClassName(typeElement) + " actual type parameter bounded exception");
                 }
 
             }
@@ -710,8 +755,8 @@ public class XMLUtil {
      * Creates new annotation with configured members values.
      *
      * @param annotationElement annotation element
-     * @param annotClazz annotation class
-     * @param errorMessage error message
+     * @param annotClazz        annotation class
+     * @param errorMessage      error message
      * @return new annotation with members configures
      */
     public static Annotation getXMLDefinedAnnotationMember(Element annotationElement, Class<? extends Annotation> annotClazz, String errorMessage)
@@ -720,9 +765,9 @@ public class XMLUtil {
         NamedNodeMap attrs = annotationElement.getAttributes();
         List<String> attrsNames = new ArrayList<String>();
 
-        for(int i=0; i<attrs.getLength(); i++)
+        for (int i = 0; i < attrs.getLength(); i++)
         {
-            Attr attr = (Attr)attrs.item(i);
+            Attr attr = (Attr) attrs.item(i);
             attrsNames.add(attr.getName());
         }
 
@@ -731,7 +776,8 @@ public class XMLUtil {
         {
             if (attrsNames.contains("value"))
             {
-                throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " can not have both element 'value' attribute and body text");
+                throw new WebBeansConfigurationException(
+                        errorMessage + "Annotation with type : " + annotClazz.getName() + " can not have both element 'value' attribute and body text");
             }
         }
         /* Check for attribute "value" */
@@ -742,7 +788,7 @@ public class XMLUtil {
                 try
                 {
                     /* Contains value member method */
-                    SecurityUtil.doPrivilegedGetDeclaredMethod(annotClazz, "value", new Class[] {});
+                    SecurityUtil.doPrivilegedGetDeclaredMethod(annotClazz, "value", new Class[]{});
 
                 }
                 catch (SecurityException e)
@@ -762,7 +808,7 @@ public class XMLUtil {
         {
             try
             {
-                SecurityUtil.doPrivilegedGetDeclaredMethod(annotClazz, attrName, new Class[] {});
+                SecurityUtil.doPrivilegedGetDeclaredMethod(annotClazz, attrName, new Class[]{});
             }
             catch (SecurityException e)
             {
@@ -783,7 +829,9 @@ public class XMLUtil {
             {
                 if (!attrsNames.contains(member.getName()))
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " with non-default member method with name : " + member.getName() + " has to defined in the xml element attribute.");
+                    throw new WebBeansConfigurationException(
+                            errorMessage + "Annotation with type : " + annotClazz.getName() + " with non-default member method with name : " + member.getName() +
+                            " has to defined in the xml element attribute.");
                 }
             }
         }
@@ -794,8 +842,8 @@ public class XMLUtil {
     /**
      * Creates new annotation with its member values.
      *
-     * @param attrs list of annotation element attributes
-     * @param annotClazz annotation class
+     * @param attrs        list of annotation element attributes
+     * @param annotClazz   annotation class
      * @param errorMessage error message
      * @return new annotation
      */
@@ -803,9 +851,9 @@ public class XMLUtil {
     {
         WebBeansAnnotation annotation = JavassistProxyFactory.createNewAnnotationProxy(annotClazz);
         boolean isValueAttrDefined = false;
-        for(int i=0; i<attrs.getLength(); i++)
+        for (int i = 0; i < attrs.getLength(); i++)
         {
-            Attr attr = (Attr)attrs.item(i);
+            Attr attr = (Attr) attrs.item(i);
             String attrName = attr.getName();
             String attrValue = attr.getValue();
 
@@ -820,7 +868,7 @@ public class XMLUtil {
             Class returnType = null;
             try
             {
-                returnType = SecurityUtil.doPrivilegedGetDeclaredMethod(annotClazz, attrName, new Class[] {}).getReturnType();
+                returnType = SecurityUtil.doPrivilegedGetDeclaredMethod(annotClazz, attrName, new Class[]{}).getReturnType();
                 Object value = null;
                 if (returnType.isPrimitive())
                 {
@@ -841,12 +889,14 @@ public class XMLUtil {
                 }
                 else
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " with member : " + attrName + " does not have sutiable member return type");
+                    throw new WebBeansConfigurationException(
+                            errorMessage + "Annotation with type : " + annotClazz.getName() + " with member : " + attrName + " does not have sutiable member return type");
                 }
 
                 if (value == null)
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "Annotation with type : " + annotClazz.getName() + " with member : " + attrName + " value does not defined correctly");
+                    throw new WebBeansConfigurationException(
+                            errorMessage + "Annotation with type : " + annotClazz.getName() + " with member : " + attrName + " value does not defined correctly");
                 }
 
                 annotation.setMemberValue(attrName, value);
@@ -878,7 +928,7 @@ public class XMLUtil {
     /**
      * Injection point with array type.
      *
-     * @param typeElement array element
+     * @param typeElement  array element
      * @param errorMessage error message
      * @return new injection point model
      */
@@ -888,14 +938,18 @@ public class XMLUtil {
 
         boolean isElementTypeDefined = false;
         Set<Annotation> anns = new HashSet<Annotation>();
-        Node node; Element childElement;
+        Node node;
+        Element childElement;
         NodeList ns = typeElement.getChildNodes();
 
-        for(int i=0; i<ns.getLength(); i++)
+        for (int i = 0; i < ns.getLength(); i++)
         {
             node = ns.item(i);
-            if (!(node instanceof Element)) continue;
-            childElement = (Element)node;
+            if (!(node instanceof Element))
+            {
+                continue;
+            }
+            childElement = (Element) node;
             Class<?> clazz = XMLUtil.getElementJavaType(childElement);
 
             if (clazz == null)
@@ -909,13 +963,15 @@ public class XMLUtil {
             }
             else if (clazz.isArray() || clazz.isEnum())
             {
-                throw new WebBeansConfigurationException(errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(typeElement) + " must be class or interface type");
+                throw new WebBeansConfigurationException(
+                        errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(typeElement) + " must be class or interface type");
             }
             else
             {
                 if (isElementTypeDefined)
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "<Array> element can not have more than one child element. It has one child element that declares its type");
+                    throw new WebBeansConfigurationException(
+                            errorMessage + "<Array> element can not have more than one child element. It has one child element that declares its type");
                 }
                 else
                 {
@@ -942,13 +998,17 @@ public class XMLUtil {
     {
         boolean isElementTypeDefined = false;
         Set<Annotation> anns = new HashSet<Annotation>();
-        Node node; Element childElement;
+        Node node;
+        Element childElement;
         NodeList ns = typeElement.getChildNodes();
-        for(int i=0; i<ns.getLength(); i++)
+        for (int i = 0; i < ns.getLength(); i++)
         {
             node = ns.item(i);
-            if (!(node instanceof Element)) continue;
-            childElement = (Element)node;
+            if (!(node instanceof Element))
+            {
+                continue;
+            }
+            childElement = (Element) node;
             Class<?> clazz = XMLUtil.getElementJavaType(childElement);
 
             if (clazz == null)
@@ -962,13 +1022,15 @@ public class XMLUtil {
             }
             else if (clazz.isArray() || clazz.isEnum())
             {
-                throw new WebBeansConfigurationException(errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(typeElement) + " must be class or interface type");
+                throw new WebBeansConfigurationException(
+                        errorMessage + "<Array> element child with Java type : " + getElementJavaClassName(typeElement) + " must be class or interface type");
             }
             else
             {
                 if (isElementTypeDefined)
                 {
-                    throw new WebBeansConfigurationException(errorMessage + "<Array> element can not have more than one child element. It has one child element that declares its type");
+                    throw new WebBeansConfigurationException(
+                            errorMessage + "<Array> element can not have more than one child element. It has one child element that declares its type");
                 }
                 else
                 {

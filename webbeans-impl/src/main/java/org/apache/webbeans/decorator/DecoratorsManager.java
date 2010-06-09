@@ -63,7 +63,8 @@ public class DecoratorsManager
 
         if (srcIndex == -1 || targetIndex == -1)
         {
-            throw new IllegalArgumentException("One of the compare class of the list : [" + src.getName() + "," + target.getName() + "]" + " is not contained in the enabled decorators list!");
+            throw new IllegalArgumentException("One of the compare class of the list : [" + src.getName() + "," + target.getName() + "]"
+                                               + " is not contained in the enabled decorators list!");
         }
 
         if (srcIndex == targetIndex)
