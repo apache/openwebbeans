@@ -24,7 +24,8 @@ import java.util.Set;
 
 public class JMSModel
 {
-    public enum JMSType{
+    public enum JMSType
+    {
         QUEUE,
         TOPIC
     }
@@ -118,26 +119,40 @@ public class JMSModel
     public boolean equals(Object obj)
     {
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         JMSModel other = (JMSModel) obj;
         if (bindings == null)
         {
             if (other.bindings != null)
+            {
                 return false;
+            }
         }
         else if (!bindings.equals(other.bindings))
+        {
             return false;
+        }
         if (jmsType == null)
         {
             if (other.jmsType != null)
+            {
                 return false;
+            }
         }
         else if (!jmsType.equals(other.jmsType))
+        {
             return false;
+        }
         return true;
     }
 

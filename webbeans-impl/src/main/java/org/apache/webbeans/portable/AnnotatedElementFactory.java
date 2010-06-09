@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -34,7 +33,7 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.SecurityUtil;
 
 /**
- * Factory for {@link Annotated} elements.
+ * Factory for {@link javax.enterprise.inject.spi.Annotated} elements.
  * 
  * @version $Rev$ $Date$
  */
@@ -183,7 +182,7 @@ public final class AnnotatedElementFactory
      * 
      * @param <X> declaring class
      * @param method annotated method
-     * @param declaringClass declaring class info
+     * @param declaringType declaring class info
      * @return new annotated method
      */
     @SuppressWarnings("unchecked")

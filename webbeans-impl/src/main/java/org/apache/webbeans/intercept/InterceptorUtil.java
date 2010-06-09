@@ -75,12 +75,16 @@ public final class InterceptorUtil
             return false;
         }
 
-        if (AnnotationUtil.hasMethodAnnotation(method, PreDestroy.class) || AnnotationUtil.hasMethodAnnotation(method, PostConstruct.class) || AnnotationUtil.hasMethodAnnotation(method, AroundInvoke.class))
+        if (AnnotationUtil.hasMethodAnnotation(method, PreDestroy.class)
+            || AnnotationUtil.hasMethodAnnotation(method, PostConstruct.class)
+            || AnnotationUtil.hasMethodAnnotation(method, AroundInvoke.class))
         {
             return false;
         }
 
-        if (AnnotationUtil.hasMethodAnnotation(method, Produces.class) || AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class) || AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
+        if (AnnotationUtil.hasMethodAnnotation(method, Produces.class)
+            || AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class)
+            || AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
         {
             return true;
         }
@@ -275,7 +279,9 @@ public final class InterceptorUtil
         {
             if(methodA.isAnnotationPresent(Produces.class))
             {
-                throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName() + " can not have producer methods but it has one with name : " + methodA.getJavaMember().getName());
+                throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName()
+                                                         + " can not have producer methods but it has one with name : "
+                                                         + methodA.getJavaMember().getName());
             }
             
         }
@@ -283,10 +289,12 @@ public final class InterceptorUtil
         Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[0]);
         if (!AnnotationUtil.hasInterceptorBindingMetaAnnotation(anns))
         {
-            throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName() + " must have at least one @InterceptorBinding annotation");
+            throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName()
+                                                     + " must have at least one @InterceptorBinding annotation");
         }
 
-        checkLifecycleConditions(annotatedType, anns, "Lifecycle interceptor : " + annotatedType.getJavaClass().getName() + " interceptor binding type must be defined as @Target{TYPE}");
+        checkLifecycleConditions(annotatedType, anns, "Lifecycle interceptor : " + annotatedType.getJavaClass().getName()
+                                                      + " interceptor binding type must be defined as @Target{TYPE}");
     }
     
 
@@ -299,16 +307,19 @@ public final class InterceptorUtil
         {
             if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
             {
-                throw new WebBeansConfigurationException("Interceptor class : " + clazz + " can not have producer methods but it has one with name : " + method.getName());
+                throw new WebBeansConfigurationException("Interceptor class : " + clazz + " can not have producer methods but it has one with name : "
+                                                         + method.getName());
             }
         }
         
         if (!AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
         {
-            throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName() + " must have at least one @InterceptorBinding annotation");
+            throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName()
+                                                     + " must have at least one @InterceptorBinding annotation");
         }
 
-        checkLifecycleConditions(clazz, clazz.getDeclaredAnnotations(), "Lifecycle interceptor : " + clazz.getName() + " interceptor binding type must be defined as @Target{TYPE}");
+        checkLifecycleConditions(clazz, clazz.getDeclaredAnnotations(), "Lifecycle interceptor : " + clazz.getName()
+                                                                        + " interceptor binding type must be defined as @Target{TYPE}");
     }
 
     public static <T> void checkLifecycleConditions(Class<T> clazz, Annotation[] annots, String errorMessage)
@@ -392,13 +403,17 @@ public final class InterceptorUtil
             {
                 if (hasClassInterceptors)
                 {
-                    throw new WebBeansConfigurationException("Simple web bean class : " + clazz.getName() + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
+                    throw new WebBeansConfigurationException("Simple web bean class : " + clazz.getName()
+                                                             + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
                 }
                 else
                 {
                     if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(method.getDeclaredAnnotations()))
                     {
-                        throw new WebBeansConfigurationException("Method : " + method.getName() + "in simple web bean class : " + clazz.getName() + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");
+                        throw new WebBeansConfigurationException("Method : " + method.getName() + "in simple web bean class : "
+                                                                 + clazz.getName()
+                                                                 + " can not be defined as non-static, non-private and final. "
+                                                                 + "Because it is annotated with at least one @InterceptorBinding");
                     }
                 }
             }

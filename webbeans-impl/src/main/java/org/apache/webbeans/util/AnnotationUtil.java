@@ -600,7 +600,10 @@ public final class AnnotationUtil
     private static boolean checkEquality(String src, String member, List<String> arguments)
     {
         if ((checkEquBuffer(src, arguments).toString().trim().equals(checkEquBuffer(member, arguments).toString().trim())))
+        {
             return true;
+        }
+        
         return false;
     }
 
@@ -670,7 +673,7 @@ public final class AnnotationUtil
         //Add the default qualifier if no others exist.  Section 3.10, OWB-142///
         if(set.size() == 0)
         {
-        	set.add(new DefaultLiteral());
+            set.add(new DefaultLiteral());
         }
         ////////////////////////////////////////////////////////////////////////
 
@@ -883,7 +886,8 @@ public final class AnnotationUtil
         }
     }
 
-    private static void checkQualifierConditions(Annotation ann) {
+    private static void checkQualifierConditions(Annotation ann)
+    {
         Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(ann.annotationType());
 
         for (Method method : methods)
@@ -893,7 +897,8 @@ public final class AnnotationUtil
             {
                 if (!AnnotationUtil.hasAnnotation(method.getDeclaredAnnotations(), Nonbinding.class))
                 {
-                    throw new WebBeansConfigurationException("@Qualifier : " + ann.annotationType().getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                    throw new WebBeansConfigurationException("@Qualifier : " + ann.annotationType().getName()
+                                                             + " must have @NonBinding valued members for its array-valued and annotation valued members");
                 }
             }
         }

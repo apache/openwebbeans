@@ -169,22 +169,7 @@ public final class EventUtil
                 }                
                 else
                 {                                        
-                    if(typeArgs.length == 1)
-                    {
-                        //TCK does not check those! Also specification not talk about them.
-//                        Type actualArgument = typeArgs[0];
-//                        
-//                        if(ClassUtil.isParametrizedType(actualArgument) || ClassUtil.isWildCardType(actualArgument) || ClassUtil.isTypeVariable(actualArgument))
-//                        {                            
-//                            throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " actual type argument can not be Parametrized, Wildcard type or Type variable");                            
-//                        }
-//                                                
-//                        if(ClassUtil.isDefinitionConstainsTypeVariables((Class<?>)actualArgument))
-//                        {
-//                            throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString() + " must not have TypeVariable or WildCard generic type argument");                            
-//                        }
-                    }
-                    else
+                    if(typeArgs.length != 1)
                     {
                         throw new IllegalArgumentException("@Observable field injection " + injectionPoint.toString()
                                                            + " must not have more than one actual type argument");

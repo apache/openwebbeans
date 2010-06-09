@@ -78,7 +78,8 @@ public final class JNDIUtil
                 {
                     context = (Context)initialContext.lookup(parts[i]);
                     
-                }catch(NameNotFoundException e)
+                }
+                catch(NameNotFoundException e)
                 {
                     context = initialContext.createSubcontext(parts[i]);   
                 }
@@ -117,7 +118,8 @@ public final class JNDIUtil
         try
         {
             return (T) initialContext.lookup(name);
-        } catch (NamingException e)
+        }
+        catch (NamingException e)
         {
             LOGGER.error(e);
             throw new WebBeansException(LOGGER.getTokenString(OWBLogConst.EXCEPT_0010) + name, e);

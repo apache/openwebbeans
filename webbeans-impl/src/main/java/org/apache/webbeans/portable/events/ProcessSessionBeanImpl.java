@@ -72,7 +72,8 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
      * {@inheritDoc}
      */
     @Override
-    public AnnotatedType<Object> getAnnotatedBeanClass() {
+    public AnnotatedType<Object> getAnnotatedBeanClass()
+    {
         return annotatedBeanClass;
     }
 

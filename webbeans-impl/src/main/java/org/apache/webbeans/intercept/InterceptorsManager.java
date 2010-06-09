@@ -63,15 +63,22 @@ public class InterceptorsManager
 
         if (srcIndex == -1 || targetIndex == -1)
         {
-            throw new IllegalArgumentException("One of the compare class of the list : [" + src.getName() + "," + target.getName() + "]" + " is not contained in the enabled interceptors list!");
+            throw new IllegalArgumentException("One of the compare class of the list : [" + src.getName() + "," + target.getName() + "]"
+                                               + " is not contained in the enabled interceptors list!");
         }
 
         if (srcIndex == targetIndex)
+        {
             return 0;
+        }
         else if (srcIndex < targetIndex)
+        {
             return -1;
+        }
         else
+        {
             return 1;
+        }
     }
 
     public boolean isInterceptorEnabled(Class<?> interceptorClazz)

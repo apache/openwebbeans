@@ -122,7 +122,9 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
             {
                 if (!AnnotationUtil.hasAnnotation(method.getAnnotations(), Nonbinding.class))
                 {
-                    throw new WebBeansConfigurationException("Interceptor definition class : " + getClazz().getName() + " @InterceptorBinding : " + binding.getName() + " must have @NonBinding valued members for its array-valued and annotation valued members");
+                    throw new WebBeansConfigurationException("Interceptor definition class : " + getClazz().getName() + " @InterceptorBinding : "
+                                                             + binding.getName()
+                                                             + " must have @NonBinding valued members for its array-valued and annotation valued members");
                 }
             }
         }

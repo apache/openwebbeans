@@ -491,7 +491,9 @@ public final class ClassUtil
         if (et.length == 1)
         {
             if (et[0].equals(Exception.class))
+            {
                 return true;
+            }
         }
 
         return false;
@@ -775,7 +777,7 @@ public final class ClassUtil
         
         try
         {
-        	SecurityUtil.doPrivilegedGetDeclaredConstructor(clazz, new Class<?>[] {});
+            SecurityUtil.doPrivilegedGetDeclaredConstructor(clazz, new Class<?>[] {});
         }
         catch (SecurityException e)
         {
@@ -1264,9 +1266,7 @@ public final class ClassUtil
         Asserts.assertNotNull(fieldName, "fieldName parameter can not be null");
         try
         {
-
-        	SecurityUtil.doPrivilegedGetDeclaredField(clazz, fieldName);
-
+            SecurityUtil.doPrivilegedGetDeclaredField(clazz, fieldName);
         }
         catch (SecurityException e)
         {
@@ -2041,7 +2041,8 @@ public final class ClassUtil
         {
             return SecurityUtil.doPrivilegedGetDeclaredMethod(clazz,methodName, parameters);
             
-        }catch(NoSuchMethodException e)
+        }
+        catch(NoSuchMethodException e)
         {
             return null;
         }
@@ -2053,7 +2054,8 @@ public final class ClassUtil
         {
             return clazz.getConstructor(parameterTypes);
             
-        }catch(NoSuchMethodException e)
+        }
+        catch(NoSuchMethodException e)
         {
             return null;
         }

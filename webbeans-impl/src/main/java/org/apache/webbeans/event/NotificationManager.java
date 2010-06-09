@@ -336,7 +336,8 @@ public final class NotificationManager
         
     }
     
-    private <T> void addToMathingWithParametrizedForProducers(boolean isObserverMethod,Type type, Class<?> beanClass, Class<?> producerOrObserverReturnClass, Set<ObserverMethod<? super T>> matching )
+    private <T> void addToMathingWithParametrizedForProducers(boolean isObserverMethod,Type type, Class<?> beanClass,
+                                                              Class<?> producerOrObserverReturnClass, Set<ObserverMethod<? super T>> matching )
     {
         ParameterizedType pt = (ParameterizedType)type;
         Type[] actualArgs = pt.getActualTypeArguments();

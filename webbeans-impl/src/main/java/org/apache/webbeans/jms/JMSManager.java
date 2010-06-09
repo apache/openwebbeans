@@ -53,7 +53,8 @@ public class JMSManager
     {
         Iterator<JMSModel> models = this.jmsModels.iterator();
         
-        while(models.hasNext()){
+        while(models.hasNext())
+        {
             
             JMSModel model = models.next();
             

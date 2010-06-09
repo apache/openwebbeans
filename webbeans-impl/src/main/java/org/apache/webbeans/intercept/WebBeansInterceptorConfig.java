@@ -88,7 +88,8 @@ public final class WebBeansInterceptorConfig
         {
             if(logger.wblWillLogWarn())
             {
-                logger.warn(OWBLogConst.WARN_0005_2, delegate.getBeanClass().getName());            }   
+                logger.warn(OWBLogConst.WARN_0005_2, delegate.getBeanClass().getName());
+            }   
         }   
         
         if(delegate.isAlternative())
@@ -194,9 +195,9 @@ public final class WebBeansInterceptorConfig
             Set<Annotation> inheritedBindingTypes = metadata.getInheritedInterceptorBindings();
             if (!inheritedBindingTypes.isEmpty())
             {
-                Annotation[] inherited_anns = new Annotation[inheritedBindingTypes.size()];
-                inherited_anns = inheritedBindingTypes.toArray(inherited_anns);
-                anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(inherited_anns);
+                Annotation[] inheritedAnns = new Annotation[inheritedBindingTypes.size()];
+                inheritedAnns = inheritedBindingTypes.toArray(inheritedAnns);
+                anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(inheritedAnns);
                 bindingTypeSet.addAll(Arrays.asList(anns));
             }
 
@@ -210,9 +211,9 @@ public final class WebBeansInterceptorConfig
                 // of stereotypes we've found
                 Annotation[] inherited = new Annotation[inheritedStereotypes.size()];
                 inherited = inheritedStereotypes.toArray(inherited);
-                Annotation[] transitive_stereotypes = AnnotationUtil.getStereotypeMetaAnnotations(inherited);
+                Annotation[] transitiveStereotypes = AnnotationUtil.getStereotypeMetaAnnotations(inherited);
 
-                for (Annotation stereo : transitive_stereotypes)
+                for (Annotation stereo : transitiveStereotypes)
                 {
                     if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stereo.annotationType().getDeclaredAnnotations()))
                     {
@@ -265,8 +266,8 @@ public final class WebBeansInterceptorConfig
         {
             WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
             
-            AnnotatedType<?> annotatedType = null;
-            if((annotatedType = interceptor.getAnnotatedType()) != null)
+            AnnotatedType<?> annotatedType = interceptor.getAnnotatedType();
+            if(annotatedType != null)
             {
                 // interceptor binding
                 WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, AroundInvoke.class, true, false, stack, null);
@@ -291,7 +292,8 @@ public final class WebBeansInterceptorConfig
      * @param componentInterceptors the configured interceptors from the component level
      * @param resolvedComponentInterceptorBindings complete (including transitive) set of component-level interceptor bindings
      */
-    private static void addMethodInterceptors(Class<?> clazz, List<InterceptorData> stack, Set<Interceptor<?>> componentInterceptors, Set<Annotation> resolvedComponentInterceptorBindings)
+    private static void addMethodInterceptors(Class<?> clazz, List<InterceptorData> stack, Set<Interceptor<?>> componentInterceptors,
+                                              Set<Annotation> resolvedComponentInterceptorBindings)
     {
         // All methods, not just those declared
         Method[] methods = clazz.getMethods();

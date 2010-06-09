@@ -100,7 +100,8 @@ public final class JavassistProxyFactory
         return clazz;
     }
     
-    public static Class<?> createAbstractDecoratorProxyClass(OwbBean<?> bean){
+    public static Class<?> createAbstractDecoratorProxyClass(OwbBean<?> bean)
+    {
         //Will only get called once while defining the bean, so no need to cache
         Class<?> clazz = null;
         try
@@ -136,7 +137,8 @@ public final class JavassistProxyFactory
             
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
             {
-                if (bean.getScope().equals(ApplicationScoped.class)){
+                if (bean.getScope().equals(ApplicationScoped.class))
+                {
                     ((ProxyObject)result).setHandler(new ApplicationScopedBeanIntereptorHandler(bean, creationalContext));
                 }
                 else 
@@ -247,7 +249,8 @@ public final class JavassistProxyFactory
         {
             proxyClass = SecurityUtil.doPrivilegedCreateClass(factory);
 
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider(){
 
