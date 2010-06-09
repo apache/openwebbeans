@@ -36,7 +36,8 @@ import org.apache.webbeans.component.OwbBean;
  * override intercepted functions to first delegate to all 
  * registered {@link InterceptorHandler}s.</p>
  */
-public class InterceptorRuntimeSupport {
+public class InterceptorRuntimeSupport
+{
 
     /**
      * <p>Create a interceptor/decorator subclass for the given bean.</p>

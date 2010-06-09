@@ -404,7 +404,8 @@ public final class InterceptorUtil
                 if (hasClassInterceptors)
                 {
                     throw new WebBeansConfigurationException("Simple web bean class : " + clazz.getName()
-                                                             + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
+                                                             + " can not define non-static, non-private final methods. "
+                                                             + "Because it is annotated with at least one @InterceptorBinding");
                 }
                 else
                 {

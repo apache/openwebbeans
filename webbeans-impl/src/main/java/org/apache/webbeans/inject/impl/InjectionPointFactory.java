@@ -219,7 +219,8 @@ public class InjectionPointFactory
             //@Observes is not injection point type for method parameters
             if(parameter.getAnnotation(Observes.class) == null)
             {
-                point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]), parameter.getBaseType(), member , parameter);
+                point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]),
+                                                 parameter.getBaseType(), member , parameter);
                 lists.add(point);                
             }  
         }
@@ -243,7 +244,8 @@ public class InjectionPointFactory
             //@Observes is not injection point type for method parameters
             if(parameter.getAnnotation(Observes.class) == null)
             {
-                point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]), parameter.getBaseType(), method.getJavaMember() , parameter);
+                point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]),
+                                                 parameter.getBaseType(), method.getJavaMember() , parameter);
                 lists.add(point);                
             }  
         }
@@ -294,7 +296,8 @@ public class InjectionPointFactory
         
         for(AnnotatedParameter<?> parameter : parameters)
         {
-            point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]), parameter.getBaseType(), constructor.getJavaMember() , parameter);
+            point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]),
+                                             parameter.getBaseType(), constructor.getJavaMember() , parameter);
             lists.add(point);
         }
         
@@ -318,7 +321,8 @@ public class InjectionPointFactory
         
         for(AnnotatedParameter<?> parameter : parameters)
         {
-            point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]), parameter.getBaseType(), member , parameter);
+            point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]),
+                                             parameter.getBaseType(), member , parameter);
             lists.add(point);
         }
         

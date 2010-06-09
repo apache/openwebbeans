@@ -68,11 +68,17 @@ public class DecoratorsManager
         }
 
         if (srcIndex == targetIndex)
+        {
             return 0;
+        }
         else if (srcIndex < targetIndex)
+        {
             return -1;
+        }
         else
+        {
             return 1;
+        }
     }
 
     public boolean isDecoratorEnabled(Class<?> decoratorClazz)

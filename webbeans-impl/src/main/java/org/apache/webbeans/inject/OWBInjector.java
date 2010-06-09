@@ -154,7 +154,8 @@ public final class OWBInjector implements Serializable
                             Field field = (Field)injectionPoint.getMember();
                             ClassUtil.setField(javaEeComponentInstance, field, object);
                         }                        
-                    }finally
+                    }
+                    finally
                     {
                         if(injectionPointBeanSet)
                         {
@@ -167,7 +168,8 @@ public final class OWBInjector implements Serializable
             }
             
             
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             throw e;
         }

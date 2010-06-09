@@ -237,7 +237,9 @@ public class XMLStereoTypeModel implements IStereoTypeModel
         }
 
         if (!(obj instanceof XMLStereoTypeModel))
+        {
             return false;
+        }
 
         XMLStereoTypeModel model = (XMLStereoTypeModel) obj;
 

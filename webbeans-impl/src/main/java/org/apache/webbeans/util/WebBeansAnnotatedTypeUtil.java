@@ -49,7 +49,6 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.interceptor.Interceptor;
@@ -65,7 +64,6 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
-import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
@@ -259,9 +257,11 @@ public final class WebBeansAnnotatedTypeUtil
                 Annotation[] annot = AnnotationUtil.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
 
                 Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
-                if (set.isEmpty()) {
+                if (set.isEmpty())
+                {
                     throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + 
-                                  " in class : " + declaredMethod.getDeclaringClass().getName() + ". Cannot find bean " + type + " with qualifier " + Arrays.toString(annot));
+                                  " in class : " + declaredMethod.getDeclaringClass().getName() + ". Cannot find bean " + type + " with qualifier "
+                                  + Arrays.toString(annot));
                 }
                 
                 Bean<?> foundBean = set.iterator().next();
@@ -426,7 +426,8 @@ public final class WebBeansAnnotatedTypeUtil
                     //WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
                     if(!ClassUtil.isStatic(field.getModifiers()))
                     {
-                        ResourceReference<X,Annotation> resourceRef = new ResourceReference<X, Annotation>(bean.getBeanClass(), field.getName(), (Class<X>)field.getType(), resourceAnnotation);
+                        ResourceReference<X,Annotation> resourceRef = new ResourceReference<X, Annotation>(bean.getBeanClass(), field.getName(),
+                                                                                                           (Class<X>)field.getType(), resourceAnnotation);
                         
                         //Can not define EL name
                         if(annotatedField.isAnnotationPresent(Named.class))
@@ -649,8 +650,6 @@ public final class WebBeansAnnotatedTypeUtil
                     throw new WebBeansConfigurationException("Error in definining disposal method of annotated method : " + annotatedMethod
                             + ". Multiple disposes annotation.");
                 }
-                else
-
                 found = true;
             }
         }
@@ -793,7 +792,8 @@ public final class WebBeansAnnotatedTypeUtil
         managedBeanCreator.defineStereoTypes();
 
         //Scope type
-        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                        
+        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName()
+                                           + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                        
         //Check for Enabled via Alternative
         WebBeansUtil.setInjectionTargetBeanEnableFlag(managedBean);        
         managedBeanCreator.defineApiType();

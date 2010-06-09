@@ -27,12 +27,11 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.SecurityUtil;
 
 /**
- * Injects the parameters of the {@link ManagedBean} constructor and returns
+ * Injects the parameters of the {@link org.apache.webbeans.component.ManagedBean} constructor and returns
  * the created instance.
  * 
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>

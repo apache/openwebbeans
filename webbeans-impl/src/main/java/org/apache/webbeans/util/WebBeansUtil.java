@@ -1143,10 +1143,12 @@ public final class WebBeansUtil
                 Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
 
                 if (params.length != 1 || !params[0].equals(InvocationContext.class))
+                {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
                             + method.getJavaMember().getName() + " in class : " + annotatedType.getJavaClass().getName()
                             + " can not take any formal arguments other than InvocationContext");
-
+                }
+                
                 if (!ClassUtil.getReturnType(method.getJavaMember()).equals(Object.class))
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
@@ -1406,7 +1408,6 @@ public final class WebBeansUtil
     /**
      * Returns true if array contains the StereoType meta annotation
      *
-     * @param anns annotation array
      * @return true if array contains the StereoType meta annotation
      */
     public static boolean isComponentHasStereoType(OwbBean<?> component)
@@ -1647,10 +1648,10 @@ public final class WebBeansUtil
 
         Bean<?> superBean = null;
         Bean<?> specialized = null;
-        Set<Bean<?>> resolvers = null;
+        Set<Bean<?>> resolvers = isConfiguredWebBeans(specializedClass, true);
         AlternativesManager altManager = AlternativesManager.getInstance();
 
-        if ((resolvers = isConfiguredWebBeans(specializedClass, true)) != null)
+        if (resolvers != null)
         {
             if(resolvers.isEmpty())
             {
@@ -1769,7 +1770,11 @@ public final class WebBeansUtil
      */
     protected static void configSpecializedProducerMethodBeans(List<ProducerMethodBean> sortedProducerBeans)
     {
-        if (sortedProducerBeans.isEmpty()) return;
+        if (sortedProducerBeans.isEmpty())
+        {
+            return;
+        }
+        
         AlternativesManager altManager = AlternativesManager.getInstance();
         Method superMethod = sortedProducerBeans.get(0).getCreatorMethod();
 
@@ -1814,7 +1819,9 @@ public final class WebBeansUtil
     public static void configureProducerMethodSpecializations()
     {
         Method method;
-        ProducerMethodBean pbean, pLeft, pRight;
+        ProducerMethodBean pbean;
+        ProducerMethodBean pLeft;
+        ProducerMethodBean pRight;
 
         logger.debug("configure Specialized producer beans has started.");
 
@@ -1865,7 +1872,10 @@ public final class WebBeansUtil
                     break;
                 }
             }
-            if (pbean == null) break;
+            if (pbean == null)
+            {
+                break;
+            }
 
             pLeft = pRight = pbean;
             boolean pLeftContinue = true;
@@ -1879,7 +1889,7 @@ public final class WebBeansUtil
                 {
                     //left
                     if (pLeft!= null &&
-                            pLeft.getBeanClass().getSuperclass().equals(pb.getBeanClass()))
+                        pLeft.getBeanClass().getSuperclass().equals(pb.getBeanClass()))
                     {
                         Method superMethod = ClassUtil.getClassMethodWithTypes(pb.getBeanClass(), method.getName(),
                                 Arrays.asList(method.getParameterTypes()));
@@ -1894,7 +1904,10 @@ public final class WebBeansUtil
                         {
                             pLeft = null;
                         }
-                        if (pLeft != null) pLeftContinue = true;
+                        if (pLeft != null)
+                        {
+                            pLeftContinue = true;
+                        }
                     }
                     //right
                     if (pRight != null &&
@@ -2505,7 +2518,7 @@ public final class WebBeansUtil
     /**
      * Returns <code>ProcessAnnotatedType</code> event. 
      * @param <T> bean type
-     * @param clazz bean class
+     * @param annotatedType bean class
      * @return event
      */
     public static <T> GProcessAnnotatedType fireProcessAnnotatedTypeEvent(AnnotatedType<T> annotatedType)
@@ -2541,7 +2554,6 @@ public final class WebBeansUtil
     /**
      * Returns <code>ProcessInjectionTarget</code> event.
      * @param <T> bean type
-     * @param bean bean instance
      * @return event
      */
     public static <T> GProcessInjectionTarget fireProcessInjectionTargetEventForJavaEeComponents(Class<T> componentClass)
