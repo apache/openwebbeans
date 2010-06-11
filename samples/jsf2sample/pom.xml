@@ -39,7 +39,13 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Interceptor API -->
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-resource</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+	<!-- Interceptor API -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-interceptor_1.1_spec</artifactId>
@@ -104,14 +110,15 @@
     <build>
         <finalName>jsf2sample</finalName>
         <plugins>
-            <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>8.0.0.M0</version>
-                <configuration>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
-                </configuration>
-            </plugin>
+                        <plugin>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>tomcat-maven-plugin</artifactId>
+                                        <configuration>
+                                <url>http://localhost:8080/manager/text</url>
+                                </configuration>
+                        </plugin>
+            
+            
         </plugins>
     </build>
 
