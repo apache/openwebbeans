@@ -87,6 +87,7 @@ under the License.
         <module>jms-sample</module>
         <module>reservation</module>
         <module>tomcat-sample</module>
+        <module>tomcat7-sample</module>
         <module>standalone-sample</module>
     </modules>
 </project>
