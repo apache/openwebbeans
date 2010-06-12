@@ -25,6 +25,7 @@ import java.util.Properties;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * This class performs a lookup of various configuration properties 
@@ -140,7 +141,15 @@ public class OpenWebBeansConfiguration
      */
     private void loadFromSystemProperties()
     {
-        Properties properties = System.getProperties();
+        Properties properties = null;
+        if(System.getSecurityManager() != null)
+        {
+            properties = SecurityUtil.doPrivilegedGetSystemProperties();
+        }
+        else
+        {
+            properties = System.getProperties();
+        }
         
         String value = properties.getProperty(CONVERSATION_PERIODIC_DELAY);
         setPropertyFromSystemProperty(CONVERSATION_PERIODIC_DELAY, value);        

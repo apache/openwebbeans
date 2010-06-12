@@ -24,6 +24,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Properties;
+
 import javassist.util.proxy.ProxyFactory;
 import org.apache.webbeans.exception.WebBeansException;
 
@@ -41,6 +43,8 @@ public class SecurityUtil
     private final static int METHOD_CLASS_GETDECLAREDFIELD = 0x05;
 
     private final static int METHOD_CLASS_GETDECLAREDFIELDS = 0x06;
+    
+    private final static PrivilegedActionGetSystemProperties SYSTEM_PROPERTY_ACTION = new PrivilegedActionGetSystemProperties();
 
     @SuppressWarnings("unchecked")
     public static <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) throws NoSuchMethodException
@@ -177,6 +181,49 @@ public class SecurityUtil
     {
         Class<?> ret = (Class<?>)AccessController.doPrivileged(new PrivilegedActionForProxyFactory(factory));
         return ret;
+    }
+    
+    public static String doPrivilegedGetSystemProperty(String propertyName, String defaultValue)
+    {
+        String value = AccessController.doPrivileged(new PrivilegedActionForProperty(propertyName, defaultValue));
+        
+        return value;
+    }
+
+    public static Properties doPrivilegedGetSystemProperties()
+    {
+        return AccessController.doPrivileged(SYSTEM_PROPERTY_ACTION);
+    }
+
+    protected static class PrivilegedActionForProperty implements PrivilegedAction<String>
+    {
+        private final String propertyName;
+        
+        private final String defaultValue;
+
+        protected PrivilegedActionForProperty(String propertyName, String defaultValue)
+        {
+            this.propertyName = propertyName;
+            this.defaultValue = defaultValue;
+        }
+        
+        @Override
+        public String run()
+        {
+            return System.getProperty(this.propertyName,this.defaultValue);
+        }
+        
+    }
+    
+    protected static class PrivilegedActionGetSystemProperties implements PrivilegedAction<Properties>
+    {
+        
+        @Override
+        public Properties run()
+        {
+            return System.getProperties();
+        }
+        
     }
 
     protected static class PrivilegedActionForProxyFactory implements PrivilegedAction<Object>
