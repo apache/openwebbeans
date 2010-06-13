@@ -29,7 +29,7 @@ import javax.faces.context.FacesContext;
 import org.apache.webbeans.conversation.ConversationManager;
 
 public class ConversationAwareViewHandler extends ViewHandlerWrapper
-{	
+{
     private final ViewHandler delegate;
 
     public ConversationAwareViewHandler(ViewHandler delegate)
@@ -66,10 +66,12 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
         int indexOfQuery = url.indexOf('?');
         if (indexOfQuery > 0) 
         {
-        	String queryString = url.substring(indexOfQuery);
-        	// If the query string already has a cid parameter, return url directly.
-        	if (queryString.contains("?cid=") || queryString.contains("&cid="))
-        		return url;
+            String queryString = url.substring(indexOfQuery);
+            // If the query string already has a cid parameter, return url directly.
+            if (queryString.contains("?cid=") || queryString.contains("&cid="))
+            {
+                return url;
+            }
         }
         ConversationManager conversationManager = ConversationManager.getInstance();
         Conversation conversation = conversationManager.getConversationBeanReference();

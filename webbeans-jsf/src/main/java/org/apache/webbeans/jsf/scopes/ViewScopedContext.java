@@ -1,18 +1,18 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
+ * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
+ * regarding copyright ownership. The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -67,7 +67,8 @@ public class ViewScopedContext implements Context, SystemEventListener
         @SuppressWarnings("unchecked")
         ConcurrentHashMap<Contextual<?>, Object> componentInstanceMap = (ConcurrentHashMap<Contextual<?>, Object>) viewMap.get(COMPONENT_MAP_NAME);
         
-        if(componentInstanceMap == null) {
+        if(componentInstanceMap == null)
+        {
             return null;
         }
         
@@ -165,7 +166,8 @@ public class ViewScopedContext implements Context, SystemEventListener
     }
 
     @Override
-    public boolean isListenerForSource(Object source) {
+    public boolean isListenerForSource(Object source)
+    {
         if (source instanceof UIViewRoot)
         {
             return true;
@@ -183,7 +185,8 @@ public class ViewScopedContext implements Context, SystemEventListener
      */
     @Override
     @SuppressWarnings("unchecked")
-    public void processEvent(SystemEvent event) {
+    public void processEvent(SystemEvent event)
+    {
         if (event instanceof PreDestroyViewMapEvent)
         {
             // better use the viewmap we get from the event to prevent concurrent modification problems
@@ -195,7 +198,8 @@ public class ViewScopedContext implements Context, SystemEventListener
             ConcurrentHashMap<Contextual<?>, CreationalContext<?>> creationalContextMap 
                     = (ConcurrentHashMap<Contextual<?>, CreationalContext<?>>) viewMap.get(CREATIONAL_MAP_NAME);
 
-            if(componentInstanceMap != null) {
+            if(componentInstanceMap != null)
+            {
                 for ( Entry<Contextual<?>, Object> componentEntry : componentInstanceMap.entrySet())
                 {
                     // there is no nice way to explain the Java Compiler that we are handling the same type T,
