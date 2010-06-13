@@ -272,7 +272,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.2</version>
-<!--  TODO: ENABLE IT FINALLY!
                 <executions>
                   <execution>
                     <id>verify-style</id>
@@ -280,7 +279,6 @@
                     <goals><goal>check</goal></goals>
                   </execution>
                 </executions>
--->
                 <configuration>
                     <configLocation>openwebbeans/owb-checks-default.xml</configLocation>
                     <headerLocation>openwebbeans/owb-header.txt</headerLocation>
