@@ -22,16 +22,15 @@ import org.apache.webbeans.sample.model.User;
 
 public class LoggedInEvent
 {
-	private User user;
-	
-	public LoggedInEvent(User user)
-	{
-		this.user = user;
-	}
-	
-	public User getUser()
-	{
-		return this.user;
-	}
+    private User user;
 
+    public LoggedInEvent(User user)
+    {
+        this.user = user;
+    }
+
+    public User getUser()
+    {
+        return this.user;
+    }
 }

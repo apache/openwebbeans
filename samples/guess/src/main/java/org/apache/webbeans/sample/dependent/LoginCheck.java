@@ -24,14 +24,14 @@ import javax.enterprise.context.Dependent;
 @Dependent
 public class LoginCheck
 {
-	
-	public boolean checkLogin(String userName, String password)
-	{
-		if(userName.equals("admin") && password.equals("admin"))
-		{
-			return true;
-		}
-		
-		return false;
-	}
+
+    public boolean checkLogin(String userName, String password)
+    {
+        if(userName.equals("admin") && password.equals("admin"))
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

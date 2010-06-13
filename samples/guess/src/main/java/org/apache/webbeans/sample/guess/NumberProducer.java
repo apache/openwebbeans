@@ -39,7 +39,8 @@ public class NumberProducer implements Serializable
       
    @Produces    
    @NextNumber
-   public Integer next() { 
+   public Integer next()
+   { 
       return new Integer(new java.util.Random().nextInt(101)); 
    }
    

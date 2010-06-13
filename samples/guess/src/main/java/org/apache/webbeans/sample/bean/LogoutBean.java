@@ -29,20 +29,20 @@ import org.apache.webbeans.sample.model.User;
 @Named
 public class LogoutBean
 {
-	private @Inject @LoggedInUser User user;
+    private @Inject @LoggedInUser User user;
 
-	public LogoutBean()
-	{
-		
-	}
-	
-	public String logout()
-	{
-		System.out.println("Logged out User : " + user.getUserName());
-		
-		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
-		session.invalidate();
-		
-		return "login";
-	}
+    public LogoutBean()
+    {
+
+    }
+
+    public String logout()
+    {
+        System.out.println("Logged out User : " + user.getUserName());
+
+        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+        session.invalidate();
+
+        return "login";
+    }
 }

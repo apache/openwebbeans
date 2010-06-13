@@ -25,16 +25,14 @@ import org.apache.webbeans.sample.event.LoggedInEvent;
 import org.apache.webbeans.sample.model.User;
 
 
-
 public class LoggedInObserver
 {
 
-	public void afterLogin(@Observes LoggedInEvent event)
-	{
-		User user = event.getUser();
-		System.out.println("User with user name : " + user.getUserName());
-		System.out.println("User with password : " + user.getPassword());
-		
-	}
+    public void afterLogin(@Observes LoggedInEvent event)
+    {
+        User user = event.getUser();
+        System.out.println("User with user name : " + user.getUserName());
+        System.out.println("User with password : " + user.getPassword());
+    }
 
 }

@@ -41,88 +41,88 @@ import org.apache.webbeans.sample.util.FacesMessageUtil;
 @Named
 public class LoginBean
 {
-	private User user = null;
-	
-	private String userName;
-	
-	private String password;
-	
-	private @Inject @Default LoginCheck loginCheck;
-	
-	private @Inject @Default FacesMessageUtil messageUtil;
-	
-	private @Inject @Any Event<LoggedInEvent> event;
-	
-	private @Inject @AppScopeBinding AppObject applicationScopedString;
-	
-	public LoginBean()
-	{
-		
-	}
-	
-	public String login()
-	{
-		if(loginCheck.checkLogin(this.userName, this.password))
-		{
-			user = new User();
-			user.setUserName(this.userName);
-			user.setPassword(this.password);
-			
-			event.fire(new LoggedInEvent(this.user));
-			
-			return "loginSuccess";
-		}
-		else
-		{
-			messageUtil.addMessage(FacesMessage.SEVERITY_ERROR, "Login Failed", "Login failed");
-			return null;
-		}
-	}
-	
-	public void afterLoggedIn(@Observes LoggedInEvent event)
-	{
-		messageUtil.addMessage(FacesMessage.SEVERITY_INFO, "Login Successfull", "Login Successfull");
-		System.out.println("Application scoped string : " + applicationScopedString);
-	}
-	
-	
-	@Produces @SessionScoped @LoggedInUser @Named(value="currentUser")
-	public User getLoggedInUser()
-	{
-		return this.user;
-	}
+    private User user = null;
 
-	/**
-	 * @return the userName
-	 */
-	public String getUserName()
-	{
-		return userName;
-	}
+    private String userName;
 
-	/**
-	 * @param userName the userName to set
-	 */
-	public void setUserName(String userName)
-	{
-		this.userName = userName;
-	}
+    private String password;
 
-	/**
-	 * @return the password
-	 */
-	public String getPassword()
-	{
-		return password;
-	}
+    private @Inject @Default LoginCheck loginCheck;
 
-	/**
-	 * @param password the password to set
-	 */
-	public void setPassword(String password)
-	{
-		this.password = password;
-	}
-	
-	
+    private @Inject @Default FacesMessageUtil messageUtil;
+
+    private @Inject @Any Event<LoggedInEvent> event;
+
+    private @Inject @AppScopeBinding AppObject applicationScopedString;
+
+    public LoginBean()
+    {
+
+    }
+
+    public String login()
+    {
+        if(loginCheck.checkLogin(this.userName, this.password))
+        {
+            user = new User();
+            user.setUserName(this.userName);
+            user.setPassword(this.password);
+
+            event.fire(new LoggedInEvent(this.user));
+
+            return "loginSuccess";
+        }
+        else
+        {
+            messageUtil.addMessage(FacesMessage.SEVERITY_ERROR, "Login Failed", "Login failed");
+            return null;
+        }
+    }
+
+    public void afterLoggedIn(@Observes LoggedInEvent event)
+    {
+        messageUtil.addMessage(FacesMessage.SEVERITY_INFO, "Login Successfull", "Login Successfull");
+        System.out.println("Application scoped string : " + applicationScopedString);
+    }
+
+
+    @Produces @SessionScoped @LoggedInUser @Named(value="currentUser")
+    public User getLoggedInUser()
+    {
+        return this.user;
+    }
+
+    /**
+     * @return the userName
+     */
+    public String getUserName()
+    {
+        return userName;
+    }
+
+    /**
+     * @param userName the userName to set
+     */
+    public void setUserName(String userName)
+    {
+        this.userName = userName;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword()
+    {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+
+
 }
