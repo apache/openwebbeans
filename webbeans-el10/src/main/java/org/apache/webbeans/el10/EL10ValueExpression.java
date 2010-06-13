@@ -62,7 +62,7 @@ public class EL10ValueExpression extends ValueExpression
         finally
         {
             //Destroy dependent store
-            ELContextStore store = ELContextStore.LOCAL_CONTEXT.get();
+            ELContextStore store = ELContextStore.localContext.get();
             if(store != null)
             {
                 store.destroy();

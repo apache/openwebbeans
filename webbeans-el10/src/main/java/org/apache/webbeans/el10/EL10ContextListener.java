@@ -30,6 +30,6 @@ public class EL10ContextListener implements ELContextListener
     public void contextCreated(ELContextEvent event)
     {
         ELContextStore store = new ELContextStore();        
-        ELContextStore.LOCAL_CONTEXT.set(store);
+        ELContextStore.localContext.set(store);
     }
 }

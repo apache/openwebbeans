@@ -174,96 +174,95 @@ public class MockServletContext implements ServletContext
     }
 
     /*--- NEW SERVLET 3.0 FUNCTIONS! -- */
-    /*
-	public Dynamic addFilter(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /*X
+    public Dynamic addFilter(String arg0, String arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Dynamic addFilter(String arg0, Filter arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Dynamic addFilter(String arg0, Filter arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Dynamic addFilter(String arg0, Class<? extends Filter> arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Dynamic addFilter(String arg0, Class<? extends Filter> arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public javax.servlet.ServletRegistration.Dynamic addServlet(String arg0,
-			String arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public javax.servlet.ServletRegistration.Dynamic addServlet(String arg0,
+                                                                String arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public javax.servlet.ServletRegistration.Dynamic addServlet(String arg0,
-			Servlet arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public javax.servlet.ServletRegistration.Dynamic addServlet(String arg0,
+                                                                Servlet arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public javax.servlet.ServletRegistration.Dynamic addServlet(String arg0,
-			Class<? extends Servlet> arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public javax.servlet.ServletRegistration.Dynamic addServlet(String arg0,
+                                                                Class<? extends Servlet> arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public <T extends Filter> T createFilter(Class<T> arg0)
-			throws ServletException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public <T extends Filter> T createFilter(Class<T> arg0)
+            throws ServletException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public <T extends Servlet> T createServlet(Class<T> arg0)
-			throws ServletException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public <T extends Servlet> T createServlet(Class<T> arg0)
+            throws ServletException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public FilterRegistration getFilterRegistration(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public FilterRegistration getFilterRegistration(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Map<String, FilterRegistration> getFilterRegistrations() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Map<String, FilterRegistration> getFilterRegistrations() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public ServletRegistration getServletRegistration(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public ServletRegistration getServletRegistration(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Map<String, ServletRegistration> getServletRegistrations() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Map<String, ServletRegistration> getServletRegistrations() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public SessionCookieConfig getSessionCookieConfig() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public SessionCookieConfig getSessionCookieConfig() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public boolean setInitParameter(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public boolean setInitParameter(String arg0, String arg1) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	public void setSessionTrackingModes(Set<SessionTrackingMode> arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void setSessionTrackingModes(Set<SessionTrackingMode> arg0) {
+        // TODO Auto-generated method stub
+
+    }
     */
-
 }

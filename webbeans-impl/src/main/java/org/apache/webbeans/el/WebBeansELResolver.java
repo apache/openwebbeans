@@ -105,7 +105,7 @@ public class WebBeansELResolver extends ELResolver
         CreationalContext<Object> creationalContext = null;
         
         //Local store, set by the OwbELContextListener
-        ELContextStore store = ELContextStore.LOCAL_CONTEXT.get();        
+        ELContextStore store = ELContextStore.localContext.get();
         if (obj == null)
         {                      
             //Name of the bean

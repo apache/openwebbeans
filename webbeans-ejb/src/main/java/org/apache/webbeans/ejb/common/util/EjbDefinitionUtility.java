@@ -67,7 +67,8 @@ public final class EjbDefinitionUtility
          
             return (T)(JavassistProxyFactory.defineEjbBeanProxyClass(bean, factory).newInstance());
             
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             throw new WebBeansException(e);
         }

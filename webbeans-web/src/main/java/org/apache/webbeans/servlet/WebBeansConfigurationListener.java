@@ -48,7 +48,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansConfigurationListener.class);
     
-	/**Manages the container lifecycle*/
+    /**Manages the container lifecycle*/
     private ContainerLifecycle lifeCycle = null;
 
     /**
@@ -58,10 +58,10 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     {
         
     }
-    
-	/**
-	 * {@inheritDoc}
-	 */
+
+    /**
+     * {@inheritDoc}
+     */
     public void contextInitialized(ServletContextEvent event)
     {
         this.lifeCycle = LifecycleFactory.getInstance().getLifecycle();
@@ -86,9 +86,9 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         this.lifeCycle = null;
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     public void requestDestroyed(ServletRequestEvent event)
     {
         if (logger.wblWillLogDebug())
@@ -98,9 +98,9 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         this.lifeCycle.getContextService().endContext(RequestScoped.class, event);        
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     public void requestInitialized(ServletRequestEvent event)
     {
         try
@@ -125,7 +125,8 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
                     {
                         httpRequest.getSession();
                     }
-                    catch(Exception e) {
+                    catch(Exception e)
+                    {
                         logger.error(OWBLogConst.ERROR_0013, e);
                     }
                 }
@@ -139,9 +140,9 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     public void sessionCreated(HttpSessionEvent event)
     {
         try
@@ -159,9 +160,9 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     public void sessionDestroyed(HttpSessionEvent event)
     {
         if (logger.wblWillLogDebug())
@@ -174,22 +175,22 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         conversationManager.destroyConversationContextWithSessionId(event.getSession().getId());
     }
 
-	/**
-	 * {@inheritDoc}
-	 */    
-	@Override
-	public void sessionDidActivate(HttpSessionEvent event) 
-	{
-	    //TODO activation
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sessionDidActivate(HttpSessionEvent event)
+    {
+        //TODO activation
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void sessionWillPassivate(HttpSessionEvent event) 
-	{
-	    //TODO Passivation
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sessionWillPassivate(HttpSessionEvent event)
+    {
+        //TODO Passivation
+    }
 
 }

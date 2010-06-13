@@ -158,9 +158,9 @@ public class OpenWebBeansEjbInterceptor
         
         try
         {
-            int result = 1000;
+            int result = activateContexts(RequestScoped.class);
             //Context activities
-            if( (result = activateContexts(RequestScoped.class)) == 1)
+            if(result == 1)
             {
                 requestCreated = true;
             }
@@ -168,8 +168,9 @@ public class OpenWebBeansEjbInterceptor
             {
                 requestAlreadyActive = true;
             }
-            
-            if((result = activateContexts(ApplicationScoped.class)) == 1)
+
+            result = activateContexts(ApplicationScoped.class);
+            if(result == 1)
             {
                 applicationCreated = true;
             }
@@ -189,7 +190,8 @@ public class OpenWebBeansEjbInterceptor
                 rv = callInterceptorsForNonContextuals(ejbContext.getMethod(), ejbContext.getTarget(), ejbContext.getParameters(), ejbContext);
             }
             
-        }finally
+        }
+        finally
         {
             if(!requestAlreadyActive)
             {
@@ -388,7 +390,8 @@ public class OpenWebBeansEjbInterceptor
     private BaseEjbBean<?> findTargetBean(Object instance) 
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
-        if (instance == null) { 
+        if (instance == null)
+        {
             logger.debug("findTargetBean was passed a null instance.");
             return null;
         }
@@ -462,7 +465,8 @@ public class OpenWebBeansEjbInterceptor
             { 
                 return runInterceptorStack(ejbBean.getInterceptorStack(), method, instance, arguments, ejbBean, cc, ejbContext);
             }
-            finally { 
+            finally
+            { 
                 cc.release();
             }
         }
@@ -508,7 +512,8 @@ public class OpenWebBeansEjbInterceptor
                 ((ProxyObject)delegate).setHandler(delegateHandler);
 
                 // Gets component decorator stack
-                decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate, (CreationalContextImpl<?>)threadLocalCreationalContext.get());                        
+                decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate,
+                                                                       (CreationalContextImpl<?>)threadLocalCreationalContext.get());                        
                 //Sets decorator stack of delegate
                 delegateHandler.setDecorators(decorators);
                 
@@ -617,7 +622,8 @@ public class OpenWebBeansEjbInterceptor
         Object instance = ejbContext.getTarget();
         
         BaseEjbBean<?> bean = findTargetBean(instance);
-        if (bean == null) { 
+        if (bean == null)
+        { 
             logger.debug("No bean for instance [{0}]", instance);
             return;
         }
@@ -657,7 +663,10 @@ public class OpenWebBeansEjbInterceptor
         }
         finally 
         { 
-          if (localcc != null) localcc.release();
+          if (localcc != null)
+          {
+              localcc.release();
+          }
         }
     } 
     

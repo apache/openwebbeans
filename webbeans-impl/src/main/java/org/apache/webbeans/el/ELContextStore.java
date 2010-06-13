@@ -28,7 +28,8 @@ import javax.enterprise.inject.spi.Bean;
 
 public class ELContextStore
 {
-    public static ThreadLocal<ELContextStore> LOCAL_CONTEXT = new ThreadLocal<ELContextStore>();
+    //X TODO MUST NOT BE PUBLIC!
+    public static ThreadLocal<ELContextStore> localContext = new ThreadLocal<ELContextStore>();
 
     private Map<Bean<?>, CreationalStore> dependentObjects = new HashMap<Bean<?>, CreationalStore>();
     

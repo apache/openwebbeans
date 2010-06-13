@@ -45,10 +45,9 @@ import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.spi.ContextsService;
 
 /**
- * Web container {@link ContextsService}
+ * Web container {@link org.apache.webbeans.spi.ContextsService}
  * implementation.
  */
 public class WebContextsService extends AbstractContextsService
@@ -335,8 +334,8 @@ public class WebContextsService extends AbstractContextsService
         }
         
         //Remove ELContext store
-        ELContextStore.LOCAL_CONTEXT.set(null);
-        ELContextStore.LOCAL_CONTEXT.remove();
+        ELContextStore.localContext.set(null);
+        ELContextStore.localContext.remove();
         
         //Clear thread locals
         requestContext.set(null);

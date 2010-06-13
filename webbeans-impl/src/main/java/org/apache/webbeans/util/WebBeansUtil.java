@@ -1877,14 +1877,16 @@ public final class WebBeansUtil
                 break;
             }
 
-            pLeft = pRight = pbean;
+            pRight = pbean;
+            pLeft = pRight;
             boolean pLeftContinue = true;
             boolean pRightContinue = true;
 
             // find all pbean's super beans and sub sub beans
             while(pLeftContinue || pRightContinue)
             {
-                pLeftContinue = pRightContinue = false;
+                pRightContinue = false;
+                pLeftContinue = false;
                 for(ProducerMethodBean pb : producerBeans)
                 {
                     //left

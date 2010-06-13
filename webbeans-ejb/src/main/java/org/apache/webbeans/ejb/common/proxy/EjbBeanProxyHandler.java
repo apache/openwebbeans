@@ -100,7 +100,8 @@ public class EjbBeanProxyHandler implements MethodHandler
             {
                 return proceed.invoke(instance, arguments);
                 
-            }finally
+            }
+            finally
             {
                 SecurityUtil.doPrivilegedSetAccessible(method, access);
             }            
@@ -135,7 +136,8 @@ public class EjbBeanProxyHandler implements MethodHandler
                 {
                     return method.invoke(webbeansInstance, arguments);
                     
-                }finally
+                }
+                finally
                 {
                     SecurityUtil.doPrivilegedSetAccessible(method, access);
                 }            
@@ -153,12 +155,14 @@ public class EjbBeanProxyHandler implements MethodHandler
             {
                 result = method.invoke(webbeansInstance, arguments);
                 
-            }finally
+            }
+            finally
             {
                 SecurityUtil.doPrivilegedSetAccessible(method, access);
             }            
             
-        }finally
+        }
+        finally
         {
             OpenWebBeansEjbInterceptor.unsetThreadLocal();   
         }                

@@ -82,7 +82,8 @@ public final class EjbValidator
         {
             if (!ejbBean.getScope().equals(Dependent.class) && !ejbBean.getScope().equals(ApplicationScoped.class))
             {
-                throw new WebBeansConfigurationException("Singleton Session Bean class : " + ejbBean.getReturnType() + " " + "can not define scope other than @Dependent or @ApplicationScoped");
+                throw new WebBeansConfigurationException("Singleton Session Bean class : " + ejbBean.getReturnType() + " "
+                                                         + "can not define scope other than @Dependent or @ApplicationScoped");
             }
         }
     }
