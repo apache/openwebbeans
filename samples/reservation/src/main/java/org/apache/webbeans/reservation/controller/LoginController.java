@@ -63,8 +63,8 @@ public class LoginController implements ILoginController
         }
         
         Query query = entityManager.createQuery("select p from User p where  " +
-        		                                "p.userName=:userName and " +
-        		                                "p.password=:password");
+                                                "p.userName=:userName and " +
+                                                "p.password=:password");
         
         query.setParameter("userName", userName);
         query.setParameter("password", password);

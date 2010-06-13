@@ -47,7 +47,8 @@ public class JSFSecurityPhaseListener implements PhaseListener
                 tracker = (SessionTracker)context.getApplication().evaluateExpressionGet(context, "#{sessionTracker}", SessionTracker.class);
                 user = tracker.getUser();
                 
-            }catch(Exception e)
+            }
+            catch(Exception e)
             {
                 //Tracker is null
                 System.out.println("Context is not active");

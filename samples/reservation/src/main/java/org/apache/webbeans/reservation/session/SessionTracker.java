@@ -28,7 +28,6 @@ import org.apache.webbeans.reservation.events.LoggedInEvent;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Named;
-import javax.enterprise.inject.spi.BeanManager;
 
 @SessionScoped
 @Named
@@ -40,7 +39,7 @@ public class SessionTracker implements Serializable
      
     /**
      * When event fires, this observer method is called
-     * by the {@link BeanManager} interface.
+     * by the {@link javax.enterprise.inject.spi.BeanManager} interface.
      * 
      * @param loggedInEvent event 
      */

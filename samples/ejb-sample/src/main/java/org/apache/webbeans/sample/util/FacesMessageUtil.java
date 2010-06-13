@@ -28,15 +28,14 @@ import javax.faces.context.FacesContext;
 @Dependent
 public class FacesMessageUtil
 {
+    public FacesMessageUtil()
+    {
 
-	public FacesMessageUtil()
-	{
-		
-	}
-	
-	public void addMessage(Severity severity,String summary, String detail)
-	{
-		FacesMessage message = new FacesMessage(severity,summary,detail);
-		FacesContext.getCurrentInstance().addMessage(null, message);
-	}
+    }
+
+    public void addMessage(Severity severity,String summary, String detail)
+    {
+        FacesMessage message = new FacesMessage(severity,summary,detail);
+        FacesContext.getCurrentInstance().addMessage(null, message);
+    }
 }

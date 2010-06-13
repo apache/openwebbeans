@@ -52,7 +52,8 @@ public class TransactionalInterceptor
                         
             return context.proceed();
             
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             logger.error("Exception in transactional method call", e);
             
@@ -63,7 +64,8 @@ public class TransactionalInterceptor
             
             throw e;
             
-        }finally
+        }
+        finally
         {
             if(transaction != null && transaction.isActive())
             {

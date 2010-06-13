@@ -85,7 +85,9 @@ public class UserReservationBean implements Serializable
         {
             date = new SimpleDateFormat("dd/MM/yyyy").parse(getReservationDate());
             
-        }catch(Exception e){
+        }
+        catch(Exception e)
+        {
             
             JSFUtility.addErrorMessage("Please give a date with dd/MM/yyyy", "");
             return null;
@@ -145,8 +147,8 @@ public class UserReservationBean implements Serializable
         
         for(Integer i : this.itemSelected)
         {
-            SelectItem item = null;
-            if((item = contains(i)) != null)
+            SelectItem item = contains(i);
+            if(item != null)
             {
                 this.reservations.remove(item);   
                 
