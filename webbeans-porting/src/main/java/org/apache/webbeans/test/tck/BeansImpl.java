@@ -52,24 +52,28 @@ public class BeansImpl implements Beans
         return bean;
     }
 
-    public boolean isEnterpriseBean( Class<?> clazz ) {
+    public boolean isEnterpriseBean( Class<?> clazz )
+    {
         return false;
     }
 
-    public boolean isEntityBean( Class<?> clazz ) 
+    public boolean isEntityBean( Class<?> clazz )
     {
         return (AnnotationUtil.hasClassAnnotation(clazz, Entity.class));
     }        
 
-    public boolean isProxy( Object instance ) {
+    public boolean isProxy( Object instance )
+    {
         return instance.getClass().getName().contains("$$");
     }
 
-    public boolean isStatefulBean( Class<?> clazz ) {
+    public boolean isStatefulBean( Class<?> clazz )
+    {
         return false;
     }
 
-    public boolean isStatelessBean( Class<?> clazz ) {
+    public boolean isStatelessBean( Class<?> clazz )
+    {
         return false;
     }
 

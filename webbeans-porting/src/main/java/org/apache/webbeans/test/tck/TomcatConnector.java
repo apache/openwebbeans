@@ -56,7 +56,8 @@ public class TomcatConnector extends AbstractContainerConnector implements Conta
 
    public TomcatConnector() throws IOException
    {
-      logger.info("You must add the the tests/secret user to Tomcat, for example, in $CATALINA_BASE/conf/tomcat-users.xml add <user name=\"tests\" password=\"secret\" roles=\"standard,manager\" />");
+      logger.info("You must add the the tests/secret user to Tomcat, for example, in $CATALINA_BASE/conf/tomcat-users.xml add " +
+                  "<user name=\"tests\" password=\"secret\" roles=\"standard,manager\" />");
       tmpdir = new File(System.getProperty("java.io.tmpdir"), "org.jboss.webbeans.tck.integration.jbossas");
       tmpdir.mkdir();
       tmpdir.deleteOnExit();

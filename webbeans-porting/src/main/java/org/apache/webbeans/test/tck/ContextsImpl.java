@@ -52,7 +52,8 @@ public class ContextsImpl implements Contexts<AbstractContext>
         context.setActive(false);
     }
 
-    public AbstractContext getDependentContext() {
+    public AbstractContext getDependentContext()
+    {
         return (AbstractContext) ContextFactory.getStandardContext(ContextTypes.DEPENDENT);
     }
 

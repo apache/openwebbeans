@@ -40,7 +40,7 @@ public class StandaloneResourceProcessor
     
     private static WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneResourceProcessor.class);
     
-    private static final StandaloneResourceProcessor processor = new StandaloneResourceProcessor();
+    private static StandaloneResourceProcessor processor = new StandaloneResourceProcessor();
     
     /**
      *  A cache for EntityManagerFactories.
@@ -53,7 +53,8 @@ public class StandaloneResourceProcessor
         {
             context = new InitialContext();
             
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             throw new ExceptionInInitializerError(e);
         }
@@ -166,7 +167,8 @@ public class StandaloneResourceProcessor
             {
                 factory.close();
                 
-            }catch(Exception e)
+            }
+            catch(Exception e)
             {
                 logger.warn(OWBLogConst.WARN_0006, e, key);
             }

@@ -83,7 +83,8 @@ public class StandaloneContainersImpl implements StandaloneContainers
             
             this.lifeCycle.startApplication(null);
             
-        }catch(Throwable e)
+        }
+        catch(Throwable e)
         {
             e.printStackTrace();
             this.excpetion = new DeploymentException("Standalone Container Impl.",e);
@@ -183,7 +184,8 @@ public class StandaloneContainersImpl implements StandaloneContainers
         return deployInternal(classes, xmls);
     }
     
-    private void setUp(Collection<Class<?>> classes){
+    private void setUp(Collection<Class<?>> classes)
+    {
         
         try
         {
@@ -206,7 +208,8 @@ public class StandaloneContainersImpl implements StandaloneContainers
             Properties properties = new Properties(System.getProperties());
             properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, InitContextFactory.class.getName());
             new InitialContext(properties);            
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             e.printStackTrace();
         }

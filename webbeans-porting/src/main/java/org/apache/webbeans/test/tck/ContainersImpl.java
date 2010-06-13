@@ -73,7 +73,8 @@ public class ContainersImpl extends TomcatConnector implements Containers
                     }                    
                 }
                 
-            }finally
+            }
+            finally
             {
                 method.releaseConnection();
             }
