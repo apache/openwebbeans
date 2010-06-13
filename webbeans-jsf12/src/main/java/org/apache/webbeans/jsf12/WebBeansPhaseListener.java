@@ -25,7 +25,6 @@ import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.conversation.ConversationImpl;

@@ -26,7 +26,7 @@ import javax.faces.context.FacesContext;
 import org.apache.webbeans.conversation.ConversationManager;
 
 public class ConversationAwareViewHandler extends ViewHandlerWrapper
-{	
+{
     private final ViewHandler delegate;
 
     public ConversationAwareViewHandler(ViewHandler delegate)

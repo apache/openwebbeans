@@ -182,7 +182,7 @@ public final class JSFUtil
 
     public static String getConversationId()
     {
-    	String cid = getJSFRequestParameter("cid");
-    	return cid;
+        String cid = getJSFRequestParameter("cid");
+        return cid;
     }
 }
