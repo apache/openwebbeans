@@ -102,7 +102,8 @@ class ResourceInjectionProcessor
         return clazz.cast(lookedupResource);
     }    
     
-    private  <X> X getPersistenceContext(Context context, String unitName, Class<X> clazz) {
+    private  <X> X getPersistenceContext(Context context, String unitName, Class<X> clazz)
+    {
         // get JtaEntityManagerRegistry
         JtaEntityManagerRegistry jtaEntityManagerRegistry = SystemInstance.get().getComponent(JtaEntityManagerRegistry.class);
 
@@ -113,9 +114,11 @@ class ResourceInjectionProcessor
         return clazz.cast(jtaEntityManager);
     }
 
-    private  <X> X getPersistenceUnit(Context context, String unitName, Class<X> clazz) {
+    private  <X> X getPersistenceUnit(Context context, String unitName, Class<X> clazz)
+    {
         EntityManagerFactory factory;
-        try {
+        try
+        {
 
             NamingEnumeration<NameClassPair> persUnits = context.list("java:openejb/PersistenceUnit");
             
@@ -148,7 +151,9 @@ class ResourceInjectionProcessor
             factory = (EntityManagerFactory) context.lookup("java:openejb/PersistenceUnit/" + shortestMatch);
             
             
-        } catch (NamingException e) {
+        }
+        catch (NamingException e)
+        {
             throw new CreationException("PersistenceUnit '" + unitName + "' not found", e );
         }
         return clazz.cast(factory);

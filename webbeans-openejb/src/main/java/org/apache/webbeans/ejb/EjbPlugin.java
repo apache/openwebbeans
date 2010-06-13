@@ -95,10 +95,14 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
      * @see org.apache.webbeans.plugins.AbstractOwbPlugin#shutDown()
      */
     @Override
-    public void shutDown() throws WebBeansConfigurationException {
-        try {
+    public void shutDown() throws WebBeansConfigurationException
+    {
+        try
+        {
             super.shutDown();
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             throw new WebBeansConfigurationException(e);
         }
     }
@@ -109,10 +113,14 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
      * @see org.apache.webbeans.plugins.AbstractOwbPlugin#startUp()
      */
     @Override
-    public void startUp() throws WebBeansConfigurationException {
-        try {
+    public void startUp() throws WebBeansConfigurationException
+    {
+        try
+        {
             super.startUp();
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             throw new WebBeansConfigurationException(e);
         }
         
@@ -121,9 +129,11 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         assembler = SystemInstance.get().getComponent(Assembler.class);
 
         // We register ourselves as a listener to the deployment
-        if (assembler != null) {
+        if (assembler != null)
+        {
             assembler.addDeploymentListener(this);
-            for (AppInfo appInfo : assembler.getDeployedApplications()) {
+            for (AppInfo appInfo : assembler.getDeployedApplications())
+            {
                 afterApplicationCreated(appInfo);
             }
         }
@@ -136,27 +146,32 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
      * 
      * @param appInfo applications informations
      */
-    public void afterApplicationCreated(AppInfo appInfo) {
+    public void afterApplicationCreated(AppInfo appInfo)
+    {
         logger.debug("Retrieving deployed EJB modules");
-        if (deployedApplications.add(appInfo)) {
+        if (deployedApplications.add(appInfo))
+        {
             List<DeploymentInfo> statelessList = new ArrayList<DeploymentInfo>();
             List<DeploymentInfo> statefulList = new ArrayList<DeploymentInfo>();
             List<DeploymentInfo> singletonList = new ArrayList<DeploymentInfo>();
             
-            for (EjbJarInfo ejbJar : appInfo.ejbJars) {
-                for (EnterpriseBeanInfo bean : ejbJar.enterpriseBeans) {
-                    switch (bean.type) {
-                    case EnterpriseBeanInfo.STATELESS:
-                        statelessList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
-                        break;
-                    case EnterpriseBeanInfo.STATEFUL:
-                        statefulList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
-                        break;
-                    case EnterpriseBeanInfo.SINGLETON:
-                        singletonList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
-                        break;
-                    default:
-                        break;
+            for (EjbJarInfo ejbJar : appInfo.ejbJars)
+            {
+                for (EnterpriseBeanInfo bean : ejbJar.enterpriseBeans)
+                {
+                    switch (bean.type)
+                    {
+                        case EnterpriseBeanInfo.STATELESS:
+                            statelessList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
+                            break;
+                        case EnterpriseBeanInfo.STATEFUL:
+                            statefulList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
+                            break;
+                        case EnterpriseBeanInfo.SINGLETON:
+                            singletonList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
@@ -172,7 +187,8 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
      * OpenEJB callback method
      * Not used.
      */
-    public void beforeApplicationDestroyed(AppInfo appInfo) {
+    public void beforeApplicationDestroyed(AppInfo appInfo)
+    {
     }
     
     public <T> Bean<T> defineSessionBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent)

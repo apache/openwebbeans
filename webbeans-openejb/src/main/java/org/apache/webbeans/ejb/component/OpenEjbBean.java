@@ -101,7 +101,8 @@ public class OpenEjbBean<T> extends BaseEjbBean<T>
         String jndiName = "java:openejb/Deployment/" + JndiBuilder.format(deploymentInfo.getDeploymentID(), this.iface.getName()); 
         instance = (T)this.iface.cast(jndiContext.lookup(jndiName));                             
             
-        }catch(NamingException e)
+        }
+        catch(NamingException e)
         {
             throw new RuntimeException(e);
         }        
@@ -156,26 +157,34 @@ public class OpenEjbBean<T> extends BaseEjbBean<T>
      * @param beanInterface : the bean interface class
      */
     @SuppressWarnings("unchecked")
-    private final List<Method> findRemove(Class beanClass, Class beanInterface) {
+    private final List<Method> findRemove(Class beanClass, Class beanInterface)
+    {
         List<Method> toReturn = new ArrayList<Method>();
         
         // Get all the public methods of the bean class and super class
         Method[] methods = beanClass.getMethods();
 
         // Search for methods annotated with @Remove
-        for (Method method : methods) {
+        for (Method method : methods)
+        {
             Remove annotation = method.getAnnotation(Remove.class);
-            if (annotation != null) {
+            if (annotation != null)
+            {
                 // Get the corresponding method into the bean interface
                 Method interfaceMethod;
-                try {
+                try
+                {
                     interfaceMethod = beanInterface.getMethod(method.getName(), 
                                                             method.getParameterTypes());
                     
                     toReturn.add(interfaceMethod);
-                } catch (SecurityException e) {
+                }
+                catch (SecurityException e)
+                {
                     e.printStackTrace();
-                } catch (NoSuchMethodException e) {
+                }
+                catch (NoSuchMethodException e)
+                {
                     // The method can not be into the interface in which case we
                     // don't wonder of
                 }

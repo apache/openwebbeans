@@ -44,9 +44,9 @@ public class ResourceFactory
         try
         {
             context = SystemInstance.get().getComponent(ContainerSystem.class).getJNDIContext();
-            
-        } catch(Exception e) {
-           
+        }
+        catch(Exception e)
+        {
             context = null;
         }
 
@@ -68,8 +68,8 @@ public class ResourceFactory
         try
         {
             return this.processor.getResourceReference(resourceReference);   
-            
-        } catch(Exception e)
+        }
+        catch(Exception e)
         {
            throw e;
         }
