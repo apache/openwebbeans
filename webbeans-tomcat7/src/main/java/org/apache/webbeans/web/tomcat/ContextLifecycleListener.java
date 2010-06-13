@@ -106,7 +106,8 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                     }
                 }
             }                        
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             e.printStackTrace();
         }        
@@ -182,7 +183,8 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
                 }
             }        
             
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             e.printStackTrace();
         }
@@ -416,52 +418,52 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             return value;
         }
     }
-    
-	protected static class PrivilegedActionForAccessibleObject implements PrivilegedAction<Object> 
-	{
-		
-		AccessibleObject object;
-		
-		boolean flag;
-		
-		protected PrivilegedActionForAccessibleObject(AccessibleObject object, boolean flag) 
-		{
-			this.object = object;
-			this.flag = flag;
-		}
-		
-		public Object run() 
-		{
-			object.setAccessible(flag);
-			return null;
-		}
-	}
-	
-	protected static class PrivilegedActionForClass implements PrivilegedAction<Object> 
-	{
-		Class<?> clazz;
-		
-		Object parameters;
-		
-		protected PrivilegedActionForClass(Class<?> clazz, Object parameters) 
-		{
-			this.clazz = clazz;
-			this.parameters = parameters;
-		}
-		
-		public Object run()
-		{
-			try 
-			{
-				return clazz.getDeclaredField((String)parameters);
-			} 
-			catch (Exception exception) 
-			{
-				return exception;
-			}
-		}			
-		
-	}
+
+    protected static class PrivilegedActionForAccessibleObject implements PrivilegedAction<Object>
+    {
+
+        AccessibleObject object;
+
+        boolean flag;
+
+        protected PrivilegedActionForAccessibleObject(AccessibleObject object, boolean flag)
+        {
+            this.object = object;
+            this.flag = flag;
+        }
+
+        public Object run()
+        {
+            object.setAccessible(flag);
+            return null;
+        }
+    }
+
+    protected static class PrivilegedActionForClass implements PrivilegedAction<Object>
+    {
+        Class<?> clazz;
+
+        Object parameters;
+
+        protected PrivilegedActionForClass(Class<?> clazz, Object parameters)
+        {
+            this.clazz = clazz;
+            this.parameters = parameters;
+        }
+
+        public Object run()
+        {
+            try
+            {
+                return clazz.getDeclaredField((String)parameters);
+            }
+            catch (Exception exception)
+            {
+                return exception;
+            }
+        }
+
+    }
 
     
 }

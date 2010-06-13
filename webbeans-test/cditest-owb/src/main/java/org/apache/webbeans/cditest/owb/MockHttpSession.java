@@ -27,84 +27,102 @@ import javax.servlet.http.HttpSessionContext;
 /**
  * A simple mock HttpSession
  */
-public class MockHttpSession implements HttpSession {
+public class MockHttpSession implements HttpSession
+{
 
     @Override
-    public long getCreationTime() {
+    public long getCreationTime()
+    {
         return 0;
     }
 
     @Override
-    public String getId() {
+    public String getId()
+    {
         return "sessId1";
     }
 
     @Override
-    public long getLastAccessedTime() {
+    public long getLastAccessedTime()
+    {
         return 0;
     }
 
     @Override
-    public ServletContext getServletContext() {
+    public ServletContext getServletContext()
+    {
         return null;
     }
 
     @Override
-    public void setMaxInactiveInterval(int interval) {
+    public void setMaxInactiveInterval(int interval)
+    {
     }
 
     @Override
-    public int getMaxInactiveInterval() {
+    public int getMaxInactiveInterval()
+    {
         return 0;
     }
 
     @Override
-    public HttpSessionContext getSessionContext() {
+    public HttpSessionContext getSessionContext()
+    {
         return null;
     }
 
     @Override
-    public Object getAttribute(String name) {
+    public Object getAttribute(String name)
+    {
         return null;
     }
 
     @Override
-    public Object getValue(String name) {
+    public Object getValue(String name)
+    {
         return null;
     }
 
     @Override
-    public Enumeration getAttributeNames() {
+    public Enumeration getAttributeNames()
+    {
         return null;
     }
 
     @Override
-    public String[] getValueNames() {
+    public String[] getValueNames()
+    {
         return new String[0];
     }
 
     @Override
-    public void setAttribute(String name, Object value) {
+    public void setAttribute(String name, Object value)
+    {
     }
 
     @Override
-    public void putValue(String name, Object value) {
+    public void putValue(String name, Object value)
+    {
     }
 
     @Override
-    public void removeAttribute(String name) {
+    public void removeAttribute(String name)
+    {
     }
 
     @Override
-    public void removeValue(String name) {
+    public void removeValue(String name)
+    {
     }
 
     @Override
-    public void invalidate() {
+    public void invalidate()
+    {
     }
 
     @Override
-    public boolean isNew() {
+    public boolean isNew()
+    {
         return false;
     }
 

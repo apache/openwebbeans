@@ -104,7 +104,7 @@ public class TomcatInstanceManager implements InstanceManager
             if(log.isDebugEnabled())
             {
                 log.debug("Injecting the dependencies for OpenWebBeans, " +
-                		"instance : " + object);
+                          "instance : " + object);
             }
 
             Object injectorInstance = TomcatUtil.inject(object, loader);
@@ -116,7 +116,7 @@ public class TomcatInstanceManager implements InstanceManager
         catch (Exception e)
         {
             log.error("Error is occured while injecting the OpenWebBeans " +
-            		"dependencies for instance " + object,e);
+                      "dependencies for instance " + object,e);
         }
     }
 

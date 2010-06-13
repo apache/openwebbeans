@@ -46,7 +46,8 @@ public class CdiTestContainerLoader
             throw new RuntimeException("Could not find a CdiTestContainer available in the classpath!");
         }
         
-        if (cdiIt.hasNext()) {
+        if (cdiIt.hasNext())
+        {
             throw new RuntimeException("Too many CdiTestContainers found in the classpath!");
         }
         

@@ -35,7 +35,8 @@ import javax.servlet.ServletException;
  * Mock ServletContext needed to startup the container.
  *
  */
-public class MockServletContext implements ServletContext {
+public class MockServletContext implements ServletContext
+{
 
     @SuppressWarnings("unchecked")
     private Hashtable attributes = new Hashtable();
