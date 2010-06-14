@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -34,6 +35,8 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public final class WebBeansFinder
 {   
+    private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansFinder.class);
+    
     /**
      * Keys --> ClassLoaders
      * Values --> Maps of singleton class name with object
@@ -89,7 +92,12 @@ public final class WebBeansFinder
                     
                     //Create instance
                     object = clazz.newInstance();
-                    
+
+                    if (logger.wblWillLogDebug())
+                    {
+                        logger.debug("creating a new " + singletonName + ", object " + object.hashCode() + " in classloader " + formatClassloader(classLoader));
+                    }
+
                     //Save it
                     managerMap.put(singletonName, object);
 
@@ -107,8 +115,36 @@ public final class WebBeansFinder
                     throw new WebBeansException("Class not found exception in creating instance with class : " + singletonName, e);
                 }
             }
+            else if (logger.wblWillLogDebug())
+            {
+                logger.debug("returning existing object (" + object.hashCode() + ") for " + singletonName + " in classloader " + classLoader);
+            }
         }
 
+        return object;
+    }
+    
+    /**
+     * Gets singleton instance if one already exists
+     * @param singletonName singleton class name
+     * @param cl classloader of the deployment
+     * @return singleton instance or null if one doesn't already exist
+     */
+    public static Object getExistingSingletonInstance(String singletonName, ClassLoader cl)
+    {
+        Object object = null;
+        synchronized (singletonMap)
+        {
+            Map<String, Object> managerMap = singletonMap.get(cl);
+            if (managerMap == null)
+            {
+                return null;
+            }
+            else
+            {
+                object = managerMap.get(singletonName);
+            }
+        }
         return object;
     }
     
@@ -123,5 +159,15 @@ public final class WebBeansFinder
         {
             singletonMap.remove(classLoader);
         }
-    }    
+    }
+    
+    /**
+     * Formats the toString method of Classloader to a single line
+     * @param cl classloader to be formatted
+     * @return formatted string
+     */
+    public static String formatClassloader(ClassLoader cl)
+    {
+        return cl.toString().replaceAll("\\s\\s+|\\n|\\r", " ");
+    }
 }
