@@ -24,6 +24,7 @@
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>openwebbeans-tck</artifactId>
