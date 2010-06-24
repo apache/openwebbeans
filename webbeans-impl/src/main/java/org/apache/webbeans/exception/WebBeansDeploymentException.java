@@ -40,4 +40,9 @@ public class WebBeansDeploymentException extends DeploymentException
     {
         super(message);
     }
+
+    public WebBeansDeploymentException(String message, Throwable e)
+    {
+        super(message, e);
+    }
 }

@@ -376,6 +376,7 @@
         <module>webbeans-jsf12</module>
         <module>webbeans-el10</module>
         <module>webbeans-resource</module>
+        <module>webbeans-osgi</module>
         <module>webbeans-porting</module>
         <module>webbeans-test</module>
         <module>samples</module>
@@ -456,6 +457,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.apache.xbean</groupId>
+                <artifactId>xbean-finder</artifactId>
+                <version>3.7</version>
+            </dependency>
+
+            <dependency>
                 <groupId>net.sf.scannotation</groupId>
                 <artifactId>scannotation</artifactId>
                 <version>${scannatation.version}</version>
@@ -479,6 +486,14 @@
                 <artifactId>geronimo-annotation_1.1_spec</artifactId>
                 <version>${geronimo_annotation.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>4.2.0</version>
+                <scope>provided</scope>
+            </dependency>
+            
 
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
