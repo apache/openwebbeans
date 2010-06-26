@@ -35,6 +35,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
 import javax.servlet.ServletContext;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -180,9 +181,28 @@ public class OsgiMetaDataScannerService implements ScannerService
 
         brfXmlJar.find(rfCallback);
 
-        BundleResourceFinder brfXmlWar =  new BundleResourceFinder(packageAdmin, mainBundle, "", WEB_INF_BEANS_XML);
+        // TODO I found no other way to find WEB-INF/beanx.xml directly
+        Enumeration<URL> urls = mainBundle.findEntries("", "beans.xml", true);
+        boolean webBeansXmlFound = false;
+        while(urls != null && urls.hasMoreElements())
+        {
+            URL webBeansXml = urls.nextElement();
+            if (!webBeansXml.toExternalForm().endsWith("/" + WEB_INF_BEANS_XML))
+            {
+                continue;
+            }
 
-        brfXmlWar.find(rfCallback);
+            if (webBeansXmlFound)
+            {
+                throw new WebBeansDeploymentException("found more than WEB-INF/beans.xml file!" + webBeansXml); 
+            }
+
+            logger.info("adding the following WEB-INF/beans.xml URL: " + webBeansXml);
+            beanXMLs.add(webBeansXml);
+            webBeansXmlFound = true;
+
+        }
+
     }
 
     @Override
