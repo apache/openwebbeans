@@ -19,11 +19,11 @@
 package org.apache.webbeans.ejb;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -71,9 +71,9 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     private Assembler assembler;
     
     private WebBeansLogger logger = WebBeansLogger.getLogger(EjbPlugin.class);
-
+    
     // List of deployed applications
-    private final Set<AppInfo> deployedApplications = new HashSet<AppInfo>();
+    private final Set<AppInfo> deployedApplications = new CopyOnWriteArraySet<AppInfo>();
     
     // TODO it should be Map<Class<?>,DeploymentInfo[]>
     private Map<Class<?>,DeploymentInfo> statelessBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
@@ -100,6 +100,11 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         try
         {
             super.shutDown();
+            this.deployedApplications.clear();
+            this.statelessBeans.clear();
+            this.statefulBeans.clear();
+            this.singletonBeans.clear();
+            this.containerSystem = null;            
         }
         catch (Exception e)
         {
@@ -189,6 +194,27 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
      */
     public void beforeApplicationDestroyed(AppInfo appInfo)
     {
+        this.deployedApplications.remove(appInfo);
+        for (EjbJarInfo ejbJar : appInfo.ejbJars)
+        {
+            for (EnterpriseBeanInfo bean : ejbJar.enterpriseBeans)
+            {
+                switch (bean.type)
+                {
+                    case EnterpriseBeanInfo.STATELESS:
+                        this.statelessBeans.remove(containerSystem.getDeploymentInfo(bean.ejbDeploymentId).getBeanClass());
+                        break;
+                    case EnterpriseBeanInfo.STATEFUL:
+                        this.statefulBeans.remove(containerSystem.getDeploymentInfo(bean.ejbDeploymentId).getBeanClass());
+                        break;
+                    case EnterpriseBeanInfo.SINGLETON:
+                        this.singletonBeans.remove(containerSystem.getDeploymentInfo(bean.ejbDeploymentId).getBeanClass());
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }        
     }
     
     public <T> Bean<T> defineSessionBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent)
