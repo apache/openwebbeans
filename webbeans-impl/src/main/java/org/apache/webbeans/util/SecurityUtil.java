@@ -190,6 +190,11 @@ public class SecurityUtil
         return value;
     }
 
+    public static void doPrivilegedSetSystemProperty(String propertyName, String value)
+    {
+        AccessController.doPrivileged(new PrivilegedActionForSetProperty(propertyName, value));
+    }
+
     public static Properties doPrivilegedGetSystemProperties()
     {
         return AccessController.doPrivileged(SYSTEM_PROPERTY_ACTION);
@@ -214,6 +219,27 @@ public class SecurityUtil
         }
         
     }
+    
+    protected static class PrivilegedActionForSetProperty implements PrivilegedAction<Object>
+    {
+        private final String propertyName;
+        
+        private final String value;
+
+        protected PrivilegedActionForSetProperty(String propertyName, String value)
+        {
+            this.propertyName = propertyName;
+            this.value = value;
+        }
+        
+        @Override
+        public String run()
+        {
+            System.setProperty(propertyName, value);
+            return null;            
+        }
+        
+    }    
     
     protected static class PrivilegedActionGetSystemProperties implements PrivilegedAction<Properties>
     {

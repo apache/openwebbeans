@@ -35,6 +35,11 @@ public class OwbApplicationFactory extends ApplicationFactory
     @Override
     public Application getApplication()
     {
+        if(!JSFUtil.isOwbApplication())
+        {
+            return wrapped.getApplication();
+        }
+        
         if(wrappedApplication == null)
         {
             wrappedApplication = new OwbApplication(wrapped.getApplication());

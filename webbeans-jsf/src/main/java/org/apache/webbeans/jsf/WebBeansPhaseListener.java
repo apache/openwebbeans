@@ -52,6 +52,11 @@ public class WebBeansPhaseListener implements PhaseListener
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE) ||
                 JSFUtil.getCurrentFacesContext().getResponseComplete())
         {
+            if(!JSFUtil.isOwbApplication())
+            {
+                return;
+            }
+            
             ConversationManager conversationManager = ConversationManager.getInstance();
             Conversation conversation = conversationManager.getConversationBeanReference();
 
@@ -76,7 +81,7 @@ public class WebBeansPhaseListener implements PhaseListener
      */
     public void beforePhase(PhaseEvent phaseEvent)
     {
-        if (phaseEvent.getPhaseId().equals(PhaseId.RESTORE_VIEW))
+        if (phaseEvent.getPhaseId().equals(PhaseId.RESTORE_VIEW) && JSFUtil.isOwbApplication())
         {
             //It looks for cid parameter in the JSF request.
             //If request contains cid, then it must restore conversation

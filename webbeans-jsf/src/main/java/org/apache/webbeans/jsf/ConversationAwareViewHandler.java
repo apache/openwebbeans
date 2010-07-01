@@ -43,6 +43,11 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
     @Override
     public String getActionURL(FacesContext context, String viewId)
     {
+        if(!JSFUtil.isOwbApplication())
+        {
+            return delegate.getActionURL(context, viewId);
+        }
+        
         String url = delegate.getActionURL(context, viewId);
 
         ConversationManager conversationManager = ConversationManager.getInstance();
@@ -62,6 +67,12 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
     public String getRedirectURL(FacesContext context, String viewId,
             Map<String, List<String>> parameters, boolean includeViewParams)
     {
+        
+        if(!JSFUtil.isOwbApplication())
+        {
+            return delegate.getRedirectURL(context, viewId, parameters, includeViewParams);
+        }
+        
         String url = delegate.getRedirectURL(context, viewId, parameters, includeViewParams);
         int indexOfQuery = url.indexOf('?');
         if (indexOfQuery > 0) 
