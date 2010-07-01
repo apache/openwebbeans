@@ -200,7 +200,6 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 if (InterceptorUtil.isWebBeansBusinessMethod(method))
                 {
                     List<Object> decorators = null;
-                    logger.debug("Decorator stack for target {0}", injectionTarget.getDecoratorStack());
                     if (injectionTarget.getDecoratorStack().size() > 0)
                     {
                         Class<?> proxyClass = JavassistProxyFactory.getInterceptorProxyClasses().get(bean);
