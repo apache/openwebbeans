@@ -323,10 +323,11 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
     private boolean addBeanDeploymentInfos(DeploymentInfo[] deployments, SessionBeanType type)
     {
+        boolean classLoaderEquality = false;
         for (DeploymentInfo deployment : deployments)
         {
             boolean inTest = Boolean.valueOf(SecurityUtil.doPrivilegedGetSystemProperty("EjbPlugin.test", "false"));
-            boolean classLoaderEquality = deployment.getBeanClass().getClassLoader().equals(WebBeansFinder.
+            classLoaderEquality = deployment.getBeanClass().getClassLoader().equals(WebBeansFinder.
                     getSingletonClassLoader(PluginLoader.getInstance())); 
             
             //Yes, this EJB archive is deployed within this web application
@@ -355,13 +356,11 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
                         this.ejbInstances.put(beanName, ejb);
                         logger.info("Exported EJB " + deployment.getEjbName() + " with interface " + entry.getValue().getInterface().getName());
                     }
-                }
-                
-                return true;
+                }                
             }
         }        
         
-        return false;
+        return classLoaderEquality;
     }
 
     public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
