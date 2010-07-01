@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.servlet;
 
+import java.net.URL;
+
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.servlet.ServletContextEvent;
@@ -69,8 +71,20 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
 
         try
         {
-                this.lifeCycle.startApplication(event);  
-                event.getServletContext().setAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION, "true");
+            URL url = event.getServletContext().getResource("/WEB-INF/beans.xml");
+            if(url != null)
+            {
+                this.lifeCycle.startApplication(event);
+                event.getServletContext().setAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION, "true");    
+            }
+            else
+            {
+                if(logger.wblWillLogWarn())
+                {
+                    logger.warn("CDI is not enabled for this web application, incorrect listener registration");
+                }
+            }
+            
         }
         catch (Exception e)
         {
