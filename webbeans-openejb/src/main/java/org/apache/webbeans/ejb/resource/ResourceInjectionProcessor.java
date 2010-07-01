@@ -19,7 +19,6 @@
 package org.apache.webbeans.ejb.resource;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -36,19 +35,24 @@ import javax.xml.ws.WebServiceRef;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.persistence.JtaEntityManager;
 import org.apache.openejb.persistence.JtaEntityManagerRegistry;
+import org.apache.webbeans.ejb.EjbPlugin;
+import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.spi.api.ResourceReference;
 
 
 class ResourceInjectionProcessor
 {
     private Context context = null;
+    
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ResourceInjectionProcessor.class);
 
     ResourceInjectionProcessor(Context context)
     {
         this.context = context;
     }
     
-    public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference) throws IllegalAccessException, InvocationTargetException, NamingException
+    public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference) throws Exception
     {
         X resource = null;
         
@@ -61,17 +65,62 @@ class ResourceInjectionProcessor
         if(resourceReference.supports(Resource.class))
         {
             Resource annotation = resourceReference.getAnnotation(Resource.class);
-            resource= lookupFieldResource(context, "openejb/Resource/"+annotation.name(), resourceReference.getResourceType());
+            String name = annotation.name();
+            if(name == null || name.equals(""))
+            {
+                name = resourceReference.getOwnerClass() + "/" + resourceReference.getName();
+            }
+            
+            resource= lookupFieldResource(context, "openejb/Resource/"+name, resourceReference.getResourceType());
         }
         else if(resourceReference.supports(EJB.class))
         {
             EJB annotation = resourceReference.getAnnotation(EJB.class);
-            resource = lookupFieldResource(context, "openejb/Deployment/"+annotation.name(), resourceReference.getResourceType());
+                        
+            String intf = null;
+            if(annotation.beanInterface() != null 
+                    && annotation.beanInterface() != Object.class
+                    && !annotation.beanInterface().equals(""))
+            {
+                intf = annotation.beanInterface().getName();
+            }
+            
+            if(intf == null)
+            {
+                intf = resourceReference.getResourceType().getName();
+            }
+            
+            if(intf == null &&  annotation.beanName() == null)
+            {
+                if(logger.wblWillLogWarn())
+                {
+                    logger.warn("To inject @EJBs into the managed beans you have to give @EJB(beanName), " +
+                            "trying to get inject with @EJB(name) where name is the internal JNDI name of the OpenEJB Bean");
+                }
+                
+                String name = annotation.name();
+                if(name == null || name.equals(""))
+                {
+                    name = resourceReference.getOwnerClass() + "/" + resourceReference.getName();
+                }                
+             
+                resource = lookupFieldResource(context, "openejb/Deployment/"+ name, resourceReference.getResourceType());                
+            }            
+            else
+            {
+                EjbPlugin plugin =(EjbPlugin) PluginLoader.getInstance().getEjbPlugin();
+                return plugin.getEjbInstance(intf, resourceReference.getResourceType());                
+            }
         }
         else if(resourceReference.supports(WebServiceRef.class))
         {
             WebServiceRef annotation = resourceReference.getAnnotation(WebServiceRef.class);
-            resource = lookupFieldResource(context, annotation.name(), resourceReference.getResourceType());
+            String name = annotation.name();
+            if(name == null || name.equals(""))
+            {
+                name = resourceReference.getOwnerClass() + "/" + resourceReference.getName();
+            }            
+            resource = lookupFieldResource(context, name, resourceReference.getResourceType());
         }
         else if(resourceReference.supports(PersistenceUnit.class))
         {

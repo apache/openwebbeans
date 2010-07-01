@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -32,66 +35,80 @@ import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.openejb.Container;
 import org.apache.openejb.DeploymentInfo;
+import org.apache.openejb.OpenEJBException;
 import org.apache.openejb.assembler.classic.AppInfo;
 import org.apache.openejb.assembler.classic.Assembler;
 import org.apache.openejb.assembler.classic.DeploymentListener;
 import org.apache.openejb.assembler.classic.EjbJarInfo;
 import org.apache.openejb.assembler.classic.EnterpriseBeanInfo;
+import org.apache.openejb.assembler.classic.JndiBuilder;
+import org.apache.openejb.assembler.classic.JndiBuilder.JndiNameStrategy;
 import org.apache.openejb.core.CoreContainerSystem;
+import org.apache.openejb.core.CoreDeploymentInfo;
 import org.apache.openejb.core.singleton.SingletonContainer;
 import org.apache.openejb.core.stateful.StatefulContainer;
 import org.apache.openejb.core.stateless.StatelessContainer;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.ejb.common.util.EjbDefinitionUtility;
 import org.apache.webbeans.ejb.common.util.EjbUtility;
 import org.apache.webbeans.ejb.component.OpenEjbBean;
+import org.apache.webbeans.ejb.resource.EJBInstanceProxy;
 import org.apache.webbeans.ejb.service.OpenEJBSecurityService;
 import org.apache.webbeans.ejb.service.OpenEJBTransactionService;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
+import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * EJB related stuff.
  * <p>
  * EJB functionality depends on OpenEJB.
  * </p>
+ * 
  * @version $Rev$ $Date$
- *
  */
 public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugin, DeploymentListener
 {
     private ContainerSystem containerSystem = null;
-    
+
     // OpenEJB assembler
     private Assembler assembler;
-    
+
     private WebBeansLogger logger = WebBeansLogger.getLogger(EjbPlugin.class);
-    
+
     // List of deployed applications
     private final Set<AppInfo> deployedApplications = new CopyOnWriteArraySet<AppInfo>();
-    
+
     // TODO it should be Map<Class<?>,DeploymentInfo[]>
-    private Map<Class<?>,DeploymentInfo> statelessBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
-    
-    private Map<Class<?>,DeploymentInfo> statefulBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
-    
-    private Map<Class<?>,DeploymentInfo> singletonBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
-    
+    private Map<Class<?>, DeploymentInfo> statelessBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
+
+    private Map<Class<?>, DeploymentInfo> statefulBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
+
+    private Map<Class<?>, DeploymentInfo> singletonBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
+
+    //EJB Interface to instances
+    private Map<String, EJBInstanceProxy<?>> ejbInstances = new ConcurrentHashMap<String, EJBInstanceProxy<?>>();
+
     private static final TransactionService TRANSACTION_SERVICE = new OpenEJBTransactionService();
-    
+
     private static final SecurityService SECURITY_SERVICE = new OpenEJBSecurityService();
+
+    private final Map<String, JndiNameStrategy> nameStrategies = new TreeMap<String, JndiNameStrategy>();
 
     public EjbPlugin()
     {
-        
+
     }
-        
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
      * @see org.apache.webbeans.plugins.AbstractOwbPlugin#shutDown()
      */
     @Override
@@ -104,7 +121,9 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
             this.statelessBeans.clear();
             this.statefulBeans.clear();
             this.singletonBeans.clear();
-            this.containerSystem = null;            
+            this.containerSystem = null;
+            this.ejbInstances.clear();
+            this.assembler.removeDeploymentListener(this);
         }
         catch (Exception e)
         {
@@ -112,9 +131,20 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T getEjbInstance(String intfName, Class<T> intf) throws Exception
+    {
+        EJBInstanceProxy<T> proxy = (EJBInstanceProxy<T>) this.ejbInstances.get(intfName);
+        if (proxy != null)
+        {
+            return intf.cast(proxy.getObject());
+        }
 
+        return null;
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.apache.webbeans.plugins.AbstractOwbPlugin#startUp()
      */
     @Override
@@ -128,7 +158,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         {
             throw new WebBeansConfigurationException(e);
         }
-        
+
         // Get container and assembler from OpenEJB
         containerSystem = (CoreContainerSystem) SystemInstance.get().getComponent(ContainerSystem.class);
         assembler = SystemInstance.get().getComponent(Assembler.class);
@@ -145,9 +175,8 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     }
 
     /**
-     * OpenEJB call back method
-     * It is used to get the list of deployed application and store the Stateless 
-     * and Stateful pools localy.
+     * OpenEJB call back method It is used to get the list of deployed
+     * application and store the Stateless and Stateful pools localy.
      * 
      * @param appInfo applications informations
      */
@@ -159,48 +188,55 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
             List<DeploymentInfo> statelessList = new ArrayList<DeploymentInfo>();
             List<DeploymentInfo> statefulList = new ArrayList<DeploymentInfo>();
             List<DeploymentInfo> singletonList = new ArrayList<DeploymentInfo>();
-            
+
             for (EjbJarInfo ejbJar : appInfo.ejbJars)
             {
                 for (EnterpriseBeanInfo bean : ejbJar.enterpriseBeans)
                 {
                     switch (bean.type)
                     {
-                        case EnterpriseBeanInfo.STATELESS:
-                            statelessList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
-                            break;
-                        case EnterpriseBeanInfo.STATEFUL:
-                            statefulList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
-                            break;
-                        case EnterpriseBeanInfo.SINGLETON:
-                            singletonList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
-                            break;
-                        default:
-                            break;
+                    case EnterpriseBeanInfo.STATELESS:
+                        statelessList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
+                        break;
+                    case EnterpriseBeanInfo.STATEFUL:
+                        statefulList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
+                        break;
+                    case EnterpriseBeanInfo.SINGLETON:
+                        singletonList.add(containerSystem.getDeploymentInfo(bean.ejbDeploymentId));
+                        break;
+                    default:
+                        break;
                     }
                 }
             }
+
+            //Means that this is not the our deployment archive
+            boolean result = addBeanDeploymentInfos(statelessList.toArray(new DeploymentInfo[statelessList.size()]), SessionBeanType.STATELESS);
+            if(!result)
+            {
+                deployedApplications.remove(appInfo);
+                return;
+            }
             
-            addBeanDeploymentInfos(statelessList.toArray(new DeploymentInfo[statelessList.size()]), SessionBeanType.STATELESS);
             addBeanDeploymentInfos(statefulList.toArray(new DeploymentInfo[statefulList.size()]), SessionBeanType.STATEFUL);
             addBeanDeploymentInfos(singletonList.toArray(new DeploymentInfo[singletonList.size()]), SessionBeanType.SINGLETON);
         }
-
     }
 
     /**
-     * OpenEJB callback method
-     * Not used.
+     * OpenEJB callback method Not used.
      */
     public void beforeApplicationDestroyed(AppInfo appInfo)
     {
-        this.deployedApplications.remove(appInfo);
-        for (EjbJarInfo ejbJar : appInfo.ejbJars)
+        if(this.deployedApplications.contains(appInfo))
         {
-            for (EnterpriseBeanInfo bean : ejbJar.enterpriseBeans)
+            this.deployedApplications.remove(appInfo);
+            for (EjbJarInfo ejbJar : appInfo.ejbJars)
             {
-                switch (bean.type)
+                for (EnterpriseBeanInfo bean : ejbJar.enterpriseBeans)
                 {
+                    switch (bean.type)
+                    {
                     case EnterpriseBeanInfo.STATELESS:
                         this.statelessBeans.remove(containerSystem.getDeploymentInfo(bean.ejbDeploymentId).getBeanClass());
                         break;
@@ -212,31 +248,34 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
                         break;
                     default:
                         break;
+                    }
+
+                    this.ejbInstances.remove(bean.ejbName);
                 }
-            }
-        }        
+            }            
+        }
     }
-    
+
     public <T> Bean<T> defineSessionBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent)
     {
-        if(!isSessionBean(clazz))
+        if (!isSessionBean(clazz))
         {
             throw new IllegalArgumentException("Given class is not an session bean class");
         }
-        
+
         DeploymentInfo info = null;
         SessionBeanType type = SessionBeanType.STATELESS;
-        
-        if(isStatelessBean(clazz))
+
+        if (isStatelessBean(clazz))
         {
             info = this.statelessBeans.get(clazz);
         }
-        else if(isStatefulBean(clazz))
+        else if (isStatefulBean(clazz))
         {
             info = this.statefulBeans.get(clazz);
             type = SessionBeanType.STATEFUL;
         }
-        else if(isSingletonBean(clazz))
+        else if (isSingletonBean(clazz))
         {
             info = this.singletonBeans.get(clazz);
             type = SessionBeanType.SINGLETON;
@@ -245,68 +284,91 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         {
             throw new IllegalArgumentException("Illegal EJB type with class : " + clazz.getName());
         }
-        
+
         OpenEjbBean<T> bean = new OpenEjbBean<T>(clazz);
         bean.setDeploymentInfo(info);
         bean.setEjbType(type);
-        
+
         EjbUtility.fireEvents(clazz, bean, processAnnotatedTypeEvent);
-        
+
         return bean;
     }
 
     public boolean isSessionBean(Class<?> clazz)
     {
-        if(this.containerSystem == null)
+        if (this.containerSystem == null)
         {
             this.containerSystem = SystemInstance.get().getComponent(ContainerSystem.class);
             Container[] containers = this.containerSystem.containers();
-            for(Container container : containers)
+            for (Container container : containers)
             {
                 DeploymentInfo[] deployments = container.deployments();
-                if(container instanceof StatelessContainer)
+                if (container instanceof StatelessContainer)
                 {
-                     addBeanDeploymentInfos(deployments, SessionBeanType.STATELESS);
+                    addBeanDeploymentInfos(deployments, SessionBeanType.STATELESS);
                 }
-                else if(container instanceof StatefulContainer)
+                else if (container instanceof StatefulContainer)
                 {
-                     addBeanDeploymentInfos(deployments, SessionBeanType.STATEFUL);
+                    addBeanDeploymentInfos(deployments, SessionBeanType.STATEFUL);
                 }
-                else if(container instanceof SingletonContainer)
+                else if (container instanceof SingletonContainer)
                 {
-                     addBeanDeploymentInfos(deployments, SessionBeanType.SINGLETON);
-                }                
+                    addBeanDeploymentInfos(deployments, SessionBeanType.SINGLETON);
+                }
             }
         }
-                
-        
+
         return isSingletonBean(clazz) || isStatelessBean(clazz) || isStatefulBean(clazz);
     }
-    
-    private void addBeanDeploymentInfos(DeploymentInfo[] deployments, SessionBeanType type)
+
+    private boolean addBeanDeploymentInfos(DeploymentInfo[] deployments, SessionBeanType type)
     {
-        for(DeploymentInfo deployment : deployments)
+        for (DeploymentInfo deployment : deployments)
         {
-            if(type.equals(SessionBeanType.STATELESS))
+            boolean inTest = Boolean.valueOf(SecurityUtil.doPrivilegedGetSystemProperty("EjbPlugin.test", "false"));
+            boolean classLoaderEquality = deployment.getBeanClass().getClassLoader().equals(WebBeansFinder.
+                    getSingletonClassLoader(PluginLoader.getInstance())); 
+            
+            //Yes, this EJB archive is deployed within this web application
+            if(inTest || classLoaderEquality)
             {
-                this.statelessBeans.put(deployment.getBeanClass(),deployment);   
+                if (type.equals(SessionBeanType.STATELESS))
+                {
+                    this.statelessBeans.put(deployment.getBeanClass(), deployment);
+                }
+                else if (type.equals(SessionBeanType.STATEFUL))
+                {
+                    this.statefulBeans.put(deployment.getBeanClass(), deployment);
+                }
+                else if (type.equals(SessionBeanType.SINGLETON))
+                {
+                    this.singletonBeans.put(deployment.getBeanClass(), deployment);
+                }
+
+                Map<String, EJBInstanceProxy<?>> bindings = getEjbBindings((CoreDeploymentInfo) deployment);
+                for (Entry<String, EJBInstanceProxy<?>> entry : bindings.entrySet())
+                {
+                    String beanName = entry.getKey();
+                    if (!this.ejbInstances.containsKey(beanName))
+                    {
+                        EJBInstanceProxy<?> ejb = entry.getValue();
+                        this.ejbInstances.put(beanName, ejb);
+                        logger.info("Exported EJB " + deployment.getEjbName() + " with interface " + entry.getValue().getInterface().getName());
+                    }
+                }
+                
+                return true;
             }
-            else if(type.equals(SessionBeanType.STATEFUL))
-            {
-                this.statefulBeans.put(deployment.getBeanClass(),deployment);
-            }
-            else if(type.equals(SessionBeanType.SINGLETON))
-            {
-                this.singletonBeans.put(deployment.getBeanClass(), deployment);
-            }
-        }
+        }        
+        
+        return false;
     }
-    
+
     public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
     {
-        if(isSessionBean(clazz))
+        if (isSessionBean(clazz))
         {
-            throw new WebBeansConfigurationException("Managed Bean implementation class : " + clazz.getName() + " can not be sesion bean class");            
+            throw new WebBeansConfigurationException("Managed Bean implementation class : " + clazz.getName() + " can not be sesion bean class");
         }
     }
 
@@ -327,35 +389,101 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
     public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext)
     {
-        return EjbDefinitionUtility.defineEjbBeanProxy((OpenEjbBean<?>)bean,iface, creationalContext);
+        return EjbDefinitionUtility.defineEjbBeanProxy((OpenEjbBean<?>) bean, iface, creationalContext);
     }
-    
-    
-    @Override    
+
+    @Override
     public <T> T getSupportedService(Class<T> serviceClass)
     {
-        if(serviceClass == TransactionService.class)
+        if (serviceClass == TransactionService.class)
         {
-            return serviceClass.cast(TRANSACTION_SERVICE);    
+            return serviceClass.cast(TRANSACTION_SERVICE);
         }
-        else if(serviceClass == SecurityService.class)
+        else if (serviceClass == SecurityService.class)
         {
             return serviceClass.cast(SECURITY_SERVICE);
         }
-        
+
         return null;
     }
 
     @Override
     public boolean supportService(Class<?> serviceClass)
     {
-        if((serviceClass == TransactionService.class) ||
-                serviceClass == SecurityService.class)
+        if ((serviceClass == TransactionService.class) || serviceClass == SecurityService.class)
         {
             return true;
         }
-        
+
         return false;
     }
+
+    public JndiNameStrategy createStrategy(AppInfo appInfo, List<DeploymentInfo> deployments, DeploymentInfo deployment) throws OpenEJBException
+    {
+        JndiNameStrategy strategy = nameStrategies.get(deployment.getModuleID());
+        if (strategy != null)
+        {
+            return strategy;
+        }
+
+        String deploymentId = (String) deployment.getDeploymentID();
+        for (EjbJarInfo ejbJar : appInfo.ejbJars)
+        {
+            if (ejbJar.moduleId.equals(deployment.getModuleID()))
+            {
+                Set<String> moduleDeploymentIds = new TreeSet<String>();
+                for (EnterpriseBeanInfo enterpriseBean : ejbJar.enterpriseBeans)
+                {
+                    moduleDeploymentIds.add(enterpriseBean.ejbDeploymentId);
+                }
+                Map<String, DeploymentInfo> moduleDeployments = new TreeMap<String, DeploymentInfo>();
+                for (DeploymentInfo deploymentInfo : deployments)
+                {
+                    if (moduleDeploymentIds.contains(deploymentId))
+                    {
+                        moduleDeployments.put((String) deploymentInfo.getDeploymentID(), deploymentInfo);
+                    }
+                }
+                strategy = JndiBuilder.createStrategy(ejbJar, moduleDeployments);
+                for (String moduleDeploymentId : moduleDeploymentIds)
+                {
+                    nameStrategies.put(moduleDeploymentId, strategy);
+                }
+                return strategy;
+            }
+        }
        
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, EJBInstanceProxy<?>> getEjbBindings(CoreDeploymentInfo deployment)
+    {
+        Map<String, EJBInstanceProxy<?>> bindings = new TreeMap<String, EJBInstanceProxy<?>>();
+
+        Class<?> remoteHome = deployment.getHomeInterface();
+        if (remoteHome != null)
+        {            
+            bindings.put(remoteHome.getName(), new EJBInstanceProxy(deployment, remoteHome));
+        }
+
+        Class<?> localHome = deployment.getLocalHomeInterface();
+        if (localHome != null)
+        {
+            bindings.put(localHome.getName(), new EJBInstanceProxy(deployment, remoteHome));
+        }
+
+        for (Class<?> businessLocal : deployment.getBusinessLocalInterfaces())
+        {
+            bindings.put(businessLocal.getName(), new EJBInstanceProxy(deployment, businessLocal));
+        }
+
+        for (Class<?> businessRemote : deployment.getBusinessRemoteInterfaces())
+        {
+            bindings.put(businessRemote.getName(), new EJBInstanceProxy(deployment, businessRemote));
+        }
+
+        return bindings;
+    }
+
 }

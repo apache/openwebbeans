@@ -43,6 +43,8 @@ public abstract class EjbTestContext
             System.out.println("INIT EJB");
             
             OpenEJB.init(System.getProperties());
+            System.setProperty("EjbPlugin.test", "true");
+            
         } catch(Exception e)
         {
             e.printStackTrace();
