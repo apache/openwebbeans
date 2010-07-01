@@ -32,6 +32,7 @@ import javax.servlet.jsp.JspFactory;
 
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
@@ -49,7 +50,7 @@ import org.apache.webbeans.spi.adaptor.ELAdaptor;
  * </p>
  * 
  * @version $Rev: 911764 $ $Date: 2010-02-19 11:52:54 +0200 (Fri, 19 Feb 2010) $
- * @see WebBeansConfigurationListener
+ * @see org.apache.webbeans.servlet.WebBeansConfigurationListener
  */
 public final class WebContainerLifecycle extends AbstractLifeCycle
 {
@@ -58,7 +59,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
 
     /**Manages unused conversations*/
     private ScheduledExecutorService service = null;
-    
+
 
     /**
      * Creates a new lifecycle instance and initializes
@@ -68,39 +69,39 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     {
         super(null,logger);
     }
-    
-    
+
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void startApplication(Object startupObject) throws Exception
     {
-        ServletContext servletContext = getServletContext(startupObject);        
+        ServletContext servletContext = getServletContext(startupObject);
         super.startApplication(servletContext);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void stopApplication(Object endObject)
     {
-        ServletContext servletContext = getServletContext(endObject);        
+        ServletContext servletContext = getServletContext(endObject);
         super.stopApplication(servletContext);
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    protected void afterStartApplication(Object startupObject) throws Exception    
+    protected void afterStartApplication(Object startupObject) throws Exception
     {
         String strDelay = OpenWebBeansConfiguration.getInstance().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
         long delay = Long.parseLong(strDelay);
-        
+
         service = Executors.newScheduledThreadPool(1);
         service.scheduleWithFixedDelay(new ConversationCleaner(), delay, delay, TimeUnit.MILLISECONDS);
-        
+
         ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
         ELResolver resolver = elAdaptor.getOwbELResolver();
         ELContextListener elContextListener = elAdaptor.getOwbELContextListener();
@@ -108,27 +109,27 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         if(OpenWebBeansConfiguration.getInstance().isJspApplication())
         {
             logger.debug("Application is configured as JSP. Adding EL Resolver.");
-            
+
             JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext((ServletContext)(startupObject));
-            applicationCtx.addELResolver(resolver);  
-            
+            applicationCtx.addELResolver(resolver);
+
             logger.debug("Application is configured as JSP. Adding EL Listener.");
-            
+
             //Adding listener
-            applicationCtx.addELContextListener(elContextListener);                        
-        }              
-        
+            applicationCtx.addELContextListener(elContextListener);
+        }
+
         // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
-        ServletContext servletContext = (ServletContext)(startupObject); 
+        ServletContext servletContext = (ServletContext)(startupObject);
         servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
-        
+
     }
-    
+
     protected void beforeStartApplication(Object startupObject)
     {
         this.scannerService.init(startupObject);
     }
-    
+
 
     /**
      * {@inheritDoc}
@@ -137,17 +138,17 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     {
         if(service != null)
         {
-            service.shutdownNow();   
-        }                
+            service.shutdownNow();
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     protected void afterStopApplication(Object stopObject) throws Exception
-    {                
+    {
         ServletContext servletContext = null;
-        
+
         if(stopObject instanceof ServletContext)
         {
             servletContext = (ServletContext)stopObject;
@@ -156,13 +157,15 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         {
             servletContext = getServletContext(stopObject);
         }
-        
+
         //Clear the resource injection service
         ResourceInjectionService injectionServices = ServiceLoader.getService(ResourceInjectionService.class);
         if(injectionServices != null)
         {
             injectionServices.clear();
         }
+
+        ContextFactory.cleanUpContextFactory();
         
         if (logger.wblWillLogInfo())
         {
