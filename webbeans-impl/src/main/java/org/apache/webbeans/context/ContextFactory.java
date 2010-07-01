@@ -60,6 +60,16 @@ public final class ContextFactory
     }
 
     /**
+     * This must be called before a WebApp shuts down.
+     * It makes sure that all caches get cleaned up.
+     */
+    public static void cleanUpContextFactory()
+    {
+        ClassLoader cl = WebBeansUtil.getCurrentClassLoader();
+        contextServices.remove(cl);
+    }
+
+    /**
      * @return the ContextService for the current ClassLoader
      */
     private static ContextsService getContextsService()

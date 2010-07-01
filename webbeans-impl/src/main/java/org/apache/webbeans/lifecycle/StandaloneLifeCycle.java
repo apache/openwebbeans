@@ -67,6 +67,8 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
         ContextFactory.destroyConversationContext();
         ContextFactory.destroyApplicationContext(null);
         ContextFactory.destroySingletonContext(null);
+
+        ContextFactory.cleanUpContextFactory();
     }
     
 }

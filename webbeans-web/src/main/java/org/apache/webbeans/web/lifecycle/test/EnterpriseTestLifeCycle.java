@@ -65,7 +65,9 @@ public class EnterpriseTestLifeCycle extends StandaloneLifeCycle
         ContextFactory.destroyRequestContext(null);
         ContextFactory.destroySessionContext(this.mockHttpSession);
         ContextFactory.destroyConversationContext();        
-        ContextFactory.destroyApplicationContext(this.servletContextEvent.getServletContext());   
+        ContextFactory.destroyApplicationContext(this.servletContextEvent.getServletContext());
+
+        ContextFactory.cleanUpContextFactory();
     }
 
 }

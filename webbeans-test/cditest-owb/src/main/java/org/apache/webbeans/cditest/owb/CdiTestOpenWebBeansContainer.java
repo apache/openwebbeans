@@ -107,6 +107,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         ContextFactory.destroySessionContext(session);
         ContextFactory.destroyApplicationContext(servletContext);
         ContextFactory.destroySingletonContext(servletContext);
+
+        ContextFactory.cleanUpContextFactory();
     }
 
     @Override
