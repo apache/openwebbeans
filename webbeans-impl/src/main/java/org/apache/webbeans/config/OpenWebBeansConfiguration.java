@@ -114,7 +114,7 @@ public class OpenWebBeansConfiguration
     /**EL Adaptor*/
     public static final String EL_ADAPTOR_CLASS = "org.apache.webbeans.spi.adaptor.ELAdaptor";
     
-    public static final String SYSTEM_PROPERTY_OWB_APPLICATION = "org.apache.webbeans.application.isOwbApplication";
+    public static final String PROPERTY_OWB_APPLICATION = "org.apache.webbeans.application.isOwbApplication";
     
     /**
      * Gets singleton instance.
@@ -335,12 +335,6 @@ public class OpenWebBeansConfiguration
         
         return Boolean.valueOf(value);
         
-    }
-    
-    public boolean isOwbApplication()
-    {
-        String value = SecurityUtil.doPrivilegedGetSystemProperty(SYSTEM_PROPERTY_OWB_APPLICATION, "false");
-        return Boolean.valueOf(value);
     }
     
     /**

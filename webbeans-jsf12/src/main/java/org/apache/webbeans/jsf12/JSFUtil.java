@@ -24,6 +24,7 @@ import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
@@ -189,6 +190,22 @@ public final class JSFUtil
     
     public static boolean isOwbApplication()
     {
-        return OpenWebBeansConfiguration.getInstance().isOwbApplication();
+        ServletContext context = null;
+        if(getExternalContext() != null)
+        {
+            context = (ServletContext) getExternalContext().getContext();
+        }
+        
+        if(context != null)
+        {
+            Object value = context.getAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION);
+            if(value != null)
+            {
+                return Boolean.valueOf(value.toString());
+            }            
+        }
+        
+        return false;
+
     }    
 }

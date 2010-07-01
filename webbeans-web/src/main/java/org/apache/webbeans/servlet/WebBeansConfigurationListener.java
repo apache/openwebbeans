@@ -36,7 +36,6 @@ import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.lifecycle.LifecycleFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContainerLifecycle;
-import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -71,7 +70,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         try
         {
                 this.lifeCycle.startApplication(event);  
-                SecurityUtil.doPrivilegedSetSystemProperty(OpenWebBeansConfiguration.SYSTEM_PROPERTY_OWB_APPLICATION, "true");
+                event.getServletContext().setAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION, "true");
         }
         catch (Exception e)
         {
@@ -88,7 +87,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     {
         this.lifeCycle.stopApplication(event);
         this.lifeCycle = null;
-        SecurityUtil.doPrivilegedSetSystemProperty(OpenWebBeansConfiguration.SYSTEM_PROPERTY_OWB_APPLICATION, "false");
+        event.getServletContext().setAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION, "false");
     }
 
     /**
