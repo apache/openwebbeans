@@ -185,12 +185,11 @@ public final class ClassUtil
     public static Class<?> getClassFromName(String name)
     {
         Class<?> clazz = null;
-
+        ClassLoader loader = null;
         try
         {
-            ClassLoader loader = WebBeansUtil.getCurrentClassLoader();
-            clazz = loader.loadClass(name);
-
+            loader = WebBeansUtil.getCurrentClassLoader();
+            clazz = Class.forName(name, true , loader);
             return clazz;
 
         }
@@ -198,7 +197,8 @@ public final class ClassUtil
         {
             try
             {
-                clazz = ClassUtil.class.getClassLoader().loadClass(name);
+                loader = ClassUtil.class.getClassLoader(); 
+                clazz = Class.forName(name, true , loader);
 
                 return clazz;
 
@@ -207,7 +207,8 @@ public final class ClassUtil
             {
                 try
                 {
-                    clazz = ClassLoader.getSystemClassLoader().loadClass(name);
+                    loader = ClassLoader.getSystemClassLoader();
+                    clazz = Class.forName(name, true , loader);
 
                     return clazz;
 

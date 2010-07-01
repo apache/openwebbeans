@@ -19,10 +19,13 @@
 package org.apache.webbeans.config;
 
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -39,6 +42,8 @@ public final class WebBeansFinder
      * Values --> Maps of singleton class name with object
      */
     private static Map<ClassLoader, Map<String, Object>> singletonMap = new HashMap<ClassLoader, Map<String,Object>>();
+    
+    private static Map<Object, ClassLoader> objectToClassLoaderMap = new IdentityHashMap<Object, ClassLoader>();
 
     /**
      * No instantiate.
@@ -85,13 +90,20 @@ public final class WebBeansFinder
                 try
                 {
                     //Load class
-                    Class<?> clazz = classLoader.loadClass(singletonName);
+                    Class<?> clazz = ClassUtil.getClassFromName(singletonName);
+                    if(clazz == null)
+                    {
+                        throw new ClassNotFoundException("Class with name: " + singletonName + " is not found in the system");
+                    }
                     
                     //Create instance
                     object = clazz.newInstance();
 
                     //Save it
                     managerMap.put(singletonName, object);
+                    
+                    //Save it object --> classloader
+                    objectToClassLoaderMap.put(object, classLoader);
 
                 }
                 catch (InstantiationException e)
@@ -145,8 +157,34 @@ public final class WebBeansFinder
         Asserts.assertNotNull(classLoader, "classloader is null");
         synchronized (singletonMap)
         {
-            singletonMap.remove(classLoader);
+            Map<String, Object> objects = singletonMap.remove(classLoader);
+            if(objects != null)
+            {
+                for(Entry<String, Object> entry : objects.entrySet())
+                {
+                    objectToClassLoaderMap.remove(entry.getValue());
+                }
+            }
         }
+    }
+    
+    /**
+     * Gets classloader with given singelton instance.
+     * @param object singleton instance
+     * @return the classloader that instance is created within
+     */
+    public static ClassLoader getSingletonClassLoader(Object object)
+    {
+        Asserts.assertNotNull(object, "object is null");
+        synchronized (objectToClassLoaderMap)
+        {
+            if(objectToClassLoaderMap.containsKey(object))
+            {
+                return objectToClassLoaderMap.get(object);
+            }              
+        }
+        
+        return null;
     }
 
 }
