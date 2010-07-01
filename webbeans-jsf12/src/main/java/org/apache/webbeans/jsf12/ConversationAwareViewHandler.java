@@ -40,6 +40,11 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
     @Override
     public String getActionURL(FacesContext context, String viewId)
     {
+        if(!JSFUtil.isOwbApplication())
+        {
+            return delegate.getActionURL(context, viewId);
+        }
+        
         String url = delegate.getActionURL(context, viewId);
 
         ConversationManager conversationManager = ConversationManager.getInstance();

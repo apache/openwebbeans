@@ -49,6 +49,11 @@ public class WebBeansPhaseListener implements PhaseListener
      */
     public void afterPhase(PhaseEvent phaseEvent)
     {
+        if(!JSFUtil.isOwbApplication())
+        {
+            return;
+        }
+        
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE) ||
                 JSFUtil.getCurrentFacesContext().getResponseComplete())
         {
@@ -76,6 +81,11 @@ public class WebBeansPhaseListener implements PhaseListener
      */
     public void beforePhase(PhaseEvent phaseEvent)
     {
+        if(!JSFUtil.isOwbApplication())
+        {
+            return;
+        }
+        
         if (phaseEvent.getPhaseId().equals(PhaseId.RESTORE_VIEW))
         {
             //It looks for cid parameter in the JSF request.

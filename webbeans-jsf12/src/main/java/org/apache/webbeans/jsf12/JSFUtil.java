@@ -26,6 +26,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.util.Asserts;
 
 
@@ -185,4 +186,9 @@ public final class JSFUtil
         String cid = getJSFRequestParameter("cid");
         return cid;
     }
+    
+    public static boolean isOwbApplication()
+    {
+        return OpenWebBeansConfiguration.getInstance().isOwbApplication();
+    }    
 }
