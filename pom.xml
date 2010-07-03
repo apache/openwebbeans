@@ -29,7 +29,7 @@
     <artifactId>openwebbeans</artifactId>
     <name>Apache OpenWebBeans</name>
     <packaging>pom</packaging>
-    <version>1.0.0-alpha-1</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <url>openwebbeans.apache.org</url>
 
@@ -46,9 +46,9 @@
     <inceptionYear>2008</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.0.0-alpha-1</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.0.0-alpha-1</developerConnection>
-        <url>https://svn.apache.org/repos/asf/openwebbeans/tags/openwebbeans-1.0.0-alpha-1</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openwebbeans/trunk</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openwebbeans/trunk</developerConnection>
+        <url>https://svn.apache.org/repos/asf/openwebbeans/trunk</url>
     </scm>
 
     <issueManagement>
@@ -535,50 +535,50 @@
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-impl</artifactId>
-                <version>${openwebbeans.version}</version>
+                <version> 1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-porting</artifactId>
-                <version>${openwebbeans.version}</version>
+                <version> 1.0.0-SNAPSHOT</version>
                 <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-jsf</artifactId>
-                <version>${openwebbeans.version}</version>
+                <version> 1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-spi</artifactId>
-                <version>${openwebbeans.version}</version>
+                <version> 1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-resource</artifactId>
-                <version>${openwebbeans.version}</version>
+                <version> 1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-ejb</artifactId>
-                <version>${openwebbeans.version}</version>
+                <version> 1.0.0-SNAPSHOT</version>
             </dependency>
 
             <!-- CDI Testing Framework -->
             <dependency>
                 <groupId>org.apache.openwebbeans.test</groupId>
                 <artifactId>cditest</artifactId>
-                <version>${openwebbeans.version}</version>
+                <version> 1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.openwebbeans.test</groupId>
                 <artifactId>cditest-owb</artifactId>
-                <version>${openwebbeans.version}</version>
+                <version> 1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
