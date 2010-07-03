@@ -220,10 +220,10 @@ There are several jars in the OpenWebBeans 1.0.0-alpha-1 distribution;
 How OWB Plugins Work
 ------------------------------------------
 
-OpenWebBeans has been developing in a plugin way. The Core dependency injection service
+OpenWebBeans has been developed with a plugin architecture. The Core dependency injection service
 is provided with openwebbeans-impl. If you need further service functionality, 
 you have to add respective plugin jars into the application classpath. OpenWebBeans 
-uses the Java SE 6.0 java.util.ServiceLoader mechanism to pickup those plugins at runtime.
+uses the Java SE 6.0 java.util.ServiceLoader mechanism to pickup plugins at runtime.
 
 Current Plugins:
 ---------------------
