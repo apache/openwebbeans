@@ -370,7 +370,7 @@
         <module>webbeans-ee</module>
         <module>webbeans-openejb</module>
         <module>webbeans-tomcat6</module>
-        <module>webbeans-tomcat7</module>
+<!--        <module>webbeans-tomcat7</module> -->
         <module>webbeans-jms</module>       
         <module>webbeans-jsf</module>
         <module>webbeans-jsf12</module>

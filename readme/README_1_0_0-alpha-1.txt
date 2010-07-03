@@ -211,7 +211,6 @@ There are several jars in the OpenWebBeans 1.0.0-alpha-1 distribution;
  - openwebbeans-osgi-1.0.0-alpha-1.jar     --> ClassPath ScannerService SPI implementation for OSGI environments like Apache Geronimo-3
  - openwebbeans-web-1.0.0-alpha-1.jar      --> Basic Servlet integration
  - openwebbeans-tomcat6-1.0.0-alpha-1.jar  --> Support for deeper integration into Apache Tomcat-6
- - openwebbeans-tomcat7-1.0.0-alpha-1.jar  --> Support for deeper integration into Apache Tomcat-7
 
 
 
