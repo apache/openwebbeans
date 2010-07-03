@@ -29,6 +29,21 @@
     <name>Apache OpenWebBeans :: OpenWebBeans Core</name>
     <description>Implementation of the Web Beans API</description>
 
+    <repositories>
+        <!-- TODO: this must get removed once javassist is released to maven.central -->
+        <repository>
+            <id>jboss.brew</id>
+            <url>http://repository.jboss.org/maven2-brew</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
     <dependencies>
 <!--
         <dependency>
