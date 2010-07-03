@@ -237,8 +237,6 @@ Third Party jars:
 -----------------
 They are necessary at runtime in the Core Implementation.
 
-log4j: Version 1.2.14 
-dom4j: Version 1.6.1
 javassist : Version 3.12.0.GA
 scannotation : Version 1.0.2 (if not running in an OSGi environment like Apache Geronimo-3)
 
@@ -269,7 +267,7 @@ Dependencies of OpenWebBeans Maven Modules&Plugins
 
 openwebbeans-impl : 
 ------------------
-Third party        : log4j, dom4j, javassist, scannotation, openwebbeans-spi
+Third party        : javassist, scannotation, openwebbeans-spi
 Container Provided : jcdi-api, at-inject, servlet, el, jsr-250, interceptor, jta, jsp, validation
 
 openwebbeans-ejb:
