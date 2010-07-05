@@ -37,7 +37,7 @@ under the License.
         </file>
 
         <file>
-            <source>../readme/README_M4.txt</source>
+            <source>../readme/README_1_0_0-alpha-1.txt</source>
         </file>
 
         <file>
@@ -183,18 +183,15 @@ under the License.
         <dependencySet>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans:openwebbeans-impl</include>
+                <include>org.apache.openwebbeans:openwebbeans-impl:jar:${project.version}</include>
             </includes>
-	    <excludes>
-		<exclude>org.apache.openwebbeans:openwebbeans-impl:jar:sources</exclude>
-	    </excludes>
         </dependencySet>
 
         <dependencySet>
             <outputDirectory>api</outputDirectory>
             <includes>
-                <include>org.apache.geronimo.specs:geronimo-atinject_1.0_spec:jar:1.0-beta</include>
-                <include>org.apache.geronimo.specs:geronimo-jcdi_1.0_spec:jar:1.0-beta</include>
+                <include>org.apache.geronimo.specs:geronimo-atinject_1.0_spec:jar</include>
+                <include>org.apache.geronimo.specs:geronimo-jcdi_1.0_spec:jar</include>
             </includes>
         </dependencySet>
 
@@ -204,14 +201,19 @@ under the License.
                 <include>org.apache.openwebbeans:openwebbeans-ejb</include>
                 <include>org.apache.openwebbeans:openwebbeans-resource</include>
                 <include>org.apache.openwebbeans:openwebbeans-jsf</include>
+                <include>org.apache.openwebbeans:openwebbeans-jsf12</include>
                 <include>org.apache.openwebbeans:openwebbeans-jms</include>
+                <include>org.apache.openwebbeans:openwebbeans-ejb-common</include>
+                <include>org.apache.openwebbeans:openwebbeans-ee</include>
+                <include>org.apache.openwebbeans:openwebbeans-ee-common</include>
+                <include>org.apache.openwebbeans:openwebbeans-el10</include>
+                <include>org.apache.openwebbeans:openwebbeans-resource</include>
+                <include>org.apache.openwebbeans:openwebbeans-osgi</include>
+                <include>org.apache.openwebbeans:openwebbeans-web</include>
+                <include>org.apache.openwebbeans:openwebbeans-tomcat6</include>
+                <include>org.apache.openwebbeans:openwebbeans-tomcat7</include>
             </includes>
-	    <excludes>
-		<exclude>org.apache.openwebbeans:openwebbeans-ejb:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:openwebbeans-resource:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:openwebbeans-jsf:jar:sources</exclude>
-		<exclude>org.apache.openwebbeans:openwebbeans-jms:jar:sources</exclude>
-            </excludes>
+
         </dependencySet>
 
         <dependencySet>
@@ -219,8 +221,8 @@ under the License.
             <includes>
                 <include>org.apache.openwebbeans:openwebbeans-spi</include>
             </includes>
-	    <excludes>
-		<exclude>org.apache.openwebbeans:openwebbeans-spi:jar:sources</exclude>
+            <excludes>
+                <exclude>org.apache.openwebbeans:openwebbeans-spi:jar:sources</exclude>
             </excludes>
         </dependencySet>
 

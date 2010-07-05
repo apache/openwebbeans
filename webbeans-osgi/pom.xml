@@ -25,6 +25,7 @@
     </parent>
 
     <artifactId>openwebbeans-osgi</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: OSGi ClassLoader support</name>
     <description>Apache OpenWebBeans OSGi ClassLoader support</description>
 

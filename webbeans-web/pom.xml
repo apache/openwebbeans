@@ -24,6 +24,7 @@
     </parent>
 
     <artifactId>openwebbeans-web</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: Java EE Web Utility</name>
     <description>OpenWebBeans Java EE Web Utility</description>
 

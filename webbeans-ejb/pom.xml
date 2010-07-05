@@ -24,6 +24,7 @@
 		<version>1.0.0-alpha-1</version>
 	</parent>
 	<artifactId>openwebbeans-ejb-common</artifactId>
+  <version> 1.0.0-alpha-1</version>
 	<name>Apache OpenWebBeans :: Java EE EJB Utility</name>
 	<description>OpenWebBeans Java EE EJB Utility</description>
 	<dependencies>

@@ -24,6 +24,7 @@
     </parent>
 
     <artifactId>openwebbeans-spi</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: SPI</name>
     <description>OpenWebBeans SPI</description>
 

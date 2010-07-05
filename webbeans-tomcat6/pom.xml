@@ -24,6 +24,7 @@
     </parent>
 
     <artifactId>openwebbeans-tomcat6</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: Apache Tomcat 6 Web Profile</name>
     <description>OpenWebBeans Apache Tomcat 6 Web Profile</description>
 

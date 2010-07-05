@@ -24,6 +24,7 @@
     </parent>
 
     <artifactId>openwebbeans-jsf12</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: JSF 1.2 integration</name>
     <description>JSF 1.2 integration for the  OpenWebBeans Implementation</description>
 

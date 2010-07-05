@@ -28,6 +28,7 @@
     </parent>
 
     <artifactId>atinject-tck</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: OpenWebBeans JSR-330 TCK</name>
     <packaging>jar</packaging>
     <description>JSR-330 TCK Suite</description>

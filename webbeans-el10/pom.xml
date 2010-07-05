@@ -25,6 +25,7 @@
     </parent>
 
     <artifactId>openwebbeans-el10</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: EL 1.0 integration</name>
     <description>EL 1.0 integration for the  OpenWebBeans Implementation</description>
 

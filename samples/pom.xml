@@ -27,6 +27,7 @@ under the License.
     </parent>
 
     <artifactId>samples</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <packaging>pom</packaging>
     <name>Apache OpenWebBeans :: Samples</name>
     <description>Contains samples project for openwebbeans.</description>

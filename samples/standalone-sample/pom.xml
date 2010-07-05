@@ -27,6 +27,7 @@ under the License.
     </parent>
 
     <artifactId>standalone-sample</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: OpenWebBeans Java SE Sample</name>
     <packaging>jar</packaging>
     <description>Java SE Sample</description>

@@ -24,6 +24,7 @@
 		<version>1.0.0-alpha-1</version>
 	</parent>
 	<artifactId>openwebbeans-jms</artifactId>
+  <version> 1.0.0-alpha-1</version>
 	<name>Apache OpenWebBeans :: JMS integration</name>
 	<description>OpenWebBeans JMS Integration</description>
 	<dependencies>

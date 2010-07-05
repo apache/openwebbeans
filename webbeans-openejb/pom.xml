@@ -24,6 +24,7 @@
 		<version>1.0.0-alpha-1</version>
 	</parent>
 	<artifactId>openwebbeans-ejb</artifactId>
+  <version> 1.0.0-alpha-1</version>
 	<name>Apache OpenWebBeans :: Apache OpenEJB Profile</name>
 	<description>OpenWebBeans Apache OpenEJB Profile</description>
 	<dependencies>

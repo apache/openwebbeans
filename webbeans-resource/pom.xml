@@ -26,6 +26,7 @@
         <version>1.0.0-alpha-1</version>
     </parent>
     <artifactId>openwebbeans-resource</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: Resource Integration</name>
     <description>OpenWebBeans Resource Integration</description>
     <dependencies>

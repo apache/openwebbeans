@@ -25,6 +25,7 @@
     </parent>
 
     <artifactId>openwebbeans-ee-common</artifactId>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: Java EE Common Utility</name>
     <description>OpenWebBeans Java EE Common</description>
 
