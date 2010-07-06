@@ -595,6 +595,12 @@
                 <version>${openejb.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.openwebbeans</groupId>
+                <artifactId>openwebbeans-doc</artifactId>
+                <version> 1.0.0-SNAPSHOT</version>
+            </dependency>
+            
         </dependencies>
     </dependencyManagement>
 
