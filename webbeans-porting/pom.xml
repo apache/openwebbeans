@@ -23,12 +23,12 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-alpha-1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>openwebbeans-porting</artifactId>
-  <version> 1.0.0-SNAPSHOT</version>
+  <version> 1.0.0-alpha-1</version>
     <name>Apache OpenWebBeans :: TCK Porting Package</name>
     <packaging>jar</packaging>
     <description>TCK Porting Package OpenWebBeans Implementation</description>
