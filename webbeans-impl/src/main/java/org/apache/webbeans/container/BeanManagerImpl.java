@@ -108,7 +108,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private static final long serialVersionUID = 1L;
 
     /**Holds the context with key scope*/
-    private static Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
+    private Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
 
     /**Deployment archive beans*/
     private Set<Bean<?>> deploymentBeans = new CopyOnWriteArraySet<Bean<?>>();
@@ -167,11 +167,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         new ConcurrentHashMap<Class<?>, InjectionTargetWrapper<?>>();
 
     /**
-     * The parent Manager this child is depending from.
-     */
-    private BeanManagerImpl parent;
-    
-    /**
      * Creates a new {@link BeanManager} instance.
      * Called by the system. Do not use outside of the
      * system.
@@ -214,18 +209,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         return this.errorStack;
     }
-    
-    public BeanManagerImpl getParent()
-    {
-        return this.parent;
-    }
-    
-    public synchronized void setParent(BeanManagerImpl parent)
-    {
-       this.parent = parent;
-    }
-    
-    
+
     /**
      * Return manager notification manager.
      * 
@@ -300,7 +284,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             }
         }
         
-        List<Context> others = BeanManagerImpl.contextMap.get(scopeType);
+        List<Context> others = contextMap.get(scopeType);
         if(others != null)
         {
             for(Context otherContext : others)
@@ -612,14 +596,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         Asserts.assertNotNull(scopeType, "scopeType parameter can not be null");
         Asserts.assertNotNull(context, "context parameter can not be null");
 
-        List<Context> contextList = BeanManagerImpl.contextMap.get(scopeType);
+        List<Context> contextList = contextMap.get(scopeType);
         
         if(contextList == null)
         {
             contextList = new CopyOnWriteArrayList<Context>();
             contextList.add(context);
             
-            BeanManagerImpl.contextMap.put(scopeType, contextList);
+            contextMap.put(scopeType, contextList);
         }
         else
         {
