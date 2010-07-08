@@ -67,7 +67,7 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
         
         if(declaringType == null)
         {
-            this.declaringType = (AnnotatedType<X>)AnnotatedElementFactory.newAnnotatedType(this.javaMember.getDeclaringClass());
+            this.declaringType = (AnnotatedType<X>)AnnotatedElementFactory.getInstance().newAnnotatedType(this.javaMember.getDeclaringClass());
             
             AnnotatedTypeImpl<X> impl = (AnnotatedTypeImpl<X>)this.declaringType;
             

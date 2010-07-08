@@ -457,7 +457,7 @@ public class BeansDeployer
             for(Class<?> implClass : classIndex)
             {
                 //Define annotation type
-                AnnotatedType<?> annotatedType = AnnotatedElementFactory.newAnnotatedType(implClass);
+                AnnotatedType<?> annotatedType = AnnotatedElementFactory.getInstance().newAnnotatedType(implClass);
                 
                 //Fires ProcessAnnotatedType
                 ProcessAnnotatedTypeImpl<?> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);     

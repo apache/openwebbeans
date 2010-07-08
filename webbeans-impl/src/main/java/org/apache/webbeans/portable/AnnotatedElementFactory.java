@@ -31,6 +31,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.SecurityUtil;
+import org.apache.webbeans.config.WebBeansFinder;
 
 /**
  * Factory for {@link javax.enterprise.inject.spi.Annotated} elements.
@@ -39,28 +40,34 @@ import org.apache.webbeans.util.SecurityUtil;
  */
 public final class AnnotatedElementFactory
 {
+
+    public static AnnotatedElementFactory getInstance()
+    {
+        AnnotatedElementFactory aef = (AnnotatedElementFactory) WebBeansFinder.getSingletonInstance(AnnotatedElementFactory.class.getName());
+        return aef;
+    }
+
     //Cache of the AnnotatedType
-    private static ConcurrentMap<Class<?>, AnnotatedType<?>> annotatedTypeCache = 
+    private ConcurrentMap<Class<?>, AnnotatedType<?>> annotatedTypeCache =
         new ConcurrentHashMap<Class<?>, AnnotatedType<?>>();
     
     //Cache of AnnotatedConstructor
-    private static ConcurrentMap<Constructor<?>, AnnotatedConstructor<?>> annotatedConstructorCache = 
+    private ConcurrentMap<Constructor<?>, AnnotatedConstructor<?>> annotatedConstructorCache =
         new ConcurrentHashMap<Constructor<?>, AnnotatedConstructor<?>>();
     
     //Cache of AnnotatedMethod
-    private static ConcurrentMap<Method, AnnotatedMethod<?>> annotatedMethodCache = 
+    private ConcurrentMap<Method, AnnotatedMethod<?>> annotatedMethodCache =
         new ConcurrentHashMap<Method, AnnotatedMethod<?>>();
     
     //Cache of AnnotatedField
-    private static ConcurrentMap<Field, AnnotatedField<?>> annotatedFieldCache = 
+    private ConcurrentMap<Field, AnnotatedField<?>> annotatedFieldCache =
         new ConcurrentHashMap<Field, AnnotatedField<?>>();
     
     /**
      * No instantiate.
      */
-    private AnnotatedElementFactory()
+    public AnnotatedElementFactory()
     {
-        // Emtpty
     }
 
     /**
@@ -71,7 +78,7 @@ public final class AnnotatedElementFactory
      * @return new annotated type
      */
     @SuppressWarnings("unchecked")
-    public static <X> AnnotatedType<X> newAnnotatedType(Class<X> annotatedClass)
+    public <X> AnnotatedType<X> newAnnotatedType(Class<X> annotatedClass)
     {
         Asserts.assertNotNull(annotatedClass, "annotatedClass is null");
         AnnotatedTypeImpl<X> annotatedType = null;
@@ -122,7 +129,7 @@ public final class AnnotatedElementFactory
      * @return new annotated constructor
      */
     @SuppressWarnings("unchecked")
-    public static <X> AnnotatedConstructor<X> newAnnotatedConstructor(Constructor<X> constructor, AnnotatedType<X> declaringClass)
+    public <X> AnnotatedConstructor<X> newAnnotatedConstructor(Constructor<X> constructor, AnnotatedType<X> declaringClass)
     {
         Asserts.assertNotNull(constructor, "constructor is null");
         Asserts.assertNotNull(declaringClass, "declaringClass is null");
@@ -154,7 +161,7 @@ public final class AnnotatedElementFactory
      * @return new annotated field
      */
     @SuppressWarnings("unchecked")
-    public static <X> AnnotatedField<X> newAnnotatedField(Field field, AnnotatedType<X> declaringClass)
+    public <X> AnnotatedField<X> newAnnotatedField(Field field, AnnotatedType<X> declaringClass)
     {
         Asserts.assertNotNull(field, "field is null");
         Asserts.assertNotNull(declaringClass, "declaringClass is null");
@@ -186,7 +193,7 @@ public final class AnnotatedElementFactory
      * @return new annotated method
      */
     @SuppressWarnings("unchecked")
-    public static <X> AnnotatedMethod<X> newAnnotatedMethod(Method method, AnnotatedType<X> declaringType)
+    public <X> AnnotatedMethod<X> newAnnotatedMethod(Method method, AnnotatedType<X> declaringType)
     {
         Asserts.assertNotNull(method, "method is null");
         Asserts.assertNotNull(declaringType, "declaringType is null");
@@ -212,7 +219,7 @@ public final class AnnotatedElementFactory
     /**
      * Clear caches.
      */
-    public static void clear()
+    public void clear()
     {
         annotatedTypeCache.clear();
         annotatedConstructorCache.clear();

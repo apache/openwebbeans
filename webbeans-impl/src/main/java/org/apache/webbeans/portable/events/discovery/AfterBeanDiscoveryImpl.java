@@ -66,7 +66,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @SuppressWarnings("unchecked")
     public void addBean(Bean<?> bean)
     {
-        AnnotatedType<?> annotatedType = AnnotatedElementFactory.newAnnotatedType(bean.getBeanClass());
+        AnnotatedType<?> annotatedType = AnnotatedElementFactory.getInstance().newAnnotatedType(bean.getBeanClass());
         
         //Fire Event
         ProcessBean<?> processBeanEvent = new GProcessBean(bean,annotatedType);

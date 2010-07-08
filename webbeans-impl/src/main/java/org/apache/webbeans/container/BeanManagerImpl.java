@@ -166,6 +166,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private Map<Class<?>, InjectionTargetWrapper<?>> injectionTargetForJavaEeComponents = 
         new ConcurrentHashMap<Class<?>, InjectionTargetWrapper<?>>();
 
+    private AnnotatedElementFactory annotatedElementFactory;
+
     /**
      * Creates a new {@link BeanManager} instance.
      * Called by the system. Do not use outside of the
@@ -175,6 +177,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         injectionResolver = new InjectionResolver(this);
         notificationManager = new NotificationManager();
+        annotatedElementFactory = AnnotatedElementFactory.getInstance();
     }    
     
     public <T> void putInjectionTargetWrapper(Contextual<T> contextual, InjectionTargetWrapper<T> wrapper)
@@ -637,7 +640,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> AnnotatedType<T> createAnnotatedType(Class<T> type)
     {
-        AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(type);
+        AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(type);
         
         return annotatedType;
     }

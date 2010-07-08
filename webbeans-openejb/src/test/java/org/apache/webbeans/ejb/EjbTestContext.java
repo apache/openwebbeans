@@ -70,6 +70,6 @@ public abstract class EjbTestContext
     {
         EjbPlugin plugin = new EjbPlugin();
        return (OpenEjbBean<T>)plugin.defineSessionBean(ejbClass, 
-               new GProcessAnnotatedType(AnnotatedElementFactory.newAnnotatedType(ejbClass)));
+               new GProcessAnnotatedType(AnnotatedElementFactory.getInstance().newAnnotatedType(ejbClass)));
     }
 }

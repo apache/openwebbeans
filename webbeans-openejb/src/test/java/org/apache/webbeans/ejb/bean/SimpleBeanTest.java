@@ -57,7 +57,7 @@ public class SimpleBeanTest extends EjbTestContext
         
         Assert.assertTrue(value);
         
-        GProcessAnnotatedType annotatedType = new GProcessAnnotatedType(AnnotatedElementFactory.newAnnotatedType(SimpleBean.class));
+        GProcessAnnotatedType annotatedType = new GProcessAnnotatedType(AnnotatedElementFactory.getInstance().newAnnotatedType(SimpleBean.class));
         
         OpenEjbBean<SimpleBean> bean = (OpenEjbBean<SimpleBean>)plugin.defineSessionBean(SimpleBean.class, annotatedType);
         Assert.assertNotNull(bean);

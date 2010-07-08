@@ -103,9 +103,9 @@ public class InjectionPointFactory
         
         if(!checkFieldApplicable(annots))
         {
-            AnnotatedType<?> annotated = AnnotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
+            AnnotatedType<?> annotated = AnnotatedElementFactory.getInstance().newAnnotatedType(member.getDeclaringClass());
             return getGenericInjectionPoint(owner, annots, member.getGenericType(), member, 
-                    AnnotatedElementFactory.newAnnotatedField(member, annotated));   
+                    AnnotatedElementFactory.getInstance().newAnnotatedField(member, annotated));   
         }        
         else
         {
@@ -208,8 +208,8 @@ public class InjectionPointFactory
 
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
         
-        AnnotatedType<?> annotated = AnnotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
-        AnnotatedMethod method = AnnotatedElementFactory.newAnnotatedMethod(member, annotated);
+        AnnotatedType<?> annotated = AnnotatedElementFactory.getInstance().newAnnotatedType(member.getDeclaringClass());
+        AnnotatedMethod method = AnnotatedElementFactory.getInstance().newAnnotatedMethod(member, annotated);
         List<AnnotatedParameter<?>> parameters = method.getParameters();
         
         InjectionPoint point = null;
@@ -313,8 +313,8 @@ public class InjectionPointFactory
 
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
 
-        AnnotatedType<Object> annotated = (AnnotatedType<Object>)AnnotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
-        AnnotatedConstructor constructor = AnnotatedElementFactory.newAnnotatedConstructor((Constructor<Object>)member,annotated);
+        AnnotatedType<Object> annotated = (AnnotatedType<Object>)AnnotatedElementFactory.getInstance().newAnnotatedType(member.getDeclaringClass());
+        AnnotatedConstructor constructor = AnnotatedElementFactory.getInstance().newAnnotatedConstructor((Constructor<Object>)member,annotated);
         List<AnnotatedParameter<?>> parameters = constructor.getParameters();
         
         InjectionPoint point = null;

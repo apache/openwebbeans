@@ -61,7 +61,7 @@ public class PortableTests extends TestContext
     @Test
     public void testAnnotatedType()
     {
-        AnnotatedType<PortableType1> type = AnnotatedElementFactory.newAnnotatedType(PortableType1.class);
+        AnnotatedType<PortableType1> type = AnnotatedElementFactory.getInstance().newAnnotatedType(PortableType1.class);
         
         Set<Annotation> annotations = type.getAnnotations();
         Set<Class<? extends Annotation>> clazzesAnnots = new HashSet<Class<? extends Annotation>>();

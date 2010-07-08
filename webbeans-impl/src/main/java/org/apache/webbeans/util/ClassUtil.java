@@ -56,7 +56,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
 
 /**
  * Utility classes with respect to the class operations.
- * 
+ *
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
@@ -190,6 +190,7 @@ public final class ClassUtil
         {
             loader = WebBeansUtil.getCurrentClassLoader();
             clazz = Class.forName(name, true , loader);
+            //X clazz = loader.loadClass(name);
             return clazz;
 
         }

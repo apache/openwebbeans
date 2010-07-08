@@ -72,7 +72,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  *  }
  * </pre>
  * Above class X instance observes for the event with type <code>LoggedInEvent</code>
- * and event qualifier is <code>Current</code>. Whenever event is fired, its {@link Observer#notify()}
+ * and event qualifier is <code>Current</code>. Whenever event is fired, its {@link ObserverMethod#notify()}
  * method is called.
  * </p>
  * 
@@ -123,7 +123,6 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      * @param bean owner
      * @param observerMethod method
      * @param ifExist if exist parameter
-     * @param type transaction type
      */
     public ObserverMethodImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist)
     {
@@ -150,7 +149,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      * @param bean
      * @param observerMethod
      * @param ifExist
-     * @param observedQualifiers
+     * @param qualifiers
      * @param observedEventType
      */
     public ObserverMethodImpl(InjectionTargetBean<?> bean, Method observerMethod, boolean ifExist,
@@ -294,9 +293,11 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     protected List<ObserverParams> getMethodArguments(Object event)
     {
+        AnnotatedElementFactory annotatedElementFactory = AnnotatedElementFactory.getInstance();
+
         //Define annotated parameter
-        AnnotatedType<T> annotatedType = (AnnotatedType<T>) AnnotatedElementFactory.newAnnotatedType(this.bean.getReturnType());
-        AnnotatedMethod<T> annotatedMethod = (AnnotatedMethod<T>)AnnotatedElementFactory.newAnnotatedMethod(this.observerMethod, annotatedType);
+        AnnotatedType<T> annotatedType = (AnnotatedType<T>) annotatedElementFactory.newAnnotatedType(this.bean.getReturnType());
+        AnnotatedMethod<T> annotatedMethod = (AnnotatedMethod<T>)annotatedElementFactory.newAnnotatedMethod(this.observerMethod, annotatedType);
         
         Type[] types = this.observerMethod.getGenericParameterTypes();
         Annotation[][] annots = this.observerMethod.getParameterAnnotations();

@@ -160,7 +160,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             JavassistProxyFactory.clear();
             
             //Delete AnnotateTypeCache
-            AnnotatedElementFactory.clear();
+            AnnotatedElementFactory.getInstance().clear();
             
             //After Stop
             afterStopApplication(endObject);

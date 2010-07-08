@@ -62,7 +62,9 @@ public final class EjbUtility
     public static <T> void fireEvents(Class<T> clazz, BaseEjbBean<T> ejbBean,ProcessAnnotatedType<T> event)
     {
         BeanManagerImpl manager = BeanManagerImpl.getManager();
-        AnnotatedType<T> annotatedType = AnnotatedElementFactory.newAnnotatedType(clazz);
+        AnnotatedElementFactory annotatedElementFactory = AnnotatedElementFactory.getInstance();
+
+        AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(clazz);
         
         //Fires ProcessAnnotatedType
         ProcessAnnotatedTypeImpl<T> processAnnotatedEvent = (ProcessAnnotatedTypeImpl<T>)event;             
@@ -102,7 +104,7 @@ public final class EjbUtility
         Map<ProducerMethodBean<?>,AnnotatedMethod<?>> annotatedMethods = new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>(); 
         for(ProducerMethodBean<?> producerMethod : producerMethodBeans)
         {
-            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
+            AnnotatedMethod<?> method = annotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
             ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForMethod(producerMethod,method);
             WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerMethods. Look at logs for further details");
 
@@ -115,7 +117,7 @@ public final class EjbUtility
         Map<ProducerFieldBean<?>,AnnotatedField<?>> annotatedFields = new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
         for(ProducerFieldBean<?> producerField : producerFieldBeans)
         {
-            AnnotatedField<?> field = AnnotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), annotatedType);
+            AnnotatedField<?> field = annotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), annotatedType);
             ProcessProducerImpl<?, ?> producerEvent = WebBeansUtil.fireProcessProducerEventForField(producerField, field);
             WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessProducer event observers for ProducerFields. Look at logs for further details");
             
@@ -130,7 +132,7 @@ public final class EjbUtility
         for(ObserverMethod<?> observerMethod : observerMethods)
         {
             ObserverMethodImpl<?> impl = (ObserverMethodImpl<?>)observerMethod;
-            AnnotatedMethod<?> method = AnnotatedElementFactory.newAnnotatedMethod(impl.getObserverMethod(), annotatedType);
+            AnnotatedMethod<?> method = annotatedElementFactory.newAnnotatedMethod(impl.getObserverMethod(), annotatedType);
             
             observerMethodsMap.put(observerMethod, method);
         }        

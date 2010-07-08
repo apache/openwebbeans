@@ -326,7 +326,7 @@ public abstract class TestContext implements ITestContext
             getComponents().add((AbstractOwbBean<?>) bean);
             manager.addBean(bean);
             
-            GProcessAnnotatedType type = new GProcessAnnotatedType(AnnotatedElementFactory.newAnnotatedType(clazz));
+            GProcessAnnotatedType type = new GProcessAnnotatedType(AnnotatedElementFactory.getInstance().newAnnotatedType(clazz));
             manager.fireEvent(type, new Annotation[0]);            
         }
 
