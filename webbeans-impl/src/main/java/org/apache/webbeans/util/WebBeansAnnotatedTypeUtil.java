@@ -772,7 +772,7 @@ public final class WebBeansAnnotatedTypeUtil
     {
         
         ManagedBean<T> bean = defineManagedBean(type);
-        Class clazz = JavassistProxyFactory.createAbstractDecoratorProxyClass(bean);
+        Class clazz = JavassistProxyFactory.getInstance().createAbstractDecoratorProxyClass(bean);
         bean.setConstructor(WebBeansUtil.defineConstructor(clazz));
         return bean;
     }

@@ -503,12 +503,12 @@ public class OpenWebBeansEjbInterceptor
 
             if (injectionTarget.getDecoratorStack().size() > 0)
             {
-                Class<?> proxyClass = JavassistProxyFactory.getInterceptorProxyClasses().get(injectionTarget);
+                Class<?> proxyClass = JavassistProxyFactory.getInstance().getInterceptorProxyClasses().get(injectionTarget);
                 if (proxyClass == null)
                 {
-                    ProxyFactory delegateFactory = JavassistProxyFactory.createProxyFactory(injectionTarget);
-                    proxyClass = JavassistProxyFactory.getProxyClass(delegateFactory);
-                    JavassistProxyFactory.getInterceptorProxyClasses().put(injectionTarget, proxyClass);
+                    ProxyFactory delegateFactory = JavassistProxyFactory.getInstance().createProxyFactory(injectionTarget);
+                    proxyClass = JavassistProxyFactory.getInstance().getProxyClass(delegateFactory);
+                    JavassistProxyFactory.getInstance().getInterceptorProxyClasses().put(injectionTarget, proxyClass);
                 }
                 Object delegate = proxyClass.newInstance();
                 delegateHandler = new DelegateHandler(threadLocal.get(),ejbContext);

@@ -52,7 +52,7 @@ public final class EjbDefinitionUtility
         {
             bean.setIface(iface);
             
-            Class<?> clazz = JavassistProxyFactory.getEjbBeanProxyClass(bean);
+            Class<?> clazz = JavassistProxyFactory.getInstance().getEjbBeanProxyClass(bean);
             if(clazz != null)
             {
                 return (T)clazz.newInstance();
@@ -65,7 +65,7 @@ public final class EjbDefinitionUtility
             factory.setHandler(handler);
             factory.setInterfaces(new Class[]{iface});
          
-            return (T)(JavassistProxyFactory.defineEjbBeanProxyClass(bean, factory).newInstance());
+            return (T)(JavassistProxyFactory.getInstance().defineEjbBeanProxyClass(bean, factory).newInstance());
             
         }
         catch(Exception e)

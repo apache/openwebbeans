@@ -809,7 +809,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             }
             
             //Create Managed Bean Proxy
-            instance = JavassistProxyFactory.createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
+            instance = JavassistProxyFactory.getInstance().createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
             
         }
         //Create Pseudo-Scope Bean Instance

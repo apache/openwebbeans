@@ -39,6 +39,7 @@ import javax.enterprise.inject.spi.Decorator;
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -58,20 +59,27 @@ public final class JavassistProxyFactory
 
     }
     
-    private static Map<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    private  Map<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     
-    private static Map<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    private  Map<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     
-    private static Map<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    private  Map<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     
-    private static Map<OwbBean<?>, Class<?>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    private  Map<OwbBean<?>, Class<?>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     
-    public static  Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
+    public   Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
     {
         return interceptorProxyClasses;
     }
     
-    public static void clear()
+    public static JavassistProxyFactory getInstance()
+    {
+        JavassistProxyFactory aef = (JavassistProxyFactory) WebBeansFinder.getSingletonInstance(JavassistProxyFactory.class.getName());
+        return aef;
+    }
+    
+    
+    public void clear()
     {
         normalScopedBeanProxyClasses.clear();
         dependentScopedBeanProxyClasses.clear();
@@ -79,12 +87,12 @@ public final class JavassistProxyFactory
         ejbProxyClasses.clear();
     }
     
-    public static Class<?> getEjbBeanProxyClass(OwbBean<?> bean)
+    public  Class<?> getEjbBeanProxyClass(OwbBean<?> bean)
     {
         return ejbProxyClasses.get(bean);
     }
     
-    public static Class<?> defineEjbBeanProxyClass(OwbBean<?> bean, ProxyFactory factory)
+    public  Class<?> defineEjbBeanProxyClass(OwbBean<?> bean, ProxyFactory factory)
     {
         Class<?> clazz = ejbProxyClasses.get(bean);
         if(clazz != null)
@@ -100,7 +108,7 @@ public final class JavassistProxyFactory
         return clazz;
     }
     
-    public static Class<?> createAbstractDecoratorProxyClass(OwbBean<?> bean)
+    public  Class<?> createAbstractDecoratorProxyClass(OwbBean<?> bean)
     {
         //Will only get called once while defining the bean, so no need to cache
         Class<?> clazz = null;
@@ -119,7 +127,7 @@ public final class JavassistProxyFactory
         
     }
     
-    public static Object createNormalScopedBeanProxy(OwbBean<?> bean, CreationalContext<?> creationalContext)
+    public  Object createNormalScopedBeanProxy(OwbBean<?> bean, CreationalContext<?> creationalContext)
     {
         Object result = null;
         try
@@ -155,7 +163,7 @@ public final class JavassistProxyFactory
         return result;
     }
     
-    public static Object createDependentScopedBeanProxy(OwbBean<?> bean, Object actualInstance, CreationalContext<?> creastionalContext)
+    public  Object createDependentScopedBeanProxy(OwbBean<?> bean, Object actualInstance, CreationalContext<?> creastionalContext)
     {
         Object result = null;
         
@@ -242,7 +250,7 @@ public final class JavassistProxyFactory
     }
 
 
-    public static Class<?> getProxyClass(ProxyFactory factory)
+    public  Class<?> getProxyClass(ProxyFactory factory)
     {
         Class<?> proxyClass = null;
         try
@@ -268,7 +276,7 @@ public final class JavassistProxyFactory
         return proxyClass;
     }
     
-    public static ProxyFactory createProxyFactory(Bean<?> bean) throws Exception
+    public  ProxyFactory createProxyFactory(Bean<?> bean) throws Exception
     {
         Set<Type> types = bean.getTypes();
         Set<Class<?>> interfaceList = new HashSet<Class<?>>();

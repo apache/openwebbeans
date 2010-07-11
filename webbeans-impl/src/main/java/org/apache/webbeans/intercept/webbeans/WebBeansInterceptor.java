@@ -295,7 +295,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
     {
         Context context = BeanManagerImpl.getManager().getContext(getScope());
         Object actualInstance = context.get((Bean<Object>)this.delegateBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T)JavassistProxyFactory.createDependentScopedBeanProxy(this.delegateBean, actualInstance, creationalContext);
+        T proxy = (T)JavassistProxyFactory.getInstance().createDependentScopedBeanProxy(this.delegateBean, actualInstance, creationalContext);
         
         return proxy;
     }

@@ -157,7 +157,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             InjectionResolver.getInstance().clearCaches();
             
             //Delte proxies
-            JavassistProxyFactory.clear();
+            JavassistProxyFactory.getInstance().clear();
             
             //Delete AnnotateTypeCache
             AnnotatedElementFactory.getInstance().clear();

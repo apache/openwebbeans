@@ -203,12 +203,12 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                     List<Object> decorators = null;
                     if (injectionTarget.getDecoratorStack().size() > 0)
                     {
-                        Class<?> proxyClass = JavassistProxyFactory.getInterceptorProxyClasses().get(bean);
+                        Class<?> proxyClass = JavassistProxyFactory.getInstance().getInterceptorProxyClasses().get(bean);
                         if (proxyClass == null)
                         {
-                            ProxyFactory delegateFactory = JavassistProxyFactory.createProxyFactory(bean);
-                            proxyClass = JavassistProxyFactory.getProxyClass(delegateFactory);
-                            JavassistProxyFactory.getInterceptorProxyClasses().put(bean, proxyClass);
+                            ProxyFactory delegateFactory = JavassistProxyFactory.getInstance().createProxyFactory(bean);
+                            proxyClass = JavassistProxyFactory.getInstance().getProxyClass(delegateFactory);
+                            JavassistProxyFactory.getInstance().getInterceptorProxyClasses().put(bean, proxyClass);
                         }
                         Object delegate = proxyClass.newInstance();
                         delegateHandler = new DelegateHandler(this.bean);
