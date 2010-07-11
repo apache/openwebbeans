@@ -180,7 +180,7 @@ public final class JmsUtil
             
             pf.setHandler(new JmsProxyHandler(jmsComponent,intf));
 
-            result = JavassistProxyFactory.getProxyClass(pf).newInstance();
+            result = JavassistProxyFactory.getInstance().getProxyClass(pf).newInstance();
 
         }
         catch (Exception e)
