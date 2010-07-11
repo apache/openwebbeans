@@ -24,6 +24,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Properties;
 
 import javassist.util.proxy.ProxyFactory;
@@ -189,6 +191,11 @@ public class SecurityUtil
         
         return value;
     }
+    
+    public static Object doPrivilegedObjectCreate(Class<?> clazz) throws PrivilegedActionException
+    {
+        return AccessController.doPrivileged(new PrivilegedActionForObjectCreation(clazz));
+    }
 
     public static void doPrivilegedSetSystemProperty(String propertyName, String value)
     {
@@ -248,6 +255,34 @@ public class SecurityUtil
         public Properties run()
         {
             return System.getProperties();
+        }
+        
+    }
+    
+    protected static class PrivilegedActionForObjectCreation implements PrivilegedExceptionAction<Object>
+    {
+        Class<?> clazz;
+        
+        protected PrivilegedActionForObjectCreation(Class<?> clazz)
+        {
+            this.clazz = clazz;
+        }
+
+        @Override
+        public Object run() throws Exception
+        {
+            try
+            {
+                return clazz.newInstance();
+            }
+            catch (InstantiationException e)
+            {
+                throw e;
+            }
+            catch (IllegalAccessException e)
+            {
+                throw e;
+            }
         }
         
     }

@@ -30,11 +30,16 @@ import org.apache.webbeans.util.Asserts;
 
 public class JMSManager
 {
-    private Set<JMSModel> jmsModels = new CopyOnWriteArraySet<JMSModel>();
+    private final Set<JMSModel> jmsModels = new CopyOnWriteArraySet<JMSModel>();
 
     public JMSManager()
     {
         
+    }
+    
+    public void clear()
+    {
+        this.jmsModels.clear();
     }
     
     public static JMSManager getInstance()

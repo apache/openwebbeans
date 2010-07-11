@@ -30,15 +30,11 @@ public class JMSModel
         TOPIC
     }
 
-    private JMSType jmsType;
-    
-    private String jndiName;
-    
-    private String mappedName;
-    
-    private boolean isJndiNameDefined;
-    
-    private Set<Annotation> bindings = new HashSet<Annotation>();
+    private final JMSType jmsType;    
+    private String jndiName;    
+    private final String mappedName;    
+    private boolean isJndiNameDefined;    
+    private final Set<Annotation> bindings = new HashSet<Annotation>();
     
     
     public JMSModel(JMSType jmsType, String jndiName, String mappedName)
@@ -155,7 +151,5 @@ public class JMSModel
         }
         return true;
     }
-
-
-    
+   
 }

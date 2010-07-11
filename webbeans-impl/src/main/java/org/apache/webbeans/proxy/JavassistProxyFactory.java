@@ -59,13 +59,10 @@ public final class JavassistProxyFactory
 
     }
     
-    private  Map<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
-    
-    private  Map<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
-    
-    private  Map<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
-    
-    private  Map<OwbBean<?>, Class<?>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    private Map<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
+    private Map<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
+    private Map<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
+    private Map<OwbBean<?>, Class<?>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     
     public   Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
     {
@@ -92,6 +89,7 @@ public final class JavassistProxyFactory
         return ejbProxyClasses.get(bean);
     }
     
+
     public  Class<?> defineEjbBeanProxyClass(OwbBean<?> bean, ProxyFactory factory)
     {
         Class<?> clazz = ejbProxyClasses.get(bean);

@@ -29,6 +29,7 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.corespi.ServiceLoader;
+import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -161,6 +162,9 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             
             //Delete AnnotateTypeCache
             AnnotatedElementFactory.getInstance().clear();
+            
+            //Delete JMS Model Cache
+            JMSManager.getInstance().clear();
             
             //After Stop
             afterStopApplication(endObject);

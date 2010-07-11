@@ -30,6 +30,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.PrivilegedActionException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -168,18 +169,26 @@ public final class ClassUtil
     {
         try
         {
+            if(System.getSecurityManager() != null)
+            {
+                return SecurityUtil.doPrivilegedObjectCreate(clazz);
+            }            
+            
             return clazz.newInstance();
-        }
-        catch (InstantiationException e)
+            
+        }catch(Exception e)
         {
-            logger.error(e);
-        }
-        catch (IllegalAccessException e)
-        {
-            logger.error(e);
-        }
+            Throwable cause = e;
+            if(e instanceof PrivilegedActionException)
+            {
+                cause = ((PrivilegedActionException)e).getCause();
+            }
+            
+            String error = "Error is occured while creating an instance of class : " + clazz.getName(); 
+            logger.error(error, cause);
+            throw new WebBeansException(error,cause); 
         
-        return null;
+        }
     }
 
     public static Class<?> getClassFromName(String name)
