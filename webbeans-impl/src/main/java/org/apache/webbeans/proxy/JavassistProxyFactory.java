@@ -54,7 +54,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 public final class JavassistProxyFactory
 {
-    private JavassistProxyFactory()
+    public JavassistProxyFactory()
     {
 
     }
