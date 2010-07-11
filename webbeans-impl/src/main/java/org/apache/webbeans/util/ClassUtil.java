@@ -176,7 +176,8 @@ public final class ClassUtil
             
             return clazz.newInstance();
             
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             Throwable cause = e;
             if(e instanceof PrivilegedActionException)
