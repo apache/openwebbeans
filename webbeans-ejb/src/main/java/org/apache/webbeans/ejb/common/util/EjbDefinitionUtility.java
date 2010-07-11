@@ -27,6 +27,8 @@ import org.apache.webbeans.ejb.common.component.EjbBeanCreatorImpl;
 import org.apache.webbeans.ejb.common.proxy.EjbBeanProxyHandler;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * @version $Rev: 917060 $ $Date: 2010-02-28 00:14:47 +0200 (Sun, 28 Feb 2010) $
@@ -55,7 +57,7 @@ public final class EjbDefinitionUtility
             Class<?> clazz = JavassistProxyFactory.getInstance().getEjbBeanProxyClass(bean);
             if(clazz != null)
             {
-                return (T)clazz.newInstance();
+                return (T)ClassUtil.newInstance(clazz);
             }
             
             //Proxy factory instance
