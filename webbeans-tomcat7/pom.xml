@@ -26,28 +26,14 @@
     <artifactId>openwebbeans-tomcat7</artifactId>
     <name>Apache OpenWebBeans :: Apache Tomcat 7 Web Profile</name>
     <description>OpenWebBeans Apache Tomcat 7 Web Profile</description>
-    <repositories>
-    	<repository>
-    		<id>m2-snapshot</id>
-    		<name>m2-snapshot for Tomcat7</name>
-    		<url>http://people.apache.org/repo/m2-snapshot-repository/</url>
-    		<releases>
-    			<enabled>false</enabled>
-    		</releases>
-    		<snapshots>
-    			<updatePolicy>never</updatePolicy>
-    			<checksumPolicy>ignore</checksumPolicy>
-    		</snapshots>
-    	</repository>
-    </repositories>
 
     <dependencies>
 
 
 	 <dependency>
-	      <groupId>org.apache.geronimo.ext.tomcat</groupId>
-	      <artifactId>catalina</artifactId>
-	      <version>7.0.0.1</version>
+	      <groupId>org.apache.tomcat</groupId>
+	      <artifactId>tomcat-catalina</artifactId>
+	      <version>7.0.0</version>
 	      <scope>provided</scope>
 	    </dependency>
 
