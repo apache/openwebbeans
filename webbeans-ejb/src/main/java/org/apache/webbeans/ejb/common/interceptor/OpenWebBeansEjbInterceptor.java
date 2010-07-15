@@ -452,9 +452,9 @@ public class OpenWebBeansEjbInterceptor
         rv.INTERCEPTOR_OR_DECORATOR_CALL = false;
         if(ejbBean == null)
         {
-            if (logger.wblWillLogWarn())
+            if (logger.wblWillLogDebug())
             {
-                logger.warn(OWBLogConst.WARN_0008,  instance.getClass(), manager.getComponents());
+                logger.debug(OWBLogConst.WARN_0008,  instance.getClass(), manager.getComponents());
             }
             return rv;
         }
@@ -627,40 +627,43 @@ public class OpenWebBeansEjbInterceptor
         BeanManagerImpl manager = BeanManagerImpl.getManager();
         Object instance = ejbContext.getTarget();
         
-        BaseEjbBean<?> bean = findTargetBean(instance);
-        if (bean == null)
-        { 
-            logger.debug("No bean for instance [{0}]", instance);
-            return;
-        }
-        
-        List<InterceptorData> interceptorStack = bean.getInterceptorStack();
-        
-        if (interceptorStack.size() > 0 && WebBeansUtil.isContainsInterceptorMethod(interceptorStack, interceptorType)) 
-        {
-            localcc = manager.createCreationalContext(null);
-            
-            InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, 
-                    InterceptorUtil.getInterceptorMethods(interceptorStack, interceptorType), interceptorType);
-            impl.setCreationalContext(localcc);
-            
-            try
-            {
-                impl.proceed();
-            }
-            catch (Exception e)
-            {
-                logger.error(OWBLogConst.ERROR_0008, e, interceptorType);                
-            }    
-        }       
-        else 
-        { 
-            logger.debug("No lifecycle interceptors for [{0}]", instance);
-        }
-
         try 
         { 
-           ejbContext.proceed();
+            
+            BaseEjbBean<?> bean = findTargetBean(instance);
+            if (bean == null)
+            { 
+                logger.debug("No bean for instance [{0}]", instance);
+                ejbContext.proceed();
+                return;
+            }
+            
+            List<InterceptorData> interceptorStack = bean.getInterceptorStack();
+            
+            if (interceptorStack.size() > 0 && WebBeansUtil.isContainsInterceptorMethod(interceptorStack, interceptorType)) 
+            {
+                localcc = manager.createCreationalContext(null);
+                
+                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, 
+                        InterceptorUtil.getInterceptorMethods(interceptorStack, interceptorType), interceptorType);
+                impl.setCreationalContext(localcc);
+                
+                try
+                {
+                    impl.proceed();
+                }
+                catch (Exception e)
+                {
+                    logger.error(OWBLogConst.ERROR_0008, e, interceptorType);                
+                }    
+            }       
+            else 
+            { 
+                logger.debug("No lifecycle interceptors for [{0}]", instance);
+            }
+    
+            //Call next interceptor
+            ejbContext.proceed();
         }
         catch (Exception e) 
         { 
