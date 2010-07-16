@@ -813,7 +813,8 @@ public final class WebBeansAnnotatedTypeUtil
                 return managedBean.getInjectionPoints();
                 
             }            
-        }catch(Exception e)
+        }
+        catch(Exception e)
         {
             String message = "Error is occured while getting injection points for the Java EE component instance class, " + type.getJavaClass(); 
             logger.error(message,e);
