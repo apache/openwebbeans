@@ -29,7 +29,6 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 
 import org.apache.webbeans.component.InjectionPointBean;
@@ -42,6 +41,7 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
+import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -106,8 +106,7 @@ public final class OWBInjector implements Serializable
             }
 
             Class<Object> injectableComponentClass = (Class<Object>)javaEeComponentInstance.getClass();
-            InjectionTarget<Object> injectionTarget = null;
-            
+
             //Look for custom InjectionTarget
             InjectionTargetWrapper<Object> wrapper = beanManager.getInjectionTargetWrapper(injectableComponentClass);
             if(wrapper != null)
@@ -117,8 +116,7 @@ public final class OWBInjector implements Serializable
             }
             
             AnnotatedType<Object> annotated = (AnnotatedType<Object>) beanManager.createAnnotatedType(injectableComponentClass);
-            injectionTarget = beanManager.createInjectionTarget(annotated);
-            Set<InjectionPoint> injectionPoints = injectionTarget.getInjectionPoints();
+            Set<InjectionPoint> injectionPoints = WebBeansAnnotatedTypeUtil.getJavaEeComponentInstanceInjectionPoints(annotated);
             if(injectionPoints != null && injectionPoints.size() > 0)
             {
                 for(InjectionPoint injectionPoint : injectionPoints)

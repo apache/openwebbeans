@@ -27,6 +27,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -768,6 +769,7 @@ public final class WebBeansAnnotatedTypeUtil
         }
     }
     
+    @SuppressWarnings("unchecked")
     public static <T> ManagedBean<T> defineAbstractDecorator(AnnotatedType<T> type)
     {
         
@@ -775,6 +777,48 @@ public final class WebBeansAnnotatedTypeUtil
         Class clazz = JavassistProxyFactory.getInstance().createAbstractDecoratorProxyClass(bean);
         bean.setConstructor(WebBeansUtil.defineConstructor(clazz));
         return bean;
+    }
+    
+    /**
+     * Gets injection points for the given javaee component annotated type.
+     * @param <T> component class type
+     * @param type annotated type for the class
+     * @return injection points of the java ee component class
+     * @throws IllegalArgumentException if any exception occurs
+     */
+    public static <T> Set<InjectionPoint> getJavaEeComponentInstanceInjectionPoints(AnnotatedType<T> type) throws IllegalArgumentException
+    {
+        try
+        {
+            if(type == null)
+            {
+                return Collections.emptySet();
+            }
+            else
+            {
+                //Class of the component
+                Class<T> clazz = type.getJavaClass();
+                
+                //Just creating temporary for getting injected fields
+                ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);    
+                managedBean.setAnnotatedType(type);
+                            
+                AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(managedBean);            
+                managedBeanCreator.setAnnotatedType(type);
+                
+                //Just define injections
+                managedBeanCreator.defineInjectedFields();
+                managedBeanCreator.defineInjectedMethods();
+                
+                return managedBean.getInjectionPoints();
+                
+            }            
+        }catch(Exception e)
+        {
+            String message = "Error is occured while getting injection points for the Java EE component instance class, " + type.getJavaClass(); 
+            logger.error(message,e);
+            throw new IllegalArgumentException(message, e);
+        }
     }
     
     public static <T> ManagedBean<T>  defineManagedBean(AnnotatedType<T> type)
