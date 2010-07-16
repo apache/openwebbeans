@@ -20,6 +20,7 @@ package org.apache.webbeans.ejb.common.interceptor;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @version $Rev$ $Date$
  *
  */
-public class OpenWebBeansEjbInterceptor
+public class OpenWebBeansEjbInterceptor implements Serializable
 {
     //Logger instance
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansEjbInterceptor.class);
@@ -679,6 +680,11 @@ public class OpenWebBeansEjbInterceptor
         }
     } 
     
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException
+    {
+        // Do nothing
+    }
+    
     //Read object
     private  void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
     {
@@ -686,6 +692,7 @@ public class OpenWebBeansEjbInterceptor
         threadLocalCreationalContext = new ThreadLocal<CreationalContext<?>>();
         interceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
         nonCtxInterceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
+        resolvedBeans = new HashMap<Class<?>, BaseEjbBean<?>>();
     }
  
     
