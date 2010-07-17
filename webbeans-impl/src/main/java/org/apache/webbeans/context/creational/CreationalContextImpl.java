@@ -131,10 +131,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      */
     public <K> void addDependent(Object ownerInstance, Contextual<K> dependent, Object instance)
     {
-        Asserts.assertNotNull(dependent,"ownerInstance parameter cannot be null");
         Asserts.assertNotNull(dependent,"dependent parameter cannot be null");
-        Asserts.assertNotNull(dependent,"instance parameter cannot be null");
-        Asserts.assertNotNull(dependent,"cc parameter cannot be null");
         
         if(instance != null)
         {
