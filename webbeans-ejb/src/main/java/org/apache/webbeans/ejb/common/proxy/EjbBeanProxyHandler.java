@@ -116,7 +116,7 @@ public class EjbBeanProxyHandler implements MethodHandler
             {
                 if(checkEjbRemoveMethod(method))
                 {
-                    this.ejbBean.setRemoveStatefulInstance(true);
+                    this.ejbBean.setRemovedStatefulInstance(true);
                 }
             }
             

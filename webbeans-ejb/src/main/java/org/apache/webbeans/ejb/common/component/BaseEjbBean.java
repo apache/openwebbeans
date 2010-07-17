@@ -42,8 +42,8 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     /**Injected reference local interface type*/
     protected Class<?> iface = null;
     
-    /**Remove stateful bean instance*/
-    protected boolean removeStatefulInstance = false;
+    /** Has the stateful instance already been removed by a business method invocation */
+    protected boolean removedStatefulInstance = false;
     
     /**
      * Creates a new instance of the session bean.
@@ -75,9 +75,9 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
      * Sets remove flag.
      * @param remove flag
      */
-    public void setRemoveStatefulInstance(boolean remove)
+    public void setRemovedStatefulInstance(boolean remove)
     {
-        this.removeStatefulInstance = remove;
+        this.removedStatefulInstance = remove;
     }
     
         
@@ -140,7 +140,7 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     @Override
     protected void destroyComponentInstance(T instance, CreationalContext<T> creational)
     {
-        if(!removeStatefulInstance && getEjbType().equals(SessionBeanType.STATEFUL))
+        if(!removedStatefulInstance && getEjbType().equals(SessionBeanType.STATEFUL))
         {
             //Call remove method
             List<Method> methods = getRemoveMethods();
