@@ -49,9 +49,8 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         
     /**Ejb interceptors*/
     //contextual instance --> interceptors
-    private ConcurrentMap<Object, List<EjbInterceptorContext>> ejbInterceptors = 
-            new ConcurrentHashMap<Object, List<EjbInterceptorContext>>();
-    
+    private ConcurrentMap<Object, List<EjbInterceptorContext>> ejbInterceptors = null;
+
     /**When bean object is destroyed it is set*/
     public static ThreadLocal<Object> currentRemoveObject = new ThreadLocal<Object>();
     
@@ -73,7 +72,16 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         Asserts.assertNotNull(ownerInstance,"Owner instance parameter can not be null");
         Asserts.assertNotNull(instance,"Instance parameter can not be null");
         
-        List<EjbInterceptorContext> list = this.ejbInterceptors.get(ownerInstance);
+        List<EjbInterceptorContext> list = null;
+        if (this.ejbInterceptors == null)
+        {
+            this.ejbInterceptors =  new ConcurrentHashMap<Object, List<EjbInterceptorContext>>();
+        }
+        else
+        {
+            list = this.ejbInterceptors.get(ownerInstance);
+        }
+
         if(list == null)
         {
             list = new ArrayList<EjbInterceptorContext>();
@@ -96,6 +104,11 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     public EjbInterceptorContext getEjbInterceptor(Object ownerInstance,Class<?> clazz)
     {
         Asserts.assertNotNull(ownerInstance,"Owner instance can not be null");
+
+        if (this.ejbInterceptors == null)
+        {
+            return null;
+        }
         
         List<EjbInterceptorContext> ejbInterceptors = this.ejbInterceptors.get(ownerInstance);
         if(ejbInterceptors != null)
@@ -315,7 +328,12 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         
         this.dependentObjects.clear();
         
-        Collection<List<EjbInterceptorContext>> interceptorValues = this.ejbInterceptors.values();
+        Collection<List<EjbInterceptorContext>> interceptorValues = null;
+        if (this.ejbInterceptors != null)
+        {
+            this.ejbInterceptors.values();
+        }
+
         if(interceptorValues != null)
         {
             for(List<EjbInterceptorContext> interceptors : interceptorValues)
@@ -328,10 +346,9 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                     }
                 }                
             }
+
+            this.ejbInterceptors.clear();
         }
-        
-        this.ejbInterceptors.clear();
-        
     }
     
     /**
