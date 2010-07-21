@@ -30,8 +30,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
@@ -59,6 +57,12 @@ public final class InterceptorUtil
 
     }
 
+    /**
+     * Check if the given method is a 'business method'
+     * in the sense of the Interceptor specification
+     * @param method
+     * @return <code>true</code> if the given method is an interceptable business method
+     */
     public static boolean isWebBeansBusinessMethod(Method method)
     {
         Asserts.nullCheckForMethod(method);
@@ -70,23 +74,19 @@ public final class InterceptorUtil
             return false;
         }
 
-        if (AnnotationUtil.hasMethodAnnotation(method, Inject.class))
-        {
-            return false;
-        }
+        Annotation[] anns = method.getDeclaredAnnotations();
 
-        if (AnnotationUtil.hasMethodAnnotation(method, PreDestroy.class)
-            || AnnotationUtil.hasMethodAnnotation(method, PostConstruct.class)
-            || AnnotationUtil.hasMethodAnnotation(method, AroundInvoke.class))
+        // filter out all container 'special' methods
+        for (Annotation ann : anns)
         {
-            return false;
-        }
-
-        if (AnnotationUtil.hasMethodAnnotation(method, Produces.class)
-            || AnnotationUtil.hasMethodParameterAnnotation(method, Disposes.class)
-            || AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
-        {
-            return true;
+            Class <? extends Annotation> annCls = ann.annotationType();
+            if (annCls.equals(Inject.class)        ||
+                annCls.equals(PreDestroy.class)    ||
+                annCls.equals(PostConstruct.class) ||
+                annCls.equals(AroundInvoke.class)    )
+            {
+                return false;
+            }
         }
 
         return true;
