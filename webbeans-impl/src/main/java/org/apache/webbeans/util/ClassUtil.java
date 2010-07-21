@@ -563,17 +563,25 @@ public final class ClassUtil
 
     public static List<String> getObjectMethodNames()
     {
-        List<String> list = new ArrayList<String>();
-        Class<?> clazz = Object.class;
-
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
-        for (Method method : methods)
+        if (objectMethodNames == null)
         {
-            list.add(method.getName());
+            // not much syncronisation needed...
+            List<String> list = new ArrayList<String>();
+            Class<?> clazz = Object.class;
+
+            Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
+            for (Method method : methods)
+            {
+                list.add(method.getName());
+            }
+            objectMethodNames = list;
         }
 
-        return list;
+        return objectMethodNames;
     }
+    private static List objectMethodNames= null;
+    
+
 
     public static boolean isObjectMethod(String methodName)
     {
