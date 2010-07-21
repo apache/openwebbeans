@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -2359,21 +2360,33 @@ public final class WebBeansUtil
     }
 
     /**
+     * The result of this invocation get's cached
+     * @see #isScopeTypeNormalCache
      * @param scopeType
-     * @return <code>true</code> if the given scopeType represents a {@link javax.enterprise.context.NormalScope}d
-     *         bean
+     * @return <code>true</code> if the given scopeType represents a
+     *         {@link javax.enterprise.context.NormalScope}d bean
      */
     public static boolean isScopeTypeNormal(Class<? extends Annotation> scopeType)
     {
         Asserts.assertNotNull(scopeType, "scopeType argument can not be null");
 
+        Boolean isNormal = isScopeTypeNormalCache.get(scopeType);
+
+        if (isNormal != null)
+        {
+            return isNormal.booleanValue();
+        }
+
+
         if (scopeType.isAnnotationPresent(NormalScope.class))
         {
+            isScopeTypeNormalCache.put(scopeType, Boolean.TRUE);
             return true;
         }
 
         if(scopeType.isAnnotationPresent(Scope.class))
         {
+            isScopeTypeNormalCache.put(scopeType, Boolean.FALSE);
             return false;
         }
 
@@ -2382,13 +2395,25 @@ public final class WebBeansUtil
         {
             if (additionalScope.getScope().equals(scopeType))
             {
-                return additionalScope.isNormal();
+                isNormal = new Boolean(additionalScope.isNormal());
+                isScopeTypeNormalCache.put(scopeType, isNormal);
+                return isNormal.booleanValue(); 
             }
         }
 
         // no scopetype found so far -> kawumms
         throw new IllegalArgumentException("scopeType argument must be annotated with @Scope or @NormalScope");
     }
+
+    /**
+     * we cache results of calls to {@link #isScopeTypeNormalCache} because
+     * this doesn't change at runtime.
+     * We don't need to take special care about classloader
+     * hierarchies, because each cl has other classes. 
+     */
+    private static Map<Class<? extends Annotation>, Boolean> isScopeTypeNormalCache =
+            new ConcurrentHashMap<Class<? extends Annotation>, Boolean>();
+
 
     public static void checkNullInstance(Object instance,Class<?> scopeType, String errorMessage)
     {
