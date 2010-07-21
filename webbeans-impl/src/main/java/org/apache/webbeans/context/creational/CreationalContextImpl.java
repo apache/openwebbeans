@@ -293,17 +293,20 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
             this.dependentObjects.remove(ownerInstance);                        
         }
-        
-        List<EjbInterceptorContext> interceptors = this.ejbInterceptors.get(ownerInstance);
-        if(interceptors != null)
+
+        if (this.ejbInterceptors != null)
         {
-            for(EjbInterceptorContext intereptor : interceptors)
+            List<EjbInterceptorContext> interceptors = this.ejbInterceptors.get(ownerInstance);
+            if(interceptors != null)
             {
-                intereptor.getInjectorInstance().destroy();
+                for(EjbInterceptorContext intereptor : interceptors)
+                {
+                    intereptor.getInjectorInstance().destroy();
+                }
             }
+
+            this.ejbInterceptors.remove(ownerInstance);
         }
-        
-        this.ejbInterceptors.remove(ownerInstance);
     }
     
     @SuppressWarnings("unchecked")
@@ -331,7 +334,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         Collection<List<EjbInterceptorContext>> interceptorValues = null;
         if (this.ejbInterceptors != null)
         {
-            this.ejbInterceptors.values();
+            interceptorValues = this.ejbInterceptors.values();
         }
 
         if(interceptorValues != null)
