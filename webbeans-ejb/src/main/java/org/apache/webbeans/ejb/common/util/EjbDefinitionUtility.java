@@ -21,13 +21,13 @@ package org.apache.webbeans.ejb.common.util;
 import javax.enterprise.context.spi.CreationalContext;
 
 import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.ejb.common.component.EjbBeanCreatorImpl;
 import org.apache.webbeans.ejb.common.proxy.EjbBeanProxyHandler;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
-import org.apache.webbeans.util.ClassUtil;
 
 /**
  * @version $Rev: 917060 $ $Date: 2010-02-28 00:14:47 +0200 (Sun, 28 Feb 2010) $
@@ -51,22 +51,22 @@ public final class EjbDefinitionUtility
     {
         try
         {
+            T proxyInstance = null;
             bean.setIface(iface);
             
             Class<?> clazz = JavassistProxyFactory.getInstance().getEjbBeanProxyClass(bean);
-            if(clazz != null)
+            if(clazz == null)
             {
-                return (T)ClassUtil.newInstance(clazz);
+                ProxyFactory factory = new ProxyFactory();
+                factory.setInterfaces(new Class[]{iface});
+                clazz = JavassistProxyFactory.getInstance().defineEjbBeanProxyClass(bean, factory);
             }
             
-            //Proxy factory instance
-            ProxyFactory factory = new ProxyFactory();            
+            proxyInstance = (T) clazz.newInstance();
+            EjbBeanProxyHandler handler = new EjbBeanProxyHandler(bean, creationalContext);
+            ((ProxyObject)proxyInstance).setHandler(handler);
             
-            EjbBeanProxyHandler handler = new EjbBeanProxyHandler(bean,creationalContext);            
-            factory.setHandler(handler);
-            factory.setInterfaces(new Class[]{iface});
-         
-            return (T)(JavassistProxyFactory.getInstance().defineEjbBeanProxyClass(bean, factory).newInstance());
+            return proxyInstance;
             
         }
         catch(Exception e)
