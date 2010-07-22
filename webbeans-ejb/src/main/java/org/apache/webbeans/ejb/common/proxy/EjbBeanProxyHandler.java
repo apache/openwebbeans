@@ -58,6 +58,9 @@ public class EjbBeanProxyHandler implements MethodHandler
     /**Proxy ejb bean instance*/
     private BaseEjbBean<?> ejbBean;
     
+    private Object dependentEjb;
+    private boolean isDependent = false;
+    
     /**Creational Context*/
     private transient CreationalContext<?> creationalContext;
     
@@ -76,6 +79,12 @@ public class EjbBeanProxyHandler implements MethodHandler
         else
         {
             this.creationalContext = creationalContext;   
+        }
+        
+        if (ejbBean.getScope().equals(Dependent.class)) 
+        {
+            isDependent = true;
+            dependentEjb = null;
         }
     }    
     
@@ -126,26 +135,23 @@ public class EjbBeanProxyHandler implements MethodHandler
             //Context of the bean
             Context webbeansContext = BeanManagerImpl.getManager().getContext(this.ejbBean.getScope());
             
-            //Already saved in context?
-            webbeansInstance=webbeansContext.get(this.ejbBean);
-            if (webbeansInstance != null)
+            if (isDependent && this.dependentEjb != null) 
             {
-                boolean access = method.isAccessible();
-                SecurityUtil.doPrivilegedSetAccessible(method, true);
-                try
-                {
-                    return method.invoke(webbeansInstance, arguments);
-                    
-                }
-                finally
-                {
-                    SecurityUtil.doPrivilegedSetAccessible(method, access);
-                }            
-                
+                webbeansInstance = this.dependentEjb;
             }
-            
-            // Getting actual EJB Bean proxy instance
-            webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, getContextualCreationalContext());
+            else 
+            {
+                // try looking in the context without getContextualCreationalContext() first
+                webbeansInstance = webbeansContext.get(this.ejbBean);
+                if (webbeansInstance == null)
+                {
+                    webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, getContextualCreationalContext());
+                }
+                if (isDependent)
+                {
+                    this.dependentEjb = webbeansInstance;
+                }
+            }
             
             //Call actual method on proxy
             //Actually it is called from OWB Proxy --> EJB Proxy --> Actual Bean Instance
