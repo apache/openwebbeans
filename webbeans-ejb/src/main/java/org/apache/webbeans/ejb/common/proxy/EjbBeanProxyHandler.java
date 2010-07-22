@@ -58,7 +58,7 @@ public class EjbBeanProxyHandler implements MethodHandler
     /**Proxy ejb bean instance*/
     private BaseEjbBean<?> ejbBean;
     
-    private Object dependentEjb;
+    private Object dependentEJB;
     private boolean isDependent = false;
     
     /**Creational Context*/
@@ -84,7 +84,7 @@ public class EjbBeanProxyHandler implements MethodHandler
         if (ejbBean.getScope().equals(Dependent.class)) 
         {
             isDependent = true;
-            dependentEjb = null;
+            dependentEJB = null;
         }
     }    
     
@@ -92,7 +92,7 @@ public class EjbBeanProxyHandler implements MethodHandler
      * {@inheritDoc}
      */
     @Override
-    public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
+    public Object invoke(Object proxyInstance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         Object result = null;
         
@@ -107,7 +107,7 @@ public class EjbBeanProxyHandler implements MethodHandler
             SecurityUtil.doPrivilegedSetAccessible(method, true);
             try
             {
-                return proceed.invoke(instance, arguments);
+                return proceed.invoke(proxyInstance, arguments);
                 
             }
             finally
@@ -119,40 +119,60 @@ public class EjbBeanProxyHandler implements MethodHandler
         try
         {
             Object webbeansInstance = null;
-            
-            //Check ejb remove method
-            if(this.ejbBean.getEjbType().equals(SessionBeanType.STATEFUL))
-            {
-                if(checkEjbRemoveMethod(method))
-                {
-                    this.ejbBean.setRemovedStatefulInstance(true);
-                }
-            }
-            
-            //Set Ejb bean on thread local
+
+            // Set Ejb bean on thread local
             OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean, getContextualCreationalContext());
 
-            //Context of the bean
+            // Context of the bean
             Context webbeansContext = BeanManagerImpl.getManager().getContext(this.ejbBean.getScope());
-            
-            if (isDependent && this.dependentEjb != null) 
+
+            // Don't go into a _dependent_ context on subsequent method calls in
+            // this proxy!
+            if (isDependent && this.dependentEJB != null)
             {
-                webbeansInstance = this.dependentEjb;
+                webbeansInstance = this.dependentEJB;
             }
-            else 
+            else
             {
-                // try looking in the context without getContextualCreationalContext() first
+                // try looking in the context without
+                // getContextualCreationalContext() first
                 webbeansInstance = webbeansContext.get(this.ejbBean);
                 if (webbeansInstance == null)
                 {
-                    webbeansInstance = webbeansContext.get((Contextual<Object>)this.ejbBean, getContextualCreationalContext());
+                    webbeansInstance = webbeansContext.get((Contextual<Object>) this.ejbBean, getContextualCreationalContext());
                 }
-                if (isDependent)
+
+                // We just got a new dependent EJB, save it in this the 
+                // method handler.
+                if (isDependent && webbeansInstance != null)
                 {
-                    this.dependentEjb = webbeansInstance;
+                    this.dependentEJB = webbeansInstance;
+
+                    if (this.ejbBean.getEjbType().equals(SessionBeanType.STATEFUL))
+                    {
+                        // It's an SFSB, so we need to track when it's removed
+                        this.ejbBean.addDependentSFSB(webbeansInstance, proxyInstance);
+                    }
                 }
             }
             
+            //Check ejb remove method for dependent SFSB (
+            if (this.ejbBean.isDependent() && this.ejbBean.getEjbType().equals(SessionBeanType.STATEFUL))
+            {
+                if (checkEjbRemoveMethod(method))
+                {
+                    // Stop tracking the EJB associated with this proxy
+                    this.ejbBean.removeDependentSFSB(proxyInstance);
+                    
+                    /*
+                     * Keep the local reference to the dependent SFSB. If the
+                     * user calls a contextual EJB with a removed EJB associated
+                     * with it we should let the EJB container complain, not
+                     * give them a new EJB under the covers.
+                     */
+                }
+            }
+
             //Call actual method on proxy
             //Actually it is called from OWB Proxy --> EJB Proxy --> Actual Bean Instance
             boolean access = method.isAccessible();

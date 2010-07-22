@@ -20,7 +20,10 @@ package org.apache.webbeans.ejb.common.component;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.SessionBeanType;
 
@@ -42,9 +45,9 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     /**Injected reference local interface type*/
     protected Class<?> iface = null;
     
-    /** Has the stateful instance already been removed by a business method invocation */
-    protected boolean removedStatefulInstance = false;
-    
+    /** Map of proxy instances to the dependent SFSB they've acquired but not yet removed */
+    private Map<Object, Object> dependentSFSBToBeRemoved = new ConcurrentHashMap<Object, Object>();
+
     /**
      * Creates a new instance of the session bean.
      * @param ejbClassType ebj class type
@@ -72,16 +75,6 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     }
     
     /**
-     * Sets remove flag.
-     * @param remove flag
-     */
-    public void setRemovedStatefulInstance(boolean remove)
-    {
-        this.removedStatefulInstance = remove;
-    }
-    
-        
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -89,8 +82,6 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     {
         //No-operations
     }
-    
-    
     
     /* (non-Javadoc)
      * @see org.apache.webbeans.component.AbstractBean#isPassivationCapable()
@@ -140,17 +131,32 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     @Override
     protected void destroyComponentInstance(T instance, CreationalContext<T> creational)
     {
-        if(!removedStatefulInstance && getEjbType().equals(SessionBeanType.STATEFUL))
+        if ((this.getScope() == Dependent.class) && (getEjbType().equals(SessionBeanType.STATEFUL)))
         {
-            //Call remove method
-            List<Method> methods = getRemoveMethods();
-            for(Method method : methods)
+            try
             {
-                ClassUtil.callInstanceMethod(method, instance, ClassUtil.OBJECT_EMPTY);
+                Object ejbInstance = getDependentSFSBForProxy(instance);
+                if (ejbInstance != null)
+                {
+                    List<Method> methods = getRemoveMethods();
+                    if (methods.size() > 0)
+                    {
+                        // FIXME: This needs to call an API from the EJB
+                        // container to remove the EJB instance directly, not
+                        // via a remove method
+                        // For now, just call 1 remove method directly on the
+                        // EJB
+                        ClassUtil.callInstanceMethod(methods.get(0), ejbInstance, ClassUtil.OBJECT_EMPTY);
+                    }
+                }
             }
-        }        
+            finally
+            {
+                removeDependentSFSB(instance);
+            }
+        }
     }
-    
+
     /**
      * Sets session bean type.
      * @param type session bean type
@@ -196,5 +202,36 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     {
         return this.ejbType;
     }
+    
+    /**
+     * Keep track of which proxies have gotten EJB objects out of a context
+     * @param dependentSFSB The dependent SFSB acquired from the EJB container
+     * @param proxy The OWB proxy instance whose method handler acquired the dependnet SFSB
+     */
+    public void addDependentSFSB(Object dependentSFSB, Object proxy) 
+    { 
+        dependentSFSBToBeRemoved.put(proxy, dependentSFSB);
+    }
+    
+    /**
+     * Call after observing an @Remove method on an EJB instance
+     * @param proxy the proxy instance the dependent SFSB is associated with
+     */
+    public void removeDependentSFSB(Object proxy) 
+    { 
+        dependentSFSBToBeRemoved.remove(proxy);
+    }
+    
+    /**
+     * 
+     * @param proxy an instance of our own proxy
+     * @return the underlying EJB instance associated with the proxy
+     */
+    public Object getDependentSFSBForProxy(Object proxy) 
+    { 
+        return dependentSFSBToBeRemoved.get(proxy);
+    }
+    
+
 
 }
