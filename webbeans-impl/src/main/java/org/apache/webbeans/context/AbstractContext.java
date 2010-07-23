@@ -35,6 +35,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.inject.Singleton;
 
 import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.container.SerializableBeanVault;
@@ -153,7 +154,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
         }
         else if (type.equals(ContextTypes.SINGLETON))
         {
-            this.scopeType = ConversationScoped.class;
+            this.scopeType = Singleton.class;
         }
         else
         {
