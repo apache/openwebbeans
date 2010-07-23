@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
@@ -35,17 +34,19 @@ import javax.enterprise.inject.spi.Bean;
  *  <li>
  *   Store {@link javax.enterprise.context.Dependent} objects of the same
  *   invocation. See spec section 6.4.3. <i>Dependent pseudo-scope and Unified EL</i>.
+ *   This gets cleaned up with {@link #destroyDependents()} after the whole Expression
+ *   got scanned.
  *  </li>
  *  <li>
- *   Store the Contextual Reference for each name per thread. This is a performance
+ *   Store the Contextual Reference for each name per request thread. This is a performance
  *   tuning strategy, because creating a {@link org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler}
- *   for each and every EL call is very expensive.
+ *   for each and every EL call is very expensive. This needs to be cleaned up with
+ *   {@link #destroyELContextStore()} at the end of each request. 
  *  </li>
  * </ol>
  */
 public class ELContextStore
 {
-    //X TODO MUST NOT BE PUBLIC!
     private static ThreadLocal<ELContextStore> contextStores = new ThreadLocal<ELContextStore>();
 
     /**
@@ -65,8 +66,18 @@ public class ELContextStore
         return store;
     }
 
+    /**
+     * The same Expression must get same instances of &#064;Dependent beans
+     */
     private Map<Bean<?>, CreationalStore> dependentObjects = new HashMap<Bean<?>, CreationalStore>();
-    private Map<Bean<?>, Object>          normalScopedObjects = new HashMap<Bean<?>, Object>();
+
+    /**
+     * Cache for resolved proxies of &#064;NormalScoped beans. This heavily speeds up pages with
+     * multiple ELs for the same bean. A typical bean invoke through an EL only accesses 1
+     * property. If we wouldn't cache this, every EL call would create a new proxy and
+     * drops it after the EL.
+     */
+    private Map<Bean<?>, Object> normalScopedObjects = new HashMap<Bean<?>, Object>();
 
     private BeanManagerImpl beanManager;
 
@@ -107,15 +118,24 @@ public class ELContextStore
     private ELContextStore()
     {
     }
-    
+
+    /**
+     * Add a @Dependent scoped bean for later use in the <b>same</b> EL.
+     * See spec section 6.4.3. <i>Dependent pseudo-scope and Unified EL</i>.
+     * @param bean
+     * @param dependent
+     * @param creationalContext
+     */
     public void addDependent(Bean<?> bean, Object dependent, CreationalContext<?> creationalContext)
     {
-        if(bean.getScope().equals(Dependent.class))
-        {
-            this.dependentObjects.put(bean, new CreationalStore(dependent,creationalContext));   
-        }
+        this.dependentObjects.put(bean, new CreationalStore(dependent,creationalContext));   
     }
-    
+
+    /**
+     * @see #addDependent(Bean, Object, CreationalContext)
+     * @param bean
+     * @return the previously used dependent bean or <code>null</code>
+     */
     public Object getDependent(Bean<?> bean)
     {
         CreationalStore sc = this.dependentObjects.get(bean);
@@ -123,16 +143,28 @@ public class ELContextStore
         return sc != null ? sc.getObject() : null;
     }
 
+    /**
+     * We cache resolved &#064;NormalScoped beans on the same for speeding up EL.
+     * @param bean
+     */
+    public void addNormalScoped(Bean<?> bean, Object contextualInstance)
+    {
+        normalScopedObjects.put(bean, contextualInstance);
+    }
+
+    /**
+     * @see #addNormalScoped(Bean, Object)
+     * @param bean
+     * @return the previously created proxy for a &#064;NormalScoped bean or <code>null</code>
+     */
     public Object getNormalScoped(Bean<?> bean)
     {
         return normalScopedObjects.get(bean);
     }
 
-    public void addNormalScoped(Bean<?> bean, Object contextualInstance)
-    {
-        normalScopedObjects.put(bean, contextualInstance);
-    }
-    
+    /**
+     * @return BeanManager for this thread
+     */
     public BeanManagerImpl getBeanManager()
     {
         if (beanManager == null)
@@ -142,8 +174,10 @@ public class ELContextStore
         return beanManager;
     }
 
-    
-    @SuppressWarnings("unchecked")
+    /**
+     * This method have to be called after the EL parsing to cleanup the cache
+     * for &#064;Dependent scoped beans.
+     */
     public void destroyDependents()
     {
         Set<Bean<?>> beans = this.dependentObjects.keySet();
