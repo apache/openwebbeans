@@ -222,28 +222,29 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     public void afterConstruct(InvocationContext context)
     {
         InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
-        
-        if(injectionTarget != null)
+
+        if (injectionTarget != null)
         {
-            if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
-            {                
-                InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
-                        InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
-                impl.setCreationalContext(threadLocalCreationalContext.get());
-                try
+            try
+            {
+                if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
                 {
-                    //run OWB interceptors
+                    InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
+                            InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
+                    impl.setCreationalContext(threadLocalCreationalContext.get());
+
+                    // run OWB interceptors
                     impl.proceed();
-                    
-                    //run EJB interceptors
-                    context.proceed();
                 }
-                catch (Exception e)
-                {
-                    logger.error(OWBLogConst.ERROR_0008, e, "@PostConstruct.");    
-                    throw new RuntimeException(e);
-                }
-            }                        
+
+                // run EJB interceptors
+                context.proceed();
+            }
+            catch (Exception e)
+            {
+                logger.error(OWBLogConst.ERROR_0008, e, "@PostConstruct.");
+                throw new RuntimeException(e);
+            }
         }
         else 
         { 
@@ -273,39 +274,39 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     public void preDestroy(InvocationContext context)
     {
         InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
-        
-        if(injectionTarget != null)
+
+        if (injectionTarget != null)
         {
-            if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.PRE_DESTROY))
-            {                
-                InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
-                        InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(), InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
-                impl.setCreationalContext(threadLocalCreationalContext.get());
-                try
+            try
+            {
+                if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.PRE_DESTROY))
                 {
-                    //Call OWB interceptord
+                    InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
+                            InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(),InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
+                    impl.setCreationalContext(threadLocalCreationalContext.get());
+
+                    // Call OWB interceptors
                     impl.proceed();
-                    
-                    //Call EJB interceptors
-                    context.proceed();
                 }
-                catch (Exception e)
-                {
-                    logger.error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
-                    throw new RuntimeException(e);
-                }
-            }                        
+                // Call EJB interceptors
+                context.proceed();
+            }
+            catch (Exception e)
+            {
+                logger.error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
+                throw new RuntimeException(e);
+            }
         }
-        else 
-        { 
+        else
+        {
             runPrePostForNonContextual(context, InterceptorType.PRE_DESTROY);
         }
-        
-        if(this.injector != null)
+
+        if (this.injector != null)
         {
             this.injector.destroy();
         }
-        
+
         this.interceptedMethodMap.clear();
         this.resolvedBeans.clear();
         this.nonCtxInterceptedMethodMap.clear();
