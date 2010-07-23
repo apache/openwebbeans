@@ -51,7 +51,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansConfigurationListener.class);
     
     /**Manages the container lifecycle*/
-    private ContainerLifecycle lifeCycle = null;
+    protected ContainerLifecycle lifeCycle = null;
     
     /**
      * Default constructor
