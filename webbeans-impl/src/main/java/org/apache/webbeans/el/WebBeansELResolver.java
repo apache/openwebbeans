@@ -101,15 +101,14 @@ public class WebBeansELResolver extends ELResolver
         //Creational context for creating instance
         CreationalContext<Object> creationalContext = null;
         
-        //Local store, create if not exist
-        ELContextStore store = ELContextStore.getInstance(true);
-
-        //Manager instance
-        BeanManagerImpl manager = store.getBeanManager();
-
-
         if (obj == null)
         {                      
+            //Local store, create if not exist
+            ELContextStore store = ELContextStore.getInstance(true);
+
+            //Manager instance
+            BeanManagerImpl manager = store.getBeanManager();
+
             //Name of the bean
             String name = (String) property;
             //Get beans
