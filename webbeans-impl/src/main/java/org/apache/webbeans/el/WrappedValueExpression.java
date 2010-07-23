@@ -71,10 +71,10 @@ public class WrappedValueExpression extends ValueExpression
         finally
         {
             //Destroy dependent store
-            ELContextStore store = ELContextStore.localContext.get();
+            ELContextStore store = ELContextStore.getInstance(false);
             if(store != null)
             {
-                store.destroy();
+                store.destroyDependents();
             }
         }
         

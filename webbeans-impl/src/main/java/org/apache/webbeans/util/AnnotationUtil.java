@@ -69,9 +69,6 @@ public final class AnnotationUtil
      */
     public static boolean hasMethodAnnotation(Method method, Class<? extends Annotation> clazz)
     {
-        Asserts.assertNotNull(method, "Method argument can not be null");
-        Asserts.nullCheckForClass(clazz);
-
         Annotation[] anns = method.getDeclaredAnnotations();
         for (Annotation annotation : anns)
         {

@@ -18,15 +18,12 @@
  */
 package org.apache.webbeans.spi.adaptor;
 
-import javax.el.ELContextListener;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 
 public interface ELAdaptor
 {
     public ELResolver getOwbELResolver();
-    
-    public ELContextListener getOwbELContextListener();
-    
+
     public ExpressionFactory getOwbWrappedExpressionFactory(ExpressionFactory expressionFactory);
 }

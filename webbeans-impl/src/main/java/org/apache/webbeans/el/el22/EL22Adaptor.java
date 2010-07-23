@@ -18,11 +18,9 @@
  */
 package org.apache.webbeans.el.el22;
 
-import javax.el.ELContextListener;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 
-import org.apache.webbeans.el.OwbElContextListener;
 import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.el.WrappedExpressionFactory;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
@@ -32,12 +30,6 @@ public class EL22Adaptor implements ELAdaptor
     public EL22Adaptor()
     {
         
-    }
-
-    @Override
-    public ELContextListener getOwbELContextListener()
-    {
-        return new OwbElContextListener();
     }
 
     @Override

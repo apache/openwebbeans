@@ -44,7 +44,6 @@ import javax.faces.event.ActionListener;
 import javax.faces.validator.Validator;
 
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.el10.EL10ContextListener;
 
 @SuppressWarnings("unchecked")
 public class OwbApplication extends Application
@@ -56,7 +55,6 @@ public class OwbApplication extends Application
     public OwbApplication(Application wrappedApplication)
     {
         this.wrappedApplication = wrappedApplication;
-        this.wrappedApplication.addELContextListener(new EL10ContextListener());
     }
 
     @Override

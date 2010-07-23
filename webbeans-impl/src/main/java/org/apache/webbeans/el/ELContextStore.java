@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.el;
 
+import org.apache.webbeans.container.BeanManagerImpl;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -26,13 +28,48 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
+/**
+ * The ELContextStore serves two different purposes
+ *
+ * <ol>
+ *  <li>
+ *   Store {@link javax.enterprise.context.Dependent} objects of the same
+ *   invocation. See spec section 6.4.3. <i>Dependent pseudo-scope and Unified EL</i>.
+ *  </li>
+ *  <li>
+ *   Store the Contextual Reference for each name per thread. This is a performance
+ *   tuning strategy, because creating a {@link org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler}
+ *   for each and every EL call is very expensive.
+ *  </li>
+ * </ol>
+ */
 public class ELContextStore
 {
     //X TODO MUST NOT BE PUBLIC!
-    public static ThreadLocal<ELContextStore> localContext = new ThreadLocal<ELContextStore>();
+    private static ThreadLocal<ELContextStore> contextStores = new ThreadLocal<ELContextStore>();
+
+    /**
+     * @param createIfNotExist if <code>false</code> doesn't create a new ELContextStore if none exists
+     * @return
+     */
+    public static ELContextStore getInstance(boolean createIfNotExist)
+    {
+        ELContextStore store = contextStores.get();
+
+        if (store == null && createIfNotExist)
+        {
+            store = new ELContextStore();
+            contextStores.set(store);
+        }
+
+        return store;
+    }
 
     private Map<Bean<?>, CreationalStore> dependentObjects = new HashMap<Bean<?>, CreationalStore>();
-    
+    private Map<Bean<?>, Object>          normalScopedObjects = new HashMap<Bean<?>, Object>();
+
+    private BeanManagerImpl beanManager;
+
     private static class CreationalStore
     {
         private Object object;
@@ -63,11 +100,13 @@ public class ELContextStore
         
         
     }
-    
-    public ELContextStore()
+
+    /**
+     * This class can only get constructed via {@link #getInstance(boolean)}
+     */
+    private ELContextStore()
     {
-        
-    }    
+    }
     
     public void addDependent(Bean<?> bean, Object dependent, CreationalContext<?> creationalContext)
     {
@@ -79,21 +118,33 @@ public class ELContextStore
     
     public Object getDependent(Bean<?> bean)
     {
-        if(this.dependentObjects.containsKey(bean))
-        {
-            return this.dependentObjects.get(bean).getObject();
-        }
-        
-        return null;
+        CreationalStore sc = this.dependentObjects.get(bean);
+
+        return sc != null ? sc.getObject() : null;
+    }
+
+    public Object getNormalScoped(Bean<?> bean)
+    {
+        return normalScopedObjects.get(bean);
+    }
+
+    public void addNormalScoped(Bean<?> bean, Object contextualInstance)
+    {
+        normalScopedObjects.put(bean, contextualInstance);
     }
     
-    public boolean isExist(Bean<?> bean)
+    public BeanManagerImpl getBeanManager()
     {
-        return this.dependentObjects.containsKey(bean);
+        if (beanManager == null)
+        {
+            beanManager = BeanManagerImpl.getManager();
+        }
+        return beanManager;
     }
+
     
     @SuppressWarnings("unchecked")
-    public void destroy()
+    public void destroyDependents()
     {
         Set<Bean<?>> beans = this.dependentObjects.keySet();
         for(Bean<?> bean : beans)
@@ -105,5 +156,17 @@ public class ELContextStore
         
         this.dependentObjects.clear();
     }
-    
+
+    /**
+     * This needs to be called at the end of each request.
+     * Because after the request ends, a server might reuse
+     * the Thread to serve other requests (from other WebApps) 
+     */
+    public void destroyELContextStore()
+    {
+        beanManager = null;
+        normalScopedObjects.clear();
+        contextStores.set(null);
+        contextStores.remove();
+    }
 }

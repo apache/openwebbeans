@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -69,6 +70,13 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
         ContextFactory.destroySingletonContext(null);
 
         ContextFactory.cleanUpContextFactory();
+
+        // clean up the EL caches after each request
+        ELContextStore elStore = ELContextStore.getInstance(false);
+        if (elStore != null)
+        {
+            elStore.destroyELContextStore();
+        }
     }
     
 }

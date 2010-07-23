@@ -333,9 +333,12 @@ public class WebContextsService extends AbstractContextsService
             context.destroy();
         }
         
-        //Remove ELContext store
-        ELContextStore.localContext.set(null);
-        ELContextStore.localContext.remove();
+        // clean up the EL caches after each request
+        ELContextStore elStore = ELContextStore.getInstance(false);
+        if (elStore != null)
+        {
+            elStore.destroyELContextStore();
+        }
         
         //Clear thread locals
         requestContext.set(null);
@@ -462,10 +465,10 @@ public class WebContextsService extends AbstractContextsService
             currentApplicationContexts.remove(servletContext);   
         }
         
-        //destroy all sessions
+        //destroyDependents all sessions
         sessionCtxManager.destroyAllSessions();
         
-        //destroy all conversations
+        //destroyDependents all conversations
         conversationManager.destroyAllConversations();
     }
     
@@ -517,7 +520,7 @@ public class WebContextsService extends AbstractContextsService
         }        
         
         //context is not null
-        //destroy it
+        //destroyDependents it
         if(context != null)
         {
             context.destroy();

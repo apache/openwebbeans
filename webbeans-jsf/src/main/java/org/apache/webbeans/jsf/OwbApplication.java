@@ -65,7 +65,6 @@ public class OwbApplication extends Application
     {
         ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
         this.wrappedApplication = wrappedApplication;
-        this.wrappedApplication.addELContextListener(elAdaptor.getOwbELContextListener());
     }
 
     @Override

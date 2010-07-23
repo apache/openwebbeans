@@ -22,7 +22,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.el.ELContextListener;
 import javax.el.ELResolver;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
@@ -104,7 +103,6 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
 
         ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
         ELResolver resolver = elAdaptor.getOwbELResolver();
-        ELContextListener elContextListener = elAdaptor.getOwbELContextListener();
         //Application is configured as JSP
         if(OpenWebBeansConfiguration.getInstance().isJspApplication())
         {
@@ -112,11 +110,6 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
 
             JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext((ServletContext)(startupObject));
             applicationCtx.addELResolver(resolver);
-
-            logger.debug("Application is configured as JSP. Adding EL Listener.");
-
-            //Adding listener
-            applicationCtx.addELContextListener(elContextListener);
         }
 
         // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute

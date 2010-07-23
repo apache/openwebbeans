@@ -205,7 +205,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /*
      * (non-Javadoc)
      * @param creationalContext the contextual instance has been created in
-     * @see javax.webbeans.bean.Component#destroy(java.lang.Object)
      */
     public void destroy(T instance, CreationalContext<T> creationalContext)
     {

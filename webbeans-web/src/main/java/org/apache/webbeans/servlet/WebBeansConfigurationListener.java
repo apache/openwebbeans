@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSessionListener;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.lifecycle.LifecycleFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContainerLifecycle;
@@ -100,6 +101,13 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
             logger.debug("Destroying a request : [{0}]", event.getServletRequest().getRemoteAddr());
         }
         this.lifeCycle.getContextService().endContext(RequestScoped.class, event);        
+
+        // clean up the EL caches after each request
+        ELContextStore elStore = ELContextStore.getInstance(false);
+        if (elStore != null)
+        {
+            elStore.destroyELContextStore();
+        }
     }
 
     /**

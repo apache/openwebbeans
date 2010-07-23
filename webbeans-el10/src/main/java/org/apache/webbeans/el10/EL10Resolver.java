@@ -62,74 +62,106 @@ public class EL10Resolver extends ELResolver
     @SuppressWarnings("unchecked")
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
-        //Manager instance
-        BeanManagerImpl manager = BeanManagerImpl.getManager();
-        
         //Bean instance
-        Object object = null;
-        
+        Object contextualInstance = null;
+
         //Managed bean
         Bean<Object> bean = null;
-        
+
         //Creational context for creating instance
         CreationalContext<Object> creationalContext = null;
-        
-        //Local store, set by the OwbELContextListener
-        ELContextStore store = ELContextStore.localContext.get();
+
+        //Local store, create if not exist
+        ELContextStore store = ELContextStore.getInstance(true);
+
+        //Manager instance
+        BeanManagerImpl manager = store.getBeanManager();
+
+
         if (obj == null)
-        {                      
+        {
             //Name of the bean
             String name = (String) property;
             //Get beans
             Set<Bean<?>> beans = manager.getBeans(name);
-            
+
             //Found?
             if(beans != null && !beans.isEmpty())
             {
                 bean = (Bean<Object>)beans.iterator().next();
-                creationalContext = manager.createCreationalContext(bean);                    
-                //Already registered in store
+
                 if(bean.getScope().equals(Dependent.class))
                 {
-                    object = store.getDependent(bean);
-                }                    
+                    contextualInstance = getDependentContextualInstance(manager, store, context, bean);
+                }
+                else
+                {
+                    // now we check for NormalScoped beans
+                    contextualInstance = getNormalScopedContextualInstance(manager, store, context, bean);
+                }
             }
-            
-            //If no object found on the store
-            if(object == null)
-            {
-                //Getting object
-                object = manager.getInstanceByName(name,creationalContext);                
-                if (object != null)
-                {                    
-                    context.setPropertyResolved(true);   
-                    //Adding into store
-                    store.addDependent(bean, object, creationalContext);
-                }                    
-            }
-            //Object found on the store
-            else
-            {
-                context.setPropertyResolved(true);                    
-            }
-            
         }
 
-        return object;
+        return contextualInstance;
+    }
+
+    private Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<Object> bean)
+    {
+
+        Object contextualInstance = store.getNormalScoped(bean);
+
+        if (contextualInstance != null)
+        {
+            context.setPropertyResolved(true);
+        }
+        else
+        {
+            CreationalContext<Object> creationalContext = manager.createCreationalContext(bean);
+            contextualInstance = manager.getReference(bean, Object.class, creationalContext);
+            if (contextualInstance != null)
+            {
+                context.setPropertyResolved(true);
+                //Adding into store
+                store.addNormalScoped(bean, contextualInstance);
+            }
+        }
+
+        return contextualInstance;
+    }
+
+
+    private Object getDependentContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<Object> bean)
+    {
+        Object contextualInstance = store.getDependent(bean);
+        if(contextualInstance != null)
+        {
+            //Object found on the store
+            context.setPropertyResolved(true);
+        }
+        else
+        {
+            // If no contextualInstance found on the store
+            CreationalContext<Object> creationalContext = manager.createCreationalContext(bean);
+            contextualInstance = manager.getReference(bean, Object.class, creationalContext);
+            if (contextualInstance != null)
+            {
+                context.setPropertyResolved(true);
+                //Adding into store
+                store.addDependent(bean, contextualInstance, creationalContext);
+            }
+        }
+        return contextualInstance;
     }
 
     @Override
     public boolean isReadOnly(ELContext arg0, Object arg1, Object arg2) throws NullPointerException, PropertyNotFoundException, ELException
     {
-        
         return false;
     }
 
     @Override
     public void setValue(ELContext arg0, Object arg1, Object arg2, Object arg3) throws NullPointerException, PropertyNotFoundException, PropertyNotWritableException, ELException
     {
-        
-        
     }
 
 }

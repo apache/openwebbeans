@@ -24,7 +24,6 @@ import javax.el.BeanELResolver;
 import javax.el.CompositeELResolver;
 import javax.el.ELContext;
 import javax.el.ELContextEvent;
-import javax.el.ELContextListener;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 import javax.el.FunctionMapper;
@@ -36,7 +35,6 @@ import javax.el.VariableMapper;
 import org.apache.el.ExpressionFactoryImpl;
 import org.apache.el.lang.FunctionMapperImpl;
 import org.apache.el.lang.VariableMapperImpl;
-import org.apache.webbeans.el.OwbElContextListener;
 import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.el.WrappedExpressionFactory;
 import org.jboss.jsr299.tck.spi.EL;
@@ -45,8 +43,6 @@ public class ELImpl implements EL
 {
     private static final ExpressionFactory EXPRESSION_FACTORY = new WrappedExpressionFactory(new ExpressionFactoryImpl());
     
-    public static final ELContextListener EL_CONTEXT_LISTENER = new OwbElContextListener();
-
     public ELImpl()
     {
     }
@@ -110,7 +106,6 @@ public class ELImpl implements EL
     {   
         ELContext context = new ELContextImpl();
         ELContextEvent event = new ELContextEvent(context);
-        EL_CONTEXT_LISTENER.contextCreated(event);
         
         return context;
     }

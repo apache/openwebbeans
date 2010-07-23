@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.el10;
 
-import javax.el.ELContextListener;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 
@@ -26,12 +25,6 @@ import org.apache.webbeans.spi.adaptor.ELAdaptor;
 
 public class EL10Adaptor implements ELAdaptor
 {
-
-    @Override
-    public ELContextListener getOwbELContextListener()
-    {
-        return new EL10ContextListener();
-    }
 
     @Override
     public ELResolver getOwbELResolver()
