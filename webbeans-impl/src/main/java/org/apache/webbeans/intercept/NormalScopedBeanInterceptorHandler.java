@@ -43,6 +43,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
 {
     /**Serial id*/
     private static final long serialVersionUID = 1L;
+    private static final String FINALIZE = "finalize".intern();
     
     /**
      * Creates a new bean instance
@@ -80,9 +81,9 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
-        if (method.getName().equals("finalize") &&
+        if (method.getName() == FINALIZE &&   // Method.getName() is defined to return .intern() in the VM spec.
             method.getParameterTypes().length == 0 &&
-            method.getReturnType().equals(Void.TYPE))
+            method.getReturnType() == Void.TYPE)
         {
             // we should NOT invoke the bean's finalize() from proxied
             // finalize() method since JVM will invoke it directly.

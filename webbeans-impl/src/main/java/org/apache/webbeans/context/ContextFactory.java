@@ -253,35 +253,32 @@ public final class ContextFactory
      */
     public static Context getStandardContext(Class<? extends Annotation> scopeType)
     {
-        Context context = null;
-
         if (scopeType.equals(RequestScoped.class))
         {
-            context = getStandardContext(ContextTypes.REQUEST);
+            return getStandardContext(ContextTypes.REQUEST);
         }
-        else if (scopeType.equals(SessionScoped.class))
+        if (scopeType.equals(SessionScoped.class))
         {
-            context = getStandardContext(ContextTypes.SESSION);
+            return getStandardContext(ContextTypes.SESSION);
         }
-        else if (scopeType.equals(ApplicationScoped.class))
+        if (scopeType.equals(ApplicationScoped.class))
         {
-            context = getStandardContext(ContextTypes.APPLICATION);
+            return getStandardContext(ContextTypes.APPLICATION);
         }
-        else if (scopeType.equals(ConversationScoped.class))
+        if (scopeType.equals(ConversationScoped.class))
         {
-            context = getStandardContext(ContextTypes.CONVERSATION);
-
+            return getStandardContext(ContextTypes.CONVERSATION);
         }
-        else if (scopeType.equals(Dependent.class))
+        if (scopeType.equals(Dependent.class))
         {
-            context = getStandardContext(ContextTypes.DEPENDENT);
+            return getStandardContext(ContextTypes.DEPENDENT);
         }
-        else if (scopeType.equals(Singleton.class))
+        if (scopeType.equals(Singleton.class))
         {
-            context = getStandardContext(ContextTypes.SINGLETON);
+            return getStandardContext(ContextTypes.SINGLETON);
         }
         
-        return context;
+        return null;
     }
     
     /**

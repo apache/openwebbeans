@@ -148,7 +148,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     protected OwbBean<?> bean = null;
     
     /**Intercepted methods*/
-    protected transient Map<Method, List<InterceptorData>> interceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
+    protected transient Map<Method, List<InterceptorData>> interceptedMethodMap = null;
     
     /**
      * Creates a new handler.
@@ -224,6 +224,12 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                     List<InterceptorData> interceptorStack = injectionTarget.getInterceptorStack();
                     if (interceptorStack.size() > 0)
                     {
+                        if (this.interceptedMethodMap == null)
+                        {
+                            // lazy initialisation, because creating a WeakHashMap is expensive!
+                            this.interceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
+                        }
+                        
                         if (decorators != null)
                         {
                             // We have interceptors and decorators, Our delegateHandler will need to be wrapped in an interceptor
@@ -362,9 +368,6 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         {
             logger.warn(OWBLogConst.WARN_0011, this.bean);
         }
-        
-        // restore transient interceptorMethodMap
-        interceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
     }
 
 }
