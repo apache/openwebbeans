@@ -31,8 +31,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -194,23 +192,7 @@ public final class WebBeansUtil
      */
     public static ClassLoader getCurrentClassLoader()
     {
-        ClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
-        {
-
-            public ClassLoader run()
-            {
-                try
-                {
-                    return Thread.currentThread().getContextClassLoader();
-
-                }
-                catch (Exception e)
-                {
-                    return null;
-                }
-            }
-
-        });
+        ClassLoader loader =  Thread.currentThread().getContextClassLoader();
 
         if (loader == null)
         {
@@ -864,10 +846,10 @@ public final class WebBeansUtil
 
     /**
      * Check the {@link PostConstruct} or {@link PreDestroy} annotated method
-     * criterias, and return post construct or pre destroy method.
+     * criterias, and return post construct or pre destroyDependents method.
      * <p>
      * Web Beans container is responsible for setting the post construct or pre
-     * destroy annotation if the web beans component is not an EJB components,
+     * destroyDependents annotation if the web beans component is not an EJB components,
      * in this case EJB container is responsible for this.
      * </p>
      *
