@@ -98,9 +98,6 @@ public class WebBeansELResolver extends ELResolver
         //Managed bean
         Bean<Object> bean = null;
         
-        //Creational context for creating instance
-        CreationalContext<Object> creationalContext = null;
-        
         if (obj == null)
         {                      
             //Local store, create if not exist
