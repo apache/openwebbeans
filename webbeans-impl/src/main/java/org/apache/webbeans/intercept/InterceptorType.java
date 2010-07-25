@@ -31,13 +31,17 @@ import org.apache.webbeans.exception.WebBeansException;
  */
 public enum InterceptorType
 {
-    AROUND_INVOKE, POST_CONSTRUCT, PRE_DESTROY, PRE_PASSIVATE, POST_ACTIVATE;
+    AROUND_INVOKE, AROUND_TIMEOUT, POST_CONSTRUCT, PRE_DESTROY, PRE_PASSIVATE, POST_ACTIVATE;
 
     public static InterceptorType getType(InterceptionType type)
     {
         if (type.equals(InterceptionType.AROUND_INVOKE))
         {
             return AROUND_INVOKE;
+        }
+        else if (type.equals(InterceptionType.AROUND_TIMEOUT))
+        {
+            return AROUND_TIMEOUT;
         }
         else if (type.equals(InterceptionType.POST_CONSTRUCT))
         {

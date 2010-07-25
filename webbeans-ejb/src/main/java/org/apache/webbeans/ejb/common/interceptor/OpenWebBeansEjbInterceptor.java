@@ -35,12 +35,15 @@ import javassist.util.proxy.ProxyObject;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.ejb.PostActivate;
+import javax.ejb.PrePassivate;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -213,7 +216,48 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         
         return rv.RETURN_VALUE;
     }
-    
+
+    /**
+     * Around Timeout.
+     * @param context invocation ctx
+     */
+    @AroundTimeout
+    public Object callAroundTimeouts(InvocationContext context) throws Exception
+    {
+        Object retVal = null;
+        InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
+
+        logger.debug("OpenWebBeansEjbInterceptor: @AroundTimeout called. Trying to run Interceptors.");
+
+        if(injectionTarget != null)
+        {
+            if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.AROUND_TIMEOUT))
+            {                
+                InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
+                        InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(), InterceptorType.AROUND_TIMEOUT), InterceptorType.AROUND_TIMEOUT);
+                impl.setCreationalContext(threadLocalCreationalContext.get());
+                try
+                {
+                    //run OWB interceptors
+                    impl.proceed();
+                    
+                    //run EJB interceptors
+                    retVal = context.proceed();
+                }
+                catch (Exception e)
+                {
+                    logger.error(OWBLogConst.ERROR_0008, e, "@AroundTimeout.");    
+                    throw new RuntimeException(e);
+                }
+            }                        
+        }
+        else 
+        { 
+            runPrePostForNonContextual(context, InterceptorType.AROUND_TIMEOUT);    // TODO: Is this required for activate? It was in POST_CONSTUCT code.
+        }
+        return retVal;
+    }
+
     /**
      * Post construct.
      * @param context invocation ctx
@@ -265,7 +309,88 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             }
         }
     }
-    
+
+    /**
+     * Post activate.
+     */
+    @PostActivate
+    public void afterActivate(InvocationContext context)
+    {
+        InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
+
+        logger.debug("OpenWebBeansEjbInterceptor: @PostActivate called. Trying to run Interceptors.");
+
+        if(injectionTarget != null)
+        {
+            if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.POST_ACTIVATE))
+            {                
+                InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
+                                                                       InterceptorUtil.getInterceptorMethods(
+                                                                           injectionTarget.getInterceptorStack(),
+                                                                           InterceptorType.POST_ACTIVATE),
+                                                                       InterceptorType.POST_ACTIVATE);
+                impl.setCreationalContext(threadLocalCreationalContext.get());
+                try
+                {
+                    //run OWB interceptors
+                    impl.proceed();
+
+                    //run EJB interceptors
+                    context.proceed();
+                }
+                catch (Exception e)
+                {
+                    logger.error(OWBLogConst.ERROR_0008, e, "@PostActivate.");    
+                    throw new RuntimeException(e);
+                }
+            }                        
+        }
+        else
+        {
+            runPrePostForNonContextual(context, InterceptorType.POST_ACTIVATE);    // TODO: Is this required for activate? It was in POST_CONSTUCT code.
+        }
+    }
+
+    /**
+     * Pre Passivate.
+     */
+    @PrePassivate
+    public void beforePassivate(InvocationContext context)
+    {
+        InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
+
+        logger.debug("OpenWebBeansEjbInterceptor: @PrePassivate called. Trying to run Interceptors.");
+
+        if(injectionTarget != null)
+        {
+            if (WebBeansUtil.isContainsInterceptorMethod(injectionTarget.getInterceptorStack(), InterceptorType.PRE_PASSIVATE))
+            {                
+                InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
+                                                                       InterceptorUtil.getInterceptorMethods(
+                                                                           injectionTarget.getInterceptorStack(),
+                                                                           InterceptorType.PRE_PASSIVATE),
+                                                                       InterceptorType.PRE_PASSIVATE);
+                impl.setCreationalContext(threadLocalCreationalContext.get());
+                try
+                {
+                    //Call OWB interceptord
+                    impl.proceed();
+
+                    //Call EJB interceptors
+                    context.proceed();
+                }
+                catch (Exception e)
+                {
+                    logger.error(OWBLogConst.ERROR_0008, e, "@PrePassivate.");
+                    throw new RuntimeException(e);
+                }
+            }                        
+        }
+        else
+        {
+            runPrePostForNonContextual(context, InterceptorType.PRE_PASSIVATE);    // TODO: Is this required for passivate? It was in the PRE_DESTROY code.
+        }
+    }    
     /**
      * Pre destroy.
      * @param context invocation context
@@ -501,7 +626,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
 
             List<Object> decorators = null;
             DelegateHandler delegateHandler = null;
-            logger.debug("Decorator stack for target {0}", injectionTarget.getDecoratorStack());
+            if (logger.wblWillLogDebug())
+            {
+                logger.debug("Decorator stack for target {0}", injectionTarget.getDecoratorStack());
+            }
 
             if (injectionTarget.getDecoratorStack().size() > 0)
             {

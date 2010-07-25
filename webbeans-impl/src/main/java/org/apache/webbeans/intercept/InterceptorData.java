@@ -55,6 +55,13 @@ public interface InterceptorData
     public Method getPostConstruct();
 
     /**
+     * Gets {@link javax.ejb.PostActivate} annotated method if exist
+     * return null otherwise. 
+     * @return post-activate method
+     */
+    public Method getPostActivate();
+    
+    /**
      * Gets the {@link javax.annotation.PreDestroy} annotated method
      * if exist, returns null otherwise. 
      * @return pre-destroy method
@@ -62,11 +69,25 @@ public interface InterceptorData
     public Method getPreDestroy();
 
     /**
+     * Gets {@link javax.ejb.PrePassivate} annotated method if exist
+     * return null otherwise. 
+     * @return pre-passivate method
+     */
+    public Method getPrePassivate();
+    
+    /**
      * Gets {@link javax.interceptor.AroundInvoke} annotated method
      * if exist, returns null otherwise. 
      * @return around invoke method
      */
     public Method getAroundInvoke();
+    
+    /**
+     * Gets {@link javax.interceptor.AroundTimeout} annotated method
+     * if exist, returns null otherwise. 
+     * @return around timeout method
+     */
+    public Method getAroundTimeout();
     
     /**
      * Gets interceptor method that this

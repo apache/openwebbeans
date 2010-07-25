@@ -33,6 +33,7 @@ import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
 
@@ -67,6 +68,9 @@ public class InvocationContextImpl implements InvocationContext
     
     private OwbBean<?> owbBean;
     private InvocationContext ejbInvocationContext;
+
+    //Logger instance
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(InvocationContextImpl.class);
     
     /**
      * Initializes the context.
@@ -168,8 +172,15 @@ public class InvocationContextImpl implements InvocationContext
         {
             if (type.equals(InterceptorType.AROUND_INVOKE))
             {
+                logger.debug("InvocationContextImpl: Proceeding to AroundInvokes.");
                 return proceedAroundInvokes(this.interceptorDatas);
             }
+            else if (type.equals(InterceptorType.AROUND_TIMEOUT))
+            {
+                logger.debug("InvocationContextImpl: Proceeding to AroundTimeouts.");
+                return proceedAroundTimeouts(this.interceptorDatas);
+            }
+            logger.debug("InvocationContextImpl: Proceeding to CommonAnnotations.");
             return proceedCommonAnnots(this.interceptorDatas, this.type);
 
         }
@@ -261,7 +272,75 @@ public class InvocationContextImpl implements InvocationContext
 
         return result;
     }
-    
+
+    /**
+     * AroundTimeout operations on stack.
+     * @param datas interceptor stack
+     * @return final result
+     * @throws Exception for exceptions
+     */
+    private Object proceedAroundTimeouts(List<InterceptorData> datas) throws Exception
+    {
+        Object result = null;
+
+        if (currentMethod <= datas.size())
+        {
+            InterceptorData intc = datas.get(currentMethod - 1);
+
+            Method method = intc.getAroundTimeout();
+            boolean accessible = method.isAccessible();
+            
+            if (!accessible)
+            {
+                SecurityUtil.doPrivilegedSetAccessible(method, true);
+            }
+            
+            Object t = intc.createNewInstance(this.target,(CreationalContextImpl<?>)this.creationalContext);
+            
+            if (t == null)
+            {
+                t = target;
+            }
+
+            currentMethod++;
+            
+            result = method.invoke(t, new Object[] { this });
+            
+            if(!accessible)
+            {
+                SecurityUtil.doPrivilegedSetAccessible(method, false);
+            }
+
+        }
+        else
+        {
+            if(!(this.owbBean instanceof EnterpriseBeanMarker))
+            {
+                boolean accessible = this.method.isAccessible();
+                if(!accessible)
+                {                
+                    SecurityUtil.doPrivilegedSetAccessible(method, true);
+                }
+                
+                result = this.method.invoke(target, parameters);
+                
+                if(!accessible)
+                {
+                    SecurityUtil.doPrivilegedSetAccessible(method, false);
+                }                
+            }
+            else 
+            { 
+                if (this.ejbInvocationContext != null)
+                {
+                    result = ejbInvocationContext.proceed();
+                }
+            }
+        }
+
+        return result;
+    }
+
     /**
      * Post construct and predestroy 
      * callback operations.
@@ -282,6 +361,14 @@ public class InvocationContextImpl implements InvocationContext
             if (type.equals(InterceptorType.POST_CONSTRUCT))
             {
                 method = intc.getPostConstruct();
+            }
+            else if (type.equals(InterceptorType.POST_ACTIVATE))
+            {
+                method = intc.getPostActivate();
+            }
+            else if (type.equals(InterceptorType.PRE_PASSIVATE))
+            {
+                method = intc.getPrePassivate();
             }
             else if (type.equals(InterceptorType.PRE_DESTROY))
             {
