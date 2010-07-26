@@ -47,7 +47,9 @@ import org.apache.openejb.jee.StatefulBean;
 import org.apache.openejb.jee.StatelessBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.corespi.ServiceLoader;
+import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
 import org.jboss.testharness.api.DeploymentException;
@@ -56,109 +58,132 @@ import org.jboss.testharness.spi.StandaloneContainers;
 public class StandaloneContainersImpl implements StandaloneContainers
 {
     private StandaloneLifeCycle lifeCycle = null;
-    
+
     private DeploymentException excpetion;
-        
+
     public void deployInternal(Iterable<Class<?>> classes) throws DeploymentException
     {
-        //Scanner service
-        final TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(ScannerService.class);
-        
-        //Lifecycle container
+        // Scanner service
+        final TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl) ServiceLoader.getService(ScannerService.class);
+
+        // Lifecycle container
         this.lifeCycle = new StandaloneLifeCycle()
         {
             protected void afterInitApplication(Properties event)
             {
                 this.scannerService = discovery;
-            }            
+            }
         };
-        
+
         try
         {
             Iterator<Class<?>> it = classes.iterator();
-            while(it.hasNext())
+            while (it.hasNext())
             {
                 discovery.addBeanClass(it.next());
             }
-            
+
             this.lifeCycle.startApplication(null);
-            
+
         }
-        catch(Throwable e)
+        catch (Throwable e)
         {
             e.printStackTrace();
-            this.excpetion = new DeploymentException("Standalone Container Impl.",e);
+            this.excpetion = new DeploymentException("Standalone Container Impl.", e);
             throw this.excpetion;
         }
-        
-    }
 
+    }
 
     public boolean deployInternal(Iterable<Class<?>> classes, Iterable<URL> beansXmls)
     {
         try
         {
-            final TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl)ServiceLoader.getService(ScannerService.class);
-            
-            //Lifecycle container
+            final TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl) ServiceLoader.getService(ScannerService.class);
+
+            // Lifecycle container
             this.lifeCycle = new StandaloneLifeCycle()
             {
                 protected void afterInitApplication(Properties event)
                 {
                     this.scannerService = discovery;
-                }            
+                }
+
+                @Override
+                public void beforeStartApplication(Object object)
+                {
+                    super.beforeStartApplication(object);
+                    try
+                    {
+                        PluginLoader.getInstance().startUp();
+                        EjbPlugin plugin = (EjbPlugin) PluginLoader.getInstance().getEjbPlugin();
+                        plugin.setUseInTest(true);
+                    }
+                    catch (Throwable e)
+                    {
+                        // Not worry
+                    }
+                }
+
             };
-            
+
             Iterator<Class<?>> it = classes.iterator();
-            while(it.hasNext())
+            while (it.hasNext())
             {
                 discovery.addBeanClass(it.next());
             }
-            
+
             Iterator<URL> itUrl = beansXmls.iterator();
-            while(itUrl.hasNext())
+            while (itUrl.hasNext())
             {
                 discovery.addBeanXml(itUrl.next());
             }
-            
-            this.lifeCycle.startApplication(null);            
+
+            this.lifeCycle.startApplication(null);
         }
-        catch(Throwable e)
+        catch (Throwable e)
         {
             e.printStackTrace();
-            this.excpetion = new DeploymentException("Standalone Container Impl.",e);
-            
+            this.excpetion = new DeploymentException("Standalone Container Impl.", e);
+
             return false;
         }
-        
+
         return true;
     }
 
     public void setup()
     {
-        
+
     }
-    
+
     public void cleanup()
     {
 
     }
-    
 
     public void undeploy()
     {
         try
         {
             this.lifeCycle.stopApplication(null);
-            this.lifeCycle = null;   
-            
-            //X TODO solve in a different way! EjbPlugin.CONFIGURED_FOR_USED_IN_TEST = false;
-        }        
+            this.lifeCycle = null;
+
+            try
+            {
+                EjbPlugin plugin = (EjbPlugin) PluginLoader.getInstance().getEjbPlugin();
+                plugin.setUseInTest(false);
+            }
+            catch (Throwable e)
+            {
+                // Not worry
+            }
+        }
         finally
         {
-            ManagersImpl.cleanUp();   
+            ManagersImpl.cleanUp();
         }
-     }
+    }
 
     public DeploymentException getDeploymentException()
     {
@@ -170,14 +195,12 @@ public class StandaloneContainersImpl implements StandaloneContainers
         return BeanManagerImpl.getManager();
     }
 
-
     @Override
     public void deploy(Collection<Class<?>> classes) throws DeploymentException
-    {                
+    {
         setUp(classes);
         deployInternal(classes);
     }
-
 
     @Override
     public boolean deploy(Collection<Class<?>> classes, Collection<URL> xmls)
@@ -185,10 +208,10 @@ public class StandaloneContainersImpl implements StandaloneContainers
         setUp(classes);
         return deployInternal(classes, xmls);
     }
-    
+
     private void setUp(Collection<Class<?>> classes)
     {
-        
+
         try
         {
             ConfigurationFactory config = new ConfigurationFactory();
@@ -209,11 +232,20 @@ public class StandaloneContainersImpl implements StandaloneContainers
             System.setProperty("openejb.validation.output.level", "VERBOSE");
             Properties properties = new Properties(System.getProperties());
             properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, InitContextFactory.class.getName());
-            new InitialContext(properties);    
-            
-            //X TODO solve in a different way! EjbPlugin.CONFIGURED_FOR_USED_IN_TEST = true;
+            new InitialContext(properties);
+
+            try
+            {
+                EjbPlugin plugin = (EjbPlugin) PluginLoader.getInstance().getEjbPlugin();
+                plugin.setUseInTest(true);
+            }
+            catch (Throwable e)
+            {
+                // Not worry
+            }
+
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -223,41 +255,40 @@ public class StandaloneContainersImpl implements StandaloneContainers
     {
         EjbJar ejbJar = new EjbJar();
         ejbJar.setId(this.getClass().getName());
-        
-        for(Class<?> clazz : classes)
+
+        for (Class<?> clazz : classes)
         {
-            if(isSingleton(clazz))
+            if (isSingleton(clazz))
             {
                 ejbJar.addEnterpriseBean(new SingletonBean(clazz));
             }
-            if(isStateless(clazz))
+            if (isStateless(clazz))
             {
                 ejbJar.addEnterpriseBean(new StatelessBean(clazz));
             }
-            
-            if(isStatefull(clazz))
+
+            if (isStatefull(clazz))
             {
                 ejbJar.addEnterpriseBean(new StatefulBean(clazz));
             }
         }
-        
-        
+
         return new EjbModule(ejbJar);
-        
+
     }
 
     private boolean isSingleton(Class<?> clazz)
     {
         return clazz.isAnnotationPresent(Singleton.class) ? true : false;
     }
-    
+
     private boolean isStateless(Class<?> clazz)
     {
         return clazz.isAnnotationPresent(Stateless.class) ? true : false;
     }
-    
+
     private boolean isStatefull(Class<?> clazz)
     {
         return clazz.isAnnotationPresent(Stateful.class) ? true : false;
-    }    
+    }
 }

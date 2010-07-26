@@ -93,7 +93,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
     private Map<Class<?>, DeploymentInfo> singletonBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
 
-    //EJB Interface to instances
+    // EJB Interface to instances
     private Map<String, EJBInstanceProxy<?>> ejbInstances = new ConcurrentHashMap<String, EJBInstanceProxy<?>>();
 
     private static final TransactionService TRANSACTION_SERVICE = new OpenEJBTransactionService();
@@ -101,6 +101,10 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     private static final SecurityService SECURITY_SERVICE = new OpenEJBSecurityService();
 
     private final Map<String, JndiNameStrategy> nameStrategies = new TreeMap<String, JndiNameStrategy>();
+
+    // This is here for standalone tests are correctly run
+    // Not used in anywhere
+    private boolean useInTest = false;
 
     public EjbPlugin()
     {
@@ -174,6 +178,12 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         }
     }
 
+    // Used for tests
+    public void setUseInTest(boolean useInTest)
+    {
+        this.useInTest = useInTest;
+    }
+
     /**
      * OpenEJB call back method It is used to get the list of deployed
      * application and store the Stateless and Stateful pools localy.
@@ -210,14 +220,14 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
                 }
             }
 
-            //Means that this is not the our deployment archive
+            // Means that this is not the our deployment archive
             boolean result = addBeanDeploymentInfos(statelessList.toArray(new DeploymentInfo[statelessList.size()]), SessionBeanType.STATELESS);
-            if(!result)
+            if (!result)
             {
                 deployedApplications.remove(appInfo);
                 return;
             }
-            
+
             addBeanDeploymentInfos(statefulList.toArray(new DeploymentInfo[statefulList.size()]), SessionBeanType.STATEFUL);
             addBeanDeploymentInfos(singletonList.toArray(new DeploymentInfo[singletonList.size()]), SessionBeanType.SINGLETON);
         }
@@ -228,7 +238,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
      */
     public void beforeApplicationDestroyed(AppInfo appInfo)
     {
-        if(this.deployedApplications.contains(appInfo))
+        if (this.deployedApplications.contains(appInfo))
         {
             this.deployedApplications.remove(appInfo);
             for (EjbJarInfo ejbJar : appInfo.ejbJars)
@@ -252,7 +262,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
                     this.ejbInstances.remove(bean.ejbName);
                 }
-            }            
+            }
         }
     }
 
@@ -296,9 +306,13 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
     public boolean isSessionBean(Class<?> clazz)
     {
-        //This is used in tests, because in reality containerSystem is not null
-        if (this.containerSystem == null)
+        // This is used in tests, because in reality containerSystem is not
+        // null
+        if (this.containerSystem == null || useInTest)
         {
+            // Used for tests
+            useInTest = false;
+
             this.containerSystem = SystemInstance.get().getComponent(ContainerSystem.class);
             Container[] containers = this.containerSystem.containers();
             for (Container container : containers)
@@ -328,11 +342,11 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         for (DeploymentInfo deployment : deployments)
         {
             boolean inTest = Boolean.valueOf(SecurityUtil.doPrivilegedGetSystemProperty("EjbPlugin.test", "false"));
-            classLoaderEquality = deployment.getBeanClass().getClassLoader().equals(WebBeansFinder.
-                    getSingletonClassLoader(PluginLoader.getInstance())); 
-            
-            //Yes, this EJB archive is deployed within this web application
-            if(inTest || classLoaderEquality)
+            classLoaderEquality = deployment.getBeanClass().getClassLoader().equals(WebBeansFinder.getSingletonClassLoader(PluginLoader.getInstance()));
+
+            // Yes, this EJB archive is deployed within this web
+            // application
+            if (inTest || classLoaderEquality)
             {
                 if (type.equals(SessionBeanType.STATELESS))
                 {
@@ -357,10 +371,10 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
                         this.ejbInstances.put(beanName, ejb);
                         logger.info("Exported EJB " + deployment.getEjbName() + " with interface " + entry.getValue().getInterface().getName());
                     }
-                }                
+                }
             }
-        }        
-        
+        }
+
         return classLoaderEquality;
     }
 
@@ -452,7 +466,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
                 return strategy;
             }
         }
-       
+
         return null;
     }
 
@@ -463,7 +477,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
         Class<?> remoteHome = deployment.getHomeInterface();
         if (remoteHome != null)
-        {            
+        {
             bindings.put(remoteHome.getName(), new EJBInstanceProxy(deployment, remoteHome));
         }
 
