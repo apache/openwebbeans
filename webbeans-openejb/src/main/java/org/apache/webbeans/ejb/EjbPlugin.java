@@ -101,10 +101,6 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     private static final SecurityService SECURITY_SERVICE = new OpenEJBSecurityService();
 
     private final Map<String, JndiNameStrategy> nameStrategies = new TreeMap<String, JndiNameStrategy>();
-    
-    //This is here for standalone tests are correctly run
-    //Not used in anywhere
-    public static boolean CONFIGURED_FOR_USED_IN_TEST = false;
 
     public EjbPlugin()
     {
@@ -300,12 +296,9 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
     public boolean isSessionBean(Class<?> clazz)
     {
-    	//This is used in tests, because in reality containerSystem is not null 
-        if (this.containerSystem == null || CONFIGURED_FOR_USED_IN_TEST)
+        //This is used in tests, because in reality containerSystem is not null
+        if (this.containerSystem == null)
         {
-        	//Used for tests
-        	CONFIGURED_FOR_USED_IN_TEST = false;
-        	
             this.containerSystem = SystemInstance.get().getComponent(ContainerSystem.class);
             Container[] containers = this.containerSystem.containers();
             for (Container container : containers)

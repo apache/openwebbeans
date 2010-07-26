@@ -47,7 +47,6 @@ import org.apache.openejb.jee.StatefulBean;
 import org.apache.openejb.jee.StatelessBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.corespi.ServiceLoader;
-import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
@@ -153,7 +152,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
             this.lifeCycle.stopApplication(null);
             this.lifeCycle = null;   
             
-            EjbPlugin.CONFIGURED_FOR_USED_IN_TEST = false;
+            //X TODO solve in a different way! EjbPlugin.CONFIGURED_FOR_USED_IN_TEST = false;
         }        
         finally
         {
@@ -212,7 +211,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
             properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, InitContextFactory.class.getName());
             new InitialContext(properties);    
             
-            EjbPlugin.CONFIGURED_FOR_USED_IN_TEST = true;
+            //X TODO solve in a different way! EjbPlugin.CONFIGURED_FOR_USED_IN_TEST = true;
         }
         catch(Exception e)
         {
