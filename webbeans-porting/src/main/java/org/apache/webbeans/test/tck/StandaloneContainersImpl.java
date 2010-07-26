@@ -47,6 +47,7 @@ import org.apache.openejb.jee.StatefulBean;
 import org.apache.openejb.jee.StatelessBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.corespi.ServiceLoader;
+import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
@@ -151,6 +152,8 @@ public class StandaloneContainersImpl implements StandaloneContainers
         {
             this.lifeCycle.stopApplication(null);
             this.lifeCycle = null;   
+            
+            EjbPlugin.CONFIGURED_FOR_USED_IN_TEST = false;
         }        
         finally
         {
@@ -207,7 +210,9 @@ public class StandaloneContainersImpl implements StandaloneContainers
             System.setProperty("openejb.validation.output.level", "VERBOSE");
             Properties properties = new Properties(System.getProperties());
             properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, InitContextFactory.class.getName());
-            new InitialContext(properties);            
+            new InitialContext(properties);    
+            
+            EjbPlugin.CONFIGURED_FOR_USED_IN_TEST = true;
         }
         catch(Exception e)
         {
