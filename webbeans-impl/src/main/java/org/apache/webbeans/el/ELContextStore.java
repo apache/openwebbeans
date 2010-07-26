@@ -70,6 +70,7 @@ public class ELContextStore
      * The same Expression must get same instances of &#064;Dependent beans
      */
     private Map<Bean<?>, CreationalStore> dependentObjects = new HashMap<Bean<?>, CreationalStore>();
+    private Map<String, Bean<?>> beanNameToDependentBeanMapping = new HashMap<String, Bean<?>>();
 
     /**
      * Cache for resolved proxies of &#064;NormalScoped beans. This heavily speeds up pages with
@@ -77,9 +78,27 @@ public class ELContextStore
      * property. If we wouldn't cache this, every EL call would create a new proxy and
      * drops it after the EL.
      */
-    private Map<Bean<?>, Object> normalScopedObjects = new HashMap<Bean<?>, Object>();
+    private Map<String, Object> normalScopedObjects = new HashMap<String, Object>();
 
     private BeanManagerImpl beanManager;
+
+    public Object findBeanByName(String name)
+    {
+        Object cachedBean = normalScopedObjects.get(name);
+
+        if(cachedBean != null)
+        {
+            return cachedBean;
+        }
+
+        Bean<?> dependentBean = beanNameToDependentBeanMapping.get(name);
+
+        if(dependentBean == null)
+        {
+            return null;
+        }
+        return dependentObjects.get(dependentBean);
+    }
 
     private static class CreationalStore
     {
@@ -128,7 +147,8 @@ public class ELContextStore
      */
     public void addDependent(Bean<?> bean, Object dependent, CreationalContext<?> creationalContext)
     {
-        this.dependentObjects.put(bean, new CreationalStore(dependent,creationalContext));   
+        this.dependentObjects.put(bean, new CreationalStore(dependent,creationalContext));
+        this.beanNameToDependentBeanMapping.put(bean.getName(), bean);
     }
 
     /**
@@ -144,22 +164,12 @@ public class ELContextStore
     }
 
     /**
-     * We cache resolved &#064;NormalScoped beans on the same for speeding up EL.
-     * @param bean
+     * We cache resolved &#064;NormalScoped bean proxies on the same for speeding up EL.
+     * @param beanName
      */
-    public void addNormalScoped(Bean<?> bean, Object contextualInstance)
+    public void addNormalScoped(String beanName, Object contextualInstance)
     {
-        normalScopedObjects.put(bean, contextualInstance);
-    }
-
-    /**
-     * @see #addNormalScoped(Bean, Object)
-     * @param bean
-     * @return the previously created proxy for a &#064;NormalScoped bean or <code>null</code>
-     */
-    public Object getNormalScoped(Bean<?> bean)
-    {
-        return normalScopedObjects.get(bean);
+        normalScopedObjects.put(beanName, contextualInstance);
     }
 
     /**
@@ -189,6 +199,7 @@ public class ELContextStore
         }
         
         this.dependentObjects.clear();
+        this.beanNameToDependentBeanMapping.clear();
     }
 
     /**

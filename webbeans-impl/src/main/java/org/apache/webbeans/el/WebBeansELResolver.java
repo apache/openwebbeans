@@ -52,10 +52,10 @@ import org.apache.webbeans.container.BeanManagerImpl;
  */
 public class WebBeansELResolver extends ELResolver
 {    
-    
+
     public WebBeansELResolver()
     {
-        
+
     }
     
     /**
@@ -94,36 +94,43 @@ public class WebBeansELResolver extends ELResolver
     {
         //Bean instance
         Object contextualInstance = null;
-        
-        //Managed bean
-        Bean<Object> bean = null;
-        
+
         if (obj == null)
-        {                      
-            //Local store, create if not exist
-            ELContextStore store = ELContextStore.getInstance(true);
-
-            //Manager instance
-            BeanManagerImpl manager = store.getBeanManager();
-
+        {
             //Name of the bean
             String name = (String) property;
+            //Local store, create if not exist
+            ELContextStore elContextStore = ELContextStore.getInstance(true);
+
+            contextualInstance = elContextStore.findBeanByName(name);
+
+            if(contextualInstance != null)
+            {
+                context.setPropertyResolved(true);
+                
+                return contextualInstance;
+            }
+
+            //Manager instance
+            BeanManagerImpl manager = elContextStore.getBeanManager();
+
             //Get beans
             Set<Bean<?>> beans = manager.getBeans(name);
 
             //Found?
             if(beans != null && !beans.isEmpty())
             {
-                bean = (Bean<Object>)beans.iterator().next();
+                //Managed bean
+                Bean<Object> bean = (Bean<Object>)beans.iterator().next();
 
                 if(bean.getScope().equals(Dependent.class))
                 {
-                    contextualInstance = getDependentContextualInstance(manager, store, context, bean);
+                    contextualInstance = getDependentContextualInstance(manager, elContextStore, context, bean);
                 }
                 else
                 {
                     // now we check for NormalScoped beans
-                    contextualInstance = getNormalScopedContextualInstance(manager, store, context, bean);
+                    contextualInstance = getNormalScopedContextualInstance(manager, elContextStore, context, bean, name);
                 }
             }
         }
@@ -131,25 +138,15 @@ public class WebBeansELResolver extends ELResolver
         return contextualInstance;
     }
 
-    private Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<Object> bean)
+    private Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<Object> bean, String beanName)
     {
-
-        Object contextualInstance = store.getNormalScoped(bean);
-
+        CreationalContext<Object> creationalContext = manager.createCreationalContext(bean);
+        Object contextualInstance = manager.getReference(bean, Object.class, creationalContext);
         if (contextualInstance != null)
         {
             context.setPropertyResolved(true);
-        }
-        else
-        {
-            CreationalContext<Object> creationalContext = manager.createCreationalContext(bean);
-            contextualInstance = manager.getReference(bean, Object.class, creationalContext);
-            if (contextualInstance != null)
-            {
-                context.setPropertyResolved(true);
-                //Adding into store
-                store.addNormalScoped(bean, contextualInstance);
-            }
+            //Adding into store
+            store.addNormalScoped(beanName, contextualInstance);
         }
 
         return contextualInstance;
