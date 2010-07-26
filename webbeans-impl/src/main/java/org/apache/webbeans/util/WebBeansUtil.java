@@ -45,8 +45,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.decorator.Decorator;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
@@ -1207,10 +1205,27 @@ public final class WebBeansUtil
         {
             method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(interceptorClass, interceptorType);
         }
-        else if (interceptorType.equals(PostConstruct.class) || interceptorType.equals(PostActivate.class)
-                 || interceptorType.equals(PreDestroy.class) || interceptorType.equals(PrePassivate.class))
+        else if (interceptorType.equals(PostConstruct.class))
         {
-            method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, interceptorType, definedInInterceptorClass);
+            if (definedInInterceptorClass)
+            {
+                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PostConstruct.class, true);
+            }
+            else
+            {
+                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PostConstruct.class, false);
+            }
+        }
+        else if (interceptorType.equals(PreDestroy.class))
+        {
+            if (definedInInterceptorClass)
+            {
+                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PreDestroy.class, true);
+            }
+            else
+            {
+                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PreDestroy.class, false);
+            }
         }
 
         if (method != null)
@@ -1249,10 +1264,27 @@ public final class WebBeansUtil
         {
             method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(annotatedType, annotation);
         }
-        else if (annotation.equals(PostConstruct.class) || annotation.equals(PostActivate.class)
-                 || annotation.equals(PreDestroy.class) || annotation.equals(PrePassivate.class))
+        else if (annotation.equals(PostConstruct.class))
         {
-            method = WebBeansUtil.checkCommonAnnotationCriterias(annotatedType, annotation, definedInInterceptorClass);
+            if (definedInInterceptorClass)
+            {
+                method = WebBeansUtil.checkCommonAnnotationCriterias(annotatedType, PostConstruct.class, true);
+            }
+            else
+            {
+                method = WebBeansUtil.checkCommonAnnotationCriterias(annotatedType, PostConstruct.class, false);
+            }
+        }
+        else if (annotation.equals(PreDestroy.class))
+        {
+            if (definedInInterceptorClass)
+            {
+                method = WebBeansUtil.checkCommonAnnotationCriterias(annotatedType, PreDestroy.class, true);
+            }
+            else
+            {
+                method = WebBeansUtil.checkCommonAnnotationCriterias(annotatedType, PreDestroy.class, false);
+            }
         }
 
         if (method != null)
@@ -1336,25 +1368,14 @@ public final class WebBeansUtil
             {
                 m = data.getAroundInvoke();
             }
-            else if (type.equals(InterceptorType.AROUND_TIMEOUT))
-            {
-                m = data.getAroundTimeout();
-            }
             else if (type.equals(InterceptorType.POST_CONSTRUCT))
             {
                 m = data.getPostConstruct();
-            }
-            else if (type.equals(InterceptorType.POST_ACTIVATE))
-            {
-                m = data.getPostActivate();
+
             }
             else if (type.equals(InterceptorType.PRE_DESTROY))
             {
                 m = data.getPreDestroy();
-            }
-            else if (type.equals(InterceptorType.PRE_PASSIVATE))
-            {
-                m = data.getPrePassivate();
             }
 
             if (m != null)

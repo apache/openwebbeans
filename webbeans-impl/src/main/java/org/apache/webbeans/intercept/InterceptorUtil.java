@@ -30,8 +30,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.PrePassivate;
-import javax.ejb.PostActivate;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
@@ -47,7 +45,6 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -55,9 +52,6 @@ import org.apache.webbeans.util.SecurityUtil;
 
 public final class InterceptorUtil
 {
-    /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorUtil.class);
-
     private InterceptorUtil()
     {
 
@@ -89,10 +83,7 @@ public final class InterceptorUtil
             if (annCls.equals(Inject.class)        ||
                 annCls.equals(PreDestroy.class)    ||
                 annCls.equals(PostConstruct.class) ||
-                annCls.equals(AroundInvoke.class)  ||
-                annCls.equals(PrePassivate.class)  ||   // JSR-299 7.2
-                annCls.equals(PostActivate.class)  ||   // JSR-299 7.2
-                annCls.equals(AroundTimeout.class))     // JSR-299 7.2
+                annCls.equals(AroundInvoke.class)    )
             {
                 return false;
             }
@@ -107,10 +98,10 @@ public final class InterceptorUtil
         {
             return AroundInvoke.class;
         }
-        else if (type.equals(InterceptionType.POST_ACTIVATE))
-        {
-            return PostActivate.class;
-        }
+//        else if (type.equals(InterceptionType.POST_ACTIVATE))
+//        {
+//            return O;
+//        }
         else if (type.equals(InterceptionType.POST_CONSTRUCT))
         {
             return PostConstruct.class;
@@ -119,10 +110,10 @@ public final class InterceptorUtil
         {
             return PreDestroy.class;
         }
-        else if (type.equals(InterceptionType.PRE_PASSIVATE))
-        {
-            return PrePassivate.class;
-        }
+//        else if (type.equals(InterceptionType.PRE_PASSIVATE))
+//        {
+//            return PrePassivate.class;
+//        }
         else if (type.equals(InterceptionType.AROUND_TIMEOUT))
         {
             return AroundTimeout.class;
@@ -212,8 +203,8 @@ public final class InterceptorUtil
         for (Method method : methods)
         {
             if (AnnotationUtil.hasMethodAnnotation(method, PostConstruct.class) || AnnotationUtil.hasMethodAnnotation(method, PreDestroy.class)
-                    || AnnotationUtil.hasMethodAnnotation(method, PostActivate.class)
-                    || AnnotationUtil.hasMethodAnnotation(method, PrePassivate.class)
+//                    AnnotationUtil.isMethodHasAnnotation(method, PostActivate.class) || 
+//                    AnnotationUtil.isMethodHasAnnotation(method, PrePassivate.class)
                     )
             {
                 if (ClassUtil.isMethodHasParameter(method))
@@ -229,29 +220,10 @@ public final class InterceptorUtil
                                 {
                                     return true;
                                 }
-                                else
-                                {
-                                    logger.debug("Static LifeCycle callback method found.");
-                                }
-                            }
-                            else
-                            {
-                                logger.debug("LifeCycle callback method with checked exception.");
                             }
                         }
-                        else
-                        {
-                            logger.debug("LifeCycle callback method with non-void return type.");
-                        }
                     }
-                    else
-                    {
-                        logger.debug("LifeCycle callback method with wrong number or type of parameter(s).");
-                    }
-                }
-                else
-                {
-                    logger.debug("LifeCycle callback method without any context parameter.");
+
                 }
             }
         }
@@ -267,9 +239,7 @@ public final class InterceptorUtil
         {
             AnnotatedMethod<T> method = (AnnotatedMethod<T>)methodA;
             if(method.isAnnotationPresent(PostConstruct.class) 
-                    || method.isAnnotationPresent(PreDestroy.class)
-                    || method.isAnnotationPresent(PostActivate.class)
-                    || method.isAnnotationPresent(PrePassivate.class))
+                    || method.isAnnotationPresent(PreDestroy.class))
             {
                     if (!methodA.getParameters().isEmpty())
                     {
@@ -463,11 +433,8 @@ public final class InterceptorUtil
     public static List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptorType type)
     {
         List<InterceptorData> ai = new ArrayList<InterceptorData>();
-        List<InterceptorData> at = new ArrayList<InterceptorData>();
-        List<InterceptorData> pa = new ArrayList<InterceptorData>();
         List<InterceptorData> pc = new ArrayList<InterceptorData>();
         List<InterceptorData> pd = new ArrayList<InterceptorData>();
-        List<InterceptorData> pp = new ArrayList<InterceptorData>();
     
         Iterator<InterceptorData> it = stack.iterator();
         while (it.hasNext())
@@ -481,24 +448,6 @@ public final class InterceptorUtil
                 if (m != null)
                 {
                     ai.add(data);
-                }
-    
-            }
-            else if (type.equals(InterceptorType.AROUND_TIMEOUT))
-            {
-                m = data.getAroundTimeout();
-                if (m != null)
-                {
-                    at.add(data);
-                }
-    
-            }
-            else if (type.equals(InterceptorType.POST_ACTIVATE))
-            {
-                m = data.getPostActivate();
-                if (m != null)
-                {
-                    pa.add(data);
                 }
     
             }
@@ -520,41 +469,21 @@ public final class InterceptorUtil
                 }
     
             }
-            else if (type.equals(InterceptorType.PRE_PASSIVATE))
-            {
-                m = data.getPrePassivate();
-                if (m != null)
-                {
-                    pp.add(data);
-                }
     
-            }
         }
     
         if (type.equals(InterceptorType.AROUND_INVOKE))
         {
             return ai;
         }
-        else if (type.equals(InterceptorType.AROUND_TIMEOUT))
-        {
-            return at;
-        }
-        else if (type.equals(InterceptorType.POST_ACTIVATE))
-        {
-            return pa;
-        }
         else if (type.equals(InterceptorType.POST_CONSTRUCT))
         {
             return pc;
+    
         }
         else if (type.equals(InterceptorType.PRE_DESTROY))
         {
             return pd;
-        }
-        else if (type.equals(InterceptorType.PRE_PASSIVATE))
-        {
-            return pp;
-    
         }
     
         return Collections.EMPTY_LIST;
