@@ -97,7 +97,13 @@ public class ELContextStore
         {
             return null;
         }
-        return dependentObjects.get(dependentBean);
+        CreationalStore cs =  dependentObjects.get(dependentBean);
+        if (cs != null)
+        {
+            return cs.getObject();
+        }
+        
+        return null;
     }
 
     private static class CreationalStore
