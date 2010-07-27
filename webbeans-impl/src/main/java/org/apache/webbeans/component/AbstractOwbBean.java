@@ -61,6 +61,9 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /** Scope type of the bean */
     protected Annotation implScopeType;
 
+    /** Cached scope type of the bean */
+    protected Class<? extends Annotation> scopeClass;
+
     /** Qualifiers of the bean */
     protected Set<Annotation> implQualifiers = new HashSet<Annotation>();
 
@@ -75,7 +78,10 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
 
     /** Stereotypes of the bean */
     protected Set<Annotation> stereoTypes = new HashSet<Annotation>();
-    
+
+    /** this is only for public access and will be built from {@link #stereoTypes} on demand */
+    protected Set<Class<? extends Annotation>> stereoTypeClasses = null;
+
     /**This bean is specialized or not*/
     protected boolean specializedBean;
 
@@ -332,6 +338,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void setImplScopeType(Annotation scopeType)
     {
         this.implScopeType = scopeType;
+        this.scopeClass = this.implScopeType.annotationType();
     }
 
     /**
@@ -361,6 +368,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     public void addStereoType(Annotation stereoType)
     {
+        this.stereoTypeClasses = null; // will get rebuilt on the next request
+
         this.stereoTypes.add(stereoType);
     }
 
@@ -438,7 +447,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     @Override
     public Class<? extends Annotation> getScope()
     {
-        return this.implScopeType.annotationType();
+        return this.scopeClass;
     }
 
     
@@ -558,14 +567,18 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */    
     public Set<Class<? extends Annotation>> getStereotypes()
     {
-        Set<Class<? extends Annotation>> set = new HashSet<Class<? extends Annotation>>();
-        
-        for(Annotation ann : this.stereoTypes)
+        if (stereoTypeClasses == null)
         {
-            set.add(ann.annotationType());
+            Set<Class<? extends Annotation>> set = new HashSet<Class<? extends Annotation>>();
+
+            for(Annotation ann : this.stereoTypes)
+            {
+                set.add(ann.annotationType());
+            }
+            stereoTypeClasses = set;
         }
-        
-        return set;
+
+        return stereoTypeClasses;
     }
     
      /**
