@@ -211,8 +211,13 @@ public final class ContextFactory
      */
     public static Context getStandardContext(ContextTypes type) throws ContextNotActiveException
     {
-        Context context = null;
         ContextsService contextService = getContextsService();
+        return getStandardContext(contextService, type);
+    }
+
+    public static Context getStandardContext(ContextsService contextService, ContextTypes type) throws ContextNotActiveException
+    {
+        Context context = null;
         switch (type.getCardinal())
         {
             case 0:
