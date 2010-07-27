@@ -162,34 +162,30 @@ public class WebContextsService extends AbstractContextsService
     @Override
     public void endContext(Class<? extends Annotation> scopeType, Object endParameters)
     {        
-        if(supportsContext(scopeType))
+        if(scopeType.equals(RequestScoped.class))
         {
-            if(scopeType.equals(RequestScoped.class))
-            {
-                destroyRequestContext((ServletRequestEvent)endParameters);
-            }
-            else if(scopeType.equals(SessionScoped.class))
-            {
-                destroySessionContext((HttpSession)endParameters);
-            }
-            else if(scopeType.equals(ApplicationScoped.class))
-            {
-                destroyApplicationContext((ServletContext)endParameters);
-            }
-            else if(scopeType.equals(ConversationScoped.class))
-            {
-                destroyConversationContext();
-            }
-            else if(scopeType.equals(Dependent.class))
-            {
-                //Do nothing
-            }
-            else
-            {
-                destroySingletonContext((ServletContext)endParameters);
-            }
+            destroyRequestContext((ServletRequestEvent)endParameters);
         }
-        
+        else if(scopeType.equals(SessionScoped.class))
+        {
+            destroySessionContext((HttpSession)endParameters);
+        }
+        else if(scopeType.equals(ApplicationScoped.class))
+        {
+            destroyApplicationContext((ServletContext)endParameters);
+        }
+        else if(supportsConversation && scopeType.equals(ConversationScoped.class))
+        {
+            destroyConversationContext();
+        }
+        else if(scopeType.equals(Dependent.class))
+        {
+            //Do nothing
+        }
+        else if (scopeType.equals(Singleton.class))
+        {
+            destroySingletonContext((ServletContext)endParameters);
+        }
     }
 
     /**
@@ -198,34 +194,31 @@ public class WebContextsService extends AbstractContextsService
     @Override
     public Context getCurrentContext(Class<? extends Annotation> scopeType)
     {
-        if(supportsContext(scopeType))
+        if(scopeType.equals(RequestScoped.class))
         {
-            if(scopeType.equals(RequestScoped.class))
-            {
-                return getRequestContext();
-            }
-            else if(scopeType.equals(SessionScoped.class))
-            {
-                return getSessionContext();
-            }
-            else if(scopeType.equals(ApplicationScoped.class))
-            {
-                return getApplicationContext();
-            }
-            else if(scopeType.equals(ConversationScoped.class))
-            {
-                return getConversationContext();
-            }
-            else if(scopeType.equals(Dependent.class))
-            {
-                return dependentContext;
-            }
-            else
-            {
-                return getSingletonContext();
-            }
+            return getRequestContext();
         }
-        
+        else if(scopeType.equals(SessionScoped.class))
+        {
+            return getSessionContext();
+        }
+        else if(scopeType.equals(ApplicationScoped.class))
+        {
+            return getApplicationContext();
+        }
+        else if(supportsConversation && scopeType.equals(ConversationScoped.class))
+        {
+            return getConversationContext();
+        }
+        else if(scopeType.equals(Dependent.class))
+        {
+            return dependentContext;
+        }
+        else if (scopeType.equals(Singleton.class))
+        {
+            return getSingletonContext();
+        }
+
         return null;
     }
 
@@ -235,34 +228,30 @@ public class WebContextsService extends AbstractContextsService
     @Override
     public void startContext(Class<? extends Annotation> scopeType, Object startParameter) throws ContextException
     {
-        if(supportsContext(scopeType))
+        if(scopeType.equals(RequestScoped.class))
         {
-            if(scopeType.equals(RequestScoped.class))
-            {
-                initRequestContext((ServletRequestEvent)startParameter);
-            }
-            else if(scopeType.equals(SessionScoped.class))
-            {
-                initSessionContext((HttpSession)startParameter);
-            }
-            else if(scopeType.equals(ApplicationScoped.class))
-            {
-                initApplicationContext((ServletContext)startParameter);
-            }
-            else if(scopeType.equals(ConversationScoped.class))
-            {
-                initConversationContext((ConversationContext)startParameter);
-            }
-            else if(scopeType.equals(Dependent.class))
-            {
-                //Do nothing
-            }
-            else
-            {
-                initSingletonContext((ServletContext)startParameter);
-            }
+            initRequestContext((ServletRequestEvent)startParameter);
         }
-        
+        else if(scopeType.equals(SessionScoped.class))
+        {
+            initSessionContext((HttpSession)startParameter);
+        }
+        else if(scopeType.equals(ApplicationScoped.class))
+        {
+            initApplicationContext((ServletContext)startParameter);
+        }
+        else if(supportsConversation && scopeType.equals(ConversationScoped.class))
+        {
+            initConversationContext((ConversationContext)startParameter);
+        }
+        else if(scopeType.equals(Dependent.class))
+        {
+            //Do nothing
+        }
+        else if (scopeType.equals(Singleton.class))
+        {
+            initSingletonContext((ServletContext)startParameter);
+        }
     }
 
     /**
