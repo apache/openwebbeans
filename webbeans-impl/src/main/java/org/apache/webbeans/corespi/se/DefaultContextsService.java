@@ -106,35 +106,32 @@ public class DefaultContextsService extends AbstractContextsService
      */
     @Override
     public Context getCurrentContext(Class<? extends Annotation> scopeType)
-    {        
-        if(supportsContext(scopeType))
+    {
+        if(scopeType.equals(RequestScoped.class))
         {
-            if(scopeType.equals(RequestScoped.class))
-            {
-                return getCurrentRequestContext();
-            }
-            else if(scopeType.equals(SessionScoped.class))
-            {
-                return getCurrentSessionContext();
-            }
-            else if(scopeType.equals(ApplicationScoped.class))
-            {
-                return getCurrentApplicationContext();
-            }
-            else if(scopeType.equals(ConversationScoped.class))
-            {
-                return getCurrentConversationContext();
-            }
-            else if(scopeType.equals(Dependent.class))
-            {
-                return getCurrentDependentContext();
-            }
-            else
-            {
-                return getCurrentSingletonContext();
-            }
+            return getCurrentRequestContext();
         }
-        
+        else if(scopeType.equals(SessionScoped.class))
+        {
+            return getCurrentSessionContext();
+        }
+        else if(scopeType.equals(ApplicationScoped.class))
+        {
+            return getCurrentApplicationContext();
+        }
+        else if(scopeType.equals(ConversationScoped.class))
+        {
+            return getCurrentConversationContext();
+        }
+        else if(scopeType.equals(Dependent.class))
+        {
+            return getCurrentDependentContext();
+        }
+        else if(scopeType.equals(Singleton.class))
+        {
+            return getCurrentSingletonContext();
+        }
+
         return null;
 
     }
@@ -148,32 +145,29 @@ public class DefaultContextsService extends AbstractContextsService
     {
         try
         {
-            if(supportsContext(scopeType))
+            if(scopeType.equals(RequestScoped.class))
             {
-                if(scopeType.equals(RequestScoped.class))
-                {
-                    startRequestContext(startParameter);
-                }
-                else if(scopeType.equals(SessionScoped.class))
-                {
-                    startSessionContext(startParameter);
-                }
-                else if(scopeType.equals(ApplicationScoped.class))
-                {
-                    startApplicationContext(startParameter);
-                }
-                else if(scopeType.equals(ConversationScoped.class))
-                {
-                    startConversationContext((ConversationContext)startParameter);
-                }
-                else if(scopeType.equals(Dependent.class))
-                {
-                    //Do nothing
-                }
-                else
-                {
-                    startSingletonContext(startParameter);
-                }
+                startRequestContext(startParameter);
+            }
+            else if(scopeType.equals(SessionScoped.class))
+            {
+                startSessionContext(startParameter);
+            }
+            else if(scopeType.equals(ApplicationScoped.class))
+            {
+                startApplicationContext(startParameter);
+            }
+            else if(scopeType.equals(ConversationScoped.class))
+            {
+                startConversationContext((ConversationContext)startParameter);
+            }
+            else if(scopeType.equals(Dependent.class))
+            {
+                //Do nothing
+            }
+            else if(scopeType.equals(Singleton.class))
+            {
+                startSingletonContext(startParameter);
             }
         }
         catch(Exception e)
@@ -198,6 +192,7 @@ public class DefaultContextsService extends AbstractContextsService
         if(scopeType.equals(RequestScoped.class) ||
                 scopeType.equals(SessionScoped.class) ||
                 scopeType.equals(ApplicationScoped.class) ||
+                scopeType.equals(ConversationScoped.class) ||
                 scopeType.equals(Dependent.class) ||
                 scopeType.equals(Singleton.class))
         {
