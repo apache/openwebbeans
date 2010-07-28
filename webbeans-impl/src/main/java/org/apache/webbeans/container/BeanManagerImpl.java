@@ -273,45 +273,40 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         Asserts.assertNotNull(scopeType, "scopeType paramter can not be null");
 
-        List<Context> contexts = new ArrayList<Context>();
-        
         Context standardContext = null;
 
         standardContext = ContextFactory.getStandardContext(scopeType);
 
-        if(standardContext != null)
+        if(standardContext != null && standardContext.isActive())
         {
-            if(standardContext.isActive())
-            {
-                contexts.add(standardContext);   
-            }
+            return standardContext;
         }
         
         List<Context> others = contextMap.get(scopeType);
+        Context found = null;
+
         if(others != null)
         {
             for(Context otherContext : others)
             {
                 if(otherContext.isActive())
                 {
-                    contexts.add(otherContext);
+                    if (found != null)
+                    {
+                        throw new IllegalStateException("More than one active context exists with scope type annotation @" + scopeType.getSimpleName());
+                    }
+                    
+                    found = otherContext;
                 }
             }
         }
         
-
-        // Still null
-        if (contexts.isEmpty())
+        if (found == null)
         {
             throw new ContextNotActiveException("WebBeans context with scope type annotation @" + scopeType.getSimpleName() + " does not exist within current thread");
         }
         
-        else if(contexts.size() > 1)
-        {
-            throw new IllegalStateException("More than one active context exists with scope type annotation @" + scopeType.getSimpleName());
-        }
-
-        return contexts.get(0);
+        return found;
     }
 
     /**
