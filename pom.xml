@@ -146,6 +146,17 @@
                 <role>PMC</role>
             </roles>
         </developer>
+        <developer>
+            <id>gpetracek</id>
+            <name>Gerhard Petracek</name>
+            <email>gpetracek at apache dot org</email>
+            <organization>IRIAN.at, Austria</organization>
+            <organizationUrl>http://www.irian.at/</organizationUrl>
+            <roles>
+                <role>Committer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
     </developers>
 
     <build>
