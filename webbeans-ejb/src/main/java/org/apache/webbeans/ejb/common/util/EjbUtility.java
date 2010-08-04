@@ -42,6 +42,7 @@ import org.apache.webbeans.ejb.common.component.EjbBeanCreatorImpl;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
@@ -155,8 +156,14 @@ public final class EjbUtility
         WebBeansUtil.fireProcessObservableMethodBeanEvent(observerMethodsMap);
         WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for observer methods. Look at logs for further details");
 
+        try
+        {
+            manager.addBean(WebBeansUtil.createNewBean(ejbBean));
+        }
+        catch (DuplicateDefinitionException ignore)
+        {
+        }
         
-        manager.addBean(WebBeansUtil.createNewBean(ejbBean));                
         manager.addBean(ejbBean);
         manager.getBeans().addAll(producerMethodBeans);
         ejbBeanCreator.defineDisposalMethods();

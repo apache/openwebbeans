@@ -72,6 +72,7 @@ import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
@@ -320,14 +321,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         if(newBean instanceof AbstractOwbBean)
         {
-            this.deploymentBeans.add(newBean);
             addPassivationInfo((OwbBean)newBean);
+            this.deploymentBeans.add(newBean);
         }
         else
         {
             ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(newBean);
-            this.deploymentBeans.add(bean);
             addPassivationInfo(bean);
+            this.deploymentBeans.add(bean);
         }
         
 
@@ -348,7 +349,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             Bean<?> oldBean = passivationBeans.putIfAbsent(id, bean);
             if (oldBean != null)
             {
-                throw new DefinitionException("PassivationCapable bean id is not unique: " + id + " bean:" + bean);
+                throw new DuplicateDefinitionException("PassivationCapable bean id is not unique: " + id + " bean:" + bean);
             }
             
         }        
