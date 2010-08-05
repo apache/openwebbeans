@@ -275,7 +275,7 @@ public class OpenWebBeansConfiguration
                 }
                 catch(Exception e)
                 {
-                    
+                     // do nothing
                 }
             }
         }
