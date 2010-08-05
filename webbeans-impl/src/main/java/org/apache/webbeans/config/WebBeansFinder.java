@@ -19,6 +19,7 @@
 package org.apache.webbeans.config;
 
 import org.apache.webbeans.corespi.DefaultSingletonService;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.SingletonService;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -29,15 +30,15 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @version $Rev$ $Date$
  *
  */
-public final class WebBeansFinder implements SingletonService
+public final class WebBeansFinder
 {   
     //How you use singleton provider ,
     //As a default we use ClassLoader --> Object
-    private SingletonService singletonService = new DefaultSingletonService();
-    
-    //VM based singleton finder instance
-    private static final WebBeansFinder FINDER = new WebBeansFinder();
-    
+    private static SingletonService singletonService = new DefaultSingletonService();
+
+    /** safety mechanism to allow setting a special SingletonService only once */
+    private static boolean customSingletonServiceUsed = false;
+
     /**
      * No instantiate.
      */
@@ -53,63 +54,38 @@ public final class WebBeansFinder implements SingletonService
     
     public static Object getSingletonInstance(String singletonName, ClassLoader classLoader)
     {
-        return FINDER.get(classLoader, singletonName);
+        return singletonService.get(classLoader, singletonName);
     }
     
     
     public static Object getExistingSingletonInstance(String singletonName, ClassLoader cl)
     {
-        return FINDER.getExist(cl, singletonName);
+        return singletonService.getExist(cl, singletonName);
     }
     
     public static void clearInstances(ClassLoader classLoader)
     {
-        FINDER.clear(classLoader);
+        singletonService.clear(classLoader);
     }
     
     public static Object getSingletonClassLoader(Object object)
     {
-        return FINDER.getKey(object);
+        return singletonService.getKey(object);
     }
     
-    //Thirdt pary frameworks can set singleton instance
-    //For example, OpenEJB could provide its own provider
-    //Based on deployment
-    public synchronized void setSingletonService(SingletonService singletonService)
+    // Thirdt pary frameworks can set singleton instance
+    // For example, OpenEJB could provide its own provider
+    // Based on deployment
+    // this must not get set
+    public static void setSingletonService(SingletonService singletonSvc)
     {
-        FINDER.singletonService = singletonService;
+        if (customSingletonServiceUsed && !singletonService.equals(singletonSvc))
+        {
+            throw new WebBeansConfigurationException("Already using another custom SingletonService!");
+        }
+        
+        singletonService = singletonSvc;
+        customSingletonServiceUsed = true;
     }
-
-    @Override
-    public void clear(Object key)
-    {
-        this.singletonService.clear(key);
-    }
-
-    @Override
-    public Object get(Object key, String singletonClassName)
-    {
-        return this.singletonService.get(key, singletonClassName);
-    }
-
-    @Override
-    public Object getExist(Object key, String singletonClassName)
-    {
-        return this.singletonService.getExist(key, singletonClassName);
-    }
-
-    @Override
-    public Object getKey(Object singleton)
-    {
-        return this.singletonService.getKey(singleton);
-    }
-
-    @Override
-    public boolean isExist(Object key, String singletonClassName)
-    {
-        return this.singletonService.isExist(key, singletonClassName);
-    }
-    
-    
 
 }
