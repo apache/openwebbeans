@@ -60,7 +60,15 @@ public class OpenWebBeansConfiguration
         
     /**Conversation periodic delay in ms.*/
     public static final String CONVERSATION_PERIODIC_DELAY = "org.apache.webbeans.conversation.Conversation.periodicDelay";
-    
+
+    /**
+     * Lifycycle methods like {@link javax.annotation.PostConstruct} and
+     * {@link javax.annotation.PreDestroy} must not define a checked Exception
+     * regarding to the spec. But this is often unnecessary restrictive so we
+     * allow to disable this check application wide.
+     */
+    public static final String INTERCEPTOR_FORCE_NO_CHECKED_EXCEPTIONS = "org.apache.webbeans.forceNoCheckedExceptions";
+
     /**Use OWB Specific XML Configuration or Strict Spec XML*/
     @Deprecated //Not use any more 
     public static final String USE_OWB_SPECIFIC_XML_CONFIGURATION = "org.apache.webbeans.useOwbSpecificXmlConfig";

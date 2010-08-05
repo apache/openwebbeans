@@ -128,6 +128,7 @@ import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
@@ -183,12 +184,31 @@ public final class WebBeansUtil
      * Enforcing that interceptor callbacks should not be
      * able to throw checked exceptions is configurable
      */
-    public static boolean enforceCheckedException = true;
+    private static Boolean enforceCheckedException;
 
     // No instantiate
     private WebBeansUtil()
     {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Lifycycle methods like {@link javax.annotation.PostConstruct} and
+     * {@link javax.annotation.PreDestroy} must not define a checked Exception
+     * regarding to the spec. But this is often unnecessary restrictive so we
+     * allow to disable this check application wide.
+     *
+     * @return <code>true</code> if the spec rule of having no checked exception should be enforced
+     */
+    private static boolean isNoCheckedExceptionEnforced()
+    {
+        if (enforceCheckedException == null)
+        {
+            enforceCheckedException = Boolean.parseBoolean(OpenWebBeansConfiguration.getInstance().
+                    getProperty(OpenWebBeansConfiguration.INTERCEPTOR_FORCE_NO_CHECKED_EXCEPTIONS, "true"));
+        }
+
+        return enforceCheckedException.booleanValue();
     }
 
     /**
@@ -916,7 +936,7 @@ public final class WebBeansUtil
                             + " must return void type");
                 }
 
-                if (enforceCheckedException && ClassUtil.isMethodHasCheckedException(method))
+                if (isNoCheckedExceptionEnforced() && ClassUtil.isMethodHasCheckedException(method))
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotated method : " + method.getName() + " in class : " + clazz.getName()
@@ -1002,7 +1022,7 @@ public final class WebBeansUtil
                             + " must return void type");
                 }
 
-                if (enforceCheckedException && ClassUtil.isMethodHasCheckedException(method))
+                if (isNoCheckedExceptionEnforced() && ClassUtil.isMethodHasCheckedException(method))
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotated method : " + method.getName() + " in class : " + clazz.getName()
