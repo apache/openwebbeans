@@ -183,7 +183,7 @@ public final class WebBeansUtil
      * Enforcing that interceptor callbacks should not be
      * able to throw checked exceptions is configurable
      */
-    public static boolean ENFORCE_CHECKED_EXCEPTION = true;
+    public static boolean enforceCheckedException = true;
 
     // No instantiate
     private WebBeansUtil()
@@ -916,7 +916,7 @@ public final class WebBeansUtil
                             + " must return void type");
                 }
 
-                if (ENFORCE_CHECKED_EXCEPTION && ClassUtil.isMethodHasCheckedException(method))
+                if (enforceCheckedException && ClassUtil.isMethodHasCheckedException(method))
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotated method : " + method.getName() + " in class : " + clazz.getName()
@@ -1002,7 +1002,7 @@ public final class WebBeansUtil
                             + " must return void type");
                 }
 
-                if (ENFORCE_CHECKED_EXCEPTION && ClassUtil.isMethodHasCheckedException(method))
+                if (enforceCheckedException && ClassUtil.isMethodHasCheckedException(method))
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotated method : " + method.getName() + " in class : " + clazz.getName()
