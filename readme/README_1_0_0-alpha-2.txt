@@ -412,6 +412,12 @@ Configuration Names and Their Default Values :
    Values        : false, true
    Default       : false
 
+- "org.apache.webbeans.forceNoCheckedExceptions"
+   Description   : The interceptors spec defines that @PostConstruct & Co must not throw checked Exceptions. Setting this configuration to 'false' disables this check.
+   Values        : false, true
+   Default       : true
+
+
 ---------------------------------------------
 EJB Support via Embeddable OpenEJB Container in Tomcat 6.X
 ---------------------------------------------
