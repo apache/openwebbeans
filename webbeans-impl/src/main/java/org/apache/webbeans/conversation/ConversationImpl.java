@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.conversation;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,8 +36,13 @@ import org.apache.webbeans.util.Asserts;
  * @version $Rev$ $Date$
  *
  */
-public class ConversationImpl implements Conversation
+public class ConversationImpl implements Conversation, Serializable
 {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8511063860333431722L;
+
     /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ConversationImpl.class);
     

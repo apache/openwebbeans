@@ -19,7 +19,9 @@
 package org.apache.webbeans.conversation;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -96,6 +98,31 @@ public class ConversationManager
         
         return false;
     }
+    
+    /**
+     * Return all conversation/context associated with sessionid.
+     * 
+     * @param sessionId
+     * @return
+     */
+    public Map<Conversation, ConversationContext> getConversationMapWithSessionId(String sessionId) 
+    {
+        Asserts.assertNotNull(sessionId,"sessionId parameter can not be null");
+        Set<Conversation> set = conversations.keySet();
+        Iterator<Conversation> it = set.iterator();
+        ConversationImpl conv = null;
+        Map<Conversation, ConversationContext> map = new HashMap<Conversation, ConversationContext>();
+        while (it.hasNext())
+        {
+            conv = (ConversationImpl) it.next();
+            if (conv.getSessionId().equals(sessionId))
+            {
+                map.put(conv, conversations.get(conv));
+            }
+        }
+        return map;
+    }
+    
 
     /**
      * Remove given conversation.

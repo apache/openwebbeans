@@ -33,10 +33,12 @@ import javax.servlet.http.HttpSessionListener;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.lifecycle.LifecycleFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContainerLifecycle;
+import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -53,12 +55,15 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     /**Manages the container lifecycle*/
     protected ContainerLifecycle lifeCycle = null;
     
+    protected FailOverService failoverService = null;
+    
     /**
      * Default constructor
      */
     public WebBeansConfigurationListener()
     {
-        
+        failoverService = (FailOverService)
+        ServiceLoader.getService(FailOverService.class);
     }
 
     /**
@@ -102,6 +107,21 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
         this.lifeCycle.getContextService().endContext(RequestScoped.class, event);        
 
+        if (failoverService != null && 
+                failoverService.isSupportFailOver()) 
+        {
+            Object request = event.getServletRequest();
+            if(request instanceof HttpServletRequest)
+            {
+                HttpServletRequest httpRequest = (HttpServletRequest)request;
+                HttpSession session = httpRequest.getSession(false);
+                if (session != null) 
+                {
+                    failoverService.sessionIsIdle(session);
+                }
+            }
+        }
+        
         // clean up the EL caches after each request
         ELContextStore elStore = ELContextStore.getInstance(false);
         if (elStore != null)
@@ -141,7 +161,15 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
                     {
                         logger.error(OWBLogConst.ERROR_0013, e);
                     }
-                }
+                } 
+                else 
+                {
+                    if (failoverService != null && 
+                            failoverService.isSupportFailOver()) 
+                    {
+                        failoverService.sessionIsInUse(currentSession);
+                    }
+                }                
             }
 
         }
@@ -193,7 +221,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     @Override
     public void sessionDidActivate(HttpSessionEvent event)
     {
-        //TODO activation
     }
 
     /**
@@ -202,7 +229,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     @Override
     public void sessionWillPassivate(HttpSessionEvent event)
     {
-        //TODO Passivation
     }
 
 }

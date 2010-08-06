@@ -18,18 +18,29 @@
  */
 package org.apache.webbeans.context;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.Contextual;
 
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.context.type.ContextTypes;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Session context implementation.
  */
-public class SessionContext extends AbstractContext implements Serializable
+public class SessionContext extends AbstractContext implements Serializable, Externalizable
 {
     private static final long serialVersionUID = 1L;
 
@@ -44,4 +55,46 @@ public class SessionContext extends AbstractContext implements Serializable
         this.componentInstanceMap = new ConcurrentHashMap<Contextual<?>, BeanInstanceBag<?>>();
     }
 
+    public void readExternal(ObjectInput in) throws IOException,
+            ClassNotFoundException 
+    {
+        this.type = (ContextTypes) in.readObject();
+        this.scopeType = (Class<? extends Annotation>) in.readObject();
+        Map<String, BeanInstanceBag<?>> map = (Map<String, BeanInstanceBag<?>>)in.readObject();
+        setComponentInstanceMap();
+        Iterator<String> it = map.keySet().iterator();
+        Contextual<?> contextual = null;
+        while(it.hasNext()) 
+        {
+            String id = (String)it.next();
+            if (id != null)
+            {
+                contextual = (Contextual<?>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
+            }
+            if (contextual != null) 
+            {
+                componentInstanceMap.put(contextual, map.get(id));
+            }
+        }
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException 
+    {
+        out.writeObject(this.type);
+        out.writeObject(this.scopeType);
+        Iterator<Contextual<?>> it = componentInstanceMap.keySet().iterator();
+        Map<String, BeanInstanceBag<?>> map = new HashMap<String, BeanInstanceBag<?>>();
+        while(it.hasNext()) 
+        {
+            Contextual<?>contextual = it.next();
+            String id = WebBeansUtil.isPassivationCapable(contextual);
+            if (id == null) 
+            {
+                throw new NotSerializableException("cannot serialize " + contextual.toString());
+            }
+            map.put(id, componentInstanceMap.get(contextual));
+        }
+        out.writeObject(map);
+    }
+    
 }
