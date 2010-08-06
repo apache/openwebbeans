@@ -397,6 +397,21 @@ Configuration Names and Their Default Values :
    Values        : false, true
    Default       : false
 
+- "org.apache.webbeans.spi.FailOverService"
+   Description   : Implementation of the org.apache.webbeans.spi.FailOverService. It is used for enabling passivation/failover beans.
+   Values        : org.apache.webbeans.web.failover.DefaultOwbFailOverService or CUSTOM
+   Default       : org.apache.webbeans.web.failover.DefaultOwbFailOverService
+
+- "org.apache.webbeans.web.failover.issupportfailover"
+   Description   : Support failover of beans or not
+   Values        : false, true
+   Default       : false
+
+- "org.apache.webbeans.web.failover.issupportpassivation"
+   Description   : Support passivation of beans or not
+   Values        : false, true
+   Default       : false
+
 ---------------------------------------------
 EJB Support via Embeddable OpenEJB Container in Tomcat 6.X
 ---------------------------------------------
