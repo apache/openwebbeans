@@ -105,7 +105,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         {
             logger.debug("Destroying a request : [{0}]", event.getServletRequest().getRemoteAddr());
         }
-        this.lifeCycle.getContextService().endContext(RequestScoped.class, event);        
 
         if (failoverService != null && 
                 failoverService.isSupportFailOver()) 
@@ -128,6 +127,8 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         {
             elStore.destroyELContextStore();
         }
+
+        this.lifeCycle.getContextService().endContext(RequestScoped.class, event);
     }
 
     /**
