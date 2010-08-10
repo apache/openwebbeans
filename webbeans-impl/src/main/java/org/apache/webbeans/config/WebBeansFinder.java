@@ -52,25 +52,25 @@ public final class WebBeansFinder
         return getSingletonInstance(singletonName, WebBeansUtil.getCurrentClassLoader());
     }
     
-    public static Object getSingletonInstance(String singletonName, ClassLoader classLoader)
+    public static Object getSingletonInstance(String singletonName, Object key)
     {
-        return singletonService.get(classLoader, singletonName);
+        return singletonService.get(key, singletonName);
     }
     
     
-    public static Object getExistingSingletonInstance(String singletonName, ClassLoader cl)
+    public static Object getExistingSingletonInstance(String singletonName, Object key)
     {
-        return singletonService.getExist(cl, singletonName);
+        return singletonService.getExist(key, singletonName);
     }
     
-    public static void clearInstances(ClassLoader classLoader)
+    public static void clearInstances(Object key)
     {
-        singletonService.clear(classLoader);
+        singletonService.clear(key);
     }
     
-    public static Object getSingletonClassLoader(Object object)
+    public static Object getSingletonClassLoader(Object singletonInstance)
     {
-        return singletonService.getKey(object);
+        return singletonService.getKey(singletonInstance);
     }
     
     // Thirdt pary frameworks can set singleton instance
