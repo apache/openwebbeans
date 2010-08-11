@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.context.creational;
 
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import java.io.Serializable;
 
@@ -25,7 +26,7 @@ public class BeanInstanceBag<T> implements Serializable
 {
     private final CreationalContext<T> beanCreationalContext;
     
-    private volatile T beanInstance;
+    private T beanInstance;
     
     public BeanInstanceBag(CreationalContext<T> beanCreationalContext)
     {
@@ -58,4 +59,19 @@ public class BeanInstanceBag<T> implements Serializable
         return beanInstance;
     }
 
+    /**
+     * Create the contextual instance in a thread safe fashion
+     * @param contextual
+     * @return the single contextual instance for the context
+     */
+    public synchronized T create(Contextual<T> contextual)
+    {
+        // we need to check again, maybe we got blocked by a previous invocation
+        if (beanInstance == null)
+        {
+            beanInstance = contextual.create(beanCreationalContext);
+        }
+
+        return beanInstance; 
+    }
 }

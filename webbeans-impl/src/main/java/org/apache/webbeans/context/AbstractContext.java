@@ -195,7 +195,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
      * {@inheritDoc} 
      */
     @SuppressWarnings("unchecked")
-    protected synchronized <T> T getInstance(Contextual<T> contextual, CreationalContext<T> creationalContext)
+    protected <T> T getInstance(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
         T instance = null;
         
@@ -205,9 +205,11 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
         {
             createContextualBag(contextual, creationalContext);
         }
-        
+
+        bag = (BeanInstanceBag<T>)componentInstanceMap.get(contextual);
+
         //Look for instance
-        instance = (T)componentInstanceMap.get(contextual).getBeanInstance();        
+        instance = bag.getBeanInstance();
         if (instance != null)
         {
             return instance;
@@ -225,16 +227,8 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
                 //No instance
                 if(instance == null)
                 {
-                    instance = contextual.create(creationalContext);    
+                    instance = bag.create(contextual);    
                 }
-                
-                //If succesfull creation
-                if (instance != null)
-                {
-                    bag = (BeanInstanceBag<T>)this.componentInstanceMap.get(contextual);
-                    bag.setBeanInstance(instance);
-                }
-                
             }            
         }
 
