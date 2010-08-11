@@ -43,7 +43,7 @@ public class DefaultContextsService extends AbstractContextsService
 
     private static ThreadLocal<SessionContext> sessionContext = null;
 
-    private static ThreadLocal<ApplicationContext> applicationContext = null;
+    private ApplicationContext applicationContext = null;
 
     private static ThreadLocal<ConversationContext> conversationContext = null;
     
@@ -56,7 +56,6 @@ public class DefaultContextsService extends AbstractContextsService
     {
         requestContext = new ThreadLocal<RequestContext>();
         sessionContext = new ThreadLocal<SessionContext>();
-        applicationContext = new ThreadLocal<ApplicationContext>();
         conversationContext = new ThreadLocal<ConversationContext>();
         dependentContext = new ThreadLocal<DependentContext>();
         singletonContext = new ThreadLocal<SingletonContext>();
@@ -209,14 +208,12 @@ public class DefaultContextsService extends AbstractContextsService
     {
         requestContext.set(null);
         sessionContext.set(null);
-        applicationContext.set(null);
         conversationContext.set(null);
         dependentContext.set(null);
         singletonContext.set(null);
         
         requestContext.remove();
         sessionContext.remove();
-        applicationContext.remove();
         conversationContext.remove();
         dependentContext.remove();
         singletonContext.remove();
@@ -226,7 +223,7 @@ public class DefaultContextsService extends AbstractContextsService
     
     private Context getCurrentApplicationContext()
     {        
-        return applicationContext.get();
+        return applicationContext;
     }
 
     
@@ -270,7 +267,7 @@ public class DefaultContextsService extends AbstractContextsService
         ApplicationContext ctx = new ApplicationContext();
         ctx.setActive(true);
         
-        applicationContext.set(ctx);
+        applicationContext = ctx;
     }
 
     
@@ -315,11 +312,8 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void stopApplicationContext(Object object)
     {
-        if(applicationContext.get() != null)
-        {
-            applicationContext.get().destroy();   
-        }
-        
+        applicationContext.destroy();
+        applicationContext = null;
     }
 
     

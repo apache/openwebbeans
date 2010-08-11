@@ -195,7 +195,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
      * {@inheritDoc} 
      */
     @SuppressWarnings("unchecked")
-    protected <T> T getInstance(Contextual<T> contextual, CreationalContext<T> creationalContext)
+    protected synchronized <T> T getInstance(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
         T instance = null;
         
