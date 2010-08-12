@@ -76,30 +76,37 @@ import org.apache.webbeans.util.SecurityUtil;
  */
 public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugin, DeploymentListener
 {
+    /**Logger instance*/
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(EjbPlugin.class);
+
+    /**OpenEJB container system*/
     private ContainerSystem containerSystem = null;
 
-    // OpenEJB assembler
+    /***OpenEJB assembler */
     private Assembler assembler;
-
-    private WebBeansLogger logger = WebBeansLogger.getLogger(EjbPlugin.class);
-
-    // List of deployed applications
+    
+    /**Deployed applications*/
     private final Set<AppInfo> deployedApplications = new CopyOnWriteArraySet<AppInfo>();
 
-    // TODO it should be Map<Class<?>,DeploymentInfo[]>
+    /**Stateless Beans*/
     private Map<Class<?>, DeploymentInfo> statelessBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
-
+    
+    /**Stateful Beans*/
     private Map<Class<?>, DeploymentInfo> statefulBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
 
+    /**Singleton Beans*/
     private Map<Class<?>, DeploymentInfo> singletonBeans = new ConcurrentHashMap<Class<?>, DeploymentInfo>();
-
-    // EJB Interface to instances
+    
+    /**EJB interface class name to proxy instance*/
     private Map<String, EJBInstanceProxy<?>> ejbInstances = new ConcurrentHashMap<String, EJBInstanceProxy<?>>();
 
+    /**Transaction service*/
     private static final TransactionService TRANSACTION_SERVICE = new OpenEJBTransactionService();
-
+    
+    /**Security service*/
     private static final SecurityService SECURITY_SERVICE = new OpenEJBSecurityService();
-
+    
+    /**JNDI Name strategy*/
     private final Map<String, JndiNameStrategy> nameStrategies = new TreeMap<String, JndiNameStrategy>();
 
     // This is here for standalone tests are correctly run
@@ -127,6 +134,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
             this.singletonBeans.clear();
             this.containerSystem = null;
             this.ejbInstances.clear();
+            this.nameStrategies.clear();
             this.assembler.removeDeploymentListener(this);
         }
         catch (Exception e)
@@ -228,8 +236,20 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
                 return;
             }
 
-            addBeanDeploymentInfos(statefulList.toArray(new DeploymentInfo[statefulList.size()]), SessionBeanType.STATEFUL);
-            addBeanDeploymentInfos(singletonList.toArray(new DeploymentInfo[singletonList.size()]), SessionBeanType.SINGLETON);
+            result = addBeanDeploymentInfos(statefulList.toArray(new DeploymentInfo[statefulList.size()]), SessionBeanType.STATEFUL);
+            if (!result)
+            {
+                deployedApplications.remove(appInfo);
+                return;
+            }
+            
+            
+            result = addBeanDeploymentInfos(singletonList.toArray(new DeploymentInfo[singletonList.size()]), SessionBeanType.SINGLETON);
+            if (!result)
+            {
+                deployedApplications.remove(appInfo);
+                return;
+            }            
         }
     }
 
@@ -339,6 +359,12 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     private boolean addBeanDeploymentInfos(DeploymentInfo[] deployments, SessionBeanType type)
     {
         boolean classLoaderEquality = false;
+        
+        if(deployments.length == 0)
+        {
+            return true;
+        }
+        
         for (DeploymentInfo deployment : deployments)
         {
             boolean inTest = Boolean.valueOf(SecurityUtil.doPrivilegedGetSystemProperty("EjbPlugin.test", "false"));
