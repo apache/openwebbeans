@@ -156,6 +156,7 @@ public final class EjbUtility
         WebBeansUtil.fireProcessObservableMethodBeanEvent(observerMethodsMap);
         WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessObserverMethod event observers for observer methods. Look at logs for further details");
 
+        manager.addBean(ejbBean);
         try
         {
             manager.addBean(WebBeansUtil.createNewBean(ejbBean));
@@ -164,7 +165,7 @@ public final class EjbUtility
         {
         }
         
-        manager.addBean(ejbBean);
+        
         manager.getBeans().addAll(producerMethodBeans);
         ejbBeanCreator.defineDisposalMethods();
         manager.getBeans().addAll(producerFieldBeans);
