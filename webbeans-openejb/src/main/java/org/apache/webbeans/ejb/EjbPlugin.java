@@ -285,7 +285,10 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
             }
         }
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     public <T> Bean<T> defineSessionBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent)
     {
         if (!isSessionBean(clazz))
@@ -323,7 +326,10 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
         return bean;
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     public boolean isSessionBean(Class<?> clazz)
     {
         // This is used in tests, because in reality containerSystem is not
@@ -355,7 +361,13 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
         return isSingletonBean(clazz) || isStatelessBean(clazz) || isStatefulBean(clazz);
     }
-
+    
+    /**
+     * Checks deployment.
+     * @param deployments ejb deployments
+     * @param type session bean type
+     * @return true if this deployment ok
+     */
     private boolean addBeanDeploymentInfos(DeploymentInfo[] deployments, SessionBeanType type)
     {
         boolean classLoaderEquality = false;
@@ -403,7 +415,10 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
         return classLoaderEquality;
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
     {
         if (isSessionBean(clazz))
@@ -412,26 +427,41 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isSingletonBean(Class<?> clazz)
     {
         return this.singletonBeans.containsKey(clazz);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isStatefulBean(Class<?> clazz)
     {
         return this.statefulBeans.containsKey(clazz);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isStatelessBean(Class<?> clazz)
     {
         return this.statelessBeans.containsKey(clazz);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext)
     {
         return EjbDefinitionUtility.defineEjbBeanProxy((OpenEjbBean<?>) bean, iface, creationalContext);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T getSupportedService(Class<T> serviceClass)
     {
@@ -447,6 +477,9 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean supportService(Class<?> serviceClass)
     {
@@ -458,6 +491,14 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         return false;
     }
 
+    /**
+     * Creates strategy for jndi naming.
+     * @param appInfo app info
+     * @param deployments deployments
+     * @param deployment deployment
+     * @return strategy
+     * @throws OpenEJBException if any exception
+     */
     public JndiNameStrategy createStrategy(AppInfo appInfo, List<DeploymentInfo> deployments, DeploymentInfo deployment) throws OpenEJBException
     {
         JndiNameStrategy strategy = nameStrategies.get(deployment.getModuleID());
@@ -495,7 +536,12 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
         return null;
     }
-
+    
+    /**
+     * Gets map of intfc --> ejb proxy
+     * @param deployment deployment info
+     * @return map of ejb proxy instance with interface
+     */
     @SuppressWarnings("unchecked")
     public Map<String, EJBInstanceProxy<?>> getEjbBindings(CoreDeploymentInfo deployment)
     {
