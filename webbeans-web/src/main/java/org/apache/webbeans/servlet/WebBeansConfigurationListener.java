@@ -216,20 +216,26 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         conversationManager.destroyConversationContextWithSessionId(event.getSession().getId());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public void sessionWillPassivate(HttpSessionEvent event) 
+    {
+        if (failoverService != null &&
+            failoverService.isSupportPassivation())
+        {
+            HttpSession session = event.getSession();
+            failoverService.sessionWillPassivate(session);
+        }
+
+    }
+
     @Override
     public void sessionDidActivate(HttpSessionEvent event)
     {
+        if (failoverService.isSupportFailOver() ||
+            failoverService.isSupportPassivation())
+        {
+            HttpSession session = event.getSession();
+            failoverService.restoreBeans(session);
+        }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void sessionWillPassivate(HttpSessionEvent event)
-    {
-    }
-
 }

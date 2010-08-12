@@ -31,8 +31,6 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionActivationListener;
-import javax.servlet.http.HttpSessionEvent;
 
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -45,8 +43,7 @@ import javassist.util.proxy.ProxyObjectOutputStream;
  * Use javassist Proxy streams to serialize and restore failover bean bag.
  * 
  */
-public class FailOverBagWrapper implements HttpSessionActivationListener, 
-        Serializable, Externalizable 
+public class FailOverBagWrapper implements Serializable, Externalizable 
 {
     /**Logger instance*/
     private static final WebBeansLogger logger = 
@@ -185,26 +182,4 @@ public class FailOverBagWrapper implements HttpSessionActivationListener,
         }
     }
 
-    @Override
-    public void sessionWillPassivate(HttpSessionEvent event) 
-    {
-        if (failoverService != null && 
-            failoverService.isSupportPassivation()) 
-        {
-            HttpSession session = event.getSession();
-            failoverService.sessionWillPassivate(session);
-        }
-        
-    }
-
-    @Override
-    public void sessionDidActivate(HttpSessionEvent event) 
-    {
-        if (failoverService.isSupportFailOver() || 
-            failoverService.isSupportPassivation()) 
-        {
-            HttpSession session = event.getSession();
-            failoverService.restoreBeans(session);
-        }
-    }
 }
