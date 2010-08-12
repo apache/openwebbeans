@@ -80,7 +80,8 @@ public class BeanInstanceBag<T> implements Serializable
                 beanInstance = contextual.create(beanCreationalContext);
             }
             
-        }finally
+        }
+        finally
         {
             this.lock.unlock();
         }
