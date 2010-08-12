@@ -21,12 +21,16 @@ package org.apache.webbeans.context.creational;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import java.io.Serializable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BeanInstanceBag<T> implements Serializable
 {
     private final CreationalContext<T> beanCreationalContext;
     
     private T beanInstance;
+    
+    private final Lock lock = new ReentrantLock();
     
     public BeanInstanceBag(CreationalContext<T> beanCreationalContext)
     {
@@ -64,14 +68,23 @@ public class BeanInstanceBag<T> implements Serializable
      * @param contextual
      * @return the single contextual instance for the context
      */
-    public synchronized T create(Contextual<T> contextual)
+    public T create(Contextual<T> contextual)
     {
-        // we need to check again, maybe we got blocked by a previous invocation
-        if (beanInstance == null)
+        try
         {
-            beanInstance = contextual.create(beanCreationalContext);
+            this.lock.lock();
+            
+            // we need to check again, maybe we got blocked by a previous invocation
+            if (beanInstance == null)
+            {
+                beanInstance = contextual.create(beanCreationalContext);
+            }
+            
+        }finally
+        {
+            this.lock.unlock();
         }
-
+        
         return beanInstance; 
     }
 }
