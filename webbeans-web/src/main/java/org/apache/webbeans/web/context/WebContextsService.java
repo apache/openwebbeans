@@ -340,6 +340,10 @@ public class WebContextsService extends AbstractContextsService
         //Singleton context
         singletonContext.set(null);
         singletonContext.remove();
+        
+        //Conversation context
+        conversationContext.set(null);
+        conversationContext.remove();
     }
 
     /**
