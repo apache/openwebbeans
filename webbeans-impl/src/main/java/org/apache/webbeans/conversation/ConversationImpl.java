@@ -159,7 +159,7 @@ public class ConversationImpl implements Conversation, Serializable
         else
         {
             logger.warn(OWBLogConst.WARN_0004, id);
-            throw new IllegalStateException();
+            throw new IllegalStateException(this.toString() + " has already ended");
         }
     }
     
@@ -312,6 +312,17 @@ public class ConversationImpl implements Conversation, Serializable
         }
         
         return true;
+    }
+    
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Conversation with id [ ");
+        builder.append(this.id);
+        builder.append(" ]");
+        
+        return builder.toString();
     }
 
 }
