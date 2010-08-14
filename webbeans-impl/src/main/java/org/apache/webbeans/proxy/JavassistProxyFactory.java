@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
@@ -59,10 +60,10 @@ public final class JavassistProxyFactory
 
     }
     
-    private Map<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
-    private Map<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
-    private Map<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
-    private Map<OwbBean<?>, Class<?>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
+    private ConcurrentMap<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
+    private ConcurrentMap<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
+    private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
+    private ConcurrentMap<OwbBean<?>, Class<?>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     
     public   Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
     {
@@ -100,7 +101,7 @@ public final class JavassistProxyFactory
         else
         {
             clazz = SecurityUtil.doPrivilegedCreateClass(factory);
-            ejbProxyClasses.put(bean, clazz);
+            ejbProxyClasses.putIfAbsent(bean, clazz);
         }
         
         return clazz;
@@ -136,7 +137,7 @@ public final class JavassistProxyFactory
                 ProxyFactory fact = createProxyFactory(bean);
 
                 proxyClass = getProxyClass(fact);
-                normalScopedBeanProxyClasses.put(bean, proxyClass);
+                normalScopedBeanProxyClasses.putIfAbsent(bean, proxyClass);
             }
             
             result = proxyClass.newInstance();
@@ -229,7 +230,7 @@ public final class JavassistProxyFactory
             {
                 ProxyFactory fact = createProxyFactory(bean);
                 proxyClass = getProxyClass(fact);
-                dependentScopedBeanProxyClasses.put(bean, proxyClass);
+                dependentScopedBeanProxyClasses.putIfAbsent(bean, proxyClass);
             }
             
             result = proxyClass.newInstance();
