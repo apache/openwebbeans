@@ -318,9 +318,8 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
             throw new IllegalArgumentException("Illegal EJB type with class : " + clazz.getName());
         }
 
-        OpenEjbBean<T> bean = new OpenEjbBean<T>(clazz);
+        OpenEjbBean<T> bean = new OpenEjbBean<T>(clazz, type);
         bean.setDeploymentInfo(info);
-        bean.setEjbType(type);
 
         EjbUtility.fireEvents(clazz, bean, processAnnotatedTypeEvent);
 

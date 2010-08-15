@@ -24,14 +24,13 @@ import java.util.List;
 
 import javax.ejb.Remove;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.naming.Context;
-import javax.naming.NamingException;
+import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.openejb.DeploymentInfo;
 import org.apache.openejb.InterfaceType;
-import org.apache.openejb.assembler.classic.JndiBuilder;
-import org.apache.openejb.loader.SystemInstance;
-import org.apache.openejb.spi.ContainerSystem;
+import org.apache.openejb.DeploymentInfo.BusinessLocalHome;
+import org.apache.openejb.core.CoreDeploymentInfo;
+import org.apache.openejb.core.ivm.EjbHomeProxyHandler;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 
 /**
@@ -48,9 +47,9 @@ public class OpenEjbBean<T> extends BaseEjbBean<T>
      * Creates a new instance of the session bean.
      * @param ejbClassType ebj class type
      */
-    public OpenEjbBean(Class<T> ejbClassType)
+    public OpenEjbBean(Class<T> ejbClassType, SessionBeanType type)
     {
-        super(ejbClassType);
+        super(ejbClassType, type);
     }
     
     /**
@@ -78,36 +77,14 @@ public class OpenEjbBean<T> extends BaseEjbBean<T>
     @SuppressWarnings("unchecked")
     protected T getInstance(CreationalContext<T> creationalContext)
     {
-        T instance = null;
-        
-        ContainerSystem containerSystem =  SystemInstance.get().getComponent(ContainerSystem.class);
-        Context jndiContext = containerSystem.getJNDIContext();
-        DeploymentInfo deploymentInfo = this.getDeploymentInfo();
-        try
+        List<Class> interfaces = new ArrayList<Class>();
+        for(Class clazz : getBusinessLocalInterfaces())
         {
-            if(iface != null)
-            {
-                InterfaceType type = deploymentInfo.getInterfaceType(iface);
-                if(!type.equals(InterfaceType.BUSINESS_LOCAL))
-                {
-                    throw new IllegalArgumentException("Interface type is not legal business local interface for session bean class : " + getReturnType().getName());
-                }   
-            }    
-            else
-            {
-                iface = this.deploymentInfo.getBusinessLocalInterface();
-            }
-            
-        String jndiName = "java:openejb/Deployment/" + JndiBuilder.format(deploymentInfo.getDeploymentID(), this.iface.getName()); 
-        instance = (T)this.iface.cast(jndiContext.lookup(jndiName));                             
-            
+            interfaces.add(clazz);
         }
-        catch(NamingException e)
-        {
-            throw new RuntimeException(e);
-        }        
-
-        return instance;
+        
+        BusinessLocalHome home = getBusinessLocalHome(interfaces);
+        return (T)home.create();
     }
 
     
@@ -192,6 +169,31 @@ public class OpenEjbBean<T> extends BaseEjbBean<T>
         }
         
         return toReturn;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private BusinessLocalHome getBusinessLocalHome(List<Class> interfaces)
+    {
+        if (getBusinessLocalInterfaces().size() == 0)
+        {
+            throw new IllegalStateException("This component has no business local interfaces: " 
+                    + ((CoreDeploymentInfo)this.deploymentInfo).getDeploymentID());
+        }
+        
+        if (interfaces.size() == 0)
+        {
+            throw new IllegalArgumentException("No interface classes were specified");
+        }
+       
+        for (Class<?> clazz : interfaces)
+        {
+            if (!getBusinessLocalInterfaces().contains(clazz))
+            {
+                throw new IllegalArgumentException("Not a business interface of this bean:" + clazz.getName());
+            }
+        }
+
+        return (BusinessLocalHome) EjbHomeProxyHandler.createHomeProxy(this.deploymentInfo, InterfaceType.BUSINESS_LOCAL_HOME, interfaces);
     }
     
 }

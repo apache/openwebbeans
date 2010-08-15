@@ -40,10 +40,7 @@ import org.apache.webbeans.util.ClassUtil;
 public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> implements EnterpriseBeanMarker
 {
     /**Session bean type*/
-    protected SessionBeanType ejbType;
-    
-    /**Injected reference local interface type*/
-    protected Class<?> iface = null;
+    protected final SessionBeanType ejbType;
     
     /** Map of proxy instances to the dependent SFSB they've acquired but not yet removed */
     private Map<Object, Object> dependentSFSBToBeRemoved = new ConcurrentHashMap<Object, Object>();
@@ -52,28 +49,18 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
      * Creates a new instance of the session bean.
      * @param ejbClassType ebj class type
      */
-    public BaseEjbBean(Class<T> ejbClassType)
+    public BaseEjbBean(Class<T> ejbClassType, SessionBeanType type)
     {
         super(WebBeansType.ENTERPRISE,ejbClassType);
-
+        
+        //type of the ejb
+        this.ejbType = type;
+        
         //Setting inherited meta data instance
         setInheritedMetaData();
     }
 
-    /**
-     * Sets local interface type.
-     * @param iface local interface type
-     */
-    public void setIface(Class<?> iface)
-    {
-        this.iface = iface;
-    }
-    
-    public Class<?> getIface()
-    {
-        return this.iface;
-    }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -157,15 +144,6 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
         }
     }
 
-    /**
-     * Sets session bean type.
-     * @param type session bean type
-     */
-    public void setEjbType(SessionBeanType type)
-    {
-        this.ejbType = type;
-        
-    }
     
     /**
      * Subclasses can override this.

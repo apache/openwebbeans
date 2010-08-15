@@ -47,14 +47,12 @@ public final class EjbDefinitionUtility
         creator.defineApiType();
     }
     
-    @SuppressWarnings({"unchecked","deprecation"})
+    @SuppressWarnings({"unchecked"})
     public static <T> T defineEjbBeanProxy(BaseEjbBean<T> bean, Class<?> iface, CreationalContext<?> creationalContext)
     {
         try
         {
-            T proxyInstance = null;
-            bean.setIface(iface);
-            
+            T proxyInstance = null;            
             Class<?> clazz = JavassistProxyFactory.getInstance().getEjbBeanProxyClass(bean);
             if(clazz == null)
             {
@@ -64,6 +62,7 @@ public final class EjbDefinitionUtility
             }
             
             proxyInstance = (T) ClassUtil.newInstance(clazz);
+            
             EjbBeanProxyHandler handler = new EjbBeanProxyHandler(bean, creationalContext);
             ((ProxyObject)proxyInstance).setHandler(handler);
             
