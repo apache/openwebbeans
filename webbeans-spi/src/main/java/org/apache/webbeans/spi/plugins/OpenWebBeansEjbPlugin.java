@@ -27,7 +27,7 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
  * 
  * @version $Rev$ $Date$
  */
-public interface OpenWebBeansEjbPlugin extends OpenWebBeansJavaEEPlugin
+public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
 {
     /**
      * Returns true if class is an session bean class false otherwise

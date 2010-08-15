@@ -29,5 +29,5 @@ package org.apache.webbeans.spi.plugins;
  */
 public interface OpenWebBeansWebPlugin extends OpenWebBeansPlugin
 {
-    
+    //Any future operations for web containers
 }

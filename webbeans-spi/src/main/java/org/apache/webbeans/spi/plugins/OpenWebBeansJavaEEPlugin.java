@@ -28,6 +28,7 @@ package org.apache.webbeans.spi.plugins;
  * @version $Rev$ $Date$
  *
  */
-public interface OpenWebBeansJavaEEPlugin extends OpenWebBeansWebPlugin
+public interface OpenWebBeansJavaEEPlugin extends OpenWebBeansPlugin
 {        
+    //Any future operations for java ee containers
 }
