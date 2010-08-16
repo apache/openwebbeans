@@ -63,7 +63,6 @@ import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.Stereotype;
-import javax.enterprise.inject.UnproxyableResolutionException;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -139,6 +138,7 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
@@ -169,6 +169,7 @@ import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
+import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnproxyableResolutionException;
 
 /**
  * Contains some utility methods used in the all project.
@@ -2021,37 +2022,51 @@ public final class WebBeansUtil
         {
             Set<Type> types = bean.getTypes();
 
+            ViolationMessageBuilder violationMessage = ViolationMessageBuilder.newViolation();
+
             for(Type type : types)
             {
                 Class<?> beanClass = ClassUtil.getClass(type);
 
                 if(!beanClass.isInterface() && beanClass != Object.class)
                 {
-                    boolean throwException = false;
-                    if(ClassUtil.isPrimitive(beanClass)
-                            || ClassUtil.isArray(beanClass))
+                    if(ClassUtil.isPrimitive(beanClass))
                     {
-                        throwException = true;
+                        violationMessage.addLine("It isn't possible to use a primitive type (" + beanClass.getName(), ")");
                     }
 
-                    if(!throwException)
+                    if(ClassUtil.isArray(beanClass))
+                    {
+                        violationMessage.addLine("It isn't possible to use an array type (", beanClass.getName(), ")");
+                    }
+
+                    if(!violationMessage.containsViolation())
                     {
                         Constructor<?> cons = ClassUtil.isContaintNoArgConstructor(beanClass);
 
-                        if (ClassUtil.isFinal(beanClass.getModifiers())
-                                || ClassUtil.hasFinalMethod(beanClass) ||
-                                (cons == null || ClassUtil.isPrivate(cons.getModifiers())))
+                        if (ClassUtil.isFinal(beanClass.getModifiers()))
                         {
-                            throwException = true;
+                            violationMessage.addLine(beanClass.getName(), " is a final class! CDI doesn't allow that.");
+                        }
+                        if (ClassUtil.hasFinalMethod(beanClass))
+                        {
+                            violationMessage.addLine(beanClass.getName(), " has final methods! CDI doesn't allow that.");
+                        }
+                        if (cons == null)
+                        {
+                            violationMessage.addLine(beanClass.getName(), " has no explicit no-arg constructor!",
+                                    "A public or protected constructor without args is required!");
+                        }
+                        else if (ClassUtil.isPrivate(cons.getModifiers()))
+                        {
+                            violationMessage.addLine(beanClass.getName(), " has a >private< no-arg constructor! CDI doesn't allow that.");
                         }
                     }
 
                     //Throw Exception
-                    if(throwException)
+                    if(violationMessage.containsViolation())
                     {
-                        throw new UnproxyableResolutionException("WebBeans with api type with normal scope " +
-                                "must be proxiable to inject, but class : " + beanClass.getName()
-                                + " is not proxiable type");
+                        throwUnproxyableResolutionException(violationMessage);
                     }
                 }
             }

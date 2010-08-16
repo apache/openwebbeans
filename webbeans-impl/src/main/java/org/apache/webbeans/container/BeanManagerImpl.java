@@ -42,7 +42,6 @@ import javax.enterprise.context.NormalScope;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.spi.*;
@@ -91,6 +90,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
+import static org.apache.webbeans.util.InjectionExceptionUtils.*;
 
 /**
  * Implementation of the {@link BeanManager} contract of the web beans
@@ -415,7 +415,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         if (set.size() > 1)
         {
-            throw new AmbiguousResolutionException("There are more than one WebBeans with name : " + name);
+            throwAmbiguousResolutionExceptionForBeanName(set, name);
         }
 
         component = (AbstractOwbBean<?>) set.iterator().next();
@@ -989,7 +989,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         if(set.size() > 0 && set.size() > 1)
         {
-            throw new AmbiguousResolutionException("Ambigious resolution");
+            throwAmbiguousResolutionException(set);
         }
         
         return (Bean<? extends X>)set.iterator().next();

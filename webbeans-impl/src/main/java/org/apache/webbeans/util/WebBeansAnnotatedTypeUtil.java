@@ -26,7 +26,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +40,6 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -80,6 +78,7 @@ import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.api.ResourceReference;
+import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedResolutionException;
 
 public final class WebBeansAnnotatedTypeUtil
 {
@@ -260,9 +259,7 @@ public final class WebBeansAnnotatedTypeUtil
                 Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
                 if (set.isEmpty())
                 {
-                    throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + 
-                                  " in class : " + declaredMethod.getDeclaringClass().getName() + ". Cannot find bean " + type + " with qualifier "
-                                  + Arrays.toString(annot));
+                    throwUnsatisfiedResolutionException(type, declaredMethod, annot);
                 }
                 
                 Bean<?> foundBean = set.iterator().next();
@@ -270,8 +267,7 @@ public final class WebBeansAnnotatedTypeUtil
 
                 if (foundBean == null || !(foundBean instanceof ProducerMethodBean))
                 {
-                    throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : "
-                                                             + annotatedMethod.getDeclaringType().getJavaClass() + "is not found");
+                    throwUnsatisfiedResolutionException(annotatedMethod.getDeclaringType().getJavaClass(), declaredMethod, annot);
                 }
 
                 pr = (ProducerMethodBean<?>) foundBean;

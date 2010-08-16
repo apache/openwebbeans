@@ -24,8 +24,6 @@ import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
@@ -33,6 +31,7 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+import static org.apache.webbeans.util.InjectionExceptionUtils.*;
 
 public final class ResolutionUtil
 {
@@ -92,38 +91,14 @@ public final class ResolutionUtil
     
     public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers, InjectionPoint injectionPoint)
     {
-        StringBuffer qualifierMessage = new StringBuffer("[");
-        
-        int i = 0;
-        for(Annotation annot : qualifiers)
-        {
-            i++;            
-            qualifierMessage.append(annot);
-            
-            if(i != qualifiers.length)
-            {                
-                qualifierMessage.append(",");
-            }
-        }
-        
-        qualifierMessage.append("]");
-        
         if (resolvedSet.isEmpty())
         {
-            StringBuffer message = new StringBuffer("Api type [" + type.getName() + "] is not found with the qualifiers ");            
-            message.append(qualifierMessage);
-
-            if (injectionPoint != null) 
-            { 
-                message.append(" for injection into " + injectionPoint.toString());
-            }
-            
-            throw new UnsatisfiedResolutionException(message.toString());
+            throwUnsatisfiedResolutionException(type, injectionPoint, qualifiers);
         }
 
         if (resolvedSet.size() > 1)
         {
-            throw new AmbiguousResolutionException("There is more than one api type with : " + type.getName() + " with qualifiers : " + qualifierMessage);
+            throwAmbiguousResolutionException(resolvedSet, type, qualifiers);
         }
 
         Bean<?> bean = resolvedSet.iterator().next();

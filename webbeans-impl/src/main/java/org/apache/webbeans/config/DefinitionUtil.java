@@ -28,7 +28,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,7 +39,6 @@ import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -83,6 +81,7 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedResolutionException;
 
 /**
  * Defines the web beans components common properties.
@@ -776,8 +775,7 @@ public final class DefinitionUtil
             Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
             if (set.isEmpty())
             {
-                throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + 
-                              " in class : " + clazz.getName() + ". Cannot find bean " + type + " with qualifier " + Arrays.toString(annot));
+                throwUnsatisfiedResolutionException(clazz, declaredMethod, annot);
             }
             
             Bean<?> bean = set.iterator().next();
@@ -785,8 +783,7 @@ public final class DefinitionUtil
 
             if (bean == null || !(bean instanceof ProducerMethodBean))
             {
-                throw new UnsatisfiedResolutionException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : "
-                                                         + clazz.getName() + "is not found");
+                throwUnsatisfiedResolutionException(clazz, declaredMethod);
             }
 
             else

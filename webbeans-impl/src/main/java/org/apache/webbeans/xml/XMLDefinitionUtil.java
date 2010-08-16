@@ -32,7 +32,6 @@ import javax.annotation.PreDestroy;
 import javax.decorator.Decorator;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Interceptor;
@@ -67,6 +66,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
+import static org.apache.webbeans.util.InjectionExceptionUtils.*;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -715,7 +715,7 @@ public final class XMLDefinitionUtil
      * @param errorMessage          error message used in exceptions
      * @throws WebBeansConfigurationException if more than one Disposal element
      *                                        exist for the given disposal method element
-     * @throws UnsatisfiedResolutionException if no producer method found for
+     * @throws javax.enterprise.inject.UnsatisfiedResolutionException if no producer method found for
      *                                        given disposal method
      */
     public static <T> void defineXMLDisposalMethod(XMLManagedBean<T> component, Method disposalMethod, Element disposalMethodElement, String errorMessage)
@@ -771,8 +771,7 @@ public final class XMLDefinitionUtil
 
                 if (producerComponent == null)
                 {
-                    throw new UnsatisfiedResolutionException(errorMessage + "Producer method component of the disposal method : "
-                                                             + disposalMethod.getName() + "is not found");
+                    throwUnsatisfiedResolutionException(errorMessage, disposalMethod);
                 }
 
                 producerComponent.setDisposalMethod(disposalMethod);

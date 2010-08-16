@@ -21,7 +21,6 @@ package org.apache.webbeans.cditest.owb;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.ResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -30,6 +29,7 @@ import org.apache.webbeans.cditest.CdiTestContainer;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.lifecycle.LifecycleFactory;
 import org.apache.webbeans.spi.ContainerLifecycle;
+import static org.apache.webbeans.util.InjectionExceptionUtils.*;
 
 /**
  * OpenWebBeans specific implementation of {@link CdiTestContainer}.
@@ -153,12 +153,12 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         Set<Bean<?>> beans = getBeanManager().getBeans(type, qualifiers);
         if (beans == null || beans.isEmpty()) 
         {
-            throw new ResolutionException("cannot find beans for class " + type.getCanonicalName());
+            throwBeanNotFoundException(type, qualifiers);
         }
 
         if (beans.size() > 1) 
         {
-            throw new AmbiguousResolutionException("cannot find beans for class " + type.getCanonicalName());
+            throwAmbiguousResolutionException(beans, type, qualifiers);
         }
 
         @SuppressWarnings("unchecked")
