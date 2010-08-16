@@ -123,7 +123,7 @@ public final class WebBeansDecoratorConfig
             Object decoratorInstance = null;
             @SuppressWarnings("unchecked")
             WebBeansDecorator<Object> decorator = (WebBeansDecorator<Object>) itList.next();            
-            decoratorInstance = ownerCreationalContext.getDependentDecorator(decorator);
+            decoratorInstance = ownerCreationalContext.getDependentDecorator(instance, decorator);
             if(decoratorInstance == null)
             {
                 CreationalContext<Object> creationalContext = manager.createCreationalContext(decorator);
@@ -136,6 +136,11 @@ public final class WebBeansDecoratorConfig
                 {
                     ownerCreationalContext.addDependent(instance, decorator, decoratorInstance);
                 }                
+            }
+            //We found an existing decorator instance, update the delegate
+            else
+            {
+                decorator.setDelegate(decoratorInstance, delegate);
             }
             
             decoratorStack.add(decoratorInstance);

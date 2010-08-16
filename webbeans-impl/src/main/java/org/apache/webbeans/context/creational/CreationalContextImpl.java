@@ -203,10 +203,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * @param decorator decorator bean
      * @return bean decorator instance
      */
-    public Object getDependentDecorator(Contextual<?> decorator)
+    public Object getDependentDecorator(Object ownerInstance, Contextual<?> decorator)
     {
         Asserts.assertNotNull(decorator, "Decorator parameter can not be null");
-        List<DependentCreationalContext<?>> dcs = getDependentDecorators();
+        List<DependentCreationalContext<?>> dcs = getDependentDecorators(ownerInstance);
         for(DependentCreationalContext<?> dc : dcs)
         {
             if(dc.getContextual().equals(decorator))
@@ -250,19 +250,23 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
      * Gets list of dependent decorators context.
      * @return list of dependent decorators context
      */
-    private List<DependentCreationalContext<?>> getDependentDecorators()
+    private List<DependentCreationalContext<?>> getDependentDecorators(Object ownerInstance)
     {
         List<DependentCreationalContext<?>> list = new ArrayList<DependentCreationalContext<?>>();
-        List<DependentCreationalContext<?>> values = new ArrayList<DependentCreationalContext<?>>();
-        if(values != null && values.size() > 0)
+
+        if (ownerInstance != null)
         {
-            Iterator<DependentCreationalContext<?>> it = values.iterator();
-            while(it.hasNext())
+            List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
+            if (values != null && values.size() > 0)
             {
-                DependentCreationalContext<?> dc = it.next();
-                if(dc.getDependentType().equals(DependentType.DECORATOR))
+                Iterator<DependentCreationalContext<?>> it = values.iterator();
+                while (it.hasNext())
                 {
-                    list.add(dc);
+                    DependentCreationalContext<?> dc = it.next();
+                    if (dc.getDependentType().equals(DependentType.DECORATOR))
+                    {
+                        list.add(dc);
+                    }
                 }
             }
         }
