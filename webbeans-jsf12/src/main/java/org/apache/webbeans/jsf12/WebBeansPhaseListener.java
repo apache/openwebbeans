@@ -55,7 +55,7 @@ public class WebBeansPhaseListener implements PhaseListener
         }
         
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE) ||
-                JSFUtil.getCurrentFacesContext().getResponseComplete())
+                phaseEvent.getFacesContext().getResponseComplete())
         {
             ConversationManager conversationManager = ConversationManager.getInstance();
             Conversation conversation = conversationManager.getConversationBeanReference();

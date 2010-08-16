@@ -50,7 +50,7 @@ public class WebBeansPhaseListener implements PhaseListener
     public void afterPhase(PhaseEvent phaseEvent)
     {
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE) ||
-                JSFUtil.getCurrentFacesContext().getResponseComplete())
+                phaseEvent.getFacesContext().getResponseComplete())
         {
             if(!JSFUtil.isOwbApplication())
             {
