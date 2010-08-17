@@ -852,8 +852,7 @@ public final class DefinitionUtil
     {
 
         Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
-        boolean useOwbSpecificInjection = OpenWebBeansConfiguration.getInstance().isOwbSpecificFieldInjection();
-            
+
         if (fields.length != 0)
         {
             for (Field field : fields)
@@ -868,23 +867,17 @@ public final class DefinitionUtil
                     }
                 }                
                                 
-                if(!useOwbSpecificInjection)
+                if(!field.isAnnotationPresent(Inject.class))
                 {
-                    if(!field.isAnnotationPresent(Inject.class))
-                    {
-                        continue;
-                    }                       
+                    continue;
                 }
-                
+
                 Annotation[] anns = field.getDeclaredAnnotations();
 
                 // Injected fields can not be @Produces
                 if (AnnotationUtil.hasAnnotation(anns, Produces.class))
                 {
-                    if(!useOwbSpecificInjection)
-                    {
-                        throw new WebBeansConfigurationException("Injection fields can not be annotated with @Produces");
-                    }
+                    throw new WebBeansConfigurationException("Injection fields can not be annotated with @Produces");
                 }
 
                 Annotation[] qualifierAnns = AnnotationUtil.getQualifierAnnotations(anns);

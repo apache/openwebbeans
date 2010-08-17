@@ -65,7 +65,6 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -341,17 +340,13 @@ public final class WebBeansAnnotatedTypeUtil
     public static <X> void defineInjectedFields(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
     {
         Set<AnnotatedField<? super X>> annotatedFields = annotatedType.getFields();   
-        boolean useOwbSpecificInjection = OpenWebBeansConfiguration.getInstance().isOwbSpecificFieldInjection();
         for(AnnotatedField<? super X> annotatedField: annotatedFields)
         {
-            if(!useOwbSpecificInjection)
+            if(!annotatedField.isAnnotationPresent(Inject.class))
             {
-                if(!annotatedField.isAnnotationPresent(Inject.class))
-                {
-                    continue;
-                }                       
+                continue;
             }
-            
+
             if (annotatedField.isAnnotationPresent(Produces.class) || annotatedField.isAnnotationPresent(Delegate.class))
             {
                 continue;

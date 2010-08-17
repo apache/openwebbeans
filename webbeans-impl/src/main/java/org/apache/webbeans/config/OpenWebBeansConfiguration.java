@@ -18,9 +18,6 @@
  */
 package org.apache.webbeans.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -46,11 +43,7 @@ public class OpenWebBeansConfiguration
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansConfiguration.class);
 
     /**Default configuration files*/
-    private final static String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-default.properties";
-    private final static String CONFIG_EE_COMMON_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-ee-common.properties";
-    private final static String CONFIG_EE_WEB_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-ee-web.properties";
-    private final static String CONFIG_JMS_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-jms.properties";
-    private final static String CONFIG_JSF_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans-jsf.properties";
+    private final static String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
     
     /**Application specified file*/
     private final static String CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
@@ -72,10 +65,6 @@ public class OpenWebBeansConfiguration
     /**Use OWB Specific XML Configuration or Strict Spec XML*/
     @Deprecated //Not use any more 
     public static final String USE_OWB_SPECIFIC_XML_CONFIGURATION = "org.apache.webbeans.useOwbSpecificXmlConfig";
-    
-    /**Use OWB Specific Field Injection*/
-    @Deprecated //Not use anymore
-    public static final String USE_OWB_SPECIFIC_FIELD_INJECTION = "org.apache.webbeans.fieldInjection.useOwbSpecificInjection";    
     
     /**Use EJB Discovery or not*/
     public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.useEjbMetaDataDiscoveryService";
@@ -140,7 +129,7 @@ public class OpenWebBeansConfiguration
     {
         parseConfiguration();
         
-        logger.debug("Overriden properties from System prpoerties");
+        logger.debug("Overriding properties from System properties");
         
         //Look for System properties
         loadFromSystemProperties();        
@@ -223,72 +212,13 @@ public class OpenWebBeansConfiguration
      */
     public synchronized void parseConfiguration() throws WebBeansConfigurationException
     {
-        Properties newConfigProperties = new Properties();
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        
-        InputStream is = loader.getResourceAsStream(DEFAULT_CONFIG_PROPERTIES_NAME);
-        load(is, newConfigProperties);
-        
-        is = loader.getResourceAsStream(CONFIG_JMS_PROPERTIES_NAME);
-        load(is, newConfigProperties);
-
-        is = loader.getResourceAsStream(CONFIG_JSF_PROPERTIES_NAME);
-        load(is, newConfigProperties);
-
-        is = loader.getResourceAsStream(CONFIG_EE_COMMON_PROPERTIES_NAME);
-        load(is, newConfigProperties);
-
-        is = loader.getResourceAsStream(CONFIG_EE_WEB_PROPERTIES_NAME);
-        load(is, newConfigProperties);
-
-        // and now overload those settings with the ones from the more specialized version (if available)
-        
-        URL configUrl = loader.getResource(CONFIG_PROPERTIES_NAME);
-        if (configUrl == null)
-        {
-            logger.info(OWBLogConst.TEXT_CONFIG_NOT_FOUND, CONFIG_PROPERTIES_NAME);
-        }
-        else
-        {
-            logger.info(OWBLogConst.TEXT_CONFIG_FOUND,  CONFIG_PROPERTIES_NAME, configUrl);
-
-            is = loader.getResourceAsStream(CONFIG_PROPERTIES_NAME);
-            load(is, newConfigProperties);
-        }
+        Properties newConfigProperties = PropertyLoader.getProperties(DEFAULT_CONFIG_PROPERTIES_NAME);
 
         // set the new one as perfect fit.
         configProperties = newConfigProperties;
     }
     
-    private void load(InputStream is, Properties newConfigProperties)
-    {
-        try
-        {
-            if(is != null)
-            {
-                newConfigProperties.load(is);   
-            }
-        }
-        catch (IOException ioEx)
-        {
-            throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.EDCONF_FAIL), ioEx);
-        }       
-        finally
-        {
-            if(is != null)
-            {
-                try
-                {
-                    is.close();
-                }
-                catch(Exception e)
-                {
-                     // do nothing
-                }
-            }
-        }
-    }
-    
+
     /**
      * Gets property.
      * @param key
@@ -319,18 +249,6 @@ public class OpenWebBeansConfiguration
     public synchronized void setProperty(String key, Object value)
     {
         configProperties.put(key, value);
-    }
-    
-    /**
-     * Returns true if owb specific injection
-     * false otherwise.
-     * @return true if owb specific injection
-     */
-    public boolean isOwbSpecificFieldInjection()
-    {
-        String value = getProperty(USE_OWB_SPECIFIC_FIELD_INJECTION);
-        
-        return Boolean.valueOf(value);
     }
     
     /**
