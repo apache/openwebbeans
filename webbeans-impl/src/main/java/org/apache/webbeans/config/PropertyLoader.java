@@ -96,7 +96,11 @@ public class PropertyLoader
         Enumeration<URL> propertyUrls = cl.getResources(propertyFileName);
         if (propertyUrls == null || !propertyUrls.hasMoreElements())
         {
-            logger.info("could not find any property files with name " + propertyFileName);
+            if(logger.wblWillLogInfo())
+            {
+                logger.info("could not find any property files with name " + propertyFileName);   
+            }
+            
             return null;
         }
 
@@ -115,7 +119,10 @@ public class PropertyLoader
 
                 // a bit debugging output
                 int ordinal = getConfigurationOrdinal(prop);
-                logger.info("loading properties with ordinal " + ordinal + " from file " + propertyUrl.getFile());
+                if(logger.wblWillLogDebug())
+                {
+                    logger.debug("loading properties with ordinal " + ordinal + " from file " + propertyUrl.getFile());   
+                }
             }
             finally
             {
@@ -196,7 +203,7 @@ public class PropertyLoader
         Properties mergedProperties = new Properties();
         for (Properties p : sortedProperties)
         {
-            for (Map.Entry entry : p.entrySet())
+            for (Map.Entry<?,?> entry : p.entrySet())
             {
                 String key = (String) entry.getKey();
                 String value = (String) entry.getValue();
