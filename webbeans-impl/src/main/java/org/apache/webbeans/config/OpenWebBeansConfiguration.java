@@ -25,17 +25,15 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.SecurityUtil;
 
 /**
- * This class performs a lookup of various configuration properties 
- * There are 2 different configuration files
- * <ol>
- *  <li><code>META-INF/openwebbeans.properties</code> contains the currently used configuration</li>
- *  <li><code>META-INF/openwebbeans-default.properties</code> contains all default values</li>
- * </ol>
+ * Defines configuration for OpenWebBeans.
  * 
- * Both configuration files will be loaded via the ClassLoader. 
- * The <code>META-INF/openwebbeans.properties</code> doesn't have to contain the full set of
- * available configuration properties. If it doesn't contain a specific property, 
- * the value will be looked up in <code>META-INF/openwebbeans-default.properties<code>
+ * The algorithm is easy:
+ * <ul>
+ * <li>Load all properties you can find with the name (META-INF/openwebbeans/openwebbeans.properties),
+ * <li>Sort them via configuration.ordinal in ascending order,
+ * <li>Overload them as we do already,
+ * <li>Use the sorted list of properties.
+ * </ul>
  */
 public class OpenWebBeansConfiguration
 {
@@ -44,9 +42,6 @@ public class OpenWebBeansConfiguration
 
     /**Default configuration files*/
     private final static String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
-    
-    /**Application specified file*/
-    private final static String CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
     
     /**Property of application*/
     private Properties configProperties = new Properties();
