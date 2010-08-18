@@ -215,8 +215,11 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void destroy(T instance, CreationalContext<T> creationalContext)
     {
         try
-        {  
-            logger.debug("Destroying instance : [{0}]", this);
+        {
+            if (logger.wblWillLogDebug())
+            {
+                logger.debug("Destroying instance : [{0}]", this);
+            }
             
             InjectionTargetWrapper<T> wrapper = getManager().getInjectionTargetWrapper(this);
             if(wrapper != null)
