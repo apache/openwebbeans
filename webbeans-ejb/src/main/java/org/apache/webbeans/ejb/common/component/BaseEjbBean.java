@@ -24,12 +24,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -118,28 +120,48 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     @Override
     protected void destroyComponentInstance(T instance, CreationalContext<T> creational)
     {
-        if ((this.getScope() == Dependent.class) && (getEjbType().equals(SessionBeanType.STATEFUL)))
+        if (getEjbType().equals(SessionBeanType.STATEFUL))
         {
-            try
+            if ((this.getScope() == Dependent.class))
             {
-                Object ejbInstance = getDependentSFSBForProxy(instance);
+                try
+                {
+                    Object ejbInstance = getDependentSFSBForProxy(instance);
+                    if (ejbInstance != null)
+                    {
+                        List<Method> methods = getRemoveMethods();
+                        if (methods.size() > 0)
+                        {
+                            // FIXME: This needs to call an API from the EJB
+                            // container to remove the EJB instance directly,
+                            // not via a remove method.  For now, just call 1 
+                            // remove method directly on the EJB
+                            ClassUtil.callInstanceMethod(methods.get(0), ejbInstance, ClassUtil.OBJECT_EMPTY);
+                        }
+                    }
+                }
+                finally
+                {
+                    removeDependentSFSB(instance);
+                }
+            }
+            else // normal scope  
+            { 
+                // The EjbBeanProxyHandler may not have actually obtained an EJB for this normal-scope Bean.
+                Context webbeansContext = BeanManagerImpl.getManager().getContext(this.getScope());
+                Object ejbInstance = webbeansContext.get(this);
                 if (ejbInstance != null)
                 {
                     List<Method> methods = getRemoveMethods();
-                    if (methods.size() > 0)
-                    {
+                    if (methods.size() > 0) 
+                    {   
                         // FIXME: This needs to call an API from the EJB
-                        // container to remove the EJB instance directly, not
-                        // via a remove method
-                        // For now, just call 1 remove method directly on the
-                        // EJB
+                        // container to remove the EJB instance directly,
+                        // not via a remove method.  For now, just call 1 
+                        // remove method directly on the EJB
                         ClassUtil.callInstanceMethod(methods.get(0), ejbInstance, ClassUtil.OBJECT_EMPTY);
                     }
                 }
-            }
-            finally
-            {
-                removeDependentSFSB(instance);
             }
         }
     }
