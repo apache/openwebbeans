@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.Remove;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.SessionBeanType;
 
@@ -121,56 +120,9 @@ public class OpenEjbBean<T> extends BaseEjbBean<T>
     @Override
     public List<Method> getRemoveMethods()
     {
-        // Should we delegate to super and merge both?
-        return findRemove(deploymentInfo.getBeanClass(), deploymentInfo.getBusinessLocalInterface());
+        return this.deploymentInfo.getRemoveMethods();
     }
-    
-    /**
-     * Find all methods annotated with
-     * 
-     * @Remove into the bean implementation class and store the equivalent
-     *         method of the interface into the removes Map
-     * @param beanClass : the bean implementation class
-     * @param beanInterface : the bean interface class
-     */
-    @SuppressWarnings("unchecked")
-    private final List<Method> findRemove(Class beanClass, Class beanInterface)
-    {
-        List<Method> toReturn = new ArrayList<Method>();
         
-        // Get all the public methods of the bean class and super class
-        Method[] methods = beanClass.getMethods();
-
-        // Search for methods annotated with @Remove
-        for (Method method : methods)
-        {
-            Remove annotation = method.getAnnotation(Remove.class);
-            if (annotation != null)
-            {
-                // Get the corresponding method into the bean interface
-                Method interfaceMethod;
-                try
-                {
-                    interfaceMethod = beanInterface.getMethod(method.getName(), 
-                                                            method.getParameterTypes());
-                    
-                    toReturn.add(interfaceMethod);
-                }
-                catch (SecurityException e)
-                {
-                    e.printStackTrace();
-                }
-                catch (NoSuchMethodException e)
-                {
-                    // The method can not be into the interface in which case we
-                    // don't wonder of
-                }
-            }
-        }
-        
-        return toReturn;
-    }
-    
     @SuppressWarnings("unchecked")
     private BusinessLocalHome getBusinessLocalHome(List<Class> interfaces)
     {
