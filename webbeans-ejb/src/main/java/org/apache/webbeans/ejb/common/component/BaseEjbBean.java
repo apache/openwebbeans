@@ -129,15 +129,7 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
                     Object ejbInstance = getDependentSFSBForProxy(instance);
                     if (ejbInstance != null)
                     {
-                        List<Method> methods = getRemoveMethods();
-                        if (methods.size() > 0)
-                        {
-                            // FIXME: This needs to call an API from the EJB
-                            // container to remove the EJB instance directly,
-                            // not via a remove method.  For now, just call 1 
-                            // remove method directly on the EJB
-                            ClassUtil.callInstanceMethod(methods.get(0), ejbInstance, ClassUtil.OBJECT_EMPTY);
-                        }
+                        destroyStatefulSessionBeanInstance(instance, ejbInstance);
                     }
                 }
                 finally
@@ -152,21 +144,30 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
                 Object ejbInstance = webbeansContext.get(this);
                 if (ejbInstance != null)
                 {
-                    List<Method> methods = getRemoveMethods();
-                    if (methods.size() > 0) 
-                    {   
-                        // FIXME: This needs to call an API from the EJB
-                        // container to remove the EJB instance directly,
-                        // not via a remove method.  For now, just call 1 
-                        // remove method directly on the EJB
-                        ClassUtil.callInstanceMethod(methods.get(0), ejbInstance, ClassUtil.OBJECT_EMPTY);
-                    }
+                    destroyStatefulSessionBeanInstance(instance, ejbInstance);
                 }
             }
         }
     }
 
+    /**
+     * Called when we must ask the container to remove a specific
+     * @param proxyInstance The contextual reference 
+     * @param ejbInstance The underlying EJB instance to be removed
+     */
     
+    protected void destroyStatefulSessionBeanInstance(T proxyInstance, Object ejbInstance)
+    {
+        List<Method> methods = getRemoveMethods();
+        if (methods.size() > 0) 
+        {   
+            // FIXME: This needs to call an API from the EJB
+            // container to remove the EJB instance directly,
+            // not via a remove method.  For now, just call 1 
+            // remove method directly on the EJB
+            ClassUtil.callInstanceMethod(methods.get(0), ejbInstance, ClassUtil.OBJECT_EMPTY);
+        }
+    }
     /**
      * Subclasses can override this.
      * @return remove methods
