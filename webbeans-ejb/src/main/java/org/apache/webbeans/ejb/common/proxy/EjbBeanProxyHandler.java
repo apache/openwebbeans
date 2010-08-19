@@ -58,11 +58,14 @@ public class EjbBeanProxyHandler implements MethodHandler
     /**Proxy ejb bean instance*/
     private BaseEjbBean<?> ejbBean;
     
+    /**Dependent ejb instance*/
     private Object dependentEJB;
+    
+    /**Scope is dependent*/
     private boolean isDependent = false;
     
     /**Creational Context*/
-    private transient CreationalContext<?> creationalContext;
+    private CreationalContext<?> creationalContext;
     
     /**
      * Creates a new instance.
@@ -280,6 +283,10 @@ public class EjbBeanProxyHandler implements MethodHandler
             s.writeObject(null);
             logger.warn(OWBLogConst.WARN_0015, this.ejbBean);
         }
+        
+        s.writeBoolean(this.isDependent);
+        s.writeObject(this.creationalContext);
+        s.writeObject(this.dependentEJB);
     }
     
     /**
@@ -295,6 +302,10 @@ public class EjbBeanProxyHandler implements MethodHandler
         {
             this.ejbBean = (BaseEjbBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(passivationId);
         }
+        
+        this.isDependent = s.readBoolean();
+        this.creationalContext = (CreationalContext<?>)s.readObject();
+        this.dependentEJB = s.readObject();
     }
     
 }
