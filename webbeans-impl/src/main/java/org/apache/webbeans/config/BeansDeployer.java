@@ -51,8 +51,10 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.corespi.ServiceLoader;
+import org.apache.webbeans.corespi.se.DefaultJndiService;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.deployment.StereoTypeManager;
@@ -137,7 +139,17 @@ public class BeansDeployer
 
                 // Bind manager
                 JNDIService service = ServiceLoader.getService(JNDIService.class);
-                service.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, BeanManagerImpl.getManager());
+                
+                //Default jndi is just a map
+                if(service instanceof DefaultJndiService)
+                {
+                    service.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, new InjectableBeanManager());
+                }
+                //Assume, actual JNDI implementation
+                else
+                {
+                    service.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, BeanManagerImpl.getManager().getReference());   
+                }
 
                 // Register Manager built-in component
                 BeanManagerImpl.getManager().addBean(WebBeansUtil.getManagerBean());
