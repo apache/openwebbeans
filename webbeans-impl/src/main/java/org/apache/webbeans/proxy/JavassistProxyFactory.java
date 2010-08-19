@@ -63,7 +63,8 @@ public final class JavassistProxyFactory
     private ConcurrentMap<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     private ConcurrentMap<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
-    private ConcurrentMap<OwbBean<?>, Class<?>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
+    // second level map is indexed on local interface
+    private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();    
     
     public   Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
     {
@@ -76,7 +77,6 @@ public final class JavassistProxyFactory
         return aef;
     }
     
-    
     public void clear()
     {
         normalScopedBeanProxyClasses.clear();
@@ -84,27 +84,60 @@ public final class JavassistProxyFactory
         interceptorProxyClasses.clear();
         ejbProxyClasses.clear();
     }
-    
-    public  Class<?> getEjbBeanProxyClass(OwbBean<?> bean)
+    /**
+     * Provides the proxy for the given bean and interface, if defined
+     * 
+     * @param bean the contextual representing the EJB
+     * @param iface the injected business local interface
+     * @return the proxy Class if one has been defined, else null
+     */
+    public Class<?> getEjbBeanProxyClass(OwbBean<?> bean, Class<?> iface)
     {
-        return ejbProxyClasses.get(bean);
+        Class<?> proxyClass = null;
+        ConcurrentMap<Class<?>, Class<?>> typeToProxyClassMap = ejbProxyClasses.get(bean);
+        if (typeToProxyClassMap != null)
+        {
+            proxyClass = typeToProxyClassMap.get(iface);
+        }
+        return proxyClass;
     }
-    
 
-    public  Class<?> defineEjbBeanProxyClass(OwbBean<?> bean, ProxyFactory factory)
+    /**
+     * Defines the proxy for the given bean and iface using callers factory. Due
+     * to races with the concurrentmap, this might sometimes create additional
+     * javassist-defined classes that are not used by the caller and not stored
+     * in the map. Synchronizing the entire method, and getEjbBeanProxyClass, on
+     * ejbProxyClasses is an alternative.
+     * 
+     * @param bean the contextual representing the EJB
+     * @param iface the injected business local interface
+     * @param factory
+     * @return
+     */
+    public Class<?> defineEjbBeanProxyClass(OwbBean<?> bean, Class<?> iface, ProxyFactory factory)
     {
-        Class<?> clazz = ejbProxyClasses.get(bean);
-        if(clazz != null)
+        Class<?> proxyClass = null;
+
+        ConcurrentMap<Class<?>, Class<?>> typeToProxyClassMap = ejbProxyClasses.get(bean);
+        if (typeToProxyClassMap == null)
         {
-            return clazz;
+            typeToProxyClassMap = new ConcurrentHashMap<Class<?>, Class<?>>();
+            ConcurrentMap<Class<?>, Class<?>> existingMap = ejbProxyClasses.putIfAbsent(bean, typeToProxyClassMap);
+            
+            // use the map that beat us, because our new one definitely had no classes in it.
+            typeToProxyClassMap = (existingMap != null) ? existingMap : typeToProxyClassMap; 
         }
-        else
+
+        proxyClass = typeToProxyClassMap.get(iface);
+
+        if (proxyClass == null)
         {
-            clazz = SecurityUtil.doPrivilegedCreateClass(factory);
-            ejbProxyClasses.putIfAbsent(bean, clazz);
+            proxyClass = SecurityUtil.doPrivilegedCreateClass(factory);
+            typeToProxyClassMap.putIfAbsent(iface, proxyClass);
+            // don't care if we were beaten in updating the iface->proxyclass map
         }
-        
-        return clazz;
+
+        return proxyClass;
     }
     
     public  Class<?> createAbstractDecoratorProxyClass(OwbBean<?> bean)

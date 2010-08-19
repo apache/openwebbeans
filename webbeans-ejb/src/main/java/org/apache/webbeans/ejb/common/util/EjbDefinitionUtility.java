@@ -53,12 +53,12 @@ public final class EjbDefinitionUtility
         try
         {
             T proxyInstance = null;            
-            Class<?> clazz = JavassistProxyFactory.getInstance().getEjbBeanProxyClass(bean);
+            Class<?> clazz = JavassistProxyFactory.getInstance().getEjbBeanProxyClass(bean, iface);
             if(clazz == null)
             {
                 ProxyFactory factory = new ProxyFactory();
                 factory.setInterfaces(new Class[]{iface});
-                clazz = JavassistProxyFactory.getInstance().defineEjbBeanProxyClass(bean, factory);
+                clazz = JavassistProxyFactory.getInstance().defineEjbBeanProxyClass(bean, iface, factory);
             }
             
             proxyInstance = (T) ClassUtil.newInstance(clazz);
