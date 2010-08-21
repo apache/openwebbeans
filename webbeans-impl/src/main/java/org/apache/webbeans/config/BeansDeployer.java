@@ -96,7 +96,7 @@ import org.apache.webbeans.xml.XMLSpecializesManager;
 public class BeansDeployer
 {
     //Logger instance
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(BeansDeployer.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(BeansDeployer.class);
 
     /**Deployment is started or not*/
     protected boolean deployed = false;

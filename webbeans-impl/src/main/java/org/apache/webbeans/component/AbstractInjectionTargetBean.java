@@ -66,7 +66,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> implements InjectionTargetBean<T>
 {
     /** Logger instance */
-    private final static WebBeansLogger log = WebBeansLogger.getLogger(AbstractInjectionTargetBean.class);
+    private final WebBeansLogger log = WebBeansLogger.getLogger(AbstractInjectionTargetBean.class);
 
     /** Bean observable method */
     private Set<Method> observableMethods = new HashSet<Method>();

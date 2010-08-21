@@ -36,7 +36,7 @@ import org.scannotation.WarUrlFinder;
  */
 public class WebScannerService extends AbstractMetaDataDiscovery
 {
-    private WebBeansLogger logger = WebBeansLogger.getLogger(WebScannerService.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(WebScannerService.class);
 
     private boolean configure = false;
 

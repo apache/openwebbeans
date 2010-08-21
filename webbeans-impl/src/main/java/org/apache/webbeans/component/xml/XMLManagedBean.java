@@ -43,7 +43,7 @@ import org.apache.webbeans.util.SecurityUtil;
 public class XMLManagedBean<T> extends ManagedBean<T>
 {
     /**Logger instance*/
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(XMLManagedBean.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(XMLManagedBean.class);
 
     /** Constructor injection point decleration */
     private XMLInjectableConstructor<T> injectableConstructor = null;

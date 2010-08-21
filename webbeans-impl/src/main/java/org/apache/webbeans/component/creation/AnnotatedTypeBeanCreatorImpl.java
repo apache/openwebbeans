@@ -29,7 +29,7 @@ import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
 public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(AnnotatedTypeBeanCreatorImpl.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(AnnotatedTypeBeanCreatorImpl.class);
 
     public AnnotatedTypeBeanCreatorImpl(ManagedBean<T> managedBean)
     {

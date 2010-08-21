@@ -44,7 +44,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class InterceptorDataImpl implements InterceptorData
 {
     //Logger instance
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorDataImpl.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorDataImpl.class);
     
     /** Around invokes method */
     private Method aroundInvoke = null;

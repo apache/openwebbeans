@@ -57,7 +57,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class AbstractInjectable implements Injectable
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(AbstractInjectable.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(AbstractInjectable.class);
     
     /** Owner bean of the injection point*/
     protected OwbBean<?> injectionOwnerBean;

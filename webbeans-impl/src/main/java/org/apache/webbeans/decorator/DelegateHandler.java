@@ -35,7 +35,7 @@ import javassist.util.proxy.MethodHandler;
 
 public class DelegateHandler implements MethodHandler
 {
-    private transient static WebBeansLogger logger = WebBeansLogger.getLogger(DelegateHandler.class);
+    private transient WebBeansLogger logger = WebBeansLogger.getLogger(DelegateHandler.class);
 
     private transient List<Object> decorators;
     private transient int position = 0;

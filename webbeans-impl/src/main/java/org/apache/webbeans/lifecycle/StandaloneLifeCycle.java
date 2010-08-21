@@ -31,16 +31,15 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class StandaloneLifeCycle extends AbstractLifeCycle
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneLifeCycle.class);
-        
     public StandaloneLifeCycle(Properties properties, WebBeansLogger logger)
     {
-        super(properties, logger);        
+        super(properties);
+        this.logger = logger;
     }
     
     public StandaloneLifeCycle()
     {
-        this(null, logger);        
+        this(null, WebBeansLogger.getLogger(StandaloneLifeCycle.class));        
     }
     
     @Override

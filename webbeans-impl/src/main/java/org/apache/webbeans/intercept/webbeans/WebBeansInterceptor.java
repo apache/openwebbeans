@@ -74,7 +74,7 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
  */
 public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInterceptor<T>
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptor.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptor.class);
 
     /** InterceptorBindingTypes exist on the interceptor class */
     private Map<Class<? extends Annotation>, Annotation> interceptorBindingSet = new HashMap<Class<? extends Annotation>, Annotation>();

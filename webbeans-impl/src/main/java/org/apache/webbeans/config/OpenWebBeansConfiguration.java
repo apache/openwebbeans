@@ -38,7 +38,7 @@ import org.apache.webbeans.util.SecurityUtil;
 public class OpenWebBeansConfiguration
 {
     /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansConfiguration.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansConfiguration.class);
 
     /**Default configuration files*/
     private final static String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";

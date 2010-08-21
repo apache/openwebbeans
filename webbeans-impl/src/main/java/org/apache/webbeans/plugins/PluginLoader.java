@@ -51,7 +51,7 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 public class PluginLoader
 {
     /**Logger instance*/
-    private static WebBeansLogger logger = WebBeansLogger.getLogger(PluginLoader.class);
+    private  final WebBeansLogger logger = WebBeansLogger.getLogger(PluginLoader.class);
 
     /** unmodifiable list with all found OWB plugins */
     private List<OpenWebBeansPlugin> plugins = null;

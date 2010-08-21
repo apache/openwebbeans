@@ -79,7 +79,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class OpenWebBeansEjbInterceptor implements Serializable
 {
     //Logger instance
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansEjbInterceptor.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansEjbInterceptor.class);
     
     /**Thread local for calling bean*/
     private static transient ThreadLocal<BaseEjbBean<?>> threadLocal = new ThreadLocal<BaseEjbBean<?>>();

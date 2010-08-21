@@ -34,7 +34,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.web.context.SessionContextManager;
 
@@ -50,9 +49,6 @@ public class FailOverBag implements Serializable
      */
     private static final long serialVersionUID = -6314819837009653189L;
     
-    /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(DefaultOwbFailOverService.class);
-
     String sessionId;
 
     String owbFailoverJVMId;

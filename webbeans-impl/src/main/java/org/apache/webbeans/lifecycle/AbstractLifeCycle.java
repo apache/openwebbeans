@@ -47,7 +47,7 @@ import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 public abstract class AbstractLifeCycle implements ContainerLifecycle
 {
     //Logger instance
-    private final WebBeansLogger logger;
+    protected WebBeansLogger logger;
     
     /**Discover bean classes*/
     protected ScannerService scannerService;
@@ -69,10 +69,10 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     
     protected AbstractLifeCycle()
     {
-        this(null, WebBeansLogger.getLogger(AbstractLifeCycle.class));
+        this(null);
     }
     
-    protected AbstractLifeCycle(Properties properties, WebBeansLogger logger)
+    protected AbstractLifeCycle(Properties properties)
     {
         beforeInitApplication(properties);
         
@@ -83,7 +83,6 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         this.beanManager.setXMLConfigurator(this.xmlDeployer);
         this.scannerService = ServiceLoader.getService(ScannerService.class);
         this.contextsService = ServiceLoader.getService(ContextsService.class);
-        this.logger = logger;
         
         initApplication(properties);                
     }

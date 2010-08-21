@@ -44,7 +44,7 @@ public class ConversationImpl implements Conversation, Serializable
     private static final long serialVersionUID = 8511063860333431722L;
 
     /**Logger instance*/
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(ConversationImpl.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(ConversationImpl.class);
     
     /**Conversation id*/
     private String id;

@@ -46,7 +46,7 @@ import javassist.util.proxy.ProxyObjectOutputStream;
 public class FailOverBagWrapper implements Serializable, Externalizable 
 {
     /**Logger instance*/
-    private static final WebBeansLogger logger = 
+    private  final WebBeansLogger logger = 
             WebBeansLogger.getLogger(FailOverBagWrapper.class);
 
     private transient FailOverService failoverService;

@@ -59,7 +59,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class InjectionResolver
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(InjectionResolver.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(InjectionResolver.class);
 
     /**Bean Manager*/
     private BeanManagerImpl manager;

@@ -59,7 +59,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 @SuppressWarnings("unchecked")
 public final class NotificationManager
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(NotificationManager.class);
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(NotificationManager.class);
 
     private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
 

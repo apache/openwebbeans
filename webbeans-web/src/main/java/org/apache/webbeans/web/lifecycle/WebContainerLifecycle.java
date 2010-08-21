@@ -53,9 +53,6 @@ import org.apache.webbeans.spi.adaptor.ELAdaptor;
  */
 public final class WebContainerLifecycle extends AbstractLifeCycle
 {
-    //Logger instance
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebContainerLifecycle.class);
-
     /**Manages unused conversations*/
     private ScheduledExecutorService service = null;
 
@@ -66,7 +63,8 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
      */
     public WebContainerLifecycle()
     {
-        super(null,logger);
+        super(null);
+        this.logger = WebBeansLogger.getLogger(WebContainerLifecycle.class);
     }
 
 
