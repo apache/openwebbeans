@@ -65,9 +65,6 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> implements InjectionTargetBean<T>
 {
-    /** Logger instance */
-    private final WebBeansLogger log = WebBeansLogger.getLogger(AbstractInjectionTargetBean.class);
-
     /** Bean observable method */
     private Set<Method> observableMethods = new HashSet<Method>();
 
@@ -264,7 +261,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
 
                 catch (Exception e)
                 {
-                    log.error(OWBLogConst.ERROR_0008, e, "@PostConstruct.");
+                    logger.error(OWBLogConst.ERROR_0008, e, "@PostConstruct.");
                     throw new WebBeansException(e);
                 }
             }            
@@ -302,7 +299,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 }
                 catch (Exception e)
                 {
-                    log.error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
+                    logger.error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
                     throw new WebBeansException(e);
                 }
             }            
@@ -419,9 +416,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             }
             catch (Exception e)
             {
-                log.error(OWBLogConst.ERROR_0023, instance);
+                logger.error(OWBLogConst.ERROR_0023, instance);
                 throw new WebBeansException(MessageFormat.format(
-                        log.getTokenString(OWBLogConst.ERROR_0023), instance), e);
+                        logger.getTokenString(OWBLogConst.ERROR_0023), instance), e);
             }
         }
     }
@@ -560,7 +557,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     protected WebBeansLogger getLogger()
     {
-        return this.log;
+        return this.logger;
     }
 
     /**
@@ -605,7 +602,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             if(!decorator.isPassivationCapable())
             {
                 throw new WebBeansConfigurationException(MessageFormat.format(
-                        log.getTokenString(OWBLogConst.EXCEPT_0015), toString()));
+                        logger.getTokenString(OWBLogConst.EXCEPT_0015), toString()));
             }
             else
             {
@@ -621,7 +618,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 if(!interceptor.isPassivationCapable())
                 {
                     throw new WebBeansConfigurationException(MessageFormat.format(
-                            log.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
+                            logger.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
                 }
                 else
                 {
@@ -636,14 +633,14 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                     if(!Serializable.class.isAssignableFrom(interceptorClass))
                     {
                         throw new WebBeansConfigurationException(MessageFormat.format(
-                                log.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
+                                logger.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
                     }               
                     else
                     {
                         if(!OWBInjector.checkInjectionPointForInterceptorPassivation(interceptorClass))
                         {
                             throw new WebBeansConfigurationException(MessageFormat.format(
-                                    log.getTokenString(OWBLogConst.EXCEPT_0017), toString(), interceptorClass));
+                                    logger.getTokenString(OWBLogConst.EXCEPT_0017), toString(), interceptorClass));
                         }
                     }
                 }

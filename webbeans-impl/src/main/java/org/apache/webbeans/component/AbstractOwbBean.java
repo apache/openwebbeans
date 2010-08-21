@@ -53,7 +53,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public abstract class AbstractOwbBean<T> implements OwbBean<T>
 {
     /**Logger instance*/
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
+    protected final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
     
     /** Name of the bean */
     protected String name;

@@ -64,8 +64,6 @@ import org.apache.webbeans.util.SecurityUtil;
  */
 public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> implements OwbDecorator<T>
 {
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansDecorator.class);
-
     /** Decorator class */
     private Class<?> clazz;
 
