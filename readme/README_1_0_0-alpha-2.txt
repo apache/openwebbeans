@@ -318,19 +318,24 @@ for further details.
 OpenWebBeans Properties File
 ---------------------------------------------
 OpenWebBeans uses a default configuration file to configure some of its
-properties. Default configuration file is embedded into the OWB implementation
-jar file. Instead of opening this jar file and changing configuration properties, simply add
-"openwebbeans.properties" file into a "META-INF/openwebbeans" folder of your application
-classpath. This will override the default configuration.
+properties. Default configuration files are embedded into OWB implementation
+jar files. Instead of opening the jars file and changing configuration properties, simply add
+an "openwebbeans.properties" file into a "META-INF/openwebbeans" folder of your application
+classpath. This will override the values from the default configuration.
+You can specify a property 'configuraion.ordinal' in this file to define the overlay order.
+A properties file with higher 'configuration.ordinal' value will applied later and thus
+have a higher precedence. If you don't specify a 'configuration.ordinal' a value of 100 is assumed;
+This allows to have multiple openwebbeans.properties files e.g. a common one in an EAR lib
+(with configuration.ordinal=100) and more specific ones for each WebApp in your EAR (with a
+configuration.ordinal of e.g. 101).
 
-Belows are default configuration properties of the OpenWebBeans that is embedded into openwebbeans-impl jar file.
-
-Each plugin or developer can provide its own SPI implementation class and its own configuration values. If you woud like
-to use those implementation classes or configuration values, you have to override default configuration file as explained
+Each plugin developer can provide its own SPI implementation class and own configuration values. If you woud like
+to use those implementation classes or configuration values, you have to override the default configuration file as explained
 in the above paragraph, i.e, putting "openwebbeans.properties" file into "META-INF/openwebbeans" folder of your application.
+It is recommended to use a 'confiuration.ordinal' between 50 and 99 for custom SPI implementations.
 
-For example : You add "META-INF/openwebbeans/openwebbeans.properties" in your application classpath. And you add the following
-key-value pair to use. And this service implementation is provided by your plugin, for example OpenWebBeans OpenEJB plugin.
+Below are OpenWebBeans' default configuration properties from our openwebbeans-impl.jar file and our plugins like e.g.
+our OpenEJB plugin.
 
 Override default value of ResourceInjectionService
 -------------------------------------------------
