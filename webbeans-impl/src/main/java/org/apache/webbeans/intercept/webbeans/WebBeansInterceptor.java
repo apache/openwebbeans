@@ -53,7 +53,6 @@ import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.OwbInterceptor;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
-import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.SecurityUtil;
