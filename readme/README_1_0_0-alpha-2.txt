@@ -1,10 +1,10 @@
 -------------------------------
-Apache OpenWebBeans 1.0.0-alpha-1
+Apache OpenWebBeans 1.0.0-alpha-2
 -------------------------------
 Welcome! Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
-This document is based on the 1.0.0-alpha-1 release of the OpenWebBeans.
+This document is based on the 1.0.0-alpha-2 release of the OpenWebBeans.
 
 NOTE : Final release version of OpenWebBeans will be 1.0.0.
 
@@ -17,10 +17,10 @@ Project's web page can be found at:
 "http://openwebbeans.apache.org"
 
 --------------------------------
-OpenWebBeans 1.0.0-alpha-1 Release Features
+OpenWebBeans 1.0.0-alpha-2 Release Features
 --------------------------------
 
-- 1.0.0-alpha-1 release supports the following features
+- 1.0.0-alpha-2 release supports the following features
 -----------------------------------
 * Managed Beans Support
 * Session Beans Support (via Embeddable OpenEJB container in Tomcat)
@@ -47,14 +47,14 @@ OpenWebBeans 1.0.0-alpha-1 Release Features
 
 
 
-- 1.0.0-alpha-1 release does not supports the following features
+- 1.0.0-alpha-2 release does not support the following features
 --------------------------------------------
 * Does not fully integrate with Geronimo 
  (You have to configure your application to use OWB functionality, 
   e.g configure web.xml, adding interceptor to EJBs etc.)
 
 -------------------------------------------
-Release Notes - OpenWebBeans - Version 1.0.0-alpha-1
+Release Notes - OpenWebBeans - Version 1.0.0-alpha-2
 -------------------------------------------
 Bug
 
@@ -191,26 +191,26 @@ This section explains a content of the distribution bundle, OWB plugins and its
 dependent libraries. 
 
 ---------------------------------------------
-1.0.0-alpha-1 Distribution Content
+1.0.0-alpha-2 Distribution Content
 ---------------------------------------------
-There are several jars in the OpenWebBeans 1.0.0-alpha-1 distribution;
+There are several jars in the OpenWebBeans 1.0.0-alpha-2 distribution;
 
- - openwebbeans-impl-1.0.0-alpha-1.jar     --> Includes Core Dependency Injection Service.
- - openwebbeans-ejb-1.0.0-alpha-1.jar      --> EJB Plugin(Supports EJBs in OpenEJB embedded in Tomcat).
- - openwebbeans-openejb-1.0.0-alpha-1.jar  --> OpenEJB specific Plugin SPI implementations as extension to openwebbeans-ejb
- - openwebbeans-jms-1.0.0-alpha-1.jar      --> JMS Plugin(Supports injection of JMS related artifacts,i.e, ConnectionFactory, Session, Connection etc.)
- - openwebbeans-jsf-1.0.0-alpha-1.jar      --> JSF-2.0 Plugin(JSF Conversation Scoped Support).
- - openwebbeans-jsf12-1.0.0-alpha-1.jar    --> JSF-1.2 Plugin(JSF Conversation Scoped Support).
- - openwebbeans-resource-1.0.0-alpha-1.jar --> Java EE Resource Injection for Web Projects (Includes @PersistenceContext,@PersistenceUnit
+ - openwebbeans-impl-1.0.0-alpha-2.jar     --> Includes Core Dependency Injection Service.
+ - openwebbeans-ejb-1.0.0-alpha-2.jar      --> EJB Plugin(Supports EJBs in OpenEJB embedded in Tomcat).
+ - openwebbeans-openejb-1.0.0-alpha-2.jar  --> OpenEJB specific Plugin SPI implementations as extension to openwebbeans-ejb
+ - openwebbeans-jms-1.0.0-alpha-2.jar      --> JMS Plugin(Supports injection of JMS related artifacts,i.e, ConnectionFactory, Session, Connection etc.)
+ - openwebbeans-jsf-1.0.0-alpha-2.jar      --> JSF-2.0 Plugin(JSF Conversation Scoped Support).
+ - openwebbeans-jsf12-1.0.0-alpha-2.jar    --> JSF-1.2 Plugin(JSF Conversation Scoped Support).
+ - openwebbeans-resource-1.0.0-alpha-2.jar --> Java EE Resource Injection for Web Projects (Includes @PersistenceContext,@PersistenceUnit
                                           and @Resource injection into the Managed Beans. @Resource injections use java:/comp/env of the
                                           Web application component. @PersistenceContext is based on extended EntityManager.
- - openwebbeans-spi-1.0.0-alpha-1.jar      --> OpenWebBeans Server Provider Interfaces. They are implemented by runtime environments that would
+ - openwebbeans-spi-1.0.0-alpha-2.jar      --> OpenWebBeans Server Provider Interfaces. They are implemented by runtime environments that would
                                           like to use OpenWebBeans as a JSR-299 implementation.
  - samples                            --> Includes source code of the samples. Samples are mavenized project  therefore you can easily build and run
                                           them from your environment that has maven runtime.
- - openwebbeans-osgi-1.0.0-alpha-1.jar     --> ClassPath ScannerService SPI implementation for OSGI environments like Apache Geronimo-3
- - openwebbeans-web-1.0.0-alpha-1.jar      --> Basic Servlet integration
- - openwebbeans-tomcat6-1.0.0-alpha-1.jar  --> Support for deeper integration into Apache Tomcat-6
+ - openwebbeans-osgi-1.0.0-alpha-2.jar     --> ClassPath ScannerService SPI implementation for OSGI environments like Apache Geronimo-3
+ - openwebbeans-web-1.0.0-alpha-2.jar      --> Basic Servlet integration
+ - openwebbeans-tomcat6-1.0.0-alpha-2.jar  --> Support for deeper integration into Apache Tomcat-6
 
 
 
@@ -226,7 +226,7 @@ uses the Java SE 6.0 java.util.ServiceLoader mechanism to pickup plugins at runt
 
 Current Plugins:
 ---------------------
-Look at "1.0.0-alpha-1 Distribution Content" above.
+Look at "1.0.0-alpha-2 Distribution Content" above.
 
 ------------------------------------------
 Dependent Libraries
@@ -242,9 +242,9 @@ scannotation : Version 1.0.2 (if not running in an OSGi environment like Apache 
 Java EE APIs jars(Container Provider Libraries) :
 -------------------------------------------------
 Generally full Java EE servers provides these jars. But web containers like Tomcat or Jetty
-does not contain some of them, such as JPA, JSF, Validation API etc. So, if you do not want to bundle
-these libraries within your application classpath, you have to put these libraries into your
-server common classpath if it does not contain.
+do not contain some of them, such as JPA, JSF, Validation API etc. So, if you do not want to bundle
+these libraries within your application classpath, you have to include these libraries in your
+server common classpath.
 
 jcdi-api (JSR-299 Specification API)
 atinject-api (JSR-330 Specification API)
@@ -290,7 +290,7 @@ NOTE : We are trying to decrease dependent libraries of the our core, i.e, openw
 At 1.0.0, dependent third party libraries will be decreased. We have a plan to create profile
 plugins, therefore each profile plugin provides its own dependent libraries. For example, in 
 fully Java EE Profile Plugin, Transaction API is supported but this will not be the case
-for Java Web Profile Plugin or Java SE Profile Plugin. Stay Tune!
+for Java Web Profile Plugin or Java SE Profile Plugin. Stay Tuned!
 
 Currently, as you have seen above, openwebbeans-impl depends on some Java EE/Runtime
 provided libraries (servlet, jsp, el etc). In the future, with OpenWebBeans profiling support,
@@ -303,7 +303,7 @@ your own plugins and contributing it to OpenWebBeans :)
 Library Configuration
 ------------------------------------------
 To run openwebbeans applications in the Java EE based application server, 
-you could add JSR-299 API and JSR-330 API into the server common classpath, and
+you could add the JSR-299 API and JSR-330 API into the server common classpath, and
 implementation, plugins and dependent jars into your "WEB-INF/lib" directory 
 of the Java EE Web Application.
 
@@ -329,12 +329,12 @@ This allows to have multiple openwebbeans.properties files e.g. a common one in 
 (with configuration.ordinal=100) and more specific ones for each WebApp in your EAR (with a
 configuration.ordinal of e.g. 101).
 
-Each plugin developer can provide its own SPI implementation class and own configuration values. If you woud like
+Each plugin developer can provide their own SPI implementation class and own configuration values. If you would like
 to use those implementation classes or configuration values, you have to override the default configuration file as explained
 in the above paragraph, i.e, putting "openwebbeans.properties" file into "META-INF/openwebbeans" folder of your application.
-It is recommended to use a 'confiuration.ordinal' between 50 and 99 for custom SPI implementations.
+It is recommended to use a 'configuration.ordinal' between 50 and 99 for custom SPI implementations.
 
-Below are OpenWebBeans' default configuration properties from our openwebbeans-impl.jar file and our plugins like e.g.
+Below are OpenWebBeans' default configuration properties from our openwebbeans-impl.jar file and our plugins such as
 our OpenEJB plugin.
 
 Override default value of ResourceInjectionService
@@ -437,8 +437,8 @@ Configuration Steps:
    - openwebbeans-ejb
    - openwebbeans-impl and its dependencies
 
-You could look at ejb-sample.war for "WEB-INF/lib" libraries to develop custom application.
-You can also look at a source of the project.
+You could look at ejb-sample.war for "WEB-INF/lib" libraries as an example to develop custom applications.
+The source of this project is also available.
 
 To use EJB functionality, you will use OpenEJB collapse-ear support. In this configuration,
 your EJB beans live within your "war" bundle.
@@ -510,8 +510,8 @@ Maven Install and Package From the Source
 
 Maven Version : Apache Maven 2.2.1 or later
 
-Firstly you have to download the "source" version of the OpenWebBeans project that
-contains the all source codes of the OpenWebBeans.
+First you have to download the "source" version of the OpenWebBeans project that
+contains the all source code of the OpenWebBeans.
 
 To install the Maven artifacts of the project from the source, Maven must be installed
 in your runtime. After Maven installation, just run the following command in the top level
@@ -595,8 +595,8 @@ JMS Sample Example URL        : Hit the url http://localhost:8080/jms-sample/sen
 -----------------------------------------
 OpenWebBeans in Java SE
 ----------------------------------------
-OpenWebBeans can perfeclty use in Java SE environment like Java Swing
-applications. Standalone Samples is provided to show how to use OpenWebBeans
+OpenWebBeans can be used in Java SE environments such as Java Swing
+applications. A Standalone Sampls is provided to show how to use OpenWebBeans
 in Java SE.
 
 Go to the source directory of the standalone sample:
@@ -609,7 +609,7 @@ Go to the source directory of the standalone sample:
 -----------------------------------------------
 OpenWebBeans User and Development Mailing Lists
 -----------------------------------------------
-Please mail to the user mailing list about any questions or advice
+Please mail to the user mailing list with any questions or advice
 about the OpenWebBeans.
 
 User Mailing List : [users@openwebbeans.apache.org]
