@@ -497,7 +497,7 @@ Look at "Compile and Run Samples via Jetty&Tomcat Plugin" section. It requires
 to use JSF2 runtime.
 
 
-8) "Standalone Sample" : Shows usage of OpenWebBeans in Stadnalone Swing Application.
+8) "Standalone Sample" : Shows usage of OpenWebBeans in Standalone Swing Application.
 Look at "OpenWebBeans in Java SE" section.
 
 Configuring and Running the Applications:
@@ -596,7 +596,7 @@ JMS Sample Example URL        : Hit the url http://localhost:8080/jms-sample/sen
 OpenWebBeans in Java SE
 ----------------------------------------
 OpenWebBeans can be used in Java SE environments such as Java Swing
-applications. A Standalone Sampls is provided to show how to use OpenWebBeans
+applications. A Standalone Sample is provided to show how to use OpenWebBeans
 in Java SE.
 
 Go to the source directory of the standalone sample:
