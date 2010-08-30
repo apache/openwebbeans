@@ -23,10 +23,10 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.0.0-alpha-2</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>openwebbeans-resource</artifactId>
-  <version> 1.0.0-alpha-2</version>
+  <version> 1.0.0-SNAPSHOT</version>
     <name>Apache OpenWebBeans :: Resource Integration</name>
     <description>OpenWebBeans Resource Integration</description>
     <dependencies>

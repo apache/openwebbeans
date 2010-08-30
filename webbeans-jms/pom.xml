@@ -21,10 +21,10 @@
 	<parent>
 		<groupId>org.apache.openwebbeans</groupId>
 		<artifactId>openwebbeans</artifactId>
-		<version>1.0.0-alpha-2</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>openwebbeans-jms</artifactId>
-  <version> 1.0.0-alpha-2</version>
+  <version> 1.0.0-SNAPSHOT</version>
 	<name>Apache OpenWebBeans :: JMS integration</name>
 	<description>OpenWebBeans JMS Integration</description>
 	<dependencies>
