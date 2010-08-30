@@ -29,7 +29,7 @@ under the License.
 
     <files>
         <file>
-            <source>../LICENCE</source>
+            <source>../LICENSE</source>
         </file>
 
         <file>
@@ -37,7 +37,7 @@ under the License.
         </file>
 
         <file>
-            <source>../readme/README_1_0_0-alpha-1.txt</source>
+            <source>../readme/README_1_0_0-alpha-2.txt</source>
         </file>
 
         <file>
@@ -51,7 +51,7 @@ under the License.
 
        <file>
            <outputDirectory>config</outputDirectory>
-           <source>../webbeans-impl/src/main/resources/META-INF/openwebbeans/openwebbeans-default.properties</source>
+           <source>../webbeans-impl/src/main/resources/META-INF/openwebbeans/openwebbeans.properties</source>
        </file>
     </files>
 
