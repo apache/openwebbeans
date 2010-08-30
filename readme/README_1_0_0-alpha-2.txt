@@ -53,8 +53,29 @@ OpenWebBeans 1.0.0-alpha-2 Release Features
  (You have to configure your application to use OWB functionality, 
   e.g configure web.xml, adding interceptor to EJBs etc.)
 
+
+Noteable differences to CDI spec behaviour
+--------------------------------------------
+
+In a few special cases Apache OpenWebBeans might behave a little bit different than
+other CDI implementations. This is to some degree caused by the JSR-299 spec being
+not clear about some special topics so we needed to interpret the wording on our own.
+This mainly concerns the area of section 12.1 Bean Archives (BDA) which doesn't work
+out when it comes to OSGi containers and likes.
+In Apache OpenWebBeans, a settings configured in a beans.xml file of a BDA is not
+only effective for this very bean archive but for the whole BeanManager in control
+of the Application. This is especially the case for <alternatives> and
+<interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
+for the whole Application.
+
+
 -------------------------------------------
 Release Notes - OpenWebBeans - Version 1.0.0-alpha-2
+-------------------------------------------
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 1.0.0-alpha-1
 -------------------------------------------
 Bug
 
