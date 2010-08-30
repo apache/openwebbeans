@@ -22,12 +22,12 @@ under the License.
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-alpha-2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>samples</artifactId>
-  <version> 1.0.0-SNAPSHOT</version>
+  <version> 1.0.0-alpha-2</version>
     <packaging>pom</packaging>
     <name>Apache OpenWebBeans :: Samples</name>
     <description>Contains samples project for openwebbeans.</description>
