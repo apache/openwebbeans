@@ -72,6 +72,59 @@ for the whole Application.
 -------------------------------------------
 Release Notes - OpenWebBeans - Version 1.0.0-alpha-2
 -------------------------------------------
+Bug
+
+    * [OWB-303] - upgrade Javassist to a newer version
+    * [OWB-338] - our internal SessionContext and ConversationContext must support Session serialization
+    * [OWB-385] - implement passivation of managed beans in ServletContextListener
+    * [OWB-401] - ELContextStore not cleaned up for some JSP EL lookups
+    * [OWB-402] - OpenWebBeansJsfPlugin does not recognize @ManagedBean
+    * [OWB-404] - Contexts must not get stored in a static Map in BeanManager
+    * [OWB-405] - AnnotatedElementFactory must not use static cache maps
+    * [OWB-408] - NPE in WebBeansELResolver
+    * [OWB-415] - EjbBeanProxyHandler for dependent ejb must save ejb instance
+    * [OWB-416] - BaseEJBBean.destroyComponentInstance() tries to call multiple remove methods
+    * [OWB-418] - EjbBeanProxyHandler must be 1:1 with proxy instances for dependent SFSB
+    * [OWB-419] - fix @Dependent handling in ELResolver
+    * [OWB-420] - SingletonContext is mapped to @ConversationScoped
+    * [OWB-421] - defined-in-class EJB lifecycle callbacks masked by our Interceptor
+    * [OWB-426] - Tweak EJBPlugin to work with Standalone Tests
+    * [OWB-431] - Generic Type Inheritance not resolved correctly
+    * [OWB-434] - ThreadLocal<SingletonContext> doen't get cleaned up
+    * [OWB-436] - AbstractContext bean instance creation is not thread safe
+    * [OWB-437] - Improve AbstractContext synchronization
+    * [OWB-440] - WebBeansDecoratorConfig.getDecoratorStack always returns new Decorators
+    * [OWB-442] - our EJB proxies are broken when multiple local interfaces are used on a single class
+    * [OWB-443] - Normal-scoped EJB not removed by container during Contextual.destroy()
+
+Improvement
+
+    * [OWB-57] - cleanup problems found by maven-findbugs-plugin
+    * [OWB-195] - Give warning to the developer related with non- portable operations
+    * [OWB-409] - create a name for OWB our faces-config.xml
+    * [OWB-410] - lazy initialisation of ejbInterceptors
+    * [OWB-411] - cache calls to isNormalScope()
+    * [OWB-412] - Allow container specific extensions to WebConfigurationListener access to the lifecycle
+    * [OWB-413] - cache calls to ClassUtils#getObjectMethodNames()
+    * [OWB-414] - improve Interceptor performance
+    * [OWB-425] - improve performance of owb-el-resolver
+    * [OWB-427] - improve read-performance of AbstractOwbBean
+    * [OWB-430] - improve performance of WebBeansPhaseListener
+    * [OWB-432] - Create Singleton Service SPI
+    * [OWB-441] - new configuration properties mechanism
+
+Sub-task
+
+    * [OWB-193] - If an interceptor or decorator has any scope other than @Dependent, non-portable behavior results.
+    * [OWB-194] - If an interceptor or decorator has a name, non-portable behavior results.
+    * [OWB-196] - If an interceptor or decorator is an alternative, non-portable behavior results.
+    * [OWB-197] - If a stereotype declares any other qualifier an- notation, non-portable behavior results.
+    * [OWB-198] - If a stereotype is annotated @Typed, non-portable behavior results.
+
+
+TCK Challenge
+
+    * [OWB-424] - Adding Document for How to Configure and Run TCK (standalone and web profile TCKs)
 
 
 -------------------------------------------
