@@ -68,6 +68,9 @@ public class InvocationContextImpl implements InvocationContext
     private OwbBean<?> owbBean;
     private InvocationContext ejbInvocationContext;
     
+    /** alternate key to be used for dependent creational contexts */
+    private Object ccKey;
+    
     /**
      * Initializes the context.
      * 
@@ -216,7 +219,8 @@ public class InvocationContextImpl implements InvocationContext
                 SecurityUtil.doPrivilegedSetAccessible(method, true);
             }
             
-            Object t = intc.createNewInstance(this.target,(CreationalContextImpl<?>)this.creationalContext);
+            Object t = intc.createNewInstance(this.ccKey != null ? this.ccKey : this.target,
+                    (CreationalContextImpl<?>)this.creationalContext);     
             
             if (t == null)
             {
@@ -295,7 +299,8 @@ public class InvocationContextImpl implements InvocationContext
 
             currentMethod++;
 
-            Object t = intc.createNewInstance(this.target,(CreationalContextImpl<?>)this.creationalContext);
+            Object t = intc.createNewInstance(this.ccKey != null ? this.ccKey : this.target,
+                    (CreationalContextImpl<?>)this.creationalContext);      
             
             //In bean class
             if (t == null)
@@ -389,4 +394,15 @@ public class InvocationContextImpl implements InvocationContext
         // TODO Auto-generated method stub
         return null;
     }    
+    
+    /**
+     * Sets the alternate key (alternate owner instance) to be used within 
+     * the passed CreationalContext for dependent interceptors.
+     * 
+     * @param ccKey a unique key used to index dependent interceptors
+     */
+    public void setCcKey(Object ccKey)
+    {
+        this.ccKey = ccKey;
+    }
 }
