@@ -163,9 +163,11 @@ public interface InterceptorData
     
     /**
      * Creates and returns a new interceptor instance.
+     * @param ownerInstance The underlying instance the interceptor will be associated with, or any key to be used in its place
+     * @param creationalContext The context that will cache the created instance under the ownerInstance key
      * @return creates a new interceptor instance
      */
-    public Object createNewInstance(Object ownerInstance,CreationalContextImpl<?> ownerBean);
+    public Object createNewInstance(Object ownerInstance,CreationalContextImpl<?> creationalContext);
     
     /**
      * if this interceptor data is defined by interceptor,
