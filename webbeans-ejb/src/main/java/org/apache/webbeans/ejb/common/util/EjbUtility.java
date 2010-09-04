@@ -186,6 +186,17 @@ public final class EjbUtility
         }        
     }
     
+    /**
+     * Check if a given Method is a business method of the given enterprise bean.
+     * 
+     * FIXME: While remote interfaces aren't part of a 299 beans types, method 
+     * invocations of non-contextual references (@EJB) to remote interfaces are 
+     * business method invocations nonetheless.  Not presently accounted for here.
+     * 
+     * @param method the method of interest
+     * @param bean the Contextual
+     * @return true if the Method could be a business method invocation
+     */
     public static boolean isBusinessMethod(Method method, BaseEjbBean<?> bean)
     {
         List<Class<?>> businessLocals = bean.getBusinessLocalInterfaces();
