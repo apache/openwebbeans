@@ -321,7 +321,16 @@ public class InvocationContextImpl implements InvocationContext
             }
 
         }
-
+        else 
+        {
+            /* For EJB's, we do not call the "in bean class" interceptors --the container does, and only if
+             * our last 299 interceptor called proceed (which takes us here).
+             */
+            if ((this.owbBean instanceof EnterpriseBeanMarker) && (this.ejbInvocationContext != null))
+            {
+                result = ejbInvocationContext.proceed();
+            }
+        }
         return result;
     }
 

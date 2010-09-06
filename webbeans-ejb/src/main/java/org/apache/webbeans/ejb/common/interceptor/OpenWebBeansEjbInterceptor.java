@@ -231,14 +231,13 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                 {
                     InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
                             InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(), InterceptorType.POST_CONSTRUCT), InterceptorType.POST_CONSTRUCT);
+                    impl.setEJBInvocationContext(context);
                     impl.setCreationalContext(threadLocalCreationalContext.get());
 
-                    // run OWB interceptors
+                    // Call 299 interceptors, and if they all call proceed on OWB's invocationContext, 
+                    // do the same on the EJB containers context.
                     impl.proceed();
                 }
-
-                // run EJB interceptors
-                context.proceed();
             }
             catch (Exception e)
             {
@@ -283,13 +282,13 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                 {
                     InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
                             InterceptorUtil.getInterceptorMethods(injectionTarget.getInterceptorStack(),InterceptorType.PRE_DESTROY), InterceptorType.PRE_DESTROY);
+                    impl.setEJBInvocationContext(context);
                     impl.setCreationalContext(threadLocalCreationalContext.get());
 
-                    // Call OWB interceptors
+                    // Call 299 interceptors, and if they all call proceed on OWB's invocationContext, 
+                    // do the same on the EJB containers context.
                     impl.proceed();
                 }
-                // Call EJB interceptors
-                context.proceed();
             }
             catch (Exception e)
             {
@@ -648,10 +647,13 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                 
                 InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null, 
                         InterceptorUtil.getInterceptorMethods(interceptorStack, interceptorType), interceptorType);
+                impl.setEJBInvocationContext(ejbContext);
                 impl.setCreationalContext(localcc);
                 
                 try
                 {
+                    // Call 299 interceptors, and if they all call proceed on OWB's invocationContext, 
+                    // do the same on the EJB containers context.
                     impl.proceed();
                 }
                 catch (Exception e)
@@ -663,9 +665,6 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             { 
                 logger.debug("No lifecycle interceptors for [{0}]", instance);
             }
-    
-            //Call next interceptor
-            ejbContext.proceed();
         }
         catch (Exception e) 
         { 
