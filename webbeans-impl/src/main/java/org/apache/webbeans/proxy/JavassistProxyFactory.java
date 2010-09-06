@@ -148,7 +148,10 @@ public final class JavassistProxyFactory
         {
             ProxyFactory fact = createProxyFactory(bean);
             AbstractDecoratorMethodHandler handler = new AbstractDecoratorMethodHandler();
+
+            //X TODO we MUST NOT set the handler here! This causes mem leaks!
             fact.setHandler(handler);
+            
             clazz = SecurityUtil.doPrivilegedCreateClass(fact);
         }
         catch(Exception e)
@@ -339,11 +342,6 @@ public final class JavassistProxyFactory
         ProxyFactory fact = new ProxyFactory();        
         fact.setInterfaces(interfaceArray);
         fact.setSuperclass(superClass);        
-
-        // turn off caching since this is utterly broken
-        // this is a static field, but we do not know who else
-        // might turn it on again ...
-        ProxyFactory.useCache = false;
         
         return fact;
         
@@ -358,10 +356,9 @@ public final class JavassistProxyFactory
             ProxyFactory pf = new ProxyFactory();
             pf.setInterfaces(new Class<?>[] { annotationType, Annotation.class });
             pf.setSuperclass(WebBeansAnnotation.class);
-            pf.setHandler(new WebBeansAnnotation(annotationType));
 
             result = (WebBeansAnnotation) pf.create(new Class[] { Class.class }, new Object[] { annotationType });
-
+            ((ProxyObject)result).setHandler(new WebBeansAnnotation(annotationType));
         }
         catch (Exception e)
         {

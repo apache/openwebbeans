@@ -24,6 +24,7 @@ import javassist.util.proxy.ProxyFactory;
 
 import javax.enterprise.context.spi.CreationalContext;
 
+import javassist.util.proxy.ProxyObject;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
@@ -58,9 +59,9 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
             
             ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
             this.actualResourceReference = resourceService.getResourceReference(this.resourceReference);
-            proxyFactory.setHandler(new ResourceProxyHandler(this.actualResourceReference));
-            
+
             instance = (X)(JavassistProxyFactory.getInstance().getProxyClass(proxyFactory).newInstance());
+            ((ProxyObject)instance).setHandler(new ResourceProxyHandler(this.actualResourceReference));
         }
         catch (Exception e)
         {

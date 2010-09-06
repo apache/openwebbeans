@@ -2997,7 +2997,10 @@ public final class WebBeansUtil
     {
 
         ManagedBean<T> bean = defineManagedBean(managedBeanCreator, processInjectionTargetEvent);
+
+        //X TODO move proxy instance creation into JavassistProxyFactory!
         Class clazz = JavassistProxyFactory.getInstance().createAbstractDecoratorProxyClass(bean);
+
         bean.setConstructor(WebBeansUtil.defineConstructor(clazz));
         return bean;
     }

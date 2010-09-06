@@ -76,6 +76,7 @@ import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -168,6 +169,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         new ConcurrentHashMap<Class<?>, InjectionTargetWrapper<?>>();
 
     private AnnotatedElementFactory annotatedElementFactory;
+
+    private WebBeansLogger logger = WebBeansLogger.getLogger(BeanManagerImpl.class);
 
     /**
      * Creates a new {@link BeanManager} instance.
@@ -797,19 +800,19 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             if(instance != null)
             {
                 return instance;
-            }            
-            
-            if(this.cacheProxies.containsKey(bean))
-            {
-                return this.cacheProxies.get(bean);
             }
             
-            //Create Managed Bean Proxy
-            instance = JavassistProxyFactory.getInstance().createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
-            
-            //Cached instance
-            this.cacheProxies.put(bean, instance);
-            
+            instance = cacheProxies.get(bean);
+
+            if (instance == null)
+            {
+                //Create Managed Bean Proxy
+                instance = JavassistProxyFactory.getInstance().createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
+
+                //Cached instance
+                cacheProxies.put(bean, instance);
+            }
+
         }
         //Create Pseudo-Scope Bean Instance
         else
