@@ -18,14 +18,24 @@
  */
 package org.apache.webbeans.proxy;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.ObjectOutput;
+import java.io.ObjectInput;
 import java.lang.reflect.Method;
 
 import javassist.util.proxy.MethodHandler;
 
-public class ResourceProxyHandler implements MethodHandler
+public class ResourceProxyHandler implements MethodHandler, Serializable, Externalizable
 {
     private Object actualResource = null;
     
+    //DO NOT REMOVE, used by failover and passivation.
+    public ResourceProxyHandler() 
+    {
+    }
+
     public ResourceProxyHandler(Object actualResource)
     {
         this.actualResource = actualResource;
@@ -37,4 +47,34 @@ public class ResourceProxyHandler implements MethodHandler
         return actualMethod.invoke(this.actualResource, args);
     }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException 
+    {
+            if (actualResource instanceof javax.rmi.CORBA.Stub)
+            {
+                out.writeObject(actualResource);
+            }
+            else
+            {
+                //TODO: for other type of resources, I am planning to add some
+                // custom property to control whether owb should (de)serialize
+                // the object directly or grab a new instance from resource
+                // service (on the other jvm.).
+                out.writeObject(null);
+            }
+    }
+    
+    @Override
+    public void readExternal(ObjectInput in) throws IOException,
+            ClassNotFoundException 
+    {
+        Object obj = in.readObject();
+        if (obj != null && obj instanceof javax.rmi.CORBA.Stub)
+        {
+            actualResource = obj;
+            org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(new String[0], null);
+            ((javax.rmi.CORBA.Stub)actualResource).connect(orb);
+        }
+    }
+    
 }

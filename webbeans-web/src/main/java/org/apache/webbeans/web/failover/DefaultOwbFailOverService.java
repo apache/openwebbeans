@@ -28,6 +28,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.FailOverService;
+import org.apache.webbeans.util.WebBeansUtil;
 
 public class DefaultOwbFailOverService implements FailOverService 
 {
@@ -67,6 +68,11 @@ public class DefaultOwbFailOverService implements FailOverService
         {
             isSupportPassivation = true;
         }
+        if (isSupportFailOver || isSupportPassivation)
+        {
+            WebBeansUtil.initProxyFactoryClassLoaderProvider();
+        }
+        
         if (logger.wblWillLogDebug())
         {
             logger.debug("DefaultOwbFailOverService isSupportFailOver: [{0}]", String.valueOf(isSupportFailOver));
