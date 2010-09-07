@@ -486,82 +486,82 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
         InterceptorDataImpl decoratorInterceptorDataImpl = null;
         
-            List<Object> decorators = null;
-            DelegateHandler delegateHandler = null;
-            logger.debug("Decorator stack for target {0}", injectionTarget.getDecoratorStack());
+        List<Object> decorators = null;
+        DelegateHandler delegateHandler = null;
+        logger.debug("Decorator stack for target {0}", injectionTarget.getDecoratorStack());
 
-            if (injectionTarget.getDecoratorStack().size() > 0)
+        if (injectionTarget.getDecoratorStack().size() > 0)
+        {
+            Class<?> proxyClass = JavassistProxyFactory.getInstance().getInterceptorProxyClasses().get(injectionTarget);
+            if (proxyClass == null)
             {
-                Class<?> proxyClass = JavassistProxyFactory.getInstance().getInterceptorProxyClasses().get(injectionTarget);
-                if (proxyClass == null)
-                {
-                    ProxyFactory delegateFactory = JavassistProxyFactory.getInstance().createProxyFactory(injectionTarget);
-                    proxyClass = JavassistProxyFactory.getInstance().getProxyClass(delegateFactory);
-                    JavassistProxyFactory.getInstance().getInterceptorProxyClasses().put(injectionTarget, proxyClass);
-                }
-                Object delegate = proxyClass.newInstance();
-                delegateHandler = new DelegateHandler(threadLocal.get(),ejbContext);
-                ((ProxyObject)delegate).setHandler(delegateHandler);
-
-                // Gets component decorator stack
-                decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate,
-                                                                       (CreationalContextImpl<?>)threadLocalCreationalContext.get());                        
-                //Sets decorator stack of delegate
-                delegateHandler.setDecorators(decorators);
-                
+                ProxyFactory delegateFactory = JavassistProxyFactory.getInstance().createProxyFactory(injectionTarget);
+                proxyClass = JavassistProxyFactory.getInstance().getProxyClass(delegateFactory);
+                JavassistProxyFactory.getInstance().getInterceptorProxyClasses().put(injectionTarget, proxyClass);
             }
+            Object delegate = proxyClass.newInstance();
+            delegateHandler = new DelegateHandler(threadLocal.get(),ejbContext);
+            ((ProxyObject)delegate).setHandler(delegateHandler);
 
-            // Run around invoke chain
-            List<InterceptorData> interceptorStack = injectionTarget.getInterceptorStack();
-            if (interceptorStack.size() > 0)
-            {
-                if (decorators != null)
-                {
-                    // We have interceptors and decorators, Our delegateHandler will need to be wrapped in an interceptor
-                    WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
-                    decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor);
-                    decoratorInterceptorDataImpl.setDefinedInInterceptorClass(true);
-                    decoratorInterceptorDataImpl.setAroundInvoke(SecurityUtil.doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
-                }
-                
-                if (this.interceptedMethodMap.get(method) == null)
-                {
-                    //Holds filtered interceptor stack
-                    List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
-
-                    // Filter both EJB and WebBeans interceptors
-                    InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
-
-                    this.interceptedMethodMap.put(method, filteredInterceptorStack);
-                }
-                
-                List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(this.interceptedMethodMap.get(method));
-                if (decoratorInterceptorDataImpl != null)
-                {
-                    // created an intereceptor to run our decorators, add it to the calculated stack
-                    filteredInterceptorStack.add(decoratorInterceptorDataImpl);
-                }
-
-                // Call Around Invokes
-                if (WebBeansUtil.isContainsInterceptorMethod(filteredInterceptorStack, InterceptorType.AROUND_INVOKE))
-                {
-                     rv.INTERCEPTOR_OR_DECORATOR_CALL = true;
-                     rv.RETURN_VALUE = InterceptorUtil.callAroundInvokes(threadLocal.get(), instance, (CreationalContextImpl<?>)threadLocalCreationalContext.get(), method, 
-                            arguments, InterceptorUtil.getInterceptorMethods(filteredInterceptorStack, InterceptorType.AROUND_INVOKE), ejbContext);
-                     
-                     return rv;
-                }
-                
-            }
+            // Gets component decorator stack
+            decorators = WebBeansDecoratorConfig.getDecoratorStack(injectionTarget, instance, delegate,
+                                                                   (CreationalContextImpl<?>)threadLocalCreationalContext.get());                        
+            //Sets decorator stack of delegate
+            delegateHandler.setDecorators(decorators);
             
-            // If there are Decorators, allow the delegate handler to
-            // manage the stack
+        }
+
+        // Run around invoke chain
+        List<InterceptorData> interceptorStack = injectionTarget.getInterceptorStack();
+        if (interceptorStack.size() > 0)
+        {
             if (decorators != null)
             {
-                rv.INTERCEPTOR_OR_DECORATOR_CALL = true;
-                rv.RETURN_VALUE = delegateHandler.invoke(instance, method, null, arguments); 
-                return rv;
-            } 
+                // We have interceptors and decorators, Our delegateHandler will need to be wrapped in an interceptor
+                WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
+                decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor);
+                decoratorInterceptorDataImpl.setDefinedInInterceptorClass(true);
+                decoratorInterceptorDataImpl.setAroundInvoke(SecurityUtil.doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
+            }
+            
+            if (this.interceptedMethodMap.get(method) == null)
+            {
+                //Holds filtered interceptor stack
+                List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
+
+                // Filter both EJB and WebBeans interceptors
+                InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
+
+                this.interceptedMethodMap.put(method, filteredInterceptorStack);
+            }
+            
+            List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(this.interceptedMethodMap.get(method));
+            if (decoratorInterceptorDataImpl != null)
+            {
+                // created an intereceptor to run our decorators, add it to the calculated stack
+                filteredInterceptorStack.add(decoratorInterceptorDataImpl);
+            }
+
+            // Call Around Invokes
+            if (WebBeansUtil.isContainsInterceptorMethod(filteredInterceptorStack, InterceptorType.AROUND_INVOKE))
+            {
+                 rv.INTERCEPTOR_OR_DECORATOR_CALL = true;
+                 rv.RETURN_VALUE = InterceptorUtil.callAroundInvokes(threadLocal.get(), instance, (CreationalContextImpl<?>)threadLocalCreationalContext.get(), method, 
+                        arguments, InterceptorUtil.getInterceptorMethods(filteredInterceptorStack, InterceptorType.AROUND_INVOKE), ejbContext);
+                 
+                 return rv;
+            }
+            
+        }
+        
+        // If there are Decorators, allow the delegate handler to
+        // manage the stack
+        if (decorators != null)
+        {
+            rv.INTERCEPTOR_OR_DECORATOR_CALL = true;
+            rv.RETURN_VALUE = delegateHandler.invoke(instance, method, null, arguments); 
+            return rv;
+        } 
         
         rv.INTERCEPTOR_OR_DECORATOR_CALL = false;
         
