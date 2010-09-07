@@ -18,13 +18,19 @@
  */
 package org.apache.webbeans.decorator;
 
+import java.io.Serializable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 
 import javassist.util.proxy.MethodHandler;
 
-public class AbstractDecoratorMethodHandler implements MethodHandler
+public class AbstractDecoratorMethodHandler implements MethodHandler, Serializable
 {
   
+    private static final long serialVersionUID = 1L;
+    
     @Override
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable
     {
@@ -37,5 +43,23 @@ public class AbstractDecoratorMethodHandler implements MethodHandler
         //Throw the exception so the DelegateHandler will continue the loop
         throw new NoSuchMethodException();
     }
+    
+    private  void writeObject(ObjectOutputStream s) throws IOException
+    {
+        //TODO: abstract decorator could not be serialized yet.
+        s.writeLong(serialVersionUID);
+    }    
+    
+    private  void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
+    {
+        //TODO: abstract decorator could not be serialized yet.
+        if(s.readLong() == serialVersionUID) 
+        {
+        } 
+        else 
+        {
+        }
+    }    
+    
 
 }

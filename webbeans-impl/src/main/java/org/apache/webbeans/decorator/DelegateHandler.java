@@ -18,6 +18,11 @@
  */
 package org.apache.webbeans.decorator;
 
+import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -27,13 +32,15 @@ import javax.interceptor.InvocationContext;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.SecurityUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 import javassist.util.proxy.MethodHandler;
 
-public class DelegateHandler implements MethodHandler
+public class DelegateHandler implements MethodHandler, Serializable, Externalizable
 {
     private transient WebBeansLogger logger = WebBeansLogger.getLogger(DelegateHandler.class);
 
@@ -45,6 +52,12 @@ public class DelegateHandler implements MethodHandler
     private transient OwbBean<?> bean = null;
     
     private transient InvocationContext ejbContext;
+
+    //Do not remove this constructor, used by passivation.
+    public DelegateHandler()
+    {
+        logger = WebBeansLogger.getLogger(DelegateHandler.class);
+    }
 
     public DelegateHandler(OwbBean<?> bean)
     {
@@ -190,4 +203,35 @@ public class DelegateHandler implements MethodHandler
         this.decorators = dec;
     }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException 
+    {
+        String id = WebBeansUtil.isPassivationCapable(bean);
+        if (id != null) 
+        {
+            out.writeObject(id);
+            out.writeObject(actualBean);
+            out.writeObject(decorators);
+        }
+        else 
+        {
+            out.writeObject("");
+        }
+        //TODO: ejbContext is not serializable, need to re-grab it
+        //from the env.
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException,
+            ClassNotFoundException 
+    {
+        String id = (String)in.readObject();
+        if (id.equals("")) 
+        {
+            return;
+        }
+        bean = (OwbBean<?>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
+        actualBean = in.readObject();
+        decorators = (List<Object>) in.readObject();
+    }    
 }

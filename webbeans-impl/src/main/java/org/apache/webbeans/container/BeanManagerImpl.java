@@ -503,6 +503,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public BeanManager addDecorator(Decorator decorator)
     {
         getManager().webBeansDecorators.add(decorator);
+        if (decorator instanceof OwbBean)
+        {
+            this.addPassivationInfo((OwbBean)decorator);
+        }
         return this;
     }
 
@@ -510,6 +514,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public BeanManager addInterceptor(Interceptor interceptor)
     {
         getManager().webBeansInterceptors.add(interceptor);
+        if (interceptor instanceof OwbBean)
+        {
+            this.addPassivationInfo((OwbBean)interceptor);
+        }       
         return this;
     }
 

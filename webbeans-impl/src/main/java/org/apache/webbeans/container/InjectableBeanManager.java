@@ -19,6 +19,10 @@
 package org.apache.webbeans.container;
 
 import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -49,7 +53,7 @@ import javax.enterprise.inject.spi.ObserverMethod;
  * This class is Serializable and always resolves the current
  * instance of the central BeanManager automatically.
  */
-public class InjectableBeanManager implements BeanManager, Serializable 
+public class InjectableBeanManager implements BeanManager, Serializable, Externalizable 
 {
 
     private static final long serialVersionUID = 1L;
@@ -209,6 +213,18 @@ public class InjectableBeanManager implements BeanManager, Serializable
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
         return bm.wrapExpressionFactory(expressionFactory);
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException 
+    {    
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException,
+            ClassNotFoundException 
+    {
+        this.bm = BeanManagerImpl.getManager();
     }
 
 }
