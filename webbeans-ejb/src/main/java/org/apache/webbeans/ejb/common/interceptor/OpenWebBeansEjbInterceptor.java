@@ -54,7 +54,6 @@ import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
-import org.apache.webbeans.ejb.common.util.EjbUtility;
 import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
@@ -64,7 +63,6 @@ import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContextsService;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -487,17 +485,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         CallReturnValue rv = new CallReturnValue();
         InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) threadLocal.get();
         InterceptorDataImpl decoratorInterceptorDataImpl = null;
-
-        String methodName = method.getName();
-        if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
-        {
-            logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);
-        }
-                
-        if (InterceptorUtil.isWebBeansBusinessMethod(method) && 
-                EjbUtility.isBusinessMethod(method, threadLocal.get()))
-        {
-
+        
             List<Object> decorators = null;
             DelegateHandler delegateHandler = null;
             logger.debug("Decorator stack for target {0}", injectionTarget.getDecoratorStack());
@@ -573,8 +561,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                 rv.INTERCEPTOR_OR_DECORATOR_CALL = true;
                 rv.RETURN_VALUE = delegateHandler.invoke(instance, method, null, arguments); 
                 return rv;
-            }
-        }    
+            } 
         
         rv.INTERCEPTOR_OR_DECORATOR_CALL = false;
         
