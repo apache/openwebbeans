@@ -544,13 +544,18 @@ public final class InterceptorUtil
     }
     
     public static Object callAroundInvokes(InjectionTargetBean<?> bean,Object instance, CreationalContextImpl<?> creationalContext,
-            Method proceed, Object[] arguments, List<InterceptorData> stack, InvocationContext ejbInvocationContext) throws Exception
+            Method proceed, Object[] arguments, List<InterceptorData> stack, InvocationContext ejbInvocationContext, Object altKey) throws Exception
     {
         InvocationContextImpl impl = new InvocationContextImpl(bean, instance,
                                                                proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
         if (ejbInvocationContext != null) 
         {
             impl.setEJBInvocationContext(ejbInvocationContext);
+        }
+        
+        if (altKey != null)
+        {
+            impl.setCcKey(altKey);
         }
         
         impl.setCreationalContext(creationalContext);

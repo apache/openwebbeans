@@ -546,8 +546,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             if (WebBeansUtil.isContainsInterceptorMethod(filteredInterceptorStack, InterceptorType.AROUND_INVOKE))
             {
                  rv.INTERCEPTOR_OR_DECORATOR_CALL = true;
-                 rv.RETURN_VALUE = InterceptorUtil.callAroundInvokes(threadLocal.get(), instance, (CreationalContextImpl<?>)threadLocalCreationalContext.get(), method, 
-                        arguments, InterceptorUtil.getInterceptorMethods(filteredInterceptorStack, InterceptorType.AROUND_INVOKE), ejbContext);
+                 rv.RETURN_VALUE = InterceptorUtil.callAroundInvokes(threadLocal.get(), instance, 
+                        (CreationalContextImpl<?>)threadLocalCreationalContext.get(), method, arguments, 
+                        InterceptorUtil.getInterceptorMethods(filteredInterceptorStack, InterceptorType.AROUND_INVOKE), 
+                        ejbContext, null);
                  
                  return rv;
             }
@@ -589,9 +591,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             if (WebBeansUtil.isContainsInterceptorMethod(this.nonCtxInterceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE))
             {
                  rv.INTERCEPTOR_OR_DECORATOR_CALL = true;
-                 rv.RETURN_VALUE = InterceptorUtil.callAroundInvokes(bean, instance, (CreationalContextImpl<?>)creationalContext, method, 
-                        arguments, InterceptorUtil.getInterceptorMethods(this.nonCtxInterceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE),
-                        ejbContext);
+                 rv.RETURN_VALUE = InterceptorUtil.callAroundInvokes(bean, instance, 
+                        (CreationalContextImpl<?>)creationalContext, method, arguments,  
+                        InterceptorUtil.getInterceptorMethods(this.nonCtxInterceptedMethodMap.get(method), InterceptorType.AROUND_INVOKE),
+                        ejbContext, null);
                  
                  return rv;
             }
