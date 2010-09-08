@@ -104,7 +104,10 @@ public class EjbBeanProxyHandler implements MethodHandler
         
         if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
         {
-            logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);
+            if(logger.wblWillLogTrace())
+            {
+                logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);   
+            }
             
             boolean access = method.isAccessible();
             SecurityUtil.doPrivilegedSetAccessible(method, true);
@@ -281,7 +284,11 @@ public class EjbBeanProxyHandler implements MethodHandler
         else
         {
             s.writeObject(null);
-            logger.warn(OWBLogConst.WARN_0015, this.ejbBean);
+            
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0015, this.ejbBean);   
+            }
         }
         
         s.writeBoolean(this.isDependent);
