@@ -300,6 +300,13 @@ public class InterceptorDataImpl implements InterceptorData
     @SuppressWarnings("unchecked")
     public Object createNewInstance(Object ownerInstance, CreationalContextImpl<?> ownerCreationalContext)
     {
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("> " + ownerInstance + " " + ownerCreationalContext + " " + this);
+            logger.debug("isDefinedWithWebBeansInterceptor " + isDefinedWithWebBeansInterceptor);
+            logger.debug("definedInInterceptorClass " + definedInInterceptorClass);
+        }
+
         // check for this InterceptorData is defined by interceptor class
         if (this.isDefinedWithWebBeansInterceptor && this.definedInInterceptorClass)
         {
@@ -308,6 +315,11 @@ public class InterceptorDataImpl implements InterceptorData
             // Means that it is the last interceptor added by InterceptorHandler
             if (this.webBeansInterceptor == null)
             {
+                if (logger.wblWillLogDebug())
+                {
+                    logger.debug("< " + decoratorInterceptor);
+                }
+
                 return this.decoratorInterceptor;
             }
 
@@ -325,6 +337,10 @@ public class InterceptorDataImpl implements InterceptorData
 
                 ownerCreationalContext.addDependent(ownerInstance, (WebBeansInterceptor<Object>) this.webBeansInterceptor, interceptor);
             }
+            if (logger.wblWillLogDebug())
+            {
+                logger.debug("< " + interceptor);
+            }
 
             return interceptor;
         }
@@ -335,9 +351,19 @@ public class InterceptorDataImpl implements InterceptorData
         if (this.definedInInterceptorClass)
         {
             ctx = ownerCreationalContext.getEjbInterceptor(ownerInstance, this.interceptorClass);
+            if (logger.wblWillLogDebug())
+            {
+                logger.debug("EjbInterceptor Context " + ctx);
+            }
+
             if (ctx == null)
             {
                 interceptor = WebBeansUtil.newInstanceForced(this.interceptorClass);
+                if (logger.wblWillLogDebug())
+                {
+                    logger.debug("EjbInterceptor newInstanceForced  " + interceptor);
+                }
+
                 try
                 {
                     OWBInjector injector = new OWBInjector();
@@ -346,18 +372,28 @@ public class InterceptorDataImpl implements InterceptorData
                     ctx = new EjbInterceptorContext();
                     ctx.setInjectorInstance(injector);
                     ctx.setInterceptorInstance(interceptor);
+                    ctx.setInterceptorClass(interceptorClass);
                 }
                 catch (Exception e)
                 {
                     logger.error(OWBLogConst.ERROR_0022, e, interceptorClass);
                 }
 
-                ownerCreationalContext.addEjbInterceptor(interceptorClass, ctx);
+                ownerCreationalContext.addEjbInterceptor(ownerInstance, ctx);
             }
             else
             {
                 interceptor = ctx.getInterceptorInstance();
+                if (logger.wblWillLogDebug())
+                {
+                    logger.debug("EjbInterceptor existing " + interceptor);
+                }
+
             }
+        }
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("< " + interceptor);
         }
 
         return interceptor;
@@ -367,7 +403,10 @@ public class InterceptorDataImpl implements InterceptorData
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("Class: [").append(webBeansInterceptor.getBeanClass()).append("]");
+        if (null != webBeansInterceptor) 
+        {
+            sb.append("Class: [").append(webBeansInterceptor.getBeanClass()).append("]");
+        }
         sb.append(" aroundInvoke [").append(aroundInvoke).append("]");
         sb.append(" postConstruct [").append(postConstruct).append("]");
         sb.append(" preDestroy [").append(preDestroy).append("]");

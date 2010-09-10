@@ -84,5 +84,12 @@ public class EjbInterceptorContext implements Serializable
     {
         this.injectorInstance = injectorInstance;
     }
-
+    
+    @Override
+    public String toString() 
+    {
+        return "EjbInterceptorContext [interceptorClass=" + interceptorClass
+            + ", interceptorInstance=" + interceptorInstance
+            + ", injectorInstance=" + injectorInstance + "]";
+    }
 }
