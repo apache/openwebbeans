@@ -27,17 +27,15 @@ public class EjbInterceptorContext implements Serializable
     private static final long serialVersionUID = 1L;
 
     private Object interceptorInstance;
-    
+
     private OWBInjector injectorInstance;
-    
+
     private Class<?> interceptorClass;
-    
+
     public EjbInterceptorContext()
     {
-        
+
     }
-    
-    
 
     /**
      * @return the interceptorClass
@@ -47,7 +45,6 @@ public class EjbInterceptorContext implements Serializable
         return interceptorClass;
     }
 
-
     /**
      * @param interceptorClass the interceptorClass to set
      */
@@ -55,8 +52,6 @@ public class EjbInterceptorContext implements Serializable
     {
         this.interceptorClass = interceptorClass;
     }
-
-
 
     /**
      * @return the interceptorInstance
@@ -89,6 +84,5 @@ public class EjbInterceptorContext implements Serializable
     {
         this.injectorInstance = injectorInstance;
     }
-    
-    
+
 }
