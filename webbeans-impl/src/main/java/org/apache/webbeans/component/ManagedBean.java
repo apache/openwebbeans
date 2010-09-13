@@ -21,9 +21,12 @@ package org.apache.webbeans.component;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
+import javassist.util.proxy.ProxyObject;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Decorator;
 
+import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.intercept.InterceptorData;
 
@@ -36,6 +39,8 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
 {
     /** Constructor of the web bean component */
     private Constructor<T> constructor;
+    
+    boolean isAbstractDecorator;
 
     public ManagedBean(Class<T> returnType)
     {
@@ -66,6 +71,12 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         InjectableConstructor<T> ic = new InjectableConstructor<T>(con, this,creationalContext);
 
         T instance = ic.doInjection();
+        
+        //If this is an abstract Decorator, we need to set the handler on the Proxy instance
+        if(isAbstractDecorator)
+        {
+            ((ProxyObject)instance).setHandler(new AbstractDecoratorMethodHandler());
+        }
         
         return instance;
     }
@@ -119,5 +130,10 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         }
         
         return false;
+    }
+    
+    public void setIsAbstractDecorator(boolean flag)
+    {
+        isAbstractDecorator = flag;
     }
 }

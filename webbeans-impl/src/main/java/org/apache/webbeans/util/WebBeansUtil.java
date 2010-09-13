@@ -3004,6 +3004,7 @@ public final class WebBeansUtil
         Class clazz = JavassistProxyFactory.getInstance().createAbstractDecoratorProxyClass(bean);
 
         bean.setConstructor(WebBeansUtil.defineConstructor(clazz));
+        bean.setIsAbstractDecorator(true);
         return bean;
     }
 

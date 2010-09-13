@@ -42,7 +42,6 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.intercept.ApplicationScopedBeanIntereptorHandler;
 import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandler;
@@ -147,10 +146,6 @@ public final class JavassistProxyFactory
         try
         {
             ProxyFactory fact = createProxyFactory(bean);
-            AbstractDecoratorMethodHandler handler = new AbstractDecoratorMethodHandler();
-
-            //X TODO we MUST NOT set the handler here! This causes mem leaks!
-            fact.setHandler(handler);
             
             clazz = SecurityUtil.doPrivilegedCreateClass(fact);
         }
