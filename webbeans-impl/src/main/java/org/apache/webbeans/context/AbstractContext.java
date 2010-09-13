@@ -286,7 +286,8 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
         }
         
         //Clear context map
-        this.componentInstanceMap.clear();        
+        this.componentInstanceMap.clear();
+        this.setActive(false);       
     }
 
     /**
