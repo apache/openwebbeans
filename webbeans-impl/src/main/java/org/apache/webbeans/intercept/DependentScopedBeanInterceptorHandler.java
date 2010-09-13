@@ -58,7 +58,7 @@ public class DependentScopedBeanInterceptorHandler extends InterceptorHandler
         {
             //If this creational context is owned by this DependentBean, add it
             CreationalContextImpl<?> ccImpl = (CreationalContextImpl<?>)creationalContext;
-            if(ccImpl.getBean().equals(bean))
+            if(ccImpl.getBean() != null && ccImpl.getBean().equals(bean))
             {
                 //Owner of the dependent is itself
                 ccImpl.addDependent(instance, bean, instance);
