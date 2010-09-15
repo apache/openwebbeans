@@ -103,6 +103,9 @@ public class OpenWebBeansConfiguration
     /**Use of EJB interceptor to inject EJBs*/
     public static final String USE_EJBINTERCEPTOR_INJECTION = "org.apache.webbeans.application.useEJBInterceptorInjection";
     
+    /**Use of EJB interceptor to activate EJB contexts*/
+    public static final String USE_EJBINTERCEPTOR_ACTIVATION = "org.apache.webbeans.application.useEJBInterceptorActivation";
+    
     /**EL Adaptor*/
     public static final String EL_ADAPTOR_CLASS = "org.apache.webbeans.spi.adaptor.ELAdaptor";
     
@@ -153,6 +156,9 @@ public class OpenWebBeansConfiguration
         
         value = properties.getProperty(USE_EJBINTERCEPTOR_INJECTION);
         setPropertyFromSystemProperty(USE_EJBINTERCEPTOR_INJECTION, value);
+        
+        value = properties.getProperty(USE_EJBINTERCEPTOR_ACTIVATION);
+        setPropertyFromSystemProperty(USE_EJBINTERCEPTOR_ACTIVATION, value);
         
         value = properties.getProperty(CONTAINER_LIFECYCLE);
         setPropertyFromSystemProperty(CONTAINER_LIFECYCLE, value);
@@ -287,6 +293,17 @@ public class OpenWebBeansConfiguration
     public boolean isUseEJBInterceptorInjection()
     {
         String value = getProperty(USE_EJBINTERCEPTOR_INJECTION);
+        
+        return Boolean.valueOf(value);
+    }
+    
+    /**
+     * Gets EJB context activation property.
+     * @return true if EJB interceptor should do activation of EJB contexts
+     */
+    public boolean isUseEJBInterceptorActivation()
+    {
+        String value = getProperty(USE_EJBINTERCEPTOR_ACTIVATION);
         
         return Boolean.valueOf(value);
     }
