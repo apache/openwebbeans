@@ -535,7 +535,7 @@ public final class ClassUtil
         }
         catch (Exception e)
         {
-            throw new WebBeansException("Exception occurs in the method call with method : " + method.getName() + " in class : " + instance.getClass().getName());
+            throw new WebBeansException("Exception occurs in the method call with method : " + method.getName() + " in class : " + instance.getClass().getName(), e);
         }
 
     }
