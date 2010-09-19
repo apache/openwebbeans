@@ -158,14 +158,25 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     
     protected void destroyStatefulSessionBeanInstance(T proxyInstance, Object ejbInstance)
     {
-        List<Method> methods = getRemoveMethods();
-        if (methods.size() > 0) 
+        Method removeMeth = null;
+        for (Method m : getRemoveMethods())
         {   
             // FIXME: This needs to call an API from the EJB
             // container to remove the EJB instance directly,
             // not via a remove method.  For now, just call 1 
             // remove method directly on the EJB
-            ClassUtil.callInstanceMethod(methods.get(0), ejbInstance, ClassUtil.OBJECT_EMPTY);
+            try 
+            { 
+                removeMeth = proxyInstance.getClass().getMethod(m.getName(), m.getParameterTypes());
+                ClassUtil.callInstanceMethod(removeMeth, proxyInstance, ClassUtil.OBJECT_EMPTY);
+            }
+            catch (NoSuchMethodException e) 
+            {
+                if (logger.wblWillLogDebug())
+                {
+                    logger.debug("Error calling remove method: ", e);
+                }
+            }
         }
     }
     /**
