@@ -35,6 +35,7 @@ import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.context.AbstractContextsService;
 import org.apache.webbeans.context.ApplicationContext;
@@ -44,7 +45,10 @@ import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
 import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.el.ELContextStore;
+import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.FailOverService;
 
 /**
  * Web container {@link org.apache.webbeans.spi.ContextsService}
@@ -52,6 +56,9 @@ import org.apache.webbeans.el.ELContextStore;
  */
 public class WebContextsService extends AbstractContextsService
 {
+    /**Logger instance*/
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebContextsService.class);
+
     /**Current request context*/
     private static ThreadLocal<RequestContext> requestContext = null;
 
@@ -83,6 +90,8 @@ public class WebContextsService extends AbstractContextsService
     private final ConversationManager conversationManager = ConversationManager.getInstance();
     
     private boolean supportsConversation = false;
+    
+    protected FailOverService failoverService = null;
 
     /**Initialize thread locals*/
     static
@@ -105,6 +114,8 @@ public class WebContextsService extends AbstractContextsService
     public WebContextsService()
     {
         supportsConversation =  OpenWebBeansConfiguration.getInstance().supportsConversation();
+        failoverService = (FailOverService) ServiceLoader.getService(FailOverService.class);
+
     }
     
     /**
@@ -280,13 +291,14 @@ public class WebContextsService extends AbstractContextsService
     private void initRequestContext(ServletRequestEvent event)
     {
         
-        RequestContext rq = new RequestContext();
+        RequestContext rq = new ServletRequestContext();
         rq.setActive(true);
 
         requestContext.set(rq);// set thread local
         if(event != null)
         {
             HttpServletRequest request = (HttpServletRequest) event.getServletRequest();
+            ((ServletRequestContext)rq).setServletRequest(request);
             
             if (request != null)
             {
@@ -585,7 +597,15 @@ public class WebContextsService extends AbstractContextsService
      */
     private  SessionContext getSessionContext()
     {
-        return sessionContext.get();
+
+        SessionContext context = sessionContext.get();
+        if (null == context)
+        {
+            lazyStartSessionContext();
+            context = sessionContext.get();
+        }
+
+        return context;
     }
 
     /**
@@ -613,5 +633,49 @@ public class WebContextsService extends AbstractContextsService
     private  ConversationContext getConversationContext()
     {
         return conversationContext.get();
+    }
+
+    private Context lazyStartSessionContext()
+    {
+
+        logger.debug(">lazyStartSessionContext");
+
+        Context webContext = null;
+        Context context = getCurrentContext(RequestScoped.class);
+        if (context instanceof ServletRequestContext)
+        {
+            ServletRequestContext requestContext = (ServletRequestContext) context;
+            HttpServletRequest servletRequest = requestContext.getServletRequest();
+            if (null != servletRequest)
+            { // this could be null if there is no active request context
+                try
+                {
+                    HttpSession currentSession = servletRequest.getSession();
+                    initSessionContext(currentSession);
+                    if (failoverService != null && failoverService.isSupportFailOver())
+                    {
+                        failoverService.sessionIsInUse(currentSession);
+                    }
+
+                    logger.debug("Lazy SESSION context initialization SUCCESS");
+                }
+                catch (Exception e)
+                {
+                    logger.error(OWBLogConst.ERROR_0013, e);
+                }
+
+            }
+            else
+            {
+                logger.warn("Could NOT lazily initialize session context because NO active request context");
+            }
+        }
+        else
+        {
+            logger.warn("Could NOT lazily initialize session context because of "+context+" RequestContext");
+        }
+
+        logger.debug("<lazyStartSessionContext "+ webContext);
+        return webContext;
     }
 }

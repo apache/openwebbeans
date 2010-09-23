@@ -144,34 +144,9 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
             }
             
             this.lifeCycle.getContextService().startContext(RequestScoped.class, event);
-            
-            //Session Conext Must be Active
-            Object request = event.getServletRequest();
-            if(request instanceof HttpServletRequest)
-            {
-                HttpServletRequest httpRequest = (HttpServletRequest)request;
-                HttpSession currentSession = httpRequest.getSession(false);
-                if(currentSession == null)
-                {
-                    //To activate session context
-                    try 
-                    {
-                        httpRequest.getSession();
-                    }
-                    catch(Exception e)
-                    {
-                        logger.error(OWBLogConst.ERROR_0013, e);
-                    }
-                } 
-                else 
-                {
-                    if (failoverService != null && 
-                            failoverService.isSupportFailOver()) 
-                    {
-                        failoverService.sessionIsInUse(currentSession);
-                    }
-                }                
-            }
+
+            // we don't initialise the Session here but do it lazily if it gets requested
+            // the first time. See OWB-457            
 
         }
         catch (Exception e)
