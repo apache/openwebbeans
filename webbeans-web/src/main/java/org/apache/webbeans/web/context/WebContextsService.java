@@ -390,8 +390,8 @@ public class WebContextsService extends AbstractContextsService
     private void destroySessionContext(HttpSession session)
     {
         //Get current session context
-        SessionContext context = getSessionContext();
-        
+        SessionContext context = sessionContext.get();
+
         //Destroy context
         if (context != null)
         {
