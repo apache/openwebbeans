@@ -193,7 +193,24 @@ public class PluginLoader
         
         return null;
     }
-    
+ 
+    /**
+     * Gets ejb lifecycle annotations plugin
+     * 
+     * @return ejb LCA plugin
+     */
+    public OpenWebBeansEjbLCAPlugin getEjbLCAPlugin()
+    {
+        for(OpenWebBeansPlugin plugin : this.plugins)
+        {
+            if(plugin instanceof OpenWebBeansEjbLCAPlugin)
+            {
+                return (OpenWebBeansEjbLCAPlugin)plugin;
+            }
+        }
+        
+        return null;
+    }   
     /**
      * Gets the JMS plugin
      * 

@@ -273,10 +273,6 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
             method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(getClazz(),AroundTimeout.class);
         }
         
-        else if(type.equals(InterceptionType.POST_ACTIVATE) || type.equals(InterceptionType.PRE_PASSIVATE))
-        {
-            return null;
-        }
         else
         {
             Class<? extends Annotation> interceptorTypeAnnotationClazz = InterceptorUtil.getInterceptorAnnotationClazz(type);                

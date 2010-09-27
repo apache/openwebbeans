@@ -67,6 +67,7 @@ public class InvocationContextImpl implements InvocationContext
     
     private OwbBean<?> owbBean;
     private InvocationContext ejbInvocationContext;
+
     
     /** alternate key to be used for dependent creational contexts */
     private Object ccKey;
@@ -173,6 +174,10 @@ public class InvocationContextImpl implements InvocationContext
             {
                 return proceedAroundInvokes(this.interceptorDatas);
             }
+            else if (type.equals(InterceptorType.AROUND_TIMEOUT))
+            {
+                return proceedAroundTimeouts(this.interceptorDatas);
+            }
             return proceedCommonAnnots(this.interceptorDatas, this.type);
 
         }
@@ -265,7 +270,76 @@ public class InvocationContextImpl implements InvocationContext
 
         return result;
     }
-    
+
+    /**
+     * AroundTimeout operations on stack.
+     * @param datas interceptor stack
+     * @return final result
+     * @throws Exception for exceptions
+     */
+    private Object proceedAroundTimeouts(List<InterceptorData> datas) throws Exception
+    {
+        Object result = null;
+
+        if (currentMethod <= datas.size())
+        {
+            InterceptorData intc = datas.get(currentMethod - 1);
+
+            Method method = intc.getAroundTimeout();
+            boolean accessible = method.isAccessible();
+            
+            if (!accessible)
+            {
+                SecurityUtil.doPrivilegedSetAccessible(method, true);
+            }
+            
+            Object t = intc.createNewInstance(this.ccKey != null ? this.ccKey : this.target,
+                    (CreationalContextImpl<?>)this.creationalContext);      
+            
+            if (t == null)
+            {
+                t = target;
+            }
+
+            currentMethod++;
+            
+            result = method.invoke(t, new Object[] { this });
+            
+            if(!accessible)
+            {
+                SecurityUtil.doPrivilegedSetAccessible(method, false);
+            }
+
+        }
+        else
+        {
+            if(!(this.owbBean instanceof EnterpriseBeanMarker))
+            {
+                boolean accessible = this.method.isAccessible();
+                if(!accessible)
+                {                
+                    SecurityUtil.doPrivilegedSetAccessible(method, true);
+                }
+                
+                result = this.method.invoke(target, parameters);
+                
+                if(!accessible)
+                {
+                    SecurityUtil.doPrivilegedSetAccessible(method, false);
+                }                
+            }
+            else 
+            { 
+                if (this.ejbInvocationContext != null)
+                {
+                    result = ejbInvocationContext.proceed();
+                }
+            }
+        }
+
+        return result;
+    }
+
     /**
      * Post construct and predestroy 
      * callback operations.
@@ -286,6 +360,14 @@ public class InvocationContextImpl implements InvocationContext
             if (type.equals(InterceptorType.POST_CONSTRUCT))
             {
                 method = intc.getPostConstruct();
+            }
+            else if (type.equals(InterceptorType.POST_ACTIVATE))
+            {
+                method = intc.getPostActivate();
+            }
+            else if (type.equals(InterceptorType.PRE_PASSIVATE))
+            {
+                method = intc.getPrePassivate();
             }
             else if (type.equals(InterceptorType.PRE_DESTROY))
             {

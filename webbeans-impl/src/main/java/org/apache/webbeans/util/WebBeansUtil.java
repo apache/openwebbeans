@@ -152,6 +152,7 @@ import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
@@ -1215,6 +1216,16 @@ public final class WebBeansUtil
     {
         InterceptorData intData = null;
         Method method = null;
+        OpenWebBeansEjbLCAPlugin ejbPlugin = null;
+        Class<? extends Annotation> prePassivateClass  = null;
+        Class<? extends Annotation> postActivateClass  = null;
+
+        ejbPlugin = PluginLoader.getInstance().getEjbLCAPlugin();
+        if(ejbPlugin != null) 
+        {
+            prePassivateClass  = ejbPlugin.getPrePassivateClass();
+            postActivateClass  = ejbPlugin.getPostActivateClass();
+        }
 
         //Check for default constructor of EJB based interceptor
         if(webBeansInterceptor == null)
@@ -1234,27 +1245,10 @@ public final class WebBeansUtil
         {
             method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(interceptorClass, interceptorType);
         }
-        else if (interceptorType.equals(PostConstruct.class))
+        else if (interceptorType.equals(PostConstruct.class) || ((postActivateClass != null) && (interceptorType.equals(postActivateClass)))
+                 || interceptorType.equals(PreDestroy.class) || ((prePassivateClass != null) && (interceptorType.equals(prePassivateClass))))
         {
-            if (definedInInterceptorClass)
-            {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PostConstruct.class, true);
-            }
-            else
-            {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PostConstruct.class, false);
-            }
-        }
-        else if (interceptorType.equals(PreDestroy.class))
-        {
-            if (definedInInterceptorClass)
-            {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PreDestroy.class, true);
-            }
-            else
-            {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, PreDestroy.class, false);
-            }
+            method = WebBeansUtil.checkCommonAnnotationCriterias(interceptorClass, interceptorType, definedInInterceptorClass);
         }
 
         if (method != null)
@@ -1287,33 +1281,26 @@ public final class WebBeansUtil
     {
         InterceptorData intData = null;
         Method method = null;
+        OpenWebBeansEjbLCAPlugin ejbPlugin = null;
+        Class<? extends Annotation> prePassivateClass  = null;
+        Class<? extends Annotation> postActivateClass  = null;
+
+        ejbPlugin = PluginLoader.getInstance().getEjbLCAPlugin();
+        if(ejbPlugin != null)
+        {
+            prePassivateClass  = ejbPlugin.getPrePassivateClass();
+            postActivateClass  = ejbPlugin.getPostActivateClass();
+        }
 
         if (annotation.equals(AroundInvoke.class) ||
                 annotation.equals(AroundTimeout.class))
         {
             method = WebBeansUtil.checkAroundInvokeAnnotationCriterias(annotatedType, annotation);
         }
-        else if (annotation.equals(PostConstruct.class))
+        else if (annotation.equals(PostConstruct.class) || ((postActivateClass != null) && (annotation.equals(postActivateClass)))
+                 || annotation.equals(PreDestroy.class) || ((prePassivateClass != null) && (annotation.equals(prePassivateClass))))
         {
-            if (definedInInterceptorClass)
-            {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(annotatedType, PostConstruct.class, true);
-            }
-            else
-            {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(annotatedType, PostConstruct.class, false);
-            }
-        }
-        else if (annotation.equals(PreDestroy.class))
-        {
-            if (definedInInterceptorClass)
-            {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(annotatedType, PreDestroy.class, true);
-            }
-            else
-            {
-                method = WebBeansUtil.checkCommonAnnotationCriterias(annotatedType, PreDestroy.class, false);
-            }
+            method = WebBeansUtil.checkCommonAnnotationCriterias(annotatedType, annotation, definedInInterceptorClass);
         }
 
         if (method != null)
@@ -1397,14 +1384,25 @@ public final class WebBeansUtil
             {
                 m = data.getAroundInvoke();
             }
+            else if (type.equals(InterceptorType.AROUND_TIMEOUT))
+            {
+                m = data.getAroundTimeout();
+            }
             else if (type.equals(InterceptorType.POST_CONSTRUCT))
             {
                 m = data.getPostConstruct();
-
+            }
+            else if (type.equals(InterceptorType.POST_ACTIVATE))
+            {
+                m = data.getPostActivate();
             }
             else if (type.equals(InterceptorType.PRE_DESTROY))
             {
                 m = data.getPreDestroy();
+            }
+            else if (type.equals(InterceptorType.PRE_PASSIVATE))
+            {
+                m = data.getPrePassivate();
             }
 
             if (m != null)

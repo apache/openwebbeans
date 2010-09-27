@@ -45,6 +45,8 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -52,9 +54,18 @@ import org.apache.webbeans.util.SecurityUtil;
 
 public final class InterceptorUtil
 {
+    static OpenWebBeansEjbLCAPlugin ejbPlugin = null;
+    static Class<? extends Annotation> prePassivateClass  = null;
+    static Class<? extends Annotation> postActivateClass  = null;
+
     private InterceptorUtil()
     {
-
+        ejbPlugin = PluginLoader.getInstance().getEjbLCAPlugin();
+        if(ejbPlugin != null)
+        {
+            prePassivateClass  = ejbPlugin.getPrePassivateClass();
+            postActivateClass  = ejbPlugin.getPostActivateClass();
+        }
     }
 
     /**
@@ -83,7 +94,11 @@ public final class InterceptorUtil
             if (annCls.equals(Inject.class)        ||
                 annCls.equals(PreDestroy.class)    ||
                 annCls.equals(PostConstruct.class) ||
-                annCls.equals(AroundInvoke.class)    )
+                annCls.equals(AroundInvoke.class)  ||
+                annCls.equals(AroundTimeout.class) ||    // JSR-299 7.2
+                ((ejbPlugin != null)              &&
+                 (annCls.equals(prePassivateClass)   ||  // JSR-299 7.2
+                  annCls.equals(postActivateClass))))    // JSR-299 7.2
             {
                 return false;
             }
@@ -98,10 +113,10 @@ public final class InterceptorUtil
         {
             return AroundInvoke.class;
         }
-//        else if (type.equals(InterceptionType.POST_ACTIVATE))
-//        {
-//            return O;
-//        }
+        else if (type.equals(InterceptionType.POST_ACTIVATE))
+        {
+            return postActivateClass;
+        }
         else if (type.equals(InterceptionType.POST_CONSTRUCT))
         {
             return PostConstruct.class;
@@ -110,10 +125,10 @@ public final class InterceptorUtil
         {
             return PreDestroy.class;
         }
-//        else if (type.equals(InterceptionType.PRE_PASSIVATE))
-//        {
-//            return PrePassivate.class;
-//        }
+        else if (type.equals(InterceptionType.PRE_PASSIVATE))
+        {
+            return prePassivateClass;
+        }
         else if (type.equals(InterceptionType.AROUND_TIMEOUT))
         {
             return AroundTimeout.class;
@@ -203,9 +218,9 @@ public final class InterceptorUtil
         for (Method method : methods)
         {
             if (AnnotationUtil.hasMethodAnnotation(method, PostConstruct.class) || AnnotationUtil.hasMethodAnnotation(method, PreDestroy.class)
-//                    AnnotationUtil.isMethodHasAnnotation(method, PostActivate.class) || 
-//                    AnnotationUtil.isMethodHasAnnotation(method, PrePassivate.class)
-                    )
+                || AnnotationUtil.hasMethodAnnotation(method, postActivateClass)
+                || AnnotationUtil.hasMethodAnnotation(method, prePassivateClass)
+               )
             {
                 if (ClassUtil.isMethodHasParameter(method))
                 {
@@ -239,7 +254,9 @@ public final class InterceptorUtil
         {
             AnnotatedMethod<T> method = (AnnotatedMethod<T>)methodA;
             if(method.isAnnotationPresent(PostConstruct.class) 
-                    || method.isAnnotationPresent(PreDestroy.class))
+                    || method.isAnnotationPresent(PreDestroy.class)
+                    || method.isAnnotationPresent(postActivateClass)
+                    || method.isAnnotationPresent(prePassivateClass))
             {
                     if (!methodA.getParameters().isEmpty())
                     {
@@ -432,9 +449,12 @@ public final class InterceptorUtil
     @SuppressWarnings("unchecked")
     public static List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptorType type)
     {
-        List<InterceptorData> ai = new ArrayList<InterceptorData>();
-        List<InterceptorData> pc = new ArrayList<InterceptorData>();
-        List<InterceptorData> pd = new ArrayList<InterceptorData>();
+        List<InterceptorData> ai = new ArrayList<InterceptorData>();  // AroundInvoke
+        List<InterceptorData> at = new ArrayList<InterceptorData>();  // AroundTimeout
+        List<InterceptorData> pa = new ArrayList<InterceptorData>();  // PostActivate
+        List<InterceptorData> pc = new ArrayList<InterceptorData>();  // PostConstruct
+        List<InterceptorData> pd = new ArrayList<InterceptorData>();  // PreDestroy
+        List<InterceptorData> pp = new ArrayList<InterceptorData>();  // PrePassivate
     
         Iterator<InterceptorData> it = stack.iterator();
         while (it.hasNext())
@@ -448,6 +468,24 @@ public final class InterceptorUtil
                 if (m != null)
                 {
                     ai.add(data);
+                }
+    
+            }
+            else if (type.equals(InterceptorType.AROUND_TIMEOUT))
+            {
+                m = data.getAroundTimeout();
+                if (m != null)
+                {
+                    at.add(data);
+                }
+    
+            }
+            else if (type.equals(InterceptorType.POST_ACTIVATE))
+            {
+                m = data.getPostActivate();
+                if (m != null)
+                {
+                    pa.add(data);
                 }
     
             }
@@ -467,23 +505,42 @@ public final class InterceptorUtil
                 {
                     pd.add(data);
                 }
-    
+
             }
-    
+            else if (type.equals(InterceptorType.PRE_PASSIVATE))
+            {
+                m = data.getPrePassivate();
+                if (m != null)
+                {
+                    pp.add(data);
+                }
+
+            }
         }
     
         if (type.equals(InterceptorType.AROUND_INVOKE))
         {
             return ai;
         }
+        else if (type.equals(InterceptorType.AROUND_TIMEOUT))
+        {
+            return at;
+        }
+        else if (type.equals(InterceptorType.POST_ACTIVATE))
+        {
+            return pa;
+        }
         else if (type.equals(InterceptorType.POST_CONSTRUCT))
         {
             return pc;
-    
         }
         else if (type.equals(InterceptorType.PRE_DESTROY))
         {
             return pd;
+        }
+        else if (type.equals(InterceptorType.PRE_PASSIVATE))
+        {
+            return pp;
         }
     
         return Collections.EMPTY_LIST;

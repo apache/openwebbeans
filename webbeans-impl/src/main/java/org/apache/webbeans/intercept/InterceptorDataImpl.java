@@ -49,13 +49,22 @@ public class InterceptorDataImpl implements InterceptorData
 
     /** Around invokes method */
     private Method aroundInvoke = null;
+    
+    /** Around timeout method */
+    private Method aroundTimeout = null;
 
     /** Post construct methods */
     private Method postConstruct = null;
 
+    /** Post activate method */
+    private Method postActivate = null;
+    
     /** Predestroy Method */
     private Method preDestroy = null;
 
+    /** Prepassivate Method */
+    private Method prePassivate = null;
+    
     private Interceptor<?> webBeansInterceptor;
 
     /** Defined in the interceptor or bean */
@@ -134,6 +143,17 @@ public class InterceptorDataImpl implements InterceptorData
     /*
      * (non-Javadoc)
      * @see
+     * org.apache.webbeans.intercept.InterceptorData#addAroundTimeout(java.lang
+     * .reflect.Method)
+     */
+    public void setAroundTimeout(Method m)
+    {
+        this.aroundTimeout = m;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see
      * org.apache.webbeans.intercept.InterceptorData#addPostConstruct(java.lang
      * .reflect.Method)
      */
@@ -142,6 +162,17 @@ public class InterceptorDataImpl implements InterceptorData
         this.postConstruct = m;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#addPostActivate(java.lang
+     * .reflect.Method)
+     */
+    protected void setPostActivate(Method m)
+    {
+        this.postActivate = m;
+    }
+    
     /*
      * (non-Javadoc)
      * @see
@@ -155,6 +186,17 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
+     * @see
+     * org.apache.webbeans.intercept.InterceptorData#addPrePassivate(java.lang
+     * .reflect.Method)
+     */
+    protected void setPrePassivate(Method m)
+    {
+        this.prePassivate = m;
+    }
+    
+    /*
+     * (non-Javadoc)
      * @see org.apache.webbeans.intercept.InterceptorData#getPostConstruct()
      */
     public Method getPostConstruct()
@@ -162,6 +204,15 @@ public class InterceptorDataImpl implements InterceptorData
         return this.postConstruct;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.webbeans.intercept.InterceptorData#getPostActivate()
+     */
+    public Method getPostActivate()
+    {
+        return this.postActivate;
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.apache.webbeans.intercept.InterceptorData#getPreDestroy()
@@ -173,6 +224,15 @@ public class InterceptorDataImpl implements InterceptorData
 
     /*
      * (non-Javadoc)
+     * @see org.apache.webbeans.intercept.InterceptorData#getPrePassivate()
+     */
+    public Method getPrePassivate()
+    {
+        return this.prePassivate;
+    }
+    
+    /*
+     * (non-Javadoc)
      * @see org.apache.webbeans.intercept.InterceptorData#getAroundInvoke()
      */
     public Method getAroundInvoke()
@@ -180,6 +240,15 @@ public class InterceptorDataImpl implements InterceptorData
         return this.aroundInvoke;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.webbeans.intercept.InterceptorData#getAroundTimeout()
+     */
+    public Method getAroundTimeout()
+    {
+        return this.aroundTimeout;
+    }
+    
     /*
      * (non-Javadoc)
      * @see
@@ -273,13 +342,25 @@ public class InterceptorDataImpl implements InterceptorData
         {
             return aroundInvoke;
         }
+        else if (aroundTimeout != null)
+        {
+            return aroundTimeout;
+        }
         else if (postConstruct != null)
         {
             return postConstruct;
         }
+        else if (postActivate != null)
+        {
+            return postActivate;
+        }
         else if (preDestroy != null)
         {
             return preDestroy;
+        }
+        else if (prePassivate != null)
+        {
+            return prePassivate;
         }
 
         return null;
@@ -408,8 +489,11 @@ public class InterceptorDataImpl implements InterceptorData
             sb.append("Class: [").append(webBeansInterceptor.getBeanClass()).append("]");
         }
         sb.append(" aroundInvoke [").append(aroundInvoke).append("]");
+        sb.append(" aroundTimeout [").append(aroundTimeout).append("]");
         sb.append(" postConstruct [").append(postConstruct).append("]");
+        sb.append(" postActivate [").append(postActivate).append("]");
         sb.append(" preDestroy [").append(preDestroy).append("]");
+        sb.append(" prePassivate [").append(prePassivate).append("]");
 
         return sb.toString();
     }
