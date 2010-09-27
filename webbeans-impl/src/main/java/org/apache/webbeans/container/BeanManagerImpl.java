@@ -76,7 +76,6 @@ import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
-import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -170,7 +169,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     private AnnotatedElementFactory annotatedElementFactory;
 
-    private WebBeansLogger logger = WebBeansLogger.getLogger(BeanManagerImpl.class);
+    //private WebBeansLogger logger = WebBeansLogger.getLogger(BeanManagerImpl.class);
 
     /**
      * Creates a new {@link BeanManager} instance.
@@ -1094,5 +1093,23 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public List<ExternalScope> getAdditionalScopes()
     {
         return additionalScopes;
+    }
+    
+    public void clear()
+    {
+        this.additionalAnnotatedTypes.clear();
+        this.additionalDecoratorClasses.clear();
+        this.additionalInterceptorClasses.clear();
+        this.additionalQualifiers.clear();
+        this.additionalScopes.clear();
+        this.cacheProxies.clear();
+        this.contextMap.clear();
+        this.deploymentBeans.clear();
+        this.errorStack.clear();
+        this.injectionTargetForJavaEeComponents.clear();
+        this.injectionTargetWrappers.clear();
+        this.passivationBeans.clear();
+        this.webBeansDecorators.clear();
+        this.webBeansInterceptors.clear();
     }
 }

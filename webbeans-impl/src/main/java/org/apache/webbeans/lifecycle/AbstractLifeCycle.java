@@ -167,8 +167,11 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             
             //After Stop
             afterStopApplication(endObject);
-            
-            //Clear singleton list
+
+            // Clear BeanManager
+            this.beanManager.clear();
+
+            // Clear singleton list
             WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
                         
         }
