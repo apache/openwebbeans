@@ -295,9 +295,10 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         }
         catch (InvocationTargetException e)
         {
-            Throwable target = e.getTargetException();
+            Throwable target = e.getCause();
+            
             //Look for target exception
-            if (Exception.class.isAssignableFrom(target.getClass()))
+            if (target instanceof Exception)
             {
                 throw (Exception) target;
             }
