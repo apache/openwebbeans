@@ -36,30 +36,10 @@
     
     <body>
         <breadcrumbs>
-        <item name="Apache" href="http://www.apache.org"/>
-        <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
+            <item name="Apache" href="http://www.apache.org"/>
+            <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
+            <item name="OWB-JMS" href="http://openwebbeans.apache.org/${project.version}/webbeans-jms"/>
         </breadcrumbs>
-
-        <menu name="Overview">
-            <item name="Introduction" href="index.html" />
-        </menu>
-
-        <menu name="OpenWebBeans">
-            <item name="JSR-299" href="jsr299.html" />
-            <item name="JSR-330" href="jsr330.html" />
-            <item name="Contributing" href="contributing.html" />
-            <item name="Documentation" href="documentation.html"/>
-            <item name="IRC" href="irc.html" />
-            <item name="FAQ" href="faq.html" />
-            <item name="Extensions" href="extensions/index.html" />
-            <item name="Download Apache OWB" href="http://www.apache.org/dyn/closer.cgi/openwebbeans/" />
-        </menu>
-
-        <menu ref="modules" />
-
-        <menu name="Examples">
-            <item name="guess" href="examples/guess.html" />
-        </menu>
 
         <menu ref="reports"/>
     </body>

@@ -35,6 +35,12 @@
     <version position="left"/>
     
     <body>
+        <breadcrumbs>
+            <item name="Apache" href="http://www.apache.org"/>
+            <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
+            <item name="OWB-JSF-2" href="http://openwebbeans.apache.org/${project.version}/webbeans-jsf"/>
+        </breadcrumbs>
+
         <menu ref="reports"/>
     </body>
 </project>

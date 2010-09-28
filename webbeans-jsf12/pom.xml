@@ -39,7 +39,7 @@
             <artifactId>openwebbeans-el10</artifactId>
             <version>${project.version}</version>
         </dependency>
-	
+
         <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-api</artifactId>
@@ -59,25 +59,25 @@
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
             <optional>true</optional>
         </dependency>
-        
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
-			<optional>true</optional>
-		</dependency>
 
-		<dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-atinject_1.0_spec</artifactId>
-                <optional>true</optional>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+            <optional>true</optional>
         </dependency>
 
-		<dependency>
-			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>openwebbeans-spi</artifactId>
-			<optional>true</optional>
-		</dependency>		        
-      
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-spi</artifactId>
+            <optional>true</optional>
+        </dependency>
+
     </dependencies>
     
 </project>

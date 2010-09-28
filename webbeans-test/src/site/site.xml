@@ -35,6 +35,14 @@
     <version position="left"/>
     
     <body>
+        <breadcrumbs>
+            <item name="Incubator" href="http://incubator.apache.org"/>
+            <item name="OpenWebBeans" href="http://incubator.apache.org/openwebbeans"/>
+            <item name="CDI-Test" href="http://incubator.apache.org/openwebbeans/${project.version}/webbeans-test"/>
+        </breadcrumbs>
+        
+        <menu ref="modules" />
+
         <menu ref="reports"/>
     </body>
 </project>

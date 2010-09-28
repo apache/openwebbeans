@@ -36,9 +36,9 @@
     
     <body>
         <breadcrumbs>
-        <item name="Apache" href="http://www.apache.org"/>
-        <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
-        <item name="Impl" href="http://incubator.apache.org/openwebbeans/${project.version}/openwebbeans-impl"/>
+            <item name="Apache" href="http://www.apache.org"/>
+            <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
+            <item name="OWB-Core" href="http://openwebbeans.apache.org/${project.version}/webbeans-impl"/>
         </breadcrumbs>
 
         <menu name="Overview">
