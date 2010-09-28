@@ -32,8 +32,8 @@
     <artifactId>openwebbeans-distribution</artifactId>
     <packaging>pom</packaging>
 
-    <name>OpenWebBeans :: Distribution</name>
-    <description>Builds the complete OpenWebBeans  distribution bundles</description>
+    <name>Distribution Pkg</name>
+    <description>Apache OpenWebBeans distribution package. Builds the complete OpenWebBeans  distribution bundles</description>
 
     <properties>
         <siteId>/OWB/1.0.0-SNAPSHOT/distribution</siteId>

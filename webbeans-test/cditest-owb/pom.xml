@@ -29,9 +29,9 @@
     <artifactId>cditest-owb</artifactId>
     <packaging>jar</packaging>
 
-    <name>Apache CDI OpenWebBeans Testing integration</name>
+    <name>OWB Testing module</name>
     <description>
-        This module provides plugable CDI-Testing support for the OpenWebBeans CDI container.
+        This module provides plugable CDI-Testing support for the Apache OpenWebBeans CDI container.
     </description>
 
     <dependencies>

@@ -27,7 +27,7 @@
     
     <artifactId>openwebbeans-doc</artifactId>
     
-    <name>Apache OpenWebBeans :: Documentation</name>
+    <name>Documentation</name>
     <packaging>jar</packaging>
     <description>Apache OpenWebBeans Documentation</description>
 

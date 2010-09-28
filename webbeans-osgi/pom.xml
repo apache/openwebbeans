@@ -25,9 +25,9 @@
     </parent>
 
     <artifactId>openwebbeans-osgi</artifactId>
-  <version> 1.0.0-SNAPSHOT</version>
-    <name>Apache OpenWebBeans :: OSGi ClassLoader support</name>
-    <description>Apache OpenWebBeans OSGi ClassLoader support</description>
+    <version> 1.0.0-SNAPSHOT</version>
+    <name>OSGi plugin</name>
+    <description>Apache OpenWebBeans OSGi ClassLoader scanning support</description>
 
     <dependencies>
         <dependency>

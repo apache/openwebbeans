@@ -29,9 +29,9 @@
 
     <artifactId>openwebbeans-porting</artifactId>
   <version> 1.0.0-SNAPSHOT</version>
-    <name>Apache OpenWebBeans :: TCK Porting Package</name>
+    <name>TCK Porting Pkg</name>
     <packaging>jar</packaging>
-    <description>TCK Porting Package OpenWebBeans Implementation</description>
+    <description>Apache OpenWebBeans TCK Porting Package</description>
 
     <properties>
         <webbeans.tck.version>1.0.2.CR1</webbeans.tck.version>
@@ -78,8 +78,9 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-annotation_1.1_spec</artifactId>
+            <version>${geronimo_annotation.version}</version>
         </dependency>
 
         <dependency>

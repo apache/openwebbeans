@@ -28,7 +28,7 @@
     <artifactId>cditest</artifactId>
     <packaging>jar</packaging>
 
-    <name>Apache CDI Testing integration</name>
+    <name>CDI Testing</name>
     <description>
         This project provides a way to genericly run CDI containers 
         from inside of unit tests like junit or testng.

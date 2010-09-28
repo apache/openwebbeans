@@ -24,37 +24,35 @@
     </parent>
 
     <artifactId>openwebbeans-tomcat7</artifactId>
-    <name>Apache OpenWebBeans :: Apache Tomcat 7 Web Profile</name>
-    <description>OpenWebBeans Apache Tomcat 7 Web Profile</description>
+    <name>Tomcat 7 plugin</name>
+    <description>Apache OpenWebBeans Tomcat 7 Web Profile</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>7.0.0</version>
+            <scope>provided</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-spi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-	 <dependency>
-	      <groupId>org.apache.tomcat</groupId>
-	      <artifactId>tomcat-catalina</artifactId>
-	      <version>7.0.0</version>
-	      <scope>provided</scope>
-	    </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-	 <dependency>
-	 	<groupId>org.apache.openwebbeans</groupId>
-	 	<artifactId>openwebbeans-spi</artifactId>
-	 	<version>${project.version}</version>
-	 	<scope>provided</scope>
-	 </dependency>
-
-	 <dependency>
-	 	<groupId>org.apache.geronimo.specs</groupId>
-	 	<artifactId>geronimo-jcdi_1.0_spec</artifactId>
-	 	<scope>provided</scope>
-	 </dependency>
-
-	 <dependency>
-	 	<groupId>org.apache.geronimo.specs</groupId>
-	 	<artifactId>geronimo-atinject_1.0_spec</artifactId>
-	 	<scope>provided</scope>
-	 </dependency>      
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
     

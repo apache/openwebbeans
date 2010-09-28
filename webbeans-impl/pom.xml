@@ -26,8 +26,8 @@
     </parent>
     <artifactId>openwebbeans-impl</artifactId>
   <version> 1.0.0-SNAPSHOT</version>
-    <name>Apache OpenWebBeans :: OpenWebBeans Core</name>
-    <description>Implementation of the Web Beans API</description>
+    <name>OpenWebBeans Core</name>
+    <description>Apache OpenWebBeans Implementation core module</description>
 
     <repositories>
         <!-- TODO: this must get removed once javassist is released to maven.central -->

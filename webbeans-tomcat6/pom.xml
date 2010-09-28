@@ -24,35 +24,33 @@
     </parent>
 
     <artifactId>openwebbeans-tomcat6</artifactId>
-  <version> 1.0.0-SNAPSHOT</version>
-    <name>Apache OpenWebBeans :: Apache Tomcat 6 Web Profile</name>
-    <description>OpenWebBeans Apache Tomcat 6 Web Profile</description>
+    <version> 1.0.0-SNAPSHOT</version>
+    <name>Tomcat 6 plugin</name>
+    <description>ApacheOpenWebBeans Tomcat 6 Web Profile</description>
 
     <dependencies>
-
-
-	 <dependency>
-	      <groupId>org.apache.tomcat</groupId>
-	      <artifactId>catalina</artifactId>
-	      <version>6.0.26</version>
-	      <scope>provided</scope>
-	    </dependency>
-	 <dependency>
-	 	<groupId>org.apache.openwebbeans</groupId>
-	 	<artifactId>openwebbeans-spi</artifactId>
-	 	<version>${project.version}</version>
-	 	<scope>provided</scope>
-	 </dependency>
-	 <dependency>
-	 	<groupId>org.apache.geronimo.specs</groupId>
-	 	<artifactId>geronimo-jcdi_1.0_spec</artifactId>
-	 	<scope>provided</scope>
-	 </dependency>
-	 <dependency>
-	 	<groupId>org.apache.geronimo.specs</groupId>
-	 	<artifactId>geronimo-atinject_1.0_spec</artifactId>
-	 	<scope>provided</scope>
-	 </dependency>      
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>catalina</artifactId>
+            <version>6.0.26</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-spi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     
 </project>

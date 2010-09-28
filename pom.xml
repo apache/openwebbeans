@@ -56,6 +56,35 @@
         <url>http://issues.apache.org/jira/browse/OWB</url>
     </issueManagement>
 
+    <distributionManagement>
+        <site>
+            <id>apache.openwebbeans.site</id>
+            <url>scp://minotaur.apache.org/www/openwebbeans.apache.org/${project.version}</url>
+        </site>
+    </distributionManagement>
+
+    <properties>
+        <openwebbeans.version>1.0.0-alpha-2</openwebbeans.version>
+        <geronimo_jaxws.version>1.0</geronimo_jaxws.version>
+        <geronimo_servlet.version>1.2</geronimo_servlet.version>
+        <dom4j.version>1.6.1</dom4j.version>
+        <geronimo_ejb.version>1.0.1</geronimo_ejb.version>
+        <geronimo_el.version>1.0</geronimo_el.version>
+        <scannatation.version>1.0.2</scannatation.version>
+        <geronimo_annotation.version>1.0.1</geronimo_annotation.version>
+        <geronimo_jpa.version>1.1</geronimo_jpa.version>
+        <geronimo_jta.version>1.1.1</geronimo_jta.version>
+        <geronimo_jsp.version>1.0.1</geronimo_jsp.version>
+        <geronimo_cdi.version>1.0</geronimo_cdi.version>
+        <geronimo_atinject.version>1.0</geronimo_atinject.version>
+        <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
+        <geronimo_validation.version>1.1</geronimo_validation.version>
+        <javassist.version>3.12.0.GA</javassist.version>
+        <openejb.version>3.1.2</openejb.version>
+        <myfaces.version>2.0.2</myfaces.version>
+        <siteId>/OWB/1.0.0-alpha-2/plugins</siteId>
+    </properties>
+    
     <mailingLists>
         <mailingList>
             <name>OpenWebBeans Developer List</name>
@@ -247,7 +276,7 @@
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -256,7 +285,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.5</version>
+                <version>2.6</version>
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
@@ -282,7 +311,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.2</version>
+                <version>2.3</version>
                 <executions>
                   <execution>
                     <id>verify-style</id>
@@ -304,9 +333,9 @@
             </plugin>
 
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>rat-maven-plugin</artifactId>
-                <version>1.0-alpha-3</version>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.7</version>
                 <configuration>
                     <includes>
                         <include>src/**/*</include>
@@ -402,12 +431,6 @@
         <dependencies>
 
             <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jaxws_2.1_spec</artifactId>
                 <version>${geronimo_jaxws.version}</version>
@@ -430,13 +453,6 @@
                 <artifactId>geronimo-ejb_3.0_spec</artifactId>
                 <version>${geronimo_ejb.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>jsr250-api</artifactId>
-                <version>${javax.annot.version}</version>
-            </dependency>
-
 
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
@@ -490,7 +506,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.5</version>
+                <version>4.8.1</version>
                 <scope>test</scope>
             </dependency>
 
@@ -615,37 +631,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <distributionManagement>
-        <site>
-            <id>apache.openwebbeans.site</id>
-            <url>scp://minotaur.apache.org/www/openwebbeans.apache.org/${project.version}</url>
-        </site>
-    </distributionManagement>
-
-    <properties>
-        <openwebbeans.version>1.0.0-alpha-1</openwebbeans.version>
-        <log4j.version>1.2.14</log4j.version>
-        <geronimo_jaxws.version>1.0</geronimo_jaxws.version>
-        <geronimo_servlet.version>1.2</geronimo_servlet.version>
-        <dom4j.version>1.6.1</dom4j.version>
-        <geronimo_ejb.version>1.0.1</geronimo_ejb.version>
-        <geronimo_el.version>1.0</geronimo_el.version>
-        <scannatation.version>1.0.2</scannatation.version>
-        <geronimo_annotation.version>1.0</geronimo_annotation.version>
-        <geronimo_jpa.version>1.0</geronimo_jpa.version>
-        <geronimo_jta.version>1.1.1</geronimo_jta.version>
-        <geronimo_jsp.version>1.0.1</geronimo_jsp.version>
-        <geronimo_cdi.version>1.0</geronimo_cdi.version>
-        <geronimo_atinject.version>1.0</geronimo_atinject.version>
-        <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
-        <geronimo_validation.version>1.0</geronimo_validation.version>
-        <javassist.version>3.12.0.GA</javassist.version>
-        <openejb.version>3.1.2</openejb.version>
-        <myfaces.version>2.0.1</myfaces.version>
-        <javax.annot.version>1.0</javax.annot.version>
-        <siteId>/OWB/1.0.0-alpha-1/plugins</siteId>
-    </properties>
-
     <profiles>
         <profile>
             <id>reporting</id>
@@ -661,7 +646,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jxr-plugin</artifactId>
-                        <version>2.1</version>
+                        <version>2.2</version>
                         <configuration>
                             <inputEncoding>
                                 ${project.build.sourceEncoding}
@@ -674,7 +659,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-pmd-plugin</artifactId>
-                        <version>2.4</version>
+                        <version>2.5</version>
                         <configuration>
                             <targetJdk>1.5</targetJdk>
                             <rulesets>
@@ -712,7 +697,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-report-plugin</artifactId>
-                        <version>2.4.3</version>
+                        <version>2.6</version>
                         <reportSets>
                             <reportSet>
                                 <reports>
@@ -725,17 +710,17 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>cobertura-maven-plugin</artifactId>
-                        <version>2.2</version>
+                        <version>2.4</version>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>taglist-maven-plugin</artifactId>
-                        <version>2.2</version>
+                        <version>2.4</version>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>findbugs-maven-plugin</artifactId>
-                        <version>1.2</version>
+                        <version>2.3.1</version>
                         <configuration>
                             <threshold>Low</threshold>
                         </configuration>
@@ -745,96 +730,11 @@
             </reporting>
         </profile>
 
-        <!-- START release profile -->
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-release-plugin</artifactId>
-                        <version>2.0</version>
-                        <configuration>
-                            <useReleaseProfile>false</useReleaseProfile>
-                            <goals>deploy</goals>
-                            <arguments>-Prelease</arguments>
-                        </configuration>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-install-plugin</artifactId>
-                        <version>2.3.1</version>
-                        <configuration>
-                            <createChecksum>true</createChecksum>
-                        </configuration>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.1</version>
-                        <configuration>
-                            <passphrase>${gpg.passphrase}</passphrase>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-
-                    <!-- We want to deploy the artifact to a staging location for perusal -->
-                    <plugin>
-                        <inherited>true</inherited>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <configuration>
-                            <altDeploymentRepository>${deploy.altRepository}</altDeploymentRepository>
-                            <updateReleaseInfo>true</updateReleaseInfo>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <!-- END release profile -->
-
         <profile>
             <id>jsr330-tck</id>
             <modules>
                 <module>atinject-tck</module>
             </modules>
-
         </profile>
 
         <profile>
@@ -842,7 +742,6 @@
             <modules>
                 <module>webbeans-tck</module>
             </modules>
-
         </profile>
 
     </profiles>

@@ -24,21 +24,21 @@
     </parent>
 
     <artifactId>openwebbeans-jsf</artifactId>
-  <version> 1.0.0-SNAPSHOT</version>
-    <name>Apache OpenWebBeans :: JSF integration</name>
-    <description>JSF integration for the  OpenWebBeans Implementation</description>
+    <version> 1.0.0-SNAPSHOT</version>
+    <name>JSF-2 plugin</name>
+    <description>Apache OpenWebBeans JSF integration</description>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-impl</artifactId>
         </dependency>
-	
-	    <dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-			
+
         <dependency>
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-api</artifactId>
@@ -56,25 +56,25 @@
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
             <optional>true</optional>
         </dependency>
-        
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jcdi_1.0_spec</artifactId>
-			<optional>true</optional>
-		</dependency>
 
-		<dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-atinject_1.0_spec</artifactId>
-                <optional>true</optional>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+            <optional>true</optional>
         </dependency>
 
-		<dependency>
-			<groupId>org.apache.openwebbeans</groupId>
-			<artifactId>openwebbeans-spi</artifactId>
-			<optional>true</optional>
-		</dependency>		        
-      
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-spi</artifactId>
+            <optional>true</optional>
+        </dependency>
+
     </dependencies>
     
 </project>

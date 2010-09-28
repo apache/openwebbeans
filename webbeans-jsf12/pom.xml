@@ -25,8 +25,8 @@
 
     <artifactId>openwebbeans-jsf12</artifactId>
   <version> 1.0.0-SNAPSHOT</version>
-    <name>Apache OpenWebBeans :: JSF 1.2 integration</name>
-    <description>JSF 1.2 integration for the  OpenWebBeans Implementation</description>
+    <name>JSF 1.2 plugin</name>
+    <description>Apache OpenWebBeans JSF 1.2 integration</description>
 
     <dependencies>
         <dependency>
