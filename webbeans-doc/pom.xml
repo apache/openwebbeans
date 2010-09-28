@@ -29,7 +29,9 @@
     
     <name>Documentation</name>
     <packaging>jar</packaging>
-    <description>Apache OpenWebBeans Documentation</description>
+    <description>
+        Project for building the Apache OpenWebBeans Documentation
+    </description>
 
     <profiles>
         <profile>

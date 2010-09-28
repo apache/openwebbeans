@@ -14,14 +14,22 @@ Welcome to OpenWebBeans
   
 * What is OpenWebBeans?
 
-  OpenWebBeans will be an ASL-licensed implementation of the Web Beans Specification which is defined as JSR-299. 
+  OpenWebBeans is an ASL-licensed implementation of the JSR-299
+  "Contexts and Dependency Injection for the Java (TM) EE platform" spezification.
   
-  In addition to the implementation of the specification, the project aims to create a new set 
-  of WebBeans components exposing functionality of other Apache Foundation projects.
+  In addition to the implementation of the specification, the project provides a set
+  of WebBeans components and integration plugins exposing functionality of other
+  Apache Software Foundation projects.
 
 * Recent News
  
-  * 05.03.2010 - M4 is released
+  * 03.09.2010 - alpha-2 released
+
+  * 03.08.2010 - New committer: Gerhard Petracek
+
+  * 10.07.2010 - alpha-1 released
+
+  * 05.03.2010 - M4 released
  
   * 04.03.2010 - New committer: Ying Wang
    
