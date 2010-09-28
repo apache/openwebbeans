@@ -249,7 +249,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         
                             // Filter both EJB and WebBeans interceptors
                             InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
-        
+                            InterceptorUtil.filterOverridenAroundInvokeInterceptor(bean.getBeanClass(), filteredInterceptorStack);
                             this.interceptedMethodMap.put(method, filteredInterceptorStack);
                         }
                         

@@ -527,6 +527,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
 
                 // Filter both EJB and WebBeans interceptors
                 InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
+                InterceptorUtil.filterOverridenAroundInvokeInterceptor(injectionTarget.getBeanClass(), filteredInterceptorStack);
 
                 this.interceptedMethodMap.put(method, filteredInterceptorStack);
             }
