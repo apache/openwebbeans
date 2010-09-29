@@ -135,7 +135,7 @@ public final class JSFUtil
             if(pathIndex == -1)
             {
                 result.append(buffer.substring(0,index+1));
-                result.append(remainder.substring(0));
+                result.append(remainder);
                 result.append("?");
                 result.append("cid");
                 result.append("=");

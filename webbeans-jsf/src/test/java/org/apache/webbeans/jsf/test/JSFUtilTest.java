@@ -22,9 +22,11 @@ import org.apache.webbeans.jsf.JSFUtil;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import org.junit.Test;
 
 public class JSFUtilTest extends TestCase
 {
+    @Test
     public void testCidUrlUpdate()
     {
         String withQuery = "/context/file.get?name=hipo";
@@ -61,8 +63,6 @@ public class JSFUtilTest extends TestCase
         
         path = JSFUtil.getRedirectViewIdWithCid(withQueryWithContextWithPath, cid);
         Assert.assertEquals("/context?cid=1&hiho=hi#same", path);
-        
-        
     }
 
 }
