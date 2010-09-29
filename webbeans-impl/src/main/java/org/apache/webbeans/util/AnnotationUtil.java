@@ -18,17 +18,11 @@
  */
 package org.apache.webbeans.util;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
+import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Stereotype;
@@ -38,11 +32,18 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 import javax.interceptor.InterceptorBinding;
-
-import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.xml.XMLAnnotationTypeManager;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Utility class related with {@link Annotation} operations.
@@ -53,6 +54,8 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 public final class AnnotationUtil
 {
     public static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
+
+    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     
     // No instantiate
     private AnnotationUtil()
@@ -537,115 +540,223 @@ public final class AnnotationUtil
     }
 
     /**
-     * Returns true if the injection point binding type and {@link Nonbinding}
-     * member values are equal to the given member annotation.
-     * 
-     * @param clazz annotation class
-     * @param src component binding type annotation
-     * @param member annotation for querying the binding type
-     * @return true or false
+     * Checks if the given qualifiers are equal.
+     *
+     * Qualifiers are equal if they have the same annotationType and all their
+     * methods, except those annotated with @Nonbinding, return the same value.
+     *
+     * @param qualifier1
+     * @param qualifier2
+     * @return
      */
-    public static boolean hasAnnotationMember(Class<? extends Annotation> clazz, Annotation src, Annotation member)
+    public static boolean isQualifierEqual(Annotation qualifier1, Annotation qualifier2)
     {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(src, "Src argument can not be null");
-        Asserts.assertNotNull(member, "Member argument can not be null");
+        Asserts.assertNotNull(qualifier1, "qualifier1 argument can not be null");
+        Asserts.assertNotNull(qualifier2, "qualifier2 argument can not be null");
 
-        if (!src.annotationType().equals(member.annotationType()))
+        Class<? extends Annotation> qualifier1AnnotationType
+                = qualifier1.annotationType();
+
+        // check if the annotationTypes are equal
+        if (qualifier1AnnotationType == null
+                || !qualifier1AnnotationType.equals(qualifier2.annotationType()))
         {
             return false;
         }
 
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
+        // check the values of all qualifier-methods
+        // except those annotated with @Nonbinding
+        List<Method> bindingQualifierMethods
+                = getBindingQualifierMethods(qualifier1AnnotationType);
 
-        List<String> list = new ArrayList<String>();
-
-        for (Method method : methods)
+        for (Method method : bindingQualifierMethods)
         {
-            Annotation[] annots = method.getDeclaredAnnotations();
+            Object value1 = callMethod(qualifier1, method);
+            Object value2 = callMethod(qualifier2, method);
 
-            if (annots.length > 0)
+            if (!checkEquality(value1, value2))
             {
-                for (Annotation annot : annots)
-                {
-                    if (!annot.annotationType().equals(Nonbinding.class))
-                    {
-                        list.add(method.getName());
-                    }
-                }
-
-            }
-            else
-            {
-                list.add(method.getName());
+                return false;
             }
         }
 
-        return checkEquality(src.toString(), member.toString(), list);
-
+        return true;
     }
 
     /**
-     * Check that given two annotation values are equal or not.
-     * 
-     * @param src annotation toString method
-     * @param member annotation toString method
-     * @param arguments annotation member values with {@link Nonbinding}
-     *            annoations.
-     * @return true or false
+     * Quecks if the two values are equal.
+     *
+     * @param value1
+     * @param value2
+     * @return
      */
-    private static boolean checkEquality(String src, String member, List<String> arguments)
+    private static boolean checkEquality(Object value1, Object value2)
     {
-        if ((checkEquBuffer(src, arguments).toString().trim().equals(checkEquBuffer(member, arguments).toString().trim())))
+        if ((value1 == null && value2 != null)
+                || (value1 != null && value2 == null))
+        {
+            return false;
+        }
+
+        if (value1 == null && value2 == null)
         {
             return true;
         }
-        
-        return false;
+
+        // now both values are != null
+
+        Class<?> valueClass = value1.getClass();
+
+        if (!valueClass.equals(value2.getClass()))
+        {
+            return false;
+        }
+
+        if (valueClass.isPrimitive())
+        {
+            // primitive types can be checked with ==
+            return value1 == value2;
+        }
+        else if (valueClass.isArray())
+        {
+            Class<?> arrayType = valueClass.getComponentType();
+
+            if (arrayType.isPrimitive())
+            {
+                if (Long.TYPE == arrayType)
+                {
+                    return Arrays.equals(((long[]) value1), (long[]) value2);
+                }
+                else if (Integer.TYPE == arrayType)
+                {
+                    return Arrays.equals(((int[]) value1), (int[]) value2);
+                }
+                else if (Short.TYPE == arrayType)
+                {
+                    return Arrays.equals(((short[]) value1), (short[]) value2);
+                }
+                else if (Double.TYPE == arrayType)
+                {
+                    return Arrays.equals(((double[]) value1), (double[]) value2);
+                }
+                else if (Float.TYPE == arrayType)
+                {
+                    return Arrays.equals(((float[]) value1), (float[]) value2);
+                }
+                else if (Boolean.TYPE == arrayType)
+                {
+                    return Arrays.equals(((boolean[]) value1), (boolean[]) value2);
+                }
+                else if (Byte.TYPE == arrayType)
+                {
+                    return Arrays.equals(((byte[]) value1), (byte[]) value2);
+                }
+                else if (Character.TYPE == arrayType)
+                {
+                    return Arrays.equals(((char[]) value1), (char[]) value2);
+                }
+                return false;
+            }
+            else
+            {
+                return Arrays.equals(((Object[]) value1), (Object[]) value2);
+            }
+        }
+        else
+        {
+            return value1.equals(value2);
+        }
     }
 
-    /*
-     * Private check method
+    /**
+     * Calls the given method on the given instance.
+     * Used to determine the values of annotation instances.
+     *
+     * @param instance
+     * @param method
+     * @return
      */
-    private static StringBuffer checkEquBuffer(String src, List<String> arguments)
+    private static Object callMethod(Object instance, Method method)
     {
-        int index = src.indexOf('(');
+        boolean accessible = method.isAccessible();
 
-        String sbstr = src.substring(index + 1, src.length() - 1);
-
-        StringBuffer srcBuf = new StringBuffer();
-
-        StringTokenizer tok = new StringTokenizer(sbstr, ",");
-        while (tok.hasMoreTokens())
+        try
         {
-            String token = tok.nextToken();
-
-            StringTokenizer tok2 = new StringTokenizer(token, "=");
-            while (tok2.hasMoreElements())
+            if (!accessible)
             {
-                String tt = tok2.nextToken();
-                if (arguments.contains(tt.trim()))
-                {
-                    srcBuf.append(tt);
-                    srcBuf.append("=");
+                SecurityUtil.doPrivilegedSetAccessible(method, true);
+            }
 
-                    if (tok2.hasMoreElements())
+            return method.invoke(instance, EMPTY_OBJECT_ARRAY);
+        }
+        catch (Exception e)
+        {
+            throw new WebBeansException("Exception in method call : " + method.getName(), e);
+        }
+        finally
+        {
+            // reset accessible value
+            SecurityUtil.doPrivilegedSetAccessible(method, accessible);
+        }
+    }
+
+    /**
+     * Return a List of all methods of the qualifier,
+     * which are not annotated with @Nonbinding.
+     *
+     * @param qualifierAnnotationType
+     * @return
+     */
+    private static List<Method> getBindingQualifierMethods(
+            Class<? extends Annotation> qualifierAnnotationType)
+    {
+        Method[] qualifierMethods = SecurityUtil
+                .doPrivilegedGetDeclaredMethods(qualifierAnnotationType);
+
+        if (qualifierMethods.length > 0)
+        {
+            List<Method> bindingMethods = new ArrayList<Method>();
+
+            for (Method qualifierMethod : qualifierMethods)
+            {
+                Annotation[] qualifierMethodAnnotations
+                        = qualifierMethod.getDeclaredAnnotations();
+
+                if (qualifierMethodAnnotations.length > 0)
+                {
+                    // look for @Nonbinding
+                    boolean nonbinding = false;
+
+                    for (Annotation qualifierMethodAnnotation : qualifierMethodAnnotations)
                     {
-                        String str = tok2.nextToken();
-                        if(str.charAt(0) == '"' && str.charAt(str.length() -1) == '"')
+                        if (Nonbinding.class.equals(
+                                qualifierMethodAnnotation.annotationType()))
                         {
-                            str = str.substring(1,str.length()-1);
+                            nonbinding = true;
+                            break;
                         }
-                        
-                        srcBuf.append(str);   
                     }
+
+                    if (!nonbinding)
+                    {
+                        // no @Nonbinding found - add to list
+                        bindingMethods.add(qualifierMethod);
+                    }
+                }
+                else
+                {
+                    // no method-annotations - add to list
+                    bindingMethods.add(qualifierMethod);
                 }
             }
 
+            return bindingMethods;
         }
 
-        return srcBuf;
+        // annotation has no methods
+        return Collections.emptyList();
     }
+
 
     /**
      * Gets the array of qualifier annotations on the given array.

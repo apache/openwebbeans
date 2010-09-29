@@ -29,15 +29,91 @@ import java.lang.reflect.Proxy;
  * The annotation literal gets filled with the default values.
  * TODO implement class caching!
  */
-public class DefaultAnnotation implements InvocationHandler
+public class DefaultAnnotation implements InvocationHandler, Annotation
 {
+    
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+
     public static Annotation of(Class<? extends Annotation> annotation) 
     {
-        return (Annotation) Proxy.newProxyInstance(annotation.getClassLoader(), new Class[] {annotation}, new DefaultAnnotation());
+        return (Annotation) Proxy.newProxyInstance(annotation.getClassLoader(),
+                new Class[] {annotation}, new DefaultAnnotation(annotation));
+    }
+
+    private final Class<? extends Annotation> annotationClass;
+
+    private DefaultAnnotation(Class<? extends Annotation> annotationClass)
+    {
+        this.annotationClass = annotationClass;
     }
     
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable 
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
+        if ("hashCode".equals(method.getName()))
+        {
+            return hashCode();
+        }
+        else if ("equals".equals(method.getName()))
+        {
+            return equals(args[0]);
+        }
+        else if ("annotationType".equals(method.getName()))
+        {
+            return annotationType();
+        }
+        else if ("toString".equals(method.getName()))
+        {
+            return toString();
+        }
+
         return method.getDefaultValue();
     }
+
+    public Class<? extends Annotation> annotationType()
+    {
+        return annotationClass;
+    }
+
+    /**
+     * Copied from javax.enterprise.util.AnnotationLiteral#toString()
+     * with minor changes.
+     *
+     * @return
+     */
+    @Override
+    public String toString()
+    {
+        Method[] methods = this.annotationClass.getDeclaredMethods();
+
+        StringBuilder sb = new StringBuilder("@" + annotationType().getName() + "(");
+        int lenght = methods.length;
+
+        for (int i = 0; i < lenght; i++)
+        {
+            // Member name
+            sb.append(methods[i].getName()).append("=");
+
+            // Member value
+            Object memberValue;
+            try
+            {
+                memberValue = invoke(this, methods[i], EMPTY_OBJECT_ARRAY);
+            }
+            catch (Throwable throwable)
+            {
+                memberValue = "";
+            }
+            sb.append(memberValue);
+
+            if (i < lenght - 1)
+            {
+                sb.append(",");
+            }
+        }
+
+        sb.append(")");
+
+        return sb.toString();
+    }
+    
 }
