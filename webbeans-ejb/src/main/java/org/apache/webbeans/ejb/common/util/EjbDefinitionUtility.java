@@ -47,6 +47,15 @@ public final class EjbDefinitionUtility
         creator.defineApiType();
     }
     
+    /**
+     * 
+     * @param <T> EJB bean implementation class
+     * @param bean The Enterprise bean to create a proxy for
+     * @param iface The @Local interface the proxy should implement or the 
+     *              @Localbean class the proxy should extend.
+     * @param creationalContext 
+     * @return
+     */
     @SuppressWarnings({"unchecked"})
     public static <T> T defineEjbBeanProxy(BaseEjbBean<T> bean, Class<?> iface, CreationalContext<?> creationalContext)
     {
@@ -57,7 +66,16 @@ public final class EjbDefinitionUtility
             if(clazz == null)
             {
                 ProxyFactory factory = new ProxyFactory();
-                factory.setInterfaces(new Class[]{iface});
+                if (iface.isInterface())
+                {
+                    factory.setInterfaces(new Class[]{iface});
+                }
+                else 
+                {
+                    // @LocalBean no-interface local view requested
+                    factory.setSuperclass(iface);
+                }
+                
                 clazz = JavassistProxyFactory.getInstance().defineEjbBeanProxyClass(bean, iface, factory);
             }
             
