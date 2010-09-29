@@ -107,10 +107,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
 
         Object parentInstance = null;
 
-        // Added for most specialized bean
-        Annotation[] anns = new Annotation[this.ownerComponent.getQualifiers().size()];
-        anns = this.ownerComponent.getQualifiers().toArray(anns);
-
         Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(),
                 (AbstractOwbBean<T>) this.ownerComponent);
 
@@ -131,10 +127,6 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     protected Object getParentInstanceFromContext(CreationalContext<?> creationalContext)
     {
         Object parentInstance = null;
-
-        // Added for most specialized bean
-        Annotation[] anns = new Annotation[this.ownerComponent.getQualifiers().size()];
-        anns = this.ownerComponent.getQualifiers().toArray(anns);
 
         Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(),
                 (AbstractOwbBean<T>) this.ownerComponent);

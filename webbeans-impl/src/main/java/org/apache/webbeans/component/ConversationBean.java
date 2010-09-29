@@ -83,10 +83,6 @@ public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
     @Override
     protected void destroyInstance(Conversation instance, CreationalContext<Conversation> creationalContext)
     {
-        if (instance.isTransient())
-        {
-            instance = null;
-        }
     }
     
 }
