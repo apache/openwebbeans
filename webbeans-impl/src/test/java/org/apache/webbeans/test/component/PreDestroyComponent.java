@@ -34,17 +34,20 @@ public class PreDestroyComponent
 
     private IPayment p2 = null;
 
+    private static boolean destroyed;
+
     @PostConstruct
     public void init()
     {
         this.p = payment;
-
+        destroyed = false;
     }
 
     @PreDestroy
     public void destroy()
     {
         p2 = p;
+        destroyed = true;
     }
 
     public IPayment getP()
@@ -57,4 +60,8 @@ public class PreDestroyComponent
         return p2;
     }
 
+    public static boolean isDestroyed()
+    {
+        return destroyed;
+    }
 }

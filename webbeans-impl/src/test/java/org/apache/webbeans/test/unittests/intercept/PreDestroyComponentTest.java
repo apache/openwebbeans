@@ -85,6 +85,11 @@ public class PreDestroyComponentTest extends TestContext
         Assert.assertNotNull(pcc.getP());
         Assert.assertSame(object.getValue(), payment.getValue());
 
+        Assert.assertFalse(PreDestroyComponent.isDestroyed());
+
+        ContextFactory.destroyRequestContext(null); 
+
+        Assert.assertTrue(PreDestroyComponent.isDestroyed());
     }
 
 }
