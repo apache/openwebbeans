@@ -244,6 +244,14 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
         return dependentSFSBToBeRemoved.get(proxy);
     }
     
-
+    /**
+     * 
+     * @return true if the bean supports a no-interface (bean-class) local view but 
+     * the container does not return it in the list of business local interfaces.
+     */
+    public boolean needsBeanLocalViewAddedToTypes()
+    {
+        return false;
+    }
 
 }

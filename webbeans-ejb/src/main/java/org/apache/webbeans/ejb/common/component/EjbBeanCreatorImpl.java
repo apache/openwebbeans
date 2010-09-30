@@ -92,6 +92,14 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
             }
             
             getBean().addApiType(Object.class);
+            
+            if (getBean().needsBeanLocalViewAddedToTypes())
+            {
+                for(Class<?> clazz = getBean().getBeanClass(); !clazz.equals(Object.class); clazz = clazz.getSuperclass()) 
+                { 
+                    getBean().addApiType(clazz);    
+                }   
+            }
         }
         else
         {  
