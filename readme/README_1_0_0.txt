@@ -1,12 +1,11 @@
 -------------------------------
 Apache OpenWebBeans 1.0.0
 -------------------------------
-Welcome! Thanks for downloading and using OpenWebBeans. 
+Welcome! 
+Thanks for downloading and using OpenWebBeans. 
 This document is a "Getting Started Guide" for OpenWebBeans.
 
 This document is based on the 1.0.0 release of the OpenWebBeans.
-
-NOTE : Final release version of OpenWebBeans will be 1.0.0.
 
 --------------------------------
 What is Apache  OpenWebBeans?
@@ -15,6 +14,10 @@ OpenWebBeans is an ASL 2.0-licensed implementation of the JSR-299, Contexts and 
 
 Project's web page can be found at: 
 "http://openwebbeans.apache.org"
+
+The projects WIKI page can be found at:
+https://cwiki.apache.org/confluence/display/OWB/Index
+
 
 --------------------------------
 OpenWebBeans 1.0.0 Release Features
@@ -68,11 +71,48 @@ of the Application. This is especially the case for <alternatives> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
 
+
 -------------------------------------------
 Release Notes - OpenWebBeans - Version 1.0.0
 -------------------------------------------
 
-TODO
+Bug
+
+    * [OWB-318] - multiple methods with same EJB @interceptors(foo.class) in same bean class get multiple interceptor instances
+    * [OWB-384] - OWB needs to call 299-defined PrePassivate, PostActivate, and AroundTimeout interceptors for EJBs
+    * [OWB-422] - Support needed for PrePassivate, PostActivate, and AroundTimeout via EJBInterceptor.
+    * [OWB-429] - OpenWebBeansEjbPlugin Class Hierarchy
+    * [OWB-438] - Cached Normal Scoped Proxy instances
+    * [OWB-439] - EjbPlugin session bean proxy creation thread safe problem
+    * [OWB-445] - we must not use javassist ProxyFactory#setHandler(MethodHandler)
+    * [OWB-446] - EJB lifecycle callbacks not stacked correctly
+    * [OWB-450] - NullPointerException in DependentScopedBeanInterceptorHandler when it has a NullCreationalContext (normally from a EE component).
+    * [OWB-454] - ClassUtil.callInstanceMethod() doesn't propogate original exception
+    * [OWB-455] - IllegalArgument method calling remove method of EJB during destroy
+    * [OWB-456] - When multiple interceptors are defined for a bean OWB does NOT correctly remove the overriden base Interceptors
+    * [OWB-457] - we must not create a SessionContext for static resource reqeusts
+    * [OWB-460] - fix owb-openejb and owb-ejb artifactIds
+    * [OWB-464] - InjectionPointImpl using wrong class loader during serialize/deserialize, dropping qualifiers, and omiting qualifier values.
+    * [OWB-466] - Ensure removal of all ThreadLocal values
+
+Improvement
+
+    * [OWB-177] - Handling of InterceptionType#POST_ACTIVATE, PRE_PASSIVATE and AROUND_TIMEOUT is missing
+    * [OWB-407] - detailed information about exceptions
+    * [OWB-451] - Allow InterceptorUtil#callAroundInvokes to propogate a callers 'creational context key'
+    * [OWB-459] - upgrade to newer library versions
+    * [OWB-463] - EjbDefinitionUtility.defineEjbBeanProxy() should be able to create proxies for no-interface local beans
+    * [OWB-465] - enhance EJB common code for crude @LocalBean support
+
+TCK Challenge
+
+    * [OWB-394] - Any idea why our BeforeBeanDiscovery.addInterceptorBinding() has different signature?
+
+Task
+
+    * [OWB-453] - add a flag to disable context activation in EJB interceptor
+    * [OWB-462] - Refactor AnnotationUtil.hasAnnotationMember()
+
 
 -------------------------------------------
 Release Notes - OpenWebBeans - Version 1.0.0-alpha-2
