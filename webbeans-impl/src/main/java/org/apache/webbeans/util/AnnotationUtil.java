@@ -378,9 +378,8 @@ public final class AnnotationUtil
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
         List<Annotation> list = new ArrayList<Annotation>();
-        Annotation[] result = null;
+        Annotation[] result;
 
-        int index = 0;
         for (Annotation[] parameters : parameterAnns)
         {
             boolean found = false;
@@ -406,9 +405,6 @@ public final class AnnotationUtil
                 result = list.toArray(result);
                 return result;
             }
-
-            index++;
-
         }
         result = new Annotation[0];
         return result;

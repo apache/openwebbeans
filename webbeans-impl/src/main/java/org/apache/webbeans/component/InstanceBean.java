@@ -20,6 +20,7 @@ package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
+import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
@@ -31,6 +32,7 @@ import org.apache.webbeans.inject.instance.InstanceFactory;
 
 public class InstanceBean<T> extends AbstractOwbBean<Provider<T>>
 {
+    // TODO refactor. public static variables are uterly ugly
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     
     @SuppressWarnings("serial")
@@ -46,8 +48,9 @@ public class InstanceBean<T> extends AbstractOwbBean<Provider<T>>
         try
         {
             ParameterizedType injectedType = (ParameterizedType)local.get().getType();
+            Set<Annotation> qualifiers = local.get().getQualifiers();
             Instance<T> instance = InstanceFactory.getInstance(injectedType.getActualTypeArguments()[0],
-                                                               local.get().getQualifiers().toArray(new Annotation[0]));
+                                                               qualifiers.toArray(new Annotation[qualifiers.size()]));
             
             return instance;
         }

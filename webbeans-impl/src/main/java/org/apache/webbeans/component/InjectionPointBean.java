@@ -27,6 +27,7 @@ import org.apache.webbeans.annotation.DependentScopeLiteral;
 
 public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 {
+    // TODO refactor. public static variables are uterly ugly
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     
     public InjectionPointBean()

@@ -38,7 +38,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBeanHasParent<T>
 {
     /** Producer field that defines the component */
-    private Field producerField;
+    private Field producerField = null;
 
     /**
      * Defines the new producer field component.

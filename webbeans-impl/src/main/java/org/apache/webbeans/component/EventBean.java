@@ -37,6 +37,7 @@ import org.apache.webbeans.exception.WebBeansException;
  */
 public class EventBean<T> extends AbstractOwbBean<Event<T>>
 {
+    // TODO refactor. public static variables are uterly ugly
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
 
     /**
@@ -61,7 +62,7 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
         
         if(injectionPoint != null)
         {
-            Type[] eventActualTypeArgs = new Type[0];
+            Type[] eventActualTypeArgs;
             Type type = injectionPoint.getType();                        
             ParameterizedType pt = (ParameterizedType) type;
             eventActualTypeArgs = pt.getActualTypeArguments();

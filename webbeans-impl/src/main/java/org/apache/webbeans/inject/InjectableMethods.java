@@ -137,7 +137,7 @@ public class InjectableMethods<T> extends AbstractInjectable
                 SecurityUtil.doPrivilegedSetAccessible(method, true);
             }
 
-            return (T) method.invoke(instance, list.toArray());
+            return (T) method.invoke(instance, list.toArray(new Object[list.size()]));
 
         }
         catch (Exception e)

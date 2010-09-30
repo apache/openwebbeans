@@ -451,12 +451,10 @@ public final class WebBeansUtil
         Constructor<T> result = null;
 
         boolean inAnnotation = false;
-        int j = 0;
 
         /* Check for @Initializer */
         for (Constructor<T> constructor : constructors)
         {
-            j++;
             if (constructor.getAnnotation(Inject.class) != null)
             {
                 if (inAnnotation == true)// duplicate @In
@@ -521,11 +519,8 @@ public final class WebBeansUtil
 
         Constructor<?>[] constructors = ClassUtil.getConstructors(clazz);
 
-        int j = 0;
-
         for (Constructor<?> constructor : constructors)
         {
-            j++;
             if (constructor.getAnnotation(Inject.class) != null)
             {
                 return true;
@@ -2418,7 +2413,7 @@ public final class WebBeansUtil
         {
             if (additionalScope.getScope().equals(scopeType))
             {
-                isNormal = new Boolean(additionalScope.isNormal());
+                isNormal = additionalScope.isNormal() ? Boolean.TRUE : Boolean.FALSE;
                 isScopeTypeNormalCache.put(scopeType, isNormal);
                 return isNormal.booleanValue(); 
             }

@@ -954,7 +954,7 @@ public final class DefinitionUtil
                     continue;
                 }
                 
-                checkForInjectedInitializerMethod(component, clazz, method);
+                checkForInjectedInitializerMethod(clazz, method);
             }
             else
             {
@@ -995,7 +995,7 @@ public final class DefinitionUtil
     /**
      * add the definitions for a &#x0040;Initializer method.
      */
-    private static <T> void checkForInjectedInitializerMethod(AbstractInjectionTargetBean<T> component, Class<T> clazz, Method method)
+    private static <T> void checkForInjectedInitializerMethod(Class<T> clazz, Method method)
     {
         TypeVariable<?>[] args = method.getTypeParameters();
         if(args.length > 0)
@@ -1149,15 +1149,10 @@ public final class DefinitionUtil
     
     public static void addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
     {
-        if(WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint))
+        if(!WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint))
         {
-            //Do nothing
+            EventUtil.checkObservableInjectionPointConditions(injectionPoint);
         }        
-        else if(EventUtil.checkObservableInjectionPointConditions(injectionPoint))
-        {            
-            //Do nothing
-            //WebBeansUtil.addInjectedImplicitEventComponent(injectionPoint);
-        }
     }
     
     public static <X> Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
