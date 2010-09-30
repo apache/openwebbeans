@@ -21,10 +21,10 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>openwebbeans-ejb</artifactId>
-    <version> 1.0.0</version>
+    <version> 1.0.1-SNAPSHOT</version>
     <name>EJB plugin</name>
     <description>Apache OpenWebBeans Java EE EJB plugin</description>
     <dependencies>
