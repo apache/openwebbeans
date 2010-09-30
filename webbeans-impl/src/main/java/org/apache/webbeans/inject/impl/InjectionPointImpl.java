@@ -19,6 +19,10 @@
 package org.apache.webbeans.inject.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -40,8 +44,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 class InjectionPointImpl implements InjectionPoint, Serializable
 {
@@ -126,14 +130,19 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         this.transientt = transientt;
     }
     
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException
+    private void writeObject(java.io.ObjectOutputStream op) throws IOException
     {
+        ObjectOutputStream out = new ObjectOutputStream(op);
+
+        //Write the owning bean class
         out.writeObject(this.ownerBean.getBeanClass());
-                
-        Set<Annotation> annotations = this.ownerBean.getQualifiers();
-        for(Annotation ann : annotations)
+
+        Set<Annotation> qualifiers = this.ownerBean.getQualifiers();
+        for(Annotation qualifier : qualifiers)
         {
-            out.writeObject(ann.annotationType());
+            out.writeObject(new Character('-')); // throw-away delimiter so alternating annotations don't get swallowed in the read.
+            out.writeObject(qualifier);
+            
         }
         
         out.writeObject(new Character('~'));
@@ -171,25 +180,47 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         
         out.writeBoolean(this.delegate);
         out.writeBoolean(this.transientt);
+        out.flush();
         
     }
     
-    @SuppressWarnings("unchecked")
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    public class CustomObjectInputStream extends ObjectInputStream
     {
+        private ClassLoader classLoader;
+
+        public CustomObjectInputStream(InputStream in, ClassLoader classLoader) throws IOException
+        {
+            super(in);
+            this.classLoader = classLoader;
+        }
+        
+        protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException
+        {
+            return Class.forName(desc.getName(), false, this.classLoader);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void readObject(java.io.ObjectInputStream inp) throws IOException, ClassNotFoundException
+    {
+
+        ObjectInputStream in = new CustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
+
         Class<?> beanClass = (Class<?>)in.readObject();
         Set<Annotation> anns = new HashSet<Annotation>();
         AnnotatedElementFactory annotatedElementFactory = AnnotatedElementFactory.getInstance();
 
-        while(!in.readObject().equals(new Character('~')))
+        while(!in.readObject().equals(new Character('~')))   // read throw-away '-' or '~' terminal delimiter.
         {
-            Class<? extends Annotation> ann = (Class<Annotation>) in.readObject();
-            anns.add(JavassistProxyFactory.createNewAnnotationProxy(ann));
+            Annotation ann = (Annotation) in.readObject();  // now read the annotation.
+            anns.add(ann);
         }
         
-        this.ownerBean = BeanManagerImpl.getManager().getBeans(beanClass, anns.toArray(new Annotation[0])).iterator().next();
+        //process annotations
+        this.ownerBean = BeanManagerImpl.getManager().getBeans(beanClass, anns.toArray(new Annotation[anns.size()])).iterator().next();
         this.qualifierAnnotations = anns;
         
+        // determine type of injection point member (0=field, 1=method, 2=constructor) and read...
         int c = in.readByte();
         if(c == 0)
         {

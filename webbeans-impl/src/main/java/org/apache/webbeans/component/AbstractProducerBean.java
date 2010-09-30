@@ -19,7 +19,6 @@
 package org.apache.webbeans.component;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;

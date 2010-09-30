@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.newtests.injection.injectionpoint.tests;
 
+import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class DependentProducerMethodInjectionPointTest extends AbstractUnitTest
 {
     @SuppressWarnings("unchecked")
     @Test
-    public void testDependentProducerMethodInjectionPoint()
+    public void testDependentProducerMethodInjectionPoint() throws Exception
     {
         Collection<URL> beanXmls = new ArrayList<URL>();
         
@@ -63,8 +64,30 @@ public class DependentProducerMethodInjectionPointTest extends AbstractUnitTest
         InjectionPoint point = model2.getInjectionPoint();
         Assert.assertTrue(point.getBean().equals(bean));
         Assert.assertTrue(point.getMember() instanceof Field);
+
+        point = (InjectionPoint) deserialize(serialize(point));
+
+        Assert.assertTrue(point.getBean().equals(bean));
+        Assert.assertTrue(point.getMember() instanceof Field);
         
         shutDownContainer();
 
     }
+
+    private byte[] serialize(Object o) throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(o);
+        return baos.toByteArray();
+    }
+
+    private Object deserialize(byte[] serial) throws IOException, ClassNotFoundException
+    {
+        ByteArrayInputStream bais = new ByteArrayInputStream(serial);
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        return ois.readObject();
+    }
+
+
 }

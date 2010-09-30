@@ -18,10 +18,12 @@
  */
 package org.apache.webbeans.corespi;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.WeakHashMap;
 
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.spi.SingletonService;
@@ -35,9 +37,9 @@ public class DefaultSingletonService implements SingletonService
      * Keys --> ClassLoaders
      * Values --> Maps of singleton class name with object
      */
-    private final Map<ClassLoader, Map<String, Object>> singletonMap = new HashMap<ClassLoader, Map<String,Object>>();
+    private final Map<ClassLoader, Map<String, Object>> singletonMap = new WeakHashMap<ClassLoader, Map<String,Object>>();
     
-    private final Map<Object, ClassLoader> objectToClassLoaderMap = new IdentityHashMap<Object, ClassLoader>();
+    private final Map<Object, WeakReference<ClassLoader>> objectToClassLoaderMap = new IdentityHashMap<Object, WeakReference<ClassLoader>>();
 
  
     /**
@@ -90,7 +92,7 @@ public class DefaultSingletonService implements SingletonService
                     managerMap.put(singletonName, object);
                     
                     //Save it object --> classloader
-                    objectToClassLoaderMap.put(object, classLoader);
+                    objectToClassLoaderMap.put(object, new WeakReference<ClassLoader>(classLoader));
 
                 }
                 catch (InstantiationException e)
@@ -167,7 +169,11 @@ public class DefaultSingletonService implements SingletonService
         {
             if(objectToClassLoaderMap.containsKey(object))
             {
-                return objectToClassLoaderMap.get(object);
+                WeakReference<ClassLoader> current = objectToClassLoaderMap.get(object);
+                if(current != null)
+                {
+                    return current.get();
+                }                
             }              
         }
         
