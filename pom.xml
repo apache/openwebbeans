@@ -343,6 +343,8 @@
                     </includes>
                     <excludes>
                         <exclude>**/*/MANIFEST.MF</exclude>
+                        <exclude>.git</exclude>
+                        <exclude>.gitignore</exclude>
                     </excludes>
                 </configuration>
                 <executions>
