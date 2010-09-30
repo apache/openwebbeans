@@ -15,76 +15,92 @@
 	the specific language governing permissions and limitations under the
 	License.
 -->
-<suite name="JSR-299 TCK" verbose="2"  >
-   <test name="JSR-299 TCK">
-      <method-selectors> 
-        
-         <method-selector>
-            <selector-class name="org.jboss.testharness.impl.testng.DisableIntegrationTestsMethodSelector" />
-         </method-selector>
-				
-         <method-selector>
-            <selector-class name="org.jboss.testharness.impl.testng.ExcludeIncontainerUnderInvestigationMethodSelector" />
-         </method-selector>
-      </method-selectors>
-      
-      <groups>
-         <run>
-            <exclude name="ri-broken" />
-            <exclude name="jboss-as-broken" />
-            <exclude name="broken" />
-            <exclude name="integration"></exclude>
-         </run>
-      </groups>
-      
-     <classes>
-     	
-     	<!-- Not necessary test some EJBs in standalone mode!!! -->
-     	<class name="org.jboss.jsr299.tck.tests.implementation.enterprise.definition.EnterpriseBeanDefinitionTest">
-     		<methods>
-     			<exclude name="testConstructorAnnotatedInjectCalled"></exclude>
-     		</methods>
-     	</class>
-     	<!-- Not necessary test some EJBs in standalone mode!!! -->
-     	<class name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.singletonWithRequestScope.SingletonWithRequestScopeTest">
-     		<methods>
-     			<exclude name="testSingletonWithRequestScopeFails"></exclude>
-     		</methods>
-     	</class>
-     	<!-- Not necessary test some EJBs in standalone mode!!! -->
-     	<class name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.singletonWithSessionScope.SingletonWithSessionScopeTest">
-     		<methods>
-     			<exclude name="testSingletonWithSessionScopeFails"></exclude>
-     		</methods>
-     	</class>
-     	<!-- Not necessary test some EJBs in standalone mode!!! -->
-     	<class name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.singletonWithConversationScope.SingletonWithConversationScopeTest">
-     		<methods>
-     			<exclude name="testSingletonWithConversationScopeFails"></exclude>
-     		</methods>
-     	</class>
-     	
-     	     	
-     	<!-- ERROR IN CDI-TCK-137 -->
-     	<class name="org.jboss.jsr299.tck.tests.decorators.invocation.DecoratorInvocationTest">
-     		<methods>
-     			<exclude name="testChainedDecoratorInvocation"></exclude>
-     		</methods>
-     	</class>     	
+<suite name="JSR-299 TCK" verbose="2">
+    <test name="JSR-299 TCK">
+        <method-selectors>
 
-     	
-     	<!-- ERROR IN CDITCK-138 -->
-     	<class name="org.jboss.jsr299.tck.tests.lookup.injectionpoint.InjectionPointTest">
-     		<methods>
-     			<exclude name="testIsDelegate"></exclude>
-     		</methods>
-     	</class>          	
-     	
-     </classes>
-     
-      <packages>         
-         <package name="org.jboss.jsr299.tck.tests.*"></package>
-      </packages>
-   </test>
-   
+            <method-selector>
+                <selector-class
+                    name="org.jboss.testharness.impl.testng.DisableIntegrationTestsMethodSelector" />
+            </method-selector>
+
+            <method-selector>
+                <selector-class
+                    name="org.jboss.testharness.impl.testng.ExcludeIncontainerUnderInvestigationMethodSelector" />
+            </method-selector>
+        </method-selectors>
+
+        <groups>
+            <run>
+                <exclude name="ri-broken" />
+                <exclude name="jboss-as-broken" />
+                <exclude name="broken" />
+                <exclude name="integration"></exclude>
+            </run>
+        </groups>
+
+        <classes>
+
+            <!-- Not necessary test some EJBs in standalone mode!!! -->
+            <class
+                name="org.jboss.jsr299.tck.tests.implementation.enterprise.definition.EnterpriseBeanDefinitionTest">
+                <methods>
+                    <exclude name="testConstructorAnnotatedInjectCalled"></exclude>
+                </methods>
+            </class>
+            <!-- Not necessary test some EJBs in standalone mode!!! -->
+            <class
+                name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.singletonWithRequestScope.SingletonWithRequestScopeTest">
+                <methods>
+                    <exclude name="testSingletonWithRequestScopeFails"></exclude>
+                </methods>
+            </class>
+            <!-- Not necessary test some EJBs in standalone mode!!! -->
+            <class
+                name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.singletonWithSessionScope.SingletonWithSessionScopeTest">
+                <methods>
+                    <exclude name="testSingletonWithSessionScopeFails"></exclude>
+                </methods>
+            </class>
+            <!-- Not necessary test some EJBs in standalone mode!!! -->
+            <class
+                name="org.jboss.jsr299.tck.tests.implementation.enterprise.broken.singletonWithConversationScope.SingletonWithConversationScopeTest">
+                <methods>
+                    <exclude name="testSingletonWithConversationScopeFails"></exclude>
+                </methods>
+            </class>
+
+
+            <!-- ERROR IN CDI-TCK-137 -->
+            <class
+                name="org.jboss.jsr299.tck.tests.decorators.invocation.DecoratorInvocationTest">
+                <methods>
+                    <exclude name="testChainedDecoratorInvocation"></exclude>
+                </methods>
+            </class>
+
+
+            <!-- ERROR IN CDITCK-138 -->
+            <class
+                name="org.jboss.jsr299.tck.tests.lookup.injectionpoint.InjectionPointTest">
+                <methods>
+                    <exclude name="testIsDelegate"></exclude>
+                </methods>
+            </class>
+
+            <!-- ERROR IN CDITCK-183 -->
+            <class
+                name="org.jboss.jsr299.tck.tests.context.DestroyedInstanceReturnedByGetTest">
+                <methods>
+                    <exclude name="testDestroyedInstanceMustNotBeReturnedByGet"></exclude>
+                </methods>
+            </class>
+
+        </classes>
+
+        <packages>
+            <package name="org.jboss.jsr299.tck.tests.*"></package>
+        </packages>
+    </test>
+
 </suite>
