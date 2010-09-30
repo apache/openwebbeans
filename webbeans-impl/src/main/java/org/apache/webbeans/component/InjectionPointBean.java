@@ -18,18 +18,26 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InjectionPoint;
-
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InjectionPoint;
 
 
 public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 {
     // TODO refactor. public static variables are uterly ugly
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
-    
+
+    /**
+     * Removes the ThreadLocal from the ThreadMap to prevent memory leaks.
+     */
+    public static void removeThreadLocal()
+    {
+        local.remove();
+    }
+
     public InjectionPointBean()
     {
         super(WebBeansType.INJECTIONPOINT,InjectionPoint.class);

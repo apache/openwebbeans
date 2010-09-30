@@ -18,23 +18,6 @@
  */
 package org.apache.webbeans.web.context;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.ContextException;
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.context.spi.Context;
-import javax.inject.Singleton;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.context.AbstractContextsService;
@@ -49,6 +32,22 @@ import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.FailOverService;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ContextException;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.Context;
+import javax.inject.Singleton;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.lang.annotation.Annotation;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Web container {@link org.apache.webbeans.spi.ContextsService}
@@ -106,6 +105,18 @@ public class WebContextsService extends AbstractContextsService
         dependentContext = new DependentContext();
         dependentContext.setActive(true);
 
+    }
+
+    /**
+     * Removes the ThreadLocals from the ThreadMap to prevent memory leaks.
+     */
+    public static void removeThreadLocals()
+    {
+        requestContext.remove();
+        sessionContext.remove();
+        applicationContext.remove();
+        conversationContext.remove();
+        singletonContext.remove();
     }
     
     /**

@@ -18,19 +18,9 @@
  */
 package org.apache.webbeans.web.lifecycle;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import javax.el.ELResolver;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.jsp.JspApplicationContext;
-import javax.servlet.jsp.JspFactory;
-
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.corespi.ServiceLoader;
@@ -39,6 +29,16 @@ import org.apache.webbeans.lifecycle.AbstractLifeCycle;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
+
+import javax.el.ELResolver;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.jsp.JspApplicationContext;
+import javax.servlet.jsp.JspFactory;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Manages container lifecycle.
@@ -157,11 +157,24 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         }
 
         ContextFactory.cleanUpContextFactory();
+
+        this.cleanupShutdownThreadLocals();
         
         if (logger.wblWillLogInfo())
         {
             logger.info(OWBLogConst.INFO_0002, servletContext != null ? servletContext.getContextPath() : "null");
         }
+    }
+
+    /**
+     * Ensures that all ThreadLocals, which could have been set in this
+     * (shutdown-) Thread, are removed in order to prevent memory leaks.
+     */
+    private void cleanupShutdownThreadLocals()
+    {
+        // TODO maybe there are more to cleanup
+
+        InjectionPointBean.removeThreadLocal();
     }
     
     /**

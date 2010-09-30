@@ -18,6 +18,19 @@
  */
 package org.apache.webbeans.servlet;
 
+import org.apache.webbeans.component.InjectionPointBean;
+import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.corespi.ServiceLoader;
+import org.apache.webbeans.el.ELContextStore;
+import org.apache.webbeans.lifecycle.LifecycleFactory;
+import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.ContainerLifecycle;
+import org.apache.webbeans.spi.FailOverService;
+import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.web.context.WebContextsService;
+
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.servlet.ServletContextEvent;
@@ -29,17 +42,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionActivationListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-
-import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
-import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.corespi.ServiceLoader;
-import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.lifecycle.LifecycleFactory;
-import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.spi.ContainerLifecycle;
-import org.apache.webbeans.spi.FailOverService;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Initializing the beans container for using in an web application
@@ -129,6 +131,20 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
 
         this.lifeCycle.getContextService().endContext(RequestScoped.class, event);
+
+        this.cleanupRequestThreadLocals();
+    }
+
+    /**
+     * Ensures that all ThreadLocals, which could have been set in this
+     * request's Thread, are removed in order to prevent memory leaks. 
+     */
+    private void cleanupRequestThreadLocals()
+    {
+        // TODO maybe there are more to cleanup
+
+        InjectionPointBean.removeThreadLocal();
+        WebContextsService.removeThreadLocals();
     }
 
     /**
