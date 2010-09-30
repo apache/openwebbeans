@@ -17,3 +17,12 @@ Initial Documentation for OpenWebBeans
 * Getting Started 
     
   *  {{{http://openwebbeans.apache.org/1.0.0-SNAPSHOT/documents/userguide.pdf}OpenWebBeans User Guide}}
+
+* WIKI
+
+  We maintain a WIKI for developing the OpenWebBeans documentation.
+
+  *  {{{https://cwiki.apache.org/OWB/index.html}OpenWebBeans WIKI}}
+
+  If you like to contribute to our documentation, then please register yourself
+  and ask for edit permission on our dev mailing list.
