@@ -186,6 +186,17 @@
             </roles>
             <timezone>+1</timezone>
         </developer>
+        <developer>
+        	<id>kelapure</id>
+        	<name>Rohit Kelapure</name>
+        	<email>kelapure at apache dot org</email>
+        	<url>http://www.linkedin.com/in/rohitkelapure</url>
+        	<organization>IBM</organization>
+        	<organizationUrl>http://wasdynacache.blogspot.com</organizationUrl>
+        	<roles>
+        		<role>Committer</role>
+        	</roles>
+        </developer>
     </developers>
 
     <build>
