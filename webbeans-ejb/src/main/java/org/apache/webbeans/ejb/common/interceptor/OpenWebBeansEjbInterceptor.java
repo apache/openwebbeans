@@ -166,39 +166,46 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         
         try
         {
-            int result = activateContexts(RequestScoped.class);
-            //Context activities
-            if(result == 1)
+            if (OpenWebBeansConfiguration.getInstance().isUseEJBInterceptorActivation()) //default is true
             {
-                requestCreated = true;
-            }
-            else if(result == -1)
-            {
-                requestAlreadyActive = true;
-            }
-           
-            result = activateContexts(ApplicationScoped.class);
-            if(result == 1)
-            {
-                applicationCreated = true;
-            }
-            else if(result == -1)
-            {
-                applicationAlreadyActive = true;
+                int result = activateContexts(RequestScoped.class);
+                //Context activities
+                if(result == 1)
+                {
+                    requestCreated = true;
+                }
+                else if(result == -1)
+                {
+                    requestAlreadyActive = true;
+                }
+               
+                result = activateContexts(ApplicationScoped.class);
+                if(result == 1)
+                {
+                    applicationCreated = true;
+                }
+                else if(result == -1)
+                {
+                    applicationAlreadyActive = true;
+                }
             }
             
             return callInterceptorsAndDecorators(ejbContext.getMethod(), ejbContext.getTarget(), ejbContext.getParameters(), ejbContext);
         }
         finally
         {
-            if(!requestAlreadyActive)
+            if (OpenWebBeansConfiguration.getInstance().isUseEJBInterceptorActivation()) 
             {
-                deActivateContexts(requestCreated, RequestScoped.class);   
+                if(!requestAlreadyActive)
+                {
+                    deActivateContexts(requestCreated, RequestScoped.class);   
+                }
+                if(!applicationAlreadyActive)
+                {
+                    deActivateContexts(applicationCreated, ApplicationScoped.class);   
+                }
             }
-            if(!applicationAlreadyActive)
-            {
-                deActivateContexts(applicationCreated, ApplicationScoped.class);   
-            }
+            
         }
     }
 
