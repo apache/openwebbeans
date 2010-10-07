@@ -45,6 +45,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -188,6 +189,11 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                 {
                     applicationAlreadyActive = true;
                 }
+            }
+            
+            if (this.contextual == null)
+            {
+                return ejbContext.proceed();
             }
             
             return callInterceptorsAndDecorators(ejbContext.getMethod(), ejbContext.getTarget(), ejbContext.getParameters(), ejbContext);
@@ -411,7 +417,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     /**
      * Find the ManagedBean that corresponds to an instance of an EJB class
      * @param instance an instance of a class whose corresponding Managed Bean is to be searched for
-     * @return the correspondin BaseEjbBean, null if not found
+     * @return the corresponding BaseEjbBean, null if not found
      */
     private BaseEjbBean<?> findTargetBean(Object instance) 
     {
@@ -471,8 +477,6 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         Object rv = null;
         BaseEjbBean<?> injectionTarget = this.contextual;
         InterceptorDataImpl decoratorInterceptorDataImpl = null;
-        
-                
         List<Object> decorators = null;
         DelegateHandler delegateHandler = null;
         List<Decorator<?>> decoratorStack = injectionTarget.getDecoratorStack();
@@ -558,6 +562,47 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         
         return rv;
     }
+
+    /**
+     * Around Timeout.
+     * @param context invocation ctx
+     */
+    @AroundTimeout
+    public Object callAroundTimeouts(InvocationContext context) throws Exception
+    {
+        Object rv = null;
+        if (logger.wblWillLogTrace())
+        {
+            logger.debug("OWBEI:: @AroundTimeout entry. Trying to run Interceptors.");            
+        }
+
+        if ((this.contextual != null) && WebBeansUtil.isContainsInterceptorMethod(this.contextual.getInterceptorStack(), InterceptorType.AROUND_TIMEOUT))
+        {           
+            try
+            {
+                    InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
+                            InterceptorUtil.getInterceptorMethods(this.contextual.getInterceptorStack(), InterceptorType.AROUND_TIMEOUT), InterceptorType.AROUND_TIMEOUT);
+                    impl.setCreationalContext(this.cc);
+                    impl.setEJBInvocationContext(context);
+                    impl.setCcKey((Object)this.ccKey);
+                    
+                    rv = impl.proceed(); //run OWB interceptors and underlying EJBcontext.proceed()
+            }
+            catch (Exception e)
+            {
+                logger.error(OWBLogConst.ERROR_0008, e, "@AroundTimeout.");    
+                throw new RuntimeException(e);
+            }                      
+        }
+        else 
+        { 
+            rv = context.proceed(); // no 299 interceptors
+        }
+        
+        return rv;
+    }
+
+    
     
     /**
      * PrePassivate callback
