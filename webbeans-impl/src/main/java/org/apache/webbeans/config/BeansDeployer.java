@@ -471,27 +471,39 @@ public class BeansDeployer
                 //Define annotation type
                 AnnotatedType<?> annotatedType = AnnotatedElementFactory.getInstance().newAnnotatedType(implClass);
                 
-                //Fires ProcessAnnotatedType
-                ProcessAnnotatedTypeImpl<?> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);     
-                
-                //if veto() is called
-                if(processAnnotatedEvent.isVeto())
+                if (null != annotatedType)
                 {
-                    continue;
-                }
-                
-                //Try class is Managed Bean
-                boolean isDefined = defineManagedBean((Class<Object>)implClass, (ProcessAnnotatedTypeImpl<Object>)processAnnotatedEvent);
-                
-                //Try class is EJB bean
-                if(!isDefined && this.discoverEjb)
-                {                    
-                    if(EJBWebBeansConfigurator.isSessionBean(implClass))
+                    //Fires ProcessAnnotatedType
+                    ProcessAnnotatedTypeImpl<?> processAnnotatedEvent = WebBeansUtil.fireProcessAnnotatedTypeEvent(annotatedType);     
+                    
+                    //if veto() is called
+                    if(processAnnotatedEvent.isVeto())
                     {
-                        logger.debug("Found Enterprise Bean with class name : [{0}]", implClass.getName());
-                        defineEnterpriseWebBean((Class<Object>)implClass, (ProcessAnnotatedTypeImpl<Object>)processAnnotatedEvent);                        
+                        continue;
                     }
-                }                                     
+                    
+                    //Try class is Managed Bean
+                    boolean isDefined = defineManagedBean((Class<Object>)implClass, (ProcessAnnotatedTypeImpl<Object>)processAnnotatedEvent);
+                    
+                    //Try class is EJB bean
+                    if(!isDefined && this.discoverEjb)
+                    {                    
+                        if(EJBWebBeansConfigurator.isSessionBean(implClass))
+                        {
+                            logger.debug("Found Enterprise Bean with class name : [{0}]", implClass.getName());
+                            defineEnterpriseWebBean((Class<Object>)implClass, (ProcessAnnotatedTypeImpl<Object>)processAnnotatedEvent);                        
+                        }
+                    }                                     
+                } 
+                else
+                {
+                    if (logger.wblWillLogDebug())
+                    {
+                        logger.debug("Error creating managed bean "+ implClass);
+                    }
+
+                }
+
             }
         }
 

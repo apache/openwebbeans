@@ -29,9 +29,11 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 
+import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.SecurityUtil;
-import org.apache.webbeans.config.WebBeansFinder;
 
 /**
  * Factory for {@link javax.enterprise.inject.spi.Annotated} elements.
@@ -41,8 +43,11 @@ import org.apache.webbeans.config.WebBeansFinder;
 public final class AnnotatedElementFactory
 {
 
+    // Logger instance
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(AnnotatedElementFactory.class);
+
     public static AnnotatedElementFactory getInstance()
-    {
+  {
         AnnotatedElementFactory aef = (AnnotatedElementFactory) WebBeansFinder.getSingletonInstance(AnnotatedElementFactory.class.getName());
         return aef;
     }
@@ -88,33 +93,62 @@ public final class AnnotatedElementFactory
         }
         else
         {
-            annotatedType = new AnnotatedTypeImpl<X>(annotatedClass);
-            
-            Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(annotatedClass);
-            Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(annotatedClass);
-            Constructor<X>[] ctxs = (Constructor<X>[])SecurityUtil.doPrivilegedGetDeclaredConstructors(annotatedClass);
-            for(Field f : fields)
+            try
             {
-                AnnotatedField<X> af = new AnnotatedFieldImpl<X>(f, annotatedType);
-                annotatedType.addAnnotatedField(af);
-            }
-            
-            for(Method m : methods)
+                annotatedType = new AnnotatedTypeImpl<X>(annotatedClass);
+
+                Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(annotatedClass);
+                Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(annotatedClass);
+                Constructor<X>[] ctxs = (Constructor<X>[])SecurityUtil.doPrivilegedGetDeclaredConstructors(annotatedClass);
+                for(Field f : fields)
+                {
+                    AnnotatedField<X> af = new AnnotatedFieldImpl<X>(f, annotatedType);
+                    annotatedType.addAnnotatedField(af);
+                }
+                
+                for(Method m : methods)
+                {
+                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(m,annotatedType);
+                    annotatedType.addAnnotatedMethod(am);
+                }
+                
+                for(Constructor<X> ct : ctxs)
+                {
+                    AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(ct,annotatedType);
+                    annotatedType.addAnnotatedConstructor(ac);
+                }        
+                
+                AnnotatedTypeImpl<X> oldType = (AnnotatedTypeImpl<X>)annotatedTypeCache.putIfAbsent(annotatedClass, annotatedType);
+                if(oldType != null)
+                {
+                    annotatedType = oldType;
+                }
+
+            } 
+            catch (Exception e)
             {
-                AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(m,annotatedType);
-                annotatedType.addAnnotatedMethod(am);
-            }
-            
-            for(Constructor<X> ct : ctxs)
+                if (e instanceof ClassNotFoundException)
+                {
+                    if (logger.wblWillLogError())
+                    {
+                        logger.error(OWBLogConst.ERROR_0027, e, annotatedClass.getName(), e.getCause());
+                    }
+
+                    annotatedType = null;
+                } 
+                else
+                {
+                    throw new RuntimeException(e);
+                }
+            } 
+            catch (NoClassDefFoundError ncdfe)
             {
-                AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(ct,annotatedType);
-                annotatedType.addAnnotatedConstructor(ac);
-            }        
-            
-            AnnotatedTypeImpl<X> oldType = (AnnotatedTypeImpl<X>)annotatedTypeCache.putIfAbsent(annotatedClass, annotatedType);
-            if(oldType != null)
-            {
-                annotatedType = oldType;
+                if (logger.wblWillLogError())
+                {
+                    logger.error(OWBLogConst.ERROR_0027, ncdfe, annotatedClass.getName(), ncdfe.getCause());
+                }
+
+                annotatedType = null;
             }
         }
                 

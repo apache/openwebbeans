@@ -95,6 +95,7 @@ public class OWBLogConst
     public final static String ERROR_0024 = "ERROR_0024"; // Unable to get resource with class \: [{0}] in \: [{1}] with name \: [{2}].
     public final static String ERROR_0025 = "ERROR_0025"; // Unable to inject field \: [{0}]
     public final static String ERROR_0026 = "ERROR_0026"; // An error occured while injecting dependencies of bean \: [{0}]
+    public final static String ERROR_0027 = "ERROR_0027"; // Unable to create AnnotatedType for class \: [{0}]. Exception cause \: [{1}].
 
 
     public final static String FATAL_0001 = "FATAL_0001"; // Exception thrown while destroying bean instance : {0}
