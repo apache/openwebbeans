@@ -394,7 +394,7 @@ public class InterceptorDataImpl implements InterceptorData
     @Override
     public boolean isLifecycleInterceptor()
     {
-        if (this.preDestroy != null || this.postConstruct != null)
+        if (this.preDestroy != null || this.postConstruct != null || this.prePassivate != null || this.postActivate != null)
         {
             return true;
         }
