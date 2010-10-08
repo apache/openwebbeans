@@ -19,9 +19,13 @@
 package org.apache.webbeans.event;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,13 +33,14 @@ import javax.enterprise.event.Event;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Event implementation.
  * 
- * @version $Rev$ $Date$
+ * @version $Rev$ $Date$
  *
  * @param <T> event type
  * @see Event
@@ -43,6 +48,8 @@ import org.apache.webbeans.util.ClassUtil;
 public class EventImpl<T> implements Event<T>, Serializable
 {
     private static final long serialVersionUID = -9035218380365451350L;
+    
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(EventImpl.class);
 
     /**Event binding types*/
     private Annotation[] injectedBindings;
@@ -148,9 +155,50 @@ public class EventImpl<T> implements Event<T>, Serializable
         return select(subtype.getRawType(), bindings);
     }
     
+    @SuppressWarnings("unchecked")
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
     {
-        in.defaultReadObject();
+        try
+        {
+            final ObjectInputStream inputStream = in;
+            
+            AccessController.doPrivileged(
+                new PrivilegedExceptionAction()
+                {
+                    public Object run() throws Exception
+                    {
+                        inputStream.defaultReadObject();
+                        return null; 
+                    }
+                }
+            );
+        }
+        catch (PrivilegedActionException pae)
+        {
+            Throwable cause = ((PrivilegedActionException)pae).getCause();
+
+            if (cause instanceof IOException)
+            {
+                throw (IOException)cause;
+            }
+            else if (cause instanceof ClassNotFoundException)
+            {
+                throw (ClassNotFoundException)cause;
+            }
+            else if (cause instanceof RuntimeException)
+            {
+                throw (RuntimeException)cause;
+            }
+            else
+            {
+                if (logger.wblWillLogDebug())
+                {
+                    logger.trace("Unexpected exception via PAE [{0}]", cause);
+                }
+                
+            }
+        }
+        
         this.manager = BeanManagerImpl.getManager();
     }
 }
