@@ -22,14 +22,14 @@ import java.lang.annotation.Annotation;
 
 import javax.ejb.PrePassivate;
 import javax.ejb.PostActivate;
+import javax.interceptor.AroundTimeout;
 
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 
 /**
  * EJB Plugin for EJB related components.
- * 
- * @version 
+ * @version $Rev$ $Date$
  */
 public class OpenWebBeansEjbLCAPluginImpl extends AbstractOwbPlugin implements OpenWebBeansEjbLCAPlugin  
 {
@@ -49,5 +49,12 @@ public class OpenWebBeansEjbLCAPluginImpl extends AbstractOwbPlugin implements O
     {
         return PostActivate.class;
     }
+
+    @Override
+    public Class<? extends Annotation> getAroundTimeoutClass()
+    {
+        return AroundTimeout.class;
+    }
+        
 }
 

@@ -21,10 +21,14 @@ package org.apache.webbeans.plugins;
 import java.lang.annotation.Annotation;
 
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
-
+/**
+ * @version $Rev$ $Date$
+ */
 public interface OpenWebBeansEjbLCAPlugin extends OpenWebBeansPlugin
 {
     public Class<? extends Annotation> getPrePassivateClass();
 
     public Class<? extends Annotation> getPostActivateClass();
+    
+    public Class<? extends Annotation> getAroundTimeoutClass();
 }

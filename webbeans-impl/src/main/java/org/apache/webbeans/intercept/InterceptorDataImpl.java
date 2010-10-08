@@ -35,12 +35,14 @@ import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
+import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation of the {@link InterceptorData} api contract.
  * 
- * @version $Rev$ $Date$
+ * @version $Rev$ $Date$
  */
 public class InterceptorDataImpl implements InterceptorData
 {
@@ -115,6 +117,17 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public void setInterceptorMethod(Method m, Class<? extends Annotation> annotation)
     {
+        OpenWebBeansEjbLCAPlugin ejbPlugin = PluginLoader.getInstance().getEjbLCAPlugin();
+        Class <? extends Annotation> prePassivateClass = null;
+        Class <? extends Annotation> postActivateClass = null;
+        Class <? extends Annotation> aroundTimeoutClass = null;
+        if (null != ejbPlugin)
+        {
+            prePassivateClass = ejbPlugin.getPrePassivateClass();
+            postActivateClass = ejbPlugin.getPostActivateClass();
+            aroundTimeoutClass = ejbPlugin.getAroundTimeoutClass();
+        }
+        
         if (annotation.equals(AroundInvoke.class))
         {
             setAroundInvoke(m);
@@ -126,6 +139,18 @@ public class InterceptorDataImpl implements InterceptorData
         else if (annotation.equals(PreDestroy.class))
         {
             setPreDestroy(m);
+        } 
+        else if (null != ejbPlugin && annotation.equals(prePassivateClass))
+        {
+            setPrePassivate(m);
+        } 
+        else if (null != ejbPlugin && annotation.equals(postActivateClass))
+        {
+            setPostActivate(m);
+        } 
+        else if (null != ejbPlugin && annotation.equals(aroundTimeoutClass))
+        {
+            setAroundTimeout(m);
         }
     }
 
@@ -486,14 +511,17 @@ public class InterceptorDataImpl implements InterceptorData
         StringBuilder sb = new StringBuilder();
         if (null != webBeansInterceptor) 
         {
-            sb.append("Class: [").append(webBeansInterceptor.getBeanClass()).append("]");
+            sb.append("webBeansInterceptor: [").append(webBeansInterceptor.getBeanClass()).append("]");
         }
-        sb.append(" aroundInvoke [").append(aroundInvoke).append("]");
+        sb.append(" aroundInvoke  [").append(aroundInvoke).append("]");
         sb.append(" aroundTimeout [").append(aroundTimeout).append("]");
+        
         sb.append(" postConstruct [").append(postConstruct).append("]");
-        sb.append(" postActivate [").append(postActivate).append("]");
-        sb.append(" preDestroy [").append(preDestroy).append("]");
-        sb.append(" prePassivate [").append(prePassivate).append("]");
+        sb.append(" preDestroy    [").append(preDestroy).append("]");
+        
+        sb.append(" postActivate  [").append(postActivate).append("]");
+        sb.append(" prePassivate  [").append(prePassivate).append("]");
+        
 
         return sb.toString();
     }
