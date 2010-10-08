@@ -40,8 +40,6 @@ import org.apache.webbeans.util.ClassUtil;
 /**
  * Event implementation.
  * 
- * @version $Rev$ $Date$
- *
  * @param <T> event type
  * @see Event
  */
