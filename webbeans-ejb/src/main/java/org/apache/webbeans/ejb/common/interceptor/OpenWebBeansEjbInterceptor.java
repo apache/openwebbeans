@@ -635,6 +635,16 @@ public class OpenWebBeansEjbInterceptor implements Serializable
 
         lifecycleCommon(context, InterceptorType.POST_ACTIVATE);
     }
+    
+    public static CreationalContext<?> getThreadCreationalContext()
+    {
+        return threadLocalCreationalContext.get();
+    }
+    
+    public static BaseEjbBean<?> getEjbBean()
+    {
+        return threadLocal.get();
+    }
 
     private void writeObject(ObjectOutputStream out) throws IOException
     {

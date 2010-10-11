@@ -22,17 +22,26 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
+import javax.inject.Provider;
 
+import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetWrapper;
+import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -53,46 +62,41 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public final class OWBInjector implements Serializable
 {
+    //Serial id
     private static final long serialVersionUID = 1L;
     
+    /**Creational context to hold dependent instances*/
     private CreationalContextImpl<?> ownerCreationalContext = null;
     
+    /**Underlying javaee instance*/
     private Object javaEEInstance;
     
+    /**
+     * Creates a new instance
+     */
     public OWBInjector()
     {
-        
+        //No operation
     }
     
-    @SuppressWarnings("unchecked")
-    public void destroy()
-    {
-        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
-        
-        //Look for custom InjectionTarget
-        InjectionTargetWrapper<Object> wrapper = beanManager.getInjectionTargetWrapper((Class<Object>)javaEEInstance.getClass());
-        if(wrapper != null)
-        {
-           wrapper.dispose(javaEEInstance);
-           this.javaEEInstance = null;
-           this.ownerCreationalContext = null;
-        }
-        
-        else
-        {
-            if(this.ownerCreationalContext != null)
-            {
-                this.ownerCreationalContext.release();
-                this.ownerCreationalContext = null;
-            }            
-        }        
-    }
-    
+    /**
+     * Inject dependencies of given instance.
+     * @param javaEeComponentInstance instance
+     * @return this injector
+     * @throws Exception if exception occurs
+     */
     public  OWBInjector inject(Object javaEeComponentInstance) throws Exception
     {
         return inject(javaEeComponentInstance,null);
     }
     
+    /**
+     * Inject dependencies of given instance.
+     * @param javaEeComponentInstance instance
+     * @param creationalContext context
+     * @return this injector
+     * @throws Exception if exception occurs
+     */
     @SuppressWarnings("unchecked")
     public  OWBInjector inject(Object javaEeComponentInstance, CreationalContext<?> creationalContext) throws Exception
     {
@@ -121,45 +125,26 @@ public final class OWBInjector implements Serializable
             {
                 for(InjectionPoint injectionPoint : injectionPoints)
                 {
-                    boolean injectionPointBeanSet = false;
-                    try
+                    if(injectionPoint.getMember() instanceof Method)
                     {
-                        if(injectionPoint.getMember() instanceof Field)
-                        {
-                            //Injected contextual beam
-                            Bean<?> injectedBean = (Bean<?>)InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);                
-                            
-                            if(WebBeansUtil.isDependent(injectedBean))
-                            {
-                                if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(injectionPoint.getType())))
-                                {
-                                    injectionPointBeanSet = true;
-                                    InjectionPointBean.local.set(injectionPoint);   
-                                }
-                            }
-                        }
+                        Method method = (Method)injectionPoint.getMember();
                         
-                        Object object = beanManager.getInjectableReference(injectionPoint, ownerCreationalContext);                    
+                        //Get injected method arguments
+                        List<Object> parameters = getInjectedMethodParameterReferences(injectionPoint, beanManager, injectionPoints);
                         
-                        if(injectionPoint.getMember() instanceof Method)
-                        {
-                            Method method = (Method)injectionPoint.getMember();
-                            ClassUtil.callInstanceMethod(method, javaEeComponentInstance, new Object[]{object});
-                            
-                        }
-                        else if(injectionPoint.getMember() instanceof Field)
-                        {
-                            Field field = (Field)injectionPoint.getMember();
-                            ClassUtil.setField(javaEeComponentInstance, field, object);
-                        }                        
+                        //Set method
+                        ClassUtil.callInstanceMethod(method, javaEeComponentInstance, parameters.toArray(new Object[parameters.size()]));
+                        
                     }
-                    finally
+                    else if(injectionPoint.getMember() instanceof Field)
                     {
-                        if(injectionPointBeanSet)
-                        {
-                            InjectionPointBean.local.remove();   
-                        }  
-                    }
+                        //Get injected object ref
+                        Object object = getInjectedObjectReference(injectionPoint, beanManager);                    
+                        
+                        //Set field
+                        Field field = (Field)injectionPoint.getMember();
+                        ClassUtil.setField(javaEeComponentInstance, field, object);
+                    }                        
                 }
                 
                 return this;
@@ -175,6 +160,175 @@ public final class OWBInjector implements Serializable
         return null;
     }
     
+    /**
+     * Release dependents.
+     */
+    @SuppressWarnings("unchecked")
+    public void destroy()
+    {
+        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
+        
+        //Look for custom InjectionTarget
+        InjectionTargetWrapper<Object> wrapper = beanManager.getInjectionTargetWrapper((Class<Object>)javaEEInstance.getClass());
+        if(wrapper != null)
+        {
+           wrapper.dispose(javaEEInstance);
+           this.javaEEInstance = null;
+           this.ownerCreationalContext = null;
+        }
+        
+        else
+        {
+            if(this.ownerCreationalContext != null)
+            {
+                this.ownerCreationalContext.release();
+                this.ownerCreationalContext = null;
+            }            
+        }        
+    }
+    
+    /**
+     * Gets injected object reference.
+     * @param injectionPoint injection point of javaee instance
+     * @param beanManager bean manager implementation
+     * @return injected reference
+     */
+    private Object getInjectedObjectReference(InjectionPoint injectionPoint, BeanManagerImpl beanManager)
+    {
+        Object object = null;
+        
+        //Injected contextual beam
+        Bean<?> injectedBean = (Bean<?>)InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);                
+        
+        if(isInstanceProviderInjection(injectionPoint))
+        {
+            InstanceBean.local.set(injectionPoint);
+        }
+        
+        else if(isEventProviderInjection(injectionPoint))
+        {
+            EventBean.local.set(injectionPoint);
+        }        
+        
+        else if(WebBeansUtil.isDependent(injectedBean))
+        {
+            if(!InjectionPoint.class.isAssignableFrom(ClassUtil.getClass(injectionPoint.getType())))
+            {
+                InjectionPointBean.local.set(injectionPoint);   
+            }
+        }
+        
+        object = beanManager.getInjectableReference(injectionPoint, ownerCreationalContext);
+        
+        return object;
+    }
+    
+    /**
+     * Gets initializer method parameters.
+     * @param injectionPoint javaee component 
+     * injection point
+     * @param beanManager bean manager
+     * @param injectionPoints all injection points
+     * @return injected method injected arguments
+     */
+    private List<Object> getInjectedMethodParameterReferences(InjectionPoint injectionPoint, BeanManagerImpl beanManager, Set<InjectionPoint> injectionPoints)
+    {
+        Method method = (Method)injectionPoint.getMember();
+        List<InjectionPoint> injectedPoints = getInjectedPoints(method, injectionPoints);        
+        List<Object> list = new ArrayList<Object>();                        
+        for(int i=0;i<injectedPoints.size();i++)
+        {
+            for(InjectionPoint point : injectedPoints)
+            {                
+                AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)point.getAnnotated();
+                if(parameter.getPosition() == i)
+                {
+                    Object instance = getInjectedObjectReference(injectionPoint, beanManager);
+                    list.add(instance);    
+                    break;
+                }
+            }
+        }        
+        
+        return list;
+    }
+    
+    /**
+     * Gets injection point of given methods.
+     * @param method injection point member
+     * @param injectionPoints all injection points
+     * @return method injection points
+     */
+    private List<InjectionPoint> getInjectedPoints(Method method, Set<InjectionPoint> injectionPoints)
+    {
+        List<InjectionPoint> points = new ArrayList<InjectionPoint>();
+        
+        for(InjectionPoint ip : injectionPoints)
+        {
+            if(ip.getMember().equals(method))
+            {
+                points.add(ip);
+            }
+        }
+        
+        return points;
+        
+    }
+    
+    /**
+     * Returns true if injection point is instance injection point
+     * false otherwise.
+     * @param injectionPoint injection point
+     * @return true if injection point is instance injection point
+     */
+    private boolean isInstanceProviderInjection(InjectionPoint injectionPoint)
+    {
+        Type type = injectionPoint.getType();
+        
+        if (type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType) type;            
+            Class<?> clazz = (Class<?>) pt.getRawType();
+            
+            if(Provider.class.isAssignableFrom(clazz))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Returns true if injection point is event injection point
+     * false otherwise.
+     * @param injectionPoint injection point
+     * @return true if injection point is event injection point
+     */
+    private boolean isEventProviderInjection(InjectionPoint injectionPoint)
+    {
+        Type type = injectionPoint.getType();
+        
+        if (type instanceof ParameterizedType)
+        {
+            ParameterizedType pt = (ParameterizedType) type;            
+            Class<?> clazz = (Class<?>) pt.getRawType();
+            
+            if(clazz.isAssignableFrom(Event.class))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * JavaEE components can not inject {@link InjectionPoint}.
+     * @param clazz javaee component class info
+     * @throws exception if condition is not applied
+     */
     public static void checkInjectionPointForInjectInjectionPoint(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
@@ -195,6 +349,11 @@ public final class OWBInjector implements Serializable
         }        
     }
     
+    /**
+     * Returns trur for serializable types.
+     * @param clazz class info
+     * @return true if class is serializable
+     */
     public static boolean checkInjectionPointForInterceptorPassivation(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);

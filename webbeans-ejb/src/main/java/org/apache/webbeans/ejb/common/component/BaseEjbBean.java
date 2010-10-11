@@ -63,15 +63,6 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void injectFields(T instance, CreationalContext<T> creationalContext)
-    {
-        //No-operations
-    }
-    
     /* (non-Javadoc)
      * @see org.apache.webbeans.component.AbstractBean#isPassivationCapable()
      */
