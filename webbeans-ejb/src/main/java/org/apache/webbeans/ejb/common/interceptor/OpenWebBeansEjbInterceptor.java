@@ -84,7 +84,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     private static final long serialVersionUID = -4317127341083031217L;
 
     //Logger instance
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansEjbInterceptor.class);
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(OpenWebBeansEjbInterceptor.class);
     
     /**Thread local for calling bean*/
     private static transient ThreadLocal<BaseEjbBean<?>> threadLocal = new ThreadLocal<BaseEjbBean<?>>();
