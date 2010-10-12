@@ -69,7 +69,6 @@ class AnnotatedParameterImpl<X> extends AbstractAnnotated implements AnnotatedPa
         builder.append("Annotated Parameter");
         builder.append(",");
         builder.append(super.toString()+ ",");
-        builder.append("Annotated Callable : [" + this.declaringCallable.toString() + "],");
         builder.append("Position : " + position);
         
         return builder.toString();

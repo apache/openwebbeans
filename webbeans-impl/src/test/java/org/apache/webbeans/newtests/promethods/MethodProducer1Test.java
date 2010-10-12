@@ -24,7 +24,9 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionTarget;
 
 import junit.framework.Assert;
 
@@ -32,6 +34,7 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.promethods.beans.InjectorofMethod1Bean;
 import org.apache.webbeans.newtests.promethods.beans.MethodTypeProduces1;
+import org.apache.webbeans.newtests.promethods.beans.ProducerBean;
 import org.junit.Test;
 
 public class MethodProducer1Test extends AbstractUnitTest
@@ -65,6 +68,28 @@ public class MethodProducer1Test extends AbstractUnitTest
         Assert.assertNotNull(reference);
         
         Assert.assertTrue(reference instanceof InjectorofMethod1Bean);
+        
+        shutDownContainer();
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    /**
+     * Tests the code path of adding a bean containing producer methods through 
+     * WebBeansAnnotatedTypeUtil.defineManagedBean
+     */
+    public void testProducerAddedByWebBeansAnnotatedTypeUtil()
+    {
+        Collection<URL> beanXmls = new ArrayList<URL>();
+        
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        
+        startContainer(beanClasses, beanXmls);  
+        
+        AnnotatedType<ProducerBean> at = getBeanManager().createAnnotatedType(ProducerBean.class);
+        InjectionTarget<ProducerBean> it = getBeanManager().createInjectionTarget(at);
+        
+        Assert.assertNotNull(it);
         
         shutDownContainer();
     }
