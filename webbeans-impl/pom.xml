@@ -22,10 +22,10 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>openwebbeans-impl</artifactId>
-  <version> 1.0.0-SNAPSHOT</version>
+  <version> 1.0.0</version>
     <name>OpenWebBeans Core</name>
     <description>Apache OpenWebBeans Implementation core module</description>
 
