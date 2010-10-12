@@ -23,10 +23,10 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>openwebbeans-resource</artifactId>
-  <version> 1.0.1-SNAPSHOT</version>
+  <version> 1.0.0-SNAPSHOT</version>
     <name>EE Resource plugin</name>
     <description>Apache OpenWebBeans EE Resource Integration</description>
     <dependencies>
