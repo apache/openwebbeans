@@ -197,6 +197,14 @@
         		<role>Committer</role>
         	</roles>
         </developer>
+        <developer>
+            <id>rederpj</id>
+            <name>Paul J. Reder</name>
+            <email>rederpj at apache dot org</email>
+            <roles>
+                <role>Committer</role>
+            </roles>
+        </developer>
     </developers>
 
     <build>
