@@ -21,6 +21,7 @@ package org.apache.webbeans.lifecycle;
 import java.lang.annotation.Annotation;
 import java.util.Properties;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.BeansDeployer;
@@ -137,6 +138,9 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         {
             //Sub-classes operations            
             beforeStopApplication(endObject);
+
+            //Set up the thread local for Application scoped as listeners will be App scoped.
+            this.contextsService.startContext(ApplicationScoped.class, endObject);   
             
             //Fire shut down
             this.beanManager.fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
