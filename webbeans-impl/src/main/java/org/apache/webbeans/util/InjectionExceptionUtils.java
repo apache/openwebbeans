@@ -100,10 +100,10 @@ public class InjectionExceptionUtils
 
     public static void throwAmbiguousResolutionException(Set<Bean<?>> beans)
     {
-        throwAmbiguousResolutionException(beans, null);
+        throwAmbiguousResolutionException(beans, null, null);
     }
 
-    public static void throwAmbiguousResolutionException(Set<Bean<?>> beans, Class type, Annotation... qualifiers)
+    public static void throwAmbiguousResolutionException(Set<Bean<?>> beans, Class type, InjectionPoint injectionPoint, Annotation... qualifiers)
     {
         String qualifierMessage = createQualifierMessage(qualifiers);
 
@@ -113,6 +113,10 @@ public class InjectionExceptionUtils
         {
             violationMessage = newViolation("There is more than one api type with : ",
                     ClassUtil.getClass(type).getName(), " with qualifiers : ", qualifierMessage);
+            if (injectionPoint != null)
+            {
+                violationMessage.addLine("for injection into ", injectionPoint.toString());
+            }
         }
         else
         {

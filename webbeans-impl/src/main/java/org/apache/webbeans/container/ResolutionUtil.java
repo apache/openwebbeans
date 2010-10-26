@@ -98,7 +98,7 @@ public final class ResolutionUtil
 
         if (resolvedSet.size() > 1)
         {
-            throwAmbiguousResolutionException(resolvedSet, type, qualifiers);
+            throwAmbiguousResolutionException(resolvedSet, type, injectionPoint, qualifiers);
         }
 
         Bean<?> bean = resolvedSet.iterator().next();
