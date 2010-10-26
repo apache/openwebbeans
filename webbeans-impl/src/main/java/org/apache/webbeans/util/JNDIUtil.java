@@ -33,32 +33,11 @@ import org.apache.webbeans.logger.WebBeansLogger;
  */
 public final class JNDIUtil
 {
-    private static InitialContext initialContext = null;
-
     private static final WebBeansLogger LOGGER = WebBeansLogger.getLogger(JNDIUtil.class);
-
-    static
-    {
-        try
-        {
-            initialContext = new InitialContext();
-
-        }
-        catch (Exception e)
-        {
-            LOGGER.error(OWBLogConst.ERROR_0004, e);
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     private JNDIUtil()
     {
 
-    }
-
-    public static InitialContext getInitialContext()
-    {
-        return initialContext;
     }
 
     public static void bind(String name, Object object)
@@ -68,6 +47,7 @@ public final class JNDIUtil
 
         try
         {
+            InitialContext initialContext = new InitialContext();            
             Context context = initialContext;
             
             String[] parts = name.split("/");
@@ -100,7 +80,7 @@ public final class JNDIUtil
 
         try
         {
-            initialContext.unbind(name);
+            new InitialContext().unbind(name);
 
         }
         catch (NamingException e)
@@ -117,7 +97,7 @@ public final class JNDIUtil
 
         try
         {
-            return (T) initialContext.lookup(name);
+            return (T) new InitialContext().lookup(name);
         }
         catch (NamingException e)
         {

@@ -19,6 +19,8 @@
 package org.apache.webbeans.inject.instance;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -35,6 +37,8 @@ import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ResolutionUtil;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.OwbCustomObjectInputStream;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Implements the {@link Instance} interface.
@@ -220,6 +224,23 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         
         return instances.iterator();
     }
+    
+    private void writeObject(java.io.ObjectOutputStream op) throws IOException
+    {
+        ObjectOutputStream oos = new ObjectOutputStream(op);
+        oos.writeObject(this.injectionClazz);
+        oos.writeObject(this.qualifierAnnotations);
+        
+        oos.flush();
+    }
+    
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        final ObjectInputStream inputStream = new OwbCustomObjectInputStream(in, WebBeansUtil.getCurrentClassLoader());
+        this.injectionClazz = (Type)inputStream.readObject();
+        this.qualifierAnnotations = (Set<Annotation>)inputStream.readObject();        
+    }
+    
 
     public String toString()
     {
@@ -245,27 +266,4 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         return builder.toString();
     }
     
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
-    {
-        this.injectionClazz = (Type)in.readObject();
-        int q = in.readByte();
-        if(q != 0)
-        {
-            this.qualifierAnnotations = new HashSet<Annotation>();
-            for(int i =0; i< q; i++)
-            {
-                this.qualifierAnnotations.add((Annotation)in.readObject());
-            }
-        }
-    }
-    
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException
-    {
-        out.writeObject(this.injectionClazz);
-        out.writeByte(this.qualifierAnnotations.size());
-        for(Annotation ann : this.qualifierAnnotations)
-        {
-            out.writeObject(ann);
-        }
-    }
 }

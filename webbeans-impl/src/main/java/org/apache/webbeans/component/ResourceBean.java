@@ -19,6 +19,7 @@
 package org.apache.webbeans.component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 
 import javassist.util.proxy.ProxyFactory;
 
@@ -65,6 +66,13 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
         }
         catch (Exception e)
         {
+            //check type is final
+            //return actual resource
+            if(Modifier.isFinal(this.actualResourceReference.getClass().getModifiers()))
+            {
+                return this.actualResourceReference;
+            }
+            
             throw new WebBeansException(e);
         }
         

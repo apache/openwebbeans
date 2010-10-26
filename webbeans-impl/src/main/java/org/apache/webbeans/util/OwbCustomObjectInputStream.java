@@ -16,25 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.portable.events.generics;
+package org.apache.webbeans.util;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.SessionBeanType;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectStreamClass;
 
-import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
-
-@SuppressWarnings("unchecked")
-public class GProcessSessionBean extends ProcessSessionBeanImpl implements GenericBeanEvent
+public class OwbCustomObjectInputStream extends ObjectInputStream
 {
-    public GProcessSessionBean(Bean<Object> bean, AnnotatedType<?> annotatedType, String name, SessionBeanType type)
+    private ClassLoader classLoader;
+
+    public OwbCustomObjectInputStream(InputStream in, ClassLoader classLoader) throws IOException
     {
-        super(bean, annotatedType, name, type);
+        super(in);
+        this.classLoader = classLoader;
+    }
+    
+    protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException
+    {
+        return Class.forName(desc.getName(), false, this.classLoader);
     }
 
-    @Override
-    public Class<?> getBeanClass()
-    {
-        return getBean().getBeanClass();
-    }
 }

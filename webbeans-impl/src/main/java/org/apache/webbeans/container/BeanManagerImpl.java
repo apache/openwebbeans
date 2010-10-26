@@ -504,7 +504,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         getManager().webBeansDecorators.add(decorator);
         if (decorator instanceof OwbBean)
         {
-            this.addPassivationInfo((OwbBean)decorator);
+            OwbBean<?> owbBean = (OwbBean<?>)decorator;
+            
+            if(owbBean.isPassivationCapable())
+            {
+                this.addPassivationInfo((OwbBean)decorator);   
+            }
         }
         return this;
     }
@@ -515,7 +520,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         getManager().webBeansInterceptors.add(interceptor);
         if (interceptor instanceof OwbBean)
         {
-            this.addPassivationInfo((OwbBean)interceptor);
+            OwbBean<?> owbBean = (OwbBean<?>)interceptor;
+            if(owbBean.isPassivationCapable())
+            {
+                this.addPassivationInfo((OwbBean)interceptor);    
+            }
+            
         }       
         return this;
     }

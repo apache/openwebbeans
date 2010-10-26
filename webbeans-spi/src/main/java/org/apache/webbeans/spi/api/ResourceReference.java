@@ -19,16 +19,20 @@
 package org.apache.webbeans.spi.api;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+
 
 public class ResourceReference<X,T extends Annotation>
 {
-    private T annotation;
+    private final T annotation;
     
-    private Class<X> resourceType;
+    private final Class<X> resourceType;
     
-    private Class<?> ownerClass;
+    private final Class<?> ownerClass;
     
-    private String name;
+    private final String name;
+    
+    private String jndiName;
     
     public ResourceReference(Class<?> ownerClass, String name, Class<X> resourceType, T annotation)
     {
@@ -75,5 +79,62 @@ public class ResourceReference<X,T extends Annotation>
     {
         return this.name;
     }
+    
+    public String getJndiName()
+    {
+        if(this.jndiName == null)
+        {
+            this.jndiName = getResourceName();
+        }
+        
+        return normalize(this.jndiName);
+    }
+    
+    private Method getNameMethod(Class cls) 
+    {
+        try 
+        {
+            return cls.getMethod("name", null);
+        } 
+        catch (NoSuchMethodException e) 
+        {
+            return null;
+        }
+    }
+
+    private String getResourceName() 
+    {
+        String value = null;
+        Method nameMethod = getNameMethod(this.annotation.getClass());
+        if (nameMethod != null) 
+        {
+            try 
+            {
+                value = (String) nameMethod.invoke(this.annotation, null);
+            } 
+            catch (Exception e) 
+            {
+                // ignore
+            }
+        }
+        
+        if(value == null || value.equals(""))
+        {
+            value = this.ownerClass.getName() + "/" + this.name;
+        }
+        
+        return value;
+    }
+    
+    private String normalize(String refName) 
+    {
+        if (refName.startsWith("java:")) 
+        {
+            return refName;
+        }
+        
+        return "java:comp/env/" + refName;
+    }
+    
     
 }

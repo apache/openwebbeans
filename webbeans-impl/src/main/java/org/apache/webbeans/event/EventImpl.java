@@ -19,6 +19,8 @@
 package org.apache.webbeans.event;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -31,19 +33,19 @@ import javax.enterprise.util.TypeLiteral;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.OwbCustomObjectInputStream;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Event implementation.
  * 
- * @version $Rev$ $Date$
- *
  * @param <T> event type
  * @see Event
  */
 public class EventImpl<T> implements Event<T>, Serializable
 {
     private static final long serialVersionUID = -9035218380365451350L;
-
+    
     /**Event binding types*/
     private Annotation[] injectedBindings;
 
@@ -148,9 +150,21 @@ public class EventImpl<T> implements Event<T>, Serializable
         return select(subtype.getRawType(), bindings);
     }
     
+    private void writeObject(java.io.ObjectOutputStream op) throws IOException
+    {
+        ObjectOutputStream oos = new ObjectOutputStream(op);
+        oos.writeObject(this.eventType);
+        oos.writeObject(this.injectedBindings);
+        
+        oos.flush();
+    }
+    
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
     {
-        in.defaultReadObject();
+        final ObjectInputStream inputStream = new OwbCustomObjectInputStream(in, WebBeansUtil.getCurrentClassLoader());
+        this.eventType = (Type)inputStream.readObject();
+        this.injectedBindings = (Annotation[])inputStream.readObject();
+        
         this.manager = BeanManagerImpl.getManager();
     }
 }
