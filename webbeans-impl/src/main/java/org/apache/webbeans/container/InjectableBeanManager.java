@@ -227,4 +227,47 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
         this.bm = BeanManagerImpl.getManager();
     }
 
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((bm == null) ? 0 : System.identityHashCode(bm));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;   
+        }
+        if (obj == null)
+        {
+            return false;   
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;   
+        }
+        
+        InjectableBeanManager other = (InjectableBeanManager) obj;
+        if (bm == null)
+        {
+            if (other.bm != null)
+            {
+                return false;   
+            }
+        }
+        else if (System.identityHashCode(bm) != (System.identityHashCode(other.bm)))
+        {
+            return false;   
+        }
+        
+        return true;
+    }
+    
+    
+
 }
