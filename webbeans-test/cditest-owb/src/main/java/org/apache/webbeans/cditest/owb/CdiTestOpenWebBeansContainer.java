@@ -158,7 +158,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
 
         if (beans.size() > 1) 
         {
-            throwAmbiguousResolutionException(beans, type, qualifiers);
+            throwAmbiguousResolutionException(beans, type, null, qualifiers);
         }
 
         @SuppressWarnings("unchecked")
