@@ -21,8 +21,6 @@ package org.apache.webbeans.web.failover;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Externalizable;
-import java.io.InputStream;
-import java.io.ObjectStreamClass;
 import java.io.Serializable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -36,9 +34,6 @@ import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.FailOverService;
 
-import javassist.util.proxy.ProxyObjectInputStream;
-import javassist.util.proxy.ProxyObjectOutputStream;
-
 /**
  * Use javassist Proxy streams to serialize and restore failover bean bag.
  * 
@@ -46,26 +41,26 @@ import javassist.util.proxy.ProxyObjectOutputStream;
 public class FailOverBagWrapper implements Serializable, Externalizable 
 {
     /**Logger instance*/
-    private  final WebBeansLogger logger = 
+    protected  final WebBeansLogger logger = 
             WebBeansLogger.getLogger(FailOverBagWrapper.class);
 
     private transient FailOverService failoverService;
 
-    FailOverBag bag;
+    protected FailOverBag bag;
 
-    String sessionId;
+    protected String sessionId;
 
-    boolean isSessionInUse;
+    protected boolean isSessionInUse;
  
     //do not remove, used by serialization. 
     public FailOverBagWrapper()
     {
         failoverService = (FailOverService)ServiceLoader.getService(FailOverService.class);
-
     }
     
     public FailOverBagWrapper(HttpSession session, FailOverService service) 
     {
+        failoverService = service;
         isSessionInUse = false;
         sessionId = session.getId();
         bag = new FailOverBag(session, service);
@@ -112,7 +107,7 @@ public class FailOverBagWrapper implements Serializable, Externalizable
         {
             byte[] buf = (byte[])in.readObject();
             ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-            ObjectInputStream ois = new OwbProxyObjectInputStream(bais);
+            ObjectInputStream ois = failoverService.getObjectInputStream(bais);
             bag = (FailOverBag) ois.readObject();
             ois.close();
         }
@@ -139,47 +134,13 @@ public class FailOverBagWrapper implements Serializable, Externalizable
         ByteArrayOutputStream baos = null;
         ObjectOutputStream oos = null;
         byte[] buf = null;
-        try 
-        {
-            baos = new ByteArrayOutputStream();
-            oos = new ProxyObjectOutputStream(baos);
-            oos.writeObject(bag);
-            oos.flush();
-            buf = baos.toByteArray();
-            oos.close();
-            baos.close();
-            out.writeObject(buf);
-        } 
-        catch (Throwable e) 
-        {
-            e.printStackTrace();
-        }        
+        baos = new ByteArrayOutputStream();
+        oos = failoverService.getObjectOutputStream(baos);
+        oos.writeObject(bag);
+        oos.flush();
+        buf = baos.toByteArray();
+        oos.close();
+        baos.close();
+        out.writeObject(buf);
     }
-    
-    /**
-     * A little wrapper class to correct the class loader.
-     */
-    public static class OwbProxyObjectInputStream extends ProxyObjectInputStream 
-    {
-        public OwbProxyObjectInputStream(InputStream in) throws IOException 
-        {
-            super(in);
-        }
-        
-        protected Class<?> resolveClass(ObjectStreamClass desc)
-        throws IOException, ClassNotFoundException
-        {
-            String name = desc.getName();
-            try 
-            {
-                return Class.forName(name, false, 
-                    Thread.currentThread().getContextClassLoader());
-            } 
-            catch (ClassNotFoundException ex) 
-            {
-                return super.resolveClass(desc);
-            }
-        }
-    }
-
 }

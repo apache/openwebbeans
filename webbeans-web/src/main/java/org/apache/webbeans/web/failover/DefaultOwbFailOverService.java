@@ -21,8 +21,17 @@ package org.apache.webbeans.web.failover;
 import java.util.UUID;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+
+import javassist.util.proxy.ProxyObjectOutputStream;
+
+import javax.enterprise.inject.spi.Bean;
 import javax.servlet.http.HttpSession;
 
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
@@ -48,10 +57,17 @@ public class DefaultOwbFailOverService implements FailOverService
     private static final String OWB_FAILOVER_IS_SUPPORT_PASSIVATE = 
         "org.apache.webbeans.web.failover.issupportpassivation";
 
+    private static final String OWB_FAILOVER_RESOURCSES_SERIALIZATION_HANDLER =
+        "org.apache.webbeans.web.failover.resources.serialization.handler.v10";
+    
     boolean isSupportFailOver;
     
     boolean isSupportPassivation;
 
+    SerializationHandlerV10 handler;
+    
+    ThreadLocal<Boolean> isForPassivation = new ThreadLocal<Boolean>();
+    
     public DefaultOwbFailOverService () 
     {
         String value;
@@ -71,6 +87,18 @@ public class DefaultOwbFailOverService implements FailOverService
         if (isSupportFailOver || isSupportPassivation)
         {
             WebBeansUtil.initProxyFactoryClassLoaderProvider();
+            value = OpenWebBeansConfiguration.getInstance().getProperty(OWB_FAILOVER_RESOURCSES_SERIALIZATION_HANDLER);
+            try 
+            {
+                if (value != null) 
+                {
+                    handler = (SerializationHandlerV10) Class.forName(value).newInstance();
+                }
+            } 
+            catch (Exception e) 
+            {
+                logger.debug("DefaultOwbFailOverService could not instanciate: [{0}]", value);
+            }
         }
         
         if (logger.wblWillLogDebug())
@@ -109,6 +137,8 @@ public class DefaultOwbFailOverService implements FailOverService
             // could also be serialized.
             session.setAttribute(getFailOverAttributeName(), bagWrapper);
         }
+        isForPassivation.remove();
+        isForPassivation.set(null);
     }
     
     public void sessionIsInUse(HttpSession session)
@@ -129,6 +159,7 @@ public class DefaultOwbFailOverService implements FailOverService
     {
         FailOverBagWrapper bagWrapper = new FailOverBagWrapper(session, this);
         session.setAttribute(getFailOverAttributeName(), bagWrapper);
+        isForPassivation.set(Boolean.TRUE);
     }
     
     public void restoreBeans(HttpSession session)
@@ -165,6 +196,50 @@ public class DefaultOwbFailOverService implements FailOverService
     public void enablePassivationSupport(boolean flag) 
     {
         isSupportPassivation = flag;
+    }
+    
+    /**
+     * Get object input stream. Note, the stream should support deserialize javassist objects.
+     * 
+     * @return custom object input stream.
+     */
+    @Override
+    public ObjectInputStream getObjectInputStream(InputStream in) throws IOException 
+    {
+        return new OwbProxyObjectInputStream(in);
+    }
+    
+    /**
+     * Get object output stream. Note, the stream should support deserialize javassist objects.
+     * 
+     * @return custom object output stream.
+     */
+    @Override
+    public ObjectOutputStream getObjectOutputStream(OutputStream out) throws IOException 
+    {
+        return new ProxyObjectOutputStream(out);
+    }
+    
+    /**
+     * Except the EJB remote stub, it is hard to handle other types of resources.
+     * Here we delegate serialization/deserialization to the application provided
+     * SerializationHandler.
+     * 
+     */
+    @Override
+    public Object handleResource(
+            Bean<?> bean,
+            Object resourceObject,
+            ObjectInput in,
+            ObjectOutput out)
+    {
+        if (handler != null) 
+        {
+            return handler.handleResource(bean, resourceObject, in, out, 
+                (Boolean.TRUE == isForPassivation.get()) ? 
+                SerializationHandlerV10.TYPE_PASSIVATION : SerializationHandlerV10.TYPE_FAILOVER);
+        }
+        return NOT_HANDLED;
     }
     
     private static void verifyTest(FailOverBagWrapper bagWrapper) 

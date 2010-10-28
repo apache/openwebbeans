@@ -18,8 +18,20 @@
  */
 package org.apache.webbeans.spi;
 
+import javax.enterprise.inject.spi.Bean;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.OutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
+/**
+ * Container provided failover and passivation service.
+ * 
+ */
 public interface FailOverService 
 {
     /**
@@ -36,12 +48,30 @@ public interface FailOverService
      */
     public String getFailOverAttributeName();
     
+    /**
+     * Whether or not to support failover.
+     * @return
+     */
     public boolean isSupportFailOver();
-    
+
+    /**
+     * Whether or not to support passivation.
+     * @return
+     */
     public boolean isSupportPassivation();
     
+    /**
+     * Enable failover support.
+     * 
+     * @param flag
+     */
     public void enableFailOverSupport(boolean flag);
 
+    /**
+     * Enable passivation support.
+     * 
+     * @param flag
+     */
     public void enablePassivationSupport(boolean flag);
 
     /**
@@ -74,4 +104,52 @@ public interface FailOverService
      * @param session
      */
     public void sessionWillPassivate(HttpSession session);
+    
+    /**
+     * Container provided object input stream.
+     *  
+     * Note, the stream should support deserializing javassist objects.
+     * 
+     * @return custom object input stream.
+     */
+    public ObjectInputStream getObjectInputStream(InputStream in) throws IOException;
+    
+    /**
+     * Container provided object output stream. 
+     * 
+     * Note, the stream should support serializing javassist objects.
+     * 
+     * @return custom object output stream.
+     */
+    public ObjectOutputStream getObjectOutputStream(OutputStream out) throws IOException;
+
+
+    /**
+     * Container provided custom handler for serialize / deserialize a resource bean. 
+     * Add clean up code in this method will allow OWB to override default resource 
+     * bean passivation behavior. 
+     * 
+     * Note, in the method, a container may first invoke the application provided 
+     * handler(@See SerializationHandler) if it is configured. 
+     * 
+     * @param bean                The resource bean.
+     * @param resourceObject    The resource bean instance
+     * @param in                The input object stream
+     * @param out                The output object stream
+     * 
+     * @return NOT_HANDLED if not handled by handler.
+     */
+    public Object handleResource(
+            Bean<?> bean,
+            Object resourceObject,
+            ObjectInput in,
+            ObjectOutput out
+    );
+
+    /**
+     * Returned, if container or application does not handle the resource object
+     * in the handleResource() method.
+     */
+    public final static Object NOT_HANDLED = new Object();
+
 }
