@@ -18,9 +18,13 @@
  */
 package org.apache.webbeans.ejb.common.proxy;
 
+import java.io.Externalizable;
 import java.io.IOException;
+import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -50,7 +54,7 @@ import javassist.util.proxy.MethodHandler;
  *
  */
 @SuppressWarnings("unchecked")
-public class EjbBeanProxyHandler implements MethodHandler
+public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externalizable
 {
     //Logger instance
     private final WebBeansLogger logger = WebBeansLogger.getLogger(EjbBeanProxyHandler.class);
@@ -66,6 +70,11 @@ public class EjbBeanProxyHandler implements MethodHandler
     
     /**Creational Context*/
     private CreationalContext<?> creationalContext;
+    
+    //DO NOT REMOVE, used by PASSIVATION.
+    public EjbBeanProxyHandler() 
+    {
+    }
     
     /**
      * Creates a new instance.
@@ -313,6 +322,46 @@ public class EjbBeanProxyHandler implements MethodHandler
         this.isDependent = s.readBoolean();
         this.creationalContext = (CreationalContext<?>)s.readObject();
         this.dependentEJB = s.readObject();
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException 
+    {
+        // we have to write the ids for all beans, not only PassivationCapable
+        // since this gets serialized along with the Bean proxy.
+        String passivationId = this.ejbBean.getId();
+        if (passivationId!= null)
+        {
+            out.writeObject(passivationId);
+        }
+        else
+        {
+            out.writeObject(null);
+            
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn(OWBLogConst.WARN_0015, this.ejbBean);   
+            }
+        }
+        
+        out.writeBoolean(this.isDependent);
+        out.writeObject(this.creationalContext);
+        out.writeObject(this.dependentEJB);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException,
+            ClassNotFoundException 
+    {
+        String passivationId = (String) in.readObject();
+        if (passivationId != null)
+        {
+            this.ejbBean = (BaseEjbBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(passivationId);
+        }
+        
+        this.isDependent = in.readBoolean();
+        this.creationalContext = (CreationalContext<?>)in.readObject();
+        this.dependentEJB = in.readObject();
     }
     
 }
