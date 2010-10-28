@@ -40,6 +40,7 @@ import javax.enterprise.inject.spi.Decorator;
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -61,7 +62,8 @@ public final class JavassistProxyFactory
     
     private ConcurrentMap<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     private ConcurrentMap<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
-    private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
+    private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
+    private ConcurrentMap<ResourceBean<?, ?>, Class<?>> resourceBeanProxyClasses = new ConcurrentHashMap<ResourceBean<?,?>, Class<?>>();
     // second level map is indexed on local interface
     private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();    
     
@@ -100,6 +102,32 @@ public final class JavassistProxyFactory
         }
         return proxyClass;
     }
+    
+    public Class<?> getResourceBeanProxyClass(ResourceBean<?, ?> resourceBean)
+    {
+        Class<?> proxyClass = null;
+        try
+        {
+            proxyClass = this.resourceBeanProxyClasses.get(resourceBean);
+            if (proxyClass == null)
+            {
+                ProxyFactory fact = createProxyFactory(resourceBean);
+                proxyClass = getProxyClass(fact);
+
+                Class<?> oldClazz = this.resourceBeanProxyClasses.putIfAbsent(resourceBean, proxyClass);
+                if (oldClazz != null)
+                {
+                    return oldClazz;
+                }                
+            }                
+        }
+        catch (Exception e)
+        {
+            WebBeansUtil.throwRuntimeExceptions(e);
+        }
+
+        return proxyClass;
+    }    
 
     /**
      * Defines the proxy for the given bean and iface using callers factory. Due
