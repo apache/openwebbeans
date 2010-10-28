@@ -62,7 +62,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
             this.actualResourceReference = resourceService.getResourceReference(this.resourceReference);
 
             instance = (X)(JavassistProxyFactory.getInstance().getProxyClass(proxyFactory).newInstance());
-            ((ProxyObject)instance).setHandler(new ResourceProxyHandler(this.actualResourceReference));
+            ((ProxyObject)instance).setHandler(new ResourceProxyHandler(this, this.actualResourceReference));
         }
         catch (Exception e)
         {
@@ -85,7 +85,19 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
         this.actualResourceReference = null;
     }
 
-
+    /**
+     * Called after deserialization to get a new instance for some type of resource bean instance that are
+     * not serializable.
+     * 
+     * @return a new instance of this resource bean.
+     */
+    public X getActualInstance() 
+    {
+        ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
+        this.actualResourceReference = resourceService.getResourceReference(this.resourceReference);
+        return actualResourceReference;
+    }
+    
     public boolean isPassivationCapable()
     {
         return true;

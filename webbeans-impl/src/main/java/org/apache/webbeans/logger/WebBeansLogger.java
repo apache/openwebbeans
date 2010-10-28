@@ -24,6 +24,11 @@ package org.apache.webbeans.logger;
 import java.util.logging.Logger;
 import java.util.logging.Level;
  
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -38,7 +43,7 @@ import java.util.ResourceBundle;
  *
  * @version $Rev$ $Date$
  */
-public final class WebBeansLogger
+public final class WebBeansLogger implements Serializable, Externalizable
 {
     /** Log level mappings from OWB DEBUG, TRACE, INFO, WARN, ERROR, FATAL to whatever log
      *  levels the currently loaded logger supports (i.e. JUL provides FINEST, FINER, FINE,
@@ -53,12 +58,13 @@ public final class WebBeansLogger
     public final static Level WBL_FATAL = Level.SEVERE;
        
     /** Inner logger object to log actual log messages */
-    private Logger logger = null;
-    private ResourceBundle wbBundle = null;
+    private transient Logger logger = null;
+    private transient ResourceBundle wbBundle = null;
     private Class<?> caller = null;
+    private Locale locale = null;
     
     /** Private constructor */
-    private WebBeansLogger()
+    public WebBeansLogger()
     {
         wbBundle = ResourceBundle.getBundle("openwebbeans/Messages");
     }
@@ -90,6 +96,7 @@ public final class WebBeansLogger
     {
         WebBeansLogger wbLogger = new WebBeansLogger();
         wbLogger.caller = clazz;
+        wbLogger.locale = desiredLocale;
         Logger inLogger = Logger.getLogger(clazz.getName(), ResourceBundle.getBundle("openwebbeans/Messages", desiredLocale).toString());
         wbLogger.setLogger(inLogger);
 
@@ -303,4 +310,28 @@ public final class WebBeansLogger
         return (logger.isLoggable(WebBeansLogger.WBL_TRACE));
     }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException 
+    {
+        out.writeObject(caller);
+        out.writeObject(locale);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException,
+            ClassNotFoundException 
+    {
+        caller = (Class<?>)in.readObject();
+        locale = (Locale)in.readObject();
+        Logger inLogger = null;
+        if (locale == null) 
+        {
+            inLogger = Logger.getLogger(caller.getName(),"openwebbeans/Messages");
+        } 
+        else
+        {
+            inLogger = Logger.getLogger(caller.getName(), ResourceBundle.getBundle("openwebbeans/Messages", locale).toString());
+        }
+        this.setLogger(inLogger);
+    }
 }
