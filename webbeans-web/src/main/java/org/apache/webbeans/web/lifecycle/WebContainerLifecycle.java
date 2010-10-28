@@ -105,9 +105,17 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         if(OpenWebBeansConfiguration.getInstance().isJspApplication())
         {
             logger.debug("Application is configured as JSP. Adding EL Resolver.");
-
-            JspApplicationContext applicationCtx = JspFactory.getDefaultFactory().getJspApplicationContext((ServletContext)(startupObject));
-            applicationCtx.addELResolver(resolver);
+            
+            JspFactory factory = JspFactory.getDefaultFactory();
+            if (factory != null) 
+            {
+                JspApplicationContext applicationCtx = factory.getJspApplicationContext((ServletContext)(startupObject));
+                applicationCtx.addELResolver(resolver);                
+            }            
+            else
+            {
+                logger.debug("Default JSPFactroy instance has not found");
+            }
         }
 
         // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute

@@ -44,7 +44,7 @@ public class OpenWebBeansConfiguration
     private final static String DEFAULT_CONFIG_PROPERTIES_NAME = "META-INF/openwebbeans/openwebbeans.properties";
     
     /**Property of application*/
-    private Properties configProperties = new Properties();
+    private final Properties configProperties = new Properties();
         
     /**Conversation periodic delay in ms.*/
     public static final String CONVERSATION_PERIODIC_DELAY = "org.apache.webbeans.conversation.Conversation.periodicDelay";
@@ -214,9 +214,13 @@ public class OpenWebBeansConfiguration
     public synchronized void parseConfiguration() throws WebBeansConfigurationException
     {
         Properties newConfigProperties = PropertyLoader.getProperties(DEFAULT_CONFIG_PROPERTIES_NAME);
+        configProperties.clear();
 
         // set the new one as perfect fit.
-        configProperties = newConfigProperties;
+        if(newConfigProperties != null)
+        {
+            configProperties.putAll(newConfigProperties);
+        }
     }
     
 
