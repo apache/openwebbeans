@@ -18,14 +18,15 @@
  */
 package org.apache.webbeans.portable.events;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Extension;
-
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
@@ -42,8 +43,9 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class ExtensionLoader
 {
     /**Map of extensions*/
-    private Map<Bean<?>, Object> extensions = new ConcurrentHashMap<Bean<?>, Object>();
-    
+    private final  Map<Bean<?>, Object> extensions = new ConcurrentHashMap<Bean<?>, Object>();
+    private final Set<Class<? extends Extension>> extensionClasses = new HashSet<Class<? extends Extension>>();
+
     /**
      * Creates a new loader instance.
      */
@@ -71,17 +73,20 @@ public class ExtensionLoader
     {
         ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, WebBeansUtil.getCurrentClassLoader());
         Iterator<Extension> iterator = loader.iterator();
-        
         while(iterator.hasNext())
         {
             Extension ext = iterator.next();
-            try
+            if (!extensionClasses.contains(ext.getClass()))
             {
-                addExtension(ext);
-            }
-            catch (Exception e)
-            {
-                throw new WebBeansException("Error is occured while reading Extension service list",e);
+                extensionClasses.add(ext.getClass());
+                try
+                {
+                    addExtension(ext);
+                }
+                catch (Exception e)
+                {
+                    throw new WebBeansException("Error occurred while reading Extension service list",e);
+                }
             }
         }        
     }
@@ -108,21 +113,23 @@ public class ExtensionLoader
 
     /**
      * Add a CDI Extension to our internal list.
-     * @param ext
+     * @param ext Extension to add
      */
     public void addExtension(Extension ext)
     {
-        Bean<?> bean = WebBeansUtil.createExtensionComponent(ext.getClass());                
+        Bean<?> bean = WebBeansUtil.createExtensionComponent(ext.getClass());
         this.extensions.put(bean, ext);
-        
+
         BeanManagerImpl.getManager().addBean(bean);
     }
 
     /**
      * Clear service list.
+     * TODO since this doesn't remove the beans from the BeanManager it's unlikely to allow you to call loadExtensionServices again
      */
     public void clear()
     {
         this.extensions.clear();
-    }    
+        this.extensionClasses.clear();
+    }
 }

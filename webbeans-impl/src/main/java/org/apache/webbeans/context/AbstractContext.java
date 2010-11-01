@@ -204,9 +204,8 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
         if(bag == null)
         {
             createContextualBag(contextual, creationalContext);
+            bag = (BeanInstanceBag<T>)componentInstanceMap.get(contextual);
         }
-
-        bag = (BeanInstanceBag<T>)componentInstanceMap.get(contextual);
 
         //Look for instance
         instance = bag.getBeanInstance();
@@ -224,12 +223,8 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
             
             else
             {                
-                //No instance
-                if(instance == null)
-                {
-                    instance = bag.create(contextual);    
-                }
-            }            
+                instance = bag.create(contextual);    
+            }
         }
 
         return  instance;
