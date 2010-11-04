@@ -21,6 +21,8 @@ package org.apache.webbeans.component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 
+import javassist.util.proxy.ProxyFactory;
+
 import javax.enterprise.context.spi.CreationalContext;
 
 import javassist.util.proxy.ProxyObject;
@@ -33,6 +35,8 @@ import org.apache.webbeans.spi.api.ResourceReference;
 
 public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
 {
+    private X actualResourceReference = null;
+    
     private ResourceReference<X,T> resourceReference = null;
     
     public ResourceBean(Class<X> returnType, InjectionTargetBean<?> ownerBean,
@@ -51,38 +55,37 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
         X instance = null;
         try
         {
-            ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
-            instance = resourceService.getResourceReference(this.resourceReference);
-
-            if (instance != null && Modifier.isFinal(instance.getClass().getModifiers()))
-            {
-                return instance;
-            }
+            //X TODO cache proxy class!
+            ProxyFactory proxyFactory = JavassistProxyFactory.getInstance().createProxyFactory(this);
             
-            instance = (X) JavassistProxyFactory.getInstance().getResourceBeanProxyClass(this).newInstance();
-            ((ProxyObject) instance).setHandler(new ResourceProxyHandler(this,instance));
+            ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
+            this.actualResourceReference = resourceService.getResourceReference(this.resourceReference);
+
+            instance = (X)(JavassistProxyFactory.getInstance().getProxyClass(proxyFactory).newInstance());
+            ((ProxyObject)instance).setHandler(new ResourceProxyHandler(this.actualResourceReference));
         }
         catch (Exception e)
         {
+            //check type is final
+            //return actual resource
+            if(Modifier.isFinal(this.actualResourceReference.getClass().getModifiers()))
+            {
+                return this.actualResourceReference;
+            }
+            
             throw new WebBeansException(e);
         }
-
+        
         return instance;
     }
 
-    /**
-     * Called after deserialization to get a new instance for some type of resource bean instance that are
-     * not serializable.
-     * 
-     * @return a new instance of this resource bean.
-     */
-    public X getActualInstance() 
+    @Override
+    protected void destroyInstance(X instance, CreationalContext<X> creationalContext)
     {
-        ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
-        X instance = resourceService.getResourceReference(this.resourceReference);
-        return instance;
+        this.actualResourceReference = null;
     }
-    
+
+
     public boolean isPassivationCapable()
     {
         return true;
