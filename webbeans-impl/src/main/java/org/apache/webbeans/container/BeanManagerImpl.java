@@ -1105,6 +1105,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return additionalScopes;
     }
     
+    public List<AnnotatedType<?>> getAnnotatedTypes()
+    {
+        return this.additionalAnnotatedTypes;
+    }
+    
     public void clear()
     {
         this.additionalAnnotatedTypes.clear();
