@@ -48,26 +48,25 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
     @SuppressWarnings("unchecked")
     protected X createInstance(CreationalContext<X> creationalContext)
     {
-        X instance = null;
         try
         {
             ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
-            instance = resourceService.getResourceReference(this.resourceReference);
+            X instance = resourceService.getResourceReference(this.resourceReference);
 
             if (instance != null && Modifier.isFinal(instance.getClass().getModifiers()))
             {
                 return instance;
             }
             
-            instance = (X) JavassistProxyFactory.getInstance().getResourceBeanProxyClass(this).newInstance();
-            ((ProxyObject) instance).setHandler(new ResourceProxyHandler(this,instance));
+            X proxyInstance = (X) JavassistProxyFactory.getInstance().getResourceBeanProxyClass(this).newInstance();
+            ((ProxyObject) proxyInstance).setHandler(new ResourceProxyHandler(this,instance));
+            return proxyInstance;
         }
         catch (Exception e)
         {
             throw new WebBeansException(e);
         }
 
-        return instance;
     }
 
     /**
