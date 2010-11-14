@@ -353,13 +353,7 @@ public final class NotificationManager
         {
             Type beanClassArg = actualArgs[0];
             Type returnClassArg = actualArgs[1];
-            
-            if(isObserverMethod)
-            {
-                beanClassArg = actualArgs[1];
-                returnClassArg = actualArgs[0];
-            }
-            
+                        
             if(checkEventTypeParameterForExtensions(beanClass, beanClassArg) && 
                     checkEventTypeParameterForExtensions(producerOrObserverReturnClass, returnClassArg))
             {
