@@ -203,11 +203,12 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         ObserverParams[] obargs = null;
         try
         {
-            if (!this.observerMethod.isAccessible())
+            boolean isPrivateMethod = !this.observerMethod.isAccessible();
+            if (isPrivateMethod)
             {
                 SecurityUtil.doPrivilegedSetAccessible(observerMethod, true);
             }
-            
+
             obargs = new ObserverParams[methodArgsMap.size()];
             obargs = methodArgsMap.toArray(obargs);
             Object[] args = new Object[obargs.length];
@@ -239,17 +240,36 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     return;
                 }
                 
-                creationalContext = manager.createCreationalContext(specializedComponent);
-                
+
                 // on Reception.IF_EXISTS: ignore this bean if a the contextual instance doesn't already exist
-                if (ifExist && context.get(specializedComponent) == null) 
+                object = context.get(specializedComponent);
+
+                if (ifExist && object == null)
                 {
                     return;
                 }
-                
-                // on Reception.ALWAYS we must get a contextual reference if we didn't find the contextual instance
-                object = manager.getReference(specializedComponent, specializedComponent.getBeanClass(), creationalContext);
-                
+
+                creationalContext = manager.createCreationalContext(specializedComponent);
+
+                if (isPrivateMethod)
+                {
+                    // since private methods cannot be intercepted, we can just call them directly
+                    // so we get the contextual instance directly from the context because we do not
+                    // proxy private methods (thus the invocation on the contextual reference would fail)
+                    if (object == null)
+                    {
+                        object = context.get(specializedComponent, creationalContext);
+                    }
+                }
+                else
+                {
+                    // on Reception.ALWAYS we must get a contextual reference if we didn't find the contextual instance
+                    // we need to pick the contextual reference because of section 7.2:
+                    //  "Invocations of producer, disposer and observer methods by the container are
+                    //  business method invocations and are in- tercepted by method interceptors and decorators."
+                    object = manager.getReference(specializedComponent, specializedComponent.getBeanClass(), creationalContext);
+                }
+
                 if (object != null)
                 {
                     //Invoke Method

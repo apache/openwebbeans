@@ -49,6 +49,7 @@ public class ComponentWithObserves2
     @Transactional
     public void afterAdminLogin(@Observes @Role(value = "ADMIN") LoggedInEvent event, PaymentProcessorComponent payment)
     {
+        hasBeenIntercepted = true;
         this.payment = payment.getPaymentCheck();
         this.user = event.getUserName();
     }

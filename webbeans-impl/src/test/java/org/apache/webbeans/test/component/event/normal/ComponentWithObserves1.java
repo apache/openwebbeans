@@ -37,7 +37,7 @@ public class ComponentWithObserves1
         this.userName = event.getUserName();
     }
 
-    public void afterLoggedInWithMember(@Observes @Check(type = "CHECK") LoggedInEvent event)
+    private void afterLoggedInWithMember(@Observes @Check(type = "CHECK") LoggedInEvent event)
     {
         this.userNameWithMember = event.getUserName();
     }
