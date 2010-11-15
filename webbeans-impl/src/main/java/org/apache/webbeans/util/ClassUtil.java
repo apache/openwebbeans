@@ -1764,14 +1764,18 @@ public final class ClassUtil
     {
         Asserts.nullCheckForClass(clazz);
 
-        Class<?>[] interfaces = clazz.getInterfaces();
-
-        for (Class<?> cl : interfaces)
+        do
         {
-            set.add(cl);
+            Class<?>[] interfaces = clazz.getInterfaces();
 
-            setTypeHierarchy(set, cl);
-        }
+            for (Class<?> cl : interfaces)
+            {
+                set.add(cl);
+
+                setTypeHierarchy(set, cl);
+            }
+            clazz = clazz.getSuperclass();
+        } while (clazz != null && clazz != Object.class);
 
         return set;
     }
