@@ -110,7 +110,15 @@ public class OpenWebBeansConfiguration
     public static final String EL_ADAPTOR_CLASS = "org.apache.webbeans.spi.adaptor.ELAdaptor";
     
     public static final String PROPERTY_OWB_APPLICATION = "org.apache.webbeans.application.isOwbApplication";
-    
+
+    /**
+     * Use BDABeansXmlScanner to determine if interceptors, decorators, and
+     * alternatives are enabled in the beans.xml of a given BDA. For an
+     * application containing jar1 and jar2, this implies that an interceptor
+     * enabled in the beans.xml of jar1 is not automatically enabled in jar2
+     **/
+    public static final String USE_BDA_BEANSXML_SCANNER = "org.apache.webbeans.useBDABeansXMLScanner";
+
     /**
      * Gets singleton instance.
      * @return singleton instance
@@ -195,7 +203,10 @@ public class OpenWebBeansConfiguration
         
         value = properties.getProperty(EL_ADAPTOR_CLASS);
         setPropertyFromSystemProperty(EL_ADAPTOR_CLASS, value);
-        
+
+        value = properties.getProperty(USE_BDA_BEANSXML_SCANNER);
+        setPropertyFromSystemProperty(USE_BDA_BEANSXML_SCANNER, value);
+
     }
      
     private void setPropertyFromSystemProperty(String key, String value)

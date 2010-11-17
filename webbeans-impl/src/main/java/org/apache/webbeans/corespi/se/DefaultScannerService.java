@@ -28,6 +28,7 @@ import org.scannotation.ClasspathUrlFinder;
 
 public class DefaultScannerService extends AbstractMetaDataDiscovery
 {
+    
     public DefaultScannerService()
     {
         super();
@@ -38,15 +39,16 @@ public class DefaultScannerService extends AbstractMetaDataDiscovery
         configureAnnotationDB();
     }
 
+    
     private void configureAnnotationDB() throws Exception
     {
         ClassLoader loader = WebBeansUtil.getCurrentClassLoader();
+        //Store collection of beans.xml's before scanning archives
+        configureXML();
 
         URL[] urls = ClasspathUrlFinder.findResourceBases("META-INF/beans.xml", loader);
         
         this.getAnnotationDB().scanArchives(urls);
-
-        configureXML();
 
     }
 
@@ -68,6 +70,6 @@ public class DefaultScannerService extends AbstractMetaDataDiscovery
             throw e;
         }
     }
-
+    
 
 }

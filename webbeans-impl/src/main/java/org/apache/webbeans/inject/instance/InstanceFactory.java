@@ -30,9 +30,16 @@ public final class InstanceFactory
         
     }
     
-    public static <T> Instance<T> getInstance(Type injectedType, Annotation...annotations)
+    /**
+     * 
+     * @param injectedType injection class type
+     * @param injectionPointClass null or the class of the injection point
+     * @param annotations qualifier annotations
+     * @return
+     */
+    public static <T> Instance<T> getInstance(Type injectedType, Class<?> injectionPointClass,Annotation...annotations)
     {
-        InstanceImpl<T> instance = new InstanceImpl<T>(injectedType, annotations);   
+        InstanceImpl<T> instance = new InstanceImpl<T>(injectedType,injectionPointClass, annotations);   
         
         return instance;
     }

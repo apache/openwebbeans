@@ -60,4 +60,24 @@ public interface ScannerService
      * @return bean classes
      */
     public Set<Class<?>> getBeanClasses();
+    
+    /**
+     * Indicates if BDABeansXmlScanner is available. This method 
+     * should only return true if a BDABeansXmlScanner is implemented
+     * and the OpenWebBeansConfiguration.USE_BDA_BEANSXML_SCANNER 
+     * custom property is set to true.
+     * @return T - BDABeansXmlScanner is available and enabled;
+     * F - No BDABeansXmlScanner is available or it is disabled
+     */
+    public boolean isBDABeansXmlScanningEnabled();    
+    
+    /**
+     * Gets BDABeansXMLScanner used to determine the beans.xml 
+     * modifiers (interceptors, decorators, and, alternatives) that
+     * are enabled per BDA. This is different from the default behavior
+     * that enables modifiers per application and not just in one BDA
+     * contained in an application.
+     * @return null or reference to BDABeansXMLScanner
+     */
+    public BDABeansXmlScanner getBDABeansXmlScanner();
 }

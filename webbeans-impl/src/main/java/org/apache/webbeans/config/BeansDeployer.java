@@ -570,7 +570,7 @@ public class BeansDeployer
             {
                 fis = fileURL.openStream();
                 
-                this.xmlConfigurator.configure(fis, fileName);
+                this.xmlConfigurator.configure(fis, fileName,scanner);
             } 
             catch (IOException e)
             {

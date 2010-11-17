@@ -84,7 +84,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         this.beanManager.setXMLConfigurator(this.xmlDeployer);
         this.scannerService = ServiceLoader.getService(ScannerService.class);
         this.contextsService = ServiceLoader.getService(ContextsService.class);
-        
+        this.beanManager.setScannerService(scannerService);
         initApplication(properties);                
     }
 

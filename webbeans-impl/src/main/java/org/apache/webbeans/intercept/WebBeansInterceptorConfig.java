@@ -23,11 +23,14 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.spi.BDABeansXmlScanner;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -255,8 +258,38 @@ public final class WebBeansInterceptorConfig
         {
             addMethodInterceptors(annotatedType, stack, componentInterceptors);
         }
+        filterInterceptorsPerBDA(component,stack);
         
         Collections.sort(stack, new InterceptorDataComparator());
+
+    }
+
+    private static void filterInterceptorsPerBDA(AbstractInjectionTargetBean<?> component, List<InterceptorData> stack)
+    {
+
+        ScannerService scannerService = ServiceLoader.getService(ScannerService.class);
+        if (!scannerService.isBDABeansXmlScanningEnabled())
+        {
+            return;
+        }
+        BDABeansXmlScanner beansXMLScanner = scannerService.getBDABeansXmlScanner();
+        String beanBDABeansXML = beansXMLScanner.getBeansXml(component.getBeanClass());
+        Set<Class<?>> definedInterceptors = beansXMLScanner.getInterceptors(beanBDABeansXML);
+
+        InterceptorData interceptorData;
+
+        if (stack != null && stack.size() > 0)
+        {
+            Iterator<InterceptorData> it = stack.iterator();
+            while (it.hasNext())
+            {
+                interceptorData = (InterceptorData) it.next();
+                if (!definedInterceptors.contains(interceptorData.getInterceptorClass()))
+                {
+                    it.remove();
+                }
+            }
+        }
 
     }
 

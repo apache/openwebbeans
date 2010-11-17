@@ -25,10 +25,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.corespi.se.BeansXmlAnnotationDB;
+import org.apache.webbeans.corespi.se.DefaultBDABeansXmlScanner;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
+import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
-import org.scannotation.AnnotationDB;
 
 public abstract class AbstractMetaDataDiscovery implements ScannerService
 {
@@ -38,7 +41,10 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 
     /** Annotation Database */
-    private AnnotationDB annotationDB = null;
+    private BeansXmlAnnotationDB annotationDB = null;
+
+    protected boolean isBDAScannerEnabled = false;
+    protected BDABeansXmlScanner bdaBeansXmlScanner;
 
     protected AbstractMetaDataDiscovery()
     {
@@ -46,14 +52,14 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         {
             if (annotationDB == null)
             {
-                annotationDB = new AnnotationDB();
+                annotationDB = new BeansXmlAnnotationDB();
+                annotationDB.setBdaBeansXmlScanner(this);
                 annotationDB.setScanClassAnnotations(true);
                 annotationDB.crossReferenceMetaAnnotations();    
                 annotationDB.setScanFieldAnnotations(false);
                 annotationDB.setScanMethodAnnotations(false);
                 annotationDB.setScanParameterAnnotations(false);
             }            
-            
         }
         catch(Exception e)
         {
@@ -84,17 +90,25 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     
     public void init(Object object)
     {
-        
+        // set per BDA beans.xml flag here because setting it in constructor
+        // occurs before
+        // properties are loaded.
+        String usage = OpenWebBeansConfiguration.getInstance().getProperty(OpenWebBeansConfiguration.USE_BDA_BEANSXML_SCANNER);
+        this.isBDAScannerEnabled = Boolean.parseBoolean(usage);
+        if (isBDAScannerEnabled)
+        {
+            bdaBeansXmlScanner = new DefaultBDABeansXmlScanner();
+        }
     }
-    
+
     /**
      * @return the aNNOTATION_DB
      */
-    protected AnnotationDB getAnnotationDB()
+    protected BeansXmlAnnotationDB getAnnotationDB()
     {
         return annotationDB;
     }
-    
+
     /**
      * add the given beans.xml path to the locations list 
      * @param file location path
@@ -126,7 +140,8 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         }    
         
         return classSet;
-    }
+    }    
+
 
     /* (non-Javadoc)
      * @see org.apache.webbeans.corespi.ScannerService#getBeanXmls()
@@ -137,4 +152,15 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         return Collections.unmodifiableSet(webBeansXmlLocations);
     }
 
+    @Override
+    public BDABeansXmlScanner getBDABeansXmlScanner()
+    {
+        return bdaBeansXmlScanner;
+    }
+
+    @Override
+    public boolean isBDABeansXmlScanningEnabled()
+    {
+        return isBDAScannerEnabled;
+    }
 }

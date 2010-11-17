@@ -52,6 +52,11 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     /** Injected class type */
     private Type injectionClazz;
 
+    /**
+     * injection point class used to determine the BDA it was loaded from or null.
+     */
+    private Class<?> injectionPointClazz;
+
     /** Qualifier annotations appeared on the injection point */
     private Set<Annotation> qualifierAnnotations = new HashSet<Annotation>();
 
@@ -59,12 +64,13 @@ class InstanceImpl<T> implements Instance<T>, Serializable
      * Creates new instance.
      * 
      * @param injectionClazz injection class type
-     * @param actualTypeArguments actual type arguments
+     * @param injectionPointClazz null or class of injection point
      * @param annotations qualifier annotations
      */
-    InstanceImpl(Type injectionClazz, Annotation... annotations)
+    InstanceImpl(Type injectionClazz, Class<?> injectionPointClazz,Annotation... annotations)
     {
         this.injectionClazz = injectionClazz;
+        this.injectionPointClazz=injectionPointClazz;
 
         for (Annotation ann : annotations)
         {
@@ -107,8 +113,8 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         anns = this.qualifierAnnotations.toArray(anns);
 
         InjectionResolver resolver = InjectionResolver.getInstance();
-        Set<Bean<?>> beans = resolver.implResolveByType(this.injectionClazz, anns);
-        
+        Set<Bean<?>> beans = resolver.implResolveByType(
+                this.injectionClazz,this.injectionPointClazz, anns);
         return beans;
     }
     
@@ -141,7 +147,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     public Instance<T> select(Annotation... qualifiers)
     {
         Annotation[] newQualifiersArray = getAdditionalQualifiers(qualifiers);
-        InstanceImpl<T> newInstance = new InstanceImpl<T>(this.injectionClazz, newQualifiersArray);
+        InstanceImpl<T> newInstance = new InstanceImpl<T>(this.injectionClazz, this.injectionPointClazz,newQualifiersArray);
 
         return newInstance;
     }
@@ -193,7 +199,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         
         Annotation[] newQualifiers = getAdditionalQualifiers(qualifiers);
         
-        InstanceImpl<U> newInstance = new InstanceImpl<U>(sub, newQualifiers);
+        InstanceImpl<U> newInstance = new InstanceImpl<U>(sub, this.injectionPointClazz,newQualifiers);
                     
         return newInstance;
     }
@@ -230,6 +236,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         ObjectOutputStream oos = new ObjectOutputStream(op);
         oos.writeObject(this.injectionClazz);
         oos.writeObject(this.qualifierAnnotations);
+        oos.writeObject(this.injectionPointClazz);
         
         oos.flush();
     }
@@ -238,7 +245,8 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     {
         final ObjectInputStream inputStream = new OwbCustomObjectInputStream(in, WebBeansUtil.getCurrentClassLoader());
         this.injectionClazz = (Type)inputStream.readObject();
-        this.qualifierAnnotations = (Set<Annotation>)inputStream.readObject();        
+        this.qualifierAnnotations = (Set<Annotation>)inputStream.readObject();
+        this.injectionPointClazz = (Class<?>) inputStream.readObject();        
     }
     
 
@@ -247,8 +255,8 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         StringBuilder builder = new StringBuilder();
         builder.append("Instance<");
         builder.append(ClassUtil.getClazz(this.injectionClazz).getName());
-        builder.append(">");
-
+        builder.append("> injectionPointClazz=").append(injectionPointClazz);
+        
         builder.append(",with qualifier annotations {");
         int i = 0;
         for (Annotation qualifier : this.qualifierAnnotations)

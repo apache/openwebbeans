@@ -77,6 +77,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -134,7 +135,7 @@ public final class WebBeansXMLConfigurator
                 //Use OWB Specific XML Configuration
                 if (this.owbSpecificConfiguration)
                 {
-                    configureOwbSpecific(xmlStream, "No-name XML Stream");
+                    configureOwbSpecific(xmlStream, "No-name XML Stream",null);
                 }
                 else
                 {
@@ -149,7 +150,7 @@ public final class WebBeansXMLConfigurator
         }
 
     }
-
+    
     /**
      * Configures XML configuration file.
      *
@@ -158,6 +159,18 @@ public final class WebBeansXMLConfigurator
      */
     public void configure(InputStream xmlStream, String fileName)
     {
+        configure(xmlStream, fileName, null);
+    }
+
+    /**
+     * Configures XML configuration file.
+     *
+     * @param xmlStream xml configuration file
+     * @param fileName  file name
+     * @param scanner null or current ScannerService ref
+     */
+    public void configure(InputStream xmlStream, String fileName, ScannerService scanner)
+    {
         try
         {
             if (xmlStream.available() > 0)
@@ -165,11 +178,11 @@ public final class WebBeansXMLConfigurator
                 //Use OWB Specific XML Configuration
                 if (this.owbSpecificConfiguration)
                 {
-                    configureOwbSpecific(xmlStream, fileName);
+                    configureOwbSpecific(xmlStream, fileName,scanner);
                 }
                 else
                 {
-                    configureSpecSpecific(xmlStream, fileName);
+                    configureSpecSpecific(xmlStream, fileName,scanner);
                 }
 
             }
@@ -181,7 +194,6 @@ public final class WebBeansXMLConfigurator
 
     }
 
-
     /**
      * Configures the web beans from the given input stream.
      *
@@ -189,6 +201,18 @@ public final class WebBeansXMLConfigurator
      * @param fileName  name of the configuration file
      */
     public void configureOwbSpecific(InputStream xmlStream, String fileName)
+    {
+        configureOwbSpecific(xmlStream, fileName, null);
+    }
+
+    /**
+     * Configures the web beans from the given input stream.
+     *
+     * @param xmlStream xml file containing the web beans definitions.
+     * @param fileName  name of the configuration file
+     * @param scanner null or ref to ScannerService
+     */
+    public void configureOwbSpecific(InputStream xmlStream, String fileName,ScannerService scanner)
     {
         try
         {
@@ -203,7 +227,7 @@ public final class WebBeansXMLConfigurator
                 Element webBeansRoot = XMLUtil.getRootElement(xmlStream);
 
                 //Start configuration
-                configureOwbSpecific(webBeansRoot);
+                configureOwbSpecific(webBeansRoot,fileName,scanner);
             }
         }
         catch (IOException e)
@@ -220,6 +244,19 @@ public final class WebBeansXMLConfigurator
      */
     public void configureSpecSpecific(InputStream xmlStream, String fileName)
     {
+        configureSpecSpecific(xmlStream, fileName, null);
+    }
+    
+    
+    /**
+     * Configures the web beans from the given input stream.
+     *
+     * @param xmlStream xml file containing the web beans definitions.
+     * @param fileName  name of the configuration file
+     * @param scanner null or scanner ref
+     */
+    public void configureSpecSpecific(InputStream xmlStream, String fileName,ScannerService scanner)
+    {
         try
         {
             if (xmlStream.available() > 0)
@@ -233,7 +270,7 @@ public final class WebBeansXMLConfigurator
                 Element webBeansRoot = XMLUtil.getSpecStrictRootElement(xmlStream);
 
                 //Start configuration
-                configureSpecSpecific(webBeansRoot);
+                configureSpecSpecific(webBeansRoot,fileName,scanner);
             }
         }
         catch (IOException e)
@@ -248,7 +285,7 @@ public final class WebBeansXMLConfigurator
      *
      * @param webBeansRoot root element of the configuration xml file
      */
-    private void configureOwbSpecific(Element webBeansRoot)
+    private void configureOwbSpecific(Element webBeansRoot, String fileName,ScannerService scanner)
     {
         List<Element> webBeanDeclerationList = new ArrayList<Element>();
 
@@ -273,12 +310,12 @@ public final class WebBeansXMLConfigurator
             /* <Interceptors> element decleration */
             else if (XMLUtil.isElementInterceptorsDeclaration(child))
             {
-                configureInterceptorsElement(child);
+                configureInterceptorsElement(child,fileName,scanner);
             }
             /* <Decorators> element decleration */
             else if (XMLUtil.isElementDecoratosDeclaration(child))
             {
-                configureDecoratorsElement(child);
+                configureDecoratorsElement(child,fileName,scanner);
             }
             /* <BindingType> annotation element decleration */
             else if (XMLUtil.isElementBindingTypeDecleration(child))
@@ -303,7 +340,7 @@ public final class WebBeansXMLConfigurator
             }
             else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_ALTERNATIVES))
             {
-                configureAlternativesElement(child);
+                configureAlternativesElement(child,fileName,scanner);
             }
 
         }
@@ -318,7 +355,7 @@ public final class WebBeansXMLConfigurator
      *
      * @param webBeansRoot root element of the configuration xml file
      */
-    private void configureSpecSpecific(Element webBeansRoot)
+    private void configureSpecSpecific(Element webBeansRoot, String fileName,ScannerService scanner)
     {
         Node node;
         Element child;
@@ -335,16 +372,16 @@ public final class WebBeansXMLConfigurator
             /* <Interceptors> element decleration */
             if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT))
             {
-                configureInterceptorsElement(child);
+                configureInterceptorsElement(child,fileName,scanner);
             }
             /* <Decorators> element decleration */
             else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_DECORATORS_ELEMENT))
             {
-                configureDecoratorsElement(child);
+                configureDecoratorsElement(child,fileName,scanner);
             }
             else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES))
             {
-                configureAlternativesElement(child);
+                configureAlternativesElement(child,fileName,scanner);
             }
         }
 
@@ -516,7 +553,7 @@ public final class WebBeansXMLConfigurator
      *
      * @param interceptorsElement interceptors element
      */
-    private void configureInterceptorsElement(Element interceptorsElement)
+    private void configureInterceptorsElement(Element interceptorsElement, String fileName,ScannerService scanner)
     {
         InterceptorsManager manager = InterceptorsManager.getInstance();
         Node node;
@@ -555,8 +592,9 @@ public final class WebBeansXMLConfigurator
                                                              (this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) +
                                                              " must have at least one @InterceptorBindingType");
                 }
-
-                if (manager.isInterceptorEnabled(clazz))
+                boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
+                if ((!isBDAScanningEnabled && manager.isInterceptorEnabled(clazz)) ||
+                        (isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addInterceptor(clazz, fileName)))
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " +
                                                              (this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) + " is already defined");
@@ -574,7 +612,7 @@ public final class WebBeansXMLConfigurator
      *
      * @param decoratorsElement decorators element
      */
-    private void configureDecoratorsElement(Element decoratorsElement)
+    private void configureDecoratorsElement(Element decoratorsElement,String fileName,ScannerService scanner)
     {
         DecoratorsManager manager = DecoratorsManager.getInstance();
         Node node;
@@ -606,8 +644,9 @@ public final class WebBeansXMLConfigurator
             }
             else
             {
-
-                if (manager.isDecoratorEnabled(clazz))
+                boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
+                if ((isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addDecorator(clazz, fileName))||
+                        (!isBDAScanningEnabled && manager.isDecoratorEnabled(clazz)))
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Decorator class : " +
                                                              (this.owbSpecificConfiguration ? XMLUtil.getName(child) : child.getTextContent().trim()) + " is already defined");
@@ -625,7 +664,7 @@ public final class WebBeansXMLConfigurator
      *
      * @param alternativesElement decorators element
      */
-    private void configureAlternativesElement(Element alternativesElement)
+    private void configureAlternativesElement(Element alternativesElement,String fileName,ScannerService scanner)
     {
         Node node;
         Element child;
@@ -642,12 +681,12 @@ public final class WebBeansXMLConfigurator
             if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE) ||
                 XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_STEREOTYPE))
             {
-                addAlternative(child, true);
+                addAlternative(child, true,fileName,scanner);
             }
             else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_CLASS)
                      || XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_CLASS))
             {
-                addAlternative(child, false);
+                addAlternative(child, false,fileName,scanner);
             }
             else
             {
@@ -659,7 +698,7 @@ public final class WebBeansXMLConfigurator
         }
     }
 
-    private void addAlternative(Element child, boolean isStereoType)
+    private void addAlternative(Element child, boolean isStereoType,String fileName,ScannerService scanner)
     {
         Class<?> clazz = null;
 
@@ -681,11 +720,11 @@ public final class WebBeansXMLConfigurator
             AlternativesManager manager = AlternativesManager.getInstance();
             if (isStereoType)
             {
-                manager.addStereoTypeAlternative(clazz);
+                manager.addStereoTypeAlternative(clazz,fileName,scanner);
             }
             else
             {
-                manager.addClazzAlternative(clazz);
+                manager.addClazzAlternative(clazz,fileName,scanner);
             }
         }
     }

@@ -49,6 +49,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
 
     public void init(Object context)
     {
+        super.init(context);
         this.servletContext = (ServletContext) context;        
     }
     
@@ -145,8 +146,10 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         if (url != null)
         {
             addWebBeansXmlLocation(url);
-
-            return WarUrlFinder.findWebInfClassesPath(this.servletContext);
+            URL resourceuUrl = WarUrlFinder.findWebInfClassesPath(this.servletContext);
+            //set resource to beans.xml mapping
+            getAnnotationDB().setResourceBeansXml(resourceuUrl, url);
+            return resourceuUrl;
         }
 
         return null;

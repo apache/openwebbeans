@@ -27,6 +27,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
 
 public class AlternativesManager
@@ -46,7 +47,7 @@ public class AlternativesManager
     }
     
     @SuppressWarnings("unchecked")
-    public void addStereoTypeAlternative(Class<?> alternative)
+    public void addStereoTypeAlternative(Class<?> alternative,String fileName,ScannerService scanner)
     {                
         if(Annotation.class.isAssignableFrom(alternative))
         {
@@ -56,7 +57,9 @@ public class AlternativesManager
             {
                 if(AnnotationUtil.hasClassAnnotation(stereo, Alternative.class))
                 {
-                    if(this.stereoAlternatives.contains(stereo))
+                    boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
+                    if(isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addStereoType(stereo, fileName) ||
+                            (!isBDAScanningEnabled && this.stereoAlternatives.contains(stereo)) )
                     {
                         throw new WebBeansConfigurationException("Given alternative class : " + alternative.getName() + " is already added as @Alternative" );
                     }
@@ -78,11 +81,13 @@ public class AlternativesManager
         }        
     }
     
-    public void addClazzAlternative(Class<?> alternative)
+    public void addClazzAlternative(Class<?> alternative,String fileName,ScannerService scanner)
     {
         if(AnnotationUtil.hasClassAnnotation(alternative, Alternative.class))
         {
-            if(this.alternatives.contains(alternative))
+            boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
+            if((isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addAlternative(alternative, fileName)) ||
+                    (!isBDAScanningEnabled && this.alternatives.contains(alternative)))
             {
                 throw new WebBeansConfigurationException("Given class : " + alternative.getName() + " is already added as @Alternative" );
             }

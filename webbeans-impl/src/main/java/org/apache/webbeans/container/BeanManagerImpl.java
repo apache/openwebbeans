@@ -60,6 +60,7 @@ import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
@@ -82,6 +83,7 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -169,7 +171,17 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     private AnnotatedElementFactory annotatedElementFactory;
 
+    /**
+     * Scanner Service ref
+     */
+    private ScannerService scannerService;
+
     //private WebBeansLogger logger = WebBeansLogger.getLogger(BeanManagerImpl.class);
+
+    public synchronized void setScannerService(ScannerService scannerService)
+    {
+        this.scannerService = scannerService;
+    }
 
     /**
      * Creates a new {@link BeanManager} instance.
@@ -726,6 +738,31 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         //Find the injection point Bean
         Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
+        
+        boolean isSetIPForProducers=false;        
+        if ((scannerService != null && scannerService.isBDABeansXmlScanningEnabled()))
+        {
+            if (injectedBean instanceof AbstractOwbBean<?>)
+            {
+                AbstractOwbBean<?> aob = (AbstractOwbBean) injectedBean;
+                if (aob.getWebBeansType() == WebBeansType.PRODUCERFIELD || aob.getWebBeansType() == WebBeansType.PRODUCERMETHOD)
+                {
+                    // There is no way to pass the injection point for producers
+                    // without significant refactoring, so set injection point
+                    // on
+                    // InjectionResolver to properly handle alternative
+                    // producers
+                    // per BDA.
+                    isSetIPForProducers = true;
+                }
+            }
+        }
+        if (isSetIPForProducers)
+        {
+            // retrieve injection point from thread local for alternative
+            // producers
+            InjectionResolver.injectionPoints.set(injectionPoint);
+        }
         if(WebBeansUtil.isDependent(injectedBean))
         {        
             //Using owner creational context
@@ -738,6 +775,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             //New creational context for normal scoped beans
             CreationalContextImpl<Object> injectedCreational = (CreationalContextImpl<Object>)createCreationalContext(injectedBean);            
             instance = getReference(injectedBean, injectionPoint.getType(), injectedCreational);
+        }
+        if(isSetIPForProducers)
+        {
+            //remove reference immediate after instance is retrieved
+            InjectionResolver.injectionPoints.set(null);
+            InjectionResolver.injectionPoints.remove();
         }
 
         return instance;

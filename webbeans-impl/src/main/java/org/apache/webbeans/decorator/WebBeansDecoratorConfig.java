@@ -38,9 +38,12 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.BDABeansXmlScanner;
+import org.apache.webbeans.spi.ScannerService;
 
 public final class WebBeansDecoratorConfig
 {
@@ -108,6 +111,35 @@ public final class WebBeansDecoratorConfig
                 WebBeansDecorator<?> decorator = (WebBeansDecorator<?>) itList.next();            
                 component.getDecoratorStack().add(decorator);            
             }            
+            filterDecoratorsPerBDA(component,component.getDecoratorStack());
+        }
+    }
+    
+    private static void filterDecoratorsPerBDA(AbstractInjectionTargetBean<?> component, List<Decorator<?>> stack)
+    {
+
+        ScannerService scannerService = ServiceLoader.getService(ScannerService.class);
+        if (!scannerService.isBDABeansXmlScanningEnabled())
+        {
+            return;
+        }
+        BDABeansXmlScanner beansXMLScanner = scannerService.getBDABeansXmlScanner();
+        String beanBDABeansXML = beansXMLScanner.getBeansXml(component.getBeanClass());
+        Set<Class<?>> definedDecorators = beansXMLScanner.getDecorators(beanBDABeansXML);
+
+        WebBeansDecorator<?> dec;
+
+        if (stack != null && stack.size() > 0)
+        {
+            Iterator<Decorator<?>> it = stack.iterator();
+            while (it.hasNext())
+            {
+                dec = (WebBeansDecorator<?>) it.next();
+                if (!definedDecorators.contains(dec.getClazz()))
+                {
+                    it.remove();
+                }
+            }
         }
     }
     

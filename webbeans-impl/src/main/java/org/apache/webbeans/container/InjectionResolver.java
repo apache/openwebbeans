@@ -21,9 +21,12 @@ package org.apache.webbeans.container;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.BDABeansXmlScanner;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -73,6 +76,8 @@ public class InjectionResolver
      * This Map contains all resolved beans via it's ExpressionLanguage name.
      */
     private Map<String, Set<Bean<?>>> resolvedBeansByName = new ConcurrentHashMap<String, Set<Bean<?>>>();
+    
+    public static ThreadLocal<InjectionPoint> injectionPoints = new ThreadLocal<InjectionPoint>();
     
     /**
      * Creates a new injection resolve for given bean manager.
@@ -161,7 +166,7 @@ public class InjectionResolver
         Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
         qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
         
-        Set<Bean<?>> beanSet = implResolveByType(type, qualifiers);
+        Set<Bean<?>> beanSet = implResolveByType(type,injectionPoint.getBean().getBeanClass(),qualifiers);
         
         if(beanSet.isEmpty())
         {
@@ -227,7 +232,7 @@ public class InjectionResolver
             qualifiers[0] = new AnyLiteral();
         }
         
-        Set<Bean<?>> beanSet = implResolveByType(type, qualifiers);
+        Set<Bean<?>> beanSet = implResolveByType(type, injectionPoint.getBean().getBeanClass(),qualifiers);
         
         if(beanSet.isEmpty())
         {
@@ -392,8 +397,48 @@ public class InjectionResolver
      */
     public Set<Bean<?>> implResolveByType(Type injectionPointType, Annotation... qualifiers)
     {
+        return implResolveByType(injectionPointType, null, qualifiers);
+    }
+
+    private String getBDABeansXMLPath(Class<?> injectionPointBeanClass)
+    {
+        if (injectionPointBeanClass == null)
+        {
+            return null;
+        }
+
+        ScannerService scannerService = ServiceLoader.getService(ScannerService.class);
+        BDABeansXmlScanner beansXMLScanner = scannerService.getBDABeansXmlScanner();
+        return beansXMLScanner.getBeansXml(injectionPointBeanClass);
+    }
+    
+    /**
+     * Resolution by type.
+     * 
+     * @param injectionPointType injection point api type
+     * @param qualifiers qualifiers of the injection point
+     * @return set of resolved beans
+     */
+    public Set<Bean<?>> implResolveByType(Type injectionPointType, Class<?> injectinPointClass, Annotation... qualifiers)
+    {
+        ScannerService scannerService = ServiceLoader.getService(ScannerService.class);
+        String bdaBeansXMLFilePath =null;
+        if (scannerService.isBDABeansXmlScanningEnabled())
+        {
+            if (injectinPointClass == null)
+            {
+                // Retrieve ip from thread local for producer case
+                InjectionPoint ip = injectionPoints.get();
+                if (ip != null)
+                {
+                    injectinPointClass = ip.getBean().getBeanClass();
+                }
+            }
+            bdaBeansXMLFilePath = getBDABeansXMLPath(injectinPointClass);
+        }
+
         //X TODO maybe we need to stringify the qualifiers manually im a loop...
-        String cacheKey = getBeanCacheKey(injectionPointType, qualifiers);
+        String cacheKey = getBeanCacheKey(injectionPointType,bdaBeansXMLFilePath,qualifiers);
 
         
         Set<Bean<?>> resolvedComponents = resolvedBeansByType.get(cacheKey);
@@ -460,7 +505,7 @@ public class InjectionResolver
         resolvedComponents = findByQualifier(resolvedComponents, qualifiers);
         
         // Look for alternative
-        resolvedComponents = findByAlternatives(resolvedComponents);
+        resolvedComponents = findByAlternatives(resolvedComponents,bdaBeansXMLFilePath);
 
         
         // Ambigious resolution, check for specialization
@@ -476,9 +521,13 @@ public class InjectionResolver
         return resolvedComponents;
     }
     
-    private String getBeanCacheKey(Type injectionPointType, Annotation... qualifiers)
+    private String getBeanCacheKey(Type injectionPointType, String bdaBeansXMLPath, Annotation... qualifiers)
     {
         StringBuilder cacheKey = new StringBuilder(injectionPointType.toString());
+        if (bdaBeansXMLPath != null)
+        {
+            cacheKey.append('@').append(bdaBeansXMLPath);
+        }
         for (Annotation a : qualifiers)
         {
             cacheKey.append('@').append(a.toString());
@@ -521,30 +570,71 @@ public class InjectionResolver
      */
     public Set<Bean<?>> findByAlternatives(Set<Bean<?>> result)
     {
+        return findByAlternatives(result, null);
+    }
+    
+    /**
+     * Gets alternatives from set.
+     * @param result resolved set
+     * @return containes alternatives
+     */
+    public Set<Bean<?>> findByAlternatives(Set<Bean<?>> result, String bdaBeansXMLFilePath)
+    {
         Set<Bean<?>> alternativeSet = new HashSet<Bean<?>>();
         Set<Bean<?>> enableSet = new HashSet<Bean<?>>();
         boolean containsAlternative = false;
         
-        for(Bean<?> bean : result)
+        if (bdaBeansXMLFilePath != null)
         {
-            if(bean.isAlternative())
+            // per BDA beans.xml
+            for (Bean<?> bean : result)
             {
-                if(!containsAlternative)
+                if (bean.isAlternative())
                 {
-                    containsAlternative = true;
-                }
-                alternativeSet.add(bean);
-            }
-            else
-            {
-                if(!containsAlternative)
-                {                    
-                    AbstractOwbBean<?> temp = (AbstractOwbBean<?>)bean;
-                    if(temp.isEnabled())
+                    if (isAltBeanInInjectionPointBDA(bdaBeansXMLFilePath, bean))
                     {
+                        if (!containsAlternative)
+                        {
+                            containsAlternative = true;
+                        }
+                        alternativeSet.add(bean);
+                    }
+                }
+                else
+                {
+                    if (!containsAlternative)
+                    {
+                        // Do not check isEnabled flag to allow beans to be
+                        // added on a per BDA basis when a bean is disabled due
+                        // to specialize alternative defined in a different BDA
                         enableSet.add(bean);
-                    }                    
-                }                
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (Bean<?> bean : result)
+            {
+                if (bean.isAlternative())
+                {
+                    if (!containsAlternative)
+                    {
+                        containsAlternative = true;
+                    }
+                    alternativeSet.add(bean);
+                }
+                else
+                {
+                    if (!containsAlternative)
+                    {
+                        AbstractOwbBean<?> temp = (AbstractOwbBean<?>) bean;
+                        if (temp.isEnabled())
+                        {
+                            enableSet.add(bean);
+                        }
+                    }
+                }
             }
         }
         
@@ -555,6 +645,33 @@ public class InjectionResolver
         
         return enableSet;
     }
+
+    private boolean isAltBeanInInjectionPointBDA(String bdaBeansXMLFilePath, Bean<?> altBean)
+    {
+
+        ScannerService scannerService = ServiceLoader.getService(ScannerService.class);
+        BDABeansXmlScanner beansXMLScanner = scannerService.getBDABeansXmlScanner();
+
+        Set<Class<?>> definedAlternatives = beansXMLScanner.getAlternatives(bdaBeansXMLFilePath);
+
+        if (definedAlternatives.contains(altBean.getBeanClass()))
+        {
+            return true;
+        }
+
+        Set<Class<? extends Annotation>> definedStereotypes = beansXMLScanner.getStereotypes(bdaBeansXMLFilePath);
+
+        for (Class<? extends Annotation> stereoAnnotations : definedStereotypes)
+        {
+            if (AnnotationUtil.hasClassAnnotation(altBean.getBeanClass(), stereoAnnotations))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     /**
      * Returns filtered bean set according to the qualifiers.

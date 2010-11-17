@@ -49,8 +49,9 @@ public class InstanceBean<T> extends AbstractOwbBean<Provider<T>>
         {
             ParameterizedType injectedType = (ParameterizedType)local.get().getType();
             Set<Annotation> qualifiers = local.get().getQualifiers();
-            Instance<T> instance = InstanceFactory.getInstance(injectedType.getActualTypeArguments()[0],
-                                                               qualifiers.toArray(new Annotation[qualifiers.size()]));
+            Instance<T> instance = InstanceFactory.getInstance(injectedType.getActualTypeArguments()[0], 
+                    (local.get().getBean() == null) ? null : local.get().getBean().getBeanClass(), 
+                            qualifiers.toArray(new Annotation[qualifiers.size()]));
             
             return instance;
         }
