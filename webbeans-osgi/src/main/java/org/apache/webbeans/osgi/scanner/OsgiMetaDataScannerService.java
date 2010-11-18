@@ -20,6 +20,7 @@ package org.apache.webbeans.osgi.scanner;
 
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 
 import org.apache.xbean.finder.BundleAssignableClassFinder;
@@ -215,5 +216,17 @@ public class OsgiMetaDataScannerService implements ScannerService
     public Set<Class<?>> getBeanClasses()
     {
         return beanClasses;
+    }
+    
+    @Override
+    public BDABeansXmlScanner getBDABeansXmlScanner()
+    {
+        return null;
+    }
+
+    @Override
+    public boolean isBDABeansXmlScanningEnabled()
+    {
+        return false;
     }
 }
