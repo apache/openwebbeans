@@ -310,28 +310,7 @@ public final class JavassistProxyFactory
 
     public  Class<?> getProxyClass(ProxyFactory factory)
     {
-        Class<?> proxyClass = null;
-        try
-        {
-            proxyClass = SecurityUtil.doPrivilegedCreateClass(factory);
-
-        }
-        catch(Exception e)
-        {
-            ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider(){
-
-                @Override
-                public ClassLoader get(ProxyFactory pf)
-                {
-                    return Thread.currentThread().getContextClassLoader();
-                }
-
-            };
-
-            proxyClass = SecurityUtil.doPrivilegedCreateClass(factory);
-        }
-
-        return proxyClass;
+        return SecurityUtil.doPrivilegedCreateClass(factory);
     }
     
     public  ProxyFactory createProxyFactory(Bean<?> bean) throws Exception
