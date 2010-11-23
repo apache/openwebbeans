@@ -91,7 +91,7 @@ public final class AnnotationUtil
      * Return true if exist false otherwise.
      * 
      * @param method method
-     * @param annotation checking annotation
+     * @param clazz checking annotation
      * @return true or false
      */
     public static boolean hasMethodParameterAnnotation(Method method, Class<? extends Annotation> clazz)
@@ -207,7 +207,7 @@ public final class AnnotationUtil
      * method. Return true if exist false otherwise.
      * 
      * @param method method
-     * @param annotation checking annotation
+     * @param clazz checking annotation
      * @return true or false
      */
     public static boolean hasMethodMultipleParameterAnnotation(Method method, Class<? extends Annotation> clazz)
@@ -274,7 +274,7 @@ public final class AnnotationUtil
      * given annotation.
      * 
      * @param method method
-     * @param annotation checking annotation
+     * @param clazz checking annotation
      * @return type
      */
     public static Type getMethodFirstParameterWithAnnotation(Method method, Class<? extends Annotation> clazz)
@@ -368,7 +368,7 @@ public final class AnnotationUtil
      * Gets the method first found parameter qualifiers.
      * 
      * @param method method
-     * @param annotation checking annotation
+     * @param clazz checking annotation
      * @return annotation array
      */
     public static Annotation[] getMethodFirstParameterQualifierWithGivenAnnotation(Method method, Class<? extends Annotation> clazz)
@@ -455,7 +455,7 @@ public final class AnnotationUtil
      * Gets the method first found parameter annotation with given type.
      * 
      * @param method method
-     * @param annotation checking annotation
+     * @param clazz checking annotation
      * @return annotation
      */
     public static <T extends Annotation> T getMethodFirstParameterAnnotation(Method method, Class<T> clazz)
@@ -506,7 +506,7 @@ public final class AnnotationUtil
      * method. Return true if exist false otherwise.
      * 
      * @param method method
-     * @param annotation checking annotation
+     * @param clazz checking annotation
      * @return true or false
      */
     public static boolean hasMethodParameterAnnotationCrossRef(Method method, Class<? extends Annotation> clazz)
@@ -799,21 +799,23 @@ public final class AnnotationUtil
     {
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotation, "Annotation argument can not be null");
-
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
         List<Method> list = new ArrayList<Method>();
-        Method[] rMethod = null;
 
-        for (Method m : methods)
+        do
         {
-            if (hasMethodParameterAnnotation(m, annotation))
-            {
-                list.add(m);
-            }
-        }
+            Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
 
-        rMethod = new Method[list.size()];
-        rMethod = list.toArray(rMethod);
+            for (Method m : methods)
+            {
+                if (hasMethodParameterAnnotation(m, annotation))
+                {
+                    list.add(m);
+                }
+            }
+            clazz = clazz.getSuperclass();
+        } while (clazz != null && clazz != Object.class);
+
+        Method[] rMethod = list.toArray(new Method[list.size()]);
 
         return rMethod;
     }
@@ -860,11 +862,18 @@ public final class AnnotationUtil
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotation, "Annotation argument can not be null");
 
-        Annotation a = clazz.getAnnotation(annotation);
-
-        if (a != null)
+        try
         {
-            return true;
+            Annotation a = clazz.getAnnotation(annotation);
+
+            if (a != null)
+            {
+                return true;
+            }
+        }
+        catch (ArrayStoreException e)
+        {
+            //log this?  It is probably already logged in AnnotatedElementFactory
         }
 
         return false;

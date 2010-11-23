@@ -105,18 +105,18 @@ public final class AnnotatedElementFactory
                     AnnotatedField<X> af = new AnnotatedFieldImpl<X>(f, annotatedType);
                     annotatedType.addAnnotatedField(af);
                 }
-                
+
                 for(Method m : methods)
                 {
                     AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(m,annotatedType);
                     annotatedType.addAnnotatedMethod(am);
                 }
-                
+
                 for(Constructor<X> ct : ctxs)
                 {
                     AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(ct,annotatedType);
                     annotatedType.addAnnotatedConstructor(ac);
-                }        
+                }
                 
                 AnnotatedTypeImpl<X> oldType = (AnnotatedTypeImpl<X>)annotatedTypeCache.putIfAbsent(annotatedClass, annotatedType);
                 if(oldType != null)
@@ -127,7 +127,7 @@ public final class AnnotatedElementFactory
             } 
             catch (Exception e)
             {
-                if (e instanceof ClassNotFoundException)
+                if (e instanceof ClassNotFoundException || e instanceof ArrayStoreException)
                 {
                     if (logger.wblWillLogError())
                     {
