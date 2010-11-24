@@ -84,6 +84,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.apache.webbeans.util.InjectionExceptionUtils;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 import org.apache.webbeans.xml.XMLSpecializesManager;
@@ -434,7 +435,7 @@ public class BeansDeployer
                             beans = resolver.findByAlternatives(beans);                            
                             if(beans.size() > 1)
                             {
-                                throw new WebBeansConfigurationException("There are two different beans with name : " + beanName + " in the deployment archieve");   
+                                InjectionExceptionUtils.throwAmbiguousResolutionExceptionForBeanName(beans, beanName);
                             }   
                         }
                     }
