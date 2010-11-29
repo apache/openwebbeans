@@ -111,6 +111,13 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                 if (fileDir.endsWith(".jar!/"))
                 {
                     fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/META-INF/beans.xml";
+
+                    //fix for weblogic
+                    if (!fileDir.startsWith("file:/"))
+                    {
+                        fileDir = "file:/" + fileDir;
+                    }
+
                     addPath = new URL("jar:" + fileDir);
                 }
                 else
