@@ -339,7 +339,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         
 
         // Release the CC that lives as long as our interceptor instance
-        this.cc.release();
+        if(this.cc != null)
+        {
+            this.cc.release();   
+        }
         
     }
 
