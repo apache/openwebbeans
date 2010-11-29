@@ -45,7 +45,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
 
     @Override
     public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference)
-    {        
+    {
         if(resourceReference.supports(Resource.class))
         {         
             Resource resource = resourceReference.getAnnotation(Resource.class);
@@ -77,40 +77,48 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     @Override
     public void injectJavaEEResources(Object managedBeanInstance) throws Exception
     {
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(managedBeanInstance.getClass());
-        for(Field field : fields)
+        Class currentClass = managedBeanInstance.getClass();
+
+        while (currentClass != null && !Object.class.getName().equals(currentClass.getName()))
         {
-            if(!field.isAnnotationPresent(Produces.class))
+            Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(currentClass);
+
+            for(Field field : fields)
             {
-                if(!Modifier.isStatic(field.getModifiers()))
+                if(!field.isAnnotationPresent(Produces.class))
                 {
-                    Annotation ann = AnnotationUtil.hasOwbInjectableResource(field.getDeclaredAnnotations());                
-                    if(ann != null)
+                    if(!Modifier.isStatic(field.getModifiers()))
                     {
-                        @SuppressWarnings("unchecked")
-                        ResourceReference<Object, ?> resourceRef = new ResourceReference(field.getDeclaringClass(), field.getName(), field.getType(), ann);
-                        boolean acess = field.isAccessible();
-                        try
+                        Annotation ann = AnnotationUtil.hasOwbInjectableResource(field.getDeclaredAnnotations());
+                        if(ann != null)
                         {
-                            SecurityUtil.doPrivilegedSetAccessible(field, true);
-                            field.set(managedBeanInstance, getResourceReference(resourceRef));
-                            
+                            @SuppressWarnings("unchecked")
+                            ResourceReference<Object, ?> resourceRef = new ResourceReference(field.getDeclaringClass(), field.getName(), field.getType(), ann);
+                            boolean acess = field.isAccessible();
+                            try
+                            {
+                                SecurityUtil.doPrivilegedSetAccessible(field, true);
+                                field.set(managedBeanInstance, getResourceReference(resourceRef));
+
+                            }
+                            catch(Exception e)
+                            {
+                                logger.error(OWBLogConst.ERROR_0025, e, field);
+                                throw new WebBeansException(MessageFormat.format(logger.getTokenString(OWBLogConst.ERROR_0025), field), e);
+
+                            }
+                            finally
+                            {
+                                SecurityUtil.doPrivilegedSetAccessible(field, acess);
+                            }
                         }
-                        catch(Exception e)
-                        {
-                            logger.error(OWBLogConst.ERROR_0025, e, field);
-                            throw new WebBeansException(MessageFormat.format(logger.getTokenString(OWBLogConst.ERROR_0025), field), e);
-                            
-                        }
-                        finally
-                        {
-                            SecurityUtil.doPrivilegedSetAccessible(field, acess);
-                        }                        
-                    }                    
-                }                
+                    }
+                }
             }
-        }    
-     }
+
+            currentClass = currentClass.getSuperclass();
+        }
+    }
 
     @Override
     public void clear()
