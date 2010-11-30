@@ -68,7 +68,8 @@ public class EnterpriseTestLifeCycle extends StandaloneLifeCycle
         ContextFactory.destroyConversationContext();        
         ContextFactory.destroyApplicationContext(this.servletContextEvent.getServletContext());
 
-        ContextFactory.cleanUpContextFactory();
+        //Comment out for OWB-502
+        //ContextFactory.cleanUpContextFactory();
 
         // clean up the EL caches after each request
         ELContextStore elStore = ELContextStore.getInstance(false);

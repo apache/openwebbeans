@@ -108,7 +108,8 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         ContextFactory.destroyApplicationContext(servletContext);
         ContextFactory.destroySingletonContext(servletContext);
 
-        ContextFactory.cleanUpContextFactory();
+        //Comment out for OWB-502
+        //ContextFactory.cleanUpContextFactory();
     }
 
     @Override

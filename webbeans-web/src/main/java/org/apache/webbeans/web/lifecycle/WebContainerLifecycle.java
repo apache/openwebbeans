@@ -21,7 +21,6 @@ package org.apache.webbeans.web.lifecycle;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
@@ -164,7 +163,8 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             injectionServices.clear();
         }
 
-        ContextFactory.cleanUpContextFactory();
+        //Comment out for commit OWB-502
+        //ContextFactory.cleanUpContextFactory();
 
         this.cleanupShutdownThreadLocals();
         
