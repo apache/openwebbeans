@@ -19,7 +19,6 @@
 package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.*;
 import javax.enterprise.context.spi.Context;
@@ -30,7 +29,6 @@ import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContextsService;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * JSR-299 based standard context
@@ -42,16 +40,6 @@ public final class ContextFactory
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ContextFactory.class);
 
     /**
-     * Underlying context service per ClassLoader
-     * This distinction is necessary for application servers
-     * with multiple WAR deployments having different
-     * ContextsServices configured.
-     */
-    private static ConcurrentHashMap<ClassLoader, ContextsService> contextServices
-            = new ConcurrentHashMap<ClassLoader, ContextsService>();
-
-
-    /**
      * Not-instantiate
      */
     private ContextFactory()
@@ -60,29 +48,11 @@ public final class ContextFactory
     }
 
     /**
-     * This must be called before a WebApp shuts down.
-     * It makes sure that all caches get cleaned up.
-     */
-    public static void cleanUpContextFactory()
-    {
-        ClassLoader cl = WebBeansUtil.getCurrentClassLoader();
-        contextServices.remove(cl);
-    }
-
-    /**
      * @return the ContextService for the current ClassLoader
      */
     private static ContextsService getContextsService()
     {
-        ClassLoader cl = WebBeansUtil.getCurrentClassLoader();
-        ContextsService cs = contextServices.get(cl);
-        if (cs == null)
-        {
-            cs = ServiceLoader.getService(ContextsService.class);
-            contextServices.put(cl, cs);
-        }
-        
-        return cs;
+        return ServiceLoader.getService(ContextsService.class);
     }
     
     

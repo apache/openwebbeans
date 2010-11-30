@@ -68,8 +68,6 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
         ContextFactory.destroyApplicationContext(null);
         ContextFactory.destroySingletonContext(null);
 
-        ContextFactory.cleanUpContextFactory();
-
         // clean up the EL caches after each request
         ELContextStore elStore = ELContextStore.getInstance(false);
         if (elStore != null)
