@@ -62,6 +62,7 @@ import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -188,11 +189,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * Called by the system. Do not use outside of the
      * system.
      */
-    public BeanManagerImpl()
+    public BeanManagerImpl(WebBeansContext webBeansContext)
     {
         injectionResolver = new InjectionResolver(this);
         notificationManager = new NotificationManager();
-        annotatedElementFactory = AnnotatedElementFactory.getInstance();
+        annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
     }    
     
     public <T> void putInjectionTargetWrapper(Contextual<T> contextual, InjectionTargetWrapper<T> wrapper)

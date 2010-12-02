@@ -19,16 +19,13 @@
 package org.apache.webbeans.corespi;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.WeakHashMap;
 
-import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.SingletonService;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 public class DefaultSingletonService implements SingletonService 
@@ -37,7 +34,7 @@ public class DefaultSingletonService implements SingletonService
      * Keys --> ClassLoaders
      * Values --> Maps of singleton class name with object
      */
-    private final Map<ClassLoader, Map<String, Object>> singletonMap = new WeakHashMap<ClassLoader, Map<String,Object>>();
+    private final Map<ClassLoader, WebBeansContext> singletonMap = new WeakHashMap<ClassLoader, WebBeansContext>();
     
     private final Map<Object, WeakReference<ClassLoader>> objectToClassLoaderMap = new IdentityHashMap<Object, WeakReference<ClassLoader>>();
 
@@ -64,50 +61,18 @@ public class DefaultSingletonService implements SingletonService
 
         synchronized (singletonMap)
         {
-            Map<String, Object> managerMap = singletonMap.get(classLoader);
+            WebBeansContext managerMap = singletonMap.get(classLoader);
 
             if (managerMap == null)
             {
-                managerMap = new HashMap<String, Object>();
+                managerMap = new WebBeansContext();
                 singletonMap.put(classLoader, managerMap);
             }
-            
+
+            // WebBeansContext never returns null
             object = managerMap.get(singletonName);
-            /* No singleton for this application, create one */
-            if (object == null)
-            {
-                try
-                {
-                    //Load class
-                    Class<?> clazz = ClassUtil.getClassFromName(singletonName);
-                    if(clazz == null)
-                    {
-                        throw new ClassNotFoundException("Class with name: " + singletonName + " is not found in the system");
-                    }
-                    
-                    //Create instance
-                    object = clazz.newInstance();
 
-                    //Save it
-                    managerMap.put(singletonName, object);
-                    
-                    //Save it object --> classloader
-                    objectToClassLoaderMap.put(object, new WeakReference<ClassLoader>(classLoader));
-
-                }
-                catch (InstantiationException e)
-                {
-                    throw new WebBeansException("Unable to instantiate class : " + singletonName, e);
-                }
-                catch (IllegalAccessException e)
-                {
-                    throw new WebBeansException("Illegal access exception in creating instance with class : " + singletonName, e);
-                }
-                catch (ClassNotFoundException e)
-                {
-                    throw new WebBeansException("Class not found exception in creating instance with class : " + singletonName, e);
-                }
-            }
+            objectToClassLoaderMap.put(object, new WeakReference<ClassLoader>(classLoader));
         }
 
         return object;
@@ -121,20 +86,7 @@ public class DefaultSingletonService implements SingletonService
      */
     public Object getExistingSingletonInstance(String singletonName, ClassLoader cl)
     {
-        Object object = null;
-        synchronized (singletonMap)
-        {
-            Map<String, Object> managerMap = singletonMap.get(cl);
-            if (managerMap == null)
-            {
-                return null;
-            }
-            else
-            {
-                object = managerMap.get(singletonName);
-            }
-        }
-        return object;
+        throw new UnsupportedOperationException("getExistingSingletonInstance is never used");
     }
     
     /**
@@ -146,14 +98,7 @@ public class DefaultSingletonService implements SingletonService
         Asserts.assertNotNull(classLoader, "classloader is null");
         synchronized (singletonMap)
         {
-            Map<String, Object> objects = singletonMap.remove(classLoader);
-            if(objects != null)
-            {
-                for(Entry<String, Object> entry : objects.entrySet())
-                {
-                    objectToClassLoaderMap.remove(entry.getValue());
-                }
-            }
+            singletonMap.remove(classLoader);
         }
     }
     

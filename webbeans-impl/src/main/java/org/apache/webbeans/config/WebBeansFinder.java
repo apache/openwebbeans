@@ -67,7 +67,12 @@ public final class WebBeansFinder
     {
         singletonService.clear(key);
     }
-    
+
+    /**
+     * TODO Delete - only used one place
+     * @param singletonInstance
+     * @return
+     */
     public static Object getSingletonClassLoader(Object singletonInstance)
     {
         return singletonService.getKey(singletonInstance);
