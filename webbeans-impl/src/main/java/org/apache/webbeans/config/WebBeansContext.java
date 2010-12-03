@@ -49,22 +49,22 @@ import java.util.Map;
 public class WebBeansContext
 {
 
-    private OpenWebBeansConfiguration openWebBeansConfiguration = new OpenWebBeansConfiguration();
+    private AlternativesManager alternativesManager = new AlternativesManager();
     private AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory();
     private BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
-    private SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
     private CreationalContextFactory creationalContextFactory = new CreationalContextFactory();
+    private DecoratorsManager decoratorsManager = new DecoratorsManager(this);
     private DefaultContextsService defaultContextsService = new DefaultContextsService();
     private DefaultJndiService defaultJndiService = new DefaultJndiService();
     private DefaultScannerService defaultScannerService = new DefaultScannerService();
-    private DecoratorsManager decoratorsManager = new DecoratorsManager(this);
-    private StereoTypeManager stereoTypeManager = new StereoTypeManager();
-    private AlternativesManager alternativesManager = new AlternativesManager();
+    private ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private InterceptorsManager interceptorsManager = new InterceptorsManager(this);
     private JMSManager jmsManager = new JMSManager();
-    private PluginLoader pluginLoader = new PluginLoader();
-    private ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private JavassistProxyFactory javassistProxyFactory = new JavassistProxyFactory();
+    private OpenWebBeansConfiguration openWebBeansConfiguration = new OpenWebBeansConfiguration();
+    private PluginLoader pluginLoader = new PluginLoader();
+    private SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
+    private StereoTypeManager stereoTypeManager = new StereoTypeManager();
     private WebBeansNameSpaceContainer webBeansNameSpaceContainer = new WebBeansNameSpaceContainer();
     private XMLAnnotationTypeManager xmlAnnotationTypeManager = new XMLAnnotationTypeManager(this);
     private XMLSpecializesManager xmlSpecializesManager = new XMLSpecializesManager();
@@ -74,22 +74,22 @@ public class WebBeansContext
     public WebBeansContext()
     {
         // Add them all into the map for backwards compatibility
-        managerMap.put(OpenWebBeansConfiguration.class.getName(), openWebBeansConfiguration);
+        managerMap.put(AlternativesManager.class.getName(), alternativesManager);
+        managerMap.put(AnnotatedElementFactory.class.getName(), annotatedElementFactory);
         managerMap.put(BeanManagerImpl.class.getName(), beanManagerImpl);
-        managerMap.put(SerializableBeanVault.class.getName(), serializableBeanVault);
         managerMap.put(CreationalContextFactory.class.getName(), creationalContextFactory);
+        managerMap.put(DecoratorsManager.class.getName(), decoratorsManager);
         managerMap.put(DefaultContextsService.class.getName(), defaultContextsService);
         managerMap.put(DefaultJndiService.class.getName(), defaultJndiService);
         managerMap.put(DefaultScannerService.class.getName(), defaultScannerService);
-        managerMap.put(DecoratorsManager.class.getName(), decoratorsManager);
-        managerMap.put(StereoTypeManager.class.getName(), stereoTypeManager);
-        managerMap.put(AlternativesManager.class.getName(), alternativesManager);
+        managerMap.put(ExtensionLoader.class.getName(), extensionLoader);
         managerMap.put(InterceptorsManager.class.getName(), interceptorsManager);
         managerMap.put(JMSManager.class.getName(), jmsManager);
-        managerMap.put(PluginLoader.class.getName(), pluginLoader);
-        managerMap.put(AnnotatedElementFactory.class.getName(), annotatedElementFactory);
-        managerMap.put(ExtensionLoader.class.getName(), extensionLoader);
         managerMap.put(JavassistProxyFactory.class.getName(), javassistProxyFactory);
+        managerMap.put(OpenWebBeansConfiguration.class.getName(), openWebBeansConfiguration);
+        managerMap.put(PluginLoader.class.getName(), pluginLoader);
+        managerMap.put(SerializableBeanVault.class.getName(), serializableBeanVault);
+        managerMap.put(StereoTypeManager.class.getName(), stereoTypeManager);
         managerMap.put(WebBeansNameSpaceContainer.class.getName(), webBeansNameSpaceContainer);
         managerMap.put(XMLAnnotationTypeManager.class.getName(), xmlAnnotationTypeManager);
         managerMap.put(XMLSpecializesManager.class.getName(), xmlSpecializesManager);
