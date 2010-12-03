@@ -508,13 +508,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public Set<Bean<?>> getComponents()
     {
-        return getManager().deploymentBeans;
+        return deploymentBeans;
     }
     
     
     public BeanManager addDecorator(Decorator decorator)
     {
-        getManager().webBeansDecorators.add(decorator);
+        webBeansDecorators.add(decorator);
         if (decorator instanceof OwbBean)
         {
             OwbBean<?> owbBean = (OwbBean<?>)decorator;
@@ -530,7 +530,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public BeanManager addInterceptor(Interceptor interceptor)
     {
-        getManager().webBeansInterceptors.add(interceptor);
+        webBeansInterceptors.add(interceptor);
         if (interceptor instanceof OwbBean)
         {
             OwbBean<?> owbBean = (OwbBean<?>)interceptor;

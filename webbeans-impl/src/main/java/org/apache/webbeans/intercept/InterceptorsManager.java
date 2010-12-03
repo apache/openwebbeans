@@ -52,7 +52,7 @@ public class InterceptorsManager
 
         if (!enabledInterceptors.contains(interceptorClazz))
         {
-            getInstance().enabledInterceptors.add(interceptorClazz);
+            enabledInterceptors.add(interceptorClazz);
         }
     }
 
@@ -88,7 +88,7 @@ public class InterceptorsManager
     {
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
 
-        return getInstance().enabledInterceptors.contains(interceptorClazz);
+        return enabledInterceptors.contains(interceptorClazz);
     }
     
     public void validateInterceptorClasses()

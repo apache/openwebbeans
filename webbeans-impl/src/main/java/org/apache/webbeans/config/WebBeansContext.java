@@ -38,6 +38,7 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.xml.WebBeansNameSpaceContainer;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 import org.apache.webbeans.xml.XMLSpecializesManager;
+import util.Track;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -191,7 +192,7 @@ public class WebBeansContext
 
     public Object get(String singletonName)
     {
-
+//        Track.get(singletonName);
         Object object = managerMap.get(singletonName);
 
         /* No singleton for this application, create one */
