@@ -70,7 +70,8 @@ public class WebBeansContext
 
     private final Map<String, Object> managerMap = new HashMap<String, Object>();
 
-    public WebBeansContext() {
+    public WebBeansContext()
+    {
         // Add them all into the map for backwards compatibility
         managerMap.put(OpenWebBeansConfiguration.class.getName(), openWebBeansConfiguration);
         managerMap.put(BeanManagerImpl.class.getName(), beanManagerImpl);
