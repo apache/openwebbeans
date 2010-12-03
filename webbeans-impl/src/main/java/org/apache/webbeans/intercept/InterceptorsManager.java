@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.interceptor.Interceptor;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -31,10 +32,12 @@ import org.apache.webbeans.util.Asserts;
 public class InterceptorsManager
 {
     private List<Class<?>> enabledInterceptors = new CopyOnWriteArrayList<Class<?>>();
+    private final BeanManagerImpl manager;
 
-    public InterceptorsManager()
+    public InterceptorsManager(WebBeansContext webBeansContext)
     {
 
+        manager = webBeansContext.getBeanManagerImpl();
     }
 
     public static InterceptorsManager getInstance()
@@ -93,7 +96,7 @@ public class InterceptorsManager
         for(Class<?> decoratorClazz : enabledInterceptors)
         {
             //Validate decorator classes
-            if(!decoratorClazz.isAnnotationPresent(Interceptor.class) && !BeanManagerImpl.getManager().containsCustomInterceptorClass(decoratorClazz))
+            if(!decoratorClazz.isAnnotationPresent(Interceptor.class) && !manager.containsCustomInterceptorClass(decoratorClazz))
             {
                 throw new WebBeansConfigurationException("Given class : " + decoratorClazz + " is not a interceptor class");
             }   

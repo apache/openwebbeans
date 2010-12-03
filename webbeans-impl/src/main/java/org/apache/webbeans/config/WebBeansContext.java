@@ -56,16 +56,16 @@ public class WebBeansContext
     private DefaultContextsService defaultContextsService = new DefaultContextsService();
     private DefaultJndiService defaultJndiService = new DefaultJndiService();
     private DefaultScannerService defaultScannerService = new DefaultScannerService();
-    private DecoratorsManager decoratorsManager = new DecoratorsManager();
+    private DecoratorsManager decoratorsManager = new DecoratorsManager(this);
     private StereoTypeManager stereoTypeManager = new StereoTypeManager();
     private AlternativesManager alternativesManager = new AlternativesManager();
-    private InterceptorsManager interceptorsManager = new InterceptorsManager();
+    private InterceptorsManager interceptorsManager = new InterceptorsManager(this);
     private JMSManager jmsManager = new JMSManager();
     private PluginLoader pluginLoader = new PluginLoader();
-    private ExtensionLoader extensionLoader = new ExtensionLoader();
+    private ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private JavassistProxyFactory javassistProxyFactory = new JavassistProxyFactory();
     private WebBeansNameSpaceContainer webBeansNameSpaceContainer = new WebBeansNameSpaceContainer();
-    private XMLAnnotationTypeManager xmlAnnotationTypeManager = new XMLAnnotationTypeManager();
+    private XMLAnnotationTypeManager xmlAnnotationTypeManager = new XMLAnnotationTypeManager(this);
     private XMLSpecializesManager xmlSpecializesManager = new XMLSpecializesManager();
 
     private final Map<String, Object> managerMap = new HashMap<String, Object>();

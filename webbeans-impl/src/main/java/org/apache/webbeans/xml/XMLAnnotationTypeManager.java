@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.XMLStereoTypeModel;
@@ -41,10 +42,12 @@ public class XMLAnnotationTypeManager
     private Map<Class<? extends Annotation>, Set<Annotation>> xmlInterceptorBindingTypes = new ConcurrentHashMap<Class<? extends Annotation>, Set<Annotation>>();
 
     private Set<Class<? extends Annotation>> xmlStereoTypes = new CopyOnWriteArraySet<Class<? extends Annotation>>();
+    private final StereoTypeManager manager;
 
-    public XMLAnnotationTypeManager()
+    public XMLAnnotationTypeManager(WebBeansContext webBeansContext)
     {
 
+        manager = webBeansContext.getStereoTypeManager();
     }
 
     public static XMLAnnotationTypeManager getInstance()
@@ -86,8 +89,6 @@ public class XMLAnnotationTypeManager
     public void addStereoType(Class<? extends Annotation> stereoType, Element decleration, String name, String errorMessage)
     {
         WebBeansUtil.checkStereoTypeClass(stereoType);
-
-        StereoTypeManager manager = StereoTypeManager.getInstance();
 
         XMLStereoTypeModel model = new XMLStereoTypeModel(decleration, name, errorMessage);
         manager.addStereoTypeModel(model);

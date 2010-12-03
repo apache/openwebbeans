@@ -27,6 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Extension;
+
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
@@ -45,13 +47,16 @@ public class ExtensionLoader
     /**Map of extensions*/
     private final  Map<Bean<?>, Object> extensions = new ConcurrentHashMap<Bean<?>, Object>();
     private final Set<Class<? extends Extension>> extensionClasses = new HashSet<Class<? extends Extension>>();
+    private final BeanManagerImpl manager;
 
     /**
      * Creates a new loader instance.
+     * @param webBeansContext
      */
-    public ExtensionLoader()
+    public ExtensionLoader(WebBeansContext webBeansContext)
     {
-        
+
+        manager = webBeansContext.getBeanManagerImpl();
     }
 
     /**
@@ -120,7 +125,7 @@ public class ExtensionLoader
         Bean<?> bean = WebBeansUtil.createExtensionComponent(ext.getClass());
         this.extensions.put(bean, ext);
 
-        BeanManagerImpl.getManager().addBean(bean);
+        manager.addBean(bean);
     }
 
     /**
