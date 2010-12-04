@@ -21,7 +21,7 @@ package org.apache.webbeans.deployment;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.util.Asserts;
 
@@ -52,9 +52,7 @@ public class StereoTypeManager
      */
     public static StereoTypeManager getInstance()
     {
-        StereoTypeManager instance = (StereoTypeManager) WebBeansFinder.getSingletonInstance(StereoTypeManager.class.getName());
-        
-        return instance;
+        return WebBeansContext.getInstance().getStereoTypeManager();
     }
 
     /**

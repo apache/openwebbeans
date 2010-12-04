@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansConstants;
 
 /**
@@ -42,9 +42,7 @@ public class WebBeansNameSpaceContainer
 
     public static WebBeansNameSpaceContainer getInstance()
     {
-        WebBeansNameSpaceContainer nameSpaceContainer = (WebBeansNameSpaceContainer)WebBeansFinder.getSingletonInstance(WebBeansNameSpaceContainer.class.getName());
-        
-        return nameSpaceContainer;
+        return WebBeansContext.getInstance().getWebBeansNameSpaceContainer();
     }
 
     /**

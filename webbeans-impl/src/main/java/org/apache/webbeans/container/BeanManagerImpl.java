@@ -63,7 +63,6 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -194,8 +193,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         injectionResolver = new InjectionResolver(this);
         notificationManager = new NotificationManager();
         annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
-    }    
-    
+    }
+
     public <T> void putInjectionTargetWrapper(Contextual<T> contextual, InjectionTargetWrapper<T> wrapper)
     {
         Asserts.assertNotNull(contextual);
@@ -256,9 +255,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public static BeanManagerImpl getManager()
     {
-        BeanManagerImpl currentManager = (BeanManagerImpl) WebBeansFinder.getSingletonInstance(BeanManagerImpl.class.getName());
-        
-        return currentManager;
+        return WebBeansContext.getInstance().getBeanManagerImpl();
     }
 
     

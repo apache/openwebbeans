@@ -125,7 +125,7 @@ public class OpenWebBeansConfiguration
      */
     public static OpenWebBeansConfiguration getInstance() 
     {
-        return (OpenWebBeansConfiguration) WebBeansFinder.getSingletonInstance(OpenWebBeansConfiguration.class.getName());
+        return WebBeansContext.getInstance().getOpenWebBeansConfiguration();
     }
     
     /**

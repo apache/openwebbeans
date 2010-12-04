@@ -69,6 +69,12 @@ public class DefaultSingletonService implements SingletonService
                 singletonMap.put(classLoader, managerMap);
             }
 
+            // little optimization to potentially remove the second lookup
+            if (WebBeansContext.class.getName().equals(singletonName))
+            {
+                return managerMap;
+            }
+            
             // WebBeansContext never returns null
             object = managerMap.get(singletonName);
 

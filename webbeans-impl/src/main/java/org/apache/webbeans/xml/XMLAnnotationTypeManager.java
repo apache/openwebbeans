@@ -27,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.XMLStereoTypeModel;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -52,8 +51,7 @@ public class XMLAnnotationTypeManager
 
     public static XMLAnnotationTypeManager getInstance()
     {
-        XMLAnnotationTypeManager manager = (XMLAnnotationTypeManager) WebBeansFinder.getSingletonInstance(XMLAnnotationTypeManager.class.getName());
-        return manager;
+        return WebBeansContext.getInstance().getxMLAnnotationTypeManager();
     }
 
     public void addBindingType(Class<? extends Annotation> bindingType)

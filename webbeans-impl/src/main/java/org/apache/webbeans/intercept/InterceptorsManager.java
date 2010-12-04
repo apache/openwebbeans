@@ -24,7 +24,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.Asserts;
@@ -42,8 +41,7 @@ public class InterceptorsManager
 
     public static InterceptorsManager getInstance()
     {
-        InterceptorsManager instance = (InterceptorsManager) WebBeansFinder.getSingletonInstance(InterceptorsManager.class.getName());
-        return instance;
+        return WebBeansContext.getInstance().getInterceptorsManager();
     }
 
     public void addNewInterceptor(Class<?> interceptorClazz)

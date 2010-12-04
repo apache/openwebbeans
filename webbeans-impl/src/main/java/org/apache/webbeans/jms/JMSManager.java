@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.util.Asserts;
 
@@ -44,7 +44,7 @@ public class JMSManager
     
     public static JMSManager getInstance()
     {
-        return (JMSManager)WebBeansFinder.getSingletonInstance(JMSManager.class.getName());
+        return WebBeansContext.getInstance().getjMSManager();
     }
     
     public void addJmsModel(JMSModel model)

@@ -25,7 +25,7 @@ import java.util.Set;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -43,7 +43,7 @@ public class AlternativesManager
     
     public static AlternativesManager getInstance()
     {
-        return (AlternativesManager)WebBeansFinder.getSingletonInstance(AlternativesManager.class.getName());
+        return WebBeansContext.getInstance().getAlternativesManager();
     }
     
     @SuppressWarnings("unchecked")

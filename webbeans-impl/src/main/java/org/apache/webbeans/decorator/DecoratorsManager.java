@@ -24,7 +24,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.decorator.Decorator;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.Asserts;
@@ -34,7 +33,8 @@ public class DecoratorsManager
     private List<Class<?>> enabledDecorators = new CopyOnWriteArrayList<Class<?>>();
     private final BeanManagerImpl manager;
 
-    public DecoratorsManager(WebBeansContext webBeansContext)
+    public
+    DecoratorsManager(WebBeansContext webBeansContext)
     {
 
         manager = webBeansContext.getBeanManagerImpl();
@@ -42,9 +42,7 @@ public class DecoratorsManager
 
     public static DecoratorsManager getInstance()
     {
-        DecoratorsManager instance = (DecoratorsManager) WebBeansFinder.getSingletonInstance(DecoratorsManager.class.getName());
-
-        return instance;
+        return WebBeansContext.getInstance().getDecoratorsManager();
     }
 
     public void addNewDecorator(Class<?> decoratorClazz)

@@ -29,7 +29,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.Asserts;
@@ -66,9 +65,7 @@ public class ExtensionLoader
      */
     public static ExtensionLoader getInstance()
     {
-        ExtensionLoader loader = (ExtensionLoader) WebBeansFinder.getSingletonInstance(ExtensionLoader.class.getName());
-        
-        return loader;
+        return WebBeansContext.getInstance().getExtensionLoader();
     }
     
     /**

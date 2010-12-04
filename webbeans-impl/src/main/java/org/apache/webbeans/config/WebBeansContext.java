@@ -18,6 +18,11 @@
  */
 package org.apache.webbeans.config;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -38,10 +43,6 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.xml.WebBeansNameSpaceContainer;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 import org.apache.webbeans.xml.XMLSpecializesManager;
-import util.Track;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @version $Rev$ $Date$
@@ -73,6 +74,9 @@ public class WebBeansContext
 
     public WebBeansContext()
     {
+        // Allow the WebBeansContext itself to be looked up
+        managerMap.put(this.getClass().getName(), this);
+
         // Add them all into the map for backwards compatibility
         managerMap.put(AlternativesManager.class.getName(), alternativesManager);
         managerMap.put(AnnotatedElementFactory.class.getName(), annotatedElementFactory);
@@ -93,6 +97,13 @@ public class WebBeansContext
         managerMap.put(WebBeansNameSpaceContainer.class.getName(), webBeansNameSpaceContainer);
         managerMap.put(XMLAnnotationTypeManager.class.getName(), xmlAnnotationTypeManager);
         managerMap.put(XMLSpecializesManager.class.getName(), xmlSpecializesManager);
+    }
+    
+    public static WebBeansContext getInstance() 
+    {
+        WebBeansContext webBeansContext = (WebBeansContext) WebBeansFinder.getSingletonInstance(WebBeansContext.class.getName());
+        
+        return webBeansContext;
     }
 
     public OpenWebBeansConfiguration getOpenWebBeansConfiguration()
@@ -198,37 +209,63 @@ public class WebBeansContext
         /* No singleton for this application, create one */
         if (object == null)
         {
-            try
-            {
-                //Load class
-                Class<?> clazz = ClassUtil.getClassFromName(singletonName);
-                if (clazz == null)
-                {
-                    throw new ClassNotFoundException("Class with name: " + singletonName + " is not found in the system");
-                }
-
-                //Create instance
-                object = clazz.newInstance();
-
-                //Save it
-                managerMap.put(singletonName, object);
-
-            }
-            catch (InstantiationException e)
-            {
-                throw new WebBeansException("Unable to instantiate class : " + singletonName, e);
-            }
-            catch (IllegalAccessException e)
-            {
-                throw new WebBeansException("Illegal access exception in creating instance with class : " + singletonName, e);
-            }
-            catch (ClassNotFoundException e)
-            {
-                throw new WebBeansException("Class not found exception in creating instance with class : " + singletonName, e);
-            }
+            object = createInstance(singletonName);
+            
+            //Save it
+            managerMap.put(singletonName, object);
         }
 
         return object;
+    }
+
+    private Object createInstance(String singletonName)
+    {
+        try
+        {
+            //Load class
+            Class<?> clazz = ClassUtil.getClassFromName(singletonName);
+            if (clazz == null)
+            {
+                throw new ClassNotFoundException("Class with name: " + singletonName + " is not found in the system");
+            }
+
+            // first try constructor that takes this object as an argument
+            try
+            {
+                Constructor<?> constructor = clazz.getConstructor(WebBeansContext.class);
+                return constructor.newInstance(this);
+            }
+            catch (NoSuchMethodException e)
+            {
+            }
+
+            // then try a no-arg constructor
+            try
+            {
+                Constructor<?> constructor = clazz.getConstructor();
+                return constructor.newInstance();
+            }
+            catch (NoSuchMethodException e)
+            {
+                throw new WebBeansException("No suitable constructor : " + singletonName, e.getCause());
+            }
+        }
+        catch (InstantiationException e)
+        {
+            throw new WebBeansException("Unable to instantiate class : " + singletonName, e.getCause());
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new WebBeansException("Unable to instantiate class : " + singletonName, e.getCause());
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new WebBeansException("Illegal access exception in creating instance with class : " + singletonName, e);
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new WebBeansException("Class not found exception in creating instance with class : " + singletonName, e);
+        }
     }
 
     public void clear()

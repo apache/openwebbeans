@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
@@ -63,7 +63,7 @@ public class PluginLoader
      */
     public static PluginLoader getInstance()
     {
-        return (PluginLoader) WebBeansFinder.getSingletonInstance(PluginLoader.class.getName());
+        return WebBeansContext.getInstance().getPluginLoader();
     }
     
     public PluginLoader()

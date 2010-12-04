@@ -30,7 +30,7 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.SecurityUtil;
@@ -47,9 +47,8 @@ public final class AnnotatedElementFactory
     private final WebBeansLogger logger = WebBeansLogger.getLogger(AnnotatedElementFactory.class);
 
     public static AnnotatedElementFactory getInstance()
-  {
-        AnnotatedElementFactory aef = (AnnotatedElementFactory) WebBeansFinder.getSingletonInstance(AnnotatedElementFactory.class.getName());
-        return aef;
+    {
+        return WebBeansContext.getInstance().getAnnotatedElementFactory();
     }
 
     //Cache of the AnnotatedType

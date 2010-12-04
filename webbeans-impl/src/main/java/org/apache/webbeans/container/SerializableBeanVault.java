@@ -18,13 +18,14 @@
  */
 package org.apache.webbeans.container;
 
-import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.util.WebBeansUtil;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.spi.Bean;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * <p>This class acts as a storage for {@link SerializableBean}s.</p>
@@ -48,7 +49,7 @@ public class SerializableBeanVault
 
     public final static SerializableBeanVault getInstance()
     {
-        return (SerializableBeanVault) WebBeansFinder.getSingletonInstance(SerializableBeanVault.class.getName());
+        return WebBeansContext.getInstance().getSerializableBeanVault();
     }
 
     @SuppressWarnings("unchecked")

@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.Asserts;
 
 public class XMLSpecializesManager
@@ -36,8 +36,7 @@ public class XMLSpecializesManager
 
     public static XMLSpecializesManager getInstance()
     {
-        XMLSpecializesManager instance = (XMLSpecializesManager) WebBeansFinder.getSingletonInstance(XMLSpecializesManager.class.getName());
-        return instance;
+        return WebBeansContext.getInstance().getxMLSpecializesManager();
     }
 
     public Set<Class<?>> getXMLSpecializationClasses()

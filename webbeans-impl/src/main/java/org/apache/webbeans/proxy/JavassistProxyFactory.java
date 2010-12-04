@@ -29,19 +29,18 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javassist.util.proxy.ProxyFactory;
-import javassist.util.proxy.ProxyObject;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.intercept.ApplicationScopedBeanIntereptorHandler;
@@ -74,8 +73,7 @@ public final class JavassistProxyFactory
     
     public static JavassistProxyFactory getInstance()
     {
-        JavassistProxyFactory aef = (JavassistProxyFactory) WebBeansFinder.getSingletonInstance(JavassistProxyFactory.class.getName());
-        return aef;
+        return WebBeansContext.getInstance().getJavassistProxyFactory();
     }
     
     public void clear()

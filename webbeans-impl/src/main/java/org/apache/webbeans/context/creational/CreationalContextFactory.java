@@ -21,7 +21,7 @@ package org.apache.webbeans.context.creational;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
-import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.config.WebBeansContext;
 
 /**
  * Factory for {@link CreationalContext} instances.
@@ -47,7 +47,7 @@ public final class CreationalContextFactory<T>
     @SuppressWarnings("unchecked")
     public static CreationalContextFactory getInstance()
     {
-        return (CreationalContextFactory)WebBeansFinder.getSingletonInstance(CreationalContextFactory.class.getName());
+        return WebBeansContext.getInstance().getCreationalContextFactory();
     }
     
     /**
