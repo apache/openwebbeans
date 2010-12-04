@@ -31,17 +31,15 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.intercept.InterceptorUtil;
-import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.api.ResourceReference;
 
 import javax.decorator.Decorator;
@@ -767,7 +765,7 @@ public final class WebBeansAnnotatedTypeUtil
         ManagedBean<T> bean = defineManagedBean(type);
 
         //X TODO move proxy instance creation into JavassistProxyFactory!
-        Class clazz = JavassistProxyFactory.getInstance().createAbstractDecoratorProxyClass(bean);
+        Class clazz = WebBeansContext.getInstance().getJavassistProxyFactory().createAbstractDecoratorProxyClass(bean);
 
         bean.setConstructor(WebBeansUtil.defineConstructor(clazz));
         bean.setIsAbstractDecorator(true);
@@ -881,11 +879,11 @@ public final class WebBeansAnnotatedTypeUtil
         {
             return true;
         }
-        else if(InterceptorsManager.getInstance().isInterceptorEnabled(annotatedType.getJavaClass()))
+        else if(WebBeansContext.getInstance().getInterceptorsManager().isInterceptorEnabled(annotatedType.getJavaClass()))
         {
             return true;
         }
-        else if(DecoratorsManager.getInstance().isDecoratorEnabled(annotatedType.getJavaClass()))
+        else if(WebBeansContext.getInstance().getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass()))
         {
             return true;
         }
@@ -918,7 +916,7 @@ public final class WebBeansAnnotatedTypeUtil
      */
     public static <T> void defineDecorator(AnnotatedType<T> annotatedType)
     {
-        if (DecoratorsManager.getInstance().isDecoratorEnabled(annotatedType.getJavaClass()))
+        if (WebBeansContext.getInstance().getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass()))
         {
             ManagedBean<T> delegate = null;
             
@@ -966,7 +964,7 @@ public final class WebBeansAnnotatedTypeUtil
     public static <T> void defineInterceptor(AnnotatedType<T> annotatedType)
     {
         Class<?> clazz = annotatedType.getJavaClass();
-        if (InterceptorsManager.getInstance().isInterceptorEnabled(clazz))
+        if (WebBeansContext.getInstance().getInterceptorsManager().isInterceptorEnabled(clazz))
         {
             ManagedBean<T> delegate = null;
 

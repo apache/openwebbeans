@@ -36,6 +36,7 @@ import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.ejb.common.component.EjbBeanCreatorImpl;
@@ -62,8 +63,8 @@ public final class EjbUtility
         
     public static <T> void fireEvents(Class<T> clazz, BaseEjbBean<T> ejbBean,ProcessAnnotatedType<T> event)
     {
-        BeanManagerImpl manager = BeanManagerImpl.getManager();
-        AnnotatedElementFactory annotatedElementFactory = AnnotatedElementFactory.getInstance();
+        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
+        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
 
         AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(clazz);
         
@@ -139,8 +140,8 @@ public final class EjbUtility
         }        
 
         //Fires ProcessManagedBean
-        ProcessSessionBeanImpl<T> processBeanEvent = new GProcessSessionBean((Bean<Object>)ejbBean,annotatedType,ejbBean.getEjbName(),ejbBean.getEjbType());            
-        BeanManagerImpl.getManager().fireEvent(processBeanEvent, new Annotation[0]);
+        ProcessSessionBeanImpl<T> processBeanEvent = new GProcessSessionBean((Bean<Object>)ejbBean,annotatedType,ejbBean.getEjbName(),ejbBean.getEjbType());
+        WebBeansContext.getInstance().getBeanManagerImpl().fireEvent(processBeanEvent, new Annotation[0]);
         WebBeansUtil.inspectErrorStack("There are errors that are added by ProcessSessionBean event observers for managed beans. Look at logs for further details");
         
         

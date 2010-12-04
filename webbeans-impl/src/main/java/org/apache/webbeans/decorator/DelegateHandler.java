@@ -32,7 +32,7 @@ import javax.interceptor.InvocationContext;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.SecurityUtil;
@@ -230,7 +230,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
         {
             return;
         }
-        bean = (OwbBean<?>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
+        bean = (OwbBean<?>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
         actualBean = in.readObject();
         decorators = (List<Object>) in.readObject();
     }    

@@ -33,6 +33,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
@@ -99,7 +100,7 @@ public class XMLUtil
         }
         if (root.getNamespaceURI() != null)
         {
-            WebBeansNameSpaceContainer.getInstance().
+            WebBeansContext.getInstance().getWebBeansNameSpaceContainer().
                     addNewPackageNameSpace(root.getNamespaceURI());
         }
         else
@@ -107,7 +108,7 @@ public class XMLUtil
             String attr = root.getAttribute("xmlns");
             if (attr != null)
             {
-                WebBeansNameSpaceContainer.getInstance().
+                WebBeansContext.getInstance().getWebBeansNameSpaceContainer().
                         addNewPackageNameSpace(root.getNamespaceURI());
             }
         }
@@ -119,7 +120,7 @@ public class XMLUtil
             Attr attr = (Attr) attrs.item(i);
             if (attr.getName().toLowerCase().startsWith("xmlns"))
             {
-                WebBeansNameSpaceContainer.getInstance().addNewPackageNameSpace(attr.getValue());
+                WebBeansContext.getInstance().getWebBeansNameSpaceContainer().addNewPackageNameSpace(attr.getValue());
             }
         }
     }
@@ -495,7 +496,7 @@ public class XMLUtil
     public static Class<?> getElementJavaType(Element element)
     {
         String ns = getElementNameSpace(element);
-        List<String> packageNames = WebBeansNameSpaceContainer.getInstance().getPackageNameFromNameSpace(ns);
+        List<String> packageNames = WebBeansContext.getInstance().getWebBeansNameSpaceContainer().getPackageNameFromNameSpace(ns);
 
         Class<?> clazz = null;
         Class<?> foundClazz = null;

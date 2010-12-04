@@ -29,7 +29,7 @@ import javax.enterprise.util.TypeLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.ITypeLiteralComponent;
@@ -97,7 +97,7 @@ public class TypedLiteralComponentTest extends TestContext
 
         };
 
-        Bean<?> s = BeanManagerImpl.getManager().resolveByType(tl, anns).iterator().next();
+        Bean<?> s = WebBeansContext.getInstance().getBeanManagerImpl().resolveByType(tl, anns).iterator().next();
         Assert.assertNotNull(s);
 
         ContextFactory.destroyRequestContext(null);

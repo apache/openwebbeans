@@ -23,12 +23,11 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
@@ -341,10 +340,10 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         {
             return this.customDecorator.create(creationalContext);
         }
-        
-        Context context = BeanManagerImpl.getManager().getContext(getScope());
+
+        Context context = WebBeansContext.getInstance().getBeanManagerImpl().getContext(getScope());
         Object actualInstance = context.get((Bean<Object>)this.wrappedBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T)JavassistProxyFactory.getInstance().createDependentScopedBeanProxy(this.wrappedBean, actualInstance, creationalContext);
+        T proxy = (T) WebBeansContext.getInstance().getJavassistProxyFactory().createDependentScopedBeanProxy(this.wrappedBean, actualInstance, creationalContext);
         
         return proxy;        
     }

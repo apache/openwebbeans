@@ -23,12 +23,11 @@ import java.lang.annotation.Annotation;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
-import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 /**
  * Events that is fired before container starts to discover beans.
@@ -43,7 +42,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
 
     public BeforeBeanDiscoveryImpl()
     {
-        beanManager = BeanManagerImpl.getManager();
+        beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
     }
     
     /**
@@ -71,7 +70,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation... bindingDef)
     {
-        XMLAnnotationTypeManager.getInstance().addInterceotorBindingTypeInheritAnnotation(binding, bindingDef);
+        WebBeansContext.getInstance().getxMLAnnotationTypeManager().addInterceotorBindingTypeInheritAnnotation(binding, bindingDef);
     }
 
     /**
@@ -90,11 +89,11 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addStereotype(Class<? extends Annotation> stereotype, Annotation... stereotypeDef)
     {
-        if (!XMLAnnotationTypeManager.getInstance().hasStereoType(stereotype))
+        if (!WebBeansContext.getInstance().getxMLAnnotationTypeManager().hasStereoType(stereotype))
         {
             WebBeansUtil.checkStereoTypeClass(stereotype, stereotypeDef);
             StereoTypeModel model = new StereoTypeModel(stereotype, stereotypeDef);
-            StereoTypeManager.getInstance().addStereoTypeModel(model);
+            WebBeansContext.getInstance().getStereoTypeManager().addStereoTypeModel(model);
         }
         
     }

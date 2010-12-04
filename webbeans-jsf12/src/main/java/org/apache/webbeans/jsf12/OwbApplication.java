@@ -43,7 +43,7 @@ import javax.faces.el.VariableResolver;
 import javax.faces.event.ActionListener;
 import javax.faces.validator.Validator;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 
 @SuppressWarnings("unchecked")
 public class OwbApplication extends Application
@@ -257,7 +257,7 @@ public class OwbApplication extends Application
         if(this.expressionFactory == null)
         {
             expressionFactory = wrappedApplication.getExpressionFactory();
-            expressionFactory = BeanManagerImpl.getManager().wrapExpressionFactory(expressionFactory);            
+            expressionFactory = WebBeansContext.getInstance().getBeanManagerImpl().wrapExpressionFactory(expressionFactory);
         }
         
         return expressionFactory;

@@ -29,6 +29,7 @@ import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.AlternativesManager;
 
 public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
@@ -155,7 +156,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
         boolean alternative = this.bean.isAlternative();
         if(alternative)
         {
-            AlternativesManager manager = AlternativesManager.getInstance();
+            AlternativesManager manager = WebBeansContext.getInstance().getAlternativesManager();
             //Class alternative
             if(manager.isClassAlternative(getBeanClass()))
             {

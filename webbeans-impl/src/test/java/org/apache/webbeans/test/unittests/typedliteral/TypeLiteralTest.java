@@ -27,7 +27,7 @@ import javax.enterprise.util.TypeLiteral;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean.IntegerOrder;
@@ -70,8 +70,8 @@ public class TypeLiteralTest extends TestContext
     public void testTypeLiteralInInstance()
     {
         clear();
-        
-        BeanManagerImpl.getManager().addBean(WebBeansUtil.getInstanceBean());
+
+        WebBeansContext.getInstance().getBeanManagerImpl().addBean(WebBeansUtil.getInstanceBean());
         
         defineManagedBean(StringOrder.class);
         defineManagedBean(IntegerOrder.class);

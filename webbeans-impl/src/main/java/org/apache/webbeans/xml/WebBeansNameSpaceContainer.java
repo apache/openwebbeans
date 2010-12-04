@@ -40,6 +40,7 @@ public class WebBeansNameSpaceContainer
         
     }
 
+    @Deprecated
     public static WebBeansNameSpaceContainer getInstance()
     {
         return WebBeansContext.getInstance().getWebBeansNameSpaceContainer();

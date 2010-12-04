@@ -25,6 +25,7 @@ import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.conversation.ConversationImpl;
@@ -56,8 +57,8 @@ public class WebBeansPhaseListener implements PhaseListener
             {
                 return;
             }
-            
-            ConversationManager conversationManager = ConversationManager.getInstance();
+
+            ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
             Conversation conversation = conversationManager.getConversationBeanReference();
 
             if (conversation.isTransient())
@@ -86,7 +87,7 @@ public class WebBeansPhaseListener implements PhaseListener
             //It looks for cid parameter in the JSF request.
             //If request contains cid, then it must restore conversation
             //Otherwise create NonexistentException
-            ConversationManager conversationManager = ConversationManager.getInstance();
+            ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
             Conversation conversation = conversationManager.getConversationBeanReference();
             String cid = JSFUtil.getConversationId();
 

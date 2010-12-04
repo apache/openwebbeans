@@ -22,6 +22,7 @@ package org.apache.webbeans.event;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
@@ -69,7 +70,7 @@ public final class NotificationManager
 
     public static NotificationManager getInstance()
     {
-        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
 
         return manager.getNotificationManager();
     }

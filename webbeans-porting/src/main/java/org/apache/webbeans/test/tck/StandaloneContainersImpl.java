@@ -45,11 +45,10 @@ import org.apache.openejb.jee.EjbJar;
 import org.apache.openejb.jee.SingletonBean;
 import org.apache.openejb.jee.StatefulBean;
 import org.apache.openejb.jee.StatelessBean;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
 import org.jboss.testharness.api.DeploymentException;
@@ -115,8 +114,8 @@ public class StandaloneContainersImpl implements StandaloneContainers
                     super.beforeStartApplication(object);
                     try
                     {
-                        PluginLoader.getInstance().startUp();
-                        EjbPlugin plugin = (EjbPlugin) PluginLoader.getInstance().getEjbPlugin();
+                        WebBeansContext.getInstance().getPluginLoader().startUp();
+                        EjbPlugin plugin = (EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
                         plugin.setUseInTest(true);
                     }
                     catch (Throwable e)
@@ -171,7 +170,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
             try
             {
-                EjbPlugin plugin = (EjbPlugin) PluginLoader.getInstance().getEjbPlugin();
+                EjbPlugin plugin = (EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
                 plugin.setUseInTest(false);
             }
             catch (Throwable e)
@@ -192,7 +191,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
     protected BeanManager getBeanManager()
     {
-        return BeanManagerImpl.getManager();
+        return WebBeansContext.getInstance().getBeanManagerImpl();
     }
 
     @Override
@@ -236,7 +235,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
             try
             {
-                EjbPlugin plugin = (EjbPlugin) PluginLoader.getInstance().getEjbPlugin();
+                EjbPlugin plugin = (EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
                 plugin.setUseInTest(true);
             }
             catch (Throwable e)

@@ -43,20 +43,16 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
-import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
-import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.deployment.StereoTypeModel;
 import org.apache.webbeans.intercept.InterceptorUtil;
-import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.plugins.PluginLoader;
-import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeIsnotInterface;
 import org.apache.webbeans.test.component.decorator.broken.DelegateAttributeMustImplementAllDecoratedTypes;
@@ -127,7 +123,7 @@ public abstract class TestContext implements ITestContext
         TestContext.testContexts.add(this);
         this.manager = new MockManager();
         this.xmlConfigurator = new WebBeansXMLConfigurator();
-        PluginLoader.getInstance().startUp();            
+        WebBeansContext.getInstance().getPluginLoader().startUp();
     }
     
 
@@ -141,7 +137,7 @@ public abstract class TestContext implements ITestContext
     public void init()
     {
         manager.clear();
-        PluginLoader.getInstance().startUp();            
+        WebBeansContext.getInstance().getPluginLoader().startUp();
         
         initInterceptors();
         initDecorators();
@@ -325,8 +321,8 @@ public abstract class TestContext implements ITestContext
 
             getComponents().add((AbstractOwbBean<?>) bean);
             manager.addBean(bean);
-            
-            GProcessAnnotatedType type = new GProcessAnnotatedType(AnnotatedElementFactory.getInstance().newAnnotatedType(clazz));
+
+            GProcessAnnotatedType type = new GProcessAnnotatedType(WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(clazz));
             manager.fireEvent(type, new Annotation[0]);            
         }
 
@@ -428,8 +424,8 @@ public abstract class TestContext implements ITestContext
         ManagedBean<T> component = null;
 
         ManagedBeanConfigurator.checkManagedBeanCondition(clazz);
-        
-        InterceptorsManager.getInstance().addNewInterceptor(clazz);
+
+        WebBeansContext.getInstance().getInterceptorsManager().addNewInterceptor(clazz);
         InterceptorUtil.checkInterceptorConditions(clazz);
         component = ManagedBeanConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
         WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component, 
@@ -450,7 +446,7 @@ public abstract class TestContext implements ITestContext
     {
         ManagedBean<T> component = null;
 
-        if (DecoratorsManager.getInstance().isDecoratorEnabled(clazz))
+        if (WebBeansContext.getInstance().getDecoratorsManager().isDecoratorEnabled(clazz))
         {
             DecoratorUtil.checkDecoratorConditions(clazz);
             component = ManagedBeanConfigurator.define(clazz, WebBeansType.DECORATOR);
@@ -470,7 +466,7 @@ public abstract class TestContext implements ITestContext
     protected void clear()
     {
         this.manager.clear();
-        PluginLoader.getInstance().startUp();            
+        WebBeansContext.getInstance().getPluginLoader().startUp();
     }
 
     /**
@@ -566,7 +562,7 @@ public abstract class TestContext implements ITestContext
     {
         WebBeansUtil.checkStereoTypeClass(stereoClass);
         StereoTypeModel model = new StereoTypeModel(stereoClass);
-        StereoTypeManager.getInstance().addStereoTypeModel(model);
+        WebBeansContext.getInstance().getStereoTypeManager().addStereoTypeModel(model);
     }
 
     /**
@@ -576,7 +572,7 @@ public abstract class TestContext implements ITestContext
      */
     protected void initializeInterceptorType(Class<?> interceptorClazz)
     {
-        InterceptorsManager.getInstance().addNewInterceptor(interceptorClazz);
+        WebBeansContext.getInstance().getInterceptorsManager().addNewInterceptor(interceptorClazz);
 
     }
 
@@ -587,7 +583,7 @@ public abstract class TestContext implements ITestContext
      */
     protected void initializeDecoratorType(Class<?> decoratorClazz)
     {
-        DecoratorsManager.getInstance().addNewDecorator(decoratorClazz);
+        WebBeansContext.getInstance().getDecoratorsManager().addNewDecorator(decoratorClazz);
 
     }
 

@@ -21,10 +21,9 @@ package org.apache.webbeans.corespi;
 import java.util.List;
 
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
 /**
@@ -51,12 +50,12 @@ public class ServiceLoader
     @SuppressWarnings("unchecked")
     public static <T> T getService(Class<T> serviceInterface)
     {
-        String implName = OpenWebBeansConfiguration.getInstance().getProperty(serviceInterface.getName());
+        String implName = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(serviceInterface.getName());
         
         if (implName == null)
         {
             //Look for plugins
-            List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+            List<OpenWebBeansPlugin> plugins = WebBeansContext.getInstance().getPluginLoader().getPlugins();
             if(plugins != null && plugins.size() > 0)
             {
                 for(OpenWebBeansPlugin plugin : plugins)
@@ -87,11 +86,11 @@ public class ServiceLoader
     @SuppressWarnings("unchecked")
     public static <T> T getService(Class<T> serviceInterface, ClassLoader cl)
     {
-        String implName = OpenWebBeansConfiguration.getInstance().getProperty(serviceInterface.getName());
+        String implName = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(serviceInterface.getName());
         if (implName == null)
         {
             //Look for plugins
-            List<OpenWebBeansPlugin> plugins = PluginLoader.getInstance().getPlugins();
+            List<OpenWebBeansPlugin> plugins = WebBeansContext.getInstance().getPluginLoader().getPlugins();
             if(plugins != null && plugins.size() > 0)
             {
                 for(OpenWebBeansPlugin plugin : plugins)

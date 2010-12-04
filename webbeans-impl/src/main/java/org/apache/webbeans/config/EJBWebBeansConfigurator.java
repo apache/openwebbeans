@@ -40,7 +40,7 @@ public final class EJBWebBeansConfigurator
      */
     public static boolean isSessionBean(Class<?> clazz) throws WebBeansConfigurationException
     {
-        PluginLoader loader = PluginLoader.getInstance();
+        PluginLoader loader = WebBeansContext.getInstance().getPluginLoader();
         OpenWebBeansEjbPlugin ejbPlugin = loader.getEjbPlugin();
         
         //There is no ejb container
@@ -60,7 +60,7 @@ public final class EJBWebBeansConfigurator
      */
     public static <T> Bean<T> defineEjbBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent)
     {
-        PluginLoader loader = PluginLoader.getInstance();
+        PluginLoader loader = WebBeansContext.getInstance().getPluginLoader();
         OpenWebBeansEjbPlugin ejbPlugin = loader.getEjbPlugin();
         
         if(ejbPlugin == null)

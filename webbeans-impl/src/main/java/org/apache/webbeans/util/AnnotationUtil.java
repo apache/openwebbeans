@@ -19,7 +19,7 @@
 package org.apache.webbeans.util;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
@@ -1034,7 +1034,7 @@ public final class AnnotationUtil
     public static boolean isQualifierAnnotation(Class<? extends Annotation> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
+        XMLAnnotationTypeManager manager = WebBeansContext.getInstance().getxMLAnnotationTypeManager();
         if (manager.hasBindingType(clazz))
         {
             return true;
@@ -1043,7 +1043,7 @@ public final class AnnotationUtil
         {
             return true;
         }
-        else if(BeanManagerImpl.getManager().getAdditionalQualifiers().contains(clazz))
+        else if(WebBeansContext.getInstance().getBeanManagerImpl().getAdditionalQualifiers().contains(clazz))
         {
             return true;
         }
@@ -1103,7 +1103,7 @@ public final class AnnotationUtil
     public static boolean isInterceptorBindingAnnotation(Class<? extends Annotation> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
+        XMLAnnotationTypeManager manager = WebBeansContext.getInstance().getxMLAnnotationTypeManager();
         if (manager.hasInterceptorBindingType(clazz))
         {
             return true;
@@ -1245,7 +1245,7 @@ public final class AnnotationUtil
     public static boolean isStereoTypeAnnotation(Class<? extends Annotation> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        XMLAnnotationTypeManager manager = XMLAnnotationTypeManager.getInstance();
+        XMLAnnotationTypeManager manager = WebBeansContext.getInstance().getxMLAnnotationTypeManager();
         if (manager.hasStereoType(clazz))
         {
             return true;

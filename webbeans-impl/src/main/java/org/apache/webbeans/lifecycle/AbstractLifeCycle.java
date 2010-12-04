@@ -26,17 +26,13 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.corespi.ServiceLoader;
-import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.PluginLoader;
-import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.JNDIService;
@@ -76,8 +72,8 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     protected AbstractLifeCycle(Properties properties)
     {
         beforeInitApplication(properties);
-        
-        this.beanManager = (BeanManagerImpl) WebBeansFinder.getSingletonInstance(BeanManagerImpl.class.getName());
+
+        this.beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
         this.xmlDeployer = new WebBeansXMLConfigurator();
         this.deployer = new BeansDeployer(xmlDeployer);
         this.jndiService = ServiceLoader.getService(JNDIService.class);    
@@ -106,7 +102,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         beforeStartApplication(startupObject);
         
         //Load all plugins
-        PluginLoader.getInstance().startUp();
+        WebBeansContext.getInstance().getPluginLoader().startUp();
         
         //Initialize contexts
         this.contextsService.init(startupObject);
@@ -152,22 +148,22 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
 
             //Free all plugin resources
-            PluginLoader.getInstance().shutDown();
+            WebBeansContext.getInstance().getPluginLoader().shutDown();
             
             //Clear extensions
-            ExtensionLoader.getInstance().clear();
+            WebBeansContext.getInstance().getExtensionLoader().clear();
             
             //Delete Resolutions Cache
             InjectionResolver.getInstance().clearCaches();
             
             //Delte proxies
-            JavassistProxyFactory.getInstance().clear();
+            WebBeansContext.getInstance().getJavassistProxyFactory().clear();
             
             //Delete AnnotateTypeCache
-            AnnotatedElementFactory.getInstance().clear();
+            WebBeansContext.getInstance().getAnnotatedElementFactory().clear();
             
             //Delete JMS Model Cache
-            JMSManager.getInstance().clear();
+            WebBeansContext.getInstance().getjMSManager().clear();
             
             //After Stop
             afterStopApplication(endObject);

@@ -54,6 +54,7 @@ public class XMLAnnotationTypeManager
         return WebBeansContext.getInstance().getxMLAnnotationTypeManager();
     }
 
+    @Deprecated
     public void addBindingType(Class<? extends Annotation> bindingType)
     {
         xmlBindingTypes.add(bindingType);

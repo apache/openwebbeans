@@ -26,7 +26,7 @@ import java.io.Serializable;
 
 import javax.enterprise.context.spi.Contextual;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansUtil;
 
 public class DependentCreationalContext<S> implements Serializable
@@ -142,7 +142,7 @@ public class DependentCreationalContext<S> implements Serializable
         String id = (String) s.readObject();
         if (id != null)
         {
-            contextual = (Contextual<S>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
+            contextual = (Contextual<S>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
         }
     }
 

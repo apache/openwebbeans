@@ -42,6 +42,7 @@ import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -55,7 +56,7 @@ public class MockManager implements BeanManager
     public MockManager()
     {
         WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
-        this.manager = BeanManagerImpl.getManager();
+        this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
         manager.addBean(WebBeansUtil.getManagerBean());
     }
 
@@ -65,8 +66,8 @@ public class MockManager implements BeanManager
         componentList.clear();        
         
         WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
-        
-        this.manager = BeanManagerImpl.getManager();        
+
+        this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
     }
 
     public List<AbstractOwbBean<?>> getComponents()

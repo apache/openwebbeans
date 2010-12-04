@@ -31,6 +31,7 @@ import javassist.util.proxy.ProxyObjectOutputStream;
 import javax.enterprise.context.Conversation;
 import javax.servlet.http.HttpSession;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.conversation.ConversationManager;
@@ -75,7 +76,7 @@ public class FailOverBag implements Serializable
         sessionContext = sessionManager.getSessionContextWithSessionId(session.getId());
 
         // get all conversation contexts 
-        ConversationManager conversationManager = ConversationManager.getInstance();
+        ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
         conversationContextMap = conversationManager.getConversationMapWithSessionId(session.getId());
     }
     
@@ -91,7 +92,7 @@ public class FailOverBag implements Serializable
             }
             if (conversationContextMap != null && !conversationContextMap.isEmpty())
             {
-                ConversationManager conversationManager = ConversationManager.getInstance();
+                ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
                 java.util.Iterator<Conversation> it = conversationContextMap.keySet().iterator();
                 while(it.hasNext()) 
                 {

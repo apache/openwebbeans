@@ -24,9 +24,9 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
-import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 import org.junit.Test;
 
 public class XMLAnnotTypeTest extends TestContext
@@ -50,7 +50,7 @@ public class XMLAnnotTypeTest extends TestContext
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
         configurator.configureOwbSpecific(stream, "bindingTypeAnnot.xml");
 
-        Set<Class<? extends Annotation>> aanns = XMLAnnotationTypeManager.getInstance().getBindingTypes();
+        Set<Class<? extends Annotation>> aanns = WebBeansContext.getInstance().getxMLAnnotationTypeManager().getBindingTypes();
 
         Assert.assertEquals(2, aanns.size());
     }

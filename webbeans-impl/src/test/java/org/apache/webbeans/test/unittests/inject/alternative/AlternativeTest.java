@@ -24,8 +24,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.inject.alternative.AlternativeComponent;
 import org.apache.webbeans.test.component.inject.alternative.AlternativeInjector;
@@ -69,15 +68,15 @@ public class AlternativeTest extends TestContext
         IAlternative alternative = instance.getAlternative();
         
         Assert.assertTrue(alternative instanceof AlternativeComponent);
-        
-        PluginLoader.getInstance().shutDown();
+
+        WebBeansContext.getInstance().getPluginLoader().shutDown();
         
     }
     
     @Test
     public void testInjectNotAlternative()
     {
-        AlternativesManager.getInstance().clear();
+        WebBeansContext.getInstance().getAlternativesManager().clear();
         
         defineManagedBean(AlternativeComponent.class);
         defineManagedBean(NotAlternativeComponent.class);
@@ -90,8 +89,8 @@ public class AlternativeTest extends TestContext
         IAlternative alternative = instance.getAlternative();
         
         Assert.assertTrue(alternative instanceof NotAlternativeComponent);
-        
-        PluginLoader.getInstance().shutDown();
+
+        WebBeansContext.getInstance().getPluginLoader().shutDown();
         
     }
     

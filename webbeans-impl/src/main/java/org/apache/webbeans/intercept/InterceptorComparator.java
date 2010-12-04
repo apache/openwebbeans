@@ -22,6 +22,7 @@ import java.util.Comparator;
 
 import javax.enterprise.inject.spi.Interceptor;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 
 public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
@@ -41,7 +42,7 @@ public class InterceptorComparator<T> implements Comparator<Interceptor<T>>
             Class<?> o1Clazz = src.getClazz();
             Class<?> o2Clazz = target.getClazz();
 
-            return InterceptorsManager.getInstance().compare(o1Clazz, o2Clazz);
+            return WebBeansContext.getInstance().getInterceptorsManager().compare(o1Clazz, o2Clazz);
 
         }
     }

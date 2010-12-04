@@ -38,18 +38,19 @@ public final class CreationalContextFactory<T>
     public CreationalContextFactory()
     {
     }
-    
+
     /**
      * Gets singleton instance.
-     * 
+     *
      * @return singleton factory per class loader per VM
      */
     @SuppressWarnings("unchecked")
+    @Deprecated
     public static CreationalContextFactory getInstance()
     {
         return WebBeansContext.getInstance().getCreationalContextFactory();
     }
-    
+
     /**
      * Returns a new creational context for given contextual.
      * 

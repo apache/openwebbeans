@@ -50,6 +50,7 @@ public class StereoTypeManager
      * Returns manager for this application.
      * @return singleton instance.
      */
+    @Deprecated
     public static StereoTypeManager getInstance()
     {
         return WebBeansContext.getInstance().getStereoTypeManager();

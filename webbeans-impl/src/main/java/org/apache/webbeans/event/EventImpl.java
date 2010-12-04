@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.enterprise.event.Event;
 import javax.enterprise.util.TypeLiteral;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
@@ -65,7 +66,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     {
         this.injectedBindings = injectedBindings;
         this.eventType = eventType;
-        this.manager = BeanManagerImpl.getManager();
+        this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
     }
 
     /**
@@ -164,7 +165,7 @@ public class EventImpl<T> implements Event<T>, Serializable
         final ObjectInputStream inputStream = new OwbCustomObjectInputStream(in, WebBeansUtil.getCurrentClassLoader());
         this.eventType = (Type)inputStream.readObject();
         this.injectedBindings = (Annotation[])inputStream.readObject();
-        
-        this.manager = BeanManagerImpl.getManager();
+
+        this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
     }
 }

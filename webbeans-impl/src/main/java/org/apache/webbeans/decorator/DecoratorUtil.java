@@ -32,7 +32,7 @@ import javax.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -101,7 +101,7 @@ public final class DecoratorUtil
 
         if(decoratorList == null)
         {
-            decoratorList = BeanManagerImpl.getManager().resolveDecorators(bean.getTypes(), anns);   
+            decoratorList = WebBeansContext.getInstance().getBeanManagerImpl().resolveDecorators(bean.getTypes(), anns);
         }
         if (!decoratorList.isEmpty())
         {

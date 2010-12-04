@@ -21,6 +21,7 @@ package org.apache.webbeans.container;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
@@ -107,7 +108,7 @@ public class InjectionResolver
      */
     public static InjectionResolver getInstance()
     {
-        InjectionResolver instance = BeanManagerImpl.getManager().getInjectionResolver();
+        InjectionResolver instance = WebBeansContext.getInstance().getBeanManagerImpl().getInjectionResolver();
         
         return instance;
     }

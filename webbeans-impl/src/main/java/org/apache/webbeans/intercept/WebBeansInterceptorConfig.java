@@ -21,14 +21,13 @@ package org.apache.webbeans.intercept;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -114,9 +113,9 @@ public final class WebBeansInterceptorConfig
             checkAnns(anns, ann, delegate);
             interceptor.addInterceptorBinding(ann.annotationType(), ann);
         }
-                
 
-        BeanManagerImpl.getManager().addInterceptor(interceptor);
+
+        WebBeansContext.getInstance().getBeanManagerImpl().addInterceptor(interceptor);
 
     }
     
@@ -300,8 +299,8 @@ public final class WebBeansInterceptorConfig
         {
             WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
             AnnotatedType<?> annotatedType = interceptor.getAnnotatedType();
-            
-            OpenWebBeansEjbLCAPlugin ejbPlugin = PluginLoader.getInstance().getEjbLCAPlugin();
+
+            OpenWebBeansEjbLCAPlugin ejbPlugin = WebBeansContext.getInstance().getPluginLoader().getEjbLCAPlugin();
             Class <? extends Annotation> prePassivateClass = null;
             Class <? extends Annotation> postActivateClass = null;
             Class <? extends Annotation> aroundTimeoutClass = null;
@@ -410,8 +409,8 @@ public final class WebBeansInterceptorConfig
                     WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), AroundInvoke.class, true, true, stack, method, true);
                     WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PostConstruct.class, true, true, stack, method, true);
                     WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PreDestroy.class, true, true, stack, method, true);
-                    
-                    OpenWebBeansEjbLCAPlugin ejbPlugin = PluginLoader.getInstance().getEjbLCAPlugin();
+
+                    OpenWebBeansEjbLCAPlugin ejbPlugin = WebBeansContext.getInstance().getPluginLoader().getEjbLCAPlugin();
                     if (null != ejbPlugin)
                     {
                         WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), ejbPlugin.getPrePassivateClass(), true, true, stack, method, true);
@@ -512,7 +511,7 @@ public final class WebBeansInterceptorConfig
      */
     private static Set<Interceptor<?>> getWebBeansInterceptors()
     {
-        return Collections.unmodifiableSet(BeanManagerImpl.getManager().getInterceptors());
+        return Collections.unmodifiableSet(WebBeansContext.getInstance().getBeanManagerImpl().getInterceptors());
     }
 
     /*

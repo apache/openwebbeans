@@ -24,9 +24,9 @@ import java.lang.reflect.Modifier;
 import javax.enterprise.context.spi.CreationalContext;
 
 import javassist.util.proxy.ProxyObject;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.proxy.ResourceProxyHandler;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -57,8 +57,8 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
             {
                 return instance;
             }
-            
-            X proxyInstance = (X) JavassistProxyFactory.getInstance().getResourceBeanProxyClass(this).newInstance();
+
+            X proxyInstance = (X) WebBeansContext.getInstance().getJavassistProxyFactory().getResourceBeanProxyClass(this).newInstance();
             ((ProxyObject) proxyInstance).setHandler(new ResourceProxyHandler(this,instance));
             return proxyInstance;
         }

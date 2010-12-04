@@ -50,6 +50,7 @@ import org.apache.openejb.core.stateful.StatefulContainer;
 import org.apache.openejb.core.stateless.StatelessContainer;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.ejb.common.util.EjbDefinitionUtility;
 import org.apache.webbeans.ejb.common.util.EjbUtility;
@@ -59,7 +60,6 @@ import org.apache.webbeans.ejb.service.OpenEJBSecurityService;
 import org.apache.webbeans.ejb.service.OpenEJBTransactionService;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
@@ -379,7 +379,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         for (DeploymentInfo deployment : deployments)
         {
             boolean inTest = Boolean.valueOf(SecurityUtil.doPrivilegedGetSystemProperty("EjbPlugin.test", "false"));
-            classLoaderEquality = deployment.getBeanClass().getClassLoader().equals(WebBeansFinder.getSingletonClassLoader(PluginLoader.getInstance()));
+            classLoaderEquality = deployment.getBeanClass().getClassLoader().equals(WebBeansFinder.getSingletonClassLoader(WebBeansContext.getInstance().getPluginLoader()));
 
             // Yes, this EJB archive is deployed within this web
             // application

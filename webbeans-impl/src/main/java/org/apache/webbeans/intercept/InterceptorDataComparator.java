@@ -21,6 +21,7 @@ package org.apache.webbeans.intercept;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 
 public class InterceptorDataComparator implements Comparator<InterceptorData>, Serializable
@@ -63,7 +64,7 @@ public class InterceptorDataComparator implements Comparator<InterceptorData>, S
                 Class<?> o1Clazz = interceptorFirst.getClazz();
                 Class<?> o2Clazz = interceptorSecond.getClazz();
 
-                return InterceptorsManager.getInstance().compare(o1Clazz, o2Clazz);
+                return WebBeansContext.getInstance().getInterceptorsManager().compare(o1Clazz, o2Clazz);
             }
 
         }

@@ -45,6 +45,7 @@ import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.component.xml.XMLProducerBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.NotificationManager;
@@ -365,7 +366,7 @@ public final class XMLDefinitionUtil
             Class<? extends Annotation> temp = it.next();
             if (temp.equals(Specializes.class))
             {
-                XMLSpecializesManager.getInstance().addXMLSpecializeClass(temp);
+                WebBeansContext.getInstance().getxMLSpecializesManager().addXMLSpecializeClass(temp);
             }
         }
     }

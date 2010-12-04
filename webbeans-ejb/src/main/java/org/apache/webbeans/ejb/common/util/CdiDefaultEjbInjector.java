@@ -26,8 +26,8 @@ import java.util.concurrent.ConcurrentMap;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
@@ -53,7 +53,7 @@ public class CdiDefaultEjbInjector
     public CdiDefaultEjbInjector()
     {
         super();
-        this.beanManager = BeanManagerImpl.getManager();
+        this.beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
     }
     
     /**
@@ -139,7 +139,7 @@ public class CdiDefaultEjbInjector
     {
         if(!(ctx instanceof CreationalContextImpl))
         {
-            ctx = CreationalContextFactory.getInstance().wrappedCreationalContext(ctx, bean);
+            ctx = WebBeansContext.getInstance().getCreationalContextFactory().wrappedCreationalContext(ctx, bean);
         }
         
         Object oldInstanceUnderInjection = AbstractInjectable.instanceUnderInjection.get();

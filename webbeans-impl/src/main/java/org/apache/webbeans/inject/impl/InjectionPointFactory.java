@@ -42,9 +42,9 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
 
 import org.apache.webbeans.annotation.NamedLiteral;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.xml.XMLInjectionModelType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
-import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 
@@ -103,9 +103,9 @@ public class InjectionPointFactory
         
         if(!checkFieldApplicable(annots))
         {
-            AnnotatedType<?> annotated = AnnotatedElementFactory.getInstance().newAnnotatedType(member.getDeclaringClass());
-            return getGenericInjectionPoint(owner, annots, member.getGenericType(), member, 
-                    AnnotatedElementFactory.getInstance().newAnnotatedField(member, annotated));   
+            AnnotatedType<?> annotated = WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(member.getDeclaringClass());
+            return getGenericInjectionPoint(owner, annots, member.getGenericType(), member,
+                    WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedField(member, annotated));
         }        
         else
         {
@@ -207,9 +207,9 @@ public class InjectionPointFactory
         Asserts.assertNotNull(member, "member parameter can not be null");
 
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
-        
-        AnnotatedType<?> annotated = AnnotatedElementFactory.getInstance().newAnnotatedType(member.getDeclaringClass());
-        AnnotatedMethod method = AnnotatedElementFactory.getInstance().newAnnotatedMethod(member, annotated);
+
+        AnnotatedType<?> annotated = WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(member.getDeclaringClass());
+        AnnotatedMethod method = WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedMethod(member, annotated);
         List<AnnotatedParameter<?>> parameters = method.getParameters();
         
         InjectionPoint point = null;
@@ -313,8 +313,8 @@ public class InjectionPointFactory
 
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
 
-        AnnotatedType<Object> annotated = (AnnotatedType<Object>)AnnotatedElementFactory.getInstance().newAnnotatedType(member.getDeclaringClass());
-        AnnotatedConstructor constructor = AnnotatedElementFactory.getInstance().newAnnotatedConstructor((Constructor<Object>)member,annotated);
+        AnnotatedType<Object> annotated = (AnnotatedType<Object>) WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(member.getDeclaringClass());
+        AnnotatedConstructor constructor = WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedConstructor((Constructor<Object>)member,annotated);
         List<AnnotatedParameter<?>> parameters = constructor.getParameters();
         
         InjectionPoint point = null;

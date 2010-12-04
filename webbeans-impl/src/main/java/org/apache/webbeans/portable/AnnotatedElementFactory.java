@@ -46,6 +46,7 @@ public final class AnnotatedElementFactory
     // Logger instance
     private final WebBeansLogger logger = WebBeansLogger.getLogger(AnnotatedElementFactory.class);
 
+    @Deprecated
     public static AnnotatedElementFactory getInstance()
     {
         return WebBeansContext.getInstance().getAnnotatedElementFactory();

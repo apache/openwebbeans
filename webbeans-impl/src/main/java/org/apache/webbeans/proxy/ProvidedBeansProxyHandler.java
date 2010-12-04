@@ -25,7 +25,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -42,7 +42,7 @@ public class ProvidedBeansProxyHandler implements MethodHandler
     @SuppressWarnings("unchecked")
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable
     {
-        BeanManager beanManager = BeanManagerImpl.getManager();
+        BeanManager beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
         
         Context context = beanManager.getContext(bean.getScope());
         

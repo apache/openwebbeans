@@ -22,7 +22,7 @@ import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
@@ -30,11 +30,9 @@ import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.OwbInterceptor;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
@@ -193,9 +191,9 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
             Set<Annotation> declared = null;
             Annotation[] anns = null;
 
-            if (XMLAnnotationTypeManager.getInstance().hasInterceptorBindingType(clazzAnnot))
+            if (WebBeansContext.getInstance().getxMLAnnotationTypeManager().hasInterceptorBindingType(clazzAnnot))
             {
-                declared = XMLAnnotationTypeManager.getInstance().getInterceptorBindingTypeInherites(clazzAnnot);
+                declared = WebBeansContext.getInstance().getxMLAnnotationTypeManager().getInterceptorBindingTypeInherites(clazzAnnot);
                 anns = new Annotation[declared.size()];
                 anns = declared.toArray(anns);
             }
@@ -285,9 +283,9 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
     @SuppressWarnings("unchecked")
     protected T createInstance(CreationalContext<T> creationalContext)
     {
-        Context context = BeanManagerImpl.getManager().getContext(getScope());
+        Context context = WebBeansContext.getInstance().getBeanManagerImpl().getContext(getScope());
         Object actualInstance = context.get((Bean<Object>)this.delegateBean, (CreationalContext<Object>)creationalContext);
-        T proxy = (T)JavassistProxyFactory.getInstance().createDependentScopedBeanProxy(this.delegateBean, actualInstance, creationalContext);
+        T proxy = (T) WebBeansContext.getInstance().getJavassistProxyFactory().createDependentScopedBeanProxy(this.delegateBean, actualInstance, creationalContext);
         
         return proxy;
     }

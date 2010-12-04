@@ -43,6 +43,8 @@ import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.ObserverMethod;
 
+import org.apache.webbeans.config.WebBeansContext;
+
 /**
  * <p>This implementation of the {@link BeanManager} will get used
  * for whenever a BeanManager gets injected into a bean:
@@ -62,7 +64,7 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     
     public InjectableBeanManager()
     {
-        this.bm = BeanManagerImpl.getManager();
+        this.bm = WebBeansContext.getInstance().getBeanManagerImpl();
     }
     
     @Override
@@ -224,7 +226,7 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {
-        this.bm = BeanManagerImpl.getManager();
+        this.bm = WebBeansContext.getInstance().getBeanManagerImpl();
     }
 
     @Override

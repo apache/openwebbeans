@@ -64,7 +64,6 @@ import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.decorator.DecoratorComparator;
@@ -78,11 +77,9 @@ import org.apache.webbeans.intercept.InterceptorComparator;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.events.discovery.ErrorStack;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
@@ -250,15 +247,15 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     /**
      * Gets current activity.
-     * 
+     *
      * @return the current activity
      */
+    @Deprecated
     public static BeanManagerImpl getManager()
     {
         return WebBeansContext.getInstance().getBeanManagerImpl();
     }
 
-    
     /**
      * Sets the xml configurator instance.
      * 
@@ -682,7 +679,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             contextual = ((SerializableBean)contextual).getBean();
         }
 
-        return CreationalContextFactory.getInstance().getCreationalContext(contextual);
+        return WebBeansContext.getInstance().getCreationalContextFactory().getCreationalContext(contextual);
     }
 
     /**
@@ -846,7 +843,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         if(!(creationalContext instanceof CreationalContextImpl))
         {
-            creationalContext = CreationalContextFactory.getInstance().wrappedCreationalContext(creationalContext, bean);
+            creationalContext = WebBeansContext.getInstance().getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
         }        
         
                 
@@ -865,7 +862,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             if (instance == null)
             {
                 //Create Managed Bean Proxy
-                instance = JavassistProxyFactory.getInstance().createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
+                instance = WebBeansContext.getInstance().getJavassistProxyFactory().createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
 
                 //Cached instance
                 cacheProxies.put(bean, instance);
@@ -906,8 +903,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                     return this.cacheProxies.get(bean);
                 }
             }
-            
-            OpenWebBeansEjbPlugin ejbPlugin = PluginLoader.getInstance().getEjbPlugin();
+
+            OpenWebBeansEjbPlugin ejbPlugin = WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
             if(ejbPlugin == null)
             {
                 throw new IllegalStateException("There is no EJB plugin provider. Injection is failed for bean : " + bean);
@@ -919,7 +916,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Create JMS Proxy
         else if(bean instanceof JmsBeanMarker)
         {
-            OpenWebBeansJmsPlugin jmsPlugin = PluginLoader.getInstance().getJmsPlugin();
+            OpenWebBeansJmsPlugin jmsPlugin = WebBeansContext.getInstance().getPluginLoader().getJmsPlugin();
             if(jmsPlugin == null)
             {
                 throw new IllegalStateException("There is no JMS plugin provider. Injection is failed for bean : " + bean);

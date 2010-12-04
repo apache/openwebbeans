@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.Contextual;
 
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -69,7 +68,7 @@ public class ConversationContext extends AbstractContext implements Externalizab
             String id = (String)it.next();
             if (id != null)
             {
-                contextual = (Contextual<?>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
+                contextual = (Contextual<?>) org.apache.webbeans.config.WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
             }
             if (contextual != null) 
             {

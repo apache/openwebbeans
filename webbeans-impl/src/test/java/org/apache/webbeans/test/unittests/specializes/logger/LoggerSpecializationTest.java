@@ -24,8 +24,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.plugins.PluginLoader;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.specializes.logger.ISomeLogger;
 import org.apache.webbeans.test.component.specializes.logger.MockNotSpecializedLogger;
@@ -48,8 +47,8 @@ public class LoggerSpecializationTest extends TestContext
     public void testNotSpecializedVersion()
     {
         clear();
-        
-        PluginLoader.getInstance().startUp();
+
+        WebBeansContext.getInstance().getPluginLoader().startUp();
         
         InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/specializes/alternatives.xml");
         Assert.assertNotNull(stream);
@@ -75,17 +74,17 @@ public class LoggerSpecializationTest extends TestContext
         SystemLogger sysLogger = (SystemLogger)logger;
         
         Assert.assertEquals("Hello World", sysLogger.getMessage());
-        
-        PluginLoader.getInstance().shutDown();
-        AlternativesManager.getInstance().clear();
+
+        WebBeansContext.getInstance().getPluginLoader().shutDown();
+        WebBeansContext.getInstance().getAlternativesManager().clear();
     }
     
     @Test
     public void testSpecializedVersion()
     {
         clear();
-        
-        PluginLoader.getInstance().startUp();
+
+        WebBeansContext.getInstance().getPluginLoader().startUp();
         
         InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/specializes/alternatives.xml");
         Assert.assertNotNull(stream);
@@ -115,7 +114,7 @@ public class LoggerSpecializationTest extends TestContext
         MockSpecializedLogger sysLogger = (MockSpecializedLogger)logger;
         
         Assert.assertEquals("Hello World", sysLogger.getMessage());
-        
-        PluginLoader.getInstance().shutDown();
+
+        WebBeansContext.getInstance().getPluginLoader().shutDown();
     }
 }

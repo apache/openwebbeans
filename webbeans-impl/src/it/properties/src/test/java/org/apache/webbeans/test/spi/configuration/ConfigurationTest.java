@@ -21,6 +21,7 @@ package org.apache.webbeans.test.spi.configuration;
 import junit.framework.Assert;
 
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.WebBeansContext;
 import org.junit.Test;
 
 public class ConfigurationTest
@@ -28,7 +29,7 @@ public class ConfigurationTest
     @Test
     public void testConfigurationParser() 
     {
-        OpenWebBeansConfiguration cfg = OpenWebBeansConfiguration.getInstance();
+        OpenWebBeansConfiguration cfg = WebBeansContext.getInstance().getOpenWebBeansConfiguration();
         
         // not overloaded
         String ts = cfg.getProperty("org.apache.webbeans.spi.TransactionService");

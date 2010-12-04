@@ -21,7 +21,7 @@ package org.apache.webbeans.web.lifecycle;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
-import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
@@ -92,7 +92,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
      */
     protected void afterStartApplication(Object startupObject) throws Exception
     {
-        String strDelay = OpenWebBeansConfiguration.getInstance().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
+        String strDelay = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
         long delay = Long.parseLong(strDelay);
 
         service = Executors.newScheduledThreadPool(1);
@@ -101,7 +101,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
         ELResolver resolver = elAdaptor.getOwbELResolver();
         //Application is configured as JSP
-        if(OpenWebBeansConfiguration.getInstance().isJspApplication())
+        if(WebBeansContext.getInstance().getOpenWebBeansConfiguration().isJspApplication())
         {
             logger.debug("Application is configured as JSP. Adding EL Resolver.");
             
@@ -222,7 +222,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
 
         public void run()
         {
-            ConversationManager.getInstance().destroyWithRespectToTimout();
+            WebBeansContext.getInstance().getConversationManager().destroyWithRespectToTimout();
 
         }
     }

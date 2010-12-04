@@ -22,8 +22,7 @@ import java.io.InputStream;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.decorator.DecoratorsManager;
-import org.apache.webbeans.intercept.InterceptorsManager;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.test.xml.strict.DummyDecorator;
@@ -46,8 +45,8 @@ public class XMLSpecStrictTest extends TestContext
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
         configurator.configureSpecSpecific(stream, "decorators.xml");
-        
-        boolean enable = DecoratorsManager.getInstance().isDecoratorEnabled(DummyDecorator.class);
+
+        boolean enable = WebBeansContext.getInstance().getDecoratorsManager().isDecoratorEnabled(DummyDecorator.class);
         Assert.assertTrue(enable);
     }
     
@@ -59,8 +58,8 @@ public class XMLSpecStrictTest extends TestContext
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
         configurator.configureSpecSpecific(stream, "interceptors.xml");
-        
-        boolean enable = InterceptorsManager.getInstance().isInterceptorEnabled(DummyInterceptor.class);
+
+        boolean enable = WebBeansContext.getInstance().getInterceptorsManager().isInterceptorEnabled(DummyInterceptor.class);
         Assert.assertTrue(enable);
     }
     

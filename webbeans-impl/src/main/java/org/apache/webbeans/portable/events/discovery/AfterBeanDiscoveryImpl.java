@@ -31,12 +31,12 @@ import javax.enterprise.inject.spi.ProcessObserverMethod;
 
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.intercept.custom.CustomInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -56,7 +56,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     
     public AfterBeanDiscoveryImpl()
     {
-        this.beanManager = BeanManagerImpl.getManager();
+        this.beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
     }
     
     /**
@@ -66,7 +66,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @SuppressWarnings("unchecked")
     public void addBean(Bean<?> bean)
     {
-        AnnotatedType<?> annotatedType = AnnotatedElementFactory.getInstance().newAnnotatedType(bean.getBeanClass());
+        AnnotatedType<?> annotatedType = WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(bean.getBeanClass());
         
         //Fire Event
         ProcessBean<?> processBeanEvent = new GProcessBean(bean,annotatedType);
@@ -103,7 +103,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             }
             
             this.beanManager.addInterceptor(interceptor);
-            BeanManagerImpl.getManager().addCustomInterceptorClass(bean.getBeanClass());
+            WebBeansContext.getInstance().getBeanManagerImpl().addCustomInterceptorClass(bean.getBeanClass());
         }
         
         else if(bean instanceof Decorator)
@@ -136,7 +136,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             
             
             this.beanManager.addDecorator(new WebBeansDecorator(managedBean, (Decorator)bean));
-            BeanManagerImpl.getManager().addCustomDecoratorClass(bean.getBeanClass());            
+            WebBeansContext.getInstance().getBeanManagerImpl().addCustomDecoratorClass(bean.getBeanClass());
         }
         else
         {

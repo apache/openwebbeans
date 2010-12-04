@@ -26,7 +26,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.FailOverService;
     
@@ -114,7 +114,7 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
             ClassNotFoundException 
     {
         String id = (String)in.readObject();
-        bean = (ResourceBean)BeanManagerImpl.getManager().getPassivationCapableBean(id);
+        bean = (ResourceBean) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
         
         // try fail over service to serialize the resource object
         FailOverService failoverService = (FailOverService)

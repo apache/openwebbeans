@@ -29,10 +29,10 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
-import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.junit.Assert;
 
 
@@ -53,7 +53,7 @@ public abstract class AbstractUnitTest
         
         for (Extension ext : extensions)
         {
-            ExtensionLoader.getInstance().addExtension(ext);
+            WebBeansContext.getInstance().getExtensionLoader().addExtension(ext);
         }
         
         //Deploy bean classes
@@ -78,7 +78,7 @@ public abstract class AbstractUnitTest
         
         for (Extension ext : extensions)
         {
-            ExtensionLoader.getInstance().addExtension(ext);
+            WebBeansContext.getInstance().getExtensionLoader().addExtension(ext);
         }
         
         //Deploy bean classes

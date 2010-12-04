@@ -21,8 +21,8 @@ package org.apache.webbeans.component;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.spi.CreationalContext;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationImpl;
-import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.ConversationService;
 
@@ -60,7 +60,7 @@ public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
         if (conversationId != null)
         {
             //Gets propogated conversation
-            conversation = ConversationManager.getInstance().getPropogatedConversation(conversationId,sessionId);
+            conversation = WebBeansContext.getInstance().getConversationManager().getPropogatedConversation(conversationId,sessionId);
         }
         
         if (conversation == null)

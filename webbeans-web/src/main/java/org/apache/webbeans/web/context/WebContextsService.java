@@ -19,7 +19,7 @@
 package org.apache.webbeans.web.context;
 
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContextsService;
 import org.apache.webbeans.context.ApplicationContext;
 import org.apache.webbeans.context.ConversationContext;
@@ -86,8 +86,8 @@ public class WebContextsService extends AbstractContextsService
     private final SessionContextManager sessionCtxManager = SessionContextManager.getInstance();
 
     /**Conversation context manager*/
-    private final ConversationManager conversationManager = ConversationManager.getInstance();
-    
+    private final ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
+
     private boolean supportsConversation = false;
     
     protected FailOverService failoverService = null;
@@ -124,7 +124,7 @@ public class WebContextsService extends AbstractContextsService
      */
     public WebContextsService()
     {
-        supportsConversation =  OpenWebBeansConfiguration.getInstance().supportsConversation();
+        supportsConversation =  WebBeansContext.getInstance().getOpenWebBeansConfiguration().supportsConversation();
         failoverService = (FailOverService) ServiceLoader.getService(FailOverService.class);
 
     }

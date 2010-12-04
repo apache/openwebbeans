@@ -26,7 +26,7 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 
@@ -41,7 +41,7 @@ public class Jsf2ScopesExtension implements Extension
     
     public void addViewScoped(@Observes BeforeBeanDiscovery beforeBeanDiscovery)
     {
-        if(OpenWebBeansConfiguration.getInstance().isUseJSF2Extensions())
+        if(WebBeansContext.getInstance().getOpenWebBeansConfiguration().isUseJSF2Extensions())
         {
             @SuppressWarnings("unchecked")
             Class<? extends Annotation> clazz = (Class<? extends Annotation>)ClassUtil.getClassFromName("javax.faces.bean.ViewScoped");
@@ -51,7 +51,7 @@ public class Jsf2ScopesExtension implements Extension
     
     public void registerViewContext(@Observes AfterBeanDiscovery afterBeanDiscovery)
     {
-        if(OpenWebBeansConfiguration.getInstance().isUseJSF2Extensions())
+        if(WebBeansContext.getInstance().getOpenWebBeansConfiguration().isUseJSF2Extensions())
         {
             try
             {

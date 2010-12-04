@@ -30,6 +30,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationManager;
 
 public class WebBeansJSFFilter implements Filter
@@ -65,7 +66,7 @@ public class WebBeansJSFFilter implements Filter
                 
                 if(!ok)
                 {
-                    ConversationManager conversationManager = ConversationManager.getInstance();
+                    ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
                     Conversation conversation = conversationManager.getConversationBeanReference();
                     if (conversation != null && !conversation.isTransient())
                     {

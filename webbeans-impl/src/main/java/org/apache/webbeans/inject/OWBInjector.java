@@ -42,6 +42,7 @@ import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.InstanceBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -100,7 +101,7 @@ public final class OWBInjector implements Serializable
     @SuppressWarnings("unchecked")
     public  OWBInjector inject(Object javaEeComponentInstance, CreationalContext<?> creationalContext) throws Exception
     {
-        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
+        BeanManagerImpl beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
         try
         {
             this.javaEEInstance = javaEeComponentInstance;
@@ -166,7 +167,7 @@ public final class OWBInjector implements Serializable
     @SuppressWarnings("unchecked")
     public void destroy()
     {
-        BeanManagerImpl beanManager = BeanManagerImpl.getManager();
+        BeanManagerImpl beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
         
         //Look for custom InjectionTarget
         InjectionTargetWrapper<Object> wrapper = beanManager.getInjectionTargetWrapper((Class<Object>)javaEEInstance.getClass());

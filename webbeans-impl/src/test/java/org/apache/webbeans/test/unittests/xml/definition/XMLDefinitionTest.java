@@ -22,9 +22,8 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.xml.definition.Definition1;
 import org.apache.webbeans.test.xml.definition.Definition2;
@@ -48,13 +47,13 @@ public class XMLDefinitionTest extends TestContext
         initDependentContext();
 
         // initialize the plugin. There are no plugins, but we should not get any NPEs
-        PluginLoader.getInstance().startUp();
+        WebBeansContext.getInstance().getPluginLoader().startUp();
     }
 
     @After
     public void shutDown()
     {
-        PluginLoader.getInstance().shutDown();
+        WebBeansContext.getInstance().getPluginLoader().shutDown();
     }
     
     @Test
@@ -66,7 +65,7 @@ public class XMLDefinitionTest extends TestContext
 
         Assert.assertEquals("definition1", compDef.getName());
 
-        Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
+        Object instance = compDef.create(WebBeansContext.getInstance().getCreationalContextFactory().getCreationalContext(compDef));
 
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof Definition1);
@@ -79,7 +78,7 @@ public class XMLDefinitionTest extends TestContext
 
         XMLManagedBean<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/definition2.xml");
 
-        Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
+        Object instance = compDef.create(WebBeansContext.getInstance().getCreationalContextFactory().getCreationalContext(compDef));
 
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof Definition2);
@@ -123,7 +122,7 @@ public class XMLDefinitionTest extends TestContext
         // an unnamed bean must not have a name
         Assert.assertNull(compDef.getName());
 
-        Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
+        Object instance = compDef.create(WebBeansContext.getInstance().getCreationalContextFactory().getCreationalContext(compDef));
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanUnnamed);
     }
@@ -154,7 +153,7 @@ public class XMLDefinitionTest extends TestContext
 
         AbstractOwbBean<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml", TstBeanConstructor.class);
 
-        Object instance = compDef.create(CreationalContextFactory.getInstance().getCreationalContext(compDef));
+        Object instance = compDef.create(WebBeansContext.getInstance().getCreationalContextFactory().getCreationalContext(compDef));
         Assert.assertNotNull(instance);
         Assert.assertTrue(instance instanceof TstBeanConstructor);
 

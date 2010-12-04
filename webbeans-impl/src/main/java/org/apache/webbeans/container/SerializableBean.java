@@ -19,6 +19,7 @@
 package org.apache.webbeans.container;
 
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.inject.DeploymentException;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -158,7 +159,7 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
     throws IOException, ClassNotFoundException
     {
         String id = (String) s.readObject();
-        Bean<T> b = (Bean<T>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
+        Bean<T> b = (Bean<T>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
         if (b == null)
         {
             throw new DeploymentException("cannot deserialize Bean with PassivationCapable id=" + id);

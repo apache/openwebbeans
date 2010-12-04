@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.test.TestContext;
@@ -51,8 +52,8 @@ public class AlternativesTest extends TestContext
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
         configurator.configureSpecSpecific(stream, "alternatives_correct.xml");
-        
-        AlternativesManager manager = AlternativesManager.getInstance();
+
+        AlternativesManager manager = WebBeansContext.getInstance().getAlternativesManager();
         
         Assert.assertTrue(manager.isBeanHasAlternative(alternative1));
         Assert.assertTrue(manager.isBeanHasAlternative(alternative2));

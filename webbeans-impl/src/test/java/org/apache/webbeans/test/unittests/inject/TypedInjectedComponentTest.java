@@ -25,7 +25,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.service.ITyped2;
@@ -48,7 +48,7 @@ public class TypedInjectedComponentTest extends TestContext
     public void init()
     {
         super.init();
-        this.container = BeanManagerImpl.getManager();
+        this.container = WebBeansContext.getInstance().getBeanManagerImpl();
     }
 
     @Test

@@ -36,13 +36,13 @@ import javassist.util.proxy.ProxyObject;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DelegateHandler;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -207,12 +207,12 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                     List<Object> decorators = null;
                     if (injectionTarget.getDecoratorStack().size() > 0)
                     {
-                        Class<?> proxyClass = JavassistProxyFactory.getInstance().getInterceptorProxyClasses().get(bean);
+                        Class<?> proxyClass = WebBeansContext.getInstance().getJavassistProxyFactory().getInterceptorProxyClasses().get(bean);
                         if (proxyClass == null)
                         {
-                            ProxyFactory delegateFactory = JavassistProxyFactory.getInstance().createProxyFactory(bean);
-                            proxyClass = JavassistProxyFactory.getInstance().getProxyClass(delegateFactory);
-                            JavassistProxyFactory.getInstance().getInterceptorProxyClasses().put(bean, proxyClass);
+                            ProxyFactory delegateFactory = WebBeansContext.getInstance().getJavassistProxyFactory().createProxyFactory(bean);
+                            proxyClass = WebBeansContext.getInstance().getJavassistProxyFactory().getProxyClass(delegateFactory);
+                            WebBeansContext.getInstance().getJavassistProxyFactory().getInterceptorProxyClasses().put(bean, proxyClass);
                         }
                         Object delegate = proxyClass.newInstance();
                         delegateHandler = new DelegateHandler(this.bean);
@@ -328,7 +328,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
      */
     protected BeanManagerImpl getBeanManager()
     {
-        return BeanManagerImpl.getManager();
+        return WebBeansContext.getInstance().getBeanManagerImpl();
     }
                 
     /**
@@ -366,7 +366,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             String passivationId = (String) s.readObject();
             if (passivationId != null)
             {
-                this.bean = (OwbBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(passivationId);
+                this.bean = (OwbBean<?>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(passivationId);
             }
         }
         else

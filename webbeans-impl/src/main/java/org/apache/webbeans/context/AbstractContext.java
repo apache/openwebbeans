@@ -361,7 +361,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
         // we need to repack the Contextual<T> from the componentInstanceMap into Serializable ones
         if (componentInstanceMap != null)
         {
-            SerializableBeanVault sbv = SerializableBeanVault.getInstance();
+            SerializableBeanVault sbv = org.apache.webbeans.config.WebBeansContext.getInstance().getSerializableBeanVault();
 
             Map<Contextual<?>, BeanInstanceBag<?>> serializableInstanceMap =
                     new HashMap<Contextual<?>, BeanInstanceBag<?>>();

@@ -35,9 +35,9 @@ import javax.xml.ws.WebServiceRef;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.persistence.JtaEntityManager;
 import org.apache.openejb.persistence.JtaEntityManagerRegistry;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.spi.api.ResourceReference;
 
 
@@ -108,7 +108,7 @@ class ResourceInjectionProcessor
             }            
             else
             {
-                EjbPlugin plugin =(EjbPlugin) PluginLoader.getInstance().getEjbPlugin();
+                EjbPlugin plugin =(EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
                 return plugin.getEjbInstance(intf, resourceReference.getResourceType());                
             }
         }

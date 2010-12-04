@@ -22,7 +22,7 @@ import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ProcessBean;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 
 /**
  * Implementation of the {@link ProcessBean}.
@@ -51,7 +51,7 @@ public  class ProcessBeanImpl<X> implements ProcessBean<X>
     @Override
     public void addDefinitionError(Throwable t)
     {
-        BeanManagerImpl.getManager().getErrorStack().pushError(t);
+        WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
     }
 
     /**

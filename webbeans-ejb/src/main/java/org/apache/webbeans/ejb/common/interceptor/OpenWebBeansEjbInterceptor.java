@@ -49,7 +49,7 @@ import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -65,7 +65,6 @@ import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -167,7 +166,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         
         try
         {
-            if (OpenWebBeansConfiguration.getInstance().isUseEJBInterceptorActivation()) //default is true
+            if (WebBeansContext.getInstance().getOpenWebBeansConfiguration().isUseEJBInterceptorActivation()) //default is true
             {
                 int result = activateContexts(RequestScoped.class);
                 //Context activities
@@ -200,7 +199,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         }
         finally
         {
-            if (OpenWebBeansConfiguration.getInstance().isUseEJBInterceptorActivation()) 
+            if (WebBeansContext.getInstance().getOpenWebBeansConfiguration().isUseEJBInterceptorActivation())
             {
                 if(!requestAlreadyActive)
                 {
@@ -260,7 +259,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
 
         if (this.manager == null) 
         {
-            this.manager = BeanManagerImpl.getManager();
+            this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
         }
 
         BaseEjbBean<?> injectionTarget = threadLocal.get();
@@ -301,8 +300,8 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         }
         
         lifecycleCommon(context, InterceptorType.POST_CONSTRUCT);
-        
-        if (OpenWebBeansConfiguration.getInstance().isUseEJBInterceptorInjection())
+
+        if (WebBeansContext.getInstance().getOpenWebBeansConfiguration().isUseEJBInterceptorInjection())
         {
             Object instance = context.getTarget();
             this.injector = new OWBInjector();
@@ -498,12 +497,12 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             {
                 logger.debug("Obtaining a delegate");
             }
-            Class<?> proxyClass = JavassistProxyFactory.getInstance().getInterceptorProxyClasses().get(injectionTarget);
+            Class<?> proxyClass = WebBeansContext.getInstance().getJavassistProxyFactory().getInterceptorProxyClasses().get(injectionTarget);
             if (proxyClass == null)
             {
-                ProxyFactory delegateFactory = JavassistProxyFactory.getInstance().createProxyFactory(injectionTarget);
-                proxyClass = JavassistProxyFactory.getInstance().getProxyClass(delegateFactory);
-                JavassistProxyFactory.getInstance().getInterceptorProxyClasses().put(injectionTarget, proxyClass);
+                ProxyFactory delegateFactory = WebBeansContext.getInstance().getJavassistProxyFactory().createProxyFactory(injectionTarget);
+                proxyClass = WebBeansContext.getInstance().getJavassistProxyFactory().getProxyClass(delegateFactory);
+                WebBeansContext.getInstance().getJavassistProxyFactory().getInterceptorProxyClasses().put(injectionTarget, proxyClass);
             }
             Object delegate = proxyClass.newInstance();
             delegateHandler = new DelegateHandler(this.contextual, ejbContext);
@@ -678,7 +677,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         s.defaultReadObject();
 
         /* restore transient BeanManager */
-        this.manager = BeanManagerImpl.getManager();
+        this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
 
         if (logger.wblWillLogDebug())
         {

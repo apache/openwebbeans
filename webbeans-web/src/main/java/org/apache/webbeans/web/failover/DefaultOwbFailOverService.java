@@ -34,7 +34,7 @@ import javassist.util.proxy.ProxyObjectOutputStream;
 import javax.enterprise.inject.spi.Bean;
 import javax.servlet.http.HttpSession;
 
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -71,14 +71,14 @@ public class DefaultOwbFailOverService implements FailOverService
     public DefaultOwbFailOverService () 
     {
         String value;
-        value = OpenWebBeansConfiguration.getInstance().
+        value = WebBeansContext.getInstance().getOpenWebBeansConfiguration().
             getProperty(OWB_FAILOVER_IS_SUPPORT_FAILOVER);
         if (value != null && value.equalsIgnoreCase("true"))
         {
             isSupportFailOver = true;
         }
-        
-        value = OpenWebBeansConfiguration.getInstance().
+
+        value = WebBeansContext.getInstance().getOpenWebBeansConfiguration().
         getProperty(OWB_FAILOVER_IS_SUPPORT_PASSIVATE);
         if (value != null && value.equalsIgnoreCase("true"))
         {
@@ -87,7 +87,7 @@ public class DefaultOwbFailOverService implements FailOverService
         if (isSupportFailOver || isSupportPassivation)
         {
             WebBeansUtil.initProxyFactoryClassLoaderProvider();
-            value = OpenWebBeansConfiguration.getInstance().getProperty(OWB_FAILOVER_RESOURCSES_SERIALIZATION_HANDLER);
+            value = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(OWB_FAILOVER_RESOURCSES_SERIALIZATION_HANDLER);
             try 
             {
                 if (value != null) 

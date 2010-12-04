@@ -117,7 +117,7 @@ public final class ManagedBeanConfigurator
     @SuppressWarnings("unchecked")
     public static <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
     {
-        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
 
         checkManagedBeanCondition(clazz);
 

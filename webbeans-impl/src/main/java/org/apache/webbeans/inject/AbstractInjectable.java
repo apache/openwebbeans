@@ -36,7 +36,7 @@ import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.creational.DependentCreationalContext;
@@ -131,7 +131,7 @@ public abstract class AbstractInjectable implements Injectable
         }        
         
         //Gets injectable reference for injected bean
-        injected = BeanManagerImpl.getManager().getInjectableReference(injectionPoint, this.injectionOwnerCreationalContext);
+        injected = WebBeansContext.getInstance().getBeanManagerImpl().getInjectableReference(injectionPoint, this.injectionOwnerCreationalContext);
         
         if(dependentProducer)
         {

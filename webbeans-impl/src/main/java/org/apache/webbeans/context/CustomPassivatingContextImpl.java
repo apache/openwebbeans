@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.context;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.SerializableBeanVault;
 
 import javax.enterprise.context.spi.Context;
@@ -36,14 +37,14 @@ public class CustomPassivatingContextImpl extends CustomContextImpl
 
     public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
-        SerializableBeanVault sbv = SerializableBeanVault.getInstance();
+        SerializableBeanVault sbv = WebBeansContext.getInstance().getSerializableBeanVault();
         
         return super.get(sbv.getSerializableBean(contextual), creationalContext);
     }
 
     public <T> T get(Contextual<T> contextual)
     {
-        SerializableBeanVault sbv = SerializableBeanVault.getInstance();
+        SerializableBeanVault sbv = org.apache.webbeans.config.WebBeansContext.getInstance().getSerializableBeanVault();
         return super.get(sbv.getSerializableBean(contextual));
     }
 

@@ -43,12 +43,12 @@ import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -65,7 +65,7 @@ public final class InterceptorUtil
 
     private InterceptorUtil()
     {
-        ejbPlugin = PluginLoader.getInstance().getEjbLCAPlugin();
+        ejbPlugin = WebBeansContext.getInstance().getPluginLoader().getEjbLCAPlugin();
         if(ejbPlugin != null)
         {
             prePassivateClass  = ejbPlugin.getPrePassivateClass();

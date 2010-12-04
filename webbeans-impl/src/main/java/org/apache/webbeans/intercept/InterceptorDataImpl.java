@@ -28,6 +28,7 @@ import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.AroundInvoke;
 
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.creational.EjbInterceptorContext;
@@ -36,7 +37,6 @@ import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -117,7 +117,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public void setInterceptorMethod(Method m, Class<? extends Annotation> annotation)
     {
-        OpenWebBeansEjbLCAPlugin ejbPlugin = PluginLoader.getInstance().getEjbLCAPlugin();
+        OpenWebBeansEjbLCAPlugin ejbPlugin = WebBeansContext.getInstance().getPluginLoader().getEjbLCAPlugin();
         Class <? extends Annotation> prePassivateClass = null;
         Class <? extends Annotation> postActivateClass = null;
         Class <? extends Annotation> aroundTimeoutClass = null;
@@ -433,7 +433,7 @@ public class InterceptorDataImpl implements InterceptorData
             // There is no define interceptor, define and add it into dependent
             if (interceptor == null)
             {
-                BeanManagerImpl manager = BeanManagerImpl.getManager();
+                BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
 
                 WebBeansInterceptor<Object> actualInterceptor = (WebBeansInterceptor<Object>) this.webBeansInterceptor;
                 CreationalContext<Object> creationalContext = manager.createCreationalContext(actualInterceptor);

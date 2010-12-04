@@ -32,7 +32,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.TypeLiteral;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ResolutionUtil;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -97,7 +97,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         ResolutionUtil.checkResolvedBeans(beans, ClassUtil.getClazz(this.injectionClazz),anns);
 
         Bean<?> bean = beans.iterator().next();
-        instance = (T)BeanManagerImpl.getManager().getInstance(bean,null);
+        instance = (T) WebBeansContext.getInstance().getBeanManagerImpl().getInstance(bean,null);
 
         return instance;
     }
@@ -224,7 +224,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         Set<T> instances = new HashSet<T>();
         for(Bean<?> bean : beans)
         {
-            T instance = (T)BeanManagerImpl.getManager().getInstance(bean,null);
+            T instance = (T) WebBeansContext.getInstance().getBeanManagerImpl().getInstance(bean,null);
             instances.add(instance);
         }
         

@@ -41,12 +41,13 @@ public class JMSManager
     {
         this.jmsModels.clear();
     }
-    
+
+    @Deprecated
     public static JMSManager getInstance()
     {
         return WebBeansContext.getInstance().getjMSManager();
     }
-    
+
     public void addJmsModel(JMSModel model)
     {
         Asserts.assertNotNull(model,"model parameter can not be null");

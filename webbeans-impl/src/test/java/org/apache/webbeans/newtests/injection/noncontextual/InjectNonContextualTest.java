@@ -19,7 +19,7 @@
 package org.apache.webbeans.newtests.injection.noncontextual;
 
 import junit.framework.Assert;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public class InjectNonContextualTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public <T> void inject(T instance)
     {
-        BeanManager mgr = BeanManagerImpl.getManager();
+        BeanManager mgr = WebBeansContext.getInstance().getBeanManagerImpl();
         AnnotatedType<T> annotatedType = mgr.createAnnotatedType((Class<T>) instance.getClass());
         InjectionTarget<T> injectionTarget = mgr.createInjectionTarget(annotatedType);
         CreationalContext<T> context = mgr.createCreationalContext(null);

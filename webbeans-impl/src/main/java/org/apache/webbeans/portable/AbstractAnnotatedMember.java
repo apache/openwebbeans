@@ -30,6 +30,7 @@ import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -67,7 +68,7 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
         
         if(declaringType == null)
         {
-            this.declaringType = (AnnotatedType<X>)AnnotatedElementFactory.getInstance().newAnnotatedType(this.javaMember.getDeclaringClass());
+            this.declaringType = (AnnotatedType<X>) WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(this.javaMember.getDeclaringClass());
             
             AnnotatedTypeImpl<X> impl = (AnnotatedTypeImpl<X>)this.declaringType;
             

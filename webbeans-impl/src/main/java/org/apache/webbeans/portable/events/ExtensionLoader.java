@@ -60,14 +60,15 @@ public class ExtensionLoader
 
     /**
      * Returns singleton <code>ExtensionLoader</code> instance.
-     * 
+     *
      * @return singleton instance
      */
+    @Deprecated
     public static ExtensionLoader getInstance()
     {
         return WebBeansContext.getInstance().getExtensionLoader();
     }
-    
+
     /**
      * Load extension services.
      */

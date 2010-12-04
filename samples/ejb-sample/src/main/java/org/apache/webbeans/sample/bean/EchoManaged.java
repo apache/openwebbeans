@@ -28,6 +28,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.sample.ejb.Echo;
 import org.apache.webbeans.sample.injection.InjectionTargetBean;
@@ -59,7 +60,7 @@ public class EchoManaged
 
     public String echo()
     {
-        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
         Bean<?> b = manager.getBeans("injected").iterator().next();
         InjectionTargetBean bean = (InjectionTargetBean)manager.getReference(b, InjectionTargetBean.class, manager.createCreationalContext(b)); 
         

@@ -57,15 +57,16 @@ public class PluginLoader
     private List<OpenWebBeansPlugin> plugins = null;
 
     private AtomicBoolean started = new AtomicBoolean(false);
-    
+
     /**
-     * @return singleton PluginLoader 
+     * @return singleton PluginLoader
      */
+    @Deprecated
     public static PluginLoader getInstance()
     {
         return WebBeansContext.getInstance().getPluginLoader();
     }
-    
+
     public PluginLoader()
     {
     }    

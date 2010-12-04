@@ -31,7 +31,7 @@ import javax.enterprise.inject.spi.SessionBeanType;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -131,7 +131,7 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
             else // normal scope  
             { 
                 // The EjbBeanProxyHandler may not have actually obtained an EJB for this normal-scope Bean.
-                Context webbeansContext = BeanManagerImpl.getManager().getContext(this.getScope());
+                Context webbeansContext = WebBeansContext.getInstance().getBeanManagerImpl().getContext(this.getScope());
                 Object ejbInstance = webbeansContext.get(this);
                 if (ejbInstance != null)
                 {

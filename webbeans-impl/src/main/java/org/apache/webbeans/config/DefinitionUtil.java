@@ -63,7 +63,6 @@ import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.ExternalScope;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -316,7 +315,7 @@ public final class DefinitionUtil
     {
         boolean found = false;
 
-        List<ExternalScope> additionalScopes = BeanManagerImpl.getManager().getAdditionalScopes();
+        List<ExternalScope> additionalScopes = WebBeansContext.getInstance().getBeanManagerImpl().getAdditionalScopes();
         
         for (Annotation annotation : annotations)
         {   
@@ -860,7 +859,7 @@ public final class DefinitionUtil
                 //Check for public fields
                 if(ClassUtil.isPublic(field.getModifiers()) && !ClassUtil.isStatic(field.getModifiers()))
                 {
-                    if(BeanManagerImpl.getManager().isNormalScope(component.getScope()))
+                    if(WebBeansContext.getInstance().getBeanManagerImpl().isNormalScope(component.getScope()))
                     {
                         throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Scope. Bean is : "
                                                                  + component.toString());

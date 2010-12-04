@@ -29,7 +29,7 @@ import javax.enterprise.util.AnnotationLiteral;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.decorators.common.ConversationDecorator;
 import org.apache.webbeans.spi.ConversationService;
@@ -69,8 +69,8 @@ public class ConversationDecoratorTest extends AbstractUnitTest
         
         Bean<?> bean = getBeanManager().getBeans(Conversation.class , new AnnotationLiteral<Default>(){}).iterator().next();
         Object instance = getBeanManager().getReference(bean, Conversation.class, getBeanManager().createCreationalContext(bean));
-        
-        OpenWebBeansConfiguration.getInstance().setProperty("org.apache.webbeans.spi.ConversationService", DummyConversationService.class.getName());
+
+        WebBeansContext.getInstance().getOpenWebBeansConfiguration().setProperty("org.apache.webbeans.spi.ConversationService", DummyConversationService.class.getName());
 
         Assert.assertTrue(instance instanceof Conversation);
         Conversation conversation = (Conversation)instance;

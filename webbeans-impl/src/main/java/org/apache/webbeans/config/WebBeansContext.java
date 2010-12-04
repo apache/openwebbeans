@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
+import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.corespi.se.DefaultContextsService;
 import org.apache.webbeans.corespi.se.DefaultJndiService;
 import org.apache.webbeans.corespi.se.DefaultScannerService;
@@ -53,6 +54,7 @@ public class WebBeansContext
     private AlternativesManager alternativesManager = new AlternativesManager();
     private AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory();
     private BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
+    private ConversationManager conversationManager = new ConversationManager();
     private CreationalContextFactory creationalContextFactory = new CreationalContextFactory();
     private DecoratorsManager decoratorsManager = new DecoratorsManager(this);
     private DefaultContextsService defaultContextsService = new DefaultContextsService();
@@ -81,6 +83,7 @@ public class WebBeansContext
         managerMap.put(AlternativesManager.class.getName(), alternativesManager);
         managerMap.put(AnnotatedElementFactory.class.getName(), annotatedElementFactory);
         managerMap.put(BeanManagerImpl.class.getName(), beanManagerImpl);
+        managerMap.put(ConversationManager.class.getName(), conversationManager);
         managerMap.put(CreationalContextFactory.class.getName(), creationalContextFactory);
         managerMap.put(DecoratorsManager.class.getName(), decoratorsManager);
         managerMap.put(DefaultContextsService.class.getName(), defaultContextsService);
@@ -98,12 +101,18 @@ public class WebBeansContext
         managerMap.put(XMLAnnotationTypeManager.class.getName(), xmlAnnotationTypeManager);
         managerMap.put(XMLSpecializesManager.class.getName(), xmlSpecializesManager);
     }
-    
+
+    @Deprecated
     public static WebBeansContext getInstance() 
     {
         WebBeansContext webBeansContext = (WebBeansContext) WebBeansFinder.getSingletonInstance(WebBeansContext.class.getName());
         
         return webBeansContext;
+    }
+
+    public ConversationManager getConversationManager()
+    {
+        return conversationManager;
     }
 
     public OpenWebBeansConfiguration getOpenWebBeansConfiguration()
@@ -203,7 +212,7 @@ public class WebBeansContext
 
     public Object get(String singletonName)
     {
-//        Track.get(singletonName);
+//        util.Track.get(singletonName);
         Object object = managerMap.get(singletonName);
 
         /* No singleton for this application, create one */

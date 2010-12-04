@@ -20,10 +20,10 @@ package org.apache.webbeans.ejb.bean;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.ejb.EjbTestContext;
 import org.apache.webbeans.ejb.component.OpenEjbBean;
-import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -56,8 +56,8 @@ public class SimpleBeanTest extends EjbTestContext
         boolean value = plugin.isSessionBean(SimpleBean.class);
         
         Assert.assertTrue(value);
-        
-        GProcessAnnotatedType annotatedType = new GProcessAnnotatedType(AnnotatedElementFactory.getInstance().newAnnotatedType(SimpleBean.class));
+
+        GProcessAnnotatedType annotatedType = new GProcessAnnotatedType(WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(SimpleBean.class));
         
         OpenEjbBean<SimpleBean> bean = (OpenEjbBean<SimpleBean>)plugin.defineSessionBean(SimpleBean.class, annotatedType);
         Assert.assertNotNull(bean);

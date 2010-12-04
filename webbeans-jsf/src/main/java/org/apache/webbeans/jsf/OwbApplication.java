@@ -51,7 +51,7 @@ import javax.faces.event.SystemEvent;
 import javax.faces.event.SystemEventListener;
 import javax.faces.validator.Validator;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 
@@ -289,7 +289,7 @@ public class OwbApplication extends Application
         if(this.expressionFactory == null)
         {
             expressionFactory = wrappedApplication.getExpressionFactory();
-            expressionFactory = BeanManagerImpl.getManager().wrapExpressionFactory(expressionFactory);            
+            expressionFactory = WebBeansContext.getInstance().getBeanManagerImpl().wrapExpressionFactory(expressionFactory);
         }
         
         return expressionFactory;

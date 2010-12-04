@@ -26,6 +26,7 @@ import javax.faces.application.ViewHandler;
 import javax.faces.application.ViewHandlerWrapper;
 import javax.faces.context.FacesContext;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationManager;
 
 public class ConversationAwareViewHandler extends ViewHandlerWrapper
@@ -50,7 +51,7 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
         
         String url = delegate.getActionURL(context, viewId);
 
-        ConversationManager conversationManager = ConversationManager.getInstance();
+        ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
         Conversation conversation = conversationManager.getConversationBeanReference();
         if (conversation != null && !conversation.isTransient())
         {
@@ -84,7 +85,7 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
                 return url;
             }
         }
-        ConversationManager conversationManager = ConversationManager.getInstance();
+        ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
         Conversation conversation = conversationManager.getConversationBeanReference();
         if (conversation != null && !conversation.isTransient())
         {

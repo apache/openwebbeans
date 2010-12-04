@@ -56,7 +56,7 @@ import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.NonexistentConstructorException;
@@ -70,12 +70,10 @@ import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
 import org.apache.webbeans.inject.xml.XMLInjectionModelType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.intercept.InterceptorsManager;
-import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
-import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
@@ -110,14 +108,14 @@ public final class WebBeansXMLConfigurator
     /**
      * Annotation type manager that manages the XML defined annotations
      */
-    private XMLAnnotationTypeManager xmlAnnotTypeManager = XMLAnnotationTypeManager.getInstance();
+    private XMLAnnotationTypeManager xmlAnnotTypeManager = WebBeansContext.getInstance().getxMLAnnotationTypeManager();
 
     /**
      * Creates a new instance of the <code>WebBeansXMLConfigurator</code>
      */
     public WebBeansXMLConfigurator()
     {
-        String usage = OpenWebBeansConfiguration.getInstance().getProperty(OpenWebBeansConfiguration.USE_OWB_SPECIFIC_XML_CONFIGURATION);
+        String usage = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_OWB_SPECIFIC_XML_CONFIGURATION);
         this.owbSpecificConfiguration = Boolean.parseBoolean(usage);
     }
 
@@ -555,7 +553,7 @@ public final class WebBeansXMLConfigurator
      */
     private void configureInterceptorsElement(Element interceptorsElement, String fileName,ScannerService scanner)
     {
-        InterceptorsManager manager = InterceptorsManager.getInstance();
+        InterceptorsManager manager = WebBeansContext.getInstance().getInterceptorsManager();
         Node node;
         Element child;
         NodeList ns = interceptorsElement.getChildNodes();
@@ -614,7 +612,7 @@ public final class WebBeansXMLConfigurator
      */
     private void configureDecoratorsElement(Element decoratorsElement,String fileName,ScannerService scanner)
     {
-        DecoratorsManager manager = DecoratorsManager.getInstance();
+        DecoratorsManager manager = WebBeansContext.getInstance().getDecoratorsManager();
         Node node;
         Element child;
         NodeList ns = decoratorsElement.getChildNodes();
@@ -717,7 +715,7 @@ public final class WebBeansXMLConfigurator
         }
         else
         {
-            AlternativesManager manager = AlternativesManager.getInstance();
+            AlternativesManager manager = WebBeansContext.getInstance().getAlternativesManager();
             if (isStereoType)
             {
                 manager.addStereoTypeAlternative(clazz,fileName,scanner);
@@ -747,7 +745,7 @@ public final class WebBeansXMLConfigurator
         boolean ok = false;
 
         /* Enterprise WebBean */
-        OpenWebBeansEjbPlugin plugin = PluginLoader.getInstance().getEjbPlugin();
+        OpenWebBeansEjbPlugin plugin = WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
         if (plugin != null && plugin.isSessionBean(clazz))
         {
             // Configure for EJB
@@ -788,7 +786,7 @@ public final class WebBeansXMLConfigurator
         /* If interceptor, check this is enabled */
         if (XMLUtil.hasChildElementWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_ELEMENT))
         {
-            if (!InterceptorsManager.getInstance().isInterceptorEnabled(simpleClass))
+            if (!WebBeansContext.getInstance().getInterceptorsManager().isInterceptorEnabled(simpleClass))
             {
                 return null;
             }
@@ -797,7 +795,7 @@ public final class WebBeansXMLConfigurator
         /* If decorator, check this is enabled */
         if (XMLUtil.hasChildElementWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_DECORATOR_ELEMENT))
         {
-            if (!DecoratorsManager.getInstance().isDecoratorEnabled(simpleClass))
+            if (!WebBeansContext.getInstance().getDecoratorsManager().isDecoratorEnabled(simpleClass))
             {
                 return null;
             }
@@ -812,7 +810,7 @@ public final class WebBeansXMLConfigurator
         /* Configures child elements of this webbeans decleration element */
         configureWebBeanDeclerationChilds(component, webBeanDecleration);
 
-        BeanManagerImpl.getManager().addBean(component);
+        WebBeansContext.getInstance().getBeanManagerImpl().addBean(component);
 
         return component;
     }
@@ -1491,7 +1489,7 @@ public final class WebBeansXMLConfigurator
     private <T> void configureMethodProducesAnnotation(XMLManagedBean<T> component, Method producesMethod, Element annotChild)
     {
         XMLProducerBean<T> producer = XMLDefinitionUtil.defineXMLProducerMethod(this, component, producesMethod, annotChild, createConfigurationFailedMessage());
-        BeanManagerImpl.getManager().addBean(producer);
+        WebBeansContext.getInstance().getBeanManagerImpl().addBean(producer);
     }
 
     private <T> void configureMethodDisposesAnnotation(XMLManagedBean<T> component, Method disposalMethod, Element annotChild)
@@ -1799,7 +1797,7 @@ public final class WebBeansXMLConfigurator
 
 
         JMSModel model = new JMSModel(type, jndiName, mapName);
-        JMSManager.getInstance().addJmsModel(model);
+        WebBeansContext.getInstance().getjMSManager().addJmsModel(model);
 
         for (Annotation ann : bindingTypes)
         {
@@ -1807,8 +1805,8 @@ public final class WebBeansXMLConfigurator
         }
 
         //Adding JMS Beans
-        OpenWebBeansJmsPlugin plugin = PluginLoader.getInstance().getJmsPlugin();
-        BeanManagerImpl.getManager().addBean(plugin.getJmsBean(model));
+        OpenWebBeansJmsPlugin plugin = WebBeansContext.getInstance().getPluginLoader().getJmsPlugin();
+        WebBeansContext.getInstance().getBeanManagerImpl().addBean(plugin.getJmsBean(model));
     }
 
     /**

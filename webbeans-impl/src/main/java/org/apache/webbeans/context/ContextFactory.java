@@ -24,7 +24,6 @@ import javax.enterprise.context.*;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Singleton;
 
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -71,7 +70,7 @@ public final class ContextFactory
 
     public static Context getCustomContext(Context context)
     {
-        if (BeanManagerImpl.getManager().isPassivatingScope(context.getScope()))
+        if (org.apache.webbeans.config.WebBeansContext.getInstance().getBeanManagerImpl().isPassivatingScope(context.getScope()))
         {
             return new CustomPassivatingContextImpl(context);
         }

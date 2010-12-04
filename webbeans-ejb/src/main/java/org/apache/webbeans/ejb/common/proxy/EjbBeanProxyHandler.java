@@ -36,9 +36,8 @@ import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContext;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -139,7 +138,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
             OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean, getContextualCreationalContext());
 
             // Context of the bean
-            Context webbeansContext = BeanManagerImpl.getManager().getContext(this.ejbBean.getScope());
+            Context webbeansContext = WebBeansContext.getInstance().getBeanManagerImpl().getContext(this.ejbBean.getScope());
 
             // Don't go into a _dependent_ context on subsequent method calls in
             // this proxy!
@@ -245,7 +244,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         
         OwbBean<Object> contextual = (OwbBean<Object>)this.ejbBean;
         //Context of the bean
-        Context webbeansContext = BeanManagerImpl.getManager().getContext(this.ejbBean.getScope());
+        Context webbeansContext = WebBeansContext.getInstance().getBeanManagerImpl().getContext(this.ejbBean.getScope());
         if (webbeansContext instanceof AbstractContext)
         {
             AbstractContext owbContext = (AbstractContext)webbeansContext;
@@ -258,7 +257,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
             //contained in @ApplicationScopedBean
             if(creationalContext == null)
             {
-                creationalContext = CreationalContextFactory.getInstance().getCreationalContext(contextual);
+                creationalContext = WebBeansContext.getInstance().getCreationalContextFactory().getCreationalContext(contextual);
                 owbContext.initContextualBag((OwbBean<Object>)this.ejbBean, creationalContext);
             }            
         }
@@ -268,7 +267,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
     
     private void initiateBeanBag(OwbBean<Object> bean, CreationalContext<Object> creationalContext)
     {
-        Context webbeansContext =  BeanManagerImpl.getManager().getContext(bean.getScope());
+        Context webbeansContext =  WebBeansContext.getInstance().getBeanManagerImpl().getContext(bean.getScope());
         if (webbeansContext instanceof AbstractContext)
         {
             AbstractContext owbContext = (AbstractContext)webbeansContext;
@@ -316,7 +315,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         String passivationId = (String) s.readObject();
         if (passivationId != null)
         {
-            this.ejbBean = (BaseEjbBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(passivationId);
+            this.ejbBean = (BaseEjbBean<?>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(passivationId);
         }
         
         this.isDependent = s.readBoolean();
@@ -356,7 +355,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         String passivationId = (String) in.readObject();
         if (passivationId != null)
         {
-            this.ejbBean = (BaseEjbBean<?>)BeanManagerImpl.getManager().getPassivationCapableBean(passivationId);
+            this.ejbBean = (BaseEjbBean<?>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(passivationId);
         }
         
         this.isDependent = in.readBoolean();

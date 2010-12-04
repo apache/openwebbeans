@@ -38,7 +38,7 @@ import javax.interceptor.Interceptor;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.annotation.binding.Binding2;
@@ -61,7 +61,7 @@ public class PortableTests extends TestContext
     @Test
     public void testAnnotatedType()
     {
-        AnnotatedType<PortableType1> type = AnnotatedElementFactory.getInstance().newAnnotatedType(PortableType1.class);
+        AnnotatedType<PortableType1> type = WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(PortableType1.class);
         
         Set<Annotation> annotations = type.getAnnotations();
         Set<Class<? extends Annotation>> clazzesAnnots = new HashSet<Class<? extends Annotation>>();

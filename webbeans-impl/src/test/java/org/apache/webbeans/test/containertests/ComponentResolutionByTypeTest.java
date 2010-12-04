@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
@@ -58,7 +59,7 @@ public class ComponentResolutionByTypeTest extends TestContext
     @Before
     public void init()
     {
-        cont = BeanManagerImpl.getManager();
+        cont = WebBeansContext.getInstance().getBeanManagerImpl();
     }
 
 

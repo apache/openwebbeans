@@ -42,7 +42,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -208,7 +208,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
 
         Class<?> beanClass = (Class<?>)in.readObject();
         Set<Annotation> anns = new HashSet<Annotation>();
-        AnnotatedElementFactory annotatedElementFactory = AnnotatedElementFactory.getInstance();
+        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
 
         while(!in.readObject().equals(new Character('~')))   // read throw-away '-' or '~' terminal delimiter.
         {
@@ -217,7 +217,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         }
         
         //process annotations
-        this.ownerBean = BeanManagerImpl.getManager().getBeans(beanClass, anns.toArray(new Annotation[anns.size()])).iterator().next();
+        this.ownerBean = WebBeansContext.getInstance().getBeanManagerImpl().getBeans(beanClass, anns.toArray(new Annotation[anns.size()])).iterator().next();
         this.qualifierAnnotations = anns;
         
         // determine type of injection point member (0=field, 1=method, 2=constructor) and read...

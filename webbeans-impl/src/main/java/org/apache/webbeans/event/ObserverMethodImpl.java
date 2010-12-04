@@ -47,6 +47,7 @@ import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansException;
@@ -226,7 +227,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             }
             else
             {
-                BeanManagerImpl manager = BeanManagerImpl.getManager();
+                BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
                 specializedComponent = (AbstractOwbBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
                 Context context = null;
                 try
@@ -313,7 +314,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     protected List<ObserverParams> getMethodArguments(Object event)
     {
-        AnnotatedElementFactory annotatedElementFactory = AnnotatedElementFactory.getInstance();
+        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
 
         //Define annotated parameter
         AnnotatedType<T> annotatedType = (AnnotatedType<T>) annotatedElementFactory.newAnnotatedType(this.bean.getReturnType());
@@ -323,7 +324,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         Annotation[][] annots = this.observerMethod.getParameterAnnotations();
         List<ObserverParams> list = new ArrayList<ObserverParams>();
 
-        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
         ObserverParams param = null;
         if (types.length > 0)
         {
@@ -402,7 +403,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      */
     protected List<ObserverParams> getAnnotatedMethodArguments(Object event)
     {
-        BeanManagerImpl manager = BeanManagerImpl.getManager();
+        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
         List<ObserverParams> list = new ArrayList<ObserverParams>();
         List<AnnotatedParameter<T>> parameters = this.annotatedMethod.getParameters();
         ObserverParams param = null;

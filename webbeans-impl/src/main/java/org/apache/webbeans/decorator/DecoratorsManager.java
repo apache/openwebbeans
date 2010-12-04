@@ -40,6 +40,7 @@ public class DecoratorsManager
         manager = webBeansContext.getBeanManagerImpl();
     }
 
+    @Deprecated
     public static DecoratorsManager getInstance()
     {
         return WebBeansContext.getInstance().getDecoratorsManager();

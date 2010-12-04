@@ -39,6 +39,7 @@ public class InterceptorsManager
         manager = webBeansContext.getBeanManagerImpl();
     }
 
+    @Deprecated
     public static InterceptorsManager getInstance()
     {
         return WebBeansContext.getInstance().getInterceptorsManager();

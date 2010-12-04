@@ -26,7 +26,7 @@ import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
@@ -99,13 +99,13 @@ public class ConversationImpl implements Conversation, Serializable
             this.id = Integer.toString(conversationIdGenerator.incrementAndGet());
             
             //Conversation manager
-            ConversationManager manager = ConversationManager.getInstance();            
+            ConversationManager manager = WebBeansContext.getInstance().getConversationManager();
             try
             {
                 //Gets current converation context instance.
                 //Each conversation has its own conversation context instance.
                 //Sets at the beginning of each JSF request.
-                manager.addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));
+                manager.addConversationContext(this, (ConversationContext) WebBeansContext.getInstance().getBeanManagerImpl().getContext(ConversationScoped.class));
                 
             }
             catch(Exception e)
@@ -129,7 +129,9 @@ public class ConversationImpl implements Conversation, Serializable
     public void begin(String id)
     {   
         //Look at other conversation, that may collate with this is
-        if(ConversationManager.getInstance().isConversationExistWithGivenId(id))
+        final WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        final ConversationManager conversationManager = webBeansContext.getConversationManager();
+        if(conversationManager.isConversationExistWithGivenId(id))
         {
             throw new IllegalArgumentException("Conversation with id=" + id + " is already exist!");
         }
@@ -140,7 +142,7 @@ public class ConversationImpl implements Conversation, Serializable
             this.isTransient = false;
             this.id = id;
             this.updateTimeOut();
-            ConversationManager.getInstance().addConversationContext(this, (ConversationContext) BeanManagerImpl.getManager().getContext(ConversationScoped.class));            
+            conversationManager.addConversationContext(this, (ConversationContext) webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class));
         }
     }
     
@@ -153,8 +155,8 @@ public class ConversationImpl implements Conversation, Serializable
         if(!this.isTransient)
         {
             this.isTransient = true;
-            
-            ConversationManager.getInstance().removeConversation(this);            
+
+            WebBeansContext.getInstance().getConversationManager().removeConversation(this);
         }
         else
         {

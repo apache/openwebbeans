@@ -23,6 +23,8 @@ import java.util.Comparator;
 
 import javax.enterprise.inject.spi.Decorator;
 
+import org.apache.webbeans.config.WebBeansContext;
+
 public class DecoratorComparator<T> implements Comparator<Decorator<T>>, Serializable
 {
 
@@ -43,7 +45,7 @@ public class DecoratorComparator<T> implements Comparator<Decorator<T>>, Seriali
             Class<?> o1Clazz = src.getClazz();
             Class<?> o2Clazz = target.getClazz();
 
-            return DecoratorsManager.getInstance().compare(o1Clazz, o2Clazz);
+            return WebBeansContext.getInstance().getDecoratorsManager().compare(o1Clazz, o2Clazz);
 
         }
     }

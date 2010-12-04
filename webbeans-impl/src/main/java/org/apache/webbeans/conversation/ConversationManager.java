@@ -30,8 +30,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.util.Asserts;
 
@@ -59,10 +59,11 @@ public class ConversationManager
      * Gets conversation manager instance.
      * @return conversation manager
      */
+    @Deprecated
     public static ConversationManager getInstance()
     {
         ConversationManager manager = (ConversationManager) WebBeansFinder.getSingletonInstance(ConversationManager.class.getName());
-        
+
         return manager;
     }
 
@@ -209,7 +210,7 @@ public class ConversationManager
     @SuppressWarnings("unchecked")
     public Conversation getConversationBeanReference()
     {
-        BeanManager beanManager = BeanManagerImpl.getManager();
+        BeanManager beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
         Bean<Conversation> bean = (Bean<Conversation>)beanManager.getBeans(Conversation.class, new DefaultLiteral()).iterator().next();
         Conversation conversation =(Conversation) beanManager.getReference(bean, Conversation.class, beanManager.createCreationalContext(bean));
 

@@ -24,6 +24,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InjectionTarget;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Assert;
@@ -38,7 +39,7 @@ public class CustomTargetNoConstructorTest extends AbstractUnitTest
         try
         {
             startContainer(Collections.<Class<?>> emptyList());
-            final BeanManagerImpl manager = BeanManagerImpl.getManager();
+            final BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
             AnnotatedType<CustomTarget> annotatedType = manager.createAnnotatedType(CustomTarget.class);
             InjectionTarget<CustomTarget> injectionTarget = manager.createInjectionTarget(annotatedType);
             CreationalContext<CustomTarget> context = manager.createCreationalContext(null);
@@ -69,7 +70,7 @@ public class CustomTargetNoConstructorTest extends AbstractUnitTest
         try
         {
             startContainer(Collections.<Class<?>> emptyList());
-            manager = BeanManagerImpl.getManager();
+            manager = WebBeansContext.getInstance().getBeanManagerImpl();
             context = manager.createCreationalContext(null);
             AnnotatedType<CustomTarget> annotatedType = manager.createAnnotatedType(CustomTarget.class);
             InjectionTarget<CustomTarget> injectionTarget = manager.createInjectionTarget(annotatedType);

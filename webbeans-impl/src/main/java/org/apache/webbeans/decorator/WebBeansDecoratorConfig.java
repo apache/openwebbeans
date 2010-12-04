@@ -36,7 +36,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
@@ -83,14 +83,14 @@ public final class WebBeansDecoratorConfig
         
         logger.debug("Configuring decorator class : [{0}]", delegate.getReturnType());
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
-        BeanManagerImpl.getManager().addDecorator(decorator);
+        WebBeansContext.getInstance().getBeanManagerImpl().addDecorator(decorator);
     }
 
     public static <T> void configureXMLDecoratorClass(AbstractInjectionTargetBean<T> delegate, XMLInjectionPointModel model)
     {
         logger.debug("Configuring XML decorator class : [{0}]", delegate.getReturnType());
         WebBeansXMLDecorator<T> decorator = new WebBeansXMLDecorator<T>(delegate, model);
-        BeanManagerImpl.getManager().addDecorator(decorator);
+        WebBeansContext.getInstance().getBeanManagerImpl().addDecorator(decorator);
     }
 
     public static void configureDecarotors(AbstractInjectionTargetBean<?> component)
@@ -99,7 +99,7 @@ public final class WebBeansDecoratorConfig
         Annotation[] anns = new Annotation[qualifiers.size()];
         anns = qualifiers.toArray(anns);
 
-        List<Decorator<?>> decoratorList = BeanManagerImpl.getManager().resolveDecorators(component.getTypes(), anns);
+        List<Decorator<?>> decoratorList = WebBeansContext.getInstance().getBeanManagerImpl().resolveDecorators(component.getTypes(), anns);
         
         if(decoratorList != null && !decoratorList.isEmpty())
         {
@@ -149,7 +149,7 @@ public final class WebBeansDecoratorConfig
         List<Object> decoratorStack = new ArrayList<Object>();
         List<Decorator<?>> decoratorList = component.getDecoratorStack();        
         Iterator<Decorator<?>> itList = decoratorList.iterator();
-        BeanManager manager = BeanManagerImpl.getManager();
+        BeanManager manager = WebBeansContext.getInstance().getBeanManagerImpl();
         while (itList.hasNext())
         {
             Object decoratorInstance = null;
@@ -183,7 +183,7 @@ public final class WebBeansDecoratorConfig
 
     private static Set<Decorator<?>> getWebBeansDecorators()
     {
-        return Collections.unmodifiableSet(BeanManagerImpl.getManager().getDecorators());
+        return Collections.unmodifiableSet(WebBeansContext.getInstance().getBeanManagerImpl().getDecorators());
     }
 
     public static Set<Decorator<?>> findDeployedWebBeansDecorator(Set<Type> apiType, Annotation... anns)

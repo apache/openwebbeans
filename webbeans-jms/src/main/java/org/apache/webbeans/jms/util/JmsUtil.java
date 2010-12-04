@@ -40,13 +40,12 @@ import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansCreationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.component.JmsBean;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.util.Asserts;
 
@@ -139,7 +138,7 @@ public final class JmsUtil
     
     public static ConnectionFactory getConnectionFactory()
     {
-        String connectionFactoryJndiName = OpenWebBeansConfiguration.getInstance().getProperty(JNDIService.JMS_CONNECTION_FACTORY_JNDI_KEY);
+        String connectionFactoryJndiName = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(JNDIService.JMS_CONNECTION_FACTORY_JNDI_KEY);
         
         if(connectionFactoryJndiName == null || connectionFactoryJndiName.equals(""))
         {
@@ -180,7 +179,7 @@ public final class JmsUtil
             
             pf.setHandler(new JmsProxyHandler(jmsComponent,intf));
 
-            result = JavassistProxyFactory.getInstance().getProxyClass(pf).newInstance();
+            result = WebBeansContext.getInstance().getJavassistProxyFactory().getProxyClass(pf).newInstance();
 
         }
         catch (Exception e)

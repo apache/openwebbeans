@@ -19,10 +19,8 @@
 package org.apache.webbeans.ejb;
 
 import org.apache.openejb.OpenEJB;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.component.OpenEjbBean;
-import org.apache.webbeans.plugins.PluginLoader;
-import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
 
 public abstract class EjbTestContext
@@ -30,7 +28,7 @@ public abstract class EjbTestContext
     
     protected EjbTestContext(String name)
     {
-        BeanManagerImpl.getManager();
+        WebBeansContext.getInstance().getBeanManagerImpl();
     }
  
     
@@ -38,7 +36,7 @@ public abstract class EjbTestContext
     {
         try
         {
-            PluginLoader.getInstance().startUp();
+            WebBeansContext.getInstance().getPluginLoader().startUp();
             
             System.out.println("INIT EJB");
             
@@ -69,7 +67,7 @@ public abstract class EjbTestContext
     protected <T> OpenEjbBean<T> defineEjbBean(Class<T> ejbClass)
     {
         EjbPlugin plugin = new EjbPlugin();
-       return (OpenEjbBean<T>)plugin.defineSessionBean(ejbClass, 
-               new GProcessAnnotatedType(AnnotatedElementFactory.getInstance().newAnnotatedType(ejbClass)));
+        return (OpenEjbBean<T>)plugin.defineSessionBean(ejbClass,
+               new GProcessAnnotatedType(WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(ejbClass)));
     }
 }

@@ -34,6 +34,7 @@ public class XMLSpecializesManager
 
     }
 
+    @Deprecated
     public static XMLSpecializesManager getInstance()
     {
         return WebBeansContext.getInstance().getxMLSpecializesManager();

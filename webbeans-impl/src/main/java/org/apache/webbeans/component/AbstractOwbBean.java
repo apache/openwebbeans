@@ -34,11 +34,10 @@ import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -120,7 +119,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         this.webBeansType = webBeansType;
         this.returnType = returnType;
-        this.manager = BeanManagerImpl.getManager();
+        this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
     }
     
     /**
@@ -154,8 +153,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         try
         {  
             if(!(creationalContext instanceof CreationalContextImpl))
-            {                
-                creationalContext = CreationalContextFactory.getInstance().wrappedCreationalContext(
+            {
+                creationalContext = WebBeansContext.getInstance().getCreationalContextFactory().wrappedCreationalContext(
                         creationalContext, this); 
             }
            
@@ -589,7 +588,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */    
     public boolean isAlternative()
     {
-        return AlternativesManager.getInstance().isBeanHasAlternative(this);
+        return WebBeansContext.getInstance().getAlternativesManager().isBeanHasAlternative(this);
     }
     
     /**

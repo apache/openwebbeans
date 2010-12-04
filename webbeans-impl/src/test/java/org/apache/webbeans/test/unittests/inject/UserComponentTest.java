@@ -25,7 +25,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.ContainUserComponent;
@@ -45,7 +45,7 @@ public class UserComponentTest extends TestContext
     @Before
     public void init()
     {
-        this.container = BeanManagerImpl.getManager();
+        this.container = WebBeansContext.getInstance().getBeanManagerImpl();
         super.init();
     }
 

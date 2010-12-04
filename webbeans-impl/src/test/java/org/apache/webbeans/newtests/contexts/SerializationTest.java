@@ -19,8 +19,8 @@
 package org.apache.webbeans.newtests.contexts;
 
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.SerializableBean;
-import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.newtests.AbstractUnitTest;
@@ -124,7 +124,7 @@ public class SerializationTest extends AbstractUnitTest
             String id = null;
             if((id = WebBeansUtil.isPassivationCapable(bean)) != null)
             {
-                bean = (Bean<?>) SerializableBeanVault.getInstance().getSerializableBean(bean);
+                bean = (Bean<?>) WebBeansContext.getInstance().getSerializableBeanVault().getSerializableBean(bean);
                 
                 byte[] serial = serializeBean(bean);
                 Bean<?> b2 = deSerializeBean(serial);

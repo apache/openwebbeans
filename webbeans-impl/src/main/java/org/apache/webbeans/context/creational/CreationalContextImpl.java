@@ -28,7 +28,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.Interceptor;
 
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.DependentCreationalContext.DependentType;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -288,11 +288,12 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
         if(values != null)
         {
+            final CreationalContextFactory contextFactory = WebBeansContext.getInstance().getCreationalContextFactory();
             Iterator<?> iterator = values.iterator();        
             while(iterator.hasNext())
             {
                 DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)iterator.next();
-                dependent.getContextual().destroy((T)dependent.getInstance(), CreationalContextFactory.getInstance().getCreationalContext(dependent.getContextual()));
+                dependent.getContextual().destroy((T)dependent.getInstance(), contextFactory.getCreationalContext(dependent.getContextual()));
             }
 
             this.dependentObjects.remove(ownerInstance);                        
@@ -327,7 +328,8 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                     while(iterator.hasNext())
                     {
                         DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)iterator.next();
-                        dependent.getContextual().destroy((T)dependent.getInstance(), CreationalContextFactory.getInstance().getCreationalContext(dependent.getContextual()));
+                        final CreationalContextFactory contextFactory = WebBeansContext.getInstance().getCreationalContextFactory();
+                        dependent.getContextual().destroy((T)dependent.getInstance(), contextFactory.getCreationalContext(dependent.getContextual()));
                     }                        
                 }                
             }
@@ -421,7 +423,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         String id = (String) s.readObject();
         if (id != null)
         {
-            contextual = (Contextual<T>) BeanManagerImpl.getManager().getPassivationCapableBean(id);
+            contextual = (Contextual<T>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
         }
                 
         ejbInterceptors = (ConcurrentMap<Object, List<EjbInterceptorContext>>) s.readObject();

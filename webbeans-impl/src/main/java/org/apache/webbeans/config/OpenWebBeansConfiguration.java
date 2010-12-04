@@ -123,11 +123,12 @@ public class OpenWebBeansConfiguration
      * Gets singleton instance.
      * @return singleton instance
      */
+    @Deprecated
     public static OpenWebBeansConfiguration getInstance() 
     {
         return WebBeansContext.getInstance().getOpenWebBeansConfiguration();
     }
-    
+
     /**
      * Parse configuration.
      */

@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.el;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 
 import java.util.HashMap;
@@ -185,7 +186,7 @@ public class ELContextStore
     {
         if (beanManager == null)
         {
-            beanManager = BeanManagerImpl.getManager();
+            beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
         }
         return beanManager;
     }

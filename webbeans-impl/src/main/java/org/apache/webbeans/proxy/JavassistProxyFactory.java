@@ -70,12 +70,13 @@ public final class JavassistProxyFactory
     {
         return interceptorProxyClasses;
     }
-    
+
+    @Deprecated
     public static JavassistProxyFactory getInstance()
     {
         return WebBeansContext.getInstance().getJavassistProxyFactory();
     }
-    
+
     public void clear()
     {
         normalScopedBeanProxyClasses.clear();
