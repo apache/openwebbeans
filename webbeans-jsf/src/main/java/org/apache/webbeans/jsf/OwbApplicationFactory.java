@@ -60,7 +60,7 @@ public class OwbApplicationFactory extends ApplicationFactory
     @Override
     public ApplicationFactory getWrapped()
     {
-        return wrapped.getWrapped();
+        return wrapped;
     }
     
     
