@@ -61,6 +61,8 @@ public class DefaultSingletonService implements SingletonService
 
         synchronized (singletonMap)
         {
+//            util.Track.sync(singletonName);
+            
             WebBeansContext managerMap = singletonMap.get(classLoader);
 //            util.Track.get(singletonName);
 
