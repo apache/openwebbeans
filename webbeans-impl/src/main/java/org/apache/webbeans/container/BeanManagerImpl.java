@@ -172,6 +172,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * Scanner Service ref
      */
     private ScannerService scannerService;
+    private final WebBeansContext webBeansContext;
 
     //private WebBeansLogger logger = WebBeansLogger.getLogger(BeanManagerImpl.class);
 
@@ -187,6 +188,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public BeanManagerImpl(WebBeansContext webBeansContext)
     {
+        this.webBeansContext = webBeansContext;
         injectionResolver = new InjectionResolver(this);
         notificationManager = new NotificationManager();
         annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
@@ -679,7 +681,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             contextual = ((SerializableBean)contextual).getBean();
         }
 
-        return WebBeansContext.getInstance().getCreationalContextFactory().getCreationalContext(contextual);
+        return webBeansContext.getCreationalContextFactory().getCreationalContext(contextual);
     }
 
     /**
@@ -843,7 +845,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         if(!(creationalContext instanceof CreationalContextImpl))
         {
-            creationalContext = WebBeansContext.getInstance().getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
+            creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(creationalContext, bean);
         }        
         
                 
@@ -862,7 +864,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             if (instance == null)
             {
                 //Create Managed Bean Proxy
-                instance = WebBeansContext.getInstance().getJavassistProxyFactory().createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
+                instance = webBeansContext.getJavassistProxyFactory().createNormalScopedBeanProxy((AbstractOwbBean<?>)bean,creationalContext);
 
                 //Cached instance
                 cacheProxies.put(bean, instance);
@@ -904,7 +906,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 }
             }
 
-            OpenWebBeansEjbPlugin ejbPlugin = WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
+            OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
             if(ejbPlugin == null)
             {
                 throw new IllegalStateException("There is no EJB plugin provider. Injection is failed for bean : " + bean);
@@ -916,7 +918,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Create JMS Proxy
         else if(bean instanceof JmsBeanMarker)
         {
-            OpenWebBeansJmsPlugin jmsPlugin = WebBeansContext.getInstance().getPluginLoader().getJmsPlugin();
+            OpenWebBeansJmsPlugin jmsPlugin = webBeansContext.getPluginLoader().getJmsPlugin();
             if(jmsPlugin == null)
             {
                 throw new IllegalStateException("There is no JMS plugin provider. Injection is failed for bean : " + bean);

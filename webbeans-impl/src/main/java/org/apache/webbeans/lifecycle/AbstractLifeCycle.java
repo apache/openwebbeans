@@ -63,7 +63,8 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     
     /**Root container.*/
     private final BeanManagerImpl beanManager;
-    
+    private final WebBeansContext webBeansContext;
+
     protected AbstractLifeCycle()
     {
         this(null);
@@ -73,7 +74,8 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     {
         beforeInitApplication(properties);
 
-        this.beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
+        webBeansContext = WebBeansContext.getInstance();
+        this.beanManager = webBeansContext.getBeanManagerImpl();
         this.xmlDeployer = new WebBeansXMLConfigurator();
         this.deployer = new BeansDeployer(xmlDeployer);
         this.jndiService = ServiceLoader.getService(JNDIService.class);    
@@ -102,7 +104,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         beforeStartApplication(startupObject);
         
         //Load all plugins
-        WebBeansContext.getInstance().getPluginLoader().startUp();
+        webBeansContext.getPluginLoader().startUp();
         
         //Initialize contexts
         this.contextsService.init(startupObject);
@@ -148,22 +150,22 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             jndiService.unbind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME);
 
             //Free all plugin resources
-            WebBeansContext.getInstance().getPluginLoader().shutDown();
+            webBeansContext.getPluginLoader().shutDown();
             
             //Clear extensions
-            WebBeansContext.getInstance().getExtensionLoader().clear();
+            webBeansContext.getExtensionLoader().clear();
             
             //Delete Resolutions Cache
             InjectionResolver.getInstance().clearCaches();
             
             //Delte proxies
-            WebBeansContext.getInstance().getJavassistProxyFactory().clear();
+            webBeansContext.getJavassistProxyFactory().clear();
             
             //Delete AnnotateTypeCache
-            WebBeansContext.getInstance().getAnnotatedElementFactory().clear();
+            webBeansContext.getAnnotatedElementFactory().clear();
             
             //Delete JMS Model Cache
-            WebBeansContext.getInstance().getjMSManager().clear();
+            webBeansContext.getjMSManager().clear();
             
             //After Stop
             afterStopApplication(endObject);
