@@ -40,9 +40,9 @@ public class AddObserverMethodExtension implements Extension
     
     public static class MyBeanExtension implements Extension
     {
-        public static ObserverMethod<AddObserverMethodExtension> observerMethod;
+        public static ObserverMethod<MyEvent> observerMethod;
         
-        public void observer(@Observes ProcessObserverMethod<AddObserverMethodExtension, MyEvent> event)
+        public void observer(@Observes ProcessObserverMethod<MyEvent, AddObserverMethodExtension> event)
         {
             observerMethod = event.getObserverMethod();
             
