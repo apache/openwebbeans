@@ -29,7 +29,7 @@ import org.apache.webbeans.context.type.ContextTypes;
 
 /**
  * Defines spi for contexts.
- * 
+ *
  * @version $Rev$ $Date$
  */
 public interface WebBeansContext extends javax.enterprise.context.spi.Context

@@ -18,6 +18,11 @@
  */
 package org.apache.webbeans.test.tck;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 
 import javax.enterprise.inject.spi.Bean;
@@ -65,6 +70,23 @@ public class BeansImpl implements Beans
     public boolean isProxy( Object instance )
     {
         return instance.getClass().getName().contains("$$");
+    }
+
+    @Override
+    public byte[] serialize(Object o) throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(o);
+        return baos.toByteArray();
+    }
+
+    @Override
+    public Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException
+    {
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        return ois.readObject();
     }
 
     public boolean isStatefulBean( Class<?> clazz )

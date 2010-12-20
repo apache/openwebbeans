@@ -34,7 +34,7 @@
     <description>Apache OpenWebBeans TCK Porting Package</description>
 
     <properties>
-        <webbeans.tck.version>1.0.2.CR1</webbeans.tck.version>
+        <webbeans.tck.version>1.0.4.CR1</webbeans.tck.version>
     </properties>
 
         <!--Used for jboss-test-harness-api not in central maven -->
@@ -43,7 +43,7 @@
         <repository>
             <id>repository.jboss.org</id>
             <name>JBoss Repository</name>
-            <url>http://repository.jboss.org/maven2</url>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
