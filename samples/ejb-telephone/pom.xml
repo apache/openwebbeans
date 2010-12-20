@@ -138,7 +138,7 @@ under the License.
         <!-- EJB API -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-ejb_3.0_spec</artifactId>
+            <artifactId>geronimo-ejb_3.1_spec</artifactId>
             <scope>provided</scope>
         </dependency>
 

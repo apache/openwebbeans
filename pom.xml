@@ -68,8 +68,8 @@
         <geronimo_jaxws.version>1.0</geronimo_jaxws.version>
         <geronimo_servlet.version>1.2</geronimo_servlet.version>
         <dom4j.version>1.6.1</dom4j.version>
-        <geronimo_ejb.version>1.0.1</geronimo_ejb.version>
-        <geronimo_el.version>1.0</geronimo_el.version>
+        <geronimo_ejb.version>1.0.2</geronimo_ejb.version>
+        <geronimo_el.version>1.0.1</geronimo_el.version>
         <scannatation.version>1.0.2</scannatation.version>
         <geronimo_annotation.version>1.0.1</geronimo_annotation.version>
         <geronimo_jpa.version>1.1</geronimo_jpa.version>
@@ -80,8 +80,8 @@
         <geronimo_interceptor.version>1.0</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <javassist.version>3.12.0.GA</javassist.version>
-        <openejb.version>3.1.2</openejb.version>
-        <myfaces.version>2.0.2</myfaces.version>
+        <openejb.version>3.1.4</openejb.version>
+        <myfaces.version>2.0.3</myfaces.version>
         <siteId>/OWB/1.0.0-alpha-2/plugins</siteId>
     </properties>
     
@@ -471,7 +471,7 @@
 
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-ejb_3.0_spec</artifactId>
+                <artifactId>geronimo-ejb_3.1_spec</artifactId>
                 <version>${geronimo_ejb.version}</version>
             </dependency>
 
@@ -527,7 +527,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.8.1</version>
+                <version>4.8.2</version>
                 <scope>test</scope>
             </dependency>
 

@@ -158,7 +158,7 @@ class ResourceInjectionProcessor
 
         EntityManagerFactory factory = getPersistenceUnit(context, unitName, EntityManagerFactory.class);
 
-        JtaEntityManager jtaEntityManager = new JtaEntityManager(jtaEntityManagerRegistry, factory, null, false);
+        JtaEntityManager jtaEntityManager = new JtaEntityManager(unitName, jtaEntityManagerRegistry, factory, null, false);
 
         return clazz.cast(jtaEntityManager);
     }
