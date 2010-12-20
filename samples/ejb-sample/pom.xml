@@ -60,6 +60,7 @@ under the License.
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-impl</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.geronimo.specs</groupId>
@@ -99,6 +100,7 @@ under the License.
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-jsf12</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- EL Plugin -->
@@ -106,6 +108,7 @@ under the License.
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-el10</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Web Plugin -->
@@ -113,6 +116,7 @@ under the License.
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-web</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- MyFaces API -->
@@ -120,6 +124,7 @@ under the License.
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-api</artifactId>
             <version>1.2.8</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Servlet API -->
@@ -134,6 +139,7 @@ under the License.
             <groupId>org.apache.myfaces.core</groupId>
             <artifactId>myfaces-impl</artifactId>
             <version>1.2.8</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- EJB API -->
@@ -155,12 +161,14 @@ under the License.
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-resource</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Validator -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-validation_1.0_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Interceptor API -->

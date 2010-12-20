@@ -22,10 +22,10 @@
 
     <persistence-unit name="reservation" transaction-type="RESOURCE_LOCAL">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-          
-          <class>org.apache.webbeans.reservation.entity.Hotel</class>
-  		  <class>org.apache.webbeans.reservation.entity.User</class>
-  		  <class>org.apache.webbeans.reservation.entity.Reservation</class>
+
+        <class>org.apache.webbeans.reservation.entity.Hotel</class>
+        <class>org.apache.webbeans.reservation.entity.User</class>
+        <class>org.apache.webbeans.reservation.entity.Reservation</class>
          
         <properties>
             <property name="openjpa.jdbc.DBDictionary" value="hsql" />
@@ -33,8 +33,8 @@
             <property name="openjpa.ConnectionURL" value="jdbc:hsqldb:mem:test" />
             <property name="openjpa.ConnectionUserName" value="sa" />
             <property name="openjpa.ConnectionPassword" value="" />
-			<property name="openjpa.Log" value="DefaultLevel=TRACE"/>  
-  			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+            <property name="openjpa.Log" value="DefaultLevel=TRACE"/>
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
         </properties>
 
     </persistence-unit>
