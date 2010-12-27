@@ -23,14 +23,14 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import javassist.util.proxy.MethodHandler;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.FailOverService;
-    
-import javassist.util.proxy.MethodHandler;
 
 public class ResourceProxyHandler implements MethodHandler, Serializable, Externalizable
 {
@@ -63,7 +63,14 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
     @Override
     public Object invoke(Object self, Method actualMethod, Method proceed, Object[] args) throws Throwable
     {
-        return actualMethod.invoke(this.actualResource, args);
+        try
+        {
+            return actualMethod.invoke(this.actualResource, args);
+        }
+        catch (InvocationTargetException e)
+        {
+            throw e.getTargetException();
+        }
     }
 
     /**
@@ -79,11 +86,11 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
         out.writeObject(bean.getId());
 
         // try fail over service to serialize the resource object
-        FailOverService failoverService = (FailOverService) ServiceLoader.getService(FailOverService.class);
+        FailOverService failoverService = ServiceLoader.getService(FailOverService.class);
         if (failoverService != null)
         {
             Object ret = failoverService.handleResource(bean, actualResource, null, out);
-            if (ret != failoverService.NOT_HANDLED)
+            if (ret != FailOverService.NOT_HANDLED)
             {
                 return;
             }
@@ -94,8 +101,8 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
         {
             // for remote ejb stub and other serializable resources
             out.writeObject(actualResource);
-        } 
-        else 
+        }
+        else
         {
             // otherwise, write a dummy string. 
             out.writeObject(DUMMY_STRING);
@@ -117,27 +124,25 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
         bean = (ResourceBean) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
         
         // try fail over service to serialize the resource object
-        FailOverService failoverService = (FailOverService)
-        ServiceLoader.getService(FailOverService.class);
+        FailOverService failoverService = ServiceLoader.getService(FailOverService.class);
         if (failoverService != null) 
         {
             actualResource = failoverService.handleResource(bean, actualResource, in, null);
-            if (actualResource != failoverService.NOT_HANDLED)
+            if (actualResource != FailOverService.NOT_HANDLED)
             {
                 return;
             }
         }
 
         // default behavior
-        Object obj = in.readObject();
-        if (obj instanceof javax.rmi.CORBA.Stub) 
+        actualResource = in.readObject();
+        if (actualResource instanceof javax.rmi.CORBA.Stub)
         {
             // for remote ejb stub, reconnect after deserialization.
-            actualResource = obj;
             org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(new String[0], null);
             ((javax.rmi.CORBA.Stub)actualResource).connect(orb);
-        } 
-        else if (obj.equals(DUMMY_STRING))
+        }
+        else if (actualResource.equals(DUMMY_STRING))
         {
             actualResource = bean.getActualInstance();
         }
