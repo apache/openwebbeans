@@ -53,7 +53,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
             ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
             X instance = resourceService.getResourceReference(this.resourceReference);
 
-            if (instance != null && Modifier.isFinal(instance.getClass().getModifiers()))
+            if (instance == null || Modifier.isFinal(instance.getClass().getModifiers()))
             {
                 return instance;
             }
