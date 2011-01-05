@@ -18,6 +18,10 @@
  */
 package org.apache.webbeans.resource.spi.se;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -25,13 +29,17 @@ import java.text.MessageFormat;
 
 import javax.annotation.Resource;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.Bean;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.xml.ws.WebServiceRef;
 
+import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -39,6 +47,12 @@ import org.apache.webbeans.util.SecurityUtil;
 
 public class StandaloneResourceInjectionService implements ResourceInjectionService
 {
+    /**
+     * When ResourceProxyHandler deserialized, this will instruct owb to create a new actual instance, if
+     * the actual resource is not serializable.
+     */
+    private static final String DUMMY_STRING = "owb.actual.resource.dummy";
+
     private final StandaloneResourceProcessor processor = StandaloneResourceProcessor.getProcessor();
     
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneResourceInjectionService.class);
@@ -126,5 +140,68 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
         processor.clear();       
     }
     
+    /**
+     * delegation of serialization behavior
+     */
+    public <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException
+    {
+        // try fail over service to serialize the resource object
+        FailOverService failoverService = ServiceLoader.getService(FailOverService.class);
+        if (failoverService != null)
+        {
+            Object ret = failoverService.handleResource(bean, actualResource, null, out);
+            if (ret != FailOverService.NOT_HANDLED)
+            {
+                return;
+            }
+        }
+
+        // default behavior
+        if (actualResource instanceof Serializable)
+        {
+            // for remote ejb stub and other serializable resources
+            out.writeObject(actualResource);
+        }
+        else
+        {
+            // otherwise, write a dummy string.
+            out.writeObject(DUMMY_STRING);
+        }
+
+    }
+
+    /**
+     * delegation of serialization behavior
+     */
+    public <T> T readExternal(Bean<T> bean, ObjectInput in) throws IOException,
+            ClassNotFoundException
+    {
+        T actualResource = null;
+        // try fail over service to serialize the resource object
+        FailOverService failoverService = ServiceLoader.getService(FailOverService.class);
+        if (failoverService != null)
+        {
+            actualResource = (T) failoverService.handleResource(bean, actualResource, in, null);
+            if (actualResource != FailOverService.NOT_HANDLED)
+            {
+                return actualResource;
+            }
+        }
+
+        // default behavior
+        actualResource = (T) in.readObject();
+        if (actualResource instanceof javax.rmi.CORBA.Stub)
+        {
+            // for remote ejb stub, reconnect after deserialization.
+            org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(new String[0], null);
+            ((javax.rmi.CORBA.Stub)actualResource).connect(orb);
+        }
+        else if (actualResource.equals(DUMMY_STRING))
+        {
+            actualResource = (T) ((ResourceBean)bean).getActualInstance();
+        }
+        return actualResource;
+    }
+
 
 }

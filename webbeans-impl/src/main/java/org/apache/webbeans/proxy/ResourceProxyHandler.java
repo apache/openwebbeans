@@ -29,25 +29,18 @@ import java.lang.reflect.Method;
 import javassist.util.proxy.MethodHandler;
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.corespi.ServiceLoader;
-import org.apache.webbeans.spi.FailOverService;
+import org.apache.webbeans.spi.ResourceInjectionService;
 
 public class ResourceProxyHandler implements MethodHandler, Serializable, Externalizable
 {
     /**
      * 
      */
-    private static final long serialVersionUID = 4171212030439910547L;
-    
-    /**
-     * When ResourceProxyHandler deserialized, this will instruct owb to create a new actual instance, if
-     * the actual resource is not serializable.
-     */
-    private static final String DUMMY_STRING = "owb.actual.resource.dummy";
-    
-    private Object actualResource = null;
+    private static final long serialVersionUID = 2608686651845218158L;
 
-    private transient ResourceBean bean = null;
+    private transient Object actualResource;
+
+    private transient ResourceBean bean;
 
     //DO NOT REMOVE, used by failover and passivation.
     public ResourceProxyHandler()
@@ -84,29 +77,9 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
     {        
         // write bean id first
         out.writeObject(bean.getId());
-
-        // try fail over service to serialize the resource object
-        FailOverService failoverService = ServiceLoader.getService(FailOverService.class);
-        if (failoverService != null)
-        {
-            Object ret = failoverService.handleResource(bean, actualResource, null, out);
-            if (ret != FailOverService.NOT_HANDLED)
-            {
-                return;
-            }
-        }
-        
-        // default behavior
-        if (actualResource instanceof Serializable)
-        {
-            // for remote ejb stub and other serializable resources
-            out.writeObject(actualResource);
-        }
-        else
-        {
-            // otherwise, write a dummy string. 
-            out.writeObject(DUMMY_STRING);
-        }
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ResourceInjectionService resourceInjectionService = webBeansContext.getService(ResourceInjectionService.class);
+        resourceInjectionService.writeExternal(bean, actualResource, out);
     }
 
     /**
@@ -121,30 +94,9 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
             ClassNotFoundException 
     {
         String id = (String)in.readObject();
-        bean = (ResourceBean) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
-        
-        // try fail over service to serialize the resource object
-        FailOverService failoverService = ServiceLoader.getService(FailOverService.class);
-        if (failoverService != null) 
-        {
-            actualResource = failoverService.handleResource(bean, actualResource, in, null);
-            if (actualResource != FailOverService.NOT_HANDLED)
-            {
-                return;
-            }
-        }
-
-        // default behavior
-        actualResource = in.readObject();
-        if (actualResource instanceof javax.rmi.CORBA.Stub)
-        {
-            // for remote ejb stub, reconnect after deserialization.
-            org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(new String[0], null);
-            ((javax.rmi.CORBA.Stub)actualResource).connect(orb);
-        }
-        else if (actualResource.equals(DUMMY_STRING))
-        {
-            actualResource = bean.getActualInstance();
-        }
-    }    
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        bean = (ResourceBean) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
+        ResourceInjectionService resourceInjectionService = webBeansContext.getService(ResourceInjectionService.class);
+        actualResource = resourceInjectionService.readExternal(bean, in);
+    }
 }

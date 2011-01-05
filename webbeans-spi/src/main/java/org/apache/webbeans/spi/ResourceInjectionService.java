@@ -18,9 +18,13 @@
  */
 package org.apache.webbeans.spi;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.lang.annotation.Annotation;
 
 
+import javax.enterprise.inject.spi.Bean;
 import org.apache.webbeans.spi.api.ResourceReference;
 
 /**
@@ -76,5 +80,16 @@ public interface ResourceInjectionService
      * </p>
      */
     public void clear();
+
+    /**
+     * delegation of serialization behavior
+     */
+    public <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException;
+
+    /**
+     * delegation of serialization behavior
+     */
+    public <T> T readExternal(Bean<T> bean, ObjectInput out) throws IOException,
+            ClassNotFoundException;
         
 }

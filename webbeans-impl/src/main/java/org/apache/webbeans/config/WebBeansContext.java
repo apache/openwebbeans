@@ -21,6 +21,7 @@ package org.apache.webbeans.config;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -40,6 +41,7 @@ import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.xml.WebBeansNameSpaceContainer;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
@@ -73,6 +75,8 @@ public class WebBeansContext
     private XMLSpecializesManager xmlSpecializesManager = new XMLSpecializesManager();
 
     private final Map<String, Object> managerMap = new HashMap<String, Object>();
+
+    private final Map<Class<?>, Object> serviceMap = new HashMap<Class<?>, Object>();
 
     public WebBeansContext()
     {
@@ -108,6 +112,50 @@ public class WebBeansContext
         WebBeansContext webBeansContext = (WebBeansContext) WebBeansFinder.getSingletonInstance(WebBeansContext.class.getName());
         
         return webBeansContext;
+    }
+
+    public <T> T getService(Class<T> clazz)
+    {
+        T t = (T) serviceMap.get(clazz);
+        if (t == null)
+        {
+            t = doServiceLoader(clazz);
+            registerService(clazz, t);
+        }
+        return t;
+    }
+
+    public <T> void registerService(Class<T> clazz, T t)
+    {
+        serviceMap.put(clazz, t);
+    }
+
+    private <T> T doServiceLoader(Class<T> serviceInterface)
+    {
+        String implName = getOpenWebBeansConfiguration().getProperty(serviceInterface.getName());
+
+        if (implName == null)
+        {
+            //Look for plugins
+            List<OpenWebBeansPlugin> plugins = getPluginLoader().getPlugins();
+            if(plugins != null && plugins.size() > 0)
+            {
+                for(OpenWebBeansPlugin plugin : plugins)
+                {
+                    if(plugin.supportService(serviceInterface))
+                    {
+                        return plugin.getSupportedService(serviceInterface);
+                    }
+                }
+            }
+
+//            if (logger.wblWillLogWarn())
+//            {
+//                logger.warn(OWBLogConst.WARN_0009, serviceInterface.getName());
+//            }
+            return null;
+        }
+        return (T) WebBeansFinder.getSingletonInstance(implName);
     }
 
     public ConversationManager getConversationManager()

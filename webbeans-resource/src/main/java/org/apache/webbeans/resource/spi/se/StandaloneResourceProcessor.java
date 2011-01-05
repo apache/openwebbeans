@@ -30,7 +30,6 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.xml.ws.WebServiceRef;
-
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.logger.WebBeansLogger;
 
