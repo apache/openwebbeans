@@ -35,6 +35,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 
 import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyFactory.ClassLoaderProvider;
 import javassist.util.proxy.ProxyObject;
 import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -309,7 +310,43 @@ public final class JavassistProxyFactory
 
     public  Class<?> getProxyClass(ProxyFactory factory)
     {
-        return SecurityUtil.doPrivilegedCreateClass(factory);
+        ClassLoaderProvider oldProvider = ProxyFactory.classLoaderProvider;
+        Class<?> clazz = null;
+        try
+        {
+            clazz = SecurityUtil.doPrivilegedCreateClass(factory);            
+        }
+        catch(RuntimeException e)
+        {
+            //Default is false
+            if(WebBeansContext.getInstance().getOpenWebBeansConfiguration().isUpdateJavassistClassLoaderProvider())
+            {                   
+                //Try thread class loader
+                ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider()
+                {                            
+                    @Override
+                    public ClassLoader get(ProxyFactory pf)
+                    {
+                        return WebBeansUtil.getCurrentClassLoader();
+                    }
+                };
+                
+                //try again with updated class loader
+                clazz = SecurityUtil.doPrivilegedCreateClass(factory);  
+            }
+            else
+            {
+                //Default, throw exception
+                throw e;
+            }
+        }
+        finally
+        {
+            //Switch to old
+            ProxyFactory.classLoaderProvider = oldProvider;            
+        }
+        
+        return clazz; 
     }
     
     public  ProxyFactory createProxyFactory(Bean<?> bean) throws Exception
