@@ -41,6 +41,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
@@ -130,9 +131,11 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         this.bean = bean;
         this.observerMethod = observerMethod;
         this.ifExist = ifExist;
-        
-        Annotation[] qualifiers = AnnotationUtil.getMethodFirstParameterQualifierWithGivenAnnotation(observerMethod, Observes.class);
-        AnnotationUtil.checkQualifierConditions(qualifiers);
+
+        Annotation[] qualifiers =
+            WebBeansContext.getInstance().getAnnotationManager().getMethodFirstParameterQualifierWithGivenAnnotation(
+                observerMethod, Observes.class);
+        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(qualifiers);
         this.observedQualifiers = new HashSet<Annotation>(qualifiers.length);
         
         for (Annotation qualifier : qualifiers)
@@ -314,7 +317,9 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     protected List<ObserverParams> getMethodArguments(Object event)
     {
-        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         //Define annotated parameter
         AnnotatedType<T> annotatedType = (AnnotatedType<T>) annotatedElementFactory.newAnnotatedType(this.bean.getReturnType());
@@ -324,7 +329,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         Annotation[][] annots = this.observerMethod.getParameterAnnotations();
         List<ObserverParams> list = new ArrayList<ObserverParams>();
 
-        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
+        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         ObserverParams param = null;
         if (types.length > 0)
         {
@@ -358,7 +363,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 if (!observesAnnotation)
                 {
                     //Get parameter annotations
-                    Annotation[] bindingTypes = AnnotationUtil.getQualifierAnnotations(annot);
+                    Annotation[] bindingTypes = annotationManager.getQualifierAnnotations(annot);
                     
                     //Annotated parameter
                     AnnotatedParameter<T> annotatedParameter = annotatedMethod.getParameters().get(i);
@@ -403,7 +408,9 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      */
     protected List<ObserverParams> getAnnotatedMethodArguments(Object event)
     {
-        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
+        final WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+        final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         List<ObserverParams> list = new ArrayList<ObserverParams>();
         List<AnnotatedParameter<T>> parameters = this.annotatedMethod.getParameters();
         ObserverParams param = null;
@@ -418,7 +425,8 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             else
             {
                 //Get parameter annotations
-                Annotation[] bindingTypes = AnnotationUtil.getQualifierAnnotations(AnnotationUtil.
+                Annotation[] bindingTypes =
+                    annotationManager.getQualifierAnnotations(AnnotationUtil.
                         getAnnotationsFromSet(parameter.getAnnotations()));
 
                 InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(this.bean, parameter.getBaseType(), 

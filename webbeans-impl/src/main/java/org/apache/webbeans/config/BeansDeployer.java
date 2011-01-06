@@ -39,6 +39,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.interceptor.Interceptor;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
@@ -729,6 +730,8 @@ public class BeansDeployer
         logger.debug("Checking StereoType constraints has started.");
 
         addDefaultStereoTypes();
+
+        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
         
         Set<Class<?>> beanClasses = scanner.getBeanClasses();
         if (beanClasses != null && beanClasses.size() > 0)
@@ -737,8 +740,8 @@ public class BeansDeployer
             {                
                 if(beanClass.isAnnotation())
                 {
-                    Class<? extends Annotation> stereoClass = (Class<? extends Annotation>) beanClass;                    
-                    if (AnnotationUtil.isStereoTypeAnnotation(stereoClass))
+                    Class<? extends Annotation> stereoClass = (Class<? extends Annotation>) beanClass;
+                    if (annotationManager.isStereoTypeAnnotation(stereoClass))
                     {
                         if (!webBeansContext.getxMLAnnotationTypeManager().hasStereoType(stereoClass))
                         {

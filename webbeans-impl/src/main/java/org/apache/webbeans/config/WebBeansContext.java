@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
@@ -53,7 +54,7 @@ import org.apache.webbeans.xml.XMLSpecializesManager;
 public class WebBeansContext
 {
 
-    private AlternativesManager alternativesManager = new AlternativesManager();
+    private AlternativesManager alternativesManager = new AlternativesManager(this);
     private AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory();
     private BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
     private ConversationManager conversationManager = new ConversationManager();
@@ -70,8 +71,9 @@ public class WebBeansContext
     private PluginLoader pluginLoader = new PluginLoader();
     private SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
     private StereoTypeManager stereoTypeManager = new StereoTypeManager();
-    private WebBeansNameSpaceContainer webBeansNameSpaceContainer = new WebBeansNameSpaceContainer();
     private XMLAnnotationTypeManager xmlAnnotationTypeManager = new XMLAnnotationTypeManager(this);
+    private AnnotationManager annotationManager = new AnnotationManager(this);
+    private WebBeansNameSpaceContainer webBeansNameSpaceContainer = new WebBeansNameSpaceContainer();
     private XMLSpecializesManager xmlSpecializesManager = new XMLSpecializesManager();
 
     private final Map<String, Object> managerMap = new HashMap<String, Object>();
@@ -107,10 +109,10 @@ public class WebBeansContext
     }
 
     @Deprecated
-    public static WebBeansContext getInstance() 
+    public static WebBeansContext getInstance()
     {
         WebBeansContext webBeansContext = (WebBeansContext) WebBeansFinder.getSingletonInstance(WebBeansContext.class.getName());
-        
+
         return webBeansContext;
     }
 
@@ -156,6 +158,11 @@ public class WebBeansContext
             return null;
         }
         return (T) WebBeansFinder.getSingletonInstance(implName);
+    }
+
+    public AnnotationManager getAnnotationManager()
+    {
+        return annotationManager;
     }
 
     public ConversationManager getConversationManager()
@@ -260,14 +267,14 @@ public class WebBeansContext
 
     public Object get(String singletonName)
     {
-//        util.Track.get(singletonName);
+        util.Track.get(singletonName);
         Object object = managerMap.get(singletonName);
 
         /* No singleton for this application, create one */
         if (object == null)
         {
             object = createInstance(singletonName);
-            
+
             //Save it
             managerMap.put(singletonName, object);
         }

@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.intercept.webbeans;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
@@ -187,6 +188,8 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
 
         Set<Annotation> keys = getInterceptorBindings();
 
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+
         for (Annotation key : keys)
         {
             Class<? extends Annotation> clazzAnnot = key.annotationType();
@@ -200,9 +203,9 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
                 anns = declared.toArray(anns);
             }
 
-            else if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazzAnnot.getDeclaredAnnotations()))
+            else if (annotationManager.hasInterceptorBindingMetaAnnotation(clazzAnnot.getDeclaredAnnotations()))
             {
-                anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(clazzAnnot.getDeclaredAnnotations());
+                anns = annotationManager.getInterceptorBindingMetaAnnotations(clazzAnnot.getDeclaredAnnotations());
             }
 
             /*

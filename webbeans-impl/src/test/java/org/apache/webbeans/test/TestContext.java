@@ -71,7 +71,6 @@ import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
 import org.apache.webbeans.test.unittests.xml.XMLTest;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.apache.webbeans.xml.XMLUtil;
@@ -428,8 +427,9 @@ public abstract class TestContext implements ITestContext
         WebBeansContext.getInstance().getInterceptorsManager().addNewInterceptor(clazz);
         InterceptorUtil.checkInterceptorConditions(clazz);
         component = ManagedBeanConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
-        WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component, 
-                AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations()));
+        WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component,
+                                                            WebBeansContext.getInstance().getAnnotationManager().getInterceptorBindingMetaAnnotations(
+                                                                clazz.getDeclaredAnnotations()));
 
 
         return component;

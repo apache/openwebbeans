@@ -32,7 +32,6 @@ import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -85,8 +84,8 @@ public class EventImpl<T> implements Event<T>, Serializable
      */
     private Annotation[] getEventBindings(Annotation... annotations)
     {
-        AnnotationUtil.checkQualifierConditions(annotations);
-        
+        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(annotations);
+
         Set<Annotation> eventBindings = new HashSet<Annotation>();
         
         for(Annotation ann : this.injectedBindings)

@@ -694,9 +694,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             throw new IllegalArgumentException("Exception in getBeans method. Bean type can not be TypeVariable for bean type : " + beanType);
         }
-        
-        AnnotationUtil.checkQualifierConditions(bindings);
-        
+
+        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(bindings);
+
         return this.injectionResolver.implResolveByType(beanType, bindings);
         
     }
@@ -951,13 +951,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public boolean isQualifier(Class<? extends Annotation> annotationType)
     {
-        return AnnotationUtil.isQualifierAnnotation(annotationType);
+        return webBeansContext.getAnnotationManager().isQualifierAnnotation(annotationType);
     }
 
     @Override
     public boolean isInterceptorBinding(Class<? extends Annotation> annotationType)
     {
-        return AnnotationUtil.isInterceptorBindingAnnotation(annotationType);
+        return webBeansContext.getAnnotationManager().isInterceptorBindingAnnotation(annotationType);
     }
 
     @Override

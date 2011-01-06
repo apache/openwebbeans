@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.intercept;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
@@ -162,9 +163,10 @@ public final class WebBeansInterceptorConfig
         {
             typeAnns = clazz.getDeclaredAnnotations();
         }
-        if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(typeAnns))
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        if (annotationManager.hasInterceptorBindingMetaAnnotation(typeAnns))
         {
-            anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(typeAnns);
+            anns = annotationManager.getInterceptorBindingMetaAnnotations(typeAnns);
 
             for (Annotation ann : anns)
             {
@@ -174,12 +176,14 @@ public final class WebBeansInterceptorConfig
 
         // check for stereotypes _explicitly_ declared on the bean class (not
         // inherited)
-        Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(typeAnns);
+        Annotation[] stereoTypes =
+            annotationManager.getStereotypeMetaAnnotations(typeAnns);
         for (Annotation stero : stereoTypes)
         {
-            if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
+            if (annotationManager.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
             {
-                Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
+                Annotation[] steroInterceptorBindings = annotationManager.getInterceptorBindingMetaAnnotations(
+                        stero.annotationType().getDeclaredAnnotations());
 
                 for (Annotation ann : steroInterceptorBindings)
                 {
@@ -200,7 +204,7 @@ public final class WebBeansInterceptorConfig
             {
                 Annotation[] inheritedAnns = new Annotation[inheritedBindingTypes.size()];
                 inheritedAnns = inheritedBindingTypes.toArray(inheritedAnns);
-                anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(inheritedAnns);
+                anns = annotationManager.getInterceptorBindingMetaAnnotations(inheritedAnns);
                 bindingTypeSet.addAll(Arrays.asList(anns));
             }
 
@@ -214,13 +218,14 @@ public final class WebBeansInterceptorConfig
                 // of stereotypes we've found
                 Annotation[] inherited = new Annotation[inheritedStereotypes.size()];
                 inherited = inheritedStereotypes.toArray(inherited);
-                Annotation[] transitiveStereotypes = AnnotationUtil.getStereotypeMetaAnnotations(inherited);
+                Annotation[] transitiveStereotypes = annotationManager.getStereotypeMetaAnnotations(inherited);
 
                 for (Annotation stereo : transitiveStereotypes)
                 {
-                    if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stereo.annotationType().getDeclaredAnnotations()))
+                    if (annotationManager.hasInterceptorBindingMetaAnnotation(stereo.annotationType().getDeclaredAnnotations()))
                     {
-                        Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stereo.annotationType().getDeclaredAnnotations());
+                        Annotation[] steroInterceptorBindings =
+                            annotationManager.getInterceptorBindingMetaAnnotations(stereo.annotationType().getDeclaredAnnotations());
                         for (Annotation ann : steroInterceptorBindings)
                         {
                             bindingTypeSet.add(ann);
@@ -354,6 +359,8 @@ public final class WebBeansInterceptorConfig
     private static void addMethodInterceptors(Class<?> clazz, List<InterceptorData> stack, Set<Interceptor<?>> componentInterceptors,
                                               Set<Annotation> resolvedComponentInterceptorBindings)
     {
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+
         // All methods, not just those declared
         Method[] methods = clazz.getMethods();
         Set<Method> set = new HashSet<Method>();
@@ -375,9 +382,12 @@ public final class WebBeansInterceptorConfig
         for (Method method : methods)
         {
             Set<Annotation> interceptorAnns = new HashSet<Annotation>();
-            if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(method.getDeclaredAnnotations()))
+            if (annotationManager.hasInterceptorBindingMetaAnnotation(
+                method.getDeclaredAnnotations()))
             {
-                Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(method.getAnnotations());
+                Annotation[] anns =
+                    annotationManager.getInterceptorBindingMetaAnnotations(
+                        method.getAnnotations());
                 for (Annotation ann : anns)
                 {
                     interceptorAnns.add(ann);
@@ -428,6 +438,7 @@ public final class WebBeansInterceptorConfig
     private static <T> void addMethodInterceptors(AnnotatedType<T> annotatedType, List<InterceptorData> stack, Set<Interceptor<?>> componentInterceptors)
     {
 
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
         for(AnnotatedMethod<? super T> methodA : methods)
         {
@@ -436,10 +447,14 @@ public final class WebBeansInterceptorConfig
             Set<Annotation> interceptorAnns = new HashSet<Annotation>();
             
             Annotation[] methodAnns = AnnotationUtil.getAnnotationsFromSet(methodB.getAnnotations());
-            if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(methodAnns))
-            {                
-                Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(methodAnns);
-                Annotation[] annsClazz = AnnotationUtil.getInterceptorBindingMetaAnnotations(AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
+            if (annotationManager.hasInterceptorBindingMetaAnnotation(methodAnns))
+            {
+                Annotation[] anns =
+                    annotationManager.getInterceptorBindingMetaAnnotations(
+                        methodAnns);
+                Annotation[] annsClazz =
+                    annotationManager.getInterceptorBindingMetaAnnotations(
+                        AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
 
                 for (Annotation ann : anns)
                 {
@@ -452,12 +467,17 @@ public final class WebBeansInterceptorConfig
                 }
             }
 
-            Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
+            Annotation[] stereoTypes =
+                annotationManager.getStereotypeMetaAnnotations(
+                    AnnotationUtil.getAnnotationsFromSet(annotatedType.getAnnotations()));
             for (Annotation stero : stereoTypes)
             {
-                if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
+                if (annotationManager.hasInterceptorBindingMetaAnnotation(
+                    stero.annotationType().getDeclaredAnnotations()))
                 {
-                    Annotation[] steroInterceptorBindings = AnnotationUtil.getInterceptorBindingMetaAnnotations(stero.annotationType().getDeclaredAnnotations());
+                    Annotation[] steroInterceptorBindings =
+                        annotationManager.getInterceptorBindingMetaAnnotations(
+                            stero.annotationType().getDeclaredAnnotations());
 
                     for (Annotation ann : steroInterceptorBindings)
                     {

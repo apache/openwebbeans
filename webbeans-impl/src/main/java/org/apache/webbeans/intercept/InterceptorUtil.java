@@ -42,6 +42,7 @@ import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 import javax.interceptor.InvocationContext;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
@@ -309,7 +310,7 @@ public final class InterceptorUtil
         }
         
         Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[0]);
-        if (!AnnotationUtil.hasInterceptorBindingMetaAnnotation(anns))
+        if (!WebBeansContext.getInstance().getAnnotationManager().hasInterceptorBindingMetaAnnotation(anns))
         {
             throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName()
                                                      + " must have at least one @InterceptorBinding annotation");
@@ -333,8 +334,9 @@ public final class InterceptorUtil
                                                          + method.getName());
             }
         }
-        
-        if (!AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
+
+        if (!WebBeansContext.getInstance().getAnnotationManager().hasInterceptorBindingMetaAnnotation(
+            clazz.getDeclaredAnnotations()))
         {
             throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName()
                                                      + " must have at least one @InterceptorBinding annotation");
@@ -350,7 +352,8 @@ public final class InterceptorUtil
 
         if (isLifecycleMethodInterceptor(clazz) && !isBusinessMethodInterceptor(clazz))
         {
-            Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(annots);
+            Annotation[] anns =
+                WebBeansContext.getInstance().getAnnotationManager().getInterceptorBindingMetaAnnotations(annots);
 
             for (Annotation annotation : anns)
             {
@@ -370,7 +373,8 @@ public final class InterceptorUtil
     {
         if (isLifecycleMethodInterceptor(annotatedType) && !isBusinessMethodInterceptor(annotatedType))
         {
-            Annotation[] anns = AnnotationUtil.getInterceptorBindingMetaAnnotations(annots);
+            Annotation[] anns =
+                WebBeansContext.getInstance().getAnnotationManager().getInterceptorBindingMetaAnnotations(annots);
 
             for (Annotation annotation : anns)
             {
@@ -393,16 +397,17 @@ public final class InterceptorUtil
         Annotation[] anns = clazz.getDeclaredAnnotations();
 
         boolean hasClassInterceptors = false;
-        if (AnnotationUtil.getInterceptorBindingMetaAnnotations(anns).length > 0)
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        if (annotationManager.getInterceptorBindingMetaAnnotations(anns).length > 0)
         {
             hasClassInterceptors = true;
         }
         else
         {
-            Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
+            Annotation[] stereoTypes = annotationManager.getStereotypeMetaAnnotations(clazz.getDeclaredAnnotations());
             for (Annotation stero : stereoTypes)
             {
-                if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
+                if (annotationManager.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
                 {
                     hasClassInterceptors = true;
                     break;
@@ -431,7 +436,8 @@ public final class InterceptorUtil
                 }
                 else
                 {
-                    if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(method.getDeclaredAnnotations()))
+                    if (annotationManager.hasInterceptorBindingMetaAnnotation(
+                        method.getDeclaredAnnotations()))
                     {
                         throw new WebBeansConfigurationException("Method : " + method.getName() + "in simple web bean class : "
                                                                  + clazz.getName()

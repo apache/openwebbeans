@@ -156,7 +156,8 @@ public class InjectionPointFactory
     {
         InjectionPointImpl injectionPoint = null;
 
-        Annotation[] qualifierAnnots = AnnotationUtil.getQualifierAnnotations(annots);
+        Annotation[] qualifierAnnots =
+            WebBeansContext.getInstance().getAnnotationManager().getQualifierAnnotations(annots);
         
         //@Named update for injection fields!
         if(member instanceof Field)

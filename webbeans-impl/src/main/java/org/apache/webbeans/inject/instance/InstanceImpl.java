@@ -35,7 +35,6 @@ import javax.enterprise.util.TypeLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.container.ResolutionUtil;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -160,7 +159,7 @@ class InstanceImpl<T> implements Instance<T>, Serializable
      */
     private Annotation[] getAdditionalQualifiers(Annotation[] qualifiers)
     {
-        AnnotationUtil.checkQualifierConditions(qualifiers);
+        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(qualifiers);
         Set<Annotation> newQualifiers = new HashSet<Annotation>(this.qualifierAnnotations);
 
         if (qualifiers != null && qualifiers.length > 0)
@@ -188,8 +187,8 @@ class InstanceImpl<T> implements Instance<T>, Serializable
     @Override
     public <U extends T> Instance<U> select(Class<U> subtype, Annotation... qualifiers)
     {
-        AnnotationUtil.checkQualifierConditions(qualifiers);
-        
+        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(qualifiers);
+
         Type sub = subtype;
         
         if(sub == null)

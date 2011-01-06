@@ -50,6 +50,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Scope;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
@@ -219,12 +220,14 @@ public final class DefinitionUtil
      */
     public static <T> void defineQualifiers(AbstractOwbBean<T> component, Annotation[] annotations)
     {
+        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+
         boolean find = false;
         for (Annotation annotation : annotations)
         {
             Class<? extends Annotation> type = annotation.annotationType();
 
-            if (AnnotationUtil.isQualifierAnnotation(type))
+            if (annotationManager.isQualifierAnnotation(type))
             {
                 Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(type);
 
@@ -390,9 +393,11 @@ public final class DefinitionUtil
 
     public static <T> void defineStereoTypes(OwbBean<?> component, Annotation[] anns)
     {
-        if (AnnotationUtil.hasStereoTypeMetaAnnotation(anns))
+        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        if (annotationManager.hasStereoTypeMetaAnnotation(anns))
         {
-            Annotation[] steroAnns = AnnotationUtil.getStereotypeMetaAnnotations(anns);
+            Annotation[] steroAnns =
+                annotationManager.getStereotypeMetaAnnotations(anns);
 
             for (Annotation stereo : steroAnns)
             {
@@ -761,6 +766,8 @@ public final class DefinitionUtil
 
     private static <T> void createDisposalMethods(AbstractOwbBean<T> component, Method[] methods, Class<?> clazz)
     {
+        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+
         ProducerMethodBean<?> previous = null;
         for (Method declaredMethod : methods)
         {
@@ -768,7 +775,7 @@ public final class DefinitionUtil
             WebBeansUtil.checkProducerMethodDisposal(declaredMethod, clazz.getName());
 
             Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(declaredMethod, Disposes.class);
-            Annotation[] annot = AnnotationUtil.getMethodFirstParameterQualifierWithGivenAnnotation(declaredMethod, Disposes.class);
+            Annotation[] annot = annotationManager.getMethodFirstParameterQualifierWithGivenAnnotation(declaredMethod, Disposes.class);
 
 
             Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
@@ -850,6 +857,8 @@ public final class DefinitionUtil
     public static <T> void defineInternalInjectedFields(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromSuperClazz)
     {
 
+        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+
         Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
 
         if (fields.length != 0)
@@ -879,7 +888,7 @@ public final class DefinitionUtil
                     throw new WebBeansConfigurationException("Injection fields can not be annotated with @Produces");
                 }
 
-                Annotation[] qualifierAnns = AnnotationUtil.getQualifierAnnotations(anns);
+                Annotation[] qualifierAnns = annotationManager.getQualifierAnnotations(anns);
 
                 if (qualifierAnns.length > 0)
                 {

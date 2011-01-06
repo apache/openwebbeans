@@ -99,6 +99,7 @@ import javax.interceptor.InvocationContext;
 
 import javassist.util.proxy.ProxyFactory;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.ApplicationScopeLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -587,7 +588,7 @@ public final class WebBeansUtil
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(annotations, "Annotations argument can not be null");
 
-        Annotation[] as = AnnotationUtil.getQualifierAnnotations(annotations);
+        Annotation[] as = WebBeansContext.getInstance().getAnnotationManager().getQualifierAnnotations(annotations);
         for (Annotation a : annotations)
         {
             if (a.annotationType().equals(New.class))
@@ -1419,7 +1420,7 @@ public final class WebBeansUtil
         Set<Annotation> set = component.getOwbStereotypes();
         Annotation[] anns = new Annotation[set.size()];
         anns = set.toArray(anns);
-        if (AnnotationUtil.hasStereoTypeMetaAnnotation(anns))
+        if (WebBeansContext.getInstance().getAnnotationManager().hasStereoTypeMetaAnnotation(anns))
         {
             return true;
         }
@@ -1441,7 +1442,7 @@ public final class WebBeansUtil
             Annotation[] anns = new Annotation[set.size()];
             anns = set.toArray(anns);
 
-            return AnnotationUtil.getStereotypeMetaAnnotations(anns);
+            return WebBeansContext.getInstance().getAnnotationManager().getStereotypeMetaAnnotations(anns);
         }
 
         return new Annotation[] {};
@@ -1532,6 +1533,7 @@ public final class WebBeansUtil
     {
         Asserts.nullCheckForClass(clazz);
 
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
         boolean scopeTypeFound = false;
         for (Annotation annotation : annotations)
         {
@@ -1558,7 +1560,7 @@ public final class WebBeansUtil
                             "annotation with value");
                 }
             }
-            else if (AnnotationUtil.isInterceptorBindingAnnotation(annotType))
+            else if (annotationManager.isInterceptorBindingAnnotation(annotType))
             {
                 Target target = clazz.getAnnotation(Target.class);
                 ElementType[] type = target.value();
@@ -2142,7 +2144,8 @@ public final class WebBeansUtil
         }
         else
         {
-            Annotation[] anns = AnnotationUtil.getStereotypeMetaAnnotations(superMethod.getAnnotations());
+            Annotation[] anns = WebBeansContext.getInstance().getAnnotationManager().getStereotypeMetaAnnotations(
+                superMethod.getAnnotations());
             for(Annotation ann : anns)
             {
                 if(ann.annotationType().isAnnotationPresent(Stereotype.class))
@@ -2196,10 +2199,13 @@ public final class WebBeansUtil
                     "array argument can not be empty");
         }
 
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+
         Annotation old = null;
         for (Annotation interceptorBinding : interceptorBindings)
         {
-            if (!AnnotationUtil.isInterceptorBindingAnnotation(interceptorBinding.annotationType()))
+            if (!annotationManager.isInterceptorBindingAnnotation(
+                interceptorBinding.annotationType()))
             {
                 throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor" +
                         " bindings array can not contain other annotation that is not @InterceptorBinding");
@@ -2231,10 +2237,12 @@ public final class WebBeansUtil
                     "can not be empty");
         }
 
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        
         Annotation old = null;
         for (Annotation qualifier : qualifiers)
         {
-            if (!AnnotationUtil.isQualifierAnnotation(qualifier.annotationType()))
+            if (!annotationManager.isQualifierAnnotation(qualifier.annotationType()))
             {
                 throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array " +
                         "can not contain other annotation that is not @Qualifier");
@@ -2331,7 +2339,8 @@ public final class WebBeansUtil
             if (component != null)
             {
                 WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component,
-                        AnnotationUtil.getInterceptorBindingMetaAnnotations(clazz.getDeclaredAnnotations()));
+                                                                    WebBeansContext.getInstance().getAnnotationManager().getInterceptorBindingMetaAnnotations(
+                                                                        clazz.getDeclaredAnnotations()));
             }
         }
 

@@ -35,10 +35,13 @@ public class AlternativesManager
     private final Set<Class<?>> alternatives = new HashSet<Class<?>>();
     
     private final Set<Class<? extends Annotation>> stereoAlternatives = new HashSet<Class<? extends Annotation>>();
-    
-    public AlternativesManager()
+
+    private final WebBeansContext webBeansContext;
+
+    public AlternativesManager(WebBeansContext webBeansContext)
     {
-        
+
+        this.webBeansContext = webBeansContext;
     }
 
     @Deprecated
@@ -54,7 +57,7 @@ public class AlternativesManager
         {
             Class<? extends Annotation> stereo = (Class<? extends Annotation>)alternative;
             boolean ok = false;
-            if(AnnotationUtil.isStereoTypeAnnotation(stereo))
+            if(webBeansContext.getAnnotationManager().isStereoTypeAnnotation(stereo))
             {
                 if(AnnotationUtil.hasClassAnnotation(stereo, Alternative.class))
                 {

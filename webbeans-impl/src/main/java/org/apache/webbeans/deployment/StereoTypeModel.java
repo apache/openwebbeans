@@ -30,7 +30,9 @@ import javax.enterprise.inject.Typed;
 import javax.inject.Named;
 import javax.inject.Scope;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -88,8 +90,9 @@ public class StereoTypeModel implements IStereoTypeModel
                 logger.warn(OWBLogConst.WARN_0016, clazz.getName());
             }            
         }
-        
-        Annotation[] qualifiers = AnnotationUtil.getQualifierAnnotations(annotations);
+
+        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        Annotation[] qualifiers = annotationManager.getQualifierAnnotations(annotations);
         
         if(qualifiers != null)
         {
@@ -119,19 +122,21 @@ public class StereoTypeModel implements IStereoTypeModel
         {
             this.defaultScopeType = AnnotationUtil.getMetaAnnotations(annotations, Scope.class)[0];
         }
-        
-        if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(annotations))
+
+        if (annotationManager.hasInterceptorBindingMetaAnnotation(annotations))
         {
-            Annotation[] ibs = AnnotationUtil.getInterceptorBindingMetaAnnotations(annotations);
+            Annotation[] ibs =
+                annotationManager.getInterceptorBindingMetaAnnotations(annotations);
             for (Annotation ann : ibs)
             {
                 this.interceptorBindingTypes.add(ann);
             }
         }
 
-        if (AnnotationUtil.hasStereoTypeMetaAnnotation(annotations))
+        if (annotationManager.hasStereoTypeMetaAnnotation(annotations))
         {
-            Annotation[] isy = AnnotationUtil.getStereotypeMetaAnnotations(annotations);
+            Annotation[] isy =
+                annotationManager.getStereotypeMetaAnnotations(annotations);
 
             Target outerStereo = clazz.getAnnotation(Target.class);
             for (Annotation is : isy)

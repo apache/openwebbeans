@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.util;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -230,6 +231,7 @@ public final class WebBeansAnnotatedTypeUtil
     @SuppressWarnings("unchecked")
     public static <X> void defineDisposalMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
     {
+        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
         Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();    
         ProducerMethodBean<?> previous = null;
         for (AnnotatedMethod<? super X> annotatedMethod : annotatedMethods)
@@ -251,7 +253,7 @@ public final class WebBeansAnnotatedTypeUtil
             {
                 checkProducerMethodDisposal(annotatedMethod);
                 Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
-                Annotation[] annot = AnnotationUtil.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
+                Annotation[] annot = annotationManager.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
 
                 Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
                 if (set.isEmpty())
@@ -337,6 +339,8 @@ public final class WebBeansAnnotatedTypeUtil
     
     public static <X> void defineInjectedFields(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
     {
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+
         Set<AnnotatedField<? super X>> annotatedFields = annotatedType.getFields();   
         for(AnnotatedField<? super X> annotatedField: annotatedFields)
         {
@@ -360,9 +364,9 @@ public final class WebBeansAnnotatedTypeUtil
                     throw new WebBeansConfigurationException("Error in annotated field : " + annotatedField
                                                     +" while definining injected field. If bean has a public modifier injection point, bean scope must be defined as @Dependent");
                 }
-            }                
-            
-            Annotation[] qualifierAnns = AnnotationUtil.getQualifierAnnotations(anns);
+            }
+
+            Annotation[] qualifierAnns = annotationManager.getQualifierAnnotations(anns);
 
             if (qualifierAnns.length > 0)
             {
@@ -713,16 +717,17 @@ public final class WebBeansAnnotatedTypeUtil
 
         Class<?> clazz = type.getJavaClass();
         boolean hasClassInterceptors = false;
-        if (AnnotationUtil.getInterceptorBindingMetaAnnotations(anns).length > 0)
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        if (annotationManager.getInterceptorBindingMetaAnnotations(anns).length > 0)
         {
             hasClassInterceptors = true;
         }
         else
         {
-            Annotation[] stereoTypes = AnnotationUtil.getStereotypeMetaAnnotations(anns);
+            Annotation[] stereoTypes = annotationManager.getStereotypeMetaAnnotations(anns);
             for (Annotation stero : stereoTypes)
             {
-                if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
+                if (annotationManager.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
                 {
                     hasClassInterceptors = true;
                     break;
@@ -748,7 +753,8 @@ public final class WebBeansAnnotatedTypeUtil
                                                     + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
                 }
 
-                if (AnnotationUtil.hasInterceptorBindingMetaAnnotation(AnnotationUtil.getAnnotationsFromSet(methodA.getAnnotations())))
+                if (annotationManager.hasInterceptorBindingMetaAnnotation(
+                    AnnotationUtil.getAnnotationsFromSet(methodA.getAnnotations())))
                 {
                     throw new WebBeansConfigurationException("Method : " + method.getName() + "in managed bean class : " + clazz.getName()
                                                     + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");
@@ -964,7 +970,8 @@ public final class WebBeansAnnotatedTypeUtil
     public static <T> void defineInterceptor(AnnotatedType<T> annotatedType)
     {
         Class<?> clazz = annotatedType.getJavaClass();
-        if (WebBeansContext.getInstance().getInterceptorsManager().isInterceptorEnabled(clazz))
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        if (webBeansContext.getInterceptorsManager().isInterceptorEnabled(clazz))
         {
             ManagedBean<T> delegate = null;
 
@@ -973,8 +980,10 @@ public final class WebBeansAnnotatedTypeUtil
 
             if (delegate != null)
             {
-                WebBeansInterceptorConfig.configureInterceptorClass(delegate, 
-                        AnnotationUtil.getInterceptorBindingMetaAnnotations(annotatedType.getAnnotations().toArray(new Annotation[0])));
+                Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[0]);
+                AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+                WebBeansInterceptorConfig.configureInterceptorClass(delegate,
+                                                                    annotationManager.getInterceptorBindingMetaAnnotations(anns));
             }
             else
             {
@@ -991,6 +1000,8 @@ public final class WebBeansAnnotatedTypeUtil
     public static <X> Method getDisposalWithGivenAnnotatedMethod(AnnotatedType<X> annotatedType, Type beanType, Annotation[] qualifiers)
     {
         Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();  
+        
+        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
         
         if(annotatedMethods != null)
         {
@@ -1013,7 +1024,7 @@ public final class WebBeansAnnotatedTypeUtil
                     if(found)
                     {
                         Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
-                        Annotation[] annots = AnnotationUtil.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
+                        Annotation[] annots = annotationManager.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
                         
                         if(type.equals(beanType))
                         {

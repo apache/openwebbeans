@@ -35,6 +35,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -59,7 +60,7 @@ public final class EventUtil
 
     public static void checkEventBindings(Set<Annotation> annotations)
     {
-        AnnotationUtil.checkQualifierConditions(annotations);
+        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(annotations);
     }
 
     public static void checkEventBindings(Annotation... annotations)
@@ -75,8 +76,8 @@ public final class EventUtil
             }
             ///////////////////////////////////////////////////////
 
-        }        
-        AnnotationUtil.checkQualifierConditions(annotations);
+        }
+        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(annotations);
     }
 
     public static TransactionPhase getObserverMethodTransactionType(Method observerMethod)

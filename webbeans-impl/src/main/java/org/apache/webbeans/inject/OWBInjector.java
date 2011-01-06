@@ -38,6 +38,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetWrapper;
@@ -333,6 +334,7 @@ public final class OWBInjector implements Serializable
     public static void checkInjectionPointForInjectInjectionPoint(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
         Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
         for(Field field : fields)
         {
@@ -340,7 +342,8 @@ public final class OWBInjector implements Serializable
             {
                 if(field.getType() == InjectionPoint.class)
                 {
-                    Annotation[] anns = AnnotationUtil.getQualifierAnnotations(field.getDeclaredAnnotations());
+                    Annotation[] anns = annotationManager.getQualifierAnnotations(
+                        field.getDeclaredAnnotations());
                     if (AnnotationUtil.hasAnnotation(anns, Default.class))
                     {
                         throw new WebBeansConfigurationException("Java EE Component class :  " + clazz + " can not inject InjectionPoint");

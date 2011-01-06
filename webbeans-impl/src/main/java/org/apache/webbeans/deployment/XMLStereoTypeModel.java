@@ -28,11 +28,12 @@ import javax.enterprise.context.NormalScope;
 import javax.inject.Named;
 import javax.inject.Scope;
 
+import org.apache.webbeans.annotation.AnnotationManager;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
-import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.xml.XMLUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -95,6 +96,7 @@ public class XMLStereoTypeModel implements IStereoTypeModel
             annClazz = (Class<? extends Annotation>) clazz;
             Annotation defaultAnn = JavassistProxyFactory.createNewAnnotationProxy(annClazz);
 
+            final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
             if (clazz.isAnnotationPresent(NormalScope.class) || clazz.isAnnotationPresent(Scope.class))
             {
                 if (scopeTypeFound)
@@ -105,7 +107,7 @@ public class XMLStereoTypeModel implements IStereoTypeModel
                 defaultScopeType = defaultAnn;
                 scopeTypeFound = true;
             }                
-            else if (AnnotationUtil.isInterceptorBindingAnnotation(annClazz))
+            else if (annotationManager.isInterceptorBindingAnnotation(annClazz))
             {
                 Target target = clazz.getAnnotation(Target.class);
                 ElementType[] type = target.value();
@@ -126,12 +128,12 @@ public class XMLStereoTypeModel implements IStereoTypeModel
                     throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not define @Named annotation with value");
                 }
             }
-            else if (AnnotationUtil.isQualifierAnnotation(annClazz))
+            else if (annotationManager.isQualifierAnnotation(annClazz))
             {
                 throw new WebBeansConfigurationException(errorMessage + "@StereoType annotation can not define @Qualifier annotation");
             }
 
-            else if (AnnotationUtil.isStereoTypeAnnotation(annClazz))
+            else if (annotationManager.isStereoTypeAnnotation(annClazz))
             {
                 Target innerStereo = clazz.getAnnotation(Target.class);
                 Class<?> outerStereoClass = XMLUtil.getElementJavaType(stereoTypeDecleration);

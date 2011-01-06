@@ -27,7 +27,7 @@ import java.util.Set;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -81,7 +81,7 @@ public final class ResolutionUtil
 
     public static void getInstanceByTypeConditions(Annotation[] qualifiers)
     {
-        AnnotationUtil.checkQualifierConditions(qualifiers);
+        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(qualifiers);
     }
 
     public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers) 
