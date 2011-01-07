@@ -18,23 +18,34 @@
  */
 package org.apache.webbeans.annotation;
 
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.SecurityUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
+import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.New;
 import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.util.Nonbinding;
+import javax.inject.Named;
 import javax.inject.Qualifier;
+import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -452,6 +463,291 @@ public final class AnnotationManager
     private Annotation[] getTransitiveStereoTypes(Annotation[] anns)
     {
         return getStereotypeMetaAnnotations(anns);
+    }
+
+    /**
+     * Returns true if array contains the StereoType meta annotation
+     *
+     * @return true if array contains the StereoType meta annotation
+     */
+    public boolean isComponentHasStereoType(OwbBean<?> component)
+    {
+        Asserts.assertNotNull(component, "component parameter can not be null");
+
+        Set<Annotation> set = component.getOwbStereotypes();
+        Annotation[] anns = new Annotation[set.size()];
+        anns = set.toArray(anns);
+        if (hasStereoTypeMetaAnnotation(anns))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns bean stereotypes.
+     * @param bean bean instance
+     * @return bean stereotypes
+     */
+    public Annotation[] getComponentStereoTypes(OwbBean<?> bean)
+    {
+        Asserts.assertNotNull(bean, "bean parameter can not be null");
+        if (isComponentHasStereoType(bean))
+        {
+            Set<Annotation> set = bean.getOwbStereotypes();
+            Annotation[] anns = new Annotation[set.size()];
+            anns = set.toArray(anns);
+
+            return getStereotypeMetaAnnotations(anns);
+        }
+
+        return new Annotation[] {};
+    }
+
+    /**
+     * Returns true if name exists,false otherwise.
+     * @param bean bean instance
+     * @return true if name exists
+     */
+    public boolean hasNamedOnStereoTypes(OwbBean<?> bean)
+    {
+        Annotation[] types = getComponentStereoTypes(bean);
+
+        for (Annotation ann : types)
+        {
+            if (AnnotationUtil.hasClassAnnotation(ann.annotationType(), Named.class))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Validates that given class obeys stereotype model
+     * defined by the specification.
+     * @param clazz stereotype class
+     */
+    public void checkStereoTypeClass(Class<? extends Annotation> clazz)
+    {
+        checkStereoTypeClass(clazz, clazz.getDeclaredAnnotations());
+    }
+
+    /**
+     * Validates that given class obeys stereotype model
+     * defined by the specification.
+     * @param clazz stereotype class
+     */
+    public void checkStereoTypeClass(Class<? extends Annotation> clazz, Annotation...annotations)
+    {
+        Asserts.nullCheckForClass(clazz);
+
+        boolean scopeTypeFound = false;
+        for (Annotation annotation : annotations)
+        {
+            Class<? extends Annotation> annotType = annotation.annotationType();
+
+            if (annotType.isAnnotationPresent(NormalScope.class) || annotType.isAnnotationPresent(Scope.class))
+            {
+                if (scopeTypeFound == true)
+                {
+                    throw new WebBeansConfigurationException("@StereoType annotation can not contain more " +
+                            "than one @Scope/@NormalScope annotation");
+                }
+                else
+                {
+                    scopeTypeFound = true;
+                }
+            }
+            else if (annotType.equals(Named.class))
+            {
+                Named name = (Named) annotation;
+                if (!name.value().equals(""))
+                {
+                    throw new WebBeansConfigurationException("@StereoType annotation can not define @Named " +
+                            "annotation with value");
+                }
+            }
+            else if (isInterceptorBindingAnnotation(annotType))
+            {
+                Target target = clazz.getAnnotation(Target.class);
+                ElementType[] type = target.value();
+
+                if (type.length != 1 && !type[0].equals(ElementType.TYPE))
+                {
+                    throw new WebBeansConfigurationException("Stereotype with @InterceptorBinding must be " +
+                            "defined as @Target{TYPE}");
+                }
+
+            }
+        }
+    }
+
+    public void checkInterceptorResolverParams(Annotation... interceptorBindings)
+    {
+        if (interceptorBindings == null || interceptorBindings.length == 0)
+        {
+            throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor bindings " +
+                    "array argument can not be empty");
+        }
+
+        Annotation old = null;
+        for (Annotation interceptorBinding : interceptorBindings)
+        {
+            if (!this.isInterceptorBindingAnnotation(
+                interceptorBinding.annotationType()))
+            {
+                throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor" +
+                        " bindings array can not contain other annotation that is not @InterceptorBinding");
+            }
+
+            if (old == null)
+            {
+                old = interceptorBinding;
+            }
+            else
+            {
+                if (old.equals(interceptorBinding))
+                {
+                    throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor " +
+                            "bindings array argument can not define duplicate binding annotation with name : @" +
+                            old.getClass().getName());
+                }
+
+                old = interceptorBinding;
+            }
+        }
+    }
+
+    public void checkDecoratorResolverParams(Set<Type> apiTypes, Annotation... qualifiers)
+    {
+        if (apiTypes == null || apiTypes.size() == 0)
+        {
+            throw new IllegalArgumentException("Manager.resolveDecorators() method parameter api types argument " +
+                    "can not be empty");
+        }
+
+        Annotation old = null;
+        for (Annotation qualifier : qualifiers)
+        {
+            if (!this.isQualifierAnnotation(qualifier.annotationType()))
+            {
+                throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers array " +
+                        "can not contain other annotation that is not @Qualifier");
+            }
+            if (old == null)
+            {
+                old = qualifier;
+            }
+            else
+            {
+                if (old.annotationType().equals(qualifier.annotationType()))
+                {
+                    throw new IllegalArgumentException("Manager.resolveDecorators() method parameter qualifiers " +
+                            "array argument can not define duplicate qualifier annotation with name : @" +
+                            old.annotationType().getName());
+                }
+
+                old = qualifier;
+            }
+        }
+
+    }
+
+
+    /**
+     * Check conditions for the new binding.
+     * @param annotations annotations
+     * @return Annotation[] with all binding annotations
+     * @throws WebBeansConfigurationException if New plus any other binding annotation is set
+     */
+    public Annotation[] checkForNewQualifierForDeployment(Type type, Class<?> clazz, String name,
+                                                                 Annotation[] annotations)
+    {
+        Asserts.assertNotNull(type, "Type argument can not be null");
+        Asserts.nullCheckForClass(clazz);
+        Asserts.assertNotNull(annotations, "Annotations argument can not be null");
+
+        Annotation[] as = this.getQualifierAnnotations(annotations);
+        for (Annotation a : annotations)
+        {
+            if (a.annotationType().equals(New.class))
+            {
+                if (as.length > 1)
+                {
+                    throw new WebBeansConfigurationException("@New binding annotation can not have any binding "
+                                                             + "annotation in class : " + clazz.getName()
+                                                             + " in field/method : " + name);
+                }
+            }
+        }
+
+        return as;
+    }
+
+    /**
+     * Configures the name of the producer method for specializing the parent.
+     *
+     * @param component producer method component
+     * @param method specialized producer method
+     * @param superMethod overriden super producer method
+     */
+    public boolean configuredProducerSpecializedName(AbstractOwbBean<?> component,
+                                                            Method method,
+                                                            Method superMethod)
+    {
+        Asserts.assertNotNull(component,"component parameter can not be null");
+        Asserts.assertNotNull(method,"method parameter can not be null");
+        Asserts.assertNotNull(superMethod,"superMethod parameter can not be null");
+
+        String name = null;
+        boolean hasName = false;
+        if(AnnotationUtil.hasMethodAnnotation(superMethod, Named.class))
+        {
+            Named named =  superMethod.getAnnotation(Named.class);
+            hasName = true;
+            if(!named.value().equals(""))
+            {
+                name = named.value();
+            }
+            else
+            {
+                name = WebBeansUtil.getProducerDefaultName(superMethod.getName());
+            }
+        }
+        else
+        {
+            Annotation[] anns = this.getStereotypeMetaAnnotations(superMethod.getAnnotations());
+            for(Annotation ann : anns)
+            {
+                if(ann.annotationType().isAnnotationPresent(Stereotype.class))
+                {
+                    hasName = true;
+                    name = WebBeansUtil.getProducerDefaultName(superMethod.getName());
+                    break;
+                }
+            }
+        }
+
+        if(hasName)
+        {
+            if(AnnotationUtil.hasMethodAnnotation(method, Named.class))
+            {
+                throw new DefinitionException("Specialized method : " + method.getName() + " in class : "
+                        + component.getReturnType().getName() + " may not define @Named annotation");
+            }
+
+            component.setName(name);
+        }
+
+        return hasName;
+//        else
+//        {
+//            component.setName(name);
+//        }
+
     }
 
 }
