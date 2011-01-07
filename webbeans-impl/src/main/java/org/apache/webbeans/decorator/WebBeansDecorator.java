@@ -210,7 +210,8 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         {
             if (!(ClassUtil.getClass(decType)).isAssignableFrom(ClassUtil.getClass(fieldType)))
             {
-                throw new WebBeansConfigurationException("Decorator : " + toString() + " delegate attribute must implement all of the decorator decorated types.");
+                throw new WebBeansConfigurationException("Decorator : " + toString() + " delegate attribute must implement all of the decorator decorated types" + 
+                        ", but decorator type " + decType + " is not assignable from delegate type of " + fieldType);
             }
             else
             {
