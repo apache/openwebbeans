@@ -22,10 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 
 import javax.enterprise.context.spi.CreationalContext;
-
 import javassist.util.proxy.ProxyObject;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.proxy.ResourceProxyHandler;
 import org.apache.webbeans.spi.ResourceInjectionService;
@@ -50,7 +47,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
     {
         try
         {
-            ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
+            ResourceInjectionService resourceService = getWebBeansContext().getService(ResourceInjectionService.class);
             X instance = resourceService.getResourceReference(this.resourceReference);
 
             if (instance == null || Modifier.isFinal(instance.getClass().getModifiers()))
@@ -58,7 +55,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
                 return instance;
             }
 
-            X proxyInstance = (X) WebBeansContext.getInstance().getJavassistProxyFactory().getResourceBeanProxyClass(this).newInstance();
+            X proxyInstance = (X) getWebBeansContext().getJavassistProxyFactory().getResourceBeanProxyClass(this).newInstance();
             ((ProxyObject) proxyInstance).setHandler(new ResourceProxyHandler(this,instance));
             return proxyInstance;
         }
@@ -77,7 +74,7 @@ public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
      */
     public X getActualInstance() 
     {
-        ResourceInjectionService resourceService = ServiceLoader.getService(ResourceInjectionService.class);
+        ResourceInjectionService resourceService = getWebBeansContext().getService(ResourceInjectionService.class);
         X instance = resourceService.getResourceReference(this.resourceReference);
         return instance;
     }

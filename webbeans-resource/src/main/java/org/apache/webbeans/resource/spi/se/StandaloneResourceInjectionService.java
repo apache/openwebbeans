@@ -36,7 +36,7 @@ import javax.xml.ws.WebServiceRef;
 
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.corespi.ServiceLoader;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.FailOverService;
@@ -56,6 +56,18 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     private final StandaloneResourceProcessor processor = StandaloneResourceProcessor.getProcessor();
     
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneResourceInjectionService.class);
+
+    private final WebBeansContext webBeansContext;
+
+    public StandaloneResourceInjectionService(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
+    }
+
+    protected WebBeansContext getWebBeansContext()
+    {
+        return webBeansContext;
+    }
 
     @Override
     public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference)
@@ -146,7 +158,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     public <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException
     {
         // try fail over service to serialize the resource object
-        FailOverService failoverService = ServiceLoader.getService(FailOverService.class);
+        FailOverService failoverService = webBeansContext.getService(FailOverService.class);
         if (failoverService != null)
         {
             Object ret = failoverService.handleResource(bean, actualResource, null, out);
@@ -178,7 +190,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     {
         T actualResource = null;
         // try fail over service to serialize the resource object
-        FailOverService failoverService = ServiceLoader.getService(FailOverService.class);
+        FailOverService failoverService = webBeansContext.getService(FailOverService.class);
         if (failoverService != null)
         {
             actualResource = (T) failoverService.handleResource(bean, actualResource, in, null);

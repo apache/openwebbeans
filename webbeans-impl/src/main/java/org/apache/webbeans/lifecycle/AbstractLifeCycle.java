@@ -30,7 +30,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.spi.ContainerLifecycle;
@@ -78,12 +77,16 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         this.beanManager = webBeansContext.getBeanManagerImpl();
         this.xmlDeployer = new WebBeansXMLConfigurator();
         this.deployer = new BeansDeployer(xmlDeployer);
-        this.jndiService = ServiceLoader.getService(JNDIService.class);    
+        this.jndiService = webBeansContext.getService(JNDIService.class);
         this.beanManager.setXMLConfigurator(this.xmlDeployer);
-        this.scannerService = ServiceLoader.getService(ScannerService.class);
-        this.contextsService = ServiceLoader.getService(ContextsService.class);
-        this.beanManager.setScannerService(scannerService);
-        initApplication(properties);                
+        this.scannerService = webBeansContext.getScannerService();
+        this.contextsService = webBeansContext.getService(ContextsService.class);
+        initApplication(properties);
+    }
+
+    public WebBeansContext getWebBeansContext()
+    {
+        return webBeansContext;
     }
 
     @Override
@@ -195,10 +198,10 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     /**
      * @return the scannerService
      */
-    protected ScannerService getScannerService()
-    {
-        return scannerService;
-    }
+//    protected ScannerService getScannerService()
+//    {
+//        return scannerService;
+//    }
 
     /**
      * @return the contextsService
@@ -211,26 +214,26 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     /**
      * @return the deployer
      */
-    protected BeansDeployer getDeployer()
-    {
-        return deployer;
-    }
+//    protected BeansDeployer getDeployer()
+//    {
+//        return deployer;
+//    }
 
     /**
      * @return the xmlDeployer
      */
-    protected WebBeansXMLConfigurator getXmlDeployer()
-    {
-        return xmlDeployer;
-    }
+//    protected WebBeansXMLConfigurator getXmlDeployer()
+//    {
+//        return xmlDeployer;
+//    }
 
     /**
      * @return the jndiService
      */
-    protected JNDIService getJndiService()
-    {
-        return jndiService;
-    }
+//    protected JNDIService getJndiService()
+//    {
+//        return jndiService;
+//    }
 
     @Override
     public void initApplication(Properties properties)

@@ -25,7 +25,6 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.ValidatorService;
 
 public class ValidatorBean extends AbstractOwbBean<Validator>
@@ -43,7 +42,7 @@ public class ValidatorBean extends AbstractOwbBean<Validator>
     @Override
     protected Validator createInstance(CreationalContext<Validator> creationalContext)
     {
-        ValidatorService validatorService = ServiceLoader.getService(ValidatorService.class);
+        ValidatorService validatorService = getWebBeansContext().getService(ValidatorService.class);
         if(validatorService != null)
         {
             return validatorService.getDefaultValidator();

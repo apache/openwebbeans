@@ -25,7 +25,7 @@ import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.corespi.ServiceLoader;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.TransactionService;
 
@@ -41,7 +41,7 @@ public class TransactionalEventNotifier
     
     public static void registerTransactionSynchronization(TransactionPhase phase, ObserverMethod<? super Object> observer, Object event) throws Exception
     {
-        TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
+        TransactionService transactionService = WebBeansContext.getInstance().getService(TransactionService.class);
         
         Transaction transaction = null;
         if(transactionService != null)

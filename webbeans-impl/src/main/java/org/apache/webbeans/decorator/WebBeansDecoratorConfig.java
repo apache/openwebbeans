@@ -31,14 +31,12 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
-
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -118,7 +116,7 @@ public final class WebBeansDecoratorConfig
     private static void filterDecoratorsPerBDA(AbstractInjectionTargetBean<?> component, List<Decorator<?>> stack)
     {
 
-        ScannerService scannerService = ServiceLoader.getService(ScannerService.class);
+        ScannerService scannerService = component.getWebBeansContext().getScannerService();
         if (!scannerService.isBDABeansXmlScanningEnabled())
         {
             return;

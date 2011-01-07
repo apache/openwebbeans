@@ -19,6 +19,7 @@
 package org.apache.webbeans.resource.spi.ee;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.resource.spi.se.StandaloneResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
@@ -36,6 +37,12 @@ import java.util.Iterator;
  */
 public class ExtendedStandaloneResourceInjectionService extends StandaloneResourceInjectionService
 {
+
+    public ExtendedStandaloneResourceInjectionService(WebBeansContext webBeansContext)
+    {
+        super(webBeansContext);
+    }
+
     @Override
     public <X, T extends Annotation> X getResourceReference(ResourceReference<X, T> resourceReference)
     {
@@ -66,7 +73,7 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
         catch (NamingException e)
         {
             //fallback for a servlet container
-            BeanManagerImpl beanManager = BeanManagerImpl.getManager();
+            BeanManagerImpl beanManager = getWebBeansContext().getBeanManagerImpl();
 
             Iterator<Bean<?>> beansIterator = beanManager.getBeans(resourceType, new DefaultLiteral()).iterator();
 

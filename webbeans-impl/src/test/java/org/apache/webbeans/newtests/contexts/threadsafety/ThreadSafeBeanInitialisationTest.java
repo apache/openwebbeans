@@ -54,11 +54,11 @@ public class ThreadSafeBeanInitialisationTest extends AbstractUnitTest
         classes.add(LongInitApplicationBean.class);
         startContainer(classes);
 
-        BeanManager bm = getLifecycle().getBeanManager();
+        BeanManager bm = getBeanManager();
 
-        ParallelBeanStarter bs1 = new ParallelBeanStarter(bm, getLifecycle().getContextService());
-        ParallelBeanStarter bs2 = new ParallelBeanStarter(bm, getLifecycle().getContextService());
-        ParallelBeanStarter bs3 = new ParallelBeanStarter(bm, getLifecycle().getContextService());
+        ParallelBeanStarter bs1 = new ParallelBeanStarter(bm, getWebBeansContext().getContextsService());
+        ParallelBeanStarter bs2 = new ParallelBeanStarter(bm, getWebBeansContext().getContextsService());
+        ParallelBeanStarter bs3 = new ParallelBeanStarter(bm, getWebBeansContext().getContextsService());
 
         bs1.start();
         bs2.start();

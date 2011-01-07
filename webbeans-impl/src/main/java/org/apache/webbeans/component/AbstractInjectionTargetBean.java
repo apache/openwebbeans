@@ -34,13 +34,11 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
-
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -402,7 +400,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 ResourceInjectionService service = null;
                 try
                 {
-                    service = ServiceLoader.getService(ResourceInjectionService.class);
+                    service = getWebBeansContext().getService(ResourceInjectionService.class);
                     
                 }
                 catch(Exception e)

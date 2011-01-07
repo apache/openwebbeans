@@ -26,7 +26,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.swing.JFrame;
 
-import org.apache.webbeans.lifecycle.LifecycleFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.se.sample.gui.LoginWindow;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
@@ -40,7 +40,7 @@ public class Boot
     {
         try
         {
-            lifecycle = LifecycleFactory.getInstance().getLifecycle();
+            lifecycle = WebBeansContext.getInstance().getService(ContainerLifecycle.class);
             lifecycle.startApplication(startupObject);
             
         }

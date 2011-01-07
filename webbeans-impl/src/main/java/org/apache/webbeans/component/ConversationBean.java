@@ -20,10 +20,7 @@ package org.apache.webbeans.component;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.spi.CreationalContext;
-
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationImpl;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.ConversationService;
 
 /**
@@ -49,7 +46,7 @@ public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
     {
         Conversation conversation = null;
         //Gets conversation service
-        ConversationService conversationService = ServiceLoader.getService(ConversationService.class);        
+        ConversationService conversationService = getWebBeansContext().getService(ConversationService.class);
         //Gets conversation id
         String conversationId = conversationService.getConversationId();       
         //Gets session id that conversation is created
@@ -60,7 +57,7 @@ public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
         if (conversationId != null)
         {
             //Gets propogated conversation
-            conversation = WebBeansContext.getInstance().getConversationManager().getPropogatedConversation(conversationId,sessionId);
+            conversation = getWebBeansContext().getConversationManager().getPropogatedConversation(conversationId,sessionId);
         }
         
         if (conversation == null)

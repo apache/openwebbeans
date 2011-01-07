@@ -30,9 +30,12 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
+import org.apache.webbeans.spi.ScannerService;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
 
 
@@ -40,52 +43,38 @@ public abstract class AbstractUnitTest
 {
     private OpenWebBeansTestLifeCycle testLifecycle;
     private List<Extension>  extensions = new ArrayList<Extension>();
+    private WebBeansContext webBeansContext;
 
     protected AbstractUnitTest()
     {
-        
+
     }
     
     protected void startContainer(Collection<Class<?>> beanClasses)
     {
-        //Creates a new container
-        testLifecycle = new OpenWebBeansTestLifeCycle();
-        
-        for (Extension ext : extensions)
-        {
-            WebBeansContext.getInstance().getExtensionLoader().addExtension(ext);
-        }
-        
-        //Deploy bean classes
-        OpenWebBeansTestMetaDataDiscoveryService discoveyService = (OpenWebBeansTestMetaDataDiscoveryService)testLifecycle.getScannerService();
-        discoveyService.deployClasses(beanClasses);
-        
-        //Start application
-        try
-        {
-            testLifecycle.startApplication(null);
-        }
-        catch (Exception e)
-        {
-            throw new WebBeansConfigurationException(e);
-        }
+        startContainer(beanClasses, null);
     }
     
     protected void startContainer(Collection<Class<?>> beanClasses, Collection<URL> beanXmls)
     {
+        WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
         //Creates a new container
         testLifecycle = new OpenWebBeansTestLifeCycle();
         
+        webBeansContext = WebBeansContext.getInstance();
         for (Extension ext : extensions)
         {
-            WebBeansContext.getInstance().getExtensionLoader().addExtension(ext);
+            webBeansContext.getExtensionLoader().addExtension(ext);
         }
         
         //Deploy bean classes
-        OpenWebBeansTestMetaDataDiscoveryService discoveyService = (OpenWebBeansTestMetaDataDiscoveryService)testLifecycle.getScannerService();
-        discoveyService.deployClasses(beanClasses);
-        discoveyService.deployXMLs(beanXmls);
-        
+        OpenWebBeansTestMetaDataDiscoveryService discoveryService = (OpenWebBeansTestMetaDataDiscoveryService)webBeansContext.getScannerService();
+        discoveryService.deployClasses(beanClasses);
+        if (beanXmls != null)
+        {
+            discoveryService.deployXMLs(beanXmls);
+        }
+
         //Start application
         try
         {
@@ -107,15 +96,15 @@ public abstract class AbstractUnitTest
             this.testLifecycle.stopApplication(null);
         }        
     }
-    
-    protected OpenWebBeansTestLifeCycle getLifecycle()
+        
+    protected WebBeansContext getWebBeansContext()
     {
-        return this.testLifecycle;
+        return this.webBeansContext;
     }
     
     protected BeanManager getBeanManager()
     {
-        return this.testLifecycle.getBeanManager();
+        return this.webBeansContext.getBeanManagerImpl();
     }
     
     @SuppressWarnings("unchecked")

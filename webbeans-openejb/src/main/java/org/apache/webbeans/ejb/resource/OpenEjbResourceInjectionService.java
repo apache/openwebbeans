@@ -32,7 +32,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.corespi.ServiceLoader;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -51,6 +51,13 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
     private static final String DUMMY_STRING = "owb.actual.resource.dummy";
 
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(OpenEjbResourceInjectionService.class);
+
+    private final WebBeansContext webBeansContext;
+
+    public OpenEjbResourceInjectionService(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
+    }
 
     @Override
     public void clear()
@@ -118,7 +125,7 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
     public <T> void writeExternal(Bean<T> bean, T actualResource, ObjectOutput out) throws IOException
     {
         // try fail over service to serialize the resource object
-        FailOverService failoverService = ServiceLoader.getService(FailOverService.class);
+        FailOverService failoverService = webBeansContext.getService(FailOverService.class);
         if (failoverService != null)
         {
             Object ret = failoverService.handleResource(bean, actualResource, null, out);
@@ -150,7 +157,7 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
     {
         T actualResource = null;
         // try fail over service to serialize the resource object
-        FailOverService failoverService = ServiceLoader.getService(FailOverService.class);
+        FailOverService failoverService = webBeansContext.getService(FailOverService.class);
         if (failoverService != null)
         {
             actualResource = (T) failoverService.handleResource(bean, actualResource, in, null);

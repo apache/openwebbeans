@@ -19,31 +19,6 @@
 
 package org.apache.webbeans.event;
 
-import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.corespi.ServiceLoader;
-import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
-import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
-import org.apache.webbeans.spi.TransactionService;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.ArrayUtil;
-import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
-
-import javax.enterprise.event.ObserverException;
-import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
-import javax.enterprise.event.TransactionPhase;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
-import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -56,16 +31,41 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.event.ObserverException;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.Reception;
+import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.ObserverMethod;
+import javax.enterprise.inject.spi.ProcessObserverMethod;
+import javax.enterprise.util.TypeLiteral;
+import org.apache.webbeans.annotation.AnyLiteral;
+import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
+import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
+import org.apache.webbeans.spi.TransactionService;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.ArrayUtil;
+import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
+
 @SuppressWarnings("unchecked")
 public final class NotificationManager
 {
     private final WebBeansLogger logger = WebBeansLogger.getLogger(NotificationManager.class);
 
     private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<Type, Set<ObserverMethod<?>>>();
+    private final WebBeansContext webBeansContext;
 
-    public NotificationManager()
+    public NotificationManager(WebBeansContext webBeansContext)
     {
-
+        this.webBeansContext = webBeansContext;
     }
 
     public static NotificationManager getInstance()
@@ -426,7 +426,7 @@ public final class NotificationManager
                 
                 if(phase != null && !phase.equals(TransactionPhase.IN_PROGRESS))
                 {
-                    TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
+                    TransactionService transactionService = webBeansContext.getService(TransactionService.class);
                     if(transactionService != null)
                     {
                         transactionService.registerTransactionSynchronization(phase, observer, event);

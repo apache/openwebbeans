@@ -29,9 +29,9 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.corespi.se.DefaultContextsService;
-import org.apache.webbeans.corespi.se.DefaultJndiService;
-import org.apache.webbeans.corespi.se.DefaultScannerService;
+//import org.apache.webbeans.corespi.se.DefaultContextsService;
+//import org.apache.webbeans.corespi.se.DefaultJndiService;
+//import org.apache.webbeans.corespi.se.DefaultScannerService;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
@@ -42,6 +42,8 @@ import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.spi.ContextsService;
+import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.xml.WebBeansNameSpaceContainer;
@@ -57,12 +59,9 @@ public class WebBeansContext
     private AlternativesManager alternativesManager = new AlternativesManager(this);
     private AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory();
     private BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
-    private ConversationManager conversationManager = new ConversationManager();
+    private ConversationManager conversationManager = new ConversationManager(this);
     private CreationalContextFactory creationalContextFactory = new CreationalContextFactory();
     private DecoratorsManager decoratorsManager = new DecoratorsManager(this);
-    private DefaultContextsService defaultContextsService = new DefaultContextsService();
-    private DefaultJndiService defaultJndiService = new DefaultJndiService();
-    private DefaultScannerService defaultScannerService = new DefaultScannerService();
     private ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private InterceptorsManager interceptorsManager = new InterceptorsManager(this);
     private JMSManager jmsManager = new JMSManager();
@@ -92,9 +91,6 @@ public class WebBeansContext
         managerMap.put(ConversationManager.class.getName(), conversationManager);
         managerMap.put(CreationalContextFactory.class.getName(), creationalContextFactory);
         managerMap.put(DecoratorsManager.class.getName(), decoratorsManager);
-        managerMap.put(DefaultContextsService.class.getName(), defaultContextsService);
-        managerMap.put(DefaultJndiService.class.getName(), defaultJndiService);
-        managerMap.put(DefaultScannerService.class.getName(), defaultScannerService);
         managerMap.put(ExtensionLoader.class.getName(), extensionLoader);
         managerMap.put(InterceptorsManager.class.getName(), interceptorsManager);
         managerMap.put(JMSManager.class.getName(), jmsManager);
@@ -118,7 +114,7 @@ public class WebBeansContext
 
     public <T> T getService(Class<T> clazz)
     {
-        T t = (T) serviceMap.get(clazz);
+        T t = clazz.cast(serviceMap.get(clazz));
         if (t == null)
         {
             t = doServiceLoader(clazz);
@@ -157,7 +153,7 @@ public class WebBeansContext
 //            }
             return null;
         }
-        return (T) WebBeansFinder.getSingletonInstance(implName);
+        return serviceInterface.cast(WebBeansFinder.getSingletonInstance(implName));
     }
 
     public AnnotationManager getAnnotationManager()
@@ -193,21 +189,6 @@ public class WebBeansContext
     public CreationalContextFactory getCreationalContextFactory()
     {
         return creationalContextFactory;
-    }
-
-    public DefaultContextsService getDefaultContextsService()
-    {
-        return defaultContextsService;
-    }
-
-    public DefaultJndiService getDefaultJndiService()
-    {
-        return defaultJndiService;
-    }
-
-    public DefaultScannerService getDefaultScannerService()
-    {
-        return defaultScannerService;
     }
 
     public DecoratorsManager getDecoratorsManager()
@@ -263,6 +244,17 @@ public class WebBeansContext
     public XMLSpecializesManager getxMLSpecializesManager()
     {
         return xmlSpecializesManager;
+    }
+
+    //candidates for fields
+    public ScannerService getScannerService()
+    {
+        return getService(ScannerService.class);
+    }
+
+    public ContextsService getContextsService()
+    {
+        return getService(ContextsService.class);
     }
 
     public Object get(String singletonName)

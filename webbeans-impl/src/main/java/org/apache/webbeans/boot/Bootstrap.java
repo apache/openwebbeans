@@ -22,7 +22,7 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.lifecycle.LifecycleFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
@@ -30,7 +30,7 @@ public class Bootstrap
 {
     private static final WebBeansLogger log = WebBeansLogger.getLogger(Bootstrap.class);
     
-    private CountDownLatch latch = new CountDownLatch(1);
+    private final CountDownLatch latch = new CountDownLatch(1);
     
     private ContainerLifecycle containerLifecycle = null;
     
@@ -39,7 +39,7 @@ public class Bootstrap
     public void init(Properties properties)
     {
         log.info(OWBLogConst.INFO_0006);
-        this.containerLifecycle = LifecycleFactory.getInstance().getLifecycle();
+        this.containerLifecycle = WebBeansContext.getInstance().getService(ContainerLifecycle.class);
     }
     
     public void start() throws Exception

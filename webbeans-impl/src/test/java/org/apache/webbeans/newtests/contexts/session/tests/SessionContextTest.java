@@ -82,8 +82,8 @@ public class SessionContextTest extends AbstractUnitTest
         Assert.assertNotNull(pdb1);
         
         // now we reset the session Context so we should get a new contextual instance.
-        getLifecycle().getContextService().endContext(SessionScoped.class, null);
-        getLifecycle().getContextService().startContext(SessionScoped.class, null);
+        getWebBeansContext().getContextsService().endContext(SessionScoped.class, null);
+        getWebBeansContext().getContextsService().startContext(SessionScoped.class, null);
         
         PersonalDataBean pdb2 = appBeanInstance.getPdb().getInstance();
         Assert.assertNotNull(pdb2);

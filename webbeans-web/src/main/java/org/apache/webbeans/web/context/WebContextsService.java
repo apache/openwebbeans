@@ -28,7 +28,6 @@ import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
 import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.FailOverService;
@@ -86,7 +85,7 @@ public class WebContextsService extends AbstractContextsService
     private final SessionContextManager sessionCtxManager = SessionContextManager.getInstance();
 
     /**Conversation context manager*/
-    private final ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
+    private final ConversationManager conversationManager;
 
     private boolean supportsConversation = false;
     
@@ -122,11 +121,11 @@ public class WebContextsService extends AbstractContextsService
     /**
      * Creates a new instance.
      */
-    public WebContextsService()
+    public WebContextsService(WebBeansContext webBeansContext)
     {
-        supportsConversation =  WebBeansContext.getInstance().getOpenWebBeansConfiguration().supportsConversation();
-        failoverService = (FailOverService) ServiceLoader.getService(FailOverService.class);
-
+        supportsConversation =  webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
+        failoverService = webBeansContext.getService(FailOverService.class);
+        conversationManager = webBeansContext.getConversationManager();
     }
     
     /**

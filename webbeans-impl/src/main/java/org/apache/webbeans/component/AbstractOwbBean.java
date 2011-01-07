@@ -32,7 +32,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.spi.InjectionPoint;
-
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -103,11 +102,9 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     protected String passivatingId = null;
     
-    /**Bean Manager*/
-    private final BeanManagerImpl manager;
+    private final WebBeansContext webBeansContext;
 
-    
-            
+
     /**
      * Constructor definiton. Each subclass redefines its own constructor with
      * calling this.
@@ -119,7 +116,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         this.webBeansType = webBeansType;
         this.returnType = returnType;
-        this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
+        webBeansContext = WebBeansContext.getInstance();
     }
     
     /**
@@ -131,6 +128,16 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         this(webBeanType, null);
     }
+
+    /**
+     * Get the web beans context this bean is associated with
+     *
+     * @return WebBeansContext this bean is associated with
+     */
+    public WebBeansContext getWebBeansContext()
+    {
+        return webBeansContext;
+    }
     
     /**
      * Gets manager instance
@@ -139,7 +146,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */
     protected BeanManagerImpl getManager()
     {
-        return manager;
+        return webBeansContext.getBeanManagerImpl();
     }
     
     

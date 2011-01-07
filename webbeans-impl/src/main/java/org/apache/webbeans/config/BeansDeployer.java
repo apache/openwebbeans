@@ -38,7 +38,6 @@ import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.interceptor.Interceptor;
-
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
@@ -50,12 +49,11 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
+import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.corespi.se.DefaultJndiService;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.deployment.StereoTypeModel;
@@ -76,10 +74,10 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.InjectionExceptionUtils;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.util.InjectionExceptionUtils;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
 /**
@@ -135,7 +133,7 @@ public class BeansDeployer
                 webBeansContext.getExtensionLoader().loadExtensionServices();
 
                 // Bind manager
-                JNDIService service = ServiceLoader.getService(JNDIService.class);
+                JNDIService service = webBeansContext.getService(JNDIService.class);
                 
                 //Default jndi is just a map
                 if(service instanceof DefaultJndiService)

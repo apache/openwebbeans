@@ -31,7 +31,6 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.util.Asserts;
 
@@ -45,26 +44,15 @@ import org.apache.webbeans.util.Asserts;
 public class ConversationManager
 {
     /**Current conversations*/
-    private ConcurrentHashMap<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
+    private final ConcurrentHashMap<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
+    private final WebBeansContext webBeansContext;
 
     /**
      * Creates new conversation manager
      */
-    public ConversationManager()
+    public ConversationManager(WebBeansContext webBeansContext)
     {
-        
-    }
-
-    /**
-     * Gets conversation manager instance.
-     * @return conversation manager
-     */
-    @Deprecated
-    public static ConversationManager getInstance()
-    {
-        ConversationManager manager = (ConversationManager) WebBeansFinder.getSingletonInstance(ConversationManager.class.getName());
-
-        return manager;
+        this.webBeansContext = webBeansContext;
     }
 
     /**
@@ -210,7 +198,7 @@ public class ConversationManager
     @SuppressWarnings("unchecked")
     public Conversation getConversationBeanReference()
     {
-        BeanManager beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
+        BeanManager beanManager = webBeansContext.getBeanManagerImpl();
         Bean<Conversation> bean = (Bean<Conversation>)beanManager.getBeans(Conversation.class, new DefaultLiteral()).iterator().next();
         Conversation conversation =(Conversation) beanManager.getReference(bean, Conversation.class, beanManager.createCreationalContext(bean));
 

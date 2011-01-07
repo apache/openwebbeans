@@ -22,7 +22,6 @@ import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.lifecycle.AbstractLifeCycle;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -98,10 +97,10 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         service = Executors.newScheduledThreadPool(1);
         service.scheduleWithFixedDelay(new ConversationCleaner(), delay, delay, TimeUnit.MILLISECONDS);
 
-        ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
+        ELAdaptor elAdaptor = getWebBeansContext().getService(ELAdaptor.class);
         ELResolver resolver = elAdaptor.getOwbELResolver();
         //Application is configured as JSP
-        if(WebBeansContext.getInstance().getOpenWebBeansConfiguration().isJspApplication())
+        if(getWebBeansContext().getOpenWebBeansConfiguration().isJspApplication())
         {
             logger.debug("Application is configured as JSP. Adding EL Resolver.");
             
@@ -157,7 +156,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         }
 
         //Clear the resource injection service
-        ResourceInjectionService injectionServices = ServiceLoader.getService(ResourceInjectionService.class);
+        ResourceInjectionService injectionServices = getWebBeansContext().getService(ResourceInjectionService.class);
         if(injectionServices != null)
         {
             injectionServices.clear();

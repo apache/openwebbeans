@@ -46,10 +46,8 @@ import org.apache.openejb.jee.SingletonBean;
 import org.apache.openejb.jee.StatefulBean;
 import org.apache.openejb.jee.StatelessBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
-import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
 import org.jboss.testharness.api.DeploymentException;
 import org.jboss.testharness.spi.StandaloneContainers;
@@ -63,7 +61,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
     public void deployInternal(Iterable<Class<?>> classes) throws DeploymentException
     {
         // Scanner service
-        final TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl) ServiceLoader.getService(ScannerService.class);
+        final TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl) WebBeansContext.getInstance().getScannerService();
 
         // Lifecycle container
         this.lifeCycle = new StandaloneLifeCycle()
@@ -98,7 +96,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
     {
         try
         {
-            final TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl) ServiceLoader.getService(ScannerService.class);
+            final TCKMetaDataDiscoveryImpl discovery = (TCKMetaDataDiscoveryImpl) WebBeansContext.getInstance().getScannerService();
 
             // Lifecycle container
             this.lifeCycle = new StandaloneLifeCycle()

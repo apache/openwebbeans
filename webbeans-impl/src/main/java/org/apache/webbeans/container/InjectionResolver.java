@@ -18,26 +18,6 @@
  */
 package org.apache.webbeans.container;
 
-import org.apache.webbeans.annotation.AnyLiteral;
-import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.corespi.ServiceLoader;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.inject.NullableDependencyException;
-import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.spi.BDABeansXmlScanner;
-import org.apache.webbeans.spi.ScannerService;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -47,6 +27,25 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.New;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import org.apache.webbeans.annotation.AnyLiteral;
+import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.inject.NullableDependencyException;
+import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.spi.BDABeansXmlScanner;
+import org.apache.webbeans.spi.ScannerService;
+import org.apache.webbeans.util.AnnotationUtil;
+import org.apache.webbeans.util.Asserts;
+import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Injection point resolver class. 
@@ -65,7 +64,7 @@ public class InjectionResolver
     private final WebBeansLogger logger = WebBeansLogger.getLogger(InjectionResolver.class);
 
     /**Bean Manager*/
-    private BeanManagerImpl manager;
+    private WebBeansContext webBeansContext;
     
     /**
      * This Map contains all resolved beans via it's type and qualifiers.
@@ -83,11 +82,11 @@ public class InjectionResolver
     /**
      * Creates a new injection resolve for given bean manager.
      * 
-     * @param manager bean manager
+     * @param webBeansContext WebBeansContext
      */
-    public InjectionResolver(BeanManagerImpl manager)
+    public InjectionResolver(WebBeansContext webBeansContext)
     {
-        this.manager = manager;
+        this.webBeansContext = webBeansContext;
 
     }
     
@@ -299,7 +298,7 @@ public class InjectionResolver
         }
 
         resolvedComponents = new HashSet<Bean<?>>();        
-        Set<Bean<?>> deployedComponents = this.manager.getBeans();
+        Set<Bean<?>> deployedComponents = this.webBeansContext.getBeanManagerImpl().getBeans();
         
         Iterator<Bean<?>> it = deployedComponents.iterator();
         //Finding all beans with given name
@@ -408,7 +407,7 @@ public class InjectionResolver
             return null;
         }
 
-        ScannerService scannerService = ServiceLoader.getService(ScannerService.class);
+        ScannerService scannerService = webBeansContext.getScannerService();
         BDABeansXmlScanner beansXMLScanner = scannerService.getBDABeansXmlScanner();
         return beansXMLScanner.getBeansXml(injectionPointBeanClass);
     }
@@ -422,7 +421,7 @@ public class InjectionResolver
      */
     public Set<Bean<?>> implResolveByType(Type injectionPointType, Class<?> injectinPointClass, Annotation... qualifiers)
     {
-        ScannerService scannerService = ServiceLoader.getService(ScannerService.class);
+        ScannerService scannerService = webBeansContext.getScannerService();
         String bdaBeansXMLFilePath =null;
         if (scannerService.isBDABeansXmlScanningEnabled())
         {
@@ -450,7 +449,7 @@ public class InjectionResolver
         
         resolvedComponents = new HashSet<Bean<?>>();
         
-        Set<Bean<?>> deployedComponents = this.manager.getBeans();
+        Set<Bean<?>> deployedComponents = this.webBeansContext.getBeanManagerImpl().getBeans();
 
         boolean currentQualifier = false;
         boolean returnAll = false;
@@ -650,7 +649,7 @@ public class InjectionResolver
     private boolean isAltBeanInInjectionPointBDA(String bdaBeansXMLFilePath, Bean<?> altBean)
     {
 
-        ScannerService scannerService = ServiceLoader.getService(ScannerService.class);
+        ScannerService scannerService = webBeansContext.getScannerService();
         BDABeansXmlScanner beansXMLScanner = scannerService.getBDABeansXmlScanner();
 
         Set<Class<?>> definedAlternatives = beansXMLScanner.getAlternatives(bdaBeansXMLFilePath);

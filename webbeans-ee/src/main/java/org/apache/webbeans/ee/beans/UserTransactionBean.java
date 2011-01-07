@@ -25,7 +25,6 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.TransactionService;
 
 public class UserTransactionBean extends AbstractOwbBean<UserTransaction>
@@ -43,7 +42,7 @@ public class UserTransactionBean extends AbstractOwbBean<UserTransaction>
     @Override
     protected UserTransaction createInstance(CreationalContext<UserTransaction> creationalContext)
     {
-        TransactionService transactionService = ServiceLoader.getService(TransactionService.class);
+        TransactionService transactionService = getWebBeansContext().getService(TransactionService.class);
         if(transactionService != null)
         {
             return transactionService.getUserTransaction();

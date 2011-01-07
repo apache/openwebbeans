@@ -42,7 +42,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 
     /** Annotation Database */
-    private BeansXmlAnnotationDB annotationDB = null;
+    private final BeansXmlAnnotationDB annotationDB;
 
     protected boolean isBDAScannerEnabled = false;
     protected BDABeansXmlScanner bdaBeansXmlScanner;
@@ -51,16 +51,13 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     {
         try
         {
-            if (annotationDB == null)
-            {
-                annotationDB = new BeansXmlAnnotationDB();
-                annotationDB.setBdaBeansXmlScanner(this);
-                annotationDB.setScanClassAnnotations(true);
-                annotationDB.crossReferenceMetaAnnotations();    
-                annotationDB.setScanFieldAnnotations(false);
-                annotationDB.setScanMethodAnnotations(false);
-                annotationDB.setScanParameterAnnotations(false);
-            }            
+            annotationDB = new BeansXmlAnnotationDB();
+            annotationDB.setBdaBeansXmlScanner(this);
+            annotationDB.setScanClassAnnotations(true);
+            annotationDB.crossReferenceMetaAnnotations();
+            annotationDB.setScanFieldAnnotations(false);
+            annotationDB.setScanMethodAnnotations(false);
+            annotationDB.setScanParameterAnnotations(false);
         }
         catch(Exception e)
         {

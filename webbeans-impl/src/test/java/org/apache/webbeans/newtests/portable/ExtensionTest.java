@@ -70,7 +70,7 @@ public class ExtensionTest extends AbstractUnitTest
         
         Assert.assertNotNull(instance);
         
-        Assert.assertTrue(getLifecycle().getBeanManager().isPassivatingScope(ExternalTestScoped.class));
+        Assert.assertTrue(getBeanManager().isPassivatingScope(ExternalTestScoped.class));
         
         //Fire shut down
         getBeanManager().fireEvent(new BeforeShutdownImpl(), new Annotation[0]);

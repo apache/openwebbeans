@@ -30,7 +30,7 @@ import java.io.ObjectOutputStream;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.webbeans.corespi.ServiceLoader;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.FailOverService;
 
@@ -55,7 +55,7 @@ public class FailOverBagWrapper implements Serializable, Externalizable
     //do not remove, used by serialization. 
     public FailOverBagWrapper()
     {
-        failoverService = (FailOverService)ServiceLoader.getService(FailOverService.class);
+        failoverService = WebBeansContext.getInstance().getService(FailOverService.class);
     }
     
     public FailOverBagWrapper(HttpSession session, FailOverService service) 

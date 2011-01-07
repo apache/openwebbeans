@@ -44,7 +44,15 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Stereotype;
-import javax.enterprise.inject.spi.*;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Decorator;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.Interceptor;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
@@ -52,7 +60,6 @@ import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
-
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -65,7 +72,6 @@ import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.decorator.WebBeansDecorator;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -89,7 +95,9 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
-import static org.apache.webbeans.util.InjectionExceptionUtils.*;
+
+import static org.apache.webbeans.util.InjectionExceptionUtils.throwAmbiguousResolutionException;
+import static org.apache.webbeans.util.InjectionExceptionUtils.throwAmbiguousResolutionExceptionForBeanName;
 
 /**
  * Implementation of the {@link BeanManager} contract of the web beans
@@ -138,14 +146,14 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private List<Class<?>> additionalInterceptorClasses = new CopyOnWriteArrayList<Class<?>>();
     
     /**
-     * This list contains additional qualifiers which got set via the {@link BeforeBeanDiscovery#addQualifier(Class)} 
+     * This list contains additional qualifiers which got set via the {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
      * event function.
      */
     private List<Class<? extends Annotation>> additionalQualifiers = Collections.synchronizedList(new ArrayList<Class<? extends Annotation>>());
     
     /**
      * This list contains additional scopes which got set via the 
-     * {@link BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
+     * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
      */
     private List<ExternalScope> additionalScopes =  Collections.synchronizedList(new ArrayList<ExternalScope>());
     
@@ -154,7 +162,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private List<AnnotatedType<?>> additionalAnnotatedTypes = new CopyOnWriteArrayList<AnnotatedType<?>>();
 
     /**
-     * This map stores all beans along with their unique {@link PassivationCapable} id.
+     * This map stores all beans along with their unique {@link javax.enterprise.inject.spi.PassivationCapable} id.
      * This is used as a reference for serialization.
      */
     private ConcurrentHashMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<String, Bean<?>>(); 
@@ -168,18 +176,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     private AnnotatedElementFactory annotatedElementFactory;
 
-    /**
-     * Scanner Service ref
-     */
-    private ScannerService scannerService;
     private final WebBeansContext webBeansContext;
-
-    //private WebBeansLogger logger = WebBeansLogger.getLogger(BeanManagerImpl.class);
-
-    public synchronized void setScannerService(ScannerService scannerService)
-    {
-        this.scannerService = scannerService;
-    }
 
     /**
      * Creates a new {@link BeanManager} instance.
@@ -189,8 +186,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public BeanManagerImpl(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        injectionResolver = new InjectionResolver(this);
-        notificationManager = new NotificationManager();
+        injectionResolver = new InjectionResolver(webBeansContext);
+        notificationManager = new NotificationManager(webBeansContext);
         annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
     }
 
@@ -712,7 +709,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public ELResolver getELResolver()
     {
-        ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
+        ELAdaptor elAdaptor = webBeansContext.getService(ELAdaptor.class);
         return elAdaptor.getOwbELResolver();
     }
 
@@ -736,7 +733,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Find the injection point Bean
         Bean<Object> injectedBean = (Bean<Object>)injectionResolver.getInjectionPointBean(injectionPoint);
         
-        boolean isSetIPForProducers=false;        
+        boolean isSetIPForProducers=false;
+        ScannerService scannerService = webBeansContext.getScannerService();
         if ((scannerService != null && scannerService.isBDABeansXmlScanningEnabled()))
         {
             if (injectedBean instanceof AbstractOwbBean<?>)
@@ -1110,7 +1108,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public ExpressionFactory wrapExpressionFactory(ExpressionFactory expressionFactory)
     {
-        ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
+        ELAdaptor elAdaptor = webBeansContext.getService(ELAdaptor.class);
         return elAdaptor.getOwbWrappedExpressionFactory(expressionFactory);
     }
 

@@ -52,7 +52,6 @@ import javax.faces.event.SystemEventListener;
 import javax.faces.validator.Validator;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 
 public class OwbApplication extends Application
@@ -63,7 +62,7 @@ public class OwbApplication extends Application
     
     public OwbApplication(Application wrappedApplication)
     {
-        ELAdaptor elAdaptor = ServiceLoader.getService(ELAdaptor.class);
+        ELAdaptor elAdaptor = WebBeansContext.getInstance().getService(ELAdaptor.class);
         this.wrappedApplication = wrappedApplication;
     }
 

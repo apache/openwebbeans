@@ -41,7 +41,6 @@ import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansCreationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.jms.JMSModel;
@@ -126,7 +125,7 @@ public final class JmsUtil
     
     private static JNDIService getJNDIService()
     {
-       JNDIService jndiService = ServiceLoader.getService(JNDIService.class);
+       JNDIService jndiService = WebBeansContext.getInstance().getService(JNDIService.class);
         
         if(jndiService == null)
         {

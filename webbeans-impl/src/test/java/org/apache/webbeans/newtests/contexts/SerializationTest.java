@@ -76,8 +76,8 @@ public class SerializationTest extends AbstractUnitTest
         classes.add(CircularApplicationScopedBean.class);
         startContainer(classes);
 
-        BeanManager bm = getLifecycle().getBeanManager();
-        Set<Bean<?>> beans = getLifecycle().getBeanManager().getBeans(PersonalDataBean.class);
+        BeanManager bm = getBeanManager();
+        Set<Bean<?>> beans = getBeanManager().getBeans(PersonalDataBean.class);
         Assert.assertNotNull(beans);
         Assert.assertTrue(beans.size() == 1);
         Bean pdbBean = beans.iterator().next();
@@ -115,7 +115,7 @@ public class SerializationTest extends AbstractUnitTest
 
         startContainer(classes);
 
-        Set<Bean<?>> beans = getLifecycle().getBeanManager().getBeans(Object.class);
+        Set<Bean<?>> beans = getBeanManager().getBeans(Object.class);
         Assert.assertNotNull(beans);
         Assert.assertTrue(beans.size() > 7);
 
@@ -159,7 +159,7 @@ public class SerializationTest extends AbstractUnitTest
 
         startContainer(classes);
 
-        Set<Bean<?>> beans = getLifecycle().getBeanManager().getBeans(SessScopedBean.class);
+        Set<Bean<?>> beans = getBeanManager().getBeans(SessScopedBean.class);
         Assert.assertNotNull(beans);
         Assert.assertTrue(beans.size() == 1);
         

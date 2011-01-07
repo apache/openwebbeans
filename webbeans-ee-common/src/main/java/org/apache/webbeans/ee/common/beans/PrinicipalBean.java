@@ -26,7 +26,6 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.spi.SecurityService;
 
 public class PrinicipalBean extends AbstractOwbBean<Principal>
@@ -44,7 +43,7 @@ public class PrinicipalBean extends AbstractOwbBean<Principal>
     @Override
     protected Principal createInstance(CreationalContext<Principal> creationalContext)
     {
-        SecurityService securityService = ServiceLoader.getService(SecurityService.class);
+        SecurityService securityService = getWebBeansContext().getService(SecurityService.class);
         if(securityService != null)
         {
             return securityService.getCurrentPrincipal();

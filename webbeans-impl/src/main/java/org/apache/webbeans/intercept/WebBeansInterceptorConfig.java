@@ -24,7 +24,6 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -271,7 +270,7 @@ public final class WebBeansInterceptorConfig
     private static void filterInterceptorsPerBDA(AbstractInjectionTargetBean<?> component, List<InterceptorData> stack)
     {
 
-        ScannerService scannerService = ServiceLoader.getService(ScannerService.class);
+        ScannerService scannerService = component.getWebBeansContext().getScannerService();
         if (!scannerService.isBDABeansXmlScanningEnabled())
         {
             return;

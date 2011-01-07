@@ -20,6 +20,7 @@ package org.apache.webbeans.lifecycle.test;
 
 import java.util.Properties;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
 import org.apache.webbeans.spi.ScannerService;
 
@@ -39,13 +40,9 @@ public class OpenWebBeansTestLifeCycle extends StandaloneLifeCycle
     }
     
     @Override
-    public void initApplication(Properties properties)
+    public void beforeInitApplication(Properties properties)
     {
-        this.scannerService = new OpenWebBeansTestMetaDataDiscoveryService();
+        WebBeansContext.getInstance().registerService(ScannerService.class, new OpenWebBeansTestMetaDataDiscoveryService());
     }    
     
-    public ScannerService getScannerService()
-    {
-        return this.scannerService;
-    }
 }

@@ -23,9 +23,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationManager;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.lifecycle.LifecycleFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.FailOverService;
@@ -59,14 +57,15 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     protected ContainerLifecycle lifeCycle = null;
     
     protected FailOverService failoverService = null;
-    
+    private WebBeansContext webBeansContext;
+
     /**
      * Default constructor
      */
     public WebBeansConfigurationListener()
     {
-        failoverService = (FailOverService)
-        ServiceLoader.getService(FailOverService.class);
+        webBeansContext = WebBeansContext.getInstance();
+        failoverService = webBeansContext.getService(FailOverService.class);
     }
 
     /**
@@ -74,7 +73,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
      */
     public void contextInitialized(ServletContextEvent event)
     {
-        this.lifeCycle = LifecycleFactory.getInstance().getLifecycle();
+        this.lifeCycle = webBeansContext.getService(ContainerLifecycle.class);
 
         try
         {

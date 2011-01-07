@@ -20,12 +20,15 @@ package org.apache.webbeans.context;
 
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.context.*;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ContextNotActiveException;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Singleton;
-
 import org.apache.webbeans.context.type.ContextTypes;
-import org.apache.webbeans.corespi.ServiceLoader;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContextsService;
 
@@ -51,7 +54,7 @@ public final class ContextFactory
      */
     private static ContextsService getContextsService()
     {
-        return ServiceLoader.getService(ContextsService.class);
+        return org.apache.webbeans.config.WebBeansContext.getInstance().getService(ContextsService.class);
     }
     
     

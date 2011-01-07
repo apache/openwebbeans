@@ -26,8 +26,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.cditest.CdiTestContainer;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
-import org.apache.webbeans.lifecycle.LifecycleFactory;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import static org.apache.webbeans.util.InjectionExceptionUtils.*;
 
@@ -46,7 +46,7 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     {
         servletContext = new MockServletContext();
         session = new MockHttpSession();
-        lifecycle = LifecycleFactory.getInstance().getLifecycle();
+        lifecycle = WebBeansContext.getInstance().getService(ContainerLifecycle.class);
         lifecycle.startApplication(servletContext);
     }
 
