@@ -743,7 +743,7 @@ public class BeansDeployer
                     {
                         if (!webBeansContext.getxMLAnnotationTypeManager().hasStereoType(stereoClass))
                         {
-                            WebBeansUtil.checkStereoTypeClass(stereoClass);
+                            webBeansContext.getAnnotationManager().checkStereoTypeClass(stereoClass, stereoClass.getDeclaredAnnotations());
                             StereoTypeModel model = new StereoTypeModel(stereoClass);
                             webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
                         }

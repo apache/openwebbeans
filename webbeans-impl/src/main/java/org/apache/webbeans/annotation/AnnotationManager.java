@@ -32,10 +32,13 @@ import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Default;
+import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Named;
 import javax.inject.Qualifier;
@@ -747,6 +750,64 @@ public final class AnnotationManager
 //        {
 //            component.setName(name);
 //        }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public <X> Method getDisposalWithGivenAnnotatedMethod(AnnotatedType<X> annotatedType, Type beanType, Annotation[] qualifiers)
+    {
+        Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
+
+        if(annotatedMethods != null)
+        {
+            for (AnnotatedMethod<? super X> annotatedMethod : annotatedMethods)
+            {
+                AnnotatedMethod<X> annt = (AnnotatedMethod<X>)annotatedMethod;
+                List<AnnotatedParameter<X>> parameters = annt.getParameters();
+                if(parameters != null)
+                {
+                    boolean found = false;
+                    for(AnnotatedParameter<X> parameter : parameters)
+                    {
+                        if(parameter.isAnnotationPresent(Disposes.class))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if(found)
+                    {
+                        Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
+                        Annotation[] annots = this.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
+
+                        if(type.equals(beanType))
+                        {
+                            for(Annotation qualifier : qualifiers)
+                            {
+                                if(qualifier.annotationType() != Default.class)
+                                {
+                                    for(Annotation ann :annots)
+                                    {
+                                        if(!AnnotationUtil.isQualifierEqual(qualifier, ann))
+                                        {
+                                            return null;
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            return annotatedMethod.getJavaMember();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
 
     }
 

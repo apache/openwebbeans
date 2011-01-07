@@ -784,9 +784,10 @@ public final class WebBeansXMLConfigurator
         XMLDefinitionUtil.checkSimpleWebBeansInXML(simpleClass, webBeanDecleration, createConfigurationFailedMessage());
 
         /* If interceptor, check this is enabled */
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         if (XMLUtil.hasChildElementWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_INTERCEPTOR_ELEMENT))
         {
-            if (!WebBeansContext.getInstance().getInterceptorsManager().isInterceptorEnabled(simpleClass))
+            if (!webBeansContext.getInterceptorsManager().isInterceptorEnabled(simpleClass))
             {
                 return null;
             }
@@ -795,7 +796,7 @@ public final class WebBeansXMLConfigurator
         /* If decorator, check this is enabled */
         if (XMLUtil.hasChildElementWithWebBeansNameSpace(webBeanDecleration, WebBeansConstants.WEB_BEANS_XML_DECORATOR_ELEMENT))
         {
-            if (!WebBeansContext.getInstance().getDecoratorsManager().isDecoratorEnabled(simpleClass))
+            if (!webBeansContext.getDecoratorsManager().isDecoratorEnabled(simpleClass))
             {
                 return null;
             }
@@ -810,7 +811,7 @@ public final class WebBeansXMLConfigurator
         /* Configures child elements of this webbeans decleration element */
         configureWebBeanDeclerationChilds(component, webBeanDecleration);
 
-        WebBeansContext.getInstance().getBeanManagerImpl().addBean(component);
+        webBeansContext.getBeanManagerImpl().addBean(component);
 
         return component;
     }
@@ -1797,7 +1798,8 @@ public final class WebBeansXMLConfigurator
 
 
         JMSModel model = new JMSModel(type, jndiName, mapName);
-        WebBeansContext.getInstance().getjMSManager().addJmsModel(model);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getjMSManager().addJmsModel(model);
 
         for (Annotation ann : bindingTypes)
         {
@@ -1805,8 +1807,8 @@ public final class WebBeansXMLConfigurator
         }
 
         //Adding JMS Beans
-        OpenWebBeansJmsPlugin plugin = WebBeansContext.getInstance().getPluginLoader().getJmsPlugin();
-        WebBeansContext.getInstance().getBeanManagerImpl().addBean(plugin.getJmsBean(model));
+        OpenWebBeansJmsPlugin plugin = webBeansContext.getPluginLoader().getJmsPlugin();
+        webBeansContext.getBeanManagerImpl().addBean(plugin.getJmsBean(model));
     }
 
     /**

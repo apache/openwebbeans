@@ -560,7 +560,7 @@ public abstract class TestContext implements ITestContext
      */
     protected void initializeStereoType(Class<? extends Annotation> stereoClass)
     {
-        WebBeansUtil.checkStereoTypeClass(stereoClass);
+        WebBeansContext.getInstance().getAnnotationManager().checkStereoTypeClass(stereoClass, stereoClass.getDeclaredAnnotations());
         StereoTypeModel model = new StereoTypeModel(stereoClass);
         WebBeansContext.getInstance().getStereoTypeManager().addStereoTypeModel(model);
     }

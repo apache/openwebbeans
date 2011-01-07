@@ -48,7 +48,6 @@ import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
-import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.event.xml.BeanObserverXMLImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.NonexistentFieldException;
@@ -360,13 +359,14 @@ public final class XMLDefinitionUtil
 
     public static <T> void defineXMLSpecializes(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet)
     {
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         while (it.hasNext())
         {
             Class<? extends Annotation> temp = it.next();
             if (temp.equals(Specializes.class))
             {
-                WebBeansContext.getInstance().getxMLSpecializesManager().addXMLSpecializeClass(temp);
+                webBeansContext.getxMLSpecializesManager().addXMLSpecializeClass(temp);
             }
         }
     }
@@ -798,6 +798,8 @@ public final class XMLDefinitionUtil
      */
     public static <T, K> void defineXMLObservesMethod(XMLManagedBean<T> component, Method observesMethod, Element observesMethodElement, String errorMessage)
     {
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+
         component.addObservableMethod(observesMethod);
 
 
@@ -843,7 +845,7 @@ public final class XMLDefinitionUtil
 
                 beanObserver.addXMLInjectionObservesParameter(model);
 
-                NotificationManager.getInstance().addObserver(beanObserver, eventType);
+                webBeansContext.getBeanManagerImpl().getNotificationManager().addObserver(beanObserver, eventType);
 
             }
             /* Disposal method parameter other than @Disposes */

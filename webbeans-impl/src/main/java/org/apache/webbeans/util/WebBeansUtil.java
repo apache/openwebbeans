@@ -94,6 +94,7 @@ import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 
 import javassist.util.proxy.ProxyFactory;
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.ApplicationScopeLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
@@ -570,11 +571,12 @@ public final class WebBeansUtil
     }
 
     /**
-     * Check conditions for the new binding. 
+     * Check conditions for the new binding.
      * @param annotations annotations
      * @return Annotation[] with all binding annotations
-     * @throws WebBeansConfigurationException if New plus any other binding annotation is set         
+     * @throws WebBeansConfigurationException if New plus any other binding annotation is set
      */
+    @Deprecated
     public static Annotation[] checkForNewQualifierForDeployment(Type type, Class<?> clazz, String name,
                                                                  Annotation[] annotations)
     {
@@ -1389,6 +1391,7 @@ public final class WebBeansUtil
      *
      * @return true if array contains the StereoType meta annotation
      */
+    @Deprecated
     public static boolean isComponentHasStereoType(OwbBean<?> component)
     {
         return WebBeansContext.getInstance().getAnnotationManager().isComponentHasStereoType(component);
@@ -1399,6 +1402,7 @@ public final class WebBeansUtil
      * @param bean bean instance
      * @return bean stereotypes
      */
+    @Deprecated
     public static Annotation[] getComponentStereoTypes(OwbBean<?> bean)
     {
         return WebBeansContext.getInstance().getAnnotationManager().getComponentStereoTypes(bean);
@@ -1409,6 +1413,7 @@ public final class WebBeansUtil
      * @param bean bean instance
      * @return true if name exists
      */
+    @Deprecated
     public static boolean hasNamedOnStereoTypes(OwbBean<?> bean)
     {
         return WebBeansContext.getInstance().getAnnotationManager().hasNamedOnStereoTypes(bean);
@@ -1465,6 +1470,7 @@ public final class WebBeansUtil
      * defined by the specification.
      * @param clazz stereotype class
      */
+    @Deprecated
     public static void checkStereoTypeClass(Class<? extends Annotation> clazz)
     {
         WebBeansContext.getInstance().getAnnotationManager().checkStereoTypeClass(clazz, clazz.getDeclaredAnnotations());
@@ -1475,6 +1481,7 @@ public final class WebBeansUtil
      * defined by the specification.
      * @param clazz stereotype class
      */
+    @Deprecated
     public static void checkStereoTypeClass(Class<? extends Annotation> clazz, Annotation...annotations)
     {
         WebBeansContext.getInstance().getAnnotationManager().checkStereoTypeClass(clazz, annotations);
@@ -2046,11 +2053,13 @@ public final class WebBeansUtil
 
     }
 
+    @Deprecated
     public static void checkInterceptorResolverParams(Annotation... interceptorBindings)
     {
         WebBeansContext.getInstance().getAnnotationManager().checkInterceptorResolverParams(interceptorBindings);
     }
 
+    @Deprecated
     public static void checkDecoratorResolverParams(Set<Type> apiTypes, Annotation... qualifiers)
     {
         WebBeansContext.getInstance().getAnnotationManager().checkDecoratorResolverParams(apiTypes, qualifiers);
@@ -2437,17 +2446,20 @@ public final class WebBeansUtil
                                                           AnnotatedMethod<?>> annotatedMethods,
                                                           AnnotatedType<?> annotatedType)
     {
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
+
         for(ProducerMethodBean<?> bean : annotatedMethods.keySet())
         {
             AnnotatedMethod<?> annotatedMethod = annotatedMethods.get(bean);
-            Method disposal = WebBeansAnnotatedTypeUtil.getDisposalWithGivenAnnotatedMethod(annotatedType,
-                    bean.getReturnType(), AnnotationUtil.getAnnotationsFromSet(bean.getQualifiers()));
+            Annotation[] annotationsFromSet = AnnotationUtil.getAnnotationsFromSet(bean.getQualifiers());
+            Method disposal = annotationManager.getDisposalWithGivenAnnotatedMethod(annotatedType, bean.getReturnType(), annotationsFromSet);
 
             AnnotatedMethod<?> disposalAnnotated = null;
             GProcessProducerMethod processProducerMethodEvent = null;
             if(disposal != null)
             {
-                disposalAnnotated = WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedMethod(disposal, annotatedType);
+                disposalAnnotated = webBeansContext.getAnnotatedElementFactory().newAnnotatedMethod(disposal, annotatedType);
                 processProducerMethodEvent = new GProcessProducerMethod(bean,annotatedMethod,
                                                                         disposalAnnotated.getParameters().get(0));
             }
@@ -2458,7 +2470,7 @@ public final class WebBeansUtil
 
 
             //Fires ProcessProducer
-            WebBeansContext.getInstance().getBeanManagerImpl().fireEvent(processProducerMethodEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+            webBeansContext.getBeanManagerImpl().fireEvent(processProducerMethodEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         }
     }
 

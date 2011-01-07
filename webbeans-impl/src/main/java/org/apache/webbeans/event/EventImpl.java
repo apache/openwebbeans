@@ -54,6 +54,7 @@ public class EventImpl<T> implements Event<T>, Serializable
 
     /**Bean manager*/
     private transient BeanManagerImpl manager = null;
+    private final WebBeansContext webBeansContext;
 
     /**
      * Creates a new event.
@@ -65,7 +66,8 @@ public class EventImpl<T> implements Event<T>, Serializable
     {
         this.injectedBindings = injectedBindings;
         this.eventType = eventType;
-        this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
+        webBeansContext = WebBeansContext.getInstance();
+        this.manager = webBeansContext.getBeanManagerImpl();
     }
 
     /**
@@ -84,7 +86,7 @@ public class EventImpl<T> implements Event<T>, Serializable
      */
     private Annotation[] getEventBindings(Annotation... annotations)
     {
-        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(annotations);
+        webBeansContext.getAnnotationManager().checkQualifierConditions(annotations);
 
         Set<Annotation> eventBindings = new HashSet<Annotation>();
         
@@ -165,6 +167,6 @@ public class EventImpl<T> implements Event<T>, Serializable
         this.eventType = (Type)inputStream.readObject();
         this.injectedBindings = (Annotation[])inputStream.readObject();
 
-        this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
+        this.manager = webBeansContext.getBeanManagerImpl();
     }
 }

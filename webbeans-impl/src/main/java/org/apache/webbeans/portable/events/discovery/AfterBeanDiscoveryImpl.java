@@ -34,7 +34,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
-import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.intercept.custom.CustomInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
@@ -52,11 +51,13 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
 {
     private BeanManagerImpl beanManager = null;
     
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(AfterBeanDiscoveryImpl.class); 
-    
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(AfterBeanDiscoveryImpl.class);
+    private final WebBeansContext webBeansContext;
+
     public AfterBeanDiscoveryImpl()
     {
-        this.beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
+        webBeansContext = WebBeansContext.getInstance();
+        this.beanManager = webBeansContext.getBeanManagerImpl();
     }
     
     /**
@@ -66,7 +67,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     @SuppressWarnings("unchecked")
     public void addBean(Bean<?> bean)
     {
-        AnnotatedType<?> annotatedType = WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(bean.getBeanClass());
+        AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getBeanClass());
         
         //Fire Event
         ProcessBean<?> processBeanEvent = new GProcessBean(bean,annotatedType);
@@ -103,7 +104,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             }
             
             this.beanManager.addInterceptor(interceptor);
-            WebBeansContext.getInstance().getBeanManagerImpl().addCustomInterceptorClass(bean.getBeanClass());
+            webBeansContext.getBeanManagerImpl().addCustomInterceptorClass(bean.getBeanClass());
         }
         
         else if(bean instanceof Decorator)
@@ -136,7 +137,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
             
             
             this.beanManager.addDecorator(new WebBeansDecorator(managedBean, (Decorator)bean));
-            WebBeansContext.getInstance().getBeanManagerImpl().addCustomDecoratorClass(bean.getBeanClass());
+            webBeansContext.getBeanManagerImpl().addCustomDecoratorClass(bean.getBeanClass());
         }
         else
         {
@@ -171,7 +172,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     {
         ProcessObserverMethod<?, ?> event = new GProcessObservableMethod(null,observerMethod);
         this.beanManager.fireEvent(event, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-        NotificationManager.getInstance().addObserver(observerMethod, observerMethod.getObservedType());
+        this.beanManager.getNotificationManager().addObserver(observerMethod, observerMethod.getObservedType());
     }
 
 }

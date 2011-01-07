@@ -23,7 +23,7 @@ import java.lang.annotation.Annotation;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.apache.webbeans.event.NotificationManager;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.LoggedInEvent;
@@ -104,7 +104,7 @@ public class EventExceptionTest extends TestContext
             };
 
             LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
-            NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class);
+            WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, LoggedInEvent.class);
 
             getManager().fireEvent(new LoggedInEvent(), anns);
 
@@ -134,7 +134,7 @@ public class EventExceptionTest extends TestContext
             };
             
             LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
-            NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class);
+            WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, LoggedInEvent.class);
 
             getManager().fireEvent(new LoggedInEvent(), anns);
 

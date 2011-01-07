@@ -35,7 +35,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
-import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.intercept.InterceptorUtil;
@@ -48,7 +47,6 @@ import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
@@ -178,6 +176,7 @@ public final class WebBeansAnnotatedTypeUtil
     @SuppressWarnings("unchecked")
     public static <X> Set<ObserverMethod<?>> defineObserverMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
     {
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
         Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();    
         for (AnnotatedMethod<? super X> annotatedMethod : annotatedMethods)
@@ -217,7 +216,7 @@ public final class WebBeansAnnotatedTypeUtil
                 addMethodInjectionPointMetaData(bean, annotatedMethod);
                 
                 //Looking for ObserverMethod
-                ObserverMethod<?> definedObserver = NotificationManager.getInstance().getObservableMethodForAnnotatedMethod(annotatedMethod, bean);
+                ObserverMethod<?> definedObserver = webBeansContext.getBeanManagerImpl().getNotificationManager().getObservableMethodForAnnotatedMethod(annotatedMethod, bean);
                 if(definedObserver != null)
                 {
                     definedObservers.add(definedObserver);
@@ -372,7 +371,7 @@ public final class WebBeansAnnotatedTypeUtil
             {
                 if (qualifierAnns.length > 0)
                 {
-                    WebBeansUtil.checkForNewQualifierForDeployment(annotatedField.getBaseType(), annotatedField.getDeclaringType().getJavaClass(), field.getName(), anns);
+                    annotationManager.checkForNewQualifierForDeployment(annotatedField.getBaseType(), annotatedField.getDeclaringType().getJavaClass(), field.getName(), anns);
                 }
 
                 int mod = field.getModifiers();
@@ -610,13 +609,15 @@ public final class WebBeansAnnotatedTypeUtil
             ". Reason : Initializer method can not be annotated with @Produces.");
         
         }
-        
+
+        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+
         List<AnnotatedParameter<X>> annotatedParameters = annotatedMethod.getParameters();
         for (AnnotatedParameter<X> annotatedParameter : annotatedParameters)
         {
-            WebBeansUtil.checkForNewQualifierForDeployment(annotatedParameter.getBaseType(), annotatedMethod.getDeclaringType().getJavaClass(), 
+            annotationManager.checkForNewQualifierForDeployment(annotatedParameter.getBaseType(), annotatedMethod.getDeclaringType().getJavaClass(),
                     method.getName(), AnnotationUtil.getAnnotationsFromSet(annotatedParameter.getAnnotations()));
-            
+
             if(annotatedParameter.isAnnotationPresent(Disposes.class) ||
                     annotatedParameter.isAnnotationPresent(Observes.class))
             {
@@ -994,66 +995,12 @@ public final class WebBeansAnnotatedTypeUtil
             }
         }
 
-    }    
-    
+    }
+
     @SuppressWarnings("unchecked")
+    @Deprecated
     public static <X> Method getDisposalWithGivenAnnotatedMethod(AnnotatedType<X> annotatedType, Type beanType, Annotation[] qualifiers)
     {
-        Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();  
-        
-        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
-        
-        if(annotatedMethods != null)
-        {
-            for (AnnotatedMethod<? super X> annotatedMethod : annotatedMethods)
-            {
-                AnnotatedMethod<X> annt = (AnnotatedMethod<X>)annotatedMethod;
-                List<AnnotatedParameter<X>> parameters = annt.getParameters();
-                if(parameters != null)
-                {
-                    boolean found = false;                    
-                    for(AnnotatedParameter<X> parameter : parameters)
-                    {
-                        if(parameter.isAnnotationPresent(Disposes.class))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    
-                    if(found)
-                    {
-                        Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
-                        Annotation[] annots = annotationManager.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
-                        
-                        if(type.equals(beanType))
-                        {
-                            for(Annotation qualifier : qualifiers)
-                            {
-                                if(qualifier.annotationType() != Default.class)
-                                {
-                                    for(Annotation ann :annots)
-                                    {
-                                        if(!AnnotationUtil.isQualifierEqual(qualifier, ann))
-                                        {
-                                            return null;
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            return annotatedMethod.getJavaMember();
-                        }                
-                    }                                
-                }
-            }            
-        }        
-        return null;
-        
+        return WebBeansContext.getInstance().getAnnotationManager().getDisposalWithGivenAnnotatedMethod(annotatedType, beanType, qualifiers);
     }
-    
 }

@@ -553,7 +553,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override    
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
-        WebBeansUtil.checkDecoratorResolverParams(types, bindingTypes);
+        webBeansContext.getAnnotationManager().checkDecoratorResolverParams(types, bindingTypes);
         Set<Decorator<?>> intsSet = WebBeansDecoratorConfig.findDeployedWebBeansDecorator(types, bindingTypes);
         Iterator<Decorator<?>> itSet = intsSet.iterator();
 
@@ -577,7 +577,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public List<Interceptor<?>> resolveInterceptors(InterceptionType type, Annotation... interceptorBindings)
     {
-        WebBeansUtil.checkInterceptorResolverParams(interceptorBindings);
+        webBeansContext.getAnnotationManager().checkInterceptorResolverParams(interceptorBindings);
 
         Set<Interceptor<?>> intsSet = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(interceptorBindings);
         Iterator<Interceptor<?>> itSet = intsSet.iterator();

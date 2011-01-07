@@ -23,7 +23,7 @@ import java.lang.annotation.Annotation;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.TypeLiteral;
 
-import org.apache.webbeans.event.NotificationManager;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.event.ITypeArgumentEventInterface;
@@ -53,7 +53,7 @@ public class EventTest extends TestContext
         };
 
         LoggedInObserver observer = new LoggedInObserver(ArrayUtil.asSet(anns));
-        NotificationManager.getInstance().addObserver(observer, LoggedInEvent.class);
+        WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, LoggedInEvent.class);
 
         getManager().fireEvent(new LoggedInEvent(), anns);
 
@@ -73,7 +73,7 @@ public class EventTest extends TestContext
         {
         };
 
-        NotificationManager.getInstance().addObserver(observer, tl);
+        WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, tl);
 
         getManager().fireEvent(new TypeArgumentEvent(), anns);
 
@@ -89,7 +89,7 @@ public class EventTest extends TestContext
         };
 
         TypeArgumentInterfaceObserver observer = new TypeArgumentInterfaceObserver(ArrayUtil.asSet(anns));
-        NotificationManager.getInstance().addObserver(observer, ITypeArgumentEventInterface.class);
+        WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager().addObserver(observer, ITypeArgumentEventInterface.class);
 
         getManager().fireEvent(new TypeArgumentEvent(), anns);
         Assert.assertEquals("ok", observer.getResult());

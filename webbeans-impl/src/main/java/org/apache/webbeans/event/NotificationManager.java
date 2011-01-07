@@ -43,7 +43,6 @@ import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
@@ -70,14 +69,12 @@ public final class NotificationManager
 
     public static NotificationManager getInstance()
     {
-        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
-
-        return manager.getNotificationManager();
+        return WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager();
     }
 
     public <T> void addObserver(ObserverMethod<T> observer, Type eventType)
     {
-        EventUtil.checkEventBindings(observer.getObservedQualifiers());
+        webBeansContext.getAnnotationManager().checkQualifierConditions(observer.getObservedQualifiers());
 
         Set<ObserverMethod<?>> set = observers.get(eventType);
         if (set == null)

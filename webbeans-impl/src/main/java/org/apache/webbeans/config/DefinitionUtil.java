@@ -534,7 +534,7 @@ public final class DefinitionUtil
         if (nameAnnot == null) // no @Named
         {
             // Check for stereottype
-            if (WebBeansUtil.hasNamedOnStereoTypes(component))
+            if (WebBeansContext.getInstance().getAnnotationManager().hasNamedOnStereoTypes(component))
             {
                 isDefault = true;
             }
@@ -894,7 +894,7 @@ public final class DefinitionUtil
                 {
                     if (qualifierAnns.length > 0)
                     {
-                        WebBeansUtil.checkForNewQualifierForDeployment(field.getGenericType(), clazz, field.getName(), anns);
+                        annotationManager.checkForNewQualifierForDeployment(field.getGenericType(), clazz, field.getName(), anns);
                     }
 
                     int mod = field.getModifiers();
@@ -1018,7 +1018,7 @@ public final class DefinitionUtil
         {
             Annotation[] a = anns[i];
             Type t = type[i];
-            WebBeansUtil.checkForNewQualifierForDeployment(t, clazz, method.getName(), a);
+            WebBeansContext.getInstance().getAnnotationManager().checkForNewQualifierForDeployment(t, clazz, method.getName(), a);
         }
 
         if (method.getAnnotation(Produces.class) == null)
@@ -1080,7 +1080,7 @@ public final class DefinitionUtil
         Asserts.assertNotNull(component, "component parameter can not be null");
         Asserts.nullCheckForClass(clazz);
 
-        NotificationManager manager = NotificationManager.getInstance();
+        NotificationManager manager = WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager();
 
         Method[] candidateMethods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Observes.class);
 
