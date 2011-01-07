@@ -24,6 +24,10 @@ under the License.
 
     <name>org_apache_openwebbeans</name>
 
+    <factory>
+        <application-factory>org.apache.webbeans.jsf.OwbApplicationFactory</application-factory>
+    </factory>
+
     <application>
         <view-handler>org.apache.webbeans.jsf.ConversationAwareViewHandler</view-handler>
         <el-resolver>org.apache.webbeans.el.WebBeansELResolver</el-resolver>
