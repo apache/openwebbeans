@@ -266,7 +266,7 @@ public class WebBeansContext
 
     public Object get(String singletonName)
     {
-        util.Track.get(singletonName);
+        //util.Track.get(singletonName);
         Object object = managerMap.get(singletonName);
 
         /* No singleton for this application, create one */
