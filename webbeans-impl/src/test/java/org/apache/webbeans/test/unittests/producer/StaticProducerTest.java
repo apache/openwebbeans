@@ -21,7 +21,7 @@ package org.apache.webbeans.test.unittests.producer;
 import java.lang.annotation.Annotation;
 
 import org.apache.webbeans.component.ProducerMethodBean;
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.producer.StaticProducer1;
 import org.junit.Assert;
@@ -47,7 +47,7 @@ public class StaticProducerTest extends TestContext
     {
         clear();
 
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         defineManagedBean(StaticProducer1.class);
 

@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.dependent;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
 import org.apache.webbeans.test.component.dependent.MultipleDependentComponent;
@@ -45,8 +45,8 @@ public class MultipleDependentTest extends TestContext
     public void testMultipleDependent()
     {
         clear();
-        ContextFactory.initRequestContext(null);
-        
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
         defineManagedBean(DependentComponent.class);
         defineManagedBean(MultipleDependentComponent.class);
         

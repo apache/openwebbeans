@@ -62,8 +62,9 @@ public class Producer1ConsumerComponentTest extends TestContext
 
         List<AbstractOwbBean<?>> comps = getComponents();
 
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initApplicationContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
+        contextFactory.initApplicationContext(null);
 
         Assert.assertEquals(7, getDeployedComponents());
 
@@ -85,8 +86,8 @@ public class Producer1ConsumerComponentTest extends TestContext
 
         Assert.assertNotNull(service);
 
-        ContextFactory.destroyApplicationContext(null);
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyApplicationContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
 }

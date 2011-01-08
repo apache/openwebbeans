@@ -23,7 +23,6 @@ import javax.enterprise.inject.spi.Bean;
 import junit.framework.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.webbeans.ShoppingCard;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
@@ -50,10 +49,11 @@ public class ShoppingCardInterceptorTest extends TestContext
     @Test
     public void testTransactionalInterceptor()
     {
-        ContextFactory.initSessionContext(null);
-        
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getContextFactory().initSessionContext(null);
+
         // Interceptors must explicitly get enabled via XML. We fake this:
-        WebBeansContext.getInstance().getInterceptorsManager().addNewInterceptor(TransactionalInterceptor.class);
+        webBeansContext.getInterceptorsManager().addNewInterceptor(TransactionalInterceptor.class);
         
         defineInterceptor(TransactionalInterceptor.class);
         
@@ -67,7 +67,7 @@ public class ShoppingCardInterceptorTest extends TestContext
         card.placeOrder2();
         
         Assert.assertFalse(ShoppingCard.getCALLED());
-                
-        ContextFactory.destroySessionContext(null);
+
+        webBeansContext.getContextFactory().destroySessionContext(null);
     }
 }

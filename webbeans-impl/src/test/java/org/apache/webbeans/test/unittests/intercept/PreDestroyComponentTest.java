@@ -61,7 +61,8 @@ public class PreDestroyComponentTest extends TestContext
         defineManagedBean(PreDestroyComponent.class);
         List<AbstractOwbBean<?>> comps = getComponents();
 
-        ContextFactory.initRequestContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
 
         Assert.assertEquals(2, comps.size());
 
@@ -87,7 +88,7 @@ public class PreDestroyComponentTest extends TestContext
 
         Assert.assertFalse(PreDestroyComponent.isDestroyed());
 
-        ContextFactory.destroyRequestContext(null); 
+        contextFactory.destroyRequestContext(null);
 
         Assert.assertTrue(PreDestroyComponent.isDestroyed());
     }

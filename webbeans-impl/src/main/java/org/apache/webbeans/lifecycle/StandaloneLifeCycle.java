@@ -21,7 +21,6 @@ package org.apache.webbeans.lifecycle;
 import java.util.Properties;
 
 import org.apache.webbeans.config.WebBeansFinder;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -51,22 +50,22 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
     @Override
     public void beforeStartApplication(Object object)
     {
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initSessionContext(null);
-        ContextFactory.initConversationContext(null);
-        ContextFactory.initApplicationContext(null);       
-        ContextFactory.initSingletonContext(null);
+        webBeansContext.getContextFactory().initRequestContext(null);
+        webBeansContext.getContextFactory().initSessionContext(null);
+        webBeansContext.getContextFactory().initConversationContext(null);
+        webBeansContext.getContextFactory().initApplicationContext(null);
+        webBeansContext.getContextFactory().initSingletonContext(null);
     }
         
     
     @Override
     public void beforeStopApplication(Object endObject)
     {
-        ContextFactory.destroyRequestContext(null);
-        ContextFactory.destroySessionContext(null);
-        ContextFactory.destroyConversationContext();
-        ContextFactory.destroyApplicationContext(null);
-        ContextFactory.destroySingletonContext(null);
+        webBeansContext.getContextFactory().destroyRequestContext(null);
+        webBeansContext.getContextFactory().destroySessionContext(null);
+        webBeansContext.getContextFactory().destroyConversationContext();
+        webBeansContext.getContextFactory().destroyApplicationContext(null);
+        webBeansContext.getContextFactory().destroySingletonContext(null);
 
         // clean up the EL caches after each request
         ELContextStore elStore = ELContextStore.getInstance(false);

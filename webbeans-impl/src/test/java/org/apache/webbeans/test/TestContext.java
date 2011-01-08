@@ -44,7 +44,6 @@ import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
@@ -146,7 +145,7 @@ public abstract class TestContext implements ITestContext
 
     protected void initDependentContext()
     {
-        DependentContext dependentContext = (DependentContext)ContextFactory.getStandardContext(Dependent.class);
+        DependentContext dependentContext = (DependentContext) WebBeansContext.getInstance().getContextFactory().getStandardContext(Dependent.class);
         dependentContext.setActive(true);
     }
 

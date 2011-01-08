@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.producer.primitive;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.producer.primitive.PrimitiveConsumer;
 import org.apache.webbeans.test.component.producer.primitive.PrimitiveProducer;
@@ -43,8 +43,8 @@ public class PrimitiveProducerTest extends TestContext
     @Test
     public void testPrimitiveProducer()
     {
-        ContextFactory.initRequestContext(null);
-        
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
         defineManagedBean(PrimitiveProducer.class);
         defineManagedBean(PrimitiveConsumer.class);
         

@@ -28,7 +28,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
 import org.apache.webbeans.newtests.interceptors.beans.RequestScopedBean;
@@ -79,9 +79,10 @@ public class DependingInterceptorTest extends AbstractUnitTest
 
         TransactionInterceptor.ECHO = false;
 
-        ContextFactory.destroyRequestContext(null);
-        ContextFactory.initRequestContext(null);      
-        
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getContextFactory().destroyRequestContext(null);
+        webBeansContext.getContextFactory().initRequestContext(null);
+
         CreationalContext<RequestScopedBean> ctx2 = getBeanManager().createCreationalContext(bean);
         Object reference2 = getBeanManager().getReference(bean, RequestScopedBean.class, ctx2);
         Assert.assertNotNull(reference2);

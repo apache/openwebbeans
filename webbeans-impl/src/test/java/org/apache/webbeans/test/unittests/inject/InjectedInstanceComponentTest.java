@@ -22,7 +22,7 @@ package org.apache.webbeans.test.unittests.inject;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.apache.webbeans.test.component.inject.InstanceInjectedComponent;
@@ -48,8 +48,8 @@ public class InjectedInstanceComponentTest extends TestContext
     public void testInstanceInjectedComponent()
     {
         getManager().addBean(WebBeansUtil.getInstanceBean());
-        
-        ContextFactory.initRequestContext(null);
+
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
         Bean<PaymentProcessorComponent> bean =  defineManagedBean(PaymentProcessorComponent.class);
         
         getManager().getInstance(bean);

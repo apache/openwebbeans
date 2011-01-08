@@ -23,7 +23,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.dependent.DependentComponent;
 import org.apache.webbeans.test.component.dependent.DependentOwnerComponent;
@@ -52,7 +52,8 @@ public class DependentComponentTest extends TestContext
         defineManagedBean(DependentComponent.class);
         defineManagedBean(DependentOwnerComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getContextFactory().initRequestContext(null);
 
         List<AbstractOwbBean<?>> comps = getComponents();
 
@@ -64,15 +65,15 @@ public class DependentComponentTest extends TestContext
 
         Assert.assertNotNull(dc);
 
-        ContextFactory.destroyRequestContext(null);
+        webBeansContext.getContextFactory().destroyRequestContext(null);
     }
 
     @Test
     public void testDependentCircular()
     {
         clear();
-        
-        ContextFactory.initRequestContext(null);
+
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         AbstractOwbBean<DependentA> componentA = defineManagedBean(DependentA.class);
         AbstractOwbBean<DependentB> componentB = defineManagedBean(DependentB.class);

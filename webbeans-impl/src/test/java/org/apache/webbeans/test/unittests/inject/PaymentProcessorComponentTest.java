@@ -25,7 +25,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
@@ -60,7 +60,7 @@ public class PaymentProcessorComponentTest extends TestContext
 
         List<AbstractOwbBean<?>> comps = getComponents();
 
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         Assert.assertEquals(3, comps.size());
 
@@ -83,7 +83,7 @@ public class PaymentProcessorComponentTest extends TestContext
 
         Assert.assertEquals("MONEY", p.pay());
 
-        ContextFactory.destroyRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().destroyRequestContext(null);
     }
 
 }

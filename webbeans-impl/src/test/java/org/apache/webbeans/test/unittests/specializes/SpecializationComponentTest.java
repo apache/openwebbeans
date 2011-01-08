@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.specializes;
 
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.specializes.AsynhrounousSpecalizesService;
 import org.apache.webbeans.test.component.specializes.SpecializesServiceInjectorComponent;
@@ -44,9 +44,9 @@ public class SpecializationComponentTest extends TestContext
     public void testMockService()
     {
         clear();
-        
-        ContextFactory.initRequestContext(null);
-        
+
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
         Bean<AsynhrounousSpecalizesService> bean2 = defineManagedBean(AsynhrounousSpecalizesService.class);
         Bean<SpecializesServiceInjectorComponent> bean3 = defineManagedBean(SpecializesServiceInjectorComponent.class);
         

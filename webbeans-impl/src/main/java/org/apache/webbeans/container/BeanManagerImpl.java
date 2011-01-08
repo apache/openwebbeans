@@ -70,7 +70,6 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.third.ThirdpartyBeanImpl;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.DecoratorComparator;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -284,7 +283,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         Context standardContext = null;
 
-        standardContext = ContextFactory.getStandardContext(scopeType);
+        standardContext = webBeansContext.getContextFactory().getStandardContext(scopeType);
 
         if(standardContext != null && standardContext.isActive())
         {
@@ -366,7 +365,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     public BeanManager addContext(Context context)
     {
-        addContext(context.getScope(), ContextFactory.getCustomContext(context));
+        addContext(context.getScope(), webBeansContext.getContextFactory().getCustomContext(context));
 
         return this;
 

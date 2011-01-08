@@ -31,6 +31,7 @@ import javax.inject.Singleton;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContextsService;
+import org.apache.webbeans.config.WebBeansContext;
 
 /**
  * JSR-299 based standard context
@@ -40,25 +41,22 @@ public final class ContextFactory
 {
     /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ContextFactory.class);
+    private final WebBeansContext webBeansContext;
 
-    /**
-     * Not-instantiate
-     */
-    private ContextFactory()
+    public ContextFactory(WebBeansContext webBeansContext)
     {
-        throw new UnsupportedOperationException();
+        this.webBeansContext = webBeansContext;
     }
 
     /**
      * @return the ContextService for the current ClassLoader
      */
-    private static ContextsService getContextsService()
+    private ContextsService getContextsService()
     {
-        return org.apache.webbeans.config.WebBeansContext.getInstance().getService(ContextsService.class);
+        return webBeansContext.getService(ContextsService.class);
     }
-    
-    
-    public static void initRequestContext(Object request)
+
+    public void initRequestContext(Object request)
     {
         try
         {
@@ -71,23 +69,23 @@ public final class ContextFactory
         }
     }
 
-    public static Context getCustomContext(Context context)
+    public Context getCustomContext(Context context)
     {
-        if (org.apache.webbeans.config.WebBeansContext.getInstance().getBeanManagerImpl().isPassivatingScope(context.getScope()))
+        if (webBeansContext.getBeanManagerImpl().isPassivatingScope(context.getScope()))
         {
             return new CustomPassivatingContextImpl(context);
         }
-        
+
         return new CustomContextImpl(context);
     }
-    
-    public static void destroyRequestContext(Object request)
+
+    public void destroyRequestContext(Object request)
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(RequestScoped.class, request);
     }
 
-    public static void initSessionContext(Object session)
+    public void initSessionContext(Object session)
     {
         try
         {
@@ -100,18 +98,13 @@ public final class ContextFactory
         }
     }
 
-    public static void destroySessionContext(Object session)
+    public void destroySessionContext(Object session)
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(SessionScoped.class, session);
     }
 
-    /**
-     * Creates the application context at the application startup
-     * 
-     * @param parameter parameter object
-     */
-    public static void initApplicationContext(Object parameter)
+    public void initApplicationContext(Object parameter)
     {
         try
         {
@@ -127,16 +120,16 @@ public final class ContextFactory
     /**
      * Destroys the application context and all of its components at the end of
      * the application.
-     * 
+     *
      * @param parameter parameter object
      */
-    public static void destroyApplicationContext(Object parameter)
+    public void destroyApplicationContext(Object parameter)
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(ApplicationScoped.class, parameter);
     }
-    
-    public static void initSingletonContext(Object parameter)
+
+    public void initSingletonContext(Object parameter)
     {
         try
         {
@@ -145,17 +138,17 @@ public final class ContextFactory
         }
         catch (Exception e)
         {
-            logger.error(e);            
+            logger.error(e);
         }
     }
-    
-    public static void destroySingletonContext(Object parameter)
+
+    public void destroySingletonContext(Object parameter)
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(Singleton.class, parameter);
     }
 
-    public static void initConversationContext(Object context)
+    public void initConversationContext(Object context)
     {
         try
         {
@@ -164,11 +157,11 @@ public final class ContextFactory
         }
         catch (Exception e)
         {
-            logger.error(e);            
+            logger.error(e);
         }
     }
 
-    public static void destroyConversationContext()
+    public void destroyConversationContext()
     {
         ContextsService contextService = getContextsService();
         contextService.endContext(ConversationScoped.class, null);
@@ -176,18 +169,18 @@ public final class ContextFactory
 
     /**
      * Gets the current context with given type.
-     * 
+     *
      * @return the current context
      * @throws ContextNotActiveException if context is not active
      * @throws IllegalArgumentException if the type is not a standard context
      */
-    public static Context getStandardContext(ContextTypes type) throws ContextNotActiveException
+    public Context getStandardContext(ContextTypes type) throws ContextNotActiveException
     {
         ContextsService contextService = getContextsService();
         return getStandardContext(contextService, type);
     }
 
-    public static Context getStandardContext(ContextsService contextService, ContextTypes type) throws ContextNotActiveException
+    public Context getStandardContext(ContextsService contextService, ContextTypes type) throws ContextNotActiveException
     {
         Context context = null;
         switch (type.getCardinal())
@@ -195,19 +188,19 @@ public final class ContextFactory
             case 0:
                 context = contextService.getCurrentContext(RequestScoped.class);
                 break;
-    
+
             case 1:
                 context = contextService.getCurrentContext(SessionScoped.class);
                 break;
-    
+
             case 2:
                 context = contextService.getCurrentContext(ApplicationScoped.class);
                 break;
-    
+
             case 3:
                 context = contextService.getCurrentContext(ConversationScoped.class);
                 break;
-                
+
             case 4:
                 context = contextService.getCurrentContext(Dependent.class);
                 break;
@@ -215,7 +208,7 @@ public final class ContextFactory
             case 5:
                 context = contextService.getCurrentContext(Singleton.class);
                 break;
-                
+
             default:
                 throw new IllegalArgumentException("There is no such a standard context with context id=" + type.getCardinal());
         }
@@ -225,32 +218,32 @@ public final class ContextFactory
 
     /**
      * Gets the standard context with given scope type.
-     * 
+     *
      * @return the current context, or <code>null</code> if no standard context exists for the given scopeType
      */
-    public static Context getStandardContext(Class<? extends Annotation> scopeType)
+    public Context getStandardContext(Class<? extends Annotation> scopeType)
     {
         ContextsService contextService = getContextsService();
 
         return contextService.getCurrentContext(scopeType);
     }
-    
+
     /**
-     * Activate context. 
+     * Activate context.
      */
-    public static void activateContext(Class<? extends Annotation> scopeType)
+    public void activateContext(Class<? extends Annotation> scopeType)
     {
         ContextsService contextService = getContextsService();
         contextService.activateContext(scopeType);
     }
-    
+
     /**
      * Deactivate context.
      */
-    public static void deActivateContext(Class<? extends Annotation> scopeType)
+    public void deActivateContext(Class<? extends Annotation> scopeType)
     {
         ContextsService contextService = getContextsService();
         contextService.deActivateContext(scopeType);
     }
-    
+
 }

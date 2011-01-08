@@ -26,7 +26,7 @@ import javax.enterprise.util.TypeLiteral;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.producer.ParametrizedModel1;
 import org.apache.webbeans.test.component.producer.ParametrizedModel2;
@@ -94,7 +94,7 @@ public class ProducerComponentTest extends TestContext
         clear();
         defineManagedBean(ParametrizedProducer.class);
 
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
         Assert.assertEquals(4, getDeployedComponents());
 
         TypeLiteral<List<ParametrizedModel1>> model1 = new TypeLiteral<List<ParametrizedModel1>>()
@@ -122,7 +122,7 @@ public class ProducerComponentTest extends TestContext
         defineManagedBean(Producer4.class);
         AbstractOwbBean<Producer4ConsumerComponent> component = defineManagedBean(Producer4ConsumerComponent.class);
 
-        ContextFactory.initSessionContext(new Object());
+        WebBeansContext.getInstance().getContextFactory().initSessionContext(new Object());
 
         Producer4ConsumerComponent instance = getManager().getInstance(component);
 

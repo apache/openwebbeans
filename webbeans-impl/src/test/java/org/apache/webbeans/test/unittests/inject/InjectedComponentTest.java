@@ -23,6 +23,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.service.InjectedComponent;
@@ -53,8 +54,9 @@ public class InjectedComponentTest extends TestContext
         defineManagedBean(ServiceImpl1.class);
         List<AbstractOwbBean<?>> comps = getComponents();
 
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initApplicationContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
+        contextFactory.initApplicationContext(null);
 
         Assert.assertEquals(2, comps.size());
 
@@ -62,8 +64,8 @@ public class InjectedComponentTest extends TestContext
 
         Assert.assertTrue(object instanceof InjectedComponent);
 
-        ContextFactory.destroyApplicationContext(null);
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyApplicationContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
 }

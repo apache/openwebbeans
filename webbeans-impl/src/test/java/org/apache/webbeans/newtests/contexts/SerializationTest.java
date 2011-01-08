@@ -21,7 +21,6 @@ package org.apache.webbeans.newtests.contexts;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.SerializableBean;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.contexts.serialize.AppScopedBean;
@@ -119,12 +118,13 @@ public class SerializationTest extends AbstractUnitTest
         Assert.assertNotNull(beans);
         Assert.assertTrue(beans.size() > 7);
 
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         for (Bean<?> bean : beans)
         {
             String id = null;
             if((id = WebBeansUtil.isPassivationCapable(bean)) != null)
             {
-                bean = (Bean<?>) WebBeansContext.getInstance().getSerializableBeanVault().getSerializableBean(bean);
+                bean = (Bean<?>) webBeansContext.getSerializableBeanVault().getSerializableBean(bean);
                 
                 byte[] serial = serializeBean(bean);
                 Bean<?> b2 = deSerializeBean(serial);
@@ -139,8 +139,8 @@ public class SerializationTest extends AbstractUnitTest
         pdb.business();
         
         // first we need to actually create a few instances
-        
-        Context sessionContext = ContextFactory.getStandardContext(ContextTypes.SESSION);
+
+        Context sessionContext = webBeansContext.getContextFactory().getStandardContext(ContextTypes.SESSION);
         Assert.assertNotNull(sessionContext);
         byte[] ba = serializeObject(sessionContext);
         Assert.assertNotNull(ba);

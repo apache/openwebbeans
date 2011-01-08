@@ -23,6 +23,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.TestContext;
@@ -79,7 +80,8 @@ public class WebBeansInterceptComponentTest extends TestContext
         defineInterceptor(WebBeansInterceptor.class);
         defineManagedBean(WInterceptorComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
         List<AbstractOwbBean<?>> comps = getComponents();
 
         Object object = getManager().getInstance(comps.get(0));
@@ -91,7 +93,7 @@ public class WebBeansInterceptComponentTest extends TestContext
 
         Assert.assertEquals(5, s);
 
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
     @Test
@@ -103,7 +105,8 @@ public class WebBeansInterceptComponentTest extends TestContext
         defineInterceptor(WebBeanswithMetaInterceptor.class);
         defineManagedBean(WMetaInterceptorComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
         List<AbstractOwbBean<?>> comps = getComponents();
 
         Object object = getManager().getInstance(comps.get(0));
@@ -119,7 +122,7 @@ public class WebBeansInterceptComponentTest extends TestContext
 
         Assert.assertEquals(10, s);
 
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
 }

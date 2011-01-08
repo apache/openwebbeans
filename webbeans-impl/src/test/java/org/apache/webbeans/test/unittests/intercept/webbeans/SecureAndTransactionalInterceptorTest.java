@@ -22,6 +22,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.webbeans.SecureAndTransactionalComponent;
@@ -46,7 +47,8 @@ public class SecureAndTransactionalInterceptorTest extends TestContext
     @Test
     public void testSecureAndTransactionalInterceptor()
     {
-        ContextFactory.initSessionContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initSessionContext(null);
         defineInterceptor(SecureAndTransactionalInterceptor.class);
         
         Bean<SecureAndTransactionalComponent> bean = defineManagedBean(SecureAndTransactionalComponent.class);
@@ -57,8 +59,8 @@ public class SecureAndTransactionalInterceptorTest extends TestContext
         payment.pay();
         
         Assert.assertTrue(SecureAndTransactionalComponent.getCALL());
-        
-                
-        ContextFactory.destroySessionContext(null);
+
+
+        contextFactory.destroySessionContext(null);
     }
 }

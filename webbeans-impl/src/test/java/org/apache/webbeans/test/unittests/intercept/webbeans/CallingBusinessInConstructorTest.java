@@ -23,6 +23,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.test.TestContext;
@@ -56,8 +57,9 @@ public class CallingBusinessInConstructorTest extends TestContext
     @Test
     public void testCallBusinessInConstructor()
     {
-        ContextFactory.initRequestContext(null);
-        
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
+
         clear();      
         
         SecureInterceptor.CALL = false;
@@ -70,14 +72,14 @@ public class CallingBusinessInConstructorTest extends TestContext
         Assert.assertNotNull(instance);
         
         Assert.assertTrue(SecureInterceptor.CALL);
-        
-        ContextFactory.destroyRequestContext(null);
-        
+
+        contextFactory.destroyRequestContext(null);
+
         SecureInterceptor.CALL = false;
-        
-        ContextFactory.initRequestContext(null);
-        
-        RequestContext ctx = (RequestContext) ContextFactory.getStandardContext(RequestScoped.class);
+
+        contextFactory.initRequestContext(null);
+
+        RequestContext ctx = (RequestContext) contextFactory.getStandardContext(RequestScoped.class);
                 
         Assert.assertNull(ctx.get(bean));
                 
@@ -86,9 +88,9 @@ public class CallingBusinessInConstructorTest extends TestContext
         Assert.assertNotNull(instance);
         
         Assert.assertTrue(SecureInterceptor.CALL);
-        
-        ContextFactory.destroyRequestContext(null);
-        
+
+        contextFactory.destroyRequestContext(null);
+
     }
 
 }

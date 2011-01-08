@@ -62,7 +62,8 @@ public class TypedInjectedComponentTest extends TestContext
 
         Object session = getSession();
 
-        ContextFactory.initSessionContext(session);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initSessionContext(session);
 
         Assert.assertEquals(2, comps.size());
 
@@ -83,7 +84,7 @@ public class TypedInjectedComponentTest extends TestContext
 
         Assert.assertSame(typed2.isValue(), obj2.isValue());
 
-        ContextFactory.destroySessionContext(session);
+        contextFactory.destroySessionContext(session);
     }
 
     @Test
@@ -97,7 +98,8 @@ public class TypedInjectedComponentTest extends TestContext
 
         Object session = getSession();
 
-        ContextFactory.initSessionContext(session);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initSessionContext(session);
 
         Assert.assertEquals(2, comps.size());
 
@@ -116,7 +118,7 @@ public class TypedInjectedComponentTest extends TestContext
 
         Assert.assertSame(typed2.isValue(), obj2.isValue());
 
-        ContextFactory.destroySessionContext(session);
+        contextFactory.destroySessionContext(session);
     }
 
 }

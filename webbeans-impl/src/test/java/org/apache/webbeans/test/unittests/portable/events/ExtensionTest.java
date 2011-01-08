@@ -27,7 +27,7 @@ import javax.enterprise.inject.spi.Bean;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.portable.events.discovery.BeforeShutdownImpl;
 import org.apache.webbeans.test.component.library.BookShop;
@@ -58,8 +58,8 @@ public class ExtensionTest extends AbstractUnitTest
         addExtension(new MyExtension());
         
         startContainer(classes);
-        
-        ContextFactory.initApplicationContext(null);
+
+        getWebBeansContext().getContextFactory().initApplicationContext(null);
 
         Bean<MyExtension> extension = (Bean<MyExtension>) getBeanManager().getBeans(MyExtension.class, new DefaultLiteral()).iterator().next();
         
@@ -79,8 +79,8 @@ public class ExtensionTest extends AbstractUnitTest
         //Fire shut down
         getBeanManager().fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
 
-        ContextFactory.destroyApplicationContext(null);
-        
+        getWebBeansContext().getContextFactory().destroyApplicationContext(null);
+
         Assert.assertNotNull(MyExtension.beforeShutdownEvent);
     }
 }

@@ -26,7 +26,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.annotation.binding.NotAnyLiteral;
@@ -66,7 +66,7 @@ public class ObserversComponentTest extends TestContext
         clear();
 
         AbstractOwbBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("Gurkan");
 
@@ -90,7 +90,7 @@ public class ObserversComponentTest extends TestContext
         AbstractOwbBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
         AbstractOwbBean<ComponentWithObservable1> componentObservable = defineManagedBean(ComponentWithObservable1.class);
 
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         ComponentWithObserves1 instance = getManager().getInstance(component);
         ComponentWithObservable1 observable = getManager().getInstance(componentObservable);
@@ -112,7 +112,7 @@ public class ObserversComponentTest extends TestContext
         AbstractOwbBean<ComponentWithObserves5> component5 = defineManagedBean(ComponentWithObserves5.class);
         AbstractOwbBean<ComponentWithObserves6> component6 = defineManagedBean(ComponentWithObserves6.class);
 
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         /*
          * DO NOT CALL getInstance FOR component3! IF_EXISTS NEEDS TO FAIL FOR THAT OBJECT.
@@ -142,7 +142,7 @@ public class ObserversComponentTest extends TestContext
         getManager().addBean(WebBeansUtil.getEventBean());
         
         AbstractOwbBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("Gurkan");
 
@@ -176,7 +176,7 @@ public class ObserversComponentTest extends TestContext
         getManager().addBean(WebBeansUtil.getEventBean());
         
         AbstractOwbBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("Mark");
 
@@ -202,7 +202,7 @@ public class ObserversComponentTest extends TestContext
         defineManagedBean(CheckWithMoneyPayment.class);
         defineManagedBean(PaymentProcessorComponent.class);
         AbstractOwbBean<ComponentWithObserves2> component = defineManagedBean(ComponentWithObserves2.class);
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         LoggedInEvent event = new LoggedInEvent("USER");
 

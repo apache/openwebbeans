@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.SerializableBeanVault;
+import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
 //import org.apache.webbeans.corespi.se.DefaultContextsService;
@@ -56,6 +57,7 @@ import org.apache.webbeans.xml.XMLSpecializesManager;
 public class WebBeansContext
 {
 
+    private ContextFactory contextFactory = new ContextFactory(this);
     private AlternativesManager alternativesManager = new AlternativesManager(this);
     private AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory();
     private BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
@@ -154,6 +156,11 @@ public class WebBeansContext
             return null;
         }
         return serviceInterface.cast(WebBeansFinder.getSingletonInstance(implName));
+    }
+
+    public ContextFactory getContextFactory()
+    {
+        return contextFactory;
     }
 
     public AnnotationManager getAnnotationManager()
@@ -259,7 +266,7 @@ public class WebBeansContext
 
     public Object get(String singletonName)
     {
-        //util.Track.get(singletonName);
+        util.Track.get(singletonName);
         Object object = managerMap.get(singletonName);
 
         /* No singleton for this application, create one */

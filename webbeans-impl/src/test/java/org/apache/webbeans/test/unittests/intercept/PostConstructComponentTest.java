@@ -26,6 +26,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.test.TestContext;
@@ -59,7 +60,8 @@ public class PostConstructComponentTest extends TestContext
         defineManagedBean(PostConstructComponent.class);
         List<AbstractOwbBean<?>> comps = getComponents();
 
-        ContextFactory.initRequestContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
 
         Assert.assertEquals(2, comps.size());
 
@@ -81,7 +83,7 @@ public class PostConstructComponentTest extends TestContext
         Assert.assertNotNull(pcc.getP());
         Assert.assertSame(object.getValue(), chk.getValue());
 
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
 }

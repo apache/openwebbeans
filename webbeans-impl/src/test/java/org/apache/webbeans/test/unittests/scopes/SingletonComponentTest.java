@@ -62,7 +62,8 @@ public class SingletonComponentTest extends TestContext
 
         Object session = getSession();
 
-        ContextFactory.initSessionContext(session);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initSessionContext(session);
 
         Assert.assertEquals(2, comps.size());
 
@@ -80,7 +81,7 @@ public class SingletonComponentTest extends TestContext
 
         Assert.assertNotNull(t);
 
-        ContextFactory.destroySessionContext(session);
+        contextFactory.destroySessionContext(session);
     }
 
 }

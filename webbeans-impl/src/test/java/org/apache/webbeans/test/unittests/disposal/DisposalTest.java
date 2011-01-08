@@ -20,6 +20,7 @@ package org.apache.webbeans.test.unittests.disposal;
 
 import java.util.List;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.disposal.Disposal1;
@@ -46,8 +47,9 @@ public class DisposalTest extends TestContext
     {
         clear();
 
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initSessionContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
+        contextFactory.initSessionContext(null);
 
         defineManagedBean(Disposal1.class);
 
@@ -55,7 +57,7 @@ public class DisposalTest extends TestContext
         List<Integer> list = (List<Integer>) getManager().getInstanceByName("createBinding1");
         Assert.assertNotNull(list);
         Assert.assertTrue(list.size() == 1);
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyRequestContext(null);
 
         Assert.assertTrue(Disposal1.getDISPOSCALL());
 

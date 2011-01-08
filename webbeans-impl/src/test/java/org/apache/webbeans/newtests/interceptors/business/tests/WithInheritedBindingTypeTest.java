@@ -28,7 +28,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
 
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.business.common.WithInheritedBindingTypeBean;
 import org.apache.webbeans.newtests.interceptors.common.SecureInterceptor;
@@ -73,10 +73,11 @@ public class WithInheritedBindingTypeTest extends AbstractUnitTest
         
         Assert.assertTrue(TransactionInterceptor.ECHO);
         Assert.assertTrue(SecureInterceptor.ECHO);
-        
-        ContextFactory.destroyRequestContext(null);
-        ContextFactory.initRequestContext(null);
-        
+
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getContextFactory().destroyRequestContext(null);
+        webBeansContext.getContextFactory().initRequestContext(null);
+
         reference = getBeanManager().getReference(bean, WithInheritedBindingTypeBean.class, ctx);
         beanInstance = (WithInheritedBindingTypeBean)reference;
         beanInstance.business();

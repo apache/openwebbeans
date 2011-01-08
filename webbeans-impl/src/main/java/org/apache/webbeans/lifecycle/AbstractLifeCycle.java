@@ -62,7 +62,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     
     /**Root container.*/
     private final BeanManagerImpl beanManager;
-    private final WebBeansContext webBeansContext;
+    protected final WebBeansContext webBeansContext;
 
     protected AbstractLifeCycle()
     {

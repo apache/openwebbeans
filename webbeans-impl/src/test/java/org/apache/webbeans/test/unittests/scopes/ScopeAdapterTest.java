@@ -23,6 +23,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -55,9 +56,10 @@ public class ScopeAdapterTest extends TestContext
         defineManagedBean(ScopeAdaptorInjectorComponent.class);
 
         Object session = getSession();
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initSessionContext(session);
-        ContextFactory.initApplicationContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
+        contextFactory.initSessionContext(session);
+        contextFactory.initApplicationContext(null);
 
         List<AbstractOwbBean<?>> comps = getComponents();
 
@@ -68,9 +70,9 @@ public class ScopeAdapterTest extends TestContext
         getInstanceByName("scope");
         getManager().getInstance(comps.get(2));
 
-        ContextFactory.destroyApplicationContext(null);
-        ContextFactory.destroySessionContext(session);
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyApplicationContext(null);
+        contextFactory.destroySessionContext(session);
+        contextFactory.destroyRequestContext(null);
 
     }
 

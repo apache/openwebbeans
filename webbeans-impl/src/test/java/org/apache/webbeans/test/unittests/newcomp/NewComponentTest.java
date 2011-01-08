@@ -23,6 +23,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -57,7 +58,8 @@ public class NewComponentTest extends TestContext
         defineManagedBean(DependentOwnerComponent.class);
         defineManagedBean(NewComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
 
         List<AbstractOwbBean<?>> comps = getComponents();
 
@@ -69,7 +71,7 @@ public class NewComponentTest extends TestContext
 
         Assert.assertNotNull(own);
 
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
     @Test
@@ -79,7 +81,7 @@ public class NewComponentTest extends TestContext
         defineManagedBean(CheckWithCheckPayment.class);
         defineManagedBean(ProducerNewComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
         Assert.assertEquals(5, getDeployedComponents());
 
         IPayment payment = (IPayment) getManager().getInstanceByName("paymentProducer");

@@ -23,6 +23,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.InterceptedComponent;
@@ -59,7 +60,8 @@ public class EJBInterceptComponentTest extends TestContext
         clear();
         defineManagedBean(InterceptedComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
         List<AbstractOwbBean<?>> comps = getComponents();
 
         Object object = getManager().getInstance(comps.get(0));
@@ -71,7 +73,7 @@ public class EJBInterceptComponentTest extends TestContext
 
         Assert.assertEquals(new Integer(5), s);
 
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
     @Test
@@ -80,7 +82,8 @@ public class EJBInterceptComponentTest extends TestContext
         clear();
         defineManagedBean(MultipleInterceptedComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
         List<AbstractOwbBean<?>> comps = getComponents();
 
         Object object = getManager().getInstance(comps.get(0));
@@ -96,7 +99,7 @@ public class EJBInterceptComponentTest extends TestContext
 
         Assert.assertEquals(2, arr.length);
         Assert.assertTrue("key".equals(arr[0]) && "key2".equals(arr[1]) || "key".equals(arr[1]) && "key2".equals(arr[0]));
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
     @Test
@@ -105,7 +108,8 @@ public class EJBInterceptComponentTest extends TestContext
         clear();
         defineManagedBean(InterceptorWithSuperClassInterceptedComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
         List<AbstractOwbBean<?>> comps = getComponents();
 
         Object object = getManager().getInstance(comps.get(0));
@@ -121,7 +125,7 @@ public class EJBInterceptComponentTest extends TestContext
 
         Assert.assertEquals(1, arr.length);
         Assert.assertTrue("key0".equals(arr[0]));
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
     @Test
@@ -130,7 +134,8 @@ public class EJBInterceptComponentTest extends TestContext
         clear();
         defineManagedBean(MultipleListOfInterceptedComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
         List<AbstractOwbBean<?>> comps = getComponents();
 
         Object object = getManager().getInstance(comps.get(0));
@@ -144,7 +149,7 @@ public class EJBInterceptComponentTest extends TestContext
 
         Assert.assertEquals("ok", (String) obj);
 
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
     @Test
@@ -153,7 +158,8 @@ public class EJBInterceptComponentTest extends TestContext
         clear();
         defineManagedBean(MultipleListOfInterceptedWithExcludeClassComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
         List<AbstractOwbBean<?>> comps = getComponents();
 
         Object object = getManager().getInstance(comps.get(0));
@@ -167,7 +173,7 @@ public class EJBInterceptComponentTest extends TestContext
 
         Assert.assertEquals("value2", (String) obj);
 
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyRequestContext(null);
     }
 
 }

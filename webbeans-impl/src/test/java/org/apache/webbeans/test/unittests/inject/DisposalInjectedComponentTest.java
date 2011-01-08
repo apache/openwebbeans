@@ -60,8 +60,9 @@ public class DisposalInjectedComponentTest extends TestContext
 
         List<AbstractOwbBean<?>> comps = getComponents();
 
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initApplicationContext(null);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
+        contextFactory.initApplicationContext(null);
 
         Assert.assertEquals(2, comps.size());
 
@@ -83,8 +84,8 @@ public class DisposalInjectedComponentTest extends TestContext
 
         Assert.assertNotNull(s);
 
-        ContextFactory.destroyApplicationContext(null);
-        ContextFactory.destroyRequestContext(null);
+        contextFactory.destroyApplicationContext(null);
+        contextFactory.destroyRequestContext(null);
 
     }
 

@@ -58,7 +58,8 @@ public class InjectedComponentWithMemberTest extends TestContext
         List<AbstractOwbBean<?>> comps = getComponents();
 
         Object session = getSession();
-        ContextFactory.initSessionContext(session);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initSessionContext(session);
 
         Assert.assertEquals(2, comps.size());
 
@@ -72,7 +73,7 @@ public class InjectedComponentWithMemberTest extends TestContext
 
         Assert.assertTrue(bc != null);
 
-        ContextFactory.destroySessionContext(session);
+        contextFactory.destroySessionContext(session);
     }
 
 }

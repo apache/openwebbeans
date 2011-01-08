@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.pfield;
 
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
@@ -50,8 +50,8 @@ public class ProducerFieldComponentTest extends TestContext
     @Test
     public void testInjectedProducerField()
     {
-        ContextFactory.initRequestContext(null);
-        
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
         defineManagedBean(CheckWithCheckPayment.class);
         defineManagedBean(CheckWithMoneyPayment.class);
         
@@ -78,7 +78,7 @@ public class ProducerFieldComponentTest extends TestContext
     @Test
     public void testInjectedProducerFieldIncorrectType()
     {
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         defineManagedBean(ProducerFieldDefinitionParameterized.class);
         Bean<ProducerFieldInjectedWrongType> beanInjected = defineManagedBean(ProducerFieldInjectedWrongType.class);
@@ -102,8 +102,8 @@ public class ProducerFieldComponentTest extends TestContext
     @Test
     public void testProducerFieldTypeVariable()
     {
-        ContextFactory.initRequestContext(null);
-        
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
+
         Exception expected = null;
         try
         {

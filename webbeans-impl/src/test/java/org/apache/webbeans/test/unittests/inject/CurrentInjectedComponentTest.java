@@ -23,6 +23,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.ContaintsCurrentComponent;
@@ -57,8 +58,9 @@ public class CurrentInjectedComponentTest extends TestContext
         List<AbstractOwbBean<?>> comps = getComponents();
 
         Object session = getSession();
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initSessionContext(session);
+        ContextFactory contextFactory = WebBeansContext.getInstance().getContextFactory();
+        contextFactory.initRequestContext(null);
+        contextFactory.initSessionContext(session);
 
         Assert.assertEquals(3, comps.size());
 
@@ -82,8 +84,8 @@ public class CurrentInjectedComponentTest extends TestContext
 
         Assert.assertNotNull(typed2);
 
-        ContextFactory.destroyRequestContext(null);
-        ContextFactory.destroySessionContext(session);
+        contextFactory.destroyRequestContext(null);
+        contextFactory.destroySessionContext(session);
     }
 
 }

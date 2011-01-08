@@ -31,7 +31,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.annotation.binding.Binding1Literal;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -71,8 +71,9 @@ public class Decorator1Test extends TestContext
         defineDecorator(ServiceDecorator.class);
         AbstractOwbBean<ServiceImpl1> component = defineManagedBean(ServiceImpl1.class);
 
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initApplicationContext(null);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getContextFactory().initRequestContext(null);
+        webBeansContext.getContextFactory().initApplicationContext(null);
 
         ServiceImpl1 serviceImpl = getManager().getInstance(component);
         String s = serviceImpl.service();
@@ -98,7 +99,7 @@ public class Decorator1Test extends TestContext
         defineDecorator(LargeTransactionDecorator.class);
         AbstractOwbBean<AccountComponent> component = defineManagedBean(AccountComponent.class);
 
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         AccountComponent account = getManager().getInstance(component);
 

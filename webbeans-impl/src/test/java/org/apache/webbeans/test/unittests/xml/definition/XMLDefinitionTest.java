@@ -23,7 +23,6 @@ import junit.framework.Assert;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.xml.definition.Definition1;
 import org.apache.webbeans.test.xml.definition.Definition2;
@@ -149,7 +148,7 @@ public class XMLDefinitionTest extends TestContext
     {
         clear();
 
-        ContextFactory.initRequestContext(null);
+        WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
 
         AbstractOwbBean<?> compDef = getWebBeanFromXml("org/apache/webbeans/test/xml/definition/testBeanConstructor2.xml", TstBeanConstructor.class);
 

@@ -27,7 +27,7 @@ import javax.enterprise.inject.spi.Bean;
 import junit.framework.Assert;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.portable.scopeextension.ExternalTestScopeExtension;
@@ -59,7 +59,8 @@ public class ExtensionTest extends AbstractUnitTest
         addExtension(new ExternalTestScopeExtension());
         startContainer(classes);
 
-        ContextFactory.initApplicationContext(null);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getContextFactory().initApplicationContext(null);
 
         @SuppressWarnings("unchecked")
         Bean<ExternalTestScopedBean> bean = (Bean<ExternalTestScopedBean>) getBeanManager().getBeans(ExternalTestScopedBean.class, 
@@ -75,8 +76,8 @@ public class ExtensionTest extends AbstractUnitTest
         //Fire shut down
         getBeanManager().fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
 
-        ContextFactory.destroyApplicationContext(null);
-        
+        webBeansContext.getContextFactory().destroyApplicationContext(null);
+
         shutDownContainer();
         
     }
