@@ -31,10 +31,8 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.spi.plugins.AbstractOwbJsfPlugin;
 
 public class EL10Resolver extends ELResolver
 {
@@ -61,27 +59,9 @@ public class EL10Resolver extends ELResolver
     }
 
     @Override
-    @SuppressWarnings({"unchecked","deprecation"})
+    @SuppressWarnings("unchecked")
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
-        //Check that application is OWB enabled
-        //For JSF applications that are not
-        //OWB enabled, no need to go with this resolver....
-        AbstractOwbJsfPlugin jsfPlugin = WebBeansContext.getInstance().getPluginLoader().getJsfPlugin();
-        
-        //No JSF plugin, sure that not OWB  
-        if(jsfPlugin == null)
-        {
-            return null;
-        }        
-        else
-        {
-            if(!jsfPlugin.isOwbApplication())
-            {
-                return null;
-            }
-        }
-        
         //Bean instance
         Object contextualInstance = null;
 

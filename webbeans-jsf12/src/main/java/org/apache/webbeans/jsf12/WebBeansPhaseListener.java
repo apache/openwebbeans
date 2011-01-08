@@ -58,13 +58,15 @@ public class WebBeansPhaseListener implements PhaseListener
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE) ||
                 phaseEvent.getFacesContext().getResponseComplete())
         {
-            ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
+            WebBeansContext webBeansContext = WebBeansContext.getInstance();
+            ConversationManager conversationManager = webBeansContext.getConversationManager();
             Conversation conversation = conversationManager.getConversationBeanReference();
+            ContextFactory contextFactory = webBeansContext.getContextFactory();
 
             if (conversation.isTransient())
             {
                 logger.debug("Destroying the conversation context with cid : [{0}]", conversation.getId());
-                ContextFactory.destroyConversationContext();                                                    
+                contextFactory.destroyConversationContext();
             }
             else
             {
@@ -92,14 +94,16 @@ public class WebBeansPhaseListener implements PhaseListener
             //It looks for cid parameter in the JSF request.
             //If request contains cid, then it must restore conversation
             //Otherwise create NonexistentException
-            ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
+            WebBeansContext webBeansContext = WebBeansContext.getInstance();
+            ConversationManager conversationManager = webBeansContext.getConversationManager();
             Conversation conversation = conversationManager.getConversationBeanReference();
             String cid = JSFUtil.getConversationId();
+            ContextFactory contextFactory = webBeansContext.getContextFactory();
 
             if (conversation.isTransient())
             {
                 logger.debug("Creating a new transitional conversation with cid : [{0}]", conversation.getId());
-                ContextFactory.initConversationContext(null);
+                contextFactory.initConversationContext(null);
 
                 //Not restore, throw exception
                 if(cid != null && !cid.equals(""))
@@ -115,14 +119,14 @@ public class WebBeansPhaseListener implements PhaseListener
                 ConversationImpl owbConversation = (ConversationImpl)conversation;
                 if(!owbConversation.getInUsed().compareAndSet(false, true))
                 {
-                    ContextFactory.initConversationContext(null);
+                    contextFactory.initConversationContext(null);
                     //Throw Busy exception
                     throw new BusyConversationException("Propogated conversation with cid=" + cid + " is used by other request. It creates a new transient conversation");
                 }
                 else
                 {
                     ConversationContext conversationContext = conversationManager.getConversationContext(conversation);
-                    ContextFactory.initConversationContext(conversationContext);
+                    contextFactory.initConversationContext(conversationContext);
                 }
             }
         }

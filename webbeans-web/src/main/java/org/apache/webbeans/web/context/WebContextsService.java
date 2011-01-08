@@ -82,7 +82,7 @@ public class WebContextsService extends AbstractContextsService
     private static Map<ServletContext, SingletonContext> currentSingletonContexts = new ConcurrentHashMap<ServletContext, SingletonContext>();
 
     /**Session context manager*/
-    private final SessionContextManager sessionCtxManager = SessionContextManager.getInstance();
+    private final SessionContextManager sessionCtxManager;
 
     /**Conversation context manager*/
     private final ConversationManager conversationManager;
@@ -126,6 +126,7 @@ public class WebContextsService extends AbstractContextsService
         supportsConversation =  webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
         failoverService = webBeansContext.getService(FailOverService.class);
         conversationManager = webBeansContext.getConversationManager();
+        sessionCtxManager = webBeansContext.getService(SessionContextManager.class);
     }
     
     /**

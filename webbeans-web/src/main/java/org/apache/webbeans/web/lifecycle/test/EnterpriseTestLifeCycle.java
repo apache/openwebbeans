@@ -20,6 +20,7 @@ package org.apache.webbeans.web.lifecycle.test;
 
 import java.util.Properties;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.corespi.se.DefaultScannerService;
 import org.apache.webbeans.el.ELContextStore;
@@ -47,11 +48,12 @@ public class EnterpriseTestLifeCycle extends StandaloneLifeCycle
     {
         this.mockHttpSession = new MockHttpSession();
         this.servletContextEvent = new MockServletContextEvent();
-        
-        ContextFactory.initRequestContext(null);
-        ContextFactory.initSessionContext(mockHttpSession);
-        ContextFactory.initConversationContext(null);
-        ContextFactory.initApplicationContext(this.servletContextEvent.getServletContext());        
+        WebBeansContext webBeansContext = getWebBeansContext();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+        contextFactory.initRequestContext(null);
+        contextFactory.initSessionContext(mockHttpSession);
+        contextFactory.initConversationContext(null);
+        contextFactory.initApplicationContext(this.servletContextEvent.getServletContext());
     }
     
     @Override
@@ -63,10 +65,12 @@ public class EnterpriseTestLifeCycle extends StandaloneLifeCycle
     @Override
     public void beforeStopApplication(Object endObject)
     {
-        ContextFactory.destroyRequestContext(null);
-        ContextFactory.destroySessionContext(this.mockHttpSession);
-        ContextFactory.destroyConversationContext();        
-        ContextFactory.destroyApplicationContext(this.servletContextEvent.getServletContext());
+        WebBeansContext webBeansContext = getWebBeansContext();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+        contextFactory.destroyRequestContext(null);
+        contextFactory.destroySessionContext(this.mockHttpSession);
+        contextFactory.destroyConversationContext();
+        contextFactory.destroyApplicationContext(this.servletContextEvent.getServletContext());
 
         //Comment out for OWB-502
         //ContextFactory.cleanUpContextFactory();

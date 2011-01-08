@@ -20,6 +20,7 @@ package org.apache.webbeans.test.tck;
 
 import javax.enterprise.context.RequestScoped;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContext;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.RequestContext;
@@ -31,14 +32,17 @@ public class ContextsImpl implements Contexts<AbstractContext>
 
     public AbstractContext getRequestContext()
     {
-        RequestContext ctx =  (RequestContext)ContextFactory.getStandardContext(RequestScoped.class);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        RequestContext ctx =  (RequestContext)contextFactory.getStandardContext(RequestScoped.class);
         
         if(ctx == null)
         {
-            ContextFactory.initRequestContext(null);   
+            contextFactory.initRequestContext(null);
         }
         
-        return (AbstractContext) ContextFactory.getStandardContext(ContextTypes.REQUEST);
+        return (AbstractContext) contextFactory.getStandardContext(ContextTypes.REQUEST);
     }
 
     public void setActive(AbstractContext context)
@@ -54,7 +58,10 @@ public class ContextsImpl implements Contexts<AbstractContext>
 
     public AbstractContext getDependentContext()
     {
-        return (AbstractContext) ContextFactory.getStandardContext(ContextTypes.DEPENDENT);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        return (AbstractContext) contextFactory.getStandardContext(ContextTypes.DEPENDENT);
     }
 
     public void destroyContext(AbstractContext context)

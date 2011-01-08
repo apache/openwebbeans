@@ -109,7 +109,7 @@ public class WebBeansContext
     @Deprecated
     public static WebBeansContext getInstance()
     {
-        WebBeansContext webBeansContext = (WebBeansContext) WebBeansFinder.getSingletonInstance(WebBeansContext.class.getName());
+        WebBeansContext webBeansContext = WebBeansFinder.getSingletonInstance();
 
         return webBeansContext;
     }
@@ -155,7 +155,7 @@ public class WebBeansContext
 //            }
             return null;
         }
-        return serviceInterface.cast(WebBeansFinder.getSingletonInstance(implName));
+        return serviceInterface.cast(get(implName));
     }
 
     public ContextFactory getContextFactory()

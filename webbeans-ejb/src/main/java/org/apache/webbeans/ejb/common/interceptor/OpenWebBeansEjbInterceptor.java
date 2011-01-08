@@ -63,6 +63,7 @@ import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -161,10 +162,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         { 
             logger.debug("Intercepting EJB method {0} ", ejbContext.getMethod());
         }
-        
+
         try
         {
-            if (WebBeansContext.getInstance().getOpenWebBeansConfiguration().isUseEJBInterceptorActivation()) //default is true
+            if (webBeansContext.getOpenWebBeansConfiguration().isUseEJBInterceptorActivation()) //default is true
             {
                 int result = activateContexts(RequestScoped.class);
                 //Context activities
@@ -197,7 +198,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         }
         finally
         {
-            if (WebBeansContext.getInstance().getOpenWebBeansConfiguration().isUseEJBInterceptorActivation())
+            if (webBeansContext.getOpenWebBeansConfiguration().isUseEJBInterceptorActivation())
             {
                 if(!requestAlreadyActive)
                 {
@@ -352,17 +353,18 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     {
         ContextsService service = webBeansContext.getService(ContextsService.class);
         Context ctx = service.getCurrentContext(scopeType);
-        
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
         if(scopeType == RequestScoped.class)
         {
             if(ctx != null && !ctx.isActive())
             {
-                ContextFactory.activateContext(scopeType);
+                contextFactory.activateContext(scopeType);
                 return 0;
             }
             else if(ctx == null)
             {
-                ContextFactory.initRequestContext(null);
+                contextFactory.initRequestContext(null);
                 return 1;
             }
             
@@ -371,12 +373,12 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         ctx = service.getCurrentContext(scopeType);
         if(ctx != null && !ctx.isActive())
         {
-            ContextFactory.activateContext(scopeType);
+            contextFactory.activateContext(scopeType);
             return 0;
         }
         else if(ctx == null)
         {
-            ContextFactory.initApplicationContext(null);
+            contextFactory.initApplicationContext(null);
             return 1;
 
         }     
@@ -391,26 +393,27 @@ public class OpenWebBeansEjbInterceptor implements Serializable
      */
     private void deActivateContexts(boolean destroy, Class<? extends Annotation> scopeType)
     {
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
         if(scopeType == ApplicationScoped.class)
         {
             if(destroy)
             {
-                ContextFactory.destroyApplicationContext(null);
+                contextFactory.destroyApplicationContext(null);
             }
             else
             {
-                ContextFactory.deActivateContext(ApplicationScoped.class);
+                contextFactory.deActivateContext(ApplicationScoped.class);
             }            
         }
         else
         {
             if(destroy)
             {
-                ContextFactory.destroyRequestContext(null);
+                contextFactory.destroyRequestContext(null);
             }
             else
             {
-                ContextFactory.deActivateContext(RequestScoped.class);
+                contextFactory.deActivateContext(RequestScoped.class);
             }            
         }                
     }
@@ -498,9 +501,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             Class<?> proxyClass = WebBeansContext.getInstance().getJavassistProxyFactory().getInterceptorProxyClasses().get(injectionTarget);
             if (proxyClass == null)
             {
-                ProxyFactory delegateFactory = WebBeansContext.getInstance().getJavassistProxyFactory().createProxyFactory(injectionTarget);
-                proxyClass = WebBeansContext.getInstance().getJavassistProxyFactory().getProxyClass(delegateFactory);
-                WebBeansContext.getInstance().getJavassistProxyFactory().getInterceptorProxyClasses().put(injectionTarget, proxyClass);
+                JavassistProxyFactory proxyFactory = webBeansContext.getJavassistProxyFactory();
+                ProxyFactory delegateFactory = proxyFactory.createProxyFactory(injectionTarget);
+                proxyClass = proxyFactory.getProxyClass(delegateFactory);
+                proxyFactory.getInterceptorProxyClasses().put(injectionTarget, proxyClass);
             }
             Object delegate = proxyClass.newInstance();
             delegateHandler = new DelegateHandler(this.contextual, ejbContext);

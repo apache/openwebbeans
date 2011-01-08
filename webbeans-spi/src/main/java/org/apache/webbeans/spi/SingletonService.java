@@ -26,15 +26,14 @@ package org.apache.webbeans.spi;
  * 
  * @version $Rev$ $Date$
  */
-public interface SingletonService
+public interface SingletonService<T>
 {
     /**
      * Get instance for given key and class name.
      * @param key instance key
-     * @param singletonClassName instance class name
      * @return instance
      */
-    public Object get(Object key, String singletonClassName);
+    public T get(Object key);
     
     /**
      * Any clean activity.
@@ -42,28 +41,4 @@ public interface SingletonService
      */
     public void clear(Object key);
     
-    /**
-     * Returns true if singleton exist,
-     * false otherwise.
-     * @param key instance key
-     * @param singletonClassName class name
-     * @return true if singleton exist
-     */
-    public boolean isExist(Object key, String singletonClassName);
-    
-    /**
-     * Returns exist instance or null.
-     * @param key instance key
-     * @param singletonClassName class name
-     * @return exist instance
-     */
-    public Object getExist(Object key, String singletonClassName);
-    
-    /**
-     * Returns key for the given singleton
-     * instance.
-     * @param singleton instance
-     * @return key for given instance
-     */
-    public Object getKey(Object singleton);
 }

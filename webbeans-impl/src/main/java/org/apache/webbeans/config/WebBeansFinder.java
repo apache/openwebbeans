@@ -34,7 +34,7 @@ public final class WebBeansFinder
 {   
     //How you use singleton provider ,
     //As a default we use ClassLoader --> Object
-    private static SingletonService singletonService = new DefaultSingletonService();
+    private static SingletonService<WebBeansContext> singletonService = new DefaultSingletonService();
 
     /** safety mechanism to allow setting a special SingletonService only once */
     private static boolean customSingletonServiceUsed = false;
@@ -47,42 +47,20 @@ public final class WebBeansFinder
         //No action
     }
     
-    public static Object getSingletonInstance(String singletonName)
+    public static WebBeansContext getSingletonInstance()
     {
-        return getSingletonInstance(singletonName, WebBeansUtil.getCurrentClassLoader());
+        return singletonService.get(WebBeansUtil.getCurrentClassLoader());
     }
-    
-    public static Object getSingletonInstance(String singletonName, Object key)
-    {
-        return singletonService.get(key, singletonName);
-    }
-    
-    
-    public static Object getExistingSingletonInstance(String singletonName, Object key)
-    {
-        return singletonService.getExist(key, singletonName);
-    }
-    
+
     public static void clearInstances(Object key)
     {
         singletonService.clear(key);
     }
 
-    /**
-     * TODO Delete - only used one place
-     * @param singletonInstance
-     * @return
-     */
-    public static Object getSingletonClassLoader(Object singletonInstance)
-    {
-        return singletonService.getKey(singletonInstance);
-    }
-    
-    // Thirdt pary frameworks can set singleton instance
+    // Third pary frameworks can set singleton instance
     // For example, OpenEJB could provide its own provider
-    // Based on deployment
-    // this must not get set
-    public static void setSingletonService(SingletonService singletonSvc)
+    // This can be called at most once.
+    public static void setSingletonService(SingletonService<WebBeansContext> singletonSvc)
     {
         if (customSingletonServiceUsed && !singletonService.equals(singletonSvc))
         {

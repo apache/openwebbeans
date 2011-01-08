@@ -62,23 +62,32 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     @Override
     public void startContexts() throws Exception 
     {
-        ContextFactory.initSingletonContext(servletContext);
-        ContextFactory.initApplicationContext(servletContext);
-        ContextFactory.initSessionContext(session);
-        ContextFactory.initConversationContext(null);
-        ContextFactory.initRequestContext(null);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        contextFactory.initSingletonContext(servletContext);
+        contextFactory.initApplicationContext(servletContext);
+        contextFactory.initSessionContext(session);
+        contextFactory.initConversationContext(null);
+        contextFactory.initRequestContext(null);
     }
 
     @Override
     public void startApplicationScope() throws Exception 
     {
-        ContextFactory.initApplicationContext(servletContext);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        contextFactory.initApplicationContext(servletContext);
     }
 
     @Override
     public void startConversationScope() throws Exception 
     {
-        ContextFactory.initConversationContext(null);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        contextFactory.initConversationContext(null);
     }
 
     @Override
@@ -90,23 +99,32 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     @Override
     public void startRequestScope() throws Exception 
     {
-        ContextFactory.initRequestContext(null);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        contextFactory.initRequestContext(null);
     }
 
     @Override
     public void startSessionScope() throws Exception 
     {
-        ContextFactory.initSessionContext(session);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        contextFactory.initSessionContext(session);
     }
 
     @Override
     public void stopContexts() throws Exception 
     {
-        ContextFactory.destroyRequestContext(null);
-        ContextFactory.destroyConversationContext();
-        ContextFactory.destroySessionContext(session);
-        ContextFactory.destroyApplicationContext(servletContext);
-        ContextFactory.destroySingletonContext(servletContext);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        contextFactory.destroyRequestContext(null);
+        contextFactory.destroyConversationContext();
+        contextFactory.destroySessionContext(session);
+        contextFactory.destroyApplicationContext(servletContext);
+        contextFactory.destroySingletonContext(servletContext);
 
         //Comment out for OWB-502
         //ContextFactory.cleanUpContextFactory();
@@ -115,13 +133,19 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     @Override
     public void stopApplicationScope() throws Exception 
     {
-        ContextFactory.destroyApplicationContext(servletContext);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        contextFactory.destroyApplicationContext(servletContext);
     }
 
     @Override
     public void stopConversationScope() throws Exception 
     {
-        ContextFactory.destroyConversationContext();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        contextFactory.destroyConversationContext();
     }
 
     @Override
@@ -133,13 +157,19 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
     @Override
     public void stopRequestScope() throws Exception 
     {
-        ContextFactory.destroyRequestContext(null);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        contextFactory.destroyRequestContext(null);
     }
 
     @Override
     public void stopSessionScope() throws Exception 
     {
-        ContextFactory.destroySessionContext(session);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        ContextFactory contextFactory = webBeansContext.getContextFactory();
+
+        contextFactory.destroySessionContext(session);
     }
     
     public  BeanManager getBeanManager() 

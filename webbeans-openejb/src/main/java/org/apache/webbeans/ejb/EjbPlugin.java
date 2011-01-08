@@ -21,10 +21,10 @@ package org.apache.webbeans.ejb;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -50,8 +50,6 @@ import org.apache.openejb.core.stateful.StatefulContainer;
 import org.apache.openejb.core.stateless.StatelessContainer;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.ejb.common.util.EjbDefinitionUtility;
 import org.apache.webbeans.ejb.common.util.EjbUtility;
 import org.apache.webbeans.ejb.component.OpenEjbBean;
@@ -65,6 +63,7 @@ import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.SecurityUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * EJB related stuff.
@@ -379,7 +378,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         for (DeploymentInfo deployment : deployments)
         {
             boolean inTest = Boolean.valueOf(SecurityUtil.doPrivilegedGetSystemProperty("EjbPlugin.test", "false"));
-            classLoaderEquality = deployment.getBeanClass().getClassLoader().equals(WebBeansFinder.getSingletonClassLoader(WebBeansContext.getInstance().getPluginLoader()));
+            classLoaderEquality = deployment.getBeanClass().getClassLoader().equals(WebBeansUtil.getCurrentClassLoader());
 
             // Yes, this EJB archive is deployed within this web
             // application

@@ -57,6 +57,8 @@ public class FailOverBag implements Serializable
     SessionContext sessionContext;
     
     Map<Conversation, ConversationContext> conversationContextMap;
+
+    private final WebBeansContext webBeansContext = WebBeansContext.getInstance();
     
     public FailOverBag()
     {
@@ -72,11 +74,11 @@ public class FailOverBag implements Serializable
     public void updateOwbFailOverBag(HttpSession session, FailOverService service) 
     {
         // get the session context
-        SessionContextManager sessionManager = SessionContextManager.getInstance();
+        SessionContextManager sessionManager = webBeansContext.getService(SessionContextManager.class);
         sessionContext = sessionManager.getSessionContextWithSessionId(session.getId());
 
         // get all conversation contexts 
-        ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
+        ConversationManager conversationManager = webBeansContext.getConversationManager();
         conversationContextMap = conversationManager.getConversationMapWithSessionId(session.getId());
     }
     
@@ -86,13 +88,13 @@ public class FailOverBag implements Serializable
         {
             if (sessionContext != null) 
             {
-                SessionContextManager sessionManager = SessionContextManager.getInstance();
+                SessionContextManager sessionManager = webBeansContext.getService(SessionContextManager.class);
                 sessionManager.addNewSessionContext(sessionId, sessionContext);
                 sessionContext.setActive(true);
             }
             if (conversationContextMap != null && !conversationContextMap.isEmpty())
             {
-                ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
+                ConversationManager conversationManager = webBeansContext.getConversationManager();
                 java.util.Iterator<Conversation> it = conversationContextMap.keySet().iterator();
                 while(it.hasNext()) 
                 {

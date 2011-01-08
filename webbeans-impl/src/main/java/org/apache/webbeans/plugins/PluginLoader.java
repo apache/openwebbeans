@@ -29,7 +29,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.spi.plugins.AbstractOwbJsfPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
@@ -185,11 +184,6 @@ public class PluginLoader
      */
     public OpenWebBeansEjbPlugin getEjbPlugin()
     {
-        if(!pluginsExist())
-        {
-            return null;
-        }
-        
         for(OpenWebBeansPlugin plugin : this.plugins)
         {
             if(plugin instanceof OpenWebBeansEjbPlugin)
@@ -200,30 +194,6 @@ public class PluginLoader
         
         return null;
     }
-    
-    /**
-     * Gets JSF plugin.
-     * 
-     * @return JSF plugin
-     */
-    public AbstractOwbJsfPlugin getJsfPlugin()
-    {
-        if(!pluginsExist())
-        {
-            return null;
-        }
-        
-        for(OpenWebBeansPlugin plugin : this.plugins)
-        {
-            if(plugin instanceof AbstractOwbJsfPlugin)
-            {
-                return (AbstractOwbJsfPlugin)plugin;
-            }
-        }
-        
-        return null;
-    }   
-    
  
     /**
      * Gets ejb lifecycle annotations plugin
@@ -232,11 +202,6 @@ public class PluginLoader
      */
     public OpenWebBeansEjbLCAPlugin getEjbLCAPlugin()
     {
-        if(!pluginsExist())
-        {
-            return null;
-        }
-        
         for(OpenWebBeansPlugin plugin : this.plugins)
         {
             if(plugin instanceof OpenWebBeansEjbLCAPlugin)
@@ -254,11 +219,6 @@ public class PluginLoader
      */
     public OpenWebBeansJmsPlugin getJmsPlugin()
     {
-        if(!pluginsExist())
-        {
-            return null;
-        }
-        
         for(OpenWebBeansPlugin plugin : this.plugins)
         {
             if(plugin instanceof OpenWebBeansJmsPlugin)
@@ -273,11 +233,6 @@ public class PluginLoader
     
     public OpenWebBeansJavaEEPlugin getJavaEEPlugin()
     {
-        if(!pluginsExist())
-        {
-            return null;
-        }
-        
         for(OpenWebBeansPlugin plugin : this.plugins)
         {
             if(plugin instanceof OpenWebBeansJavaEEPlugin)
@@ -291,11 +246,6 @@ public class PluginLoader
     
     public OpenWebBeansWebPlugin getWebPlugin()
     {
-        if(!pluginsExist())
-        {
-            return null;
-        }
-        
         for(OpenWebBeansPlugin plugin : this.plugins)
         {
             if(plugin instanceof OpenWebBeansWebPlugin)
@@ -307,15 +257,6 @@ public class PluginLoader
         return null;        
     }    
     
-    private boolean pluginsExist()
-    {
-        if(this.plugins == null)
-        {
-            return false;
-        }
-        
-        return true;
-    }
     
     public boolean isShowDown()
     {

@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.util.Asserts;
 
@@ -37,7 +36,7 @@ import org.apache.webbeans.util.Asserts;
 public class SessionContextManager
 {
     /** Session id to SessionContext map*/
-    private Map<String, SessionContext> sessionContexts = null;
+    private final Map<String, SessionContext> sessionContexts;
 
     
     /**
@@ -47,18 +46,7 @@ public class SessionContextManager
     {
         sessionContexts = new ConcurrentHashMap<String, SessionContext>();        
     }
-    
-    /**
-     * Gets singleton instance.
-     * @return instance of session context manager
-     */
-    public static SessionContextManager getInstance()
-    {
-        SessionContextManager sessionContextManager = (SessionContextManager)WebBeansFinder.getSingletonInstance(SessionContextManager.class.getName());        
-        
-        return sessionContextManager;
-    }
-    
+
     /**
      * Adds new session context for the given session id.
      * @param sessionId session id

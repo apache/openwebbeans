@@ -91,7 +91,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
      */
     protected void afterStartApplication(Object startupObject) throws Exception
     {
-        String strDelay = getWebBeansContext().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
+        String strDelay = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
         long delay = Long.parseLong(strDelay);
 
         service = Executors.newScheduledThreadPool(1);
@@ -115,7 +115,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
                 logger.debug("Default JSPFactroy instance has not found");
             }
         }
-        
+
         // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
         ServletContext servletContext = (ServletContext)(startupObject);
         servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());

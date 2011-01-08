@@ -31,9 +31,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.spi.plugins.AbstractOwbJsfPlugin;
 
 /**
  * JSF or JSP expression language a.k.a EL resolver.
@@ -91,38 +89,18 @@ public class WebBeansELResolver extends ELResolver
      * {@inheritDoc}
      */    
     @Override
-    @SuppressWarnings({"unchecked","deprecation"})
+    @SuppressWarnings("unchecked")
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
-        //Check that application is OWB enabled
-        //For JSF applications that are not
-        //OWB enabled, no need to go with this resolver....
-        AbstractOwbJsfPlugin jsfPlugin = WebBeansContext.getInstance().getPluginLoader().getJsfPlugin();
-        
-        //No JSF plugin, sure that not OWB  
-        if(jsfPlugin == null)
-        {
-            return null;
-        }        
-        //If PluginLoader is called by application explicitly
-        //But not OWB application
-        else
-        {
-            if(!jsfPlugin.isOwbApplication())
-            {
-                return null;
-            }
-        }
-        
         //Bean instance
         Object contextualInstance = null;
-        ELContextStore elContextStore = null;
+
         if (obj == null)
         {
             //Name of the bean
             String name = (String) property;
             //Local store, create if not exist
-            elContextStore = ELContextStore.getInstance(true);
+            ELContextStore elContextStore = ELContextStore.getInstance(true);
 
             contextualInstance = elContextStore.findBeanByName(name);
 
@@ -156,7 +134,7 @@ public class WebBeansELResolver extends ELResolver
                 }
             }
         }
-        
+
         return contextualInstance;
     }
 
