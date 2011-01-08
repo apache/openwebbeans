@@ -77,33 +77,33 @@ public class WebBeansContext
     private WebBeansNameSpaceContainer webBeansNameSpaceContainer = new WebBeansNameSpaceContainer();
     private XMLSpecializesManager xmlSpecializesManager = new XMLSpecializesManager();
 
-    private final Map<String, Object> managerMap = new HashMap<String, Object>();
+    private final Map<Class<?>, Object> managerMap = new HashMap<Class<?>, Object>();
 
     private final Map<Class<?>, Object> serviceMap = new HashMap<Class<?>, Object>();
 
     public WebBeansContext()
     {
         // Allow the WebBeansContext itself to be looked up
-        managerMap.put(this.getClass().getName(), this);
+        managerMap.put(this.getClass(), this);
 
         // Add them all into the map for backwards compatibility
-        managerMap.put(AlternativesManager.class.getName(), alternativesManager);
-        managerMap.put(AnnotatedElementFactory.class.getName(), annotatedElementFactory);
-        managerMap.put(BeanManagerImpl.class.getName(), beanManagerImpl);
-        managerMap.put(ConversationManager.class.getName(), conversationManager);
-        managerMap.put(CreationalContextFactory.class.getName(), creationalContextFactory);
-        managerMap.put(DecoratorsManager.class.getName(), decoratorsManager);
-        managerMap.put(ExtensionLoader.class.getName(), extensionLoader);
-        managerMap.put(InterceptorsManager.class.getName(), interceptorsManager);
-        managerMap.put(JMSManager.class.getName(), jmsManager);
-        managerMap.put(JavassistProxyFactory.class.getName(), javassistProxyFactory);
-        managerMap.put(OpenWebBeansConfiguration.class.getName(), openWebBeansConfiguration);
-        managerMap.put(PluginLoader.class.getName(), pluginLoader);
-        managerMap.put(SerializableBeanVault.class.getName(), serializableBeanVault);
-        managerMap.put(StereoTypeManager.class.getName(), stereoTypeManager);
-        managerMap.put(WebBeansNameSpaceContainer.class.getName(), webBeansNameSpaceContainer);
-        managerMap.put(XMLAnnotationTypeManager.class.getName(), xmlAnnotationTypeManager);
-        managerMap.put(XMLSpecializesManager.class.getName(), xmlSpecializesManager);
+        managerMap.put(AlternativesManager.class, alternativesManager);
+        managerMap.put(AnnotatedElementFactory.class, annotatedElementFactory);
+        managerMap.put(BeanManagerImpl.class, beanManagerImpl);
+        managerMap.put(ConversationManager.class, conversationManager);
+        managerMap.put(CreationalContextFactory.class, creationalContextFactory);
+        managerMap.put(DecoratorsManager.class, decoratorsManager);
+        managerMap.put(ExtensionLoader.class, extensionLoader);
+        managerMap.put(InterceptorsManager.class, interceptorsManager);
+        managerMap.put(JMSManager.class, jmsManager);
+        managerMap.put(JavassistProxyFactory.class, javassistProxyFactory);
+        managerMap.put(OpenWebBeansConfiguration.class, openWebBeansConfiguration);
+        managerMap.put(PluginLoader.class, pluginLoader);
+        managerMap.put(SerializableBeanVault.class, serializableBeanVault);
+        managerMap.put(StereoTypeManager.class, stereoTypeManager);
+        managerMap.put(WebBeansNameSpaceContainer.class, webBeansNameSpaceContainer);
+        managerMap.put(XMLAnnotationTypeManager.class, xmlAnnotationTypeManager);
+        managerMap.put(XMLSpecializesManager.class, xmlSpecializesManager);
     }
 
     @Deprecated
@@ -264,38 +264,45 @@ public class WebBeansContext
         return getService(ContextsService.class);
     }
 
-    public Object get(String singletonName)
+    private Object get(String singletonName)
+    {
+        //Load class
+        Class<?> clazz = ClassUtil.getClassFromName(singletonName);
+        if (clazz == null)
+        {
+            throw new WebBeansException("Class not found exception in creating instance with class : " + singletonName,
+                    new ClassNotFoundException("Class with name: " + singletonName + " is not found in the system"));
+        }
+        return get(clazz);
+
+    }
+
+    public <T> T get(Class<T> clazz)
     {
         //util.Track.get(singletonName);
-        Object object = managerMap.get(singletonName);
+        T object = clazz.cast(managerMap.get(clazz));
 
         /* No singleton for this application, create one */
         if (object == null)
         {
-            object = createInstance(singletonName);
+            object = createInstance(clazz);
 
             //Save it
-            managerMap.put(singletonName, object);
+            managerMap.put(clazz, object);
         }
 
         return object;
     }
 
-    private Object createInstance(String singletonName)
+    private <T> T createInstance(Class<T> clazz)
     {
         try
         {
-            //Load class
-            Class<?> clazz = ClassUtil.getClassFromName(singletonName);
-            if (clazz == null)
-            {
-                throw new ClassNotFoundException("Class with name: " + singletonName + " is not found in the system");
-            }
 
             // first try constructor that takes this object as an argument
             try
             {
-                Constructor<?> constructor = clazz.getConstructor(WebBeansContext.class);
+                Constructor<T> constructor = clazz.getConstructor(WebBeansContext.class);
                 return constructor.newInstance(this);
             }
             catch (NoSuchMethodException e)
@@ -305,29 +312,25 @@ public class WebBeansContext
             // then try a no-arg constructor
             try
             {
-                Constructor<?> constructor = clazz.getConstructor();
+                Constructor<T> constructor = clazz.getConstructor();
                 return constructor.newInstance();
             }
             catch (NoSuchMethodException e)
             {
-                throw new WebBeansException("No suitable constructor : " + singletonName, e.getCause());
+                throw new WebBeansException("No suitable constructor : " + clazz.getName(), e.getCause());
             }
         }
         catch (InstantiationException e)
         {
-            throw new WebBeansException("Unable to instantiate class : " + singletonName, e.getCause());
+            throw new WebBeansException("Unable to instantiate class : " + clazz.getName(), e.getCause());
         }
         catch (InvocationTargetException e)
         {
-            throw new WebBeansException("Unable to instantiate class : " + singletonName, e.getCause());
+            throw new WebBeansException("Unable to instantiate class : " + clazz.getName(), e.getCause());
         }
         catch (IllegalAccessException e)
         {
-            throw new WebBeansException("Illegal access exception in creating instance with class : " + singletonName, e);
-        }
-        catch (ClassNotFoundException e)
-        {
-            throw new WebBeansException("Class not found exception in creating instance with class : " + singletonName, e);
+            throw new WebBeansException("Illegal access exception in creating instance with class : " + clazz.getName(), e);
         }
     }
 

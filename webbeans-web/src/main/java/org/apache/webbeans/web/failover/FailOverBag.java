@@ -37,6 +37,7 @@ import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.web.context.SessionContextManager;
+import org.apache.webbeans.web.context.WebContextsService;
 
 /**
  * 
@@ -74,7 +75,7 @@ public class FailOverBag implements Serializable
     public void updateOwbFailOverBag(HttpSession session, FailOverService service) 
     {
         // get the session context
-        SessionContextManager sessionManager = webBeansContext.getService(SessionContextManager.class);
+        SessionContextManager sessionManager = ((WebContextsService)webBeansContext.getContextsService()).getSessionContextManager();
         sessionContext = sessionManager.getSessionContextWithSessionId(session.getId());
 
         // get all conversation contexts 
@@ -88,7 +89,7 @@ public class FailOverBag implements Serializable
         {
             if (sessionContext != null) 
             {
-                SessionContextManager sessionManager = webBeansContext.getService(SessionContextManager.class);
+                SessionContextManager sessionManager = ((WebContextsService)webBeansContext.getContextsService()).getSessionContextManager();
                 sessionManager.addNewSessionContext(sessionId, sessionContext);
                 sessionContext.setActive(true);
             }
