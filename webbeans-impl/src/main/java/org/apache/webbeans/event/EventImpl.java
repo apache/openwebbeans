@@ -31,7 +31,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -52,9 +51,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     /**Event types*/
     private Type eventType;
 
-    /**Bean manager*/
-    private transient BeanManagerImpl manager = null;
-    private final WebBeansContext webBeansContext;
+    private transient WebBeansContext webBeansContext = WebBeansContext.getInstance();
 
     /**
      * Creates a new event.
@@ -66,8 +63,6 @@ public class EventImpl<T> implements Event<T>, Serializable
     {
         this.injectedBindings = injectedBindings;
         this.eventType = eventType;
-        webBeansContext = WebBeansContext.getInstance();
-        this.manager = webBeansContext.getBeanManagerImpl();
     }
 
     /**
@@ -75,7 +70,7 @@ public class EventImpl<T> implements Event<T>, Serializable
      */
     public void fire(T event)
     {
-        this.manager.fireEvent(event, this.injectedBindings);
+        this.webBeansContext.getBeanManagerImpl().fireEvent(event, this.injectedBindings);
     }
 
     /**
@@ -167,6 +162,6 @@ public class EventImpl<T> implements Event<T>, Serializable
         this.eventType = (Type)inputStream.readObject();
         this.injectedBindings = (Annotation[])inputStream.readObject();
 
-        this.manager = webBeansContext.getBeanManagerImpl();
+        this.webBeansContext = WebBeansContext.getInstance();
     }
 }
