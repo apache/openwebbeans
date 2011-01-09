@@ -47,9 +47,13 @@ public class OpenWebBeansJsfPlugin extends AbstractOwbJsfPlugin
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if(facesContext == null)
         {
-            throw new IllegalStateException("FacesContext is null");
+            //This application is not JSF, probably JSP based OWB application
+            //WebBeansELResolver for JSP has been registered on booting
+            //phase of OWB
+            return true;
         }
         
+        //If this application is JSF, check that OWB has booted
         ExternalContext ext = facesContext.getExternalContext();
         ServletContext servletContext = (ServletContext) ext.getContext();
         Object attribute = servletContext.getAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION);

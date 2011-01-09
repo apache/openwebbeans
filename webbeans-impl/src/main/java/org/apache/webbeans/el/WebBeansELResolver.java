@@ -100,13 +100,14 @@ public class WebBeansELResolver extends ELResolver
         AbstractOwbJsfPlugin jsfPlugin = WebBeansContext.getInstance().getPluginLoader().getJsfPlugin();
         
         //No JSF plugin, sure that not OWB  
-        if(jsfPlugin == null)
+        if(jsfPlugin == null && !(WebBeansContext.getInstance().getOpenWebBeansConfiguration().isJspApplication()))
         {
             return null;
         }        
+
         //If PluginLoader is called by application explicitly
         //But not OWB application
-        else
+        else if(jsfPlugin != null)
         {
             if(!jsfPlugin.isOwbApplication())
             {
