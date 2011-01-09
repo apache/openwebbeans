@@ -160,7 +160,7 @@ public class WebBeansELResolver extends ELResolver
         return contextualInstance;
     }
 
-    private Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<Object> bean, String beanName)
+    protected Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<Object> bean, String beanName)
     {
         CreationalContext<Object> creationalContext = manager.createCreationalContext(bean);
         Object contextualInstance = manager.getReference(bean, Object.class, creationalContext);
@@ -175,7 +175,7 @@ public class WebBeansELResolver extends ELResolver
     }
 
 
-    private Object getDependentContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<Object> bean)
+    protected Object getDependentContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<Object> bean)
     {
         Object contextualInstance = store.getDependent(bean);
         if(contextualInstance != null)

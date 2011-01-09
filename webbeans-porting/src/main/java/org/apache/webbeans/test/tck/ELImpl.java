@@ -35,7 +35,6 @@ import javax.el.VariableMapper;
 import org.apache.el.ExpressionFactoryImpl;
 import org.apache.el.lang.FunctionMapperImpl;
 import org.apache.el.lang.VariableMapperImpl;
-import org.apache.webbeans.el.WebBeansELResolver;
 import org.apache.webbeans.el.WrappedExpressionFactory;
 import org.jboss.jsr299.tck.spi.EL;
 
@@ -55,7 +54,7 @@ public class ELImpl implements EL
         composite.add(new MapELResolver());
         composite.add(new ListELResolver());
         composite.add(new ResourceBundleELResolver());
-        composite.add(new WebBeansELResolver());
+        composite.add(new OwbTckElResolver());
         
         return composite;
     }

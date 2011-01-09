@@ -33,7 +33,7 @@
 
     <properties>
         <!--  <webbeans.tck.version>1.0.1-Final</webbeans.tck.version> -->
-        <webbeans.tck.version>1.0.4.CR1</webbeans.tck.version>
+        <webbeans.tck.version>1.0.4.CR2</webbeans.tck.version>
     </properties>
 
     <!--Used for jboss-test-harness-api not in central maven -->
