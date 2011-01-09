@@ -28,8 +28,8 @@ import org.apache.webbeans.component.ProducerFieldBean;
  * 
  * @version $Rev$ $Date$
  *
- * @param <X> declared bean class
- * @param <T> producer return type info
+ * @param <X> producer field return type
+ * @param <T> producer field bean class type
  */
 public class ProcessProducerFieldImpl<X,T> extends ProcessBeanImpl<T> implements ProcessProducerField<X, T>
 {

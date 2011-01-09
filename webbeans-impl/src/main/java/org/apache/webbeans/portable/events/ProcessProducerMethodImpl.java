@@ -29,8 +29,8 @@ import org.apache.webbeans.component.ProducerMethodBean;
  * 
  * @version $Rev$ $Date$
  *
- * @param <X> declared bean class
- * @param <T> producer return type
+ * @param <X> producer method return type
+ * @param <T> producer method bean class
  */
 public class ProcessProducerMethodImpl<X,T> extends ProcessBeanImpl<T> implements ProcessProducerMethod<X, T>
 {

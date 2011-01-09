@@ -37,7 +37,7 @@ import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
+import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.util.TypeLiteral;
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.InjectionTargetBean;
@@ -222,16 +222,16 @@ public final class NotificationManager
                         Class<?> producerOrObserverReturnClass = genericBeanEvent.getProducerOrObserverType();
 
                         if(WebBeansUtil.isDefaultExtensionProducerOrObserverEventType(observerClass))
-                        {            
+                        {   
+                            boolean processProducerEvent = false;
+                            if(observerClass.equals(ProcessProducer.class))
+                            {
+                                processProducerEvent = true;
+                            }
+                            
                             if(ClassUtil.isParametrizedType(type))
                             {
-                                boolean isObserverMethod = false;
-                                if(observerClass.equals(ProcessObserverMethod.class))
-                                {
-                                    isObserverMethod = true;
-                                }
-                                
-                                addToMathingWithParametrizedForProducers(isObserverMethod,type, beanClass, producerOrObserverReturnClass, matching);
+                                addToMatchingWithParametrizedForProducers(processProducerEvent,type, beanClass, producerOrObserverReturnClass, matching);
                             }
                             else
                             {
@@ -266,6 +266,15 @@ public final class NotificationManager
         return matching;        
     }
     
+    /**
+     * Returns true if fired event class is assignable with 
+     * given observer type argument.
+     * @param beanClass fired event class.
+     * @param observerTypeActualArg actual type argument, 
+     * such as in case ProcessProducerField&lt;Book&gt; is Book.class
+     * @return true if fired event class is assignable with 
+     * given observer type argument.
+     */
     private boolean checkEventTypeParameterForExtensions(Class<?> beanClass, Type observerTypeActualArg)
     {
         if(ClassUtil.isTypeVariable(observerTypeActualArg))
@@ -333,7 +342,16 @@ public final class NotificationManager
         
     }
     
-    private <T> void addToMathingWithParametrizedForProducers(boolean isObserverMethod,Type type, Class<?> beanClass,
+    /**
+     * Add to matching.
+     * @param <T> generic observer method parameter type 
+     * fired event because of observer method or not
+     * @param type one of observer method parameter base type
+     * @param beanClass observer method owner bean class
+     * @param producerOrObserverReturnClass observer even normal class
+     * @param matching set of observer method that match the given type
+     */
+    private <T> void addToMatchingWithParametrizedForProducers(boolean processProducer, Type type, Class<?> beanClass,
                                                               Class<?> producerOrObserverReturnClass, Set<ObserverMethod<? super T>> matching )
     {
         ParameterizedType pt = (ParameterizedType)type;
@@ -348,16 +366,21 @@ public final class NotificationManager
             }
         }
         else
-        {
-            Type beanClassArg = actualArgs[0];
-            Type returnClassArg = actualArgs[1];
+        {   
+            //Bean class argument
+            //For observer related event, observer owner bean class.
+            Type beanClassArg = actualArgs[1];
             
-            if(isObserverMethod)
+            //Event payload
+            Type returnClassArg = actualArgs[0];
+            
+            //For ProcessProducer<BeanClass, Event Class>
+            if(processProducer)
             {
-                beanClassArg = actualArgs[1];
-                returnClassArg = actualArgs[0];
+                beanClassArg = actualArgs[0];
+                returnClassArg = actualArgs[1];
             }
-            
+                        
             if(checkEventTypeParameterForExtensions(beanClass, beanClassArg) && 
                     checkEventTypeParameterForExtensions(producerOrObserverReturnClass, returnClassArg))
             {
