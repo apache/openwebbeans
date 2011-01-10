@@ -122,16 +122,6 @@ public class OpenWebBeansConfiguration
     public static final String USE_BDA_BEANSXML_SCANNER = "org.apache.webbeans.useBDABeansXMLScanner";
 
     /**
-     * Gets singleton instance.
-     * @return singleton instance
-     */
-    @Deprecated
-    public static OpenWebBeansConfiguration getInstance() 
-    {
-        return WebBeansContext.getInstance().getOpenWebBeansConfiguration();
-    }
-
-    /**
      * Parse configuration.
      */
     public OpenWebBeansConfiguration()

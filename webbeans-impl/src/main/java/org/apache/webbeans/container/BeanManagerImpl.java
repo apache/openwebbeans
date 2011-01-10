@@ -244,17 +244,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     /**
-     * Gets current activity.
-     *
-     * @return the current activity
-     */
-    @Deprecated
-    public static BeanManagerImpl getManager()
-    {
-        return WebBeansContext.getInstance().getBeanManagerImpl();
-    }
-
-    /**
      * Sets the xml configurator instance.
      * 
      * @param xmlConfigurator set xml configurator instance.
@@ -691,7 +680,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             throw new IllegalArgumentException("Exception in getBeans method. Bean type can not be TypeVariable for bean type : " + beanType);
         }
 
-        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(bindings);
+        webBeansContext.getAnnotationManager().checkQualifierConditions(bindings);
 
         return this.injectionResolver.implResolveByType(beanType, bindings);
         

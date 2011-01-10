@@ -47,6 +47,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  * @version $Rev$ $Date$
  * 
  * @see javax.enterprise.inject.spi.Bean
+ * 
  */
 public abstract class AbstractOwbBean<T> implements OwbBean<T>
 {
@@ -161,7 +162,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         {  
             if(!(creationalContext instanceof CreationalContextImpl))
             {
-                creationalContext = WebBeansContext.getInstance().getCreationalContextFactory().wrappedCreationalContext(
+                creationalContext = webBeansContext.getCreationalContextFactory().wrappedCreationalContext(
                         creationalContext, this); 
             }
            
@@ -595,7 +596,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */    
     public boolean isAlternative()
     {
-        return WebBeansContext.getInstance().getAlternativesManager().isBeanHasAlternative(this);
+        return webBeansContext.getAlternativesManager().isBeanHasAlternative(this);
     }
     
     /**

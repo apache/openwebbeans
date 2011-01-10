@@ -21,7 +21,6 @@ package org.apache.webbeans.component;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.annotation.ApplicationScopeLiteral;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 
 /**
@@ -50,7 +49,7 @@ public class ExtensionBean<T> extends AbstractInjectionTargetBean<T>
     @Override
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
-        ExtensionLoader loader = WebBeansContext.getInstance().getExtensionLoader();
+        ExtensionLoader loader = getWebBeansContext().getExtensionLoader();
         
         return loader.getBeanInstance(this);
     }

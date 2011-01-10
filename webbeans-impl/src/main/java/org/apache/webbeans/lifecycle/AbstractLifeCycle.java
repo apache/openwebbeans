@@ -76,7 +76,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         webBeansContext = WebBeansContext.getInstance();
         this.beanManager = webBeansContext.getBeanManagerImpl();
         this.xmlDeployer = new WebBeansXMLConfigurator();
-        this.deployer = new BeansDeployer(xmlDeployer);
+        this.deployer = new BeansDeployer(xmlDeployer, webBeansContext);
         this.jndiService = webBeansContext.getService(JNDIService.class);
         this.beanManager.setXMLConfigurator(this.xmlDeployer);
         this.scannerService = webBeansContext.getScannerService();

@@ -36,7 +36,6 @@ import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -136,7 +135,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         boolean isDependentProxy = false;
         if(getScope() == Dependent.class && !(this instanceof EnterpriseBeanMarker))
         {
-            T result = (T) WebBeansContext.getInstance().getJavassistProxyFactory().createDependentScopedBeanProxy(this, instance, creationalContext);
+            T result = (T) getWebBeansContext().getJavassistProxyFactory().createDependentScopedBeanProxy(this, instance, creationalContext);
             //Means that Dependent Bean has interceptor/decorator
             if(JavassistProxyFactory.isProxyInstance(result))
             {

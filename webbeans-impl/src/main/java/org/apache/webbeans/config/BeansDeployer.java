@@ -105,12 +105,13 @@ public class BeansDeployer
      * Creates a new deployer with given xml configurator.
      * 
      * @param xmlConfigurator xml configurator
+     * @param webBeansContext
      */
-    public BeansDeployer(WebBeansXMLConfigurator xmlConfigurator)
+    public BeansDeployer(WebBeansXMLConfigurator xmlConfigurator, WebBeansContext webBeansContext)
     {
         this.xmlConfigurator = xmlConfigurator;
-        this.webBeansContext = WebBeansContext.getInstance();
-        String usage = webBeansContext.getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_EJB_DISCOVERY);
+        this.webBeansContext = webBeansContext;
+        String usage = this.webBeansContext.getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.USE_EJB_DISCOVERY);
         this.discoverEjb = Boolean.parseBoolean(usage);
     }
 
@@ -421,7 +422,7 @@ public class BeansDeployer
                     
                     if(beanName.equals(other))
                     {
-                        InjectionResolver resolver = InjectionResolver.getInstance();
+                        InjectionResolver resolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
                         Set<Bean<?>> beans = resolver.implResolveByName(beanName);
                         if(beans.size() > 1)
                         {
@@ -729,7 +730,7 @@ public class BeansDeployer
 
         addDefaultStereoTypes();
 
-        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         
         Set<Class<?>> beanClasses = scanner.getBeanClasses();
         if (beanClasses != null && beanClasses.size() > 0)

@@ -449,8 +449,6 @@ public class InjectionResolver
         
         resolvedComponents = new HashSet<Bean<?>>();
         
-        Set<Bean<?>> deployedComponents = this.webBeansContext.getBeanManagerImpl().getBeans();
-
         boolean currentQualifier = false;
         boolean returnAll = false;
         
@@ -475,11 +473,8 @@ public class InjectionResolver
             returnAll = true;
         }
 
-        Iterator<Bean<?>> it = deployedComponents.iterator();
-
-        while (it.hasNext())
+        for (Bean<?> component : this.webBeansContext.getBeanManagerImpl().getBeans())
         {
-            Bean<?> component = it.next();
 
             if (returnAll)
             {
@@ -487,13 +482,10 @@ public class InjectionResolver
                 continue;
             }
 
-            Set<Type> componentApiTypes = component.getTypes();
-            Iterator<Type> itComponentApiTypes = componentApiTypes.iterator();
-            while (itComponentApiTypes.hasNext())
+            for (Type componentApiType : component.getTypes())
             {
-                Type componentApiType = itComponentApiTypes.next();
-                
-                if(ClassUtil.isAssignable(componentApiType, injectionPointType))
+
+                if (ClassUtil.isAssignable(componentApiType, injectionPointType))
                 {
                     resolvedComponents.add(component);
                     break;
