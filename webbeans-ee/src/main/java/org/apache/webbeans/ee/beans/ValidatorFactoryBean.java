@@ -23,11 +23,11 @@ import javax.validation.ValidatorFactory;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.spi.ValidatorService;
 
-public class ValidatorFactoryBean extends AbstractOwbBean<ValidatorFactory>
+public class ValidatorFactoryBean extends BuildInOwbBean<ValidatorFactory>
 {
 
     public ValidatorFactoryBean()
@@ -45,12 +45,24 @@ public class ValidatorFactoryBean extends AbstractOwbBean<ValidatorFactory>
         ValidatorService validatorService = getWebBeansContext().getService(ValidatorService.class);
         if(validatorService != null)
         {
-            return validatorService.getDefaultValidatorFactory();
+            ValidatorFactory t = validatorService.getDefaultValidatorFactory();
+            return createProxyWrapper(t, creationalContext);
         }
         
         return null;
     }
 
+    @Override
+    protected ValidatorFactory createActualInstance(CreationalContext<ValidatorFactory> creationalContext)
+    {
+        ValidatorService validatorService = getWebBeansContext().getService(ValidatorService.class);
+        if(validatorService != null)
+        {
+            return validatorService.getDefaultValidatorFactory();
+        }        
+        return null;
+    }
+    
     @Override
     public boolean isPassivationCapable()
     {

@@ -23,11 +23,11 @@ import javax.validation.Validator;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.spi.ValidatorService;
 
-public class ValidatorBean extends AbstractOwbBean<Validator>
+public class ValidatorBean extends BuildInOwbBean<Validator>
 {
 
     public ValidatorBean()
@@ -45,9 +45,21 @@ public class ValidatorBean extends AbstractOwbBean<Validator>
         ValidatorService validatorService = getWebBeansContext().getService(ValidatorService.class);
         if(validatorService != null)
         {
-            return validatorService.getDefaultValidator();
+            Validator t = validatorService.getDefaultValidator();
+            return createProxyWrapper(t, creationalContext);
         }
         
+        return null;
+    }
+
+    @Override
+    protected Validator createActualInstance(CreationalContext<Validator> creationalContext)
+    {
+        ValidatorService validatorService = getWebBeansContext().getService(ValidatorService.class);
+        if(validatorService != null)
+        {
+            return validatorService.getDefaultValidator();
+        }       
         return null;
     }
 

@@ -23,11 +23,11 @@ import javax.transaction.UserTransaction;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.spi.TransactionService;
 
-public class UserTransactionBean extends AbstractOwbBean<UserTransaction>
+public class UserTransactionBean extends BuildInOwbBean<UserTransaction>
 {
 
     public UserTransactionBean()
@@ -40,12 +40,25 @@ public class UserTransactionBean extends AbstractOwbBean<UserTransaction>
     }
 
     @Override
-    protected UserTransaction createInstance(CreationalContext<UserTransaction> creationalContext)
+    protected UserTransaction createActualInstance(CreationalContext<UserTransaction> creationalContext)
     {
         TransactionService transactionService = getWebBeansContext().getService(TransactionService.class);
         if(transactionService != null)
         {
             return transactionService.getUserTransaction();
+        }
+        
+        return null;
+    }
+
+    @Override
+    protected UserTransaction createInstance(CreationalContext<UserTransaction> creationalContext)
+    {
+        TransactionService transactionService = getWebBeansContext().getService(TransactionService.class);
+        if(transactionService != null)
+        {
+            UserTransaction t = transactionService.getUserTransaction();
+            return createProxyWrapper(t, creationalContext);
         }
         
         return null;

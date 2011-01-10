@@ -24,11 +24,11 @@ import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
-import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.spi.SecurityService;
 
-public class PrinicipalBean extends AbstractOwbBean<Principal>
+public class PrinicipalBean extends BuildInOwbBean<Principal>
 {
 
     public PrinicipalBean()
@@ -42,6 +42,19 @@ public class PrinicipalBean extends AbstractOwbBean<Principal>
 
     @Override
     protected Principal createInstance(CreationalContext<Principal> creationalContext)
+    {
+        SecurityService securityService = getWebBeansContext().getService(SecurityService.class);
+        if(securityService != null)
+        {
+            Principal t = securityService.getCurrentPrincipal();
+            return createProxyWrapper(t, creationalContext);
+        }
+        
+        return null;
+    }
+
+    @Override
+    protected Principal createActualInstance(CreationalContext<Principal> creationalContext)
     {
         SecurityService securityService = getWebBeansContext().getService(SecurityService.class);
         if(securityService != null)
