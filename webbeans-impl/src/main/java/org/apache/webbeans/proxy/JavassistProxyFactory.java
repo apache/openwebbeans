@@ -60,6 +60,7 @@ public final class JavassistProxyFactory
 
     }
     
+    private ConcurrentMap<OwbBean<?>, Class<?>> buildInBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     private ConcurrentMap<OwbBean<?>, Class<?>> normalScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     private ConcurrentMap<OwbBean<?>, Class<?>> dependentScopedBeanProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();    
     private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
@@ -220,6 +221,28 @@ public final class JavassistProxyFactory
 
         return result;
     }
+    
+    public Object createBuildInBeanProxy(OwbBean<?> bean) 
+    {
+        Object result = null;
+        try
+        {
+            Class<?> proxyClass = buildInBeanProxyClasses.get(bean);
+            if (proxyClass == null)
+            {
+                ProxyFactory fact = createProxyFactory(bean);
+                proxyClass = getProxyClass(fact);
+                buildInBeanProxyClasses.putIfAbsent(bean, proxyClass);
+            }
+            result = proxyClass.newInstance();
+        }
+        catch (Exception e)
+        {
+            WebBeansUtil.throwRuntimeExceptions(e);
+        }
+        return result;
+    }
+
     
     public  Object createDependentScopedBeanProxy(OwbBean<?> bean, Object actualInstance, CreationalContext<?> creastionalContext)
     {
