@@ -39,7 +39,7 @@ public class BeanManagerBean extends AbstractOwbBean<BeanManager>
     {
         if (this.manager == null)
         {
-            manager = new InjectableBeanManager();
+            manager = new InjectableBeanManager(getWebBeansContext().getBeanManagerImpl());
         }
 
         return manager;

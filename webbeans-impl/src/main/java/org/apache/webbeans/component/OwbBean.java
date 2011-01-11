@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.*;
+import org.apache.webbeans.config.WebBeansContext;
 
 /**
  * OWB specific extension of the {@link Bean} interface.
@@ -205,4 +206,6 @@ public interface OwbBean<T> extends Bean<T>
      * @throws org.apache.webbeans.exception.WebBeansConfigurationException if not satisfy passivation dependencies
      */
     public void validatePassivationDependencies();
+
+    public WebBeansContext getWebBeansContext();
 }

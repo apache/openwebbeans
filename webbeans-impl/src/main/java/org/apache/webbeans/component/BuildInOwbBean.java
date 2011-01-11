@@ -33,8 +33,7 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyObject;
 
 import org.apache.webbeans.config.BeansDeployer;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
-import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 
@@ -63,7 +62,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
     private final WebBeansLogger logger = WebBeansLogger.getLogger(BeansDeployer.class);
 
     
-    private static HashMap<WebBeansType, String> proxyHandlerMap = new HashMap<WebBeansType, String>();
+    private final HashMap<WebBeansType, String> proxyHandlerMap = new HashMap<WebBeansType, String>();
 
     
     public static final String BUILD_IN_BEAN_PROPERTY = "org.apache.webbeans.component.BuildInOwbBean.property";
@@ -84,7 +83,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
     /**
      * Initialize build-in config.
      */
-    private static boolean initialized = initBuildInBeanConfig();
+    private boolean initialized;
 
     /**
      * The handler class name.
@@ -104,9 +103,9 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
      * 
      * @return true
      */
-    protected static boolean initBuildInBeanConfig() 
+    protected  boolean initBuildInBeanConfig(WebBeansContext webBeansContext)
     {
-        String s = OpenWebBeansConfiguration.getInstance().getProperty(BUILD_IN_BEAN_PROPERTY);
+        String s = webBeansContext.getOpenWebBeansConfiguration().getProperty(BUILD_IN_BEAN_PROPERTY);
         proxyHandlerMap.put(WebBeansType.USERTRANSACTION, PROXY_HANDLER_VALUE_DEFAULT);
         proxyHandlerMap.put(WebBeansType.PRINCIPAL, PROXY_HANDLER_VALUE_DEFAULT);
         proxyHandlerMap.put(WebBeansType.VALIDATION, PROXY_HANDLER_VALUE_DEFAULT);
@@ -155,12 +154,14 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
     protected BuildInOwbBean(WebBeansType webBeanType)
     {
         this(webBeanType, null);
+        initBuildInBeanConfig(getWebBeansContext());
     }
 
     @SuppressWarnings("unchecked")
     protected BuildInOwbBean(WebBeansType webBeansType, Class<T> returnType)
     {
         super(webBeansType, returnType);
+        initBuildInBeanConfig(getWebBeansContext());
         this.handlerClassName = proxyHandlerMap.get(this.getWebBeansType());
         if (handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_NONE) ||
                 handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_DEFAULT)) 
@@ -301,7 +302,8 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
             if(s.readLong() == serialVersionUID) 
             {
                 String id = (String)s.readObject();
-                bean = (BuildInOwbBean<T>)BeanManagerImpl.getManager().getPassivationCapableBean(id);
+                WebBeansContext webBeansContext = WebBeansContext.getInstance();
+                bean = (BuildInOwbBean<T>)webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
                 // create new real instance after deserialized.
                 actualObject = bean.createActualInstance(null);
             } 

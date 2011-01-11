@@ -139,7 +139,7 @@ public class BeansDeployer
                 //Default jndi is just a map
                 if(service instanceof DefaultJndiService)
                 {
-                    service.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, new InjectableBeanManager());
+                    service.bind(WebBeansConstants.WEB_BEANS_MANAGER_JNDI_NAME, new InjectableBeanManager(webBeansContext.getBeanManagerImpl()));
                 }
                 //Assume, actual JNDI implementation
                 else

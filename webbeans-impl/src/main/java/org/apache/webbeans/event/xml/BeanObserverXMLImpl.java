@@ -26,9 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 
@@ -53,13 +51,16 @@ public class BeanObserverXMLImpl<T> extends ObserverMethodImpl<T>
     protected List getMethodArguments(Object event)
     {
         List<Object> params = new ArrayList<Object>();
-        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
+        BeanManagerImpl manager = getWebBeansContext().getBeanManagerImpl();
         for (XMLInjectionPointModel model : observersParameters)
         {
             Set<Annotation> setBindingTypes = model.getBindingTypes();
             Annotation[] anns = new Annotation[setBindingTypes.size()];
             anns = setBindingTypes.toArray(anns);
-            params.add(manager.getInstance(InjectionResolver.getInstance().implResolveByType(model.getInjectionGenericType(), anns).iterator().next(),null));
+            params.add(manager.getInstance(
+                    getWebBeansContext().getBeanManagerImpl().getInjectionResolver()
+                            .implResolveByType(model.getInjectionGenericType(), anns)
+                            .iterator().next(),null));
         }
 
         return params;

@@ -50,7 +50,6 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -133,9 +132,9 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         this.ifExist = ifExist;
 
         Annotation[] qualifiers =
-            WebBeansContext.getInstance().getAnnotationManager().getMethodFirstParameterQualifierWithGivenAnnotation(
+            getWebBeansContext().getAnnotationManager().getMethodFirstParameterQualifierWithGivenAnnotation(
                 observerMethod, Observes.class);
-        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(qualifiers);
+        getWebBeansContext().getAnnotationManager().checkQualifierConditions(qualifiers);
         this.observedQualifiers = new HashSet<Annotation>(qualifiers.length);
         
         for (Annotation qualifier : qualifiers)
@@ -372,7 +371,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     InjectionPoint point = InjectionPointFactory.getPartialInjectionPoint(this.bean, type, this.observerMethod, annotatedParameter, bindingTypes);
                     
                     //Injected Bean
-                    Bean<Object> injectedBean = (Bean<Object>)InjectionResolver.getInstance().getInjectionPointBean(point);
+                    Bean<Object> injectedBean = (Bean<Object>)getWebBeansContext().getBeanManagerImpl().getInjectionResolver().getInjectionPointBean(point);
                     
                     //Set for @Inject InjectionPoint
                     if(WebBeansUtil.isDependent(injectedBean))
@@ -434,7 +433,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
 
                 //Get observer parameter instance
                 @SuppressWarnings("unchecked")
-                Bean<Object> injectedBean = (Bean<Object>)InjectionResolver.getInstance().getInjectionPointBean(point);
+                Bean<Object> injectedBean = (Bean<Object>)getWebBeansContext().getBeanManagerImpl().getInjectionResolver().getInjectionPointBean(point);
 
                 //Set for @Inject InjectionPoint
                 if(WebBeansUtil.isDependent(injectedBean))
@@ -506,4 +505,8 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         return this.observerMethod;
     }
 
+    protected WebBeansContext getWebBeansContext()
+    {
+        return bean.getWebBeansContext();
+    }
 }

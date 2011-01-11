@@ -61,7 +61,13 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     private static final long serialVersionUID = 1L;
     
     private transient BeanManager bm;
-    
+
+    public InjectableBeanManager(BeanManager bm)
+    {
+        this.bm = bm;
+    }
+
+
     public InjectableBeanManager()
     {
         this.bm = WebBeansContext.getInstance().getBeanManagerImpl();
@@ -223,9 +229,11 @@ public class InjectableBeanManager implements BeanManager, Serializable, Externa
     }
 
     @Override
+    @SuppressWarnings("deprecated")
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {
+        //static lookup required for bean manager
         this.bm = WebBeansContext.getInstance().getBeanManagerImpl();
     }
 

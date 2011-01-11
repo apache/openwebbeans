@@ -35,10 +35,12 @@ public class Bootstrap
     private ContainerLifecycle containerLifecycle = null;
     
     private Properties properties = null;
-    
+
+    @SuppressWarnings("deprecated")
     public void init(Properties properties)
     {
         log.info(OWBLogConst.INFO_0006);
+        //this relies on DefaultSingletonService to instantiate the WebBeansContext
         this.containerLifecycle = WebBeansContext.getInstance().getService(ContainerLifecycle.class);
     }
     
