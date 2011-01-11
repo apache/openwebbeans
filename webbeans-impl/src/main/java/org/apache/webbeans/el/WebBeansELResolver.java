@@ -114,6 +114,10 @@ public class WebBeansELResolver extends ELResolver
                 return null;
             }
         }
+        else
+        {
+            return null;
+        }
         
         //Bean instance
         Object contextualInstance = null;
