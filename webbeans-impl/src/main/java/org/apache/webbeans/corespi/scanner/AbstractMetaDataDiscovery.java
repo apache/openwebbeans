@@ -37,7 +37,7 @@ import org.apache.webbeans.util.ClassUtil;
 public abstract class AbstractMetaDataDiscovery implements ScannerService
 {
     /** Location of the beans.xml files. */
-    private Set<URL> webBeansXmlLocations = new HashSet<URL>();
+    private final Set<URL> webBeansXmlLocations = new HashSet<URL>();
 
     //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 

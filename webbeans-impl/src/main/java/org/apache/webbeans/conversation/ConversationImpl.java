@@ -26,6 +26,7 @@ import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -53,7 +54,7 @@ public class ConversationImpl implements Conversation, Serializable
     private boolean isTransient = true;
 
     /**Default timeout is 30mins*/
-    private long timeout = 30 * 60 * 1000 ;
+    private long timeout;
 
     /**Id of the session that this conversation is created*/
     private String sessionId;
@@ -72,7 +73,15 @@ public class ConversationImpl implements Conversation, Serializable
      */
     public ConversationImpl()
     {
-        
+        try
+        {
+            this.timeout = Long.parseLong(WebBeansContext.getInstance().getOpenWebBeansConfiguration().
+                    getProperty(OpenWebBeansConfiguration.CONVERSATION_TIMEOUT_INTERVAL, "1800000"));   
+        }
+        catch(NumberFormatException e)
+        {
+            this.timeout = 30 * 60 * 1000;
+        }
     }
 
     /**

@@ -30,8 +30,10 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -46,6 +48,7 @@ public class ConversationManager
     /**Current conversations*/
     private final ConcurrentHashMap<Conversation, ConversationContext> conversations = new ConcurrentHashMap<Conversation, ConversationContext>();
     private final WebBeansContext webBeansContext;
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(ConversationManager.class);
 
     /**
      * Creates new conversation manager
@@ -226,6 +229,10 @@ public class ConversationManager
                     ConversationContext ctx = getConversationContext(conv);
                     if (ctx != null) 
                     {
+                        if(logger.wblWillLogInfo())
+                        {
+                            logger.info(logger.getTokenString(OWBLogConst.INFO_0011),new Object[]{conv.getId()});
+                        }
                         ctx.destroy();
                     }
 

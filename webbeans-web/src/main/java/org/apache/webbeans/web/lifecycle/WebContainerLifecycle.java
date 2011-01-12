@@ -36,6 +36,7 @@ import javax.servlet.jsp.JspApplicationContext;
 import javax.servlet.jsp.JspFactory;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -89,12 +90,21 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     /**
      * {@inheritDoc}
      */
-    protected void afterStartApplication(Object startupObject) throws Exception
+    protected void afterStartApplication(final Object startupObject) throws Exception
     {
-        String strDelay = WebBeansContext.getInstance().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
+        String strDelay = getWebBeansContext().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
         long delay = Long.parseLong(strDelay);
 
-        service = Executors.newScheduledThreadPool(1);
+        service = Executors.newScheduledThreadPool(1, new ThreadFactory()
+        {            
+            @Override
+            public Thread newThread(Runnable runable)
+            {
+                Thread t = new Thread(runable, "OwbConversationCleaner-" + ((ServletContext)(startupObject)).getContextPath());
+                t.setDaemon(true);
+                return t;                
+            }
+        });
         service.scheduleWithFixedDelay(new ConversationCleaner(), delay, delay, TimeUnit.MILLISECONDS);
 
         ELAdaptor elAdaptor = getWebBeansContext().getService(ELAdaptor.class);

@@ -77,8 +77,11 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
 
         try
         {
-                this.lifeCycle.startApplication(event);  
-                event.getServletContext().setAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION, "true");
+                this.lifeCycle.startApplication(event);
+                
+                //If there is no beans.xml, not an owb application
+                boolean isOwbApplication = !webBeansContext.getScannerService().getBeanXmls().isEmpty();
+                event.getServletContext().setAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION, Boolean.toString(isOwbApplication));
         }
         catch (Exception e)
         {

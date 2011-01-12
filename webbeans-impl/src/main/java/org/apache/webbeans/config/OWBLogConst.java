@@ -41,6 +41,7 @@ public class OWBLogConst
     public final static String INFO_0008 = "INFO_0008"; // Stopping OpenWebBeans Container...
     public final static String INFO_0009 = "INFO_0009"; // OpenWebBeans Container has stopped.
     public final static String INFO_0010 = "INFO_0010"; // Cannot send event to bean in non-active context \: [{0}]
+    public final static String INFO_0011 = "INFO_0011"; // Conversation with id {0} has been destroyed because of inactive time period.
 
 
     public final static String WARN_0001 = "WARN_0001"; // No plugins to shutDown.

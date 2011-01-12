@@ -48,6 +48,9 @@ public class OpenWebBeansConfiguration
         
     /**Conversation periodic delay in ms.*/
     public static final String CONVERSATION_PERIODIC_DELAY = "org.apache.webbeans.conversation.Conversation.periodicDelay";
+    
+    /**Timeout interval in ms*/
+    public static final String CONVERSATION_TIMEOUT_INTERVAL = "org.apache.webbeans.conversation.Conversation.timeoutInterval";
 
     /**
      * Lifycycle methods like {@link javax.annotation.PostConstruct} and
