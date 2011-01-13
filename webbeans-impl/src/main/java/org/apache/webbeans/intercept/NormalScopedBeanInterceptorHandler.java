@@ -28,8 +28,8 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.UnproxyableResolutionException;
 
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContext;
+import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 
@@ -148,6 +148,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         OwbBean<Object> contextual = (OwbBean<Object>)this.bean;
         //Context of the bean
         Context webbeansContext = getBeanManager().getContext(bean.getScope());
+        CreationalContextFactory contextFactory = bean.getWebBeansContext().getCreationalContextFactory();
         if (webbeansContext instanceof AbstractContext)
         {
             AbstractContext owbContext = (AbstractContext)webbeansContext;
@@ -160,7 +161,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
             //contained in @ApplicationScopedBean
             if(creationalContext == null)
             {
-                creationalContext = WebBeansContext.getInstance().getCreationalContextFactory().getCreationalContext(contextual);
+                creationalContext = contextFactory.getCreationalContext(contextual);
                 owbContext.initContextualBag((OwbBean<Object>)this.bean, creationalContext);
             }
         }
@@ -172,7 +173,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
         // preceding call to Context.get(Contextual) (without any CreationalContext)
         if(creationalContext == null)
         {
-            creationalContext = WebBeansContext.getInstance().getCreationalContextFactory().getCreationalContext(contextual);
+            creationalContext = contextFactory.getCreationalContext(contextual);
         }
 
         return creationalContext;

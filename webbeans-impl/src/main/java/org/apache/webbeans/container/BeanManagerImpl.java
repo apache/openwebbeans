@@ -836,7 +836,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
                 
         //Scope is normal
-        if (WebBeansUtil.isScopeTypeNormal(bean.getScope()))
+        if (webBeansContext.getWebBeansUtil()._isScopeTypeNormal(bean.getScope()))
         {
             instance = getEjbOrJmsProxyReference(bean, beanType,creationalContext);
             
@@ -883,7 +883,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Create session bean proxy
         if(bean instanceof EnterpriseBeanMarker)
         {
-            if(WebBeansUtil.isScopeTypeNormal(bean.getScope()))
+            if(webBeansContext.getWebBeansUtil()._isScopeTypeNormal(bean.getScope()))
             {
                 //Maybe it is cached
                 if(this.cacheProxies.containsKey(bean))

@@ -30,7 +30,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 import static org.apache.webbeans.util.InjectionExceptionUtils.*;
 
 public final class ResolutionUtil
@@ -102,7 +101,7 @@ public final class ResolutionUtil
         }
 
         Bean<?> bean = resolvedSet.iterator().next();
-        WebBeansUtil.checkUnproxiableApiType(bean, bean.getScope());
+        WebBeansContext.getInstance().getWebBeansUtil()._checkUnproxiableApiType(bean, bean.getScope());
 
     }    
 }

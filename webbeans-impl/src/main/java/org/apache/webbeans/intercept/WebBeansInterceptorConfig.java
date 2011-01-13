@@ -32,7 +32,6 @@ import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.SecurityUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -115,7 +114,7 @@ public final class WebBeansInterceptorConfig
         }
 
 
-        WebBeansContext.getInstance().getBeanManagerImpl().addInterceptor(interceptor);
+        delegate.getWebBeansContext().getBeanManagerImpl().addInterceptor(interceptor);
 
     }
     
@@ -162,7 +161,7 @@ public final class WebBeansInterceptorConfig
         {
             typeAnns = clazz.getDeclaredAnnotations();
         }
-        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
         if (annotationManager.hasInterceptorBindingMetaAnnotation(typeAnns))
         {
             anns = annotationManager.getInterceptorBindingMetaAnnotations(typeAnns);
@@ -298,13 +297,14 @@ public final class WebBeansInterceptorConfig
 
     public static void addComponentInterceptors(Set<Interceptor<?>> set, List<InterceptorData> stack)
     {
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         Iterator<Interceptor<?>> it = set.iterator();
         while (it.hasNext())
         {
             WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
             AnnotatedType<?> annotatedType = interceptor.getAnnotatedType();
 
-            OpenWebBeansEjbLCAPlugin ejbPlugin = WebBeansContext.getInstance().getPluginLoader().getEjbLCAPlugin();
+            OpenWebBeansEjbLCAPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
             Class <? extends Annotation> prePassivateClass = null;
             Class <? extends Annotation> postActivateClass = null;
             Class <? extends Annotation> aroundTimeoutClass = null;
@@ -318,29 +318,60 @@ public final class WebBeansInterceptorConfig
             if(annotatedType != null)
             {
                 // interceptor binding
-                WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, AroundInvoke.class, true, false, stack, null);
-                WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PostConstruct.class, true, false, stack, null);
-                WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, PreDestroy.class, true, false, stack, null);   
-                
+                webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor, annotatedType,
+                                                                                             AroundInvoke.class, true,
+                                                                                             false, stack, null);
+                webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor, annotatedType,
+                                                                                             PostConstruct.class, true,
+                                                                                             false, stack, null);
+                webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor, annotatedType,
+                                                                                             PreDestroy.class, true,
+                                                                                             false, stack, null);
+
                 if (null != ejbPlugin)
                 {
-                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, prePassivateClass, true, false, stack, null);                
-                    WebBeansUtil.configureInterceptorMethods(interceptor, annotatedType, postActivateClass, true, false, stack, null);       
-                    
+                    webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                 annotatedType,
+                                                                                                 prePassivateClass,
+                                                                                                 true, false, stack,
+                                                                                                 null);
+                    webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                 annotatedType,
+                                                                                                 postActivateClass,
+                                                                                                 true, false, stack,
+                                                                                                 null);
+
                 }                
             }
             else
             {
                 // interceptor binding
-                WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), AroundInvoke.class, true, false, stack, null, true);
-                WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PostConstruct.class, true, false, stack, null, true);
-                WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PreDestroy.class, true, false, stack, null, true);
-                
+                webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                             interceptor.getClazz(),
+                                                                                             AroundInvoke.class, true,
+                                                                                             false, stack, null, true);
+                webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                             interceptor.getClazz(),
+                                                                                             PostConstruct.class, true,
+                                                                                             false, stack, null, true);
+                webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                             interceptor.getClazz(),
+                                                                                             PreDestroy.class, true,
+                                                                                             false, stack, null, true);
+
                 if (null != ejbPlugin) 
                 {
-                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), prePassivateClass, true, false, stack, null, true);                
-                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), postActivateClass, true, false, stack, null, true);       
-                    
+                    webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                 interceptor.getClazz(),
+                                                                                                 prePassivateClass,
+                                                                                                 true, false, stack,
+                                                                                                 null, true);
+                    webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                 interceptor.getClazz(),
+                                                                                                 postActivateClass,
+                                                                                                 true, false, stack,
+                                                                                                 null, true);
+
                 }                
 
             }
@@ -358,7 +389,8 @@ public final class WebBeansInterceptorConfig
     private static void addMethodInterceptors(Class<?> clazz, List<InterceptorData> stack, Set<Interceptor<?>> componentInterceptors,
                                               Set<Annotation> resolvedComponentInterceptorBindings)
     {
-        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         // All methods, not just those declared
         Method[] methods = clazz.getMethods();
@@ -415,15 +447,35 @@ public final class WebBeansInterceptorConfig
                 {
                     WebBeansInterceptor<?> interceptor = (WebBeansInterceptor<?>) it.next();
 
-                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), AroundInvoke.class, true, true, stack, method, true);
-                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PostConstruct.class, true, true, stack, method, true);
-                    WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PreDestroy.class, true, true, stack, method, true);
+                    webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                 interceptor.getClazz(),
+                                                                                                 AroundInvoke.class,
+                                                                                                 true, true, stack,
+                                                                                                 method, true);
+                    webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                 interceptor.getClazz(),
+                                                                                                 PostConstruct.class,
+                                                                                                 true, true, stack,
+                                                                                                 method, true);
+                    webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                 interceptor.getClazz(),
+                                                                                                 PreDestroy.class, true,
+                                                                                                 true, stack, method,
+                                                                                                 true);
 
-                    OpenWebBeansEjbLCAPlugin ejbPlugin = WebBeansContext.getInstance().getPluginLoader().getEjbLCAPlugin();
+                    OpenWebBeansEjbLCAPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
                     if (null != ejbPlugin)
                     {
-                        WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), ejbPlugin.getPrePassivateClass(), true, true, stack, method, true);
-                        WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), ejbPlugin.getPostActivateClass(), true, true, stack, method, true);
+                        webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                     interceptor.getClazz(),
+                                                                                                     ejbPlugin.getPrePassivateClass(),
+                                                                                                     true, true, stack,
+                                                                                                     method, true);
+                        webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                     interceptor.getClazz(),
+                                                                                                     ejbPlugin.getPostActivateClass(),
+                                                                                                     true, true, stack,
+                                                                                                     method, true);
                     }
             
                     
@@ -437,7 +489,8 @@ public final class WebBeansInterceptorConfig
     private static <T> void addMethodInterceptors(AnnotatedType<T> annotatedType, List<InterceptorData> stack, Set<Interceptor<?>> componentInterceptors)
     {
 
-        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
         for(AnnotatedMethod<? super T> methodA : methods)
         {
@@ -507,15 +560,39 @@ public final class WebBeansInterceptorConfig
                     
                     if(interAnnoType == null)
                     {
-                        WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), AroundInvoke.class, true, true, stack, method, true);
-                        WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PostConstruct.class, true, true, stack, method, true);
-                        WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PreDestroy.class, true, true, stack, method, true);                        
+                        webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                     interceptor.getClazz(),
+                                                                                                     AroundInvoke.class,
+                                                                                                     true, true, stack,
+                                                                                                     method, true);
+                        webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                     interceptor.getClazz(),
+                                                                                                     PostConstruct.class,
+                                                                                                     true, true, stack,
+                                                                                                     method, true);
+                        webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                     interceptor.getClazz(),
+                                                                                                     PreDestroy.class,
+                                                                                                     true, true, stack,
+                                                                                                     method, true);
                     }
                     else
                     {
-                        WebBeansUtil.configureInterceptorMethods(interceptor, interAnnoType, AroundInvoke.class, true, true, stack, method);
-                        WebBeansUtil.configureInterceptorMethods(interceptor, interAnnoType, PostConstruct.class, true, true, stack, method);
-                        WebBeansUtil.configureInterceptorMethods(interceptor, interAnnoType, PreDestroy.class, true, true, stack, method);                        
+                        webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                     interAnnoType,
+                                                                                                     AroundInvoke.class,
+                                                                                                     true, true, stack,
+                                                                                                     method);
+                        webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                     interAnnoType,
+                                                                                                     PostConstruct.class,
+                                                                                                     true, true, stack,
+                                                                                                     method);
+                        webBeansContext.getWebBeansUtil()._configureInterceptorMethods(interceptor,
+                                                                                                     interAnnoType,
+                                                                                                     PreDestroy.class,
+                                                                                                     true, true, stack,
+                                                                                                     method);
                     }
                 }
             }            

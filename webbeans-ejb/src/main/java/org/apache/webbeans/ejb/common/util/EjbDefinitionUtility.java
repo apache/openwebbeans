@@ -23,7 +23,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.ejb.common.component.EjbBeanCreatorImpl;
 import org.apache.webbeans.ejb.common.proxy.EjbBeanProxyHandler;
@@ -62,7 +61,7 @@ public final class EjbDefinitionUtility
         try
         {
             T proxyInstance = null;
-            Class<?> clazz = WebBeansContext.getInstance().getJavassistProxyFactory().getEjbBeanProxyClass(bean, iface);
+            Class<?> clazz = bean.getWebBeansContext().getJavassistProxyFactory().getEjbBeanProxyClass(bean, iface);
             if(clazz == null)
             {
                 ProxyFactory factory = new ProxyFactory();
@@ -76,7 +75,7 @@ public final class EjbDefinitionUtility
                     factory.setSuperclass(iface);
                 }
 
-                clazz = WebBeansContext.getInstance().getJavassistProxyFactory().defineEjbBeanProxyClass(bean, iface, factory);
+                clazz = bean.getWebBeansContext().getJavassistProxyFactory().defineEjbBeanProxyClass(bean, iface, factory);
             }
             
             proxyInstance = (T) ClassUtil.newInstance(clazz);

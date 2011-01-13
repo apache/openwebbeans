@@ -48,10 +48,10 @@ public class DefaultSingletonService implements SingletonService<WebBeansContext
         ClassLoader classLoader = (ClassLoader) key;
         synchronized (singletonMap)
         {
-            //util.Track.sync(singletonName);
+            //util.Track.sync(key);
             
             WebBeansContext webBeansContext = singletonMap.get(classLoader);
-            //util.Track.get(singletonName);
+            //util.Track.get(key);
 
             if (webBeansContext == null)
             {

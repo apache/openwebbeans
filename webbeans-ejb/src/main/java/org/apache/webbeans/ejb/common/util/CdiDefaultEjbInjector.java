@@ -46,14 +46,17 @@ public class CdiDefaultEjbInjector
         new ConcurrentHashMap<Object, CreationalContextImpl<Object>>();
     
     private final BeanManagerImpl beanManager;
-    
+
+    private final WebBeansContext webBeansContext;
+
     /**
      * Default constructor.
      */
     public CdiDefaultEjbInjector()
     {
         super();
-        this.beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
+        webBeansContext = WebBeansContext.getInstance();
+        this.beanManager = webBeansContext.getBeanManagerImpl();
     }
     
     /**
@@ -139,7 +142,7 @@ public class CdiDefaultEjbInjector
     {
         if(!(ctx instanceof CreationalContextImpl))
         {
-            ctx = WebBeansContext.getInstance().getCreationalContextFactory().wrappedCreationalContext(ctx, bean);
+            ctx = this.webBeansContext.getCreationalContextFactory().wrappedCreationalContext(ctx, bean);
         }
         
         Object oldInstanceUnderInjection = AbstractInjectable.instanceUnderInjection.get();

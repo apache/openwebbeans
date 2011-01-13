@@ -98,9 +98,10 @@ public class XMLUtil
         {
             throw new WebBeansConfigurationException(log.getTokenString(OWBLogConst.EXCEPT_0012));
         }
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         if (root.getNamespaceURI() != null)
         {
-            WebBeansContext.getInstance().getWebBeansNameSpaceContainer().
+            webBeansContext.getWebBeansNameSpaceContainer().
                     addNewPackageNameSpace(root.getNamespaceURI());
         }
         else
@@ -108,7 +109,7 @@ public class XMLUtil
             String attr = root.getAttribute("xmlns");
             if (attr != null)
             {
-                WebBeansContext.getInstance().getWebBeansNameSpaceContainer().
+                webBeansContext.getWebBeansNameSpaceContainer().
                         addNewPackageNameSpace(root.getNamespaceURI());
             }
         }
@@ -120,7 +121,7 @@ public class XMLUtil
             Attr attr = (Attr) attrs.item(i);
             if (attr.getName().toLowerCase().startsWith("xmlns"))
             {
-                WebBeansContext.getInstance().getWebBeansNameSpaceContainer().addNewPackageNameSpace(attr.getValue());
+                webBeansContext.getWebBeansNameSpaceContainer().addNewPackageNameSpace(attr.getValue());
             }
         }
     }

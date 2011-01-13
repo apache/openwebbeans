@@ -548,7 +548,7 @@ public final class NotificationManager
         
         //Looking for qualifiers
         Annotation[] observerQualifiers =
-            WebBeansContext.getInstance().getAnnotationManager().getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(
+            bean.getWebBeansContext().getAnnotationManager().getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(
                 annotatedMethod, Observes.class);
         
         //Getting observer event type

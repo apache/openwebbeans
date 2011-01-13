@@ -47,6 +47,7 @@ import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansNameSpaceContainer;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 import org.apache.webbeans.xml.XMLSpecializesManager;
@@ -57,6 +58,7 @@ import org.apache.webbeans.xml.XMLSpecializesManager;
 public class WebBeansContext
 {
 
+    private WebBeansUtil webBeansUtil = new WebBeansUtil(this);
     private ContextFactory contextFactory = new ContextFactory(this);
     private AlternativesManager alternativesManager = new AlternativesManager(this);
     private AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory();
@@ -156,6 +158,11 @@ public class WebBeansContext
             return null;
         }
         return serviceInterface.cast(get(implName));
+    }
+
+    public WebBeansUtil getWebBeansUtil()
+    {
+        return webBeansUtil;
     }
 
     public ContextFactory getContextFactory()
@@ -279,7 +286,7 @@ public class WebBeansContext
 
     public <T> T get(Class<T> clazz)
     {
-        //util.Track.get(singletonName);
+        //util.Track.get(clazz);
         T object = clazz.cast(managerMap.get(clazz));
 
         /* No singleton for this application, create one */

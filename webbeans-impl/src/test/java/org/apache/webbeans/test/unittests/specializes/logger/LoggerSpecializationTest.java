@@ -20,6 +20,7 @@ package org.apache.webbeans.test.unittests.specializes.logger;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+
 import javax.enterprise.inject.spi.Bean;
 
 import junit.framework.Assert;
@@ -32,7 +33,6 @@ import org.apache.webbeans.test.component.specializes.logger.MockSpecializedLogg
 import org.apache.webbeans.test.component.specializes.logger.SpecializedInjector;
 import org.apache.webbeans.test.component.specializes.logger.SystemLogger;
 import org.apache.webbeans.test.unittests.xml.XMLTest;
-import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.junit.Test;
 
@@ -97,8 +97,8 @@ public class LoggerSpecializationTest extends TestContext
         
         ArrayList<Class<?>> specialClassList = new ArrayList<Class<?>>();
         specialClassList.add(MockSpecializedLogger.class);
-        WebBeansUtil.configureSpecializations(specialClassList);
-        
+        WebBeansContext.getInstance().getWebBeansUtil()._configureSpecializations(specialClassList);
+
         Bean<SpecializedInjector> bean = defineManagedBean(SpecializedInjector.class);
         Object instance = getManager().getReference(bean, SpecializedInjector.class, getManager().createCreationalContext(bean));
         

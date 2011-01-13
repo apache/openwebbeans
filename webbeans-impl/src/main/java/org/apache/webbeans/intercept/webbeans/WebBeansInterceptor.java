@@ -277,8 +277,10 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         
         else
         {
-            Class<? extends Annotation> interceptorTypeAnnotationClazz = InterceptorUtil.getInterceptorAnnotationClazz(type);                
-            method = WebBeansUtil.checkCommonAnnotationCriterias(getClazz(), interceptorTypeAnnotationClazz, true);            
+            Class<? extends Annotation> interceptorTypeAnnotationClazz = InterceptorUtil.getInterceptorAnnotationClazz(type);
+            method = getWebBeansContext().getWebBeansUtil()._checkCommonAnnotationCriterias(getClazz(),
+                                                                                                     interceptorTypeAnnotationClazz,
+                                                                                                     true);
         }
         
         return method;

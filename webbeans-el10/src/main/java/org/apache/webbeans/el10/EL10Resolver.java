@@ -67,10 +67,11 @@ public class EL10Resolver extends ELResolver
         //Check that application is OWB enabled
         //For JSF applications that are not
         //OWB enabled, no need to go with this resolver....
-        AbstractOwbJsfPlugin jsfPlugin = WebBeansContext.getInstance().getPluginLoader().getJsfPlugin();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        AbstractOwbJsfPlugin jsfPlugin = webBeansContext.getPluginLoader().getJsfPlugin();
         
         //No JSF plugin, sure that not OWB  
-        if(jsfPlugin == null && !(WebBeansContext.getInstance().getOpenWebBeansConfiguration().isJspApplication()))
+        if(jsfPlugin == null && !(webBeansContext.getOpenWebBeansConfiguration().isJspApplication()))
         {
             return null;
         }        

@@ -43,7 +43,6 @@ import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -69,7 +68,9 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
     
     /**Creational Context*/
     private CreationalContext<?> creationalContext;
-    
+
+    private WebBeansContext webBeansContext;
+
     //DO NOT REMOVE, used by PASSIVATION.
     public EjbBeanProxyHandler() 
     {
@@ -82,8 +83,8 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
     public EjbBeanProxyHandler(BaseEjbBean<?> ejbBean, CreationalContext<?> creationalContext)
     {
         this.ejbBean = ejbBean;
-        
-        if(WebBeansUtil.isScopeTypeNormal(ejbBean.getScope()))
+
+        if(ejbBean.getWebBeansContext().getWebBeansUtil()._isScopeTypeNormal(ejbBean.getScope()))
         {
             initiateBeanBag((OwbBean<Object>)ejbBean, (CreationalContext<Object>)creationalContext);
         }
@@ -97,7 +98,8 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
             isDependent = true;
             dependentEJB = null;
         }
-    }    
+        webBeansContext = ejbBean.getWebBeansContext();
+    }
     
     /**
      * {@inheritDoc}
@@ -138,7 +140,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
             OpenWebBeansEjbInterceptor.setThreadLocal(this.ejbBean, getContextualCreationalContext());
 
             // Context of the bean
-            Context webbeansContext = WebBeansContext.getInstance().getBeanManagerImpl().getContext(this.ejbBean.getScope());
+            Context webbeansContext = webBeansContext.getBeanManagerImpl().getContext(this.ejbBean.getScope());
 
             // Don't go into a _dependent_ context on subsequent method calls in
             // this proxy!
@@ -244,7 +246,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         
         OwbBean<Object> contextual = (OwbBean<Object>)this.ejbBean;
         //Context of the bean
-        Context webbeansContext = WebBeansContext.getInstance().getBeanManagerImpl().getContext(this.ejbBean.getScope());
+        Context webbeansContext = webBeansContext.getBeanManagerImpl().getContext(this.ejbBean.getScope());
         if (webbeansContext instanceof AbstractContext)
         {
             AbstractContext owbContext = (AbstractContext)webbeansContext;
@@ -257,7 +259,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
             //contained in @ApplicationScopedBean
             if(creationalContext == null)
             {
-                creationalContext = WebBeansContext.getInstance().getCreationalContextFactory().getCreationalContext(contextual);
+                creationalContext = webBeansContext.getCreationalContextFactory().getCreationalContext(contextual);
                 owbContext.initContextualBag((OwbBean<Object>)this.ejbBean, creationalContext);
             }            
         }
@@ -267,7 +269,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
     
     private void initiateBeanBag(OwbBean<Object> bean, CreationalContext<Object> creationalContext)
     {
-        Context webbeansContext =  WebBeansContext.getInstance().getBeanManagerImpl().getContext(bean.getScope());
+        Context webbeansContext =  webBeansContext.getBeanManagerImpl().getContext(bean.getScope());
         if (webbeansContext instanceof AbstractContext)
         {
             AbstractContext owbContext = (AbstractContext)webbeansContext;
@@ -315,7 +317,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         String passivationId = (String) s.readObject();
         if (passivationId != null)
         {
-            this.ejbBean = (BaseEjbBean<?>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(passivationId);
+            this.ejbBean = (BaseEjbBean<?>) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(passivationId);
         }
         
         this.isDependent = s.readBoolean();
@@ -355,7 +357,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
         String passivationId = (String) in.readObject();
         if (passivationId != null)
         {
-            this.ejbBean = (BaseEjbBean<?>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(passivationId);
+            this.ejbBean = (BaseEjbBean<?>) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(passivationId);
         }
         
         this.isDependent = in.readBoolean();

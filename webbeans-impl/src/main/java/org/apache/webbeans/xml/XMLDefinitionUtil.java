@@ -65,7 +65,6 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansConstants;
-import org.apache.webbeans.util.WebBeansUtil;
 import static org.apache.webbeans.util.InjectionExceptionUtils.*;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -312,13 +311,26 @@ public final class XMLDefinitionUtil
         Iterator<Interceptor<?>> it = setInterceptors.iterator();
 
         List<InterceptorData> stack = component.getInterceptorStack();
+        WebBeansContext webBeansContext = component.getWebBeansContext();
+
         while (it.hasNext())
         {
             WebBeansInterceptor interceptor = (WebBeansInterceptor) it.next();
 
-            WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), AroundInvoke.class, false, true, stack, interceptorMethod, true);
-            WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PostConstruct.class, false, true, stack, interceptorMethod, true);
-            WebBeansUtil.configureInterceptorMethods(interceptor, interceptor.getClazz(), PreDestroy.class, false, true, stack, interceptorMethod, true);
+            webBeansContext.getWebBeansUtil()._configureInterceptorMethods((Interceptor<?>) interceptor,
+                                                                                         (Class<?>) interceptor.getClazz(),
+                                                                                         AroundInvoke.class, false,
+                                                                                         true, stack, interceptorMethod,
+                                                                                         true);
+            webBeansContext.getWebBeansUtil()._configureInterceptorMethods((Interceptor<?>) interceptor,
+                                                                                         (Class<?>) interceptor.getClazz(),
+                                                                                         PostConstruct.class, false,
+                                                                                         true, stack, interceptorMethod,
+                                                                                         true);
+            webBeansContext.getWebBeansUtil()._configureInterceptorMethods((Interceptor<?>) interceptor,
+                                                                                         (Class<?>) interceptor.getClazz(),
+                                                                                         PreDestroy.class, false, true,
+                                                                                         stack, interceptorMethod, true);
         }
 
     }
@@ -359,7 +371,7 @@ public final class XMLDefinitionUtil
 
     public static <T> void defineXMLSpecializes(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet)
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        WebBeansContext webBeansContext = component.getWebBeansContext();
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         while (it.hasNext())
         {
@@ -798,7 +810,7 @@ public final class XMLDefinitionUtil
      */
     public static <T, K> void defineXMLObservesMethod(XMLManagedBean<T> component, Method observesMethod, Element observesMethodElement, String errorMessage)
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        WebBeansContext webBeansContext = component.getWebBeansContext();
 
         component.addObservableMethod(observesMethod);
 

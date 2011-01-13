@@ -31,7 +31,6 @@ import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
@@ -125,7 +124,7 @@ public class InvocationContextImpl implements InvocationContext
     @SuppressWarnings("unchecked")
     private void configureTarget(OwbBean<?> bean)
     {
-        Context webbeansContext = WebBeansContext.getInstance().getBeanManagerImpl().getContext(bean.getScope());
+        Context webbeansContext = bean.getWebBeansContext().getBeanManagerImpl().getContext(bean.getScope());
         
         this.target = webbeansContext.get((Contextual<Object>)bean, (CreationalContext<Object>)this.creationalContext);        
         

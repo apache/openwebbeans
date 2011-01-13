@@ -208,7 +208,8 @@ class InjectionPointImpl implements InjectionPoint, Serializable
 
         Class<?> beanClass = (Class<?>)in.readObject();
         Set<Annotation> anns = new HashSet<Annotation>();
-        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
 
         while(!in.readObject().equals(new Character('~')))   // read throw-away '-' or '~' terminal delimiter.
         {
@@ -217,7 +218,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         }
         
         //process annotations
-        this.ownerBean = WebBeansContext.getInstance().getBeanManagerImpl().getBeans(beanClass, anns.toArray(new Annotation[anns.size()])).iterator().next();
+        this.ownerBean = webBeansContext.getBeanManagerImpl().getBeans(beanClass, anns.toArray(new Annotation[anns.size()])).iterator().next();
         this.qualifierAnnotations = anns;
         
         // determine type of injection point member (0=field, 1=method, 2=constructor) and read...

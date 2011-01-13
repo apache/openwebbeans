@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.ManagedBeanConfigurator;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -37,6 +38,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> implements ManagedBeanCreator<T>
 {
+    private final WebBeansContext webBeansContext;
 
     /**
      * Creates a new creator.
@@ -46,6 +48,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
     public ManagedBeanCreatorImpl(ManagedBean<T> managedBean)
     {
         super(managedBean);
+        webBeansContext = managedBean.getWebBeansContext();
     }
     
     
@@ -66,7 +69,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
         
         WebBeansUtil.checkGenericType(getBean());
         //Check Unproxiable
-        WebBeansUtil.checkUnproxiableApiType(getBean(), getBean().getScope());                                
+        webBeansContext.getWebBeansUtil()._checkUnproxiableApiType(getBean(), getBean().getScope());
     }
 
 

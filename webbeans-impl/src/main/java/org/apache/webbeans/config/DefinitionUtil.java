@@ -220,7 +220,7 @@ public final class DefinitionUtil
      */
     public static <T> void defineQualifiers(AbstractOwbBean<T> component, Annotation[] annotations)
     {
-        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        final AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
 
         boolean find = false;
         for (Annotation annotation : annotations)
@@ -318,7 +318,7 @@ public final class DefinitionUtil
     {
         boolean found = false;
 
-        List<ExternalScope> additionalScopes = WebBeansContext.getInstance().getBeanManagerImpl().getAdditionalScopes();
+        List<ExternalScope> additionalScopes = component.getWebBeansContext().getBeanManagerImpl().getAdditionalScopes();
         
         for (Annotation annotation : annotations)
         {   
@@ -393,7 +393,7 @@ public final class DefinitionUtil
 
     public static <T> void defineStereoTypes(OwbBean<?> component, Annotation[] anns)
     {
-        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        final AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
         if (annotationManager.hasStereoTypeMetaAnnotation(anns))
         {
             Annotation[] steroAnns =
@@ -534,7 +534,7 @@ public final class DefinitionUtil
         if (nameAnnot == null) // no @Named
         {
             // Check for stereottype
-            if (WebBeansContext.getInstance().getAnnotationManager().hasNamedOnStereoTypes(component))
+            if (component.getWebBeansContext().getAnnotationManager().hasNamedOnStereoTypes(component))
             {
                 isDefault = true;
             }
@@ -683,14 +683,15 @@ public final class DefinitionUtil
         defineStereoTypes(component, method.getDeclaredAnnotations());
 
         Annotation[] methodAnns = method.getDeclaredAnnotations();
-        
-        WebBeansUtil.setBeanEnableFlagForProducerBean(parent, component, methodAnns);
+
+        WebBeansContext webBeansContext = parent.getWebBeansContext();
+        webBeansContext.getWebBeansUtil()._setBeanEnableFlagForProducerBean(parent, component, methodAnns);
 
         DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
         DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName()
                                                               + " must declare default @Scope annotation");
-        WebBeansUtil.checkUnproxiableApiType(component, component.getScope());
-        WebBeansUtil.checkProducerGenericType(component,method);        
+        webBeansContext.getWebBeansUtil()._checkUnproxiableApiType(component, component.getScope());
+        WebBeansUtil.checkProducerGenericType(component,method);
         DefinitionUtil.defineQualifiers(component, methodAnns);
         DefinitionUtil.defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
 
@@ -739,13 +740,14 @@ public final class DefinitionUtil
         defineStereoTypes(component, field.getDeclaredAnnotations());
 
         Annotation[] fieldAnns = field.getDeclaredAnnotations();
-        
-        WebBeansUtil.setBeanEnableFlagForProducerBean(parent, component, fieldAnns);
+
+        WebBeansContext webBeansContext = parent.getWebBeansContext();
+        webBeansContext.getWebBeansUtil()._setBeanEnableFlagForProducerBean(parent, component, fieldAnns);
 
         DefinitionUtil.defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
         DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName()
                                                              + " must declare default @Scope annotation");
-        WebBeansUtil.checkUnproxiableApiType(component, component.getScope());
+        webBeansContext.getWebBeansUtil()._checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,field);
         DefinitionUtil.defineQualifiers(component, fieldAnns);
         DefinitionUtil.defineName(component, fieldAnns, field.getName());
@@ -766,7 +768,7 @@ public final class DefinitionUtil
 
     private static <T> void createDisposalMethods(AbstractOwbBean<T> component, Method[] methods, Class<?> clazz)
     {
-        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        final AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
 
         ProducerMethodBean<?> previous = null;
         for (Method declaredMethod : methods)
@@ -857,7 +859,8 @@ public final class DefinitionUtil
     public static <T> void defineInternalInjectedFields(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromSuperClazz)
     {
 
-        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        WebBeansContext webBeansContext = component.getWebBeansContext();
+        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
 
@@ -868,7 +871,7 @@ public final class DefinitionUtil
                 //Check for public fields
                 if(ClassUtil.isPublic(field.getModifiers()) && !ClassUtil.isStatic(field.getModifiers()))
                 {
-                    if(WebBeansContext.getInstance().getBeanManagerImpl().isNormalScope(component.getScope()))
+                    if(webBeansContext.getBeanManagerImpl().isNormalScope(component.getScope()))
                     {
                         throw new WebBeansConfigurationException("If bean has a public field, bean scope must be defined as @Scope. Bean is : "
                                                                  + component.toString());
@@ -1080,7 +1083,7 @@ public final class DefinitionUtil
         Asserts.assertNotNull(component, "component parameter can not be null");
         Asserts.nullCheckForClass(clazz);
 
-        NotificationManager manager = WebBeansContext.getInstance().getBeanManagerImpl().getNotificationManager();
+        NotificationManager manager = component.getWebBeansContext().getBeanManagerImpl().getNotificationManager();
 
         Method[] candidateMethods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Observes.class);
 

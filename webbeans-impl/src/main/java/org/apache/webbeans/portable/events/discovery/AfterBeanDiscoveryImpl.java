@@ -39,7 +39,6 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.portable.events.generics.GProcessBean;
 import org.apache.webbeans.portable.events.generics.GProcessObservableMethod;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Event that is fired by the container after it discovers beans.
@@ -76,7 +75,9 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         if(bean instanceof Interceptor)
         {
             //Required for custom interceptors
-            ManagedBean managedBean = WebBeansUtil.defineManagedBeanWithoutFireEvents(annotatedType);
+            ManagedBean managedBean =
+                webBeansContext.getWebBeansUtil()._defineManagedBeanWithoutFireEvents(
+                    (AnnotatedType<?>) annotatedType);
             
             CustomInterceptor<?> interceptor = new CustomInterceptor(managedBean, (Interceptor<?>)bean);
             if(interceptor.getScope() != Dependent.class)
@@ -110,7 +111,9 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         else if(bean instanceof Decorator)
         {
             //Required for custom decorators
-            ManagedBean managedBean = WebBeansUtil.defineManagedBeanWithoutFireEvents(annotatedType);
+            ManagedBean managedBean =
+                webBeansContext.getWebBeansUtil()._defineManagedBeanWithoutFireEvents(
+                    (AnnotatedType<?>) annotatedType);
             if(managedBean.getScope() != Dependent.class)
             {
                 if(logger.wblWillLogWarn())

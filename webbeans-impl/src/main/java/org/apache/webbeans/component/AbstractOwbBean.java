@@ -39,7 +39,6 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation of the {@link OwbBean} contract. 
@@ -682,7 +681,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             {
                 if(!injectionPoint.isTransient())
                 {
-                    if(!WebBeansUtil.isPassivationCapableDependency(injectionPoint))
+                    if(!getWebBeansContext().getWebBeansUtil()._isPassivationCapableDependency(injectionPoint))
                     {
                         if(injectionPoint.getAnnotated().isAnnotationPresent(Disposes.class))
                         {

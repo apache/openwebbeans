@@ -229,7 +229,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             }
             else
             {
-                BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
+                BeanManagerImpl manager = bean.getWebBeansContext().getBeanManagerImpl();
                 specializedComponent = (AbstractOwbBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
                 Context context = null;
                 try
@@ -316,7 +316,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     @SuppressWarnings("unchecked")
     protected List<ObserverParams> getMethodArguments(Object event)
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        WebBeansContext webBeansContext = bean.getWebBeansContext();
         AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
         AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
@@ -407,7 +407,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
      */
     protected List<ObserverParams> getAnnotatedMethodArguments(Object event)
     {
-        final WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        final WebBeansContext webBeansContext = bean.getWebBeansContext();
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
         List<ObserverParams> list = new ArrayList<ObserverParams>();

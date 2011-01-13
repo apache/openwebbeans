@@ -317,6 +317,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     @SuppressWarnings("unchecked")
     public void removeAllDependents()
     {
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         Collection<List<DependentCreationalContext<?>>> values = this.dependentObjects.values();
         if(values != null)
         {
@@ -328,7 +329,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
                     while(iterator.hasNext())
                     {
                         DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)iterator.next();
-                        final CreationalContextFactory contextFactory = WebBeansContext.getInstance().getCreationalContextFactory();
+                        final CreationalContextFactory contextFactory = webBeansContext.getCreationalContextFactory();
                         dependent.getContextual().destroy((T)dependent.getInstance(), contextFactory.getCreationalContext(dependent.getContextual()));
                     }                        
                 }                

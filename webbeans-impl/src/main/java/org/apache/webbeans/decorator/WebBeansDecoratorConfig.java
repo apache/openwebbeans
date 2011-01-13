@@ -81,14 +81,14 @@ public final class WebBeansDecoratorConfig
         
         logger.debug("Configuring decorator class : [{0}]", delegate.getReturnType());
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
-        WebBeansContext.getInstance().getBeanManagerImpl().addDecorator(decorator);
+        delegate.getWebBeansContext().getBeanManagerImpl().addDecorator(decorator);
     }
 
     public static <T> void configureXMLDecoratorClass(AbstractInjectionTargetBean<T> delegate, XMLInjectionPointModel model)
     {
         logger.debug("Configuring XML decorator class : [{0}]", delegate.getReturnType());
         WebBeansXMLDecorator<T> decorator = new WebBeansXMLDecorator<T>(delegate, model);
-        WebBeansContext.getInstance().getBeanManagerImpl().addDecorator(decorator);
+        delegate.getWebBeansContext().getBeanManagerImpl().addDecorator(decorator);
     }
 
     public static void configureDecarotors(AbstractInjectionTargetBean<?> component)
@@ -97,7 +97,7 @@ public final class WebBeansDecoratorConfig
         Annotation[] anns = new Annotation[qualifiers.size()];
         anns = qualifiers.toArray(anns);
 
-        List<Decorator<?>> decoratorList = WebBeansContext.getInstance().getBeanManagerImpl().resolveDecorators(component.getTypes(), anns);
+        List<Decorator<?>> decoratorList = component.getWebBeansContext().getBeanManagerImpl().resolveDecorators(component.getTypes(), anns);
         
         if(decoratorList != null && !decoratorList.isEmpty())
         {
@@ -147,7 +147,7 @@ public final class WebBeansDecoratorConfig
         List<Object> decoratorStack = new ArrayList<Object>();
         List<Decorator<?>> decoratorList = component.getDecoratorStack();        
         Iterator<Decorator<?>> itList = decoratorList.iterator();
-        BeanManager manager = WebBeansContext.getInstance().getBeanManagerImpl();
+        BeanManager manager = component.getWebBeansContext().getBeanManagerImpl();
         while (itList.hasNext())
         {
             Object decoratorInstance = null;

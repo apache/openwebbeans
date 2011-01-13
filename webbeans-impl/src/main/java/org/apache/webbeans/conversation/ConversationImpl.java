@@ -108,13 +108,14 @@ public class ConversationImpl implements Conversation, Serializable
             this.id = Integer.toString(conversationIdGenerator.incrementAndGet());
             
             //Conversation manager
-            ConversationManager manager = WebBeansContext.getInstance().getConversationManager();
+            WebBeansContext webBeansContext = WebBeansContext.getInstance();
+            ConversationManager manager = webBeansContext.getConversationManager();
             try
             {
                 //Gets current converation context instance.
                 //Each conversation has its own conversation context instance.
                 //Sets at the beginning of each JSF request.
-                manager.addConversationContext(this, (ConversationContext) WebBeansContext.getInstance().getBeanManagerImpl().getContext(ConversationScoped.class));
+                manager.addConversationContext(this, (ConversationContext) webBeansContext.getBeanManagerImpl().getContext(ConversationScoped.class));
                 
             }
             catch(Exception e)

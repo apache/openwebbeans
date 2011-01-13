@@ -385,7 +385,8 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                               " return type in the component implementation class : " +
                               this.ownerComponent.getReturnType().getName() + " with passivating scope @" +
                               this.getScope().getName() + " must be Serializable";
-        WebBeansUtil.checkSerializableScopeType(this.getScope(), this.isSerializable(), errorMessage);
+        getWebBeansContext().getWebBeansUtil()._checkSerializableScopeType(this.getScope(),
+                                                                                    this.isSerializable(), errorMessage);
 
     }
     
