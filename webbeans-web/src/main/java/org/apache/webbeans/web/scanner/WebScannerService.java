@@ -95,18 +95,15 @@ public class WebScannerService extends AbstractMetaDataDiscovery
     protected Set<URL> createURLFromMarkerFile() throws Exception
     {
         Set<URL> listURL = new HashSet<URL>();
-        URL[] urls = null;
 
         // Root with beans.xml marker.
-        urls = ClasspathUrlFinder.findResourceBases("META-INF/beans.xml", WebBeansUtil.getCurrentClassLoader());
+        URL[] urls = ClasspathUrlFinder.findResourceBases("META-INF/beans.xml", WebBeansUtil.getCurrentClassLoader());
 
         if (urls != null)
         {
+            URL addPath;
             for (URL url : urls)
             {
-
-                URL addPath = null;
-
                 String fileDir = url.getFile();
                 if (fileDir.endsWith(".jar!/"))
                 {
@@ -119,6 +116,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                     }
 
                     addPath = new URL("jar:" + fileDir);
+                    url = new URL("jar:" + fileDir);
                 }
                 else
                 {
