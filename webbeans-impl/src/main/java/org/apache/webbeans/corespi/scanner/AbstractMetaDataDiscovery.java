@@ -30,12 +30,15 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.se.BeansXmlAnnotationDB;
 import org.apache.webbeans.corespi.se.DefaultBDABeansXmlScanner;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
 
 public abstract class AbstractMetaDataDiscovery implements ScannerService
 {
+    protected final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
+
     /** Location of the beans.xml files. */
     private final Set<URL> webBeansXmlLocations = new HashSet<URL>();
 
@@ -113,6 +116,10 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
      */
     protected void addWebBeansXmlLocation(URL file)
     {
+        if(this.logger.wblWillLogInfo())
+        {
+            this.logger.info("added beans.xml marker: " + file.getFile());
+        }
         webBeansXmlLocations.add(file);
     }
 
