@@ -113,10 +113,11 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                     if (!fileDir.startsWith("file:/"))
                     {
                         fileDir = "file:/" + fileDir;
+                        //TODO switch to a more stable approach
+                        url = new URL("jar:" + fileDir);
                     }
 
                     addPath = new URL("jar:" + fileDir);
-                    url = new URL("jar:" + fileDir);
                 }
                 else
                 {
