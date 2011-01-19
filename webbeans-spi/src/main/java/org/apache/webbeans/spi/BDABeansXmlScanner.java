@@ -21,6 +21,9 @@ package org.apache.webbeans.spi;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+/**
+ * due to a file-url issue it isn't compatible with wls (see OWB-519)
+ */
 public interface BDABeansXmlScanner
 {
 

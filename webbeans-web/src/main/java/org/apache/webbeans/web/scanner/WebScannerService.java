@@ -26,8 +26,10 @@ import javax.servlet.ServletContext;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.corespi.se.BeansXmlAnnotationDB;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.WebBeansUtil;
+import org.scannotation.AnnotationDB;
 import org.scannotation.ClasspathUrlFinder;
 import org.scannotation.WarUrlFinder;
 
@@ -114,7 +116,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                     {
                         fileDir = "file:/" + fileDir;
                         //TODO switch to a more stable approach
-                        url = new URL("jar:" + fileDir);
+                        //url = new URL("jar:" + fileDir);
                     }
 
                     addPath = new URL("jar:" + fileDir);
@@ -154,7 +156,12 @@ public class WebScannerService extends AbstractMetaDataDiscovery
             addWebBeansXmlLocation(url);
             URL resourceuUrl = WarUrlFinder.findWebInfClassesPath(this.servletContext);
             //set resource to beans.xml mapping
-            getAnnotationDB().setResourceBeansXml(resourceuUrl, url);
+            AnnotationDB annotationDB = getAnnotationDB();
+
+            if(annotationDB instanceof BeansXmlAnnotationDB)
+            {
+                ((BeansXmlAnnotationDB)annotationDB).setResourceBeansXml(resourceuUrl, url);
+            }
             return resourceuUrl;
         }
 

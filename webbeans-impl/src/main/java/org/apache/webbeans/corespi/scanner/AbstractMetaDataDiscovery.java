@@ -34,6 +34,7 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
+import org.scannotation.AnnotationDB;
 
 public abstract class AbstractMetaDataDiscovery implements ScannerService
 {
@@ -45,7 +46,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 
     /** Annotation Database */
-    private final BeansXmlAnnotationDB annotationDB;
+    private AnnotationDB annotationDB;
 
     protected boolean isBDAScannerEnabled = false;
     protected BDABeansXmlScanner bdaBeansXmlScanner;
@@ -54,8 +55,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     {
         try
         {
-            annotationDB = new BeansXmlAnnotationDB();
-            annotationDB.setBdaBeansXmlScanner(this);
+            annotationDB = new AnnotationDB();
             annotationDB.setScanClassAnnotations(true);
             annotationDB.crossReferenceMetaAnnotations();
             annotationDB.setScanFieldAnnotations(false);
@@ -98,6 +98,9 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         this.isBDAScannerEnabled = Boolean.parseBoolean(usage);
         if (isBDAScannerEnabled)
         {
+            annotationDB = new BeansXmlAnnotationDB();
+            ((BeansXmlAnnotationDB)annotationDB).setBdaBeansXmlScanner(this);
+
             bdaBeansXmlScanner = new DefaultBDABeansXmlScanner();
         }
     }
@@ -105,7 +108,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     /**
      * @return the aNNOTATION_DB
      */
-    protected BeansXmlAnnotationDB getAnnotationDB()
+    protected AnnotationDB getAnnotationDB()
     {
         return annotationDB;
     }

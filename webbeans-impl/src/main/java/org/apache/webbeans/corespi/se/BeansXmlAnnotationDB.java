@@ -35,6 +35,7 @@ import org.scannotation.AnnotationDB;
  * Provides extensions to AnnotationDB that allow the beans.xml
  * of each BDA to be associated with a class.
  *
+ * due to a file-url issue it isn't compatible with wls (see OWB-519)
  */
 public class BeansXmlAnnotationDB extends AnnotationDB
 {
