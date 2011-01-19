@@ -92,6 +92,17 @@ public class ConversationImpl implements Conversation, Serializable
     public ConversationImpl(String sessionId)
     {
         Asserts.assertNotNull(sessionId);
+        
+        try
+        {
+            this.timeout = Long.parseLong(WebBeansContext.getInstance().getOpenWebBeansConfiguration().
+                    getProperty(OpenWebBeansConfiguration.CONVERSATION_TIMEOUT_INTERVAL, "1800000"));   
+        }
+        catch(NumberFormatException e)
+        {
+            this.timeout = 30 * 60 * 1000;
+        }
+        
         this.sessionId = sessionId;
     }
     
