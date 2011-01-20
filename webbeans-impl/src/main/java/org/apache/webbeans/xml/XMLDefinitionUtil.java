@@ -55,7 +55,6 @@ import org.apache.webbeans.exception.definition.NonexistentTypeException;
 import org.apache.webbeans.inject.xml.XMLInjectionModelType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
@@ -385,6 +384,8 @@ public final class XMLDefinitionUtil
     public static <T> void defineXMLInterceptors(XMLManagedBean<T> component, List<Class<? extends Annotation>> annotationSet,
                                                  List<Element> annotationElementList, String errorMessage)
     {
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+
         Iterator<Class<? extends Annotation>> it = annotationSet.iterator();
         boolean found = false;
 
@@ -405,7 +406,7 @@ public final class XMLDefinitionUtil
                     found = true;
                 }
             }
-            else if (AnnotationUtil.isInterceptorBindingAnnotation(temp))
+            else if (webBeansContext.getAnnotationManager().isInterceptorBindingAnnotation(temp))
             {
                 Element annotationElement = annotationElementList.get(i);
                 Annotation bindingAnnotation = XMLUtil.getXMLDefinedAnnotationMember(annotationElement, temp, errorMessage);
@@ -423,7 +424,8 @@ public final class XMLDefinitionUtil
 
         Annotation[] anns = new Annotation[interceptorBindingTypes.size()];
         anns = interceptorBindingTypes.toArray(anns);
-        InterceptorUtil.checkLifecycleConditions(component.getReturnType(), anns, errorMessage + "Lifecycle interceptor : "
+        webBeansContext.getInterceptorUtil().checkLifecycleConditions(component.getReturnType(), anns,
+                                                                                     errorMessage + "Lifecycle interceptor : "
                                                                                   + component.getReturnType().getName() +
                                                                                   " interceptor binding type must be defined as @Target{TYPE}");
 

@@ -811,11 +811,11 @@ public class BeansDeployer
         }
         
         //Check for whether this class is candidate for Managed Bean
-        if (ManagedBeanConfigurator.isManagedBean(clazz))
+        if (webBeansContext.getManagedBeanConfigurator().isManagedBean(clazz))
         {
             //Check conditions
-            ManagedBeanConfigurator.checkManagedBeanCondition(clazz);
-            
+            webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
+
             //Temporary managed bean instance creationa
             ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, webBeansContext);                  
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);

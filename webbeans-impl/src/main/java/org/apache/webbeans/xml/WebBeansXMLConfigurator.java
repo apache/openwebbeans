@@ -53,7 +53,6 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.component.xml.XMLProducerBean;
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
@@ -744,7 +743,8 @@ public final class WebBeansXMLConfigurator
         boolean ok = false;
 
         /* Enterprise WebBean */
-        OpenWebBeansEjbPlugin plugin = WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        OpenWebBeansEjbPlugin plugin = webBeansContext.getPluginLoader().getEjbPlugin();
         if (plugin != null && plugin.isSessionBean(clazz))
         {
             // Configure for EJB
@@ -754,7 +754,7 @@ public final class WebBeansXMLConfigurator
         else
         {
             /* Simple WebBeans */
-            if (ManagedBeanConfigurator.isManagedBean(clazz))
+            if (webBeansContext.getManagedBeanConfigurator().isManagedBean(clazz))
             {
                 // Configure Simple WebBean
                 configureSimpleWebBean(clazz, webBeanElement);

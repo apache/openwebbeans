@@ -32,7 +32,6 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.portable.creation.InjectionTargetProducer;
 import org.apache.webbeans.portable.creation.ProducerBeansProducer;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -44,26 +43,20 @@ import org.apache.webbeans.util.WebBeansUtil;
  * <p>
  * Contains useful static methods for creating Simple WebBeans Components.
  * </p>
- * 
+ *
  * @version $Rev$ $Date$
  */
 public final class ManagedBeanConfigurator
 {
-    /**
-     * Private constructor.
-     */
-    private ManagedBeanConfigurator()
-    {
 
+    private final WebBeansContext webBeansContext;
+
+    public ManagedBeanConfigurator(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
     }
 
-    /**
-     * Checks the implementation class for checking conditions.
-     * 
-     * @param clazz implementation class
-     * @throws WebBeansConfigurationException if any configuration exception occurs
-     */
-    public static void checkManagedBeanCondition(Class<?> clazz) throws WebBeansConfigurationException
+    public void checkManagedBeanCondition(Class<?> clazz) throws WebBeansConfigurationException
     {
         int modifier = clazz.getModifiers();
 
@@ -75,27 +68,27 @@ public final class ManagedBeanConfigurator
 
         if (!AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && !AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
         {
-            InterceptorUtil.checkSimpleWebBeansInterceptorConditions(clazz);
+            webBeansContext.getInterceptorUtil().checkSimpleWebBeansInterceptorConditions(clazz);
         }
 
         if (ClassUtil.isInterface(modifier))
         {
-            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not defined as interface");
+            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
         }
     }
 
     /**
      * Returns true if this class can be candidate for simple web bean, false otherwise.
-     * 
+     *
      * @param clazz implementation class
      * @return true if this class can be candidate for simple web bean
      * @throws WebBeansConfigurationException if any configuration exception occurs
      */
-    public static boolean isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
+    public boolean isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
     {
         try
         {
-            WebBeansContext.getInstance().getWebBeansUtil().isManagedBeanClass(clazz);
+            webBeansContext.getWebBeansUtil().isManagedBeanClass(clazz);
 
         }
         catch (WebBeansConfigurationException e)
@@ -108,19 +101,34 @@ public final class ManagedBeanConfigurator
 
     /**
      * Returns the newly created Simple WebBean Component.
-     * 
+     *
      * @param clazz Simple WebBean Component implementation class
      * @return the newly created Simple WebBean Component
      * @throws WebBeansConfigurationException if any configuration exception occurs
      * @deprecated
      */
     @SuppressWarnings("unchecked")
-    public static <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
+    public <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
 
-        checkManagedBeanCondition(clazz);
+        int modifier = clazz.getModifiers();
+
+        if (AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
+        {
+            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName()
+                                                     + " may not annotated with both @Interceptor and @Decorator annotation");
+        }
+
+        if (!AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && !AnnotationUtil.hasClassAnnotation(clazz, Interceptor.class))
+        {
+            webBeansContext.getInterceptorUtil().checkSimpleWebBeansInterceptorConditions(clazz);
+        }
+
+        if (ClassUtil.isInterface(modifier))
+        {
+            throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName() + " may not _defined as interface");
+        }
 
         ManagedBean<T> component = new ManagedBean<T>(clazz, type, webBeansContext);
         manager.putInjectionTargetWrapper(component, new InjectionTargetWrapper(new InjectionTargetProducer(component)));
@@ -129,13 +137,13 @@ public final class ManagedBeanConfigurator
 
         DefinitionUtil.defineSerializable(component);
         DefinitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
-                
+
         Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
 
         DefinitionUtil.defineApiTypes(component, clazz);
         DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName()
                                                              + " stereotypes must declare same @Scope annotations");
-        
+
         WebBeansUtil.checkGenericType(component);
         DefinitionUtil.defineQualifiers(component, clazzAnns);
         DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
@@ -154,7 +162,7 @@ public final class ManagedBeanConfigurator
             manager.addBean(producerMethod);
             manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(new ProducerBeansProducer(producerMethod)));
         }
-        
+
         Set<ProducerFieldBean<?>> producerFields = DefinitionUtil.defineProduerFields(component);
         for (ProducerFieldBean<?> producerField : producerFields)
         {
@@ -162,7 +170,7 @@ public final class ManagedBeanConfigurator
             manager.addBean(producerField);
             manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(new ProducerBeansProducer(producerField)));
         }
-        
+
 
         DefinitionUtil.defineDisposalMethods(component);
         DefinitionUtil.defineInjectedFields(component);
@@ -170,5 +178,5 @@ public final class ManagedBeanConfigurator
         DefinitionUtil.defineObserverMethods(component, clazz);
 
         return component;
-    }    
+    }
 }

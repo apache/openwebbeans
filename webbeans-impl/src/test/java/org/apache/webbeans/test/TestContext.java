@@ -42,13 +42,11 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeModel;
-import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.newtests.AbstractUnitTest;
@@ -309,7 +307,8 @@ public abstract class TestContext implements ITestContext
     {
         ManagedBean<T> bean = null;
 
-        bean = ManagedBeanConfigurator.define(clazz, WebBeansType.MANAGED);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        bean = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.MANAGED);
         if (bean != null)
         {
             manager.addBean(WebBeansUtil.createNewBean(bean));
@@ -320,7 +319,7 @@ public abstract class TestContext implements ITestContext
             getComponents().add((AbstractOwbBean<?>) bean);
             manager.addBean(bean);
 
-            GProcessAnnotatedType type = new GProcessAnnotatedType(WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(clazz));
+            GProcessAnnotatedType type = new GProcessAnnotatedType(webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz));
             manager.fireEvent(type, new Annotation[0]);            
         }
 
@@ -421,13 +420,14 @@ public abstract class TestContext implements ITestContext
     {
         ManagedBean<T> component = null;
 
-        ManagedBeanConfigurator.checkManagedBeanCondition(clazz);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
 
-        WebBeansContext.getInstance().getInterceptorsManager().addNewInterceptor(clazz);
-        InterceptorUtil.checkInterceptorConditions(clazz);
-        component = ManagedBeanConfigurator.define(clazz, WebBeansType.INTERCEPTOR);
+        webBeansContext.getInterceptorsManager().addNewInterceptor(clazz);
+        webBeansContext.getInterceptorUtil().checkInterceptorConditions(clazz);
+        component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.INTERCEPTOR);
         WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component,
-                                                            WebBeansContext.getInstance().getAnnotationManager().getInterceptorBindingMetaAnnotations(
+                                                            webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
                                                                 clazz.getDeclaredAnnotations()));
 
 
@@ -445,10 +445,11 @@ public abstract class TestContext implements ITestContext
     {
         ManagedBean<T> component = null;
 
-        if (WebBeansContext.getInstance().getDecoratorsManager().isDecoratorEnabled(clazz))
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        if (webBeansContext.getDecoratorsManager().isDecoratorEnabled(clazz))
         {
             DecoratorUtil.checkDecoratorConditions(clazz);
-            component = ManagedBeanConfigurator.define(clazz, WebBeansType.DECORATOR);
+            component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.DECORATOR);
 
             if (component != null)
             {

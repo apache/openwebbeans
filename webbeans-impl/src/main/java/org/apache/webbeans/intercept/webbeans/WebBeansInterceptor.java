@@ -28,7 +28,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
-import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.OwbInterceptor;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.util.AnnotationUtil;
@@ -277,7 +276,8 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         
         else
         {
-            Class<? extends Annotation> interceptorTypeAnnotationClazz = InterceptorUtil.getInterceptorAnnotationClazz(type);
+            Class<? extends Annotation> interceptorTypeAnnotationClazz =
+                webBeansContext.getInterceptorUtil().getInterceptorAnnotationClazz(type);
             method = getWebBeansContext().getWebBeansUtil().checkCommonAnnotationCriterias(getClazz(),
                                                                                                      interceptorTypeAnnotationClazz,
                                                                                                      true);

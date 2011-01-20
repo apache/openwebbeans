@@ -57,20 +57,27 @@ import org.apache.webbeans.util.SecurityUtil;
 
 public final class InterceptorUtil
 {
-    static OpenWebBeansEjbLCAPlugin ejbPlugin = null;
-    static Class<? extends Annotation> prePassivateClass  = null;
-    static Class<? extends Annotation> postActivateClass  = null;
-
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorUtil.class);
 
+    private final OpenWebBeansEjbLCAPlugin ejbPlugin;
+    private final Class<? extends Annotation> prePassivateClass;
+    private final Class<? extends Annotation> postActivateClass;
 
-    private InterceptorUtil()
+    private final WebBeansContext webBeansContext;
+
+    public InterceptorUtil(WebBeansContext webBeansContext)
     {
-        ejbPlugin = WebBeansContext.getInstance().getPluginLoader().getEjbLCAPlugin();
-        if(ejbPlugin != null)
+        this.webBeansContext = webBeansContext;
+        this.ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
+        if (ejbPlugin != null)
         {
-            prePassivateClass  = ejbPlugin.getPrePassivateClass();
-            postActivateClass  = ejbPlugin.getPostActivateClass();
+            prePassivateClass = ejbPlugin.getPrePassivateClass();
+            postActivateClass = ejbPlugin.getPostActivateClass();
+        }
+        else
+        {
+            prePassivateClass = null;
+            postActivateClass = null;
         }
     }
 
@@ -80,7 +87,7 @@ public final class InterceptorUtil
      * @param method
      * @return <code>true</code> if the given method is an interceptable business method
      */
-    public static boolean isWebBeansBusinessMethod(Method method)
+    public boolean isWebBeansBusinessMethod(Method method)
     {
         Asserts.nullCheckForMethod(method);
 
@@ -113,7 +120,7 @@ public final class InterceptorUtil
         return true;
     }
 
-    public static Class<? extends Annotation> getInterceptorAnnotationClazz(InterceptionType type)
+    public Class<? extends Annotation> getInterceptorAnnotationClazz(InterceptionType type)
     {
         if (type.equals(InterceptionType.AROUND_INVOKE))
         {
@@ -217,7 +224,7 @@ public final class InterceptorUtil
         return false;
     }
 
-    public static boolean isLifecycleMethodInterceptor(Class<?> clazz)
+    public boolean isLifecycleMethodInterceptor(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
         Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
@@ -253,7 +260,7 @@ public final class InterceptorUtil
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> boolean isLifecycleMethodInterceptor(AnnotatedType<T> annotatedType)
+    public <T> boolean isLifecycleMethodInterceptor(AnnotatedType<T> annotatedType)
     {
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
         for(AnnotatedMethod<? super T> methodA : methods)
@@ -295,7 +302,7 @@ public final class InterceptorUtil
     }
 
 
-    public static <T> void checkAnnotatedTypeInterceptorConditions(AnnotatedType<T> annotatedType)
+    public <T> void checkAnnotatedTypeInterceptorConditions(AnnotatedType<T> annotatedType)
     {
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
         for(AnnotatedMethod<? super T> methodA : methods)
@@ -310,7 +317,7 @@ public final class InterceptorUtil
         }
 
         Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[0]);
-        if (!WebBeansContext.getInstance().getAnnotationManager().hasInterceptorBindingMetaAnnotation(anns))
+        if (!webBeansContext.getAnnotationManager().hasInterceptorBindingMetaAnnotation(anns))
         {
             throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName()
                                                      + " must have at least one @InterceptorBinding annotation");
@@ -321,7 +328,7 @@ public final class InterceptorUtil
     }
 
 
-    public static void checkInterceptorConditions(Class<?> clazz)
+    public void checkInterceptorConditions(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
 
@@ -335,7 +342,7 @@ public final class InterceptorUtil
             }
         }
 
-        if (!WebBeansContext.getInstance().getAnnotationManager().hasInterceptorBindingMetaAnnotation(
+        if (!webBeansContext.getAnnotationManager().hasInterceptorBindingMetaAnnotation(
             clazz.getDeclaredAnnotations()))
         {
             throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName()
@@ -346,14 +353,13 @@ public final class InterceptorUtil
                                                                         + " interceptor binding type must be defined as @Target{TYPE}");
     }
 
-    public static <T> void checkLifecycleConditions(Class<T> clazz, Annotation[] annots, String errorMessage)
+    public <T> void checkLifecycleConditions(Class<T> clazz, Annotation[] annots, String errorMessage)
     {
         Asserts.nullCheckForClass(clazz);
 
         if (isLifecycleMethodInterceptor(clazz) && !isBusinessMethodInterceptor(clazz))
         {
-            Annotation[] anns =
-                WebBeansContext.getInstance().getAnnotationManager().getInterceptorBindingMetaAnnotations(annots);
+            Annotation[] anns = webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(annots);
 
             for (Annotation annotation : anns)
             {
@@ -369,12 +375,11 @@ public final class InterceptorUtil
 
     }
 
-    public static <T> void checkLifecycleConditions(AnnotatedType<T> annotatedType, Annotation[] annots, String errorMessage)
+    public <T> void checkLifecycleConditions(AnnotatedType<T> annotatedType, Annotation[] annots, String errorMessage)
     {
         if (isLifecycleMethodInterceptor(annotatedType) && !isBusinessMethodInterceptor(annotatedType))
         {
-            Annotation[] anns =
-                WebBeansContext.getInstance().getAnnotationManager().getInterceptorBindingMetaAnnotations(annots);
+            Annotation[] anns = webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(annots);
 
             for (Annotation annotation : anns)
             {
@@ -391,13 +396,13 @@ public final class InterceptorUtil
     }
 
 
-    public static void checkSimpleWebBeansInterceptorConditions(Class<?> clazz)
+    public void checkSimpleWebBeansInterceptorConditions(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
         Annotation[] anns = clazz.getDeclaredAnnotations();
 
         boolean hasClassInterceptors = false;
-        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         if (annotationManager.getInterceptorBindingMetaAnnotations(anns).length > 0)
         {
             hasClassInterceptors = true;
@@ -595,7 +600,6 @@ public final class InterceptorUtil
      * Filter bean interceptor stack.
      * @param stack interceptor stack
      * @param method called method on proxy
-     * @param ownerCreationalContext bean creational context
      */
     public static void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method)
     {
@@ -665,7 +669,7 @@ public final class InterceptorUtil
      * Remove bean inherited and overriden lifecycle interceptor method from its
      * stack list.
      *
-     * @param clazz bean class
+     * @param beanClass bean class
      * @param stack bean interceptor stack
      */
     public static void filterOverridenLifecycleInterceptor(Class<?> beanClass, List<InterceptorData> stack)
@@ -698,7 +702,7 @@ public final class InterceptorUtil
      * invoked. Remove bean inherited but overriden around invoke interceptor
      * method from its stack list.
      *
-     * @param clazz bean class
+     * @param beanClass bean class
      * @param stack bean interceptor stack
      */
     public static void filterOverridenAroundInvokeInterceptor(Class<?> beanClass, List<InterceptorData> stack)

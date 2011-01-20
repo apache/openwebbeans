@@ -32,7 +32,7 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.ManagedBeanConfigurator;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.jboss.jsr299.tck.spi.Beans;
 
@@ -48,11 +48,10 @@ public class BeansImpl implements Beans
 
     public <T> Bean<T> createSimpleBean(Class<T> clazz)
     {
-        ManagedBean<T> bean = null;
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
 
-        ManagedBeanConfigurator.checkManagedBeanCondition(clazz);
-        
-        bean = ManagedBeanConfigurator.define(clazz, WebBeansType.MANAGED);
+        ManagedBean<T> bean = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.MANAGED);
 
         return bean;
     }

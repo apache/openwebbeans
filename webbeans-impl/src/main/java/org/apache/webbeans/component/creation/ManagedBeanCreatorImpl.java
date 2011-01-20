@@ -24,7 +24,6 @@ import javax.enterprise.inject.spi.AnnotatedConstructor;
 
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -60,7 +59,7 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
     {
         if(isDefaultMetaDataProvider())
         {
-            ManagedBeanConfigurator.checkManagedBeanCondition(getBean().getReturnType());                        
+            webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(getBean().getReturnType());
         }
         else
         {

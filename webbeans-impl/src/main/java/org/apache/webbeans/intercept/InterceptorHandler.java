@@ -204,7 +204,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 InterceptorDataImpl decoratorInterceptorDataImpl = null;
                 
                 //Check method is business method
-                if (InterceptorUtil.isWebBeansBusinessMethod(method))
+                if (webBeansContext.getInterceptorUtil().isWebBeansBusinessMethod(method))
                 {
                     List<Object> decorators = null;
                     if (injectionTarget.getDecoratorStack().size() > 0)

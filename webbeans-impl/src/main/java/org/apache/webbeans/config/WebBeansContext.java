@@ -39,6 +39,7 @@ import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
+import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -82,6 +83,8 @@ public class WebBeansContext
     private XMLSpecializesManager xmlSpecializesManager = new XMLSpecializesManager();
     private ResolutionUtil resolutionUtil = new ResolutionUtil(this);
     private InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
+    private InterceptorUtil interceptorUtil = new InterceptorUtil(this);
+    private ManagedBeanConfigurator managedBeanConfigurator = new ManagedBeanConfigurator(this);
 
     private final Map<Class<?>, Object> managerMap = new HashMap<Class<?>, Object>();
 
@@ -162,6 +165,16 @@ public class WebBeansContext
             return null;
         }
         return serviceInterface.cast(get(implName));
+    }
+
+    public ManagedBeanConfigurator getManagedBeanConfigurator()
+    {
+        return managedBeanConfigurator;
+    }
+
+    public InterceptorUtil getInterceptorUtil()
+    {
+        return interceptorUtil;
     }
 
     public InjectionPointFactory getInjectionPointFactory()

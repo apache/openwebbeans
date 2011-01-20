@@ -124,7 +124,6 @@ import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
 import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.EJBWebBeansConfigurator;
-import org.apache.webbeans.config.ManagedBeanConfigurator;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
@@ -145,7 +144,6 @@ import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.intercept.InterceptorType;
-import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
@@ -645,7 +643,7 @@ public final class WebBeansUtil
 
         NewBean<T> comp = null;
 
-        if (ManagedBeanConfigurator.isManagedBean(clazz))
+        if (webBeansContext.getManagedBeanConfigurator().isManagedBean(clazz))
         {
             comp = new NewBean<T>(clazz, WebBeansType.MANAGED, webBeansContext);
             comp.setImplScopeType(new DependentScopeLiteral());
@@ -2126,7 +2124,7 @@ public final class WebBeansUtil
         {
             ManagedBean<T> component = null;
 
-            InterceptorUtil.checkInterceptorConditions(clazz);
+            webBeansContext.getInterceptorUtil().checkInterceptorConditions(clazz);
             component = defineManagedBean(managedBeanCreator, injectionTargetEvent);
 
             if (component != null)
@@ -3201,7 +3199,7 @@ public final class WebBeansUtil
         {
             ManagedBean<T> delegate = null;
 
-            InterceptorUtil.checkAnnotatedTypeInterceptorConditions(annotatedType);
+            webBeansContext.getInterceptorUtil().checkAnnotatedTypeInterceptorConditions(annotatedType);
             delegate = defineManagedBean(annotatedType);
 
             if (delegate != null)
