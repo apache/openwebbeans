@@ -65,7 +65,6 @@ import org.apache.webbeans.exception.definition.NonexistentMethodException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
 import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.inject.AlternativesManager;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
 import org.apache.webbeans.inject.xml.XMLInjectionModelType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
@@ -803,7 +802,7 @@ public final class WebBeansXMLConfigurator
         }
 
         /* Create new XML component with class name */
-        XMLManagedBean<T> component = new XMLManagedBean<T>(simpleClass);
+        XMLManagedBean<T> component = new XMLManagedBean<T>(simpleClass, webBeansContext);
 
         /* Configures API type of the webbeans component */
         DefinitionUtil.defineApiTypes(component, simpleClass);
@@ -1127,7 +1126,7 @@ public final class WebBeansXMLConfigurator
             model.setInjectionMember(constructor);
             model.setType(XMLInjectionModelType.CONSTRUCTOR);
 
-            component.addInjectionPoint(InjectionPointFactory.getXMLInjectionPointData(component, model));
+            component.addInjectionPoint(component.getWebBeansContext().getInjectionPointFactory().getXMLInjectionPointData(component, model));
         }
 
         component.setInjectableConstructor(injectableConstructor);
@@ -1247,7 +1246,9 @@ public final class WebBeansXMLConfigurator
 
                     injectionPointModel.setInjectionMember(field);
                     injectionPointModel.setType(XMLInjectionModelType.FIELD);
-                    component.addInjectionPoint(InjectionPointFactory.getXMLInjectionPointData(component, injectionPointModel));
+                    component.addInjectionPoint(
+                        component.getWebBeansContext().getInjectionPointFactory().getXMLInjectionPointData(component,
+                                                                                                           injectionPointModel));
 
                     isTypeElement = true;
                     isApplicable = true;

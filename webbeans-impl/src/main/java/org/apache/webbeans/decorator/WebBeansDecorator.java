@@ -87,7 +87,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
      */
     public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean, Decorator<T> customDecorator)
     {
-        super(WebBeansType.DECORATOR,wrappedBean.getReturnType());
+        super(WebBeansType.DECORATOR,wrappedBean.getReturnType(), wrappedBean.getWebBeansContext());
         this.wrappedBean = wrappedBean;
         this.customDecorator = customDecorator;
         initDelegate();
@@ -100,7 +100,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
      */
     public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean)
     {
-        super(WebBeansType.DECORATOR,wrappedBean.getReturnType());
+        super(WebBeansType.DECORATOR,wrappedBean.getReturnType(), wrappedBean.getWebBeansContext());
         
         this.wrappedBean = wrappedBean;
         this.clazz = wrappedBean.getReturnType();
@@ -342,7 +342,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
             return this.customDecorator.create(creationalContext);
         }
 
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        WebBeansContext webBeansContext = wrappedBean.getWebBeansContext();
         Context context = webBeansContext.getBeanManagerImpl().getContext(getScope());
         Object actualInstance = context.get((Bean<Object>)this.wrappedBean, (CreationalContext<Object>)creationalContext);
         T proxy = (T) webBeansContext.getJavassistProxyFactory().createDependentScopedBeanProxy(this.wrappedBean, actualInstance, creationalContext);

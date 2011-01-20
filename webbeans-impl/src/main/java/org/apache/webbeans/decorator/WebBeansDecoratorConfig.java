@@ -35,7 +35,7 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
@@ -179,16 +179,11 @@ public final class WebBeansDecoratorConfig
         return decoratorStack;
     }
 
-    private static Set<Decorator<?>> getWebBeansDecorators()
-    {
-        return Collections.unmodifiableSet(WebBeansContext.getInstance().getBeanManagerImpl().getDecorators());
-    }
-
-    public static Set<Decorator<?>> findDeployedWebBeansDecorator(Set<Type> apiType, Annotation... anns)
+    public static Set<Decorator<?>> findDeployedWebBeansDecorator(BeanManagerImpl beanManagerImpl, Set<Type> apiType, Annotation... anns)
     {
         Set<Decorator<?>> set = new HashSet<Decorator<?>>();
 
-        Iterator<Decorator<?>> it = getWebBeansDecorators().iterator();
+        Iterator<Decorator<?>> it = Collections.unmodifiableSet(beanManagerImpl.getDecorators()).iterator();
         WebBeansDecorator<?> decorator = null;
 
         List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();

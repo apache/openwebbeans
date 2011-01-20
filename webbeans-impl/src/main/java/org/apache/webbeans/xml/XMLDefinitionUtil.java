@@ -52,7 +52,6 @@ import org.apache.webbeans.event.xml.BeanObserverXMLImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.NonexistentFieldException;
 import org.apache.webbeans.exception.definition.NonexistentTypeException;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.inject.xml.XMLInjectionModelType;
 import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -207,7 +206,7 @@ public final class XMLDefinitionUtil
         while (it.hasNext())
         {
             Class<? extends Annotation> temp = it.next();
-            if (AnnotationUtil.isQualifierAnnotation(temp))
+            if (component.getWebBeansContext().getAnnotationManager().isQualifierAnnotation(temp))
             {
                 Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(temp);
 
@@ -276,9 +275,9 @@ public final class XMLDefinitionUtil
         Annotation[] anns = new Annotation[bindingTypeSet.size()];
         anns = bindingTypeSet.toArray(anns);
 
-        Set<Interceptor<?>> set = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns);
+        Set<Interceptor<?>> set = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns, component.getWebBeansContext());
 
-        WebBeansInterceptorConfig.addComponentInterceptors(set, component.getInterceptorStack());
+        WebBeansInterceptorConfig.addComponentInterceptors(component, set, component.getInterceptorStack());
 
     }
 
@@ -307,7 +306,7 @@ public final class XMLDefinitionUtil
         Annotation[] result = new Annotation[bindingTypesSet.size()];
         result = bindingTypesSet.toArray(result);
 
-        Set<Interceptor<?>> setInterceptors = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(result);
+        Set<Interceptor<?>> setInterceptors = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(result, component.getWebBeansContext());
         Iterator<Interceptor<?>> it = setInterceptors.iterator();
 
         List<InterceptorData> stack = component.getInterceptorStack();
@@ -317,17 +316,17 @@ public final class XMLDefinitionUtil
         {
             WebBeansInterceptor interceptor = (WebBeansInterceptor) it.next();
 
-            webBeansContext.getWebBeansUtil()._configureInterceptorMethods((Interceptor<?>) interceptor,
+            webBeansContext.getWebBeansUtil().configureInterceptorMethods((Interceptor<?>) interceptor,
                                                                                          (Class<?>) interceptor.getClazz(),
                                                                                          AroundInvoke.class, false,
                                                                                          true, stack, interceptorMethod,
                                                                                          true);
-            webBeansContext.getWebBeansUtil()._configureInterceptorMethods((Interceptor<?>) interceptor,
+            webBeansContext.getWebBeansUtil().configureInterceptorMethods((Interceptor<?>) interceptor,
                                                                                          (Class<?>) interceptor.getClazz(),
                                                                                          PostConstruct.class, false,
                                                                                          true, stack, interceptorMethod,
                                                                                          true);
-            webBeansContext.getWebBeansUtil()._configureInterceptorMethods((Interceptor<?>) interceptor,
+            webBeansContext.getWebBeansUtil().configureInterceptorMethods((Interceptor<?>) interceptor,
                                                                                          (Class<?>) interceptor.getClazz(),
                                                                                          PreDestroy.class, false, true,
                                                                                          stack, interceptorMethod, true);
@@ -779,7 +778,9 @@ public final class XMLDefinitionUtil
                 Annotation[] bindingAnns = new Annotation[bindingTypes.size()];
                 bindingAnns = bindingTypes.toArray(bindingAnns);
 
-                Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(model.getInjectionGenericType(), bindingAnns);
+                InjectionResolver instance = component.getWebBeansContext().getBeanManagerImpl().getInjectionResolver();
+
+                Set<Bean<?>> set = instance.implResolveByType(model.getInjectionGenericType(), bindingAnns);
                 producerComponent = (XMLProducerBean<?>) set.iterator().next();
 
                 if (producerComponent == null)
@@ -892,7 +893,7 @@ public final class XMLDefinitionUtil
         model.setInjectionMember(method);
         model.setType(XMLInjectionModelType.METHOD);
 
-        return InjectionPointFactory.getXMLInjectionPointData(component, model);
+        return component.getWebBeansContext().getInjectionPointFactory().getXMLInjectionPointData(component, model);
 
     }
 }

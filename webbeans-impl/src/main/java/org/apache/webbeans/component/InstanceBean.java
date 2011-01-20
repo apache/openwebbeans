@@ -28,6 +28,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Provider;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.instance.InstanceFactory;
 
 public class InstanceBean<T> extends AbstractOwbBean<Provider<T>>
@@ -36,9 +37,9 @@ public class InstanceBean<T> extends AbstractOwbBean<Provider<T>>
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
     
     @SuppressWarnings("serial")
-    public InstanceBean()
+    public InstanceBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.INSTANCE, new TypeLiteral<Provider<T>>(){}.getRawType());        
+        super(WebBeansType.INSTANCE, new TypeLiteral<Provider<T>>(){}.getRawType(), webBeansContext);
     }
     
          

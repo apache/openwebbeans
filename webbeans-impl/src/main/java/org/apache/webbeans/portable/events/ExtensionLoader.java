@@ -48,6 +48,8 @@ public class ExtensionLoader
     private final Set<Class<? extends Extension>> extensionClasses = new HashSet<Class<? extends Extension>>();
     private final BeanManagerImpl manager;
 
+    private final WebBeansContext webBeansContext;
+
     /**
      * Creates a new loader instance.
      * @param webBeansContext
@@ -55,7 +57,8 @@ public class ExtensionLoader
     public ExtensionLoader(WebBeansContext webBeansContext)
     {
 
-        manager = webBeansContext.getBeanManagerImpl();
+        this.webBeansContext = webBeansContext;
+        manager = this.webBeansContext.getBeanManagerImpl();
     }
 
     /**
@@ -120,7 +123,7 @@ public class ExtensionLoader
      */
     public void addExtension(Extension ext)
     {
-        Bean<?> bean = WebBeansUtil.createExtensionComponent(ext.getClass());
+        Bean<?> bean = webBeansContext.getWebBeansUtil().createExtensionComponent(ext.getClass());
         this.extensions.put(bean, ext);
 
         manager.addBean(bean);

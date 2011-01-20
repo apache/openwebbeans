@@ -20,6 +20,8 @@ package org.apache.webbeans.component;
 
 import javax.enterprise.context.spi.CreationalContext;
 
+import org.apache.webbeans.config.WebBeansContext;
+
 /**
  * Component definition with {@link javax.enterprise.inject.New} binding annotation.
  * 
@@ -32,9 +34,9 @@ public class NewBean<T> extends ManagedBean<T>
 {
     private WebBeansType definedType;
 
-    public NewBean(Class<T> returnType, WebBeansType definedType)
+    public NewBean(Class<T> returnType, WebBeansType definedType, WebBeansContext webBeansContext)
     {
-        super(returnType);
+        super(returnType, webBeansContext);
         this.definedType = definedType;        
     }
 

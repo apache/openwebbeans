@@ -29,6 +29,7 @@ import javax.enterprise.inject.spi.PassivationCapable;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.AlternativesManager;
 
 public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
@@ -36,9 +37,9 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
     private Bean<T> bean = null;
     
     
-    public ThirdpartyBeanImpl(Bean<T> bean)
+    public ThirdpartyBeanImpl(Bean<T> bean, WebBeansContext webBeansContext)
     {
-        super(WebBeansType.THIRDPARTY);
+        super(WebBeansType.THIRDPARTY, webBeansContext);
         
         this.bean = bean;
         

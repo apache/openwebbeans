@@ -26,6 +26,7 @@ import javassist.util.proxy.ProxyObject;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Decorator;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.intercept.InterceptorData;
@@ -42,9 +43,9 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     
     boolean isAbstractDecorator;
 
-    public ManagedBean(Class<T> returnType)
+    public ManagedBean(Class<T> returnType, WebBeansContext webBeansContext)
     {
-        this(returnType, WebBeansType.MANAGED);
+        this(returnType, WebBeansType.MANAGED, webBeansContext);
     }
 
     /**
@@ -52,10 +53,11 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
      * 
      * @param returnType bean class
      * @param type webbeans type
+     * @param webBeansContext
      */
-    public ManagedBean(Class<T> returnType, WebBeansType type)
+    public ManagedBean(Class<T> returnType, WebBeansType type, WebBeansContext webBeansContext)
     {
-        super(type, returnType);
+        super(type, returnType, webBeansContext);
         
         //Setting inherited meta data instance
         setInheritedMetaData();

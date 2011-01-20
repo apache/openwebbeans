@@ -51,16 +51,18 @@ public class EventImpl<T> implements Event<T>, Serializable
     /**Event types*/
     private Type eventType;
 
-    private transient WebBeansContext webBeansContext = WebBeansContext.getInstance();
+    private transient WebBeansContext webBeansContext;
 
     /**
      * Creates a new event.
      * 
      * @param injectedBindings event bindings
      * @param eventType event type
+     * @param webBeansContext
      */
-    public EventImpl(Annotation[] injectedBindings, Type eventType)
+    public EventImpl(Annotation[] injectedBindings, Type eventType, WebBeansContext webBeansContext)
     {
+        this.webBeansContext = webBeansContext;
         this.injectedBindings = injectedBindings;
         this.eventType = eventType;
     }
@@ -110,7 +112,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public Event<T> select(Annotation... bindings)
     {
-        Event<T> sub = new EventImpl<T>(getEventBindings(bindings),this.eventType);
+        Event<T> sub = new EventImpl<T>(getEventBindings(bindings),this.eventType, webBeansContext);
         
         return sub;
     }
@@ -133,7 +135,7 @@ public class EventImpl<T> implements Event<T>, Serializable
             sub = this.eventType;
         }
         
-        Event<U> subEvent = new EventImpl<U>(getEventBindings(bindings),sub);
+        Event<U> subEvent = new EventImpl<U>(getEventBindings(bindings),sub, webBeansContext);
         
         return subEvent;
     }

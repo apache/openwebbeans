@@ -20,7 +20,7 @@ package org.apache.webbeans.portable.events.discovery;
 
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 
-import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
 
 /**
  * Event that is fired by the container after it validates
@@ -31,13 +31,20 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public class AfterDeploymentValidationImpl implements AfterDeploymentValidation
 {
+    private final BeanManagerImpl beanManagerImpl;
+
+    public AfterDeploymentValidationImpl(BeanManagerImpl beanManagerImpl)
+    {
+        this.beanManagerImpl = beanManagerImpl;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void addDeploymentProblem(Throwable t)
     {
-        WebBeansContext.getInstance().getBeanManagerImpl().getErrorStack().pushError(t);
+        beanManagerImpl.getErrorStack().pushError(t);
     }
 
 }

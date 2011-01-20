@@ -27,6 +27,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.event.EventImpl;
 import org.apache.webbeans.exception.WebBeansException;
 
@@ -42,11 +43,12 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
 
     /**
      * Creates a new instance of event bean.
+     * @param webBeansContext
      */
     @SuppressWarnings("serial")
-    public EventBean()
+    public EventBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.OBSERVABLE,new TypeLiteral<Event<T>>(){}.getRawType());
+        super(WebBeansType.OBSERVABLE,new TypeLiteral<Event<T>>(){}.getRawType(), webBeansContext);
     }
     
     /**
@@ -77,7 +79,7 @@ public class EventBean<T> extends AbstractOwbBean<Event<T>>
             
             try
             {
-                instance = new EventImpl<T>(qualifiers, eventType);
+                instance = new EventImpl<T>(qualifiers, eventType, getWebBeansContext());
             }
             catch (Exception e)
             {

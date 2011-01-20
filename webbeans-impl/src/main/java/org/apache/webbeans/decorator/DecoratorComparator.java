@@ -31,6 +31,13 @@ public class DecoratorComparator<T> implements Comparator<Decorator<T>>, Seriali
     /** default serial version UID */
     private static final long serialVersionUID = 1L;
 
+    private final WebBeansContext webBeansContext;
+
+    public DecoratorComparator(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
+    }
+
     public int compare(Decorator<T> o1, Decorator<T> o2)
     {
         WebBeansDecorator<T> src = (WebBeansDecorator<T>) o1;
@@ -45,7 +52,7 @@ public class DecoratorComparator<T> implements Comparator<Decorator<T>>, Seriali
             Class<?> o1Clazz = src.getClazz();
             Class<?> o2Clazz = target.getClazz();
 
-            return WebBeansContext.getInstance().getDecoratorsManager().compare(o1Clazz, o2Clazz);
+            return webBeansContext.getDecoratorsManager().compare(o1Clazz, o2Clazz);
 
         }
     }

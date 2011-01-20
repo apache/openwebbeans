@@ -23,6 +23,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import junit.framework.Assert;
 
 import org.apache.webbeans.component.BeanManagerBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Before;
@@ -39,13 +40,13 @@ public class ManagerResolutionTest extends TestContext
     public void beforeTest()
     {
         super.init();
-        getManager().addBean(WebBeansUtil.getManagerBean());
+        getManager().addBean(WebBeansContext.getInstance().getWebBeansUtil().getManagerBean());
     }
 
     @Test
     public void testManagerResolution()
     {
-        BeanManagerBean component = WebBeansUtil.getManagerBean();
+        BeanManagerBean component = WebBeansContext.getInstance().getWebBeansUtil().getManagerBean();
         BeanManager manager = getManager().getInstance(component);
 
         Assert.assertNotNull(manager);

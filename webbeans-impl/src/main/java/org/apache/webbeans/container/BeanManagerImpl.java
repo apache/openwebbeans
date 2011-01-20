@@ -91,7 +91,6 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
@@ -322,7 +321,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
         else
         {
-            ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(newBean);
+            ThirdpartyBeanImpl<?> bean = new ThirdpartyBeanImpl(newBean, webBeansContext);
             addPassivationInfo(bean);
             this.deploymentBeans.add(bean);
         }
@@ -438,10 +437,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Deprecated
     public <T> T getInstanceByType(Class<T> type, Annotation... bindingTypes)
     {
-        ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
+        webBeansContext.getResolutionUtil().getInstanceByTypeConditions(bindingTypes);
         Set<Bean<?>> set = resolveByType(type, bindingTypes);
 
-        ResolutionUtil.checkResolvedBeans(set, type, bindingTypes);
+        webBeansContext.getResolutionUtil().checkResolvedBeans(set, type, bindingTypes);
 
         Bean<?> bean = set.iterator().next();
         
@@ -451,10 +450,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Deprecated
     public <T> T getInstanceByType(TypeLiteral<T> type, Annotation... bindingTypes)
     {
-        ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
+        webBeansContext.getResolutionUtil().getInstanceByTypeConditions(bindingTypes);
         Set<Bean<?>> set = resolveByType(type, bindingTypes);
 
-        ResolutionUtil.checkResolvedBeans(set, type.getRawType(),bindingTypes);
+        webBeansContext.getResolutionUtil().checkResolvedBeans(set, type.getRawType(), bindingTypes);
 
         Bean<?> bean = set.iterator().next();
         
@@ -470,8 +469,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Deprecated
     public Set<Bean<?>> resolveByType(Class<?> apiType, Annotation... bindingTypes)
     {
-        ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
-        
+        webBeansContext.getResolutionUtil().getInstanceByTypeConditions(bindingTypes);
+
         return this.injectionResolver.implResolveByType(apiType, bindingTypes);
     }
 
@@ -481,8 +480,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         ParameterizedType ptype = (ParameterizedType) apiType.getType();
         ResolutionUtil.resolveByTypeConditions(ptype);
 
-        ResolutionUtil.getInstanceByTypeConditions(bindingTypes);
-       
+        webBeansContext.getResolutionUtil().getInstanceByTypeConditions(bindingTypes);
+
         return this.injectionResolver.implResolveByType(apiType.getType(), bindingTypes);
     }
 
@@ -542,7 +541,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public List<Decorator<?>> resolveDecorators(Set<Type> types, Annotation... bindingTypes)
     {
         webBeansContext.getAnnotationManager().checkDecoratorResolverParams(types, bindingTypes);
-        Set<Decorator<?>> intsSet = WebBeansDecoratorConfig.findDeployedWebBeansDecorator(types, bindingTypes);
+        Set<Decorator<?>> intsSet = WebBeansDecoratorConfig.findDeployedWebBeansDecorator(this, types, bindingTypes);
         Iterator<Decorator<?>> itSet = intsSet.iterator();
 
         List<Decorator<?>> decoratorList = new ArrayList<Decorator<?>>();
@@ -553,7 +552,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         }
 
-        Collections.sort(decoratorList, new DecoratorComparator());
+        Collections.sort(decoratorList, new DecoratorComparator(webBeansContext));
 
         return decoratorList;
 
@@ -567,7 +566,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         webBeansContext.getAnnotationManager().checkInterceptorResolverParams(interceptorBindings);
 
-        Set<Interceptor<?>> intsSet = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(interceptorBindings);
+        Set<Interceptor<?>> intsSet = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(interceptorBindings, webBeansContext);
         Iterator<Interceptor<?>> itSet = intsSet.iterator();
 
         List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>();
@@ -836,7 +835,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
                 
         //Scope is normal
-        if (webBeansContext.getWebBeansUtil()._isScopeTypeNormal(bean.getScope()))
+        if (webBeansContext.getWebBeansUtil().isScopeTypeNormal(bean.getScope()))
         {
             instance = getEjbOrJmsProxyReference(bean, beanType,creationalContext);
             
@@ -883,7 +882,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Create session bean proxy
         if(bean instanceof EnterpriseBeanMarker)
         {
-            if(webBeansContext.getWebBeansUtil()._isScopeTypeNormal(bean.getScope()))
+            if(webBeansContext.getWebBeansUtil().isScopeTypeNormal(bean.getScope()))
             {
                 //Maybe it is cached
                 if(this.cacheProxies.containsKey(bean))
@@ -1077,7 +1076,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
-        InjectionTargetBean<T> bean = WebBeansAnnotatedTypeUtil.defineManagedBean(type);
+        InjectionTargetBean<T> bean = webBeansContext.getWebBeansUtil().defineManagedBean(type);
 
         return new InjectionTargetProducer<T>(bean);
     }

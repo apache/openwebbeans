@@ -88,15 +88,19 @@ public class InterceptorDataImpl implements InterceptorData
 
     private WebBeansDecoratorInterceptor decoratorInterceptor = null;
 
-    public InterceptorDataImpl(boolean isDefinedWithWebBeansInterceptor)
+    private final WebBeansContext webBeansContext;
+
+    public InterceptorDataImpl(boolean isDefinedWithWebBeansInterceptor, WebBeansContext webBeansContext)
     {
-        this(isDefinedWithWebBeansInterceptor, null);
+        this(isDefinedWithWebBeansInterceptor, null, webBeansContext);
     }
 
-    public InterceptorDataImpl(boolean isDefinedWithWebBeansInterceptor, WebBeansDecoratorInterceptor decoratorInterceptor)
+    public InterceptorDataImpl(boolean isDefinedWithWebBeansInterceptor,
+                               WebBeansDecoratorInterceptor decoratorInterceptor, WebBeansContext webBeansContext)
     {
         this.isDefinedWithWebBeansInterceptor = isDefinedWithWebBeansInterceptor;
         this.decoratorInterceptor = decoratorInterceptor;
+        this.webBeansContext = webBeansContext;
     }
 
     public Class<?> getInterceptorClass()
@@ -117,7 +121,7 @@ public class InterceptorDataImpl implements InterceptorData
      */
     public void setInterceptorMethod(Method m, Class<? extends Annotation> annotation)
     {
-        OpenWebBeansEjbLCAPlugin ejbPlugin = WebBeansContext.getInstance().getPluginLoader().getEjbLCAPlugin();
+        OpenWebBeansEjbLCAPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
         Class <? extends Annotation> prePassivateClass = null;
         Class <? extends Annotation> postActivateClass = null;
         Class <? extends Annotation> aroundTimeoutClass = null;
@@ -433,7 +437,7 @@ public class InterceptorDataImpl implements InterceptorData
             // There is no define interceptor, define and add it into dependent
             if (interceptor == null)
             {
-                BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
+                BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
 
                 WebBeansInterceptor<Object> actualInterceptor = (WebBeansInterceptor<Object>) this.webBeansInterceptor;
                 CreationalContext<Object> creationalContext = manager.createCreationalContext(actualInterceptor);
@@ -472,7 +476,7 @@ public class InterceptorDataImpl implements InterceptorData
 
                 try
                 {
-                    OWBInjector injector = new OWBInjector();
+                    OWBInjector injector = new OWBInjector(webBeansContext);
                     injector.inject(interceptor);
 
                     ctx = new EjbInterceptorContext();

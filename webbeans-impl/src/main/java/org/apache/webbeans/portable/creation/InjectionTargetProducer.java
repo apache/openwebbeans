@@ -25,7 +25,6 @@ import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.AbstractInjectable;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
@@ -57,7 +56,7 @@ public class InjectionTargetProducer<T> extends AbstractProducer<T> implements I
     {
         if(!(ctx instanceof CreationalContextImpl))
         {
-            ctx = WebBeansContext.getInstance().getCreationalContextFactory().wrappedCreationalContext(ctx, this.bean);
+            ctx = bean.getWebBeansContext().getCreationalContextFactory().wrappedCreationalContext(ctx, this.bean);
         }
         
         Object oldInstanceUnderInjection = AbstractInjectable.instanceUnderInjection.get();

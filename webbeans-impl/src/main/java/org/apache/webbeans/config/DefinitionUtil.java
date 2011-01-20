@@ -70,8 +70,6 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.inject.OWBInjector;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
@@ -685,12 +683,12 @@ public final class DefinitionUtil
         Annotation[] methodAnns = method.getDeclaredAnnotations();
 
         WebBeansContext webBeansContext = parent.getWebBeansContext();
-        webBeansContext.getWebBeansUtil()._setBeanEnableFlagForProducerBean(parent, component, methodAnns);
+        webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(parent, component, methodAnns);
 
         DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
         DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName()
                                                               + " must declare default @Scope annotation");
-        webBeansContext.getWebBeansUtil()._checkUnproxiableApiType(component, component.getScope());
+        webBeansContext.getWebBeansUtil().checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,method);
         DefinitionUtil.defineQualifiers(component, methodAnns);
         DefinitionUtil.defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
@@ -742,12 +740,12 @@ public final class DefinitionUtil
         Annotation[] fieldAnns = field.getDeclaredAnnotations();
 
         WebBeansContext webBeansContext = parent.getWebBeansContext();
-        webBeansContext.getWebBeansUtil()._setBeanEnableFlagForProducerBean(parent, component, fieldAnns);
+        webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(parent, component, fieldAnns);
 
         DefinitionUtil.defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
         DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName()
                                                              + " must declare default @Scope annotation");
-        webBeansContext.getWebBeansUtil()._checkUnproxiableApiType(component, component.getScope());
+        webBeansContext.getWebBeansUtil().checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,field);
         DefinitionUtil.defineQualifiers(component, fieldAnns);
         DefinitionUtil.defineName(component, fieldAnns, field.getName());
@@ -779,8 +777,9 @@ public final class DefinitionUtil
             Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(declaredMethod, Disposes.class);
             Annotation[] annot = annotationManager.getMethodFirstParameterQualifierWithGivenAnnotation(declaredMethod, Disposes.class);
 
+            InjectionResolver instance = component.getWebBeansContext().getBeanManagerImpl().getInjectionResolver();
 
-            Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
+            Set<Bean<?>> set = instance.implResolveByType(type, annot);
             if (set.isEmpty())
             {
                 throwUnsatisfiedResolutionException(clazz, declaredMethod, annot);
@@ -965,7 +964,7 @@ public final class DefinitionUtil
                     continue;
                 }
                 
-                checkForInjectedInitializerMethod(clazz, method);
+                checkForInjectedInitializerMethod(clazz, method, component.getWebBeansContext());
             }
             else
             {
@@ -1006,7 +1005,8 @@ public final class DefinitionUtil
     /**
      * add the definitions for a &#x0040;Initializer method.
      */
-    private static <T> void checkForInjectedInitializerMethod(Class<T> clazz, Method method)
+    private static <T> void checkForInjectedInitializerMethod(Class<T> clazz, Method method,
+                                                              WebBeansContext webBeansContext)
     {
         TypeVariable<?>[] args = method.getTypeParameters();
         if(args.length > 0)
@@ -1021,7 +1021,7 @@ public final class DefinitionUtil
         {
             Annotation[] a = anns[i];
             Type t = type[i];
-            WebBeansContext.getInstance().getAnnotationManager().checkForNewQualifierForDeployment(t, clazz, method.getName(), a);
+            webBeansContext.getAnnotationManager().checkForNewQualifierForDeployment(t, clazz, method.getName(), a);
         }
 
         if (method.getAnnotation(Produces.class) == null)
@@ -1046,18 +1046,18 @@ public final class DefinitionUtil
         // If bean is not session bean
         if(!(bean instanceof EnterpriseBeanMarker))
         {
-            EJBInterceptorConfig.configure(((AbstractOwbBean)bean).getReturnType(), bean.getInterceptorStack());   
+            EJBInterceptorConfig.configure(((AbstractOwbBean)bean).getReturnType(), bean.getInterceptorStack(), bean);
         }
         else
         {
             //Check for injected fields in EJB @Interceptors
             List<InterceptorData> stack = new ArrayList<InterceptorData>();
-            EJBInterceptorConfig.configure(bean.getBeanClass(), stack);
+            EJBInterceptorConfig.configure(bean.getBeanClass(), stack, bean);
             for(InterceptorData data : stack)
             {
                 if(data.isDefinedInInterceptorClass())
                 {
-                    if(!OWBInjector.checkInjectionPointForInterceptorPassivation(data.getInterceptorClass()))
+                    if(!AnnotationManager.checkInjectionPointForInterceptorPassivation(data.getInterceptorClass()))
                     {
                         throw new WebBeansConfigurationException("Enterprise bean : " + bean.toString() + " interceptors must have serializable injection points");
                     }
@@ -1130,7 +1130,7 @@ public final class DefinitionUtil
 
     public static <T> void addFieldInjectionPointMetaData(AbstractOwbBean<T> owner, Field field)
     {
-        InjectionPoint injectionPoint = InjectionPointFactory.getFieldInjectionPointData(owner, field);
+        InjectionPoint injectionPoint = owner.getWebBeansContext().getInjectionPointFactory().getFieldInjectionPointData(owner, field);
         if (injectionPoint != null)
         {
             addImplicitComponentForInjectionPoint(injectionPoint);
@@ -1140,7 +1140,7 @@ public final class DefinitionUtil
 
     public static <T> void addMethodInjectionPointMetaData(AbstractOwbBean<T> owner, Method method)
     {
-        List<InjectionPoint> injectionPoints = InjectionPointFactory.getMethodInjectionPointData(owner, method);
+        List<InjectionPoint> injectionPoints = owner.getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(owner, method);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
             addImplicitComponentForInjectionPoint(injectionPoint);
@@ -1150,7 +1150,7 @@ public final class DefinitionUtil
 
     public static <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, Constructor<T> constructor)
     {
-        List<InjectionPoint> injectionPoints = InjectionPointFactory.getConstructorInjectionPointData(owner, constructor);
+        List<InjectionPoint> injectionPoints = owner.getWebBeansContext().getInjectionPointFactory().getConstructorInjectionPointData(owner, constructor);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
             addImplicitComponentForInjectionPoint(injectionPoint);

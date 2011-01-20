@@ -25,7 +25,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 
 /**
@@ -72,7 +71,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
         T instance = null;
         if(!(creationalContext instanceof CreationalContextImpl))
         {
-            creationalContext = WebBeansContext.getInstance().getCreationalContextFactory().wrappedCreationalContext(creationalContext, this.bean);
+            creationalContext = bean.getWebBeansContext().getCreationalContextFactory().wrappedCreationalContext(creationalContext, this.bean);
         }
         
         //Save it

@@ -20,6 +20,8 @@ package org.apache.webbeans.component;
 
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.spi.CreationalContext;
+
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.spi.ConversationService;
 
@@ -32,10 +34,11 @@ public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
 {
     /**
      * Default constructor.
+     * @param webBeansContext
      */
-    public ConversationBean()
+    public ConversationBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.CONVERSATION, Conversation.class);
+        super(WebBeansType.CONVERSATION, Conversation.class, webBeansContext);
     }
 
     /**

@@ -22,15 +22,16 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.annotation.ApplicationScopeLiteral;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectableBeanManager;
 
 public class BeanManagerBean extends AbstractOwbBean<BeanManager>
 {
     private BeanManager manager = null;
 
-    public BeanManagerBean()
+    public BeanManagerBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.MANAGER, BeanManager.class);
+        super(WebBeansType.MANAGER, BeanManager.class, webBeansContext);
         setImplScopeType(new ApplicationScopeLiteral());
     }
 

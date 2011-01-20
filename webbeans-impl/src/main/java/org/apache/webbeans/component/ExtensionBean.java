@@ -21,6 +21,7 @@ package org.apache.webbeans.component;
 import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.annotation.ApplicationScopeLiteral;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 
 /**
@@ -36,10 +37,11 @@ public class ExtensionBean<T> extends AbstractInjectionTargetBean<T>
      * Creates a new extesion bean.
      * 
      * @param returnType return type
+     * @param webBeansContext
      */
-    public ExtensionBean(Class<T> returnType)
+    public ExtensionBean(Class<T> returnType, WebBeansContext webBeansContext)
     {
-        super(WebBeansType.EXTENSION,returnType);
+        super(WebBeansType.EXTENSION,returnType, webBeansContext);
         setImplScopeType(new ApplicationScopeLiteral());
     }
     

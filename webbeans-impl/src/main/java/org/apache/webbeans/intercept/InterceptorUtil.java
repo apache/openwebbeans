@@ -60,7 +60,7 @@ public final class InterceptorUtil
     static OpenWebBeansEjbLCAPlugin ejbPlugin = null;
     static Class<? extends Annotation> prePassivateClass  = null;
     static Class<? extends Annotation> postActivateClass  = null;
-    
+
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorUtil.class);
 
 
@@ -144,7 +144,7 @@ public final class InterceptorUtil
             throw new WebBeansException("Undefined interceotion type");
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> boolean isBusinessMethodInterceptor(AnnotatedType<T> annotatedType)
     {
@@ -162,7 +162,7 @@ public final class InterceptorUtil
                         {
                             clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
                         }
-                        
+
                         Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
                         if (params.length == 1 && params[0].equals(InvocationContext.class))
                         {
@@ -177,13 +177,13 @@ public final class InterceptorUtil
                                 }
                             }
                         }
-                    }                
-            }           
+                    }
+            }
         }
-        
+
         return false;
     }
-    
+
 
     public static boolean isBusinessMethodInterceptor(Class<?> clazz)
     {
@@ -251,7 +251,7 @@ public final class InterceptorUtil
 
         return false;
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> boolean isLifecycleMethodInterceptor(AnnotatedType<T> annotatedType)
     {
@@ -259,7 +259,7 @@ public final class InterceptorUtil
         for(AnnotatedMethod<? super T> methodA : methods)
         {
             AnnotatedMethod<T> method = (AnnotatedMethod<T>)methodA;
-            if(method.isAnnotationPresent(PostConstruct.class) 
+            if(method.isAnnotationPresent(PostConstruct.class)
                     || method.isAnnotationPresent(PreDestroy.class)
                     || method.isAnnotationPresent(postActivateClass)
                     || method.isAnnotationPresent(prePassivateClass))
@@ -272,7 +272,7 @@ public final class InterceptorUtil
                         {
                             clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
                         }
-                        
+
                         Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
                         if (params.length == 1 && params[0].equals(InvocationContext.class))
                         {
@@ -287,14 +287,14 @@ public final class InterceptorUtil
                                 }
                             }
                         }
-                    }                
-            }           
+                    }
+            }
         }
-        
+
         return false;
     }
-    
-    
+
+
     public static <T> void checkAnnotatedTypeInterceptorConditions(AnnotatedType<T> annotatedType)
     {
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
@@ -306,9 +306,9 @@ public final class InterceptorUtil
                                                          + " can not have producer methods but it has one with name : "
                                                          + methodA.getJavaMember().getName());
             }
-            
+
         }
-        
+
         Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[0]);
         if (!WebBeansContext.getInstance().getAnnotationManager().hasInterceptorBindingMetaAnnotation(anns))
         {
@@ -319,12 +319,12 @@ public final class InterceptorUtil
         checkLifecycleConditions(annotatedType, anns, "Lifecycle interceptor : " + annotatedType.getJavaClass().getName()
                                                       + " interceptor binding type must be defined as @Target{TYPE}");
     }
-    
+
 
     public static void checkInterceptorConditions(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        
+
         Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
         for(Method method : methods)
         {
@@ -368,7 +368,7 @@ public final class InterceptorUtil
         }
 
     }
-    
+
     public static <T> void checkLifecycleConditions(AnnotatedType<T> annotatedType, Annotation[] annots, String errorMessage)
     {
         if (isLifecycleMethodInterceptor(annotatedType) && !isBusinessMethodInterceptor(annotatedType))
@@ -389,7 +389,7 @@ public final class InterceptorUtil
         }
 
     }
-    
+
 
     public static void checkSimpleWebBeansInterceptorConditions(Class<?> clazz)
     {
@@ -414,8 +414,8 @@ public final class InterceptorUtil
                 }
             }
         }
-        
-        //Simple webbeans 
+
+        //Simple webbeans
         if(ClassUtil.isFinal(clazz.getModifiers()) && hasClassInterceptors)
         {
             throw new WebBeansConfigurationException("Final Simple class with name : " + clazz.getName() + " can not define any InterceptorBindings");
@@ -452,7 +452,7 @@ public final class InterceptorUtil
 
     /**
      * Gets list of interceptors with the given type.
-     * 
+     *
      * @param stack interceptor stack
      * @param type interceptor type
      * @return list of interceptor
@@ -466,13 +466,13 @@ public final class InterceptorUtil
         List<InterceptorData> pc = new ArrayList<InterceptorData>();  // PostConstruct
         List<InterceptorData> pd = new ArrayList<InterceptorData>();  // PreDestroy
         List<InterceptorData> pp = new ArrayList<InterceptorData>();  // PrePassivate
-    
+
         Iterator<InterceptorData> it = stack.iterator();
         while (it.hasNext())
         {
             Method m = null;
             InterceptorData data = it.next();
-    
+
             if (type.equals(InterceptorType.AROUND_INVOKE))
             {
                 m = data.getAroundInvoke();
@@ -480,7 +480,7 @@ public final class InterceptorUtil
                 {
                     ai.add(data);
                 }
-    
+
             }
             else if (type.equals(InterceptorType.AROUND_TIMEOUT))
             {
@@ -489,7 +489,7 @@ public final class InterceptorUtil
                 {
                     at.add(data);
                 }
-    
+
             }
             else if (type.equals(InterceptorType.POST_ACTIVATE))
             {
@@ -498,7 +498,7 @@ public final class InterceptorUtil
                 {
                     pa.add(data);
                 }
-    
+
             }
             else if (type.equals(InterceptorType.POST_CONSTRUCT))
             {
@@ -507,7 +507,7 @@ public final class InterceptorUtil
                 {
                     pc.add(data);
                 }
-    
+
             }
             else if (type.equals(InterceptorType.PRE_DESTROY))
             {
@@ -528,7 +528,7 @@ public final class InterceptorUtil
 
             }
         }
-    
+
         if (type.equals(InterceptorType.AROUND_INVOKE))
         {
             return ai;
@@ -553,10 +553,10 @@ public final class InterceptorUtil
         {
             return pp;
         }
-    
+
         return Collections.EMPTY_LIST;
     }
-    
+
     /**
      * Returns true if this interceptor data is not related
      * false othwewise.
@@ -610,33 +610,33 @@ public final class InterceptorUtil
             }
         }
     }
-    
+
     public static Object callAroundInvokes(InjectionTargetBean<?> bean,Object instance, CreationalContextImpl<?> creationalContext,
             Method proceed, Object[] arguments, List<InterceptorData> stack, InvocationContext ejbInvocationContext, Object altKey) throws Exception
     {
         InvocationContextImpl impl = new InvocationContextImpl(bean, instance,
                                                                proceed, arguments, stack, InterceptorType.AROUND_INVOKE);
-        if (ejbInvocationContext != null) 
+        if (ejbInvocationContext != null)
         {
             impl.setEJBInvocationContext(ejbInvocationContext);
         }
-        
+
         if (altKey != null)
         {
             impl.setCcKey(altKey);
         }
-        
+
         impl.setCreationalContext(creationalContext);
-        
+
         return impl.proceed();
     }
 
-        
+
 
     /**
      * Return true if candidate class is a super class of given interceptor
      * class.
-     * 
+     *
      * @param interceptorClass interceptor class
      * @param candidateClass candaite class
      * @return true if candidate class is a super class of given interceptor
@@ -664,7 +664,7 @@ public final class InterceptorUtil
     /**
      * Remove bean inherited and overriden lifecycle interceptor method from its
      * stack list.
-     * 
+     *
      * @param clazz bean class
      * @param stack bean interceptor stack
      */
@@ -697,7 +697,7 @@ public final class InterceptorUtil
      * whether that method is itself an AroundInvoke method), it will not be
      * invoked. Remove bean inherited but overriden around invoke interceptor
      * method from its stack list.
-     * 
+     *
      * @param clazz bean class
      * @param stack bean interceptor stack
      */
@@ -732,7 +732,7 @@ public final class InterceptorUtil
      * stack If any method in the current interceptor has the same name and
      * signature as the parent's interceptor method remove the parent
      * interceptor from the stack
-     * 
+     *
      * @param interceptorData
      * @param stack
      * @return the overriden InterceptorData that represents the parent
@@ -781,7 +781,7 @@ public final class InterceptorUtil
      * This returns the Interceptor that is defined in a super class of the bean
      * and has the same method as the bean. i.e. the bean method overrides the
      * Interceptor method defined in the super class.
-     * 
+     *
      * @param clazz
      * @param interceptorData
      * @return
@@ -823,7 +823,7 @@ public final class InterceptorUtil
 
     /**
      * Return true if given candidate is listed in interceptors list.
-     * 
+     *
      * @param mainClass bean class
      * @param candidateClass interceptor candidate class
      * @return true if given candidate is listed in interceptors list

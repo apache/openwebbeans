@@ -176,18 +176,19 @@ public class InjectionResolver
                 
                 if(newQualifier.value() == New.class)
                 {
-                    beanSet.add(WebBeansUtil.createNewComponent(clazz, type));    
+                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(clazz, type));
                 }
                 else
                 {
-                    beanSet.add(WebBeansUtil.createNewComponent(newQualifier.value(),null));
+                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newQualifier.value(),null));
                 }
                 
             }
         }
-        
-        ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers, injectionPoint);
-        
+
+        webBeansContext.getResolutionUtil().checkResolvedBeans(beanSet, clazz, qualifiers,
+                                                                              injectionPoint);
+
         Bean<?> bean = beanSet.iterator().next();
         
         if(clazz.isPrimitive())
@@ -242,18 +243,18 @@ public class InjectionResolver
                 
                 if(newQualifier.value() == New.class)
                 {
-                    beanSet.add(WebBeansUtil.createNewComponent(clazz,type));    
+                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(clazz,type));
                 }
                 else
                 {
-                    beanSet.add(WebBeansUtil.createNewComponent(newQualifier.value(),null));
+                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newQualifier.value(),null));
                 }
 
             }
         }
-        
 
-        ResolutionUtil.checkResolvedBeans(beanSet, clazz, qualifiers, injectionPoint);   
+        webBeansContext.getResolutionUtil().checkResolvedBeans(beanSet, clazz, qualifiers,
+                                                                              injectionPoint);
 
         return beanSet.iterator().next();
         

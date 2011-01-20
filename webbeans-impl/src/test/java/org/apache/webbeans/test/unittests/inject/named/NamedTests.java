@@ -27,8 +27,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.inject.named.NamedFieldWithNamedValue;
@@ -59,8 +59,9 @@ public class NamedTests extends TestContext
     {
         Bean<NamedFieldWithNamedValue> bean = defineManagedBean(NamedFieldWithNamedValue.class);
         Field field = NamedFieldWithNamedValue.class.getDeclaredField("paymentProcessor");
-        
-        InjectionPoint point =InjectionPointFactory.getFieldInjectionPointData(bean, field);
+
+        InjectionPoint point =
+            WebBeansContext.getInstance().getInjectionPointFactory().getFieldInjectionPointData(bean, field);
         
         WebBeansUtil.checkInjectionPointNamedQualifier(point);
         
@@ -74,8 +75,9 @@ public class NamedTests extends TestContext
     {
         Bean<NamedFieldWithoutNamedValue> bean = defineManagedBean(NamedFieldWithoutNamedValue.class);
         Field field = NamedFieldWithoutNamedValue.class.getDeclaredField("paymentProcessor");
-        
-        InjectionPoint point =InjectionPointFactory.getFieldInjectionPointData(bean, field);
+
+        InjectionPoint point =
+            WebBeansContext.getInstance().getInjectionPointFactory().getFieldInjectionPointData(bean, field);
         
         WebBeansUtil.checkInjectionPointNamedQualifier(point);
         
@@ -90,8 +92,10 @@ public class NamedTests extends TestContext
     {
         Bean<NamedOtherWithNamedValue> bean = defineManagedBean(NamedOtherWithNamedValue.class);
         Constructor<?> constructor = NamedOtherWithNamedValue.class.getDeclaredConstructor(new Class<?>[]{IPayment.class});
-        
-        InjectionPoint point =InjectionPointFactory.getConstructorInjectionPointData(bean, constructor).get(0);
+
+        InjectionPoint point =
+            WebBeansContext.getInstance().getInjectionPointFactory().getConstructorInjectionPointData(bean,
+                                                                                                       constructor).get(0);
         
         WebBeansUtil.checkInjectionPointNamedQualifier(point);
         
@@ -106,8 +110,10 @@ public class NamedTests extends TestContext
     {
         Bean<NamedOtherWithoutNamedValue> bean = defineManagedBean(NamedOtherWithoutNamedValue.class);
         Constructor<?> constructor = NamedOtherWithoutNamedValue.class.getDeclaredConstructor(new Class<?>[]{IPayment.class});
-        
-        InjectionPoint point =InjectionPointFactory.getConstructorInjectionPointData(bean, constructor).get(0);
+
+        InjectionPoint point =
+            WebBeansContext.getInstance().getInjectionPointFactory().getConstructorInjectionPointData(bean,
+                                                                                                       constructor).get(0);
                 
         String value = qulifier(point);
         

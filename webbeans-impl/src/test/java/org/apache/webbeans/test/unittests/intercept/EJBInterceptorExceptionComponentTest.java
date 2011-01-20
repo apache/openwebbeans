@@ -49,7 +49,7 @@ public class EJBInterceptorExceptionComponentTest extends TestContext
         {
             AbstractInjectionTargetBean<MultpleInterceptor> component = defineManagedBean(MultpleInterceptor.class);
 
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {

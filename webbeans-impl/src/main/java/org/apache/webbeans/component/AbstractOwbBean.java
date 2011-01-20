@@ -110,23 +110,25 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      * calling this.
      * 
      * @param returnType of the bean
+     * @param webBeansContext
      * @param webBeansType web beans type
      */
-    protected AbstractOwbBean(WebBeansType webBeansType, Class<T> returnType)
+    protected AbstractOwbBean(WebBeansType webBeansType, Class<T> returnType, WebBeansContext webBeansContext)
     {
         this.webBeansType = webBeansType;
         this.returnType = returnType;
-        webBeansContext = WebBeansContext.getInstance();
+        this.webBeansContext = webBeansContext;
     }
     
     /**
      * Creates a new instance.
      * 
      * @param webBeanType beans type
+     * @param webBeansContext
      */
-    protected AbstractOwbBean(WebBeansType webBeanType)
+    protected AbstractOwbBean(WebBeansType webBeanType, WebBeansContext webBeansContext)
     {
-        this(webBeanType, null);
+        this(webBeanType, null, webBeansContext);
     }
 
     /**
@@ -681,7 +683,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             {
                 if(!injectionPoint.isTransient())
                 {
-                    if(!getWebBeansContext().getWebBeansUtil()._isPassivationCapableDependency(injectionPoint))
+                    if(!getWebBeansContext().getWebBeansUtil().isPassivationCapableDependency(injectionPoint))
                     {
                         if(injectionPoint.getAnnotated().isAnnotationPresent(Disposes.class))
                         {

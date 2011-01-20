@@ -20,6 +20,7 @@ package org.apache.webbeans.component;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.annotation.DependentScopeLiteral;
+import org.apache.webbeans.config.WebBeansContext;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -38,9 +39,9 @@ public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
         local.remove();
     }
 
-    public InjectionPointBean()
+    public InjectionPointBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.INJECTIONPOINT,InjectionPoint.class);
+        super(WebBeansType.INJECTIONPOINT,InjectionPoint.class, webBeansContext);
         
         addQualifier(new DefaultLiteral());
         setImplScopeType(new DependentScopeLiteral());

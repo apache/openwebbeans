@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
@@ -37,7 +38,8 @@ public class JavaEeInjectionTest extends AbstractUnitTest
         startContainer(classes);
         
         MockInstance instance = new MockInstance();
-        OWBInjector injector = new OWBInjector();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        OWBInjector injector = new OWBInjector(webBeansContext);
         injector.inject(instance);
         
         Assert.assertNotNull(instance.getBeanManager());

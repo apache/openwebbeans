@@ -49,11 +49,12 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
 
     /**
      * Creates a new instance of the session bean.
+     * @param webBeansContext
      * @param ejbClassType ebj class type
      */
-    public BaseEjbBean(Class<T> ejbClassType, SessionBeanType type)
+    public BaseEjbBean(Class<T> ejbClassType, SessionBeanType type, WebBeansContext webBeansContext)
     {
-        super(WebBeansType.ENTERPRISE,ejbClassType);
+        super(WebBeansType.ENTERPRISE,ejbClassType, webBeansContext);
         
         //type of the ejb
         this.ejbType = type;

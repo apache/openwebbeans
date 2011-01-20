@@ -211,7 +211,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<MoreThanOnePostConstructComponent> component = defineManagedBean(MoreThanOnePostConstructComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -228,7 +228,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<PostContructMethodHasParameterComponent> component = defineManagedBean(PostContructMethodHasParameterComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -245,7 +245,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(PostContructMethodHasReturnTypeComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -262,7 +262,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(PostContructMethodHasCheckedExceptionComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -279,7 +279,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(PostContructMethodHasStaticComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -296,7 +296,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(MoreThanOneAroundInvokeComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -323,7 +323,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithoutParameterComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -340,7 +340,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithoutReturnTypeComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -357,7 +357,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithWrongReturnTypeComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -374,7 +374,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithoutExceptionComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -391,7 +391,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithStaticMethodComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -408,7 +408,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(AroundInvokeWithFinalMethodComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {
@@ -425,7 +425,7 @@ public class ExceptionComponentTest extends TestContext
         {
             clear();
             AbstractInjectionTargetBean<?> component = defineManagedBean(NoArgConstructorInterceptorComponent.class);
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack());
+            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
         }
         catch (WebBeansConfigurationException e)
         {

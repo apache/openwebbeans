@@ -34,8 +34,11 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+
+import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.config.inheritance.BeanInheritedMetaData;
 import org.apache.webbeans.config.inheritance.IBeanInheritedMetaData;
 import org.apache.webbeans.decorator.WebBeansDecorator;
@@ -43,7 +46,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
-import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InterceptorUtil;
@@ -98,10 +100,11 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      * 
      * @param webBeansType webbean type
      * @param returnType bean class type
+     * @param webBeansContext
      */
-    protected AbstractInjectionTargetBean(WebBeansType webBeansType, Class<T> returnType)
+    protected AbstractInjectionTargetBean(WebBeansType webBeansType, Class<T> returnType, WebBeansContext webBeansContext)
     {
-        super(webBeansType, returnType);
+        super(webBeansType, returnType, webBeansContext);
     }
 
     /**
@@ -635,7 +638,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                     }               
                     else
                     {
-                        if(!OWBInjector.checkInjectionPointForInterceptorPassivation(interceptorClass))
+                        if(!AnnotationManager.checkInjectionPointForInterceptorPassivation(interceptorClass))
                         {
                             throw new WebBeansConfigurationException(MessageFormat.format(
                                     logger.getTokenString(OWBLogConst.EXCEPT_0017), toString(), interceptorClass));

@@ -34,22 +34,25 @@ import static org.apache.webbeans.util.InjectionExceptionUtils.*;
 
 public final class ResolutionUtil
 {
-    private ResolutionUtil()
-    {
 
+    private final WebBeansContext webBeansContext;
+
+    public ResolutionUtil(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
     }
 
     public static boolean checkBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean newBean)
-    { 
+    {
         Iterator<Type> itBeanApiTypes = beanTypes.iterator();
         while (itBeanApiTypes.hasNext())
         {
-            Type beanApiType = itBeanApiTypes.next();                    
-            
+            Type beanApiType = itBeanApiTypes.next();
+
             if(ClassUtil.isAssignable(beanApiType, givenType))
             {
                 return true;
-            }           
+            }
             else
             {
                 //Check for @New
@@ -60,13 +63,13 @@ public final class ResolutionUtil
                     {
                         return true;
                     }
-                }                
+                }
             }
         }
-        
+
         return false;
     }
-    
+
     public static void resolveByTypeConditions(ParameterizedType type)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
@@ -78,17 +81,17 @@ public final class ResolutionUtil
         }
     }
 
-    public static void getInstanceByTypeConditions(Annotation[] qualifiers)
+    public void getInstanceByTypeConditions(Annotation[] qualifiers)
     {
-        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(qualifiers);
+        webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
     }
 
-    public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers) 
+    public void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers)
     {
         checkResolvedBeans(resolvedSet, type, qualifiers, null);
     }
-    
-    public static void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers, InjectionPoint injectionPoint)
+
+    public void checkResolvedBeans(Set<Bean<?>> resolvedSet, Class<?> type, Annotation[] qualifiers, InjectionPoint injectionPoint)
     {
         if (resolvedSet.isEmpty())
         {
@@ -101,7 +104,7 @@ public final class ResolutionUtil
         }
 
         Bean<?> bean = resolvedSet.iterator().next();
-        WebBeansContext.getInstance().getWebBeansUtil()._checkUnproxiableApiType(bean, bean.getScope());
+        webBeansContext.getWebBeansUtil().checkUnproxiableApiType(bean, bean.getScope());
 
-    }    
+    }
 }

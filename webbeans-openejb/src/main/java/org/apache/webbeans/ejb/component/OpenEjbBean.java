@@ -30,6 +30,7 @@ import org.apache.openejb.InterfaceType;
 import org.apache.openejb.DeploymentInfo.BusinessLocalHome;
 import org.apache.openejb.core.CoreDeploymentInfo;
 import org.apache.openejb.core.ivm.EjbHomeProxyHandler;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 
 /**
@@ -48,7 +49,7 @@ public class OpenEjbBean<T> extends BaseEjbBean<T>
      */
     public OpenEjbBean(Class<T> ejbClassType, SessionBeanType type)
     {
-        super(ejbClassType, type);
+        super(ejbClassType, type, WebBeansContext.getInstance());
     }
     
     /**

@@ -31,6 +31,7 @@ import javax.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.xml.XMLInjectableConstructor;
 import org.apache.webbeans.inject.xml.XMLInjectableField;
@@ -61,10 +62,11 @@ public class XMLManagedBean<T> extends ManagedBean<T>
      * Creates new XML defined webbeans component.
      * 
      * @param returnType type of the webbeans component
+     * @param webBeansContext
      */
-    public XMLManagedBean(Class<T> returnType)
+    public XMLManagedBean(Class<T> returnType, WebBeansContext webBeansContext)
     {
-        super(returnType);
+        super(returnType, webBeansContext);
     }
 
     /*

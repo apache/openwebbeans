@@ -158,7 +158,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     protected InterceptorHandler(OwbBean<?> bean)
     {
         this.bean = bean;
-        this.webBeansContext = WebBeansContext.getInstance();
+        this.webBeansContext = bean.getWebBeansContext();
     }
 
     /**
@@ -240,7 +240,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         {
                             // We have interceptors and decorators, Our delegateHandler will need to be wrapped in an interceptor
                             WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
-                            decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor);
+                            decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor, webBeansContext);
                             decoratorInterceptorDataImpl.setDefinedInInterceptorClass(true);
                             decoratorInterceptorDataImpl.setAroundInvoke(SecurityUtil.doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
                         }

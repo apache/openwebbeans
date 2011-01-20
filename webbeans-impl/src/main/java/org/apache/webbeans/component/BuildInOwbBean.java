@@ -160,7 +160,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
     @SuppressWarnings("unchecked")
     protected BuildInOwbBean(WebBeansType webBeansType, Class<T> returnType)
     {
-        super(webBeansType, returnType);
+        super(webBeansType, returnType, WebBeansContext.getInstance());
         initBuildInBeanConfig(getWebBeansContext());
         this.handlerClassName = proxyHandlerMap.get(this.getWebBeansType());
         if (handlerClassName.equalsIgnoreCase(PROXY_HANDLER_VALUE_NONE) ||

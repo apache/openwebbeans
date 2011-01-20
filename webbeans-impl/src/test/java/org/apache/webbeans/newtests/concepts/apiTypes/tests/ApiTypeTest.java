@@ -25,6 +25,7 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.DefinitionUtil;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.concepts.apiTypes.common.ApiTypeBean;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class ApiTypeTest extends AbstractUnitTest
     @Test
     public void testApiType()
     {
-        ManagedBean<ApiTypeBean> bean = new ManagedBean<ApiTypeBean>(ApiTypeBean.class);
+        ManagedBean<ApiTypeBean> bean = new ManagedBean<ApiTypeBean>(ApiTypeBean.class, WebBeansContext.getInstance());
         DefinitionUtil.defineApiTypes(bean, ApiTypeBean.class);
         
         Set<Type> type = bean.getTypes();

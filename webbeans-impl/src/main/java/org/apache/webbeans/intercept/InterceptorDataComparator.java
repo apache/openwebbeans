@@ -30,6 +30,13 @@ public class InterceptorDataComparator implements Comparator<InterceptorData>, S
     /** default serial version */
     private static final long serialVersionUID = 1L;
 
+    private final WebBeansContext instance;
+
+    public InterceptorDataComparator(WebBeansContext webBeansContext)
+    {
+        instance = webBeansContext;
+    }
+
     /*
      * (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
@@ -64,7 +71,7 @@ public class InterceptorDataComparator implements Comparator<InterceptorData>, S
                 Class<?> o1Clazz = interceptorFirst.getClazz();
                 Class<?> o2Clazz = interceptorSecond.getClazz();
 
-                return WebBeansContext.getInstance().getInterceptorsManager().compare(o1Clazz, o2Clazz);
+                return instance.getInterceptorsManager().compare(o1Clazz, o2Clazz);
             }
 
         }

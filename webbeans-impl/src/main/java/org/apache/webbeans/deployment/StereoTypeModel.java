@@ -66,22 +66,23 @@ public class StereoTypeModel implements IStereoTypeModel
     /**
      * Creates a new instance of the stereotype model for
      * given class.
+     * @param webBeansContext
      * @param clazz stereotype type
      */
-    public StereoTypeModel(Class<? extends Annotation> clazz)
+    public StereoTypeModel(WebBeansContext webBeansContext, Class<? extends Annotation> clazz)
     {
-        this(clazz, clazz.getDeclaredAnnotations());
+        this(webBeansContext, clazz, clazz.getDeclaredAnnotations());
     }
     
-    public StereoTypeModel(Class<? extends Annotation> clazz, Annotation[] annotationDefs)
+    public StereoTypeModel(WebBeansContext webBeansContext, Class<? extends Annotation> clazz, Annotation[] annotationDefs)
     {
         this.name = clazz.getName();
-        
-        configAnnotations(clazz, annotationDefs);
+
+        configAnnotations(clazz, webBeansContext, annotationDefs);
         
     }
     
-    private void configAnnotations(Class<? extends Annotation> clazz, Annotation...annotations)
+    private void configAnnotations(Class<? extends Annotation> clazz, WebBeansContext webBeansContext, Annotation... annotations)
     {
         if(clazz.getAnnotation(Typed.class) != null)
         {
@@ -91,7 +92,7 @@ public class StereoTypeModel implements IStereoTypeModel
             }            
         }
 
-        final AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
         Annotation[] qualifiers = annotationManager.getQualifierAnnotations(annotations);
         
         if(qualifiers != null)

@@ -19,7 +19,6 @@
 package org.apache.webbeans.inject;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -30,15 +29,12 @@ import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetWrapper;
@@ -47,11 +43,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -72,13 +64,17 @@ public final class OWBInjector implements Serializable
     
     /**Underlying javaee instance*/
     private Object javaEEInstance;
-    
+
+    private final WebBeansContext webBeansContext;
+
     /**
      * Creates a new instance
+     * @param webBeansContext
      */
-    public OWBInjector()
+    public OWBInjector(WebBeansContext webBeansContext)
     {
         //No operation
+        this.webBeansContext = webBeansContext;
     }
     
     /**
@@ -102,7 +98,7 @@ public final class OWBInjector implements Serializable
     @SuppressWarnings("unchecked")
     public  OWBInjector inject(Object javaEeComponentInstance, CreationalContext<?> creationalContext) throws Exception
     {
-        BeanManagerImpl beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
+        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
         try
         {
             this.javaEEInstance = javaEeComponentInstance;
@@ -122,7 +118,7 @@ public final class OWBInjector implements Serializable
             }
             
             AnnotatedType<Object> annotated = (AnnotatedType<Object>) beanManager.createAnnotatedType(injectableComponentClass);
-            Set<InjectionPoint> injectionPoints = WebBeansAnnotatedTypeUtil.getJavaEeComponentInstanceInjectionPoints(annotated);
+            Set<InjectionPoint> injectionPoints = WebBeansAnnotatedTypeUtil.getJavaEeComponentInstanceInjectionPoints(webBeansContext, annotated);
             if(injectionPoints != null && injectionPoints.size() > 0)
             {
                 for(InjectionPoint injectionPoint : injectionPoints)
@@ -168,7 +164,7 @@ public final class OWBInjector implements Serializable
     @SuppressWarnings("unchecked")
     public void destroy()
     {
-        BeanManagerImpl beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
+        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
         
         //Look for custom InjectionTarget
         InjectionTargetWrapper<Object> wrapper = beanManager.getInjectionTargetWrapper((Class<Object>)javaEEInstance.getClass());
@@ -200,7 +196,9 @@ public final class OWBInjector implements Serializable
         Object object = null;
         
         //Injected contextual beam
-        Bean<?> injectedBean = (Bean<?>)InjectionResolver.getInstance().getInjectionPointBean(injectionPoint);                
+        InjectionResolver injectionResolver = beanManager.getInjectionResolver();
+
+        Bean<?> injectedBean = (Bean<?>) injectionResolver.getInjectionPointBean(injectionPoint);
         
         if(isInstanceProviderInjection(injectionPoint))
         {
@@ -324,56 +322,6 @@ public final class OWBInjector implements Serializable
         
         return false;
     }
-    
-    
-    /**
-     * JavaEE components can not inject {@link InjectionPoint}.
-     * @param clazz javaee component class info
-     * @throws exception if condition is not applied
-     */
-    public static void checkInjectionPointForInjectInjectionPoint(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
-        for(Field field : fields)
-        {
-            if(field.getAnnotation(Inject.class) != null)
-            {
-                if(field.getType() == InjectionPoint.class)
-                {
-                    Annotation[] anns = annotationManager.getQualifierAnnotations(
-                        field.getDeclaredAnnotations());
-                    if (AnnotationUtil.hasAnnotation(anns, Default.class))
-                    {
-                        throw new WebBeansConfigurationException("Java EE Component class :  " + clazz + " can not inject InjectionPoint");
-                    }                            
-                }                
-            }
-        }        
-    }
-    
-    /**
-     * Returns trur for serializable types.
-     * @param clazz class info
-     * @return true if class is serializable
-     */
-    public static boolean checkInjectionPointForInterceptorPassivation(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
-        for(Field field : fields)
-        {
-            if(field.getAnnotation(Inject.class) != null)
-            {
-                Class<?> type = field.getType();
-                if(!Serializable.class.isAssignableFrom(type))
-                {
-                    return false;
-                }
-            }
-        }
-        
-        return true;
-    }
+
+
 }

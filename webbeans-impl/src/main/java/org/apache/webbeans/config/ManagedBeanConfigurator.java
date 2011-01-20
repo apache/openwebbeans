@@ -95,7 +95,7 @@ public final class ManagedBeanConfigurator
     {
         try
         {
-            WebBeansContext.getInstance().getWebBeansUtil()._isManagedBeanClass(clazz);
+            WebBeansContext.getInstance().getWebBeansUtil().isManagedBeanClass(clazz);
 
         }
         catch (WebBeansConfigurationException e)
@@ -122,10 +122,10 @@ public final class ManagedBeanConfigurator
 
         checkManagedBeanCondition(clazz);
 
-        ManagedBean<T> component = new ManagedBean<T>(clazz, type);
+        ManagedBean<T> component = new ManagedBean<T>(clazz, type, webBeansContext);
         manager.putInjectionTargetWrapper(component, new InjectionTargetWrapper(new InjectionTargetProducer(component)));
 
-        webBeansContext.getWebBeansUtil()._setInjectionTargetBeanEnableFlag(component);
+        webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
 
         DefinitionUtil.defineSerializable(component);
         DefinitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());

@@ -84,7 +84,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
     {
         this.ejbBean = ejbBean;
 
-        if(ejbBean.getWebBeansContext().getWebBeansUtil()._isScopeTypeNormal(ejbBean.getScope()))
+        if(ejbBean.getWebBeansContext().getWebBeansUtil().isScopeTypeNormal(ejbBean.getScope()))
         {
             initiateBeanBag((OwbBean<Object>)ejbBean, (CreationalContext<Object>)creationalContext);
         }

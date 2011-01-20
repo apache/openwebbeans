@@ -40,10 +40,10 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     private BeanManagerImpl beanManager = null;
     private final WebBeansContext webBeansContext;
 
-    public BeforeBeanDiscoveryImpl()
+    public BeforeBeanDiscoveryImpl(WebBeansContext webBeansContext)
     {
-        webBeansContext = WebBeansContext.getInstance();
-        beanManager = webBeansContext.getBeanManagerImpl();
+        this.webBeansContext = webBeansContext;
+        beanManager = this.webBeansContext.getBeanManagerImpl();
     }
     
     /**
@@ -93,7 +93,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
         if (!webBeansContext.getxMLAnnotationTypeManager().hasStereoType(stereotype))
         {
             webBeansContext.getAnnotationManager().checkStereoTypeClass(stereotype, stereotypeDef);
-            StereoTypeModel model = new StereoTypeModel(stereotype, stereotypeDef);
+            StereoTypeModel model = new StereoTypeModel(webBeansContext, stereotype, stereotypeDef);
             webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
         }
         

@@ -83,12 +83,12 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
 
     public WebBeansInterceptor(AbstractInjectionTargetBean<T> delegateBean)
     {
-        super(WebBeansType.INTERCEPTOR,delegateBean.getReturnType());
+        super(WebBeansType.INTERCEPTOR,delegateBean.getReturnType(), delegateBean.getWebBeansContext());
         
         this.delegateBean = delegateBean;
         this.clazz = getDelegate().getReturnType();
 
-        webBeansContext = WebBeansContext.getInstance();
+        webBeansContext = delegateBean.getWebBeansContext();
     }
 
     public AbstractOwbBean<T> getDelegate()
@@ -217,7 +217,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
             if (anns != null && anns.length > 0)
             {
                 // For example : @Transactional @Action Interceptor
-                Set<Interceptor<?>> metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns);
+                Set<Interceptor<?>> metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns, webBeansContext);
                 set.addAll(metas);
 
                 // For each @Transactional and @Action Interceptor
@@ -225,7 +225,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
                 {
                     Annotation[] simple = new Annotation[1];
                     simple[0] = ann;
-                    metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(simple);
+                    metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(simple, webBeansContext);
                     set.addAll(metas);
                 }
 
@@ -278,7 +278,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         else
         {
             Class<? extends Annotation> interceptorTypeAnnotationClazz = InterceptorUtil.getInterceptorAnnotationClazz(type);
-            method = getWebBeansContext().getWebBeansUtil()._checkCommonAnnotationCriterias(getClazz(),
+            method = getWebBeansContext().getWebBeansUtil().checkCommonAnnotationCriterias(getClazz(),
                                                                                                      interceptorTypeAnnotationClazz,
                                                                                                      true);
         }

@@ -34,7 +34,6 @@ import javax.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.container.ResolutionUtil;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.OwbCustomObjectInputStream;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -93,10 +92,11 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         
         Set<Bean<?>> beans = resolveBeans();
 
-        ResolutionUtil.checkResolvedBeans(beans, ClassUtil.getClazz(this.injectionClazz),anns);
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getResolutionUtil().checkResolvedBeans(beans, ClassUtil.getClazz(this.injectionClazz), anns);
 
         Bean<?> bean = beans.iterator().next();
-        instance = (T) WebBeansContext.getInstance().getBeanManagerImpl().getInstance(bean,null);
+        instance = (T) webBeansContext.getBeanManagerImpl().getInstance(bean,null);
 
         return instance;
     }
@@ -111,7 +111,9 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         Annotation[] anns = new Annotation[this.qualifierAnnotations.size()];
         anns = this.qualifierAnnotations.toArray(anns);
 
-        InjectionResolver resolver = InjectionResolver.getInstance();
+        InjectionResolver injectionResolver = WebBeansContext.getInstance().getBeanManagerImpl().getInjectionResolver();
+
+        InjectionResolver resolver = injectionResolver;
         Set<Bean<?>> beans = resolver.implResolveByType(
                 this.injectionClazz,this.injectionPointClazz, anns);
         return beans;

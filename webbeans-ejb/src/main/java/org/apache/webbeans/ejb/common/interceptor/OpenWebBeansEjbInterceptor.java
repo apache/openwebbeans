@@ -300,10 +300,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         
         lifecycleCommon(context, InterceptorType.POST_CONSTRUCT);
 
-        if (WebBeansContext.getInstance().getOpenWebBeansConfiguration().isUseEJBInterceptorInjection())
+        if (webBeansContext.getOpenWebBeansConfiguration().isUseEJBInterceptorInjection())
         {
             Object instance = context.getTarget();
-            this.injector = new OWBInjector();
+            this.injector = new OWBInjector(webBeansContext);
             try
             {
                 this.injector.inject(instance, this.cc);
@@ -551,7 +551,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             if (delegateHandler != null)
             {
                 WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
-                decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor);
+                decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor, webBeansContext);
                 decoratorInterceptorDataImpl.setDefinedInInterceptorClass(true);
                 decoratorInterceptorDataImpl.setAroundInvoke(SecurityUtil.doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
                 filteredInterceptorStack.add(decoratorInterceptorDataImpl);

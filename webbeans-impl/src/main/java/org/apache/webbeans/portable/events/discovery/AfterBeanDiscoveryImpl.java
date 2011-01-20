@@ -53,10 +53,10 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(AfterBeanDiscoveryImpl.class);
     private final WebBeansContext webBeansContext;
 
-    public AfterBeanDiscoveryImpl()
+    public AfterBeanDiscoveryImpl(WebBeansContext webBeansContext)
     {
-        webBeansContext = WebBeansContext.getInstance();
-        this.beanManager = webBeansContext.getBeanManagerImpl();
+        this.webBeansContext = webBeansContext;
+        this.beanManager = this.webBeansContext.getBeanManagerImpl();
     }
     
     /**
@@ -76,7 +76,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         {
             //Required for custom interceptors
             ManagedBean managedBean =
-                webBeansContext.getWebBeansUtil()._defineManagedBeanWithoutFireEvents(
+                webBeansContext.getWebBeansUtil().defineManagedBeanWithoutFireEvents(
                     (AnnotatedType<?>) annotatedType);
             
             CustomInterceptor<?> interceptor = new CustomInterceptor(managedBean, (Interceptor<?>)bean);
@@ -112,7 +112,7 @@ public class AfterBeanDiscoveryImpl implements AfterBeanDiscovery
         {
             //Required for custom decorators
             ManagedBean managedBean =
-                webBeansContext.getWebBeansUtil()._defineManagedBeanWithoutFireEvents(
+                webBeansContext.getWebBeansUtil().defineManagedBeanWithoutFireEvents(
                     (AnnotatedType<?>) annotatedType);
             if(managedBean.getScope() != Dependent.class)
             {

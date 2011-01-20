@@ -51,31 +51,38 @@ import org.apache.webbeans.util.Asserts;
 
 public class InjectionPointFactory
 {
+    private final WebBeansContext webBeansContext;
+
+    public InjectionPointFactory(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
+    }
+
     /**
-     * 
+     *
      * @param owner
      * @param xmlInjectionModel
      * @return
      * @deprecated
      */
-    public static InjectionPoint getXMLInjectionPointData(Bean<?> owner, XMLInjectionPointModel xmlInjectionModel)
+    public InjectionPoint getXMLInjectionPointData(Bean<?> owner, XMLInjectionPointModel xmlInjectionModel)
     {
         Asserts.assertNotNull(owner, "owner parameter can not be null");
         Asserts.assertNotNull(xmlInjectionModel, "xmlInjectionModel parameter can not be null");
-        
+
         InjectionPoint injectionPoint = null;
-        
+
         Set<Annotation> setAnns = xmlInjectionModel.getAnnotations();
         Annotation[] anns = new Annotation[setAnns.size()];
         anns = setAnns.toArray(anns);
-        
+
         boolean available = true;
-        
+
         if(xmlInjectionModel.getType().equals(XMLInjectionModelType.FIELD))
         {
             if(checkFieldApplicable(anns))
             {
-               available = false; 
+               available = false;
             }
         }
         else if(xmlInjectionModel.getType().equals(XMLInjectionModelType.METHOD))
@@ -85,63 +92,63 @@ public class InjectionPointFactory
                 available = false;
             }
         }
-        
+
         if(available)
         {
             injectionPoint = getGenericInjectionPoint(owner, anns, xmlInjectionModel.getInjectionGenericType(), xmlInjectionModel.getInjectionMember(),null);
         }
-        
+
         return injectionPoint;
     }
 
-    public static InjectionPoint getFieldInjectionPointData(Bean<?> owner, Field member)
+    public InjectionPoint getFieldInjectionPointData(Bean<?> owner, Field member)
     {
         Asserts.assertNotNull(owner, "owner parameter can not be null");
         Asserts.assertNotNull(member, "member parameter can not be null");
 
         Annotation[] annots = null;
         annots = member.getAnnotations();
-        
+
         if(!checkFieldApplicable(annots))
         {
-            AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
-            
+            AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
+
             AnnotatedType<?> annotated = annotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
             return getGenericInjectionPoint(owner, annots, member.getGenericType(), member, annotatedElementFactory.newAnnotatedField(member, annotated));
-        }        
+        }
         else
         {
             return null;
         }
 
     }
-    
-    public static <X> InjectionPoint getFieldInjectionPointData(Bean<?> owner, AnnotatedField<X> annotField)
+
+    public <X> InjectionPoint getFieldInjectionPointData(Bean<?> owner, AnnotatedField<X> annotField)
     {
         Asserts.assertNotNull(owner, "owner parameter can not be null");
         Asserts.assertNotNull(annotField, "annotField parameter can not be null");
         Field member = annotField.getJavaMember();
 
         Annotation[] annots = AnnotationUtil.getAnnotationsFromSet(annotField.getAnnotations());
-        
+
         if(!checkFieldApplicable(annots))
         {
-            return getGenericInjectionPoint(owner, annots, annotField.getBaseType(), member, annotField);   
-        }        
+            return getGenericInjectionPoint(owner, annots, annotField.getBaseType(), member, annotField);
+        }
         else
         {
             return null;
         }
 
-    }    
-    
+    }
+
     private static boolean checkFieldApplicable(Annotation[] anns)
     {
 //        if(AnnotationUtil.isAnnotationExist(anns, Fires.class) || AnnotationUtil.isAnnotationExist(anns, Obtains.class))
 //        {
 //            return true;
 //        }
-     
+
         return false;
     }
 
@@ -154,13 +161,12 @@ public class InjectionPointFactory
      * @param annotated annotated instance of injection point
      * @return injection point instance
      */
-    private static InjectionPoint getGenericInjectionPoint(Bean<?> owner, Annotation[] annots, Type type, Member member,Annotated annotated)
+    private InjectionPoint getGenericInjectionPoint(Bean<?> owner, Annotation[] annots, Type type, Member member,Annotated annotated)
     {
         InjectionPointImpl injectionPoint = null;
 
-        Annotation[] qualifierAnnots =
-            WebBeansContext.getInstance().getAnnotationManager().getQualifierAnnotations(annots);
-        
+        Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(annots);
+
         //@Named update for injection fields!
         if(member instanceof Field)
         {
@@ -171,27 +177,27 @@ public class InjectionPointFactory
                 {
                     Named named = (Named)qualifier;
                     String value = named.value();
-                    
+
                     if(value == null || value.equals(""))
                     {
                         NamedLiteral namedLiteral = new NamedLiteral();
                         namedLiteral.setValue(member.getName());
                         qualifierAnnots[i] = namedLiteral;
                     }
-                    
+
                     break;
                 }
-            }            
-        }    
-        
-        
+            }
+        }
+
+
         injectionPoint = new InjectionPointImpl(owner, type, member, annotated);
-        
+
         if(AnnotationUtil.hasAnnotation(annots, Delegate.class))
         {
             injectionPoint.setDelegate(true);
         }
-        
+
         if(Modifier.isTransient(member.getModifiers()))
         {
             injectionPoint.setTransient(true);
@@ -204,20 +210,20 @@ public class InjectionPointFactory
     }
 
     @SuppressWarnings("unchecked")
-    public static List<InjectionPoint> getMethodInjectionPointData(Bean<?> owner, Method member)
+    public List<InjectionPoint> getMethodInjectionPointData(Bean<?> owner, Method member)
     {
         Asserts.assertNotNull(owner, "owner parameter can not be null");
         Asserts.assertNotNull(member, "member parameter can not be null");
 
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
 
-        AnnotatedElementFactory annotatedElementFactory = WebBeansContext.getInstance().getAnnotatedElementFactory();
+        AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
         AnnotatedType<?> annotated = annotatedElementFactory.newAnnotatedType(member.getDeclaringClass());
         AnnotatedMethod method = annotatedElementFactory.newAnnotatedMethod(member, annotated);
         List<AnnotatedParameter<?>> parameters = method.getParameters();
-        
+
         InjectionPoint point = null;
-        
+
         for(AnnotatedParameter<?> parameter : parameters)
         {
             //@Observes is not injection point type for method parameters
@@ -225,14 +231,14 @@ public class InjectionPointFactory
             {
                 point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]),
                                                  parameter.getBaseType(), member , parameter);
-                lists.add(point);                
-            }  
+                lists.add(point);
+            }
         }
-        
+
         return lists;
     }
-    
-    public static <X> List<InjectionPoint> getMethodInjectionPointData(Bean<?> owner, AnnotatedMethod<X> method)
+
+    public <X> List<InjectionPoint> getMethodInjectionPointData(Bean<?> owner, AnnotatedMethod<X> method)
     {
         Asserts.assertNotNull(owner, "owner parameter can not be null");
         Asserts.assertNotNull(method, "method parameter can not be null");
@@ -240,9 +246,9 @@ public class InjectionPointFactory
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
 
         List<AnnotatedParameter<X>> parameters = method.getParameters();
-        
+
         InjectionPoint point = null;
-        
+
         for(AnnotatedParameter<?> parameter : parameters)
         {
             //@Observes is not injection point type for method parameters
@@ -250,15 +256,15 @@ public class InjectionPointFactory
             {
                 point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]),
                                                  parameter.getBaseType(), method.getJavaMember() , parameter);
-                lists.add(point);                
-            }  
+                lists.add(point);
+            }
         }
-        
+
         return lists;
     }
-    
-    
-    
+
+
+
     private static boolean checkMethodApplicable(Annotation[] annot)
     {
         for (Annotation observersAnnot : annot)
@@ -268,26 +274,26 @@ public class InjectionPointFactory
                 return true;
             }
         }
-        
+
         return false;
-        
+
     }
 
     public static InjectionPoint getPartialInjectionPoint(Bean<?> owner,Type type, Member member, Annotated annotated, Annotation...bindings)
     {
         InjectionPointImpl impl = new InjectionPointImpl(owner,type,member,annotated);
-        
-        
+
+
         for(Annotation annot : bindings)
         {
             impl.addBindingAnnotation(annot);
         }
-        
+
         return impl;
-        
+
     }
-    
-    public static <T> List<InjectionPoint> getConstructorInjectionPointData(Bean<T> owner, AnnotatedConstructor<T> constructor)
+
+    public <T> List<InjectionPoint> getConstructorInjectionPointData(Bean<T> owner, AnnotatedConstructor<T> constructor)
     {
         Asserts.assertNotNull(owner, "owner parameter can not be null");
         Asserts.assertNotNull(constructor, "constructor parameter can not be null");
@@ -295,42 +301,41 @@ public class InjectionPointFactory
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
 
         List<AnnotatedParameter<T>> parameters = constructor.getParameters();
-        
+
         InjectionPoint point = null;
-        
+
         for(AnnotatedParameter<?> parameter : parameters)
         {
             point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]),
                                              parameter.getBaseType(), constructor.getJavaMember() , parameter);
             lists.add(point);
         }
-        
+
         return lists;
     }
-    
-    
+
+
     @SuppressWarnings("unchecked")
-    public static List<InjectionPoint> getConstructorInjectionPointData(Bean<?> owner, Constructor<?> member)
+    public List<InjectionPoint> getConstructorInjectionPointData(Bean<?> owner, Constructor<?> member)
     {
         Asserts.assertNotNull(owner, "owner parameter can not be null");
         Asserts.assertNotNull(member, "member parameter can not be null");
 
         List<InjectionPoint> lists = new ArrayList<InjectionPoint>();
 
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
         AnnotatedType<Object> annotated = (AnnotatedType<Object>) webBeansContext.getAnnotatedElementFactory().newAnnotatedType(member.getDeclaringClass());
         AnnotatedConstructor constructor = webBeansContext.getAnnotatedElementFactory().newAnnotatedConstructor((Constructor<Object>)member,annotated);
         List<AnnotatedParameter<?>> parameters = constructor.getParameters();
-        
+
         InjectionPoint point = null;
-        
+
         for(AnnotatedParameter<?> parameter : parameters)
         {
             point = getGenericInjectionPoint(owner, parameter.getAnnotations().toArray(new Annotation[parameter.getAnnotations().size()]),
                                              parameter.getBaseType(), member , parameter);
             lists.add(point);
         }
-        
+
         return lists;
     }
 
@@ -343,6 +348,6 @@ public class InjectionPointFactory
                 impl.addBindingAnnotation(ann);
             }
         }
-    }    
+    }
 
 }

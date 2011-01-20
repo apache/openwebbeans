@@ -64,7 +64,7 @@ public final class EventUtil
         WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(annotations);
     }
 
-    public static void checkEventBindings(Annotation... annotations)
+    public static void checkEventBindings(WebBeansContext webBeansContext, Annotation... annotations)
     {
         for(Annotation ann : annotations)
         {
@@ -78,7 +78,7 @@ public final class EventUtil
             ///////////////////////////////////////////////////////
 
         }
-        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(annotations);
+        webBeansContext.getAnnotationManager().checkQualifierConditions(annotations);
     }
 
     public static TransactionPhase getObserverMethodTransactionType(Method observerMethod)

@@ -48,7 +48,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
      */
     protected AbstractProducerBean(WebBeansType type, Class<T> returnType, InjectionTargetBean<?> ownerComponent)
     {
-        super(type, returnType);
+        super(type, returnType, ownerComponent.getWebBeansContext());
         this.ownerComponent = ownerComponent;
     }
 

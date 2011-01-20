@@ -97,7 +97,7 @@ public class LoggerSpecializationTest extends TestContext
         
         ArrayList<Class<?>> specialClassList = new ArrayList<Class<?>>();
         specialClassList.add(MockSpecializedLogger.class);
-        WebBeansContext.getInstance().getWebBeansUtil()._configureSpecializations(specialClassList);
+        WebBeansContext.getInstance().getWebBeansUtil().configureSpecializations(specialClassList);
 
         Bean<SpecializedInjector> bean = defineManagedBean(SpecializedInjector.class);
         Object instance = getManager().getReference(bean, SpecializedInjector.class, getManager().createCreationalContext(bean));

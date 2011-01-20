@@ -39,14 +39,19 @@ import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.Nonbinding;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.interceptor.InterceptorBinding;
+
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -811,4 +816,52 @@ public final class AnnotationManager
 
     }
 
+    /**
+     * JavaEE components can not inject {@link javax.enterprise.inject.spi.InjectionPoint}.
+     * @param clazz javaee component class info
+     * @throws WebBeansConfigurationException exception if condition is not applied
+     */
+    public void checkInjectionPointForInjectInjectionPoint(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
+        for(Field field : fields)
+        {
+            if(field.getAnnotation(Inject.class) != null)
+            {
+                if(field.getType() == InjectionPoint.class)
+                {
+                    Annotation[] anns = getQualifierAnnotations(field.getDeclaredAnnotations());
+                    if (AnnotationUtil.hasAnnotation(anns, Default.class))
+                    {
+                        throw new WebBeansConfigurationException("Java EE Component class :  " + clazz + " can not inject InjectionPoint");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns trur for serializable types.
+     * @param clazz class info
+     * @return true if class is serializable
+     */
+    public static boolean checkInjectionPointForInterceptorPassivation(Class<?> clazz)
+    {
+        Asserts.nullCheckForClass(clazz);
+        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
+        for(Field field : fields)
+        {
+            if(field.getAnnotation(Inject.class) != null)
+            {
+                Class<?> type = field.getType();
+                if(!Serializable.class.isAssignableFrom(type))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }

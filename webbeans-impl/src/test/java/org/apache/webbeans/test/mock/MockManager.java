@@ -56,8 +56,9 @@ public class MockManager implements BeanManager
     public MockManager()
     {
         WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
-        this.manager = WebBeansContext.getInstance().getBeanManagerImpl();
-        manager.addBean(WebBeansUtil.getManagerBean());
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        this.manager = webBeansContext.getBeanManagerImpl();
+        manager.addBean(webBeansContext.getWebBeansUtil().getManagerBean());
     }
 
 

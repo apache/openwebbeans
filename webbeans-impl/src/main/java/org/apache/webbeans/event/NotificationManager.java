@@ -96,7 +96,7 @@ public final class NotificationManager
     public <T> void removeObserver(ObserverMethod<T> observer, Class<T> eventType, Annotation... annotations)
     {
         EventUtil.checkEventType(eventType);
-        EventUtil.checkEventBindings(annotations);
+        EventUtil.checkEventBindings(webBeansContext, annotations);
 
         if (observers.containsKey(eventType))
         {
@@ -122,7 +122,7 @@ public final class NotificationManager
 
     public <T> Set<ObserverMethod<? super T>> resolveObservers(T event, Annotation... eventQualifiers)
     {
-        EventUtil.checkEventBindings(eventQualifiers);
+        EventUtil.checkEventBindings(webBeansContext, eventQualifiers);
 
         Set<Annotation> qualifiers = ArrayUtil.asSet(eventQualifiers);
 

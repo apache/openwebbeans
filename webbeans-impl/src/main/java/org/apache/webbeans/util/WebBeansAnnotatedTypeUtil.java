@@ -31,18 +31,13 @@ import org.apache.webbeans.component.ResourceBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
 import org.apache.webbeans.config.DefinitionUtil;
-import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
-import org.apache.webbeans.intercept.InterceptorUtil;
-import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.api.ResourceReference;
 
-import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -60,7 +55,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.interceptor.Interceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -150,7 +144,8 @@ public final class WebBeansAnnotatedTypeUtil
     
     public static <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, AnnotatedConstructor<T> constructor)
     {
-        List<InjectionPoint> injectionPoints = InjectionPointFactory.getConstructorInjectionPointData(owner, constructor);
+        InjectionPointFactory injectionPointFactory = owner.getWebBeansContext().getInjectionPointFactory();
+        List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(owner, constructor);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
             DefinitionUtil.addImplicitComponentForInjectionPoint(injectionPoint);
@@ -160,7 +155,7 @@ public final class WebBeansAnnotatedTypeUtil
     
     public static <T,X> void addMethodInjectionPointMetaData(OwbBean<T> owner, AnnotatedMethod<X> method)
     {
-        List<InjectionPoint> injectionPoints = InjectionPointFactory.getMethodInjectionPointData(owner, method);
+        List<InjectionPoint> injectionPoints = owner.getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(owner, method);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
             DefinitionUtil.addImplicitComponentForInjectionPoint(injectionPoint);
@@ -170,7 +165,7 @@ public final class WebBeansAnnotatedTypeUtil
     
     public static <T,X> void addFieldInjectionPointMetaData(AbstractOwbBean<T> owner, AnnotatedField<X> annotField)
     {
-        owner.addInjectionPoint(InjectionPointFactory.getFieldInjectionPointData(owner, annotField));        
+        owner.addInjectionPoint(owner.getWebBeansContext().getInjectionPointFactory().getFieldInjectionPointData(owner, annotField));
     }
     
     @SuppressWarnings("unchecked")
@@ -254,7 +249,9 @@ public final class WebBeansAnnotatedTypeUtil
                 Type type = AnnotationUtil.getAnnotatedMethodFirstParameterWithAnnotation(annotatedMethod, Disposes.class);
                 Annotation[] annot = annotationManager.getAnnotatedMethodFirstParameterQualifierWithGivenAnnotation(annotatedMethod, Disposes.class);
 
-                Set<Bean<?>> set = InjectionResolver.getInstance().implResolveByType(type, annot);
+                InjectionResolver injectionResolver = bean.getWebBeansContext().getBeanManagerImpl().getInjectionResolver();
+
+                Set<Bean<?>> set = injectionResolver.implResolveByType(type, annot);
                 if (set.isEmpty())
                 {
                     throwUnsatisfiedResolutionException(type, declaredMethod, annot);
@@ -451,13 +448,13 @@ public final class WebBeansAnnotatedTypeUtil
                     
                     DefinitionUtil.defineSerializable(producerFieldBean);
                     DefinitionUtil.defineStereoTypes(producerFieldBean, anns);
-                    webBeansContext.getWebBeansUtil()._setBeanEnableFlagForProducerBean(bean,
+                    webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
                                                                                                       producerFieldBean,
                                                                                                       anns);
                     Set<Type> types = annotatedField.getTypeClosure();
                     producerFieldBean.getTypes().addAll(types);
                     DefinitionUtil.defineScopeType(producerFieldBean, anns, "Annotated producer field: " + annotatedField +  "must declare default @Scope annotation");
-                    webBeansContext.getWebBeansUtil()._checkUnproxiableApiType(producerFieldBean,
+                    webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerFieldBean,
                                                                                              producerFieldBean.getScope());
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
                     DefinitionUtil.defineQualifiers(producerFieldBean, anns);
@@ -511,7 +508,7 @@ public final class WebBeansAnnotatedTypeUtil
                 
                 DefinitionUtil.defineSerializable(producerMethodBean);
                 DefinitionUtil.defineStereoTypes(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
-                webBeansContext.getWebBeansUtil()._setBeanEnableFlagForProducerBean(bean,
+                webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
                                                                                                   producerMethodBean,
                                                                                                   AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
 
@@ -520,7 +517,7 @@ public final class WebBeansAnnotatedTypeUtil
                 DefinitionUtil.defineScopeType(producerMethodBean,
                                                AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
                                                                                     "Annotated producer method : " + annotatedMethod +  "must declare default @Scope annotation");
-                webBeansContext.getWebBeansUtil()._checkUnproxiableApiType(producerMethodBean,
+                webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerMethodBean,
                                                                                          producerMethodBean.getScope());
                 WebBeansUtil.checkProducerGenericType(producerMethodBean,annotatedMethod.getJavaMember());
                 DefinitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
@@ -694,108 +691,15 @@ public final class WebBeansAnnotatedTypeUtil
                                                      + clazz.getName() + " can not annotated with annotation @Disposes");
         }                
     }
-     
-    /**
-     * Checks the implementation class for checking conditions.
-     * 
-     * @param type implementation class
-     * @throws WebBeansConfigurationException if any configuration exception occurs
-     */
-    public static <X> void checkManagedBeanCondition(AnnotatedType<X> type) throws WebBeansConfigurationException
-    {        
-        int modifier = type.getJavaClass().getModifiers();
 
-        if (type.isAnnotationPresent(Decorator.class) && type.isAnnotationPresent(Interceptor.class))
-        {
-            throw new WebBeansConfigurationException("Annotated type "+ type +  " may not annotated with both @Interceptor and @Decorator annotation");
-        }
-
-        if (!type.isAnnotationPresent(Decorator.class) && !type.isAnnotationPresent(Interceptor.class))
-        {
-            checkManagedWebBeansInterceptorConditions(type);
-        }
-
-        if (ClassUtil.isInterface(modifier))
-        {
-            throw new WebBeansConfigurationException("ManagedBean implementation class : " + type.getJavaClass().getName() + " may not defined as interface");
-        }
-    }
-    
-    public static <X> void checkManagedWebBeansInterceptorConditions(AnnotatedType<X> type)
-    {
-        Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(type.getAnnotations());
-
-        Class<?> clazz = type.getJavaClass();
-        boolean hasClassInterceptors = false;
-        AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
-        if (annotationManager.getInterceptorBindingMetaAnnotations(anns).length > 0)
-        {
-            hasClassInterceptors = true;
-        }
-        else
-        {
-            Annotation[] stereoTypes = annotationManager.getStereotypeMetaAnnotations(anns);
-            for (Annotation stero : stereoTypes)
-            {
-                if (annotationManager.hasInterceptorBindingMetaAnnotation(stero.annotationType().getDeclaredAnnotations()))
-                {
-                    hasClassInterceptors = true;
-                    break;
-                }
-            }
-        }
-         
-        if(ClassUtil.isFinal(clazz.getModifiers()) && hasClassInterceptors)
-        {
-            throw new WebBeansConfigurationException("Final managed bean class with name : " + clazz.getName() + " can not define any InterceptorBindings");
-        }
-        
-        Set<AnnotatedMethod<? super X>> methods = type.getMethods();
-        for(AnnotatedMethod<? super X> methodA : methods)
-        {
-            Method method = methodA.getJavaMember(); 
-            int modifiers = method.getModifiers();
-            if (!ClassUtil.isStatic(modifiers) && !ClassUtil.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
-            {
-                if (hasClassInterceptors)
-                {
-                    throw new WebBeansConfigurationException("Maanged bean class : " + clazz.getName()
-                                                    + " can not define non-static, non-private final methods. Because it is annotated with at least one @InterceptorBinding");
-                }
-
-                if (annotationManager.hasInterceptorBindingMetaAnnotation(
-                    AnnotationUtil.getAnnotationsFromSet(methodA.getAnnotations())))
-                {
-                    throw new WebBeansConfigurationException("Method : " + method.getName() + "in managed bean class : " + clazz.getName()
-                                                    + " can not be defined as non-static, non-private and final . Because it is annotated with at least one @InterceptorBinding");
-                }
-            }
-            
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> ManagedBean<T> defineAbstractDecorator(AnnotatedType<T> type)
-    {
-        
-        ManagedBean<T> bean = defineManagedBean(type);
-
-        //X TODO move proxy instance creation into JavassistProxyFactory!
-        Class clazz = WebBeansContext.getInstance().getJavassistProxyFactory().createAbstractDecoratorProxyClass(bean);
-
-        bean.setConstructor(WebBeansUtil.defineConstructor(clazz));
-        bean.setIsAbstractDecorator(true);
-        return bean;
-    }
-    
     /**
      * Gets injection points for the given javaee component annotated type.
-     * @param <T> component class type
-     * @param type annotated type for the class
-     * @return injection points of the java ee component class
+     * @param webBeansContext
+     *@param type annotated type for the class  @return injection points of the java ee component class
      * @throws IllegalArgumentException if any exception occurs
      */
-    public static <T> Set<InjectionPoint> getJavaEeComponentInstanceInjectionPoints(AnnotatedType<T> type) throws IllegalArgumentException
+    public static <T> Set<InjectionPoint> getJavaEeComponentInstanceInjectionPoints(WebBeansContext webBeansContext,
+                                                                                    AnnotatedType<T> type) throws IllegalArgumentException
     {
         try
         {
@@ -809,7 +713,7 @@ public final class WebBeansAnnotatedTypeUtil
                 Class<T> clazz = type.getJavaClass();
                 
                 //Just creating temporary for getting injected fields
-                ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);    
+                ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, webBeansContext);
                 managedBean.setAnnotatedType(type);
                             
                 AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(managedBean);            
@@ -830,181 +734,7 @@ public final class WebBeansAnnotatedTypeUtil
             throw new IllegalArgumentException(message, e);
         }
     }
-    
-    public static <T> ManagedBean<T>  defineManagedBean(AnnotatedType<T> type)
-    {
-        Class<T> clazz = type.getJavaClass();
-        
-        ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED);    
-        managedBean.setAnnotatedType(type);
-        AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(managedBean);            
-        managedBeanCreator.setAnnotatedType(type);
-        
-        managedBeanCreator.defineSerializable();
 
-        //Define meta-data
-        managedBeanCreator.defineStereoTypes();
-
-        //Scope type
-        managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName()
-                                           + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                        
-        //Check for Enabled via Alternative
-        WebBeansContext.getInstance().getWebBeansUtil()._setInjectionTargetBeanEnableFlag(managedBean);
-        managedBeanCreator.defineApiType();
-        managedBeanCreator.checkCreateConditions();
-        managedBeanCreator.defineQualifier();
-        managedBeanCreator.defineName(WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
-        managedBeanCreator.defineConstructor();            
-        managedBeanCreator.defineProducerMethods();       
-        managedBeanCreator.defineProducerFields();           
-        managedBeanCreator.defineInjectedFields();
-        managedBeanCreator.defineInjectedMethods();
-        managedBeanCreator.defineObserverMethods();
-        DefinitionUtil.defineDecoratorStack(managedBean);
-        DefinitionUtil.defineBeanInterceptorStack(managedBean);
-                                        
-        managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
-        
-        return managedBean;
-    }
-    
-    /**
-     * Return true if this annotated type represents a decorator.
-     * @param annotatedType annotated type
-     * @return true if decorator
-     */
-    public static boolean isAnnotatedTypeDecorator(AnnotatedType<?> annotatedType)
-    {
-        if(annotatedType.isAnnotationPresent(Decorator.class))
-        {
-            return true;
-        }
-        
-        return false;
-    }
-    
-    /**
-     * Return true if this annotated type represents a decorator.
-     * @param annotatedType annotated type
-     * @return true if decorator
-     */
-    public static boolean isAnnotatedTypeDecoratorOrInterceptor(AnnotatedType<?> annotatedType)
-    {
-        if(isAnnotatedTypeDecorator(annotatedType) ||
-                isAnnotatedTypeInterceptor(annotatedType))            
-        {
-            return true;
-        }
-        else if(WebBeansContext.getInstance().getInterceptorsManager().isInterceptorEnabled(annotatedType.getJavaClass()))
-        {
-            return true;
-        }
-        else if(WebBeansContext.getInstance().getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass()))
-        {
-            return true;
-        }
-
-        
-        return false;
-    }
-    
-    
-    /**
-     * Return true if this annotated type represents a decorator.
-     * @param annotatedType annotated type
-     * @return true if decorator
-     */
-    public static boolean isAnnotatedTypeInterceptor(AnnotatedType<?> annotatedType)
-    {
-        if(annotatedType.isAnnotationPresent(Interceptor.class))
-        {
-            return true;
-        }
-        
-        return false;
-    }
-    
-    
-    /**
-     * Define decorator bean.
-     * @param <T> type info
-     * @param annotatedType decorator class
-     */
-    public static <T> void defineDecorator(AnnotatedType<T> annotatedType)
-    {
-        if (WebBeansContext.getInstance().getDecoratorsManager().isDecoratorEnabled(annotatedType.getJavaClass()))
-        {
-            ManagedBean<T> delegate = null;
-            
-            Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
-            for(AnnotatedMethod<? super T> methodA : methods)
-            {
-                Method method = methodA.getJavaMember();
-                if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
-                {
-                    throw new WebBeansConfigurationException("Decorator class : " + annotatedType.getJavaClass() + " can not have producer methods but it has one with name : "
-                                                             + method.getName());
-                }
-                
-                if(AnnotationUtil.hasMethodParameterAnnotation(method, Observes.class))
-                {
-                    throw new WebBeansConfigurationException("Decorator class : " + annotatedType.getJavaClass() + " can not have observer methods but it has one with name : "
-                                                             + method.getName());
-                }
-                
-            }
-            
-            if(Modifier.isAbstract(annotatedType.getJavaClass().getModifiers()))
-            {
-                delegate = defineAbstractDecorator(annotatedType);
-            } 
-            else 
-            {
-                delegate = defineManagedBean(annotatedType);
-            }
-
-            if (delegate != null)
-            {
-                WebBeansDecoratorConfig.configureDecoratorClass(delegate);
-            }
-            else
-            {
-                if (logger.wblWillLogTrace())
-                {
-                    logger.trace("Unable to configure decorator with class : [{0}]", annotatedType.getJavaClass());
-                }
-            }
-        }
-    }
-    
-    public static <T> void defineInterceptor(AnnotatedType<T> annotatedType)
-    {
-        Class<?> clazz = annotatedType.getJavaClass();
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        if (webBeansContext.getInterceptorsManager().isInterceptorEnabled(clazz))
-        {
-            ManagedBean<T> delegate = null;
-
-            InterceptorUtil.checkAnnotatedTypeInterceptorConditions(annotatedType);
-            delegate = defineManagedBean(annotatedType);
-
-            if (delegate != null)
-            {
-                Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[0]);
-                AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-                WebBeansInterceptorConfig.configureInterceptorClass(delegate,
-                                                                    annotationManager.getInterceptorBindingMetaAnnotations(anns));
-            }
-            else
-            {
-                if (logger.wblWillLogTrace())
-                {
-                    logger.trace("Unable to configure interceptor with class : [{0}]", annotatedType.getJavaClass());
-                }
-            }
-        }
-
-    }
 
     @SuppressWarnings("unchecked")
     @Deprecated

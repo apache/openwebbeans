@@ -43,7 +43,6 @@ import org.apache.webbeans.test.component.event.normal.ComponentWithObserves5;
 import org.apache.webbeans.test.component.event.normal.ComponentWithObserves6;
 import org.apache.webbeans.test.component.event.normal.TransactionalInterceptor;
 import org.apache.webbeans.test.event.LoggedInEvent;
-import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -84,8 +83,8 @@ public class ObserversComponentTest extends TestContext
     public void testWithObservable()
     {
         clear();
-        
-        getManager().addBean(WebBeansUtil.getEventBean());
+
+        getManager().addBean(WebBeansContext.getInstance().getWebBeansUtil().getEventBean());
 
         AbstractOwbBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
         AbstractOwbBean<ComponentWithObservable1> componentObservable = defineManagedBean(ComponentWithObservable1.class);
@@ -104,8 +103,8 @@ public class ObserversComponentTest extends TestContext
     public void testObservesIfExists()
     {
         clear();
-        
-        getManager().addBean(WebBeansUtil.getEventBean());
+
+        getManager().addBean(WebBeansContext.getInstance().getWebBeansUtil().getEventBean());
 
         AbstractOwbBean<ComponentWithObserves3> component3 = defineManagedBean(ComponentWithObserves3.class);
         AbstractOwbBean<ComponentWithObserves4> component4 = defineManagedBean(ComponentWithObserves4.class);
@@ -139,7 +138,7 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
-        getManager().addBean(WebBeansUtil.getEventBean());
+        getManager().addBean(WebBeansContext.getInstance().getWebBeansUtil().getEventBean());
         
         AbstractOwbBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
         WebBeansContext.getInstance().getContextFactory().initRequestContext(null);
@@ -173,7 +172,7 @@ public class ObserversComponentTest extends TestContext
     {
         clear();
 
-        getManager().addBean(WebBeansUtil.getEventBean());
+        getManager().addBean(WebBeansContext.getInstance().getWebBeansUtil().getEventBean());
         
         AbstractOwbBean<ComponentWithObserves1> component = defineManagedBean(ComponentWithObserves1.class);
         WebBeansContext.getInstance().getContextFactory().initRequestContext(null);

@@ -87,7 +87,7 @@ public class CdiDefaultEjbInjector
      */
     public void injectDependenciesOfEjbInterceptor(Object ejbInstance, Object interceptorInstance, Object mapKey) throws Exception
     {
-        OWBInjector owbInjector = new OWBInjector();
+        OWBInjector owbInjector = new OWBInjector(webBeansContext);
         CreationalContextImpl<Object> cc = null;
         //Look for contextual ejb or not
         if(this.injectedContextuals.containsKey(mapKey))
@@ -188,7 +188,7 @@ public class CdiDefaultEjbInjector
      */
     private void injectDependenciesOfNonContextualEjb(Object instance, Object mapKey) throws Exception
     {
-        OWBInjector owbInjector = new OWBInjector();        
+        OWBInjector owbInjector = new OWBInjector(webBeansContext);
         CreationalContextImpl<Object> cc = (CreationalContextImpl<Object>)this.beanManager.createCreationalContext(null);
         owbInjector.inject(instance,cc);
         
