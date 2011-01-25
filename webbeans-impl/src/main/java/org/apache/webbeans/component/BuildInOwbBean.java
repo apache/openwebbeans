@@ -302,7 +302,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
             if(s.readLong() == serialVersionUID) 
             {
                 String id = (String)s.readObject();
-                WebBeansContext webBeansContext = WebBeansContext.getInstance();
+                WebBeansContext webBeansContext = WebBeansContext.currentInstance();
                 bean = (BuildInOwbBean<T>)webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
                 // create new real instance after deserialized.
                 actualObject = bean.createActualInstance(null);

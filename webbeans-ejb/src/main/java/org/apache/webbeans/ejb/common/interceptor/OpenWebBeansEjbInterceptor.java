@@ -679,7 +679,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         s.defaultReadObject();
 
         /* restore transient BeanManager */
-        this.webBeansContext = WebBeansContext.getInstance();
+        this.webBeansContext = WebBeansContext.currentInstance();
 
         if (logger.wblWillLogDebug())
         {

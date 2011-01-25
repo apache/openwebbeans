@@ -142,7 +142,8 @@ public class DependentCreationalContext<S> implements Serializable
         String id = (String) s.readObject();
         if (id != null)
         {
-            contextual = (Contextual<S>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
+            WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+            contextual = (Contextual<S>) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
         }
     }
 

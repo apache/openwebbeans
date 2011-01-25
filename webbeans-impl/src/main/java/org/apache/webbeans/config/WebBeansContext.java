@@ -123,6 +123,22 @@ public class WebBeansContext
         return webBeansContext;
     }
 
+    /**
+     * Method to be used when static use is truely unavoidable, such as serialization
+     *
+     * Ideally this method would never lazily create a WebBeansContext and as we don't
+     * want to do any deployment of new apps during deserialization, we want to rehydrate
+     * objects from an existing WebBeansContext which should be the active context.
+     *
+     * This method could throw a runtime exception if no instance currently exists. 
+     *
+     * @return
+     */
+    public static WebBeansContext currentInstance()
+    {
+        return getInstance();
+    }
+
     public <T> T getService(Class<T> clazz)
     {
         T t = clazz.cast(serviceMap.get(clazz));

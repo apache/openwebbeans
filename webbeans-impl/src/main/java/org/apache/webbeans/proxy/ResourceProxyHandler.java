@@ -94,7 +94,7 @@ public class ResourceProxyHandler implements MethodHandler, Serializable, Extern
             ClassNotFoundException 
     {
         String id = (String)in.readObject();
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
         bean = (ResourceBean) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
         ResourceInjectionService resourceInjectionService = webBeansContext.getService(ResourceInjectionService.class);
         actualResource = resourceInjectionService.readExternal(bean, in);

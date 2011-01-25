@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.spi.Contextual;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -57,6 +58,8 @@ public class SessionContext extends AbstractContext implements Serializable, Ext
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException 
     {
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
+
         this.type = (ContextTypes) in.readObject();
         this.scopeType = (Class<? extends Annotation>) in.readObject();
         Map<String, BeanInstanceBag<?>> map = (Map<String, BeanInstanceBag<?>>)in.readObject();
@@ -68,7 +71,7 @@ public class SessionContext extends AbstractContext implements Serializable, Ext
             String id = (String)it.next();
             if (id != null)
             {
-                contextual = (Contextual<?>) org.apache.webbeans.config.WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
+                contextual = (Contextual<?>) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
             }
             if (contextual != null) 
             {

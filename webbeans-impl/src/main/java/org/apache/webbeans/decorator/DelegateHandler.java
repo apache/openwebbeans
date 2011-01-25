@@ -230,7 +230,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
         {
             return;
         }
-        bean = (OwbBean<?>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
+        bean = (OwbBean<?>) WebBeansContext.currentInstance().getBeanManagerImpl().getPassivationCapableBean(id);
         actualBean = in.readObject();
         decorators = (List<Object>) in.readObject();
     }    

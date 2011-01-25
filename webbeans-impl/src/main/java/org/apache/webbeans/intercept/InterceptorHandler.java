@@ -365,7 +365,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     {
         if(s.readLong() == serialVersionUID)
         {
-            this.webBeansContext = WebBeansContext.getInstance();
+            this.webBeansContext = WebBeansContext.currentInstance();
             String passivationId = (String) s.readObject();
             if (passivationId != null)
             {

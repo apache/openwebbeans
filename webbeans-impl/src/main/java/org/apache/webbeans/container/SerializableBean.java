@@ -159,7 +159,7 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
     throws IOException, ClassNotFoundException
     {
         String id = (String) s.readObject();
-        Bean<T> b = (Bean<T>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
+        Bean<T> b = (Bean<T>) WebBeansContext.currentInstance().getBeanManagerImpl().getPassivationCapableBean(id);
         if (b == null)
         {
             throw new DeploymentException("cannot deserialize Bean with PassivationCapable id=" + id);

@@ -208,7 +208,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
 
         Class<?> beanClass = (Class<?>)in.readObject();
         Set<Annotation> anns = new HashSet<Annotation>();
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        WebBeansContext webBeansContext = WebBeansContext.currentInstance();
         AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
 
         while(!in.readObject().equals(new Character('~')))   // read throw-away '-' or '~' terminal delimiter.
