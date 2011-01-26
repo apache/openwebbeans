@@ -53,13 +53,16 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
     /**When bean object is destroyed it is set*/
     public static ThreadLocal<Object> currentRemoveObject = new ThreadLocal<Object>();
-    
+
+    private WebBeansContext webBeansContext;
+
     /**
      * Package private
      */
-    CreationalContextImpl(Contextual<T> contextual)
+    CreationalContextImpl(Contextual<T> contextual, WebBeansContext webBeansContext)
     {
         this.contextual = contextual;
+        this.webBeansContext = webBeansContext;
     }
     
     /**
@@ -288,7 +291,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
         if(values != null)
         {
-            final CreationalContextFactory contextFactory = WebBeansContext.getInstance().getCreationalContextFactory();
+            final CreationalContextFactory contextFactory = webBeansContext.getCreationalContextFactory();
             Iterator<?> iterator = values.iterator();        
             while(iterator.hasNext())
             {
@@ -317,7 +320,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     @SuppressWarnings("unchecked")
     public void removeAllDependents()
     {
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        WebBeansContext webBeansContext = this.webBeansContext;
         Collection<List<DependentCreationalContext<?>>> values = this.dependentObjects.values();
         if(values != null)
         {
@@ -418,13 +421,14 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private synchronized void readObject(ObjectInputStream s)
     throws IOException, ClassNotFoundException
     {
+        this.webBeansContext = WebBeansContext.currentInstance();
         HashMap<Object, List<DependentCreationalContext<?>>> depo = (HashMap<Object, List<DependentCreationalContext<?>>>)s.readObject();
         dependentObjects = new WeakHashMap<Object, List<DependentCreationalContext<?>>>(depo);
 
         String id = (String) s.readObject();
         if (id != null)
         {
-            contextual = (Contextual<T>) WebBeansContext.getInstance().getBeanManagerImpl().getPassivationCapableBean(id);
+            contextual = (Contextual<T>) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
         }
                 
         ejbInterceptors = (ConcurrentMap<Object, List<EjbInterceptorContext>>) s.readObject();

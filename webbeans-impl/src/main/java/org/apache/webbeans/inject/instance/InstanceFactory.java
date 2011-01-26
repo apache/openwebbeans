@@ -23,6 +23,8 @@ import java.lang.reflect.Type;
 
 import javax.enterprise.inject.Instance;
 
+import org.apache.webbeans.config.WebBeansContext;
+
 public final class InstanceFactory
 {
     private InstanceFactory()
@@ -34,12 +36,14 @@ public final class InstanceFactory
      * 
      * @param injectedType injection class type
      * @param injectionPointClass null or the class of the injection point
+     * @param webBeansContext
      * @param annotations qualifier annotations
      * @return
      */
-    public static <T> Instance<T> getInstance(Type injectedType, Class<?> injectionPointClass,Annotation...annotations)
+    public static <T> Instance<T> getInstance(Type injectedType, Class<?> injectionPointClass,
+                                              WebBeansContext webBeansContext, Annotation... annotations)
     {
-        InstanceImpl<T> instance = new InstanceImpl<T>(injectedType,injectionPointClass, annotations);   
+        InstanceImpl<T> instance = new InstanceImpl<T>(injectedType,injectionPointClass, webBeansContext, annotations);
         
         return instance;
     }

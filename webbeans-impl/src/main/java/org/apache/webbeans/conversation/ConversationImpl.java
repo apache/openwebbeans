@@ -68,14 +68,22 @@ public class ConversationImpl implements Conversation, Serializable
     /**This instance is under used*/
     private AtomicBoolean inUsed = new AtomicBoolean(false);
 
+    private WebBeansContext webBeansContext;
+
     /**
      * Default constructor. Used in tests.
      */
     public ConversationImpl()
     {
+        this(WebBeansContext.getInstance());
+    }
+    
+    public ConversationImpl(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
         try
         {
-            this.timeout = Long.parseLong(WebBeansContext.getInstance().getOpenWebBeansConfiguration().
+            this.timeout = Long.parseLong(this.webBeansContext.getOpenWebBeansConfiguration().
                     getProperty(OpenWebBeansConfiguration.CONVERSATION_TIMEOUT_INTERVAL, "1800000"));   
         }
         catch(NumberFormatException e)
@@ -88,14 +96,17 @@ public class ConversationImpl implements Conversation, Serializable
      * Creates a new conversation instance. Id is not
      * set until conversation is begin.
      * @param sessionId
+     * @param webBeansContext
      */
-    public ConversationImpl(String sessionId)
+    public ConversationImpl(String sessionId, WebBeansContext webBeansContext)
     {
         Asserts.assertNotNull(sessionId);
-        
+
+        this.webBeansContext = webBeansContext;
+
         try
         {
-            this.timeout = Long.parseLong(WebBeansContext.getInstance().getOpenWebBeansConfiguration().
+            this.timeout = Long.parseLong(this.webBeansContext.getOpenWebBeansConfiguration().
                     getProperty(OpenWebBeansConfiguration.CONVERSATION_TIMEOUT_INTERVAL, "1800000"));   
         }
         catch(NumberFormatException e)
@@ -104,6 +115,7 @@ public class ConversationImpl implements Conversation, Serializable
         }
         
         this.sessionId = sessionId;
+        this.webBeansContext = WebBeansContext.getInstance();
     }
     
     /**
@@ -119,7 +131,7 @@ public class ConversationImpl implements Conversation, Serializable
             this.id = Integer.toString(conversationIdGenerator.incrementAndGet());
             
             //Conversation manager
-            WebBeansContext webBeansContext = WebBeansContext.getInstance();
+            WebBeansContext webBeansContext = this.webBeansContext;
             ConversationManager manager = webBeansContext.getConversationManager();
             try
             {
@@ -150,7 +162,7 @@ public class ConversationImpl implements Conversation, Serializable
     public void begin(String id)
     {   
         //Look at other conversation, that may collate with this is
-        final WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        final WebBeansContext webBeansContext = this.webBeansContext;
         final ConversationManager conversationManager = webBeansContext.getConversationManager();
         if(conversationManager.isConversationExistWithGivenId(id))
         {
@@ -177,7 +189,7 @@ public class ConversationImpl implements Conversation, Serializable
         {
             this.isTransient = true;
 
-            WebBeansContext.getInstance().getConversationManager().removeConversation(this);
+            webBeansContext.getConversationManager().removeConversation(this);
         }
         else
         {

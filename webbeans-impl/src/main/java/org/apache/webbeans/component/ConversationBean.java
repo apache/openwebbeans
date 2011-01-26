@@ -67,12 +67,13 @@ public class ConversationBean extends AbstractInjectionTargetBean<Conversation>
         {
             if(sessionId != null)
             {
-                conversation = new ConversationImpl(conversationService.getConversationSessionId());    
+                conversation = new ConversationImpl(conversationService.getConversationSessionId(),
+                                                    getWebBeansContext());
             }
             else
             {
                 //Used in Tests
-                conversation = new ConversationImpl();
+                conversation = new ConversationImpl(getWebBeansContext());
             }
             
         }

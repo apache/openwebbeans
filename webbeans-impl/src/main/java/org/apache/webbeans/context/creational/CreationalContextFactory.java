@@ -32,11 +32,15 @@ import org.apache.webbeans.config.WebBeansContext;
  */
 public final class CreationalContextFactory<T>
 {
+    private WebBeansContext webBeansContext;
+
     /**
      * Creates a new <code>CreationalContextFactory</code> instance.
+     * @param webBeansContext
      */
-    public CreationalContextFactory()
+    public CreationalContextFactory(WebBeansContext webBeansContext)
     {
+        this.webBeansContext = webBeansContext;
     }
 
     /**
@@ -59,12 +63,12 @@ public final class CreationalContextFactory<T>
      */
     public CreationalContext<T> getCreationalContext(Contextual<T> contextual)
     {        
-        return new CreationalContextImpl<T>(contextual);   
+        return new CreationalContextImpl<T>(contextual, webBeansContext);
     }        
     
     public CreationalContext<T> wrappedCreationalContext(CreationalContext<T> creationalContext, Contextual<T> contextual)
     {
-        return new WrappedCreationalContext<T>(contextual, creationalContext);
+        return new WrappedCreationalContext<T>(contextual, creationalContext, webBeansContext);
     }
     
 }

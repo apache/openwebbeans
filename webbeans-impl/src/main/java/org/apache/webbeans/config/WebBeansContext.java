@@ -67,7 +67,7 @@ public class WebBeansContext
     private AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory();
     private BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
     private ConversationManager conversationManager = new ConversationManager(this);
-    private CreationalContextFactory creationalContextFactory = new CreationalContextFactory();
+    private CreationalContextFactory creationalContextFactory = new CreationalContextFactory(this);
     private DecoratorsManager decoratorsManager = new DecoratorsManager(this);
     private ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private InterceptorsManager interceptorsManager = new InterceptorsManager(this);
@@ -329,7 +329,7 @@ public class WebBeansContext
 
     public <T> T get(Class<T> clazz)
     {
-        //util.Track.get(clazz);
+        util.Track.get(clazz);
         T object = clazz.cast(managerMap.get(clazz));
 
         /* No singleton for this application, create one */

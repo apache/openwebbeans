@@ -53,11 +53,13 @@ import org.apache.webbeans.spi.plugins.AbstractOwbJsfPlugin;
  *
  */
 public class WebBeansELResolver extends ELResolver
-{    
+{
+    private WebBeansContext webBeansContext;
 
     public WebBeansELResolver()
     {
 
+        webBeansContext = WebBeansContext.getInstance();
     }
     
     /**
@@ -97,7 +99,7 @@ public class WebBeansELResolver extends ELResolver
         //Check that application is OWB enabled
         //For JSF applications that are not
         //OWB enabled, no need to go with this resolver....
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        WebBeansContext webBeansContext = this.webBeansContext;
         
         AbstractOwbJsfPlugin jsfPlugin = webBeansContext.getPluginLoader().getJsfPlugin();
         

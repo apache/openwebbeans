@@ -51,7 +51,8 @@ public class InstanceBean<T> extends AbstractOwbBean<Provider<T>>
             ParameterizedType injectedType = (ParameterizedType)local.get().getType();
             Set<Annotation> qualifiers = local.get().getQualifiers();
             Instance<T> instance = InstanceFactory.getInstance(injectedType.getActualTypeArguments()[0], 
-                    (local.get().getBean() == null) ? null : local.get().getBean().getBeanClass(), 
+                    (local.get().getBean() == null) ? null : local.get().getBean().getBeanClass(),
+                    getWebBeansContext(), 
                             qualifiers.toArray(new Annotation[qualifiers.size()]));
             
             return instance;
