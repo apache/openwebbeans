@@ -329,7 +329,7 @@ public class WebBeansContext
 
     public <T> T get(Class<T> clazz)
     {
-        util.Track.get(clazz);
+        //util.Track.get(clazz);
         T object = clazz.cast(managerMap.get(clazz));
 
         /* No singleton for this application, create one */
