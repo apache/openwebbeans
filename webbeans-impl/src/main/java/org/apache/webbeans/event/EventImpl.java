@@ -164,6 +164,6 @@ public class EventImpl<T> implements Event<T>, Serializable
         this.eventType = (Type)inputStream.readObject();
         this.injectedBindings = (Annotation[])inputStream.readObject();
 
-        this.webBeansContext = WebBeansContext.getInstance();
+        this.webBeansContext = WebBeansContext.currentInstance();
     }
 }

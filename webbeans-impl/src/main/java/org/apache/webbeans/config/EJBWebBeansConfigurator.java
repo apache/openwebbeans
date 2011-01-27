@@ -35,12 +35,13 @@ public final class EJBWebBeansConfigurator
     /**
      * Returns true if given class is an deployed ejb bean class, false otherwise.
      * @param clazz bean class
+     * @param webBeansContext
      * @return true if given class is an deployed ejb bean class
      * @throws WebBeansConfigurationException if any exception occurs
      */
-    public static boolean isSessionBean(Class<?> clazz) throws WebBeansConfigurationException
+    public static boolean isSessionBean(Class<?> clazz, WebBeansContext webBeansContext) throws WebBeansConfigurationException
     {
-        PluginLoader loader = WebBeansContext.getInstance().getPluginLoader();
+        PluginLoader loader = webBeansContext.getPluginLoader();
         OpenWebBeansEjbPlugin ejbPlugin = loader.getEjbPlugin();
         
         //There is no ejb container
@@ -54,13 +55,15 @@ public final class EJBWebBeansConfigurator
     
     /**
      * Returns ejb bean.
+     * @param webBeansContext
      * @param <T> bean class info
      * @param clazz bean class
      * @return ejb bean
      */
-    public static <T> Bean<T> defineEjbBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent)
+    public static <T> Bean<T> defineEjbBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent,
+                                            WebBeansContext webBeansContext)
     {
-        PluginLoader loader = WebBeansContext.getInstance().getPluginLoader();
+        PluginLoader loader = webBeansContext.getPluginLoader();
         OpenWebBeansEjbPlugin ejbPlugin = loader.getEjbPlugin();
         
         if(ejbPlugin == null)

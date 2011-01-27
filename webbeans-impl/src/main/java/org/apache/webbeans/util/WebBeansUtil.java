@@ -653,7 +653,7 @@ public final class WebBeansUtil
             DefinitionUtil.defineInjectedFields(comp);
             DefinitionUtil.defineInjectedMethods(comp);
         }
-        else if (EJBWebBeansConfigurator.isSessionBean(clazz))
+        else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))
         {
             comp = new NewBean<T>(clazz, WebBeansType.ENTERPRISE, webBeansContext);
             comp.setImplScopeType(new DependentScopeLiteral());

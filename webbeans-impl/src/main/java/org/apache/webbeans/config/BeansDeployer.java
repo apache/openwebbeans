@@ -535,7 +535,7 @@ public class BeansDeployer
         // Try class is EJB bean
         if (!isDefined && this.discoverEjb)
         {
-            if (EJBWebBeansConfigurator.isSessionBean(implClass))
+            if (EJBWebBeansConfigurator.isSessionBean(implClass, webBeansContext))
             {
                 logger.debug("Found Enterprise Bean with class name : [{0}]", implClass.getName());
                 defineEnterpriseWebBean((Class<Object>) implClass, (ProcessAnnotatedTypeImpl<Object>) processAnnotatedEvent);
@@ -904,7 +904,8 @@ public class BeansDeployer
      */
     protected <T> void defineEnterpriseWebBean(Class<T> clazz, ProcessAnnotatedType<T> processAnnotatedTypeEvent)
     {
-        InjectionTargetBean<T> bean = (InjectionTargetBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz, processAnnotatedTypeEvent);
+        InjectionTargetBean<T> bean = (InjectionTargetBean<T>) EJBWebBeansConfigurator.defineEjbBean(clazz, processAnnotatedTypeEvent,
+                                                                                                     webBeansContext);
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(bean);
     }
 }
