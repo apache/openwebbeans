@@ -21,8 +21,10 @@ package org.apache.webbeans.resource.spi.ee;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.resource.spi.se.StandaloneResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
+import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.ejb.EJB;
 import javax.enterprise.inject.spi.Bean;
@@ -30,17 +32,31 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * Allows to use @EJB in JEE 5 app servers
  */
 public class ExtendedStandaloneResourceInjectionService extends StandaloneResourceInjectionService
 {
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(ExtendedStandaloneResourceInjectionService.class);
+
+    private List<EjbResolver> ejbResolvers = new ArrayList<EjbResolver>();
 
     public ExtendedStandaloneResourceInjectionService(WebBeansContext webBeansContext)
     {
         super(webBeansContext);
+
+        ServiceLoader<EjbResolver> ejbResolverServiceLoader =
+                ServiceLoader.load(EjbResolver.class, WebBeansUtil.getCurrentClassLoader());
+
+        for (EjbResolver ejbResolver : ejbResolverServiceLoader)
+        {
+            this.ejbResolvers.add(ejbResolver);
+        }
     }
 
     @Override
@@ -48,8 +64,28 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
     {
         if (resourceReference.supports(EJB.class))
         {
+            for (EjbResolver ejbResolver : this.ejbResolvers)
+            {
+                try
+                {
+                    X result = ejbResolver.resolve(resourceReference.getResourceType());
+                    if(result != null)
+                    {
+                        return result;
+                    }
+                }
+                catch (NamingException e)
+                {
+                    if(logger.wblWillLogDebug())
+                    {
+                        logger.debug(ejbResolver.getClass().getName()
+                                + " couldn't find EJB for " + resourceReference.getResourceType().getName());
+                    }
+                }
+            }
+            
             String jndiName = convertToJndiName(resourceReference.getResourceType());
-            X result = lookupRemoteEjb(jndiName, resourceReference.getResourceType());
+            X result = lookupEjb(jndiName, resourceReference.getResourceType());
 
             return result;
         }
@@ -57,12 +93,12 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
         return super.getResourceReference(resourceReference);
     }
 
-        private String convertToJndiName(Class resourceType)
+    private String convertToJndiName(Class resourceType)
     {
         return resourceType.getSimpleName() + "#" + resourceType.getName();
     }
 
-    private <X> X lookupRemoteEjb(String jndiName, Class<X> resourceType)
+    private <X> X lookupEjb(String jndiName, Class<X> resourceType)
     {
         try
         {
