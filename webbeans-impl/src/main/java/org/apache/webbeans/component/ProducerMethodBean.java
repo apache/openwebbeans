@@ -203,10 +203,13 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             ThreadLocal<Object> injectionTargetInstance = AbstractInjectable.instanceUnderInjection;
             if(isInjectionToAnotherBean)
             {
-                if(oldDependents == null && injectionTargetInstance != null)
+                if(oldDependents == null)
                 {
-                    ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance.get(),
-                                                                            this , instance);
+                    if (injectionTargetInstance != null && injectionTargetInstance.get() != null)
+                    {
+                        ((CreationalContextImpl)creationalContext).
+                                addDependent(injectionTargetInstance.get(), this , instance);
+                    }
                 }
                 else
                 {
@@ -226,8 +229,8 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                 {
                     for(DependentCreationalContext<Object> dependent : dependents)
                     {
-                        ((CreationalContextImpl)creationalContext).addDependent(instance, dependent.getContextual(),
-                                                                                dependent.getInstance());
+                        ((CreationalContextImpl)creationalContext).
+                                addDependent(instance, dependent.getContextual(), dependent.getInstance());
                     }
                 }
             }
@@ -243,10 +246,13 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
                     {
                         if(isInjectionToAnotherBean)
                         {
-                            if(oldDependents == null && injectionTargetInstance != null)
+                            if(oldDependents == null)
                             {
-                                ((CreationalContextImpl)creationalContext).addDependent(injectionTargetInstance.get(),
-                                                                                        this , instance);
+                                if (injectionTargetInstance != null && injectionTargetInstance.get() != null)
+                                {
+                                    ((CreationalContextImpl)creationalContext)
+                                            .addDependent(injectionTargetInstance.get(), this , instance);
+                                }
                             }
                             else
                             {
