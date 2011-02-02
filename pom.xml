@@ -660,15 +660,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.openwebbeans.build-tools</groupId>
-            <artifactId>checkstyle-rules</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        
-    </dependencies>
 
     <profiles>
         <profile>
