@@ -562,16 +562,24 @@ public class BeansDeployer
         {
             URL fileURL = it.next();
             String fileName = fileURL.getFile();
+
+            if (logger.wblWillLogDebug())
+            {
+                logger.debug("OpenWebBeans BeansDeployer configuring filename: " +
+                        fileName + " from URL: " + fileURL.toString());
+            }
+
             InputStream fis = null;
             try
             {
                 fis = fileURL.openStream();
-                
-                this.xmlConfigurator.configure(fis, fileName,scanner);
-            } 
+
+                this.xmlConfigurator.configure(fis, fileName, scanner);
+            }
             catch (IOException e)
             {
-                throw new WebBeansDeploymentException(e);
+                throw new WebBeansDeploymentException("Error configuring: filename: " +
+                        fileName + " from fileURL: " + fileURL.toString(), e);
             }
             finally
             {
@@ -589,9 +597,11 @@ public class BeansDeployer
             }
         }
 
-        logger.debug("Deploying configurations from XML has ended successfully.");
+        if(logger.wblWillLogDebug())
+        {
+            logger.debug("Deploying configurations from XML has ended successfully.");
+        }
     }
-    
 
     /**
      * Checks specialization.
