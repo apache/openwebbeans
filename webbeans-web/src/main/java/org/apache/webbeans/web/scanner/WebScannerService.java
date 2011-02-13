@@ -111,19 +111,37 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                 {
                     fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/META-INF/beans.xml";
 
-                    //fix for weblogic
-                    if (!fileDir.startsWith("file:/"))
+                    //fix for weblogic and solaris
+                    if (!fileDir.startsWith("file:///"))
                     {
-                        fileDir = "file:/" + fileDir;
+                        fileDir = "file:///" + fileDir;
                         //TODO switch to a more stable approach
                         //url = new URL("jar:" + fileDir);
                     }
 
+                    if (logger.wblWillLogDebug())
+                    {
+                        logger.debug("OpenWebBeans found the following url while doing web scanning: " + fileDir);
+                    }
+
                     addPath = new URL("jar:" + fileDir);
+
+                    if (logger.wblWillLogDebug())
+                    {
+                        logger.debug("OpenWebBeans added the following jar based path while doing web scanning: " +
+                                addPath.toString());
+                    }
                 }
                 else
                 {
                     addPath = new URL("file:" + url.getFile() + "META-INF/beans.xml");
+
+                    if (logger.wblWillLogDebug())
+                    {
+                        logger.debug("OpenWebBeans added the following file based path while doing web scanning: " +
+                                addPath.toString());
+                    }
+
                 }
 
                 listURL.add(url);
