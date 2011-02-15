@@ -129,7 +129,8 @@ public class ConversationImpl implements Conversation, Serializable
         {
             this.isTransient = false;
             this.id = Integer.toString(conversationIdGenerator.incrementAndGet());
-            
+            this.updateTimeOut();
+
             //Conversation manager
             WebBeansContext webBeansContext = this.webBeansContext;
             ConversationManager manager = webBeansContext.getConversationManager();
