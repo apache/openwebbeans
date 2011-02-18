@@ -1032,7 +1032,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             set = this.injectionResolver.findBySpecialization(set);
         }
         
-        if(set.size() > 0 && set.size() > 1)
+        if(set.size() > 1)
         {
             throwAmbiguousResolutionException(set);
         }
