@@ -72,9 +72,10 @@ public class InvocationContextImpl implements InvocationContext
     private Object ccKey;
     
     /**
-     * Initializes the context.
-     * 
-     * @param target target object
+     * Initializes the invocation context.
+     *
+     * @param bean the Bean meta info
+     * @param instance target object
      * @param method method
      * @param parameters method parameters
      * @param datas interceptor stack
@@ -371,6 +372,10 @@ public class InvocationContextImpl implements InvocationContext
             else if (type.equals(InterceptorType.PRE_DESTROY))
             {
                 method = intc.getPreDestroy();
+            }
+            else
+            {
+                throw new IllegalArgumentException("Unsupportet InterceptorType: " + type);
             }
 
             if (!method.isAccessible())
