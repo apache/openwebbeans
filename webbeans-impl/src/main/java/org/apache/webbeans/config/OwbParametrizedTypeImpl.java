@@ -54,7 +54,7 @@ public class OwbParametrizedTypeImpl implements ParameterizedType
     @Override
     public Type[] getActualTypeArguments()
     {
-        return this.types.toArray(new Type[0]);
+        return types.toArray(new Type[types.size()]);
     }
     
     public void addTypeArgument(Type type)

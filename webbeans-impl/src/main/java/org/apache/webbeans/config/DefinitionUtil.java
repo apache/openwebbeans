@@ -1182,7 +1182,8 @@ public final class DefinitionUtil
     private static <X> void createProducerBeansFromAnnotatedType(InjectionTargetBean<X> bean, Set<ProducerMethodBean<?>> producerComponents,
                                                                  AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
     {
-        Annotation[] anns = annotatedMethod.getAnnotations().toArray(new Annotation[0]);
+        Set<Annotation> annSet = annotatedMethod.getAnnotations();
+        Annotation[] anns = annSet.toArray(new Annotation[annSet.size()]);
         
         List<AnnotatedParameter<X>> parameters = annotatedMethod.getParameters();
         // Producer Method
@@ -1190,7 +1191,8 @@ public final class DefinitionUtil
         {
             for(AnnotatedParameter<X> parameter : parameters)
             {
-                Annotation[] parameterAnns = parameter.getAnnotations().toArray(new Annotation[0]);
+                Set<Annotation> paramAnnSet = parameter.getAnnotations();
+                Annotation[] parameterAnns = paramAnnSet.toArray(new Annotation[parameter.getAnnotations().size()]);
                 if (AnnotationUtil.hasAnnotation(anns, Inject.class) ||
                     AnnotationUtil.hasAnnotation(parameterAnns, Disposes.class) ||
                     AnnotationUtil.hasAnnotation(parameterAnns, Observes.class))
@@ -1240,7 +1242,8 @@ public final class DefinitionUtil
             bean.setNullable(false);
         }
 
-        Annotation[] anns = method.getAnnotations().toArray(new Annotation[0]);
+        Set<Annotation> annSet = method.getAnnotations();
+        Annotation[] anns = annSet.toArray(new Annotation[annSet.size()]);
         
         defineSerializable(bean);
         defineStereoTypes(bean, anns);
