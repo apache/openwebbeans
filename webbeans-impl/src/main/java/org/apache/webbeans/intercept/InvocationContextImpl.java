@@ -378,6 +378,11 @@ public class InvocationContextImpl implements InvocationContext
                 throw new IllegalArgumentException("Unsupportet InterceptorType: " + type);
             }
 
+            if (method == null)
+            {
+                throw new IllegalArgumentException("Could not find intercepted Method!");
+            }
+
             if (!method.isAccessible())
             {
                 SecurityUtil.doPrivilegedSetAccessible(method, true);                

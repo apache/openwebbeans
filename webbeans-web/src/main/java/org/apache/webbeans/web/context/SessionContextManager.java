@@ -98,9 +98,9 @@ public class SessionContextManager
             {
                 sessionContext.destroy();
             }
-        }
-        
+
         //Clear map
         sessionContexts.clear();
+        }
     }
 }
