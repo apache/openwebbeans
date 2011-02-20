@@ -972,7 +972,7 @@ public final class WebBeansUtil
                         clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
                     }
 
-                    Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
+                    Class<?>[] params = clazzParameters.toArray(new Class<?>[clazzParameters.size()]);
                     if (params.length != 1 || !params[0].equals(InvocationContext.class))
                     {
                         throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
@@ -1120,7 +1120,7 @@ public final class WebBeansUtil
                     clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
                 }
 
-                Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
+                Class<?>[] params = clazzParameters.toArray(new Class<?>[clazzParameters.size()]);
 
                 if (params.length != 1 || !params[0].equals(InvocationContext.class))
                 {
@@ -3204,7 +3204,8 @@ public final class WebBeansUtil
 
             if (delegate != null)
             {
-                Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[0]);
+                Set<Annotation> annTypeSet = annotatedType.getAnnotations();
+                Annotation[] anns = annTypeSet.toArray(new Annotation[annTypeSet.size()]);
                 AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
                 WebBeansInterceptorConfig.configureInterceptorClass(delegate,
                                                                     annotationManager.getInterceptorBindingMetaAnnotations(anns));

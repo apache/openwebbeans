@@ -1907,7 +1907,7 @@ public final class ClassUtil
             }
         }
 
-        return fieldsWithType.toArray(new Field[0]);
+        return fieldsWithType.toArray(new Field[fieldsWithType.size()]);
 
     }
     
