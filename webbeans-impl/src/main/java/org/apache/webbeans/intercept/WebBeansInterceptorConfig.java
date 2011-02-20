@@ -155,7 +155,7 @@ public final class WebBeansInterceptorConfig
         Annotation[] typeAnns = null;
         if(annotations != null)
         {
-            typeAnns = annotations.toArray(new Annotation[0]);
+            typeAnns = annotations.toArray(new Annotation[annotations.size()]);
         }
         else
         {
@@ -409,7 +409,7 @@ public final class WebBeansInterceptorConfig
             set.add(m);
         }
 
-        methods = set.toArray(new Method[0]);
+        methods = set.toArray(new Method[set.size()]);
 
         for (Method method : methods)
         {

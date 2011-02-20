@@ -170,7 +170,7 @@ public final class InterceptorUtil
                             clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
                         }
 
-                        Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
+                        Class<?>[] params = clazzParameters.toArray(new Class<?>[clazzParameters.size()]);
                         if (params.length == 1 && params[0].equals(InvocationContext.class))
                         {
                             if (ClassUtil.getReturnType(method.getJavaMember()).equals(Object.class))
@@ -280,7 +280,7 @@ public final class InterceptorUtil
                             clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
                         }
 
-                        Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
+                        Class<?>[] params = clazzParameters.toArray(new Class<?>[clazzParameters.size()]);
                         if (params.length == 1 && params[0].equals(InvocationContext.class))
                         {
                             if (ClassUtil.getReturnType(method.getJavaMember()).equals(Void.TYPE))
@@ -316,7 +316,8 @@ public final class InterceptorUtil
 
         }
 
-        Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[0]);
+        Set<Annotation> annSet = annotatedType.getAnnotations();
+        Annotation[] anns = annSet.toArray(new Annotation[annSet.size()]);
         if (!webBeansContext.getAnnotationManager().hasInterceptorBindingMetaAnnotation(anns))
         {
             throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass().getName()
