@@ -140,12 +140,12 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         Set<Annotation> qualifiers = this.ownerBean.getQualifiers();
         for(Annotation qualifier : qualifiers)
         {
-            out.writeObject(new Character('-')); // throw-away delimiter so alternating annotations don't get swallowed in the read.
+            out.writeObject(Character.valueOf('-')); // throw-away delimiter so alternating annotations don't get swallowed in the read.
             out.writeObject(qualifier);
             
         }
         
-        out.writeObject(new Character('~'));
+        out.writeObject(Character.valueOf('~'));
         
         if(this.injectionMember instanceof Field)
         {
@@ -211,7 +211,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         WebBeansContext webBeansContext = WebBeansContext.currentInstance();
         AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
 
-        while(!in.readObject().equals(new Character('~')))   // read throw-away '-' or '~' terminal delimiter.
+        while(!in.readObject().equals(Character.valueOf('~')))   // read throw-away '-' or '~' terminal delimiter.
         {
             Annotation ann = (Annotation) in.readObject();  // now read the annotation.
             anns.add(ann);

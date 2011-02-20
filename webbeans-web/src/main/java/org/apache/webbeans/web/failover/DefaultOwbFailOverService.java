@@ -241,14 +241,7 @@ public class DefaultOwbFailOverService implements FailOverService
         }
         return NOT_HANDLED;
     }
-    
-    private static void verifyTest(FailOverBagWrapper bagWrapper) 
-    {        //test code
-        byte[] bytes = getBytes(bagWrapper);
-        FailOverBagWrapper bagWrapper3 = (FailOverBagWrapper)getObject(bytes);
-        System.out.println(bagWrapper3);
-    }
-    
+
     private static byte[] getBytes(Object obj) 
     {
         ByteArrayOutputStream baos = null;
