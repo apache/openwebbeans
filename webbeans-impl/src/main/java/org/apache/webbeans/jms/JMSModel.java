@@ -57,7 +57,7 @@ public class JMSModel
     
     public Annotation[] getBindings()
     {
-        return bindings.toArray(new Annotation[0]);
+        return bindings.toArray(new Annotation[bindings.size()]);
     }
 
     /**

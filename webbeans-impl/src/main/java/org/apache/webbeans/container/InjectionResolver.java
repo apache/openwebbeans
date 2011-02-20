@@ -225,8 +225,9 @@ public class InjectionResolver
         {
             clazz = (Class<?>) type;
         }
-        
-        Annotation[] qualifiers = injectionPoint.getQualifiers().toArray(new Annotation[0]);        
+
+        Set<Annotation> qualSet = injectionPoint.getQualifiers();
+        Annotation[] qualifiers = qualSet.toArray(new Annotation[qualSet.size()]);
         if(isInstanceOrEventInjection(type))
         {
             qualifiers = new Annotation[1];
