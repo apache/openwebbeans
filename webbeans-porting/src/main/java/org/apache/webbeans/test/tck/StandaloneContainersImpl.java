@@ -83,7 +83,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
             this.lifeCycle.startApplication(null);
 
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             e.printStackTrace();
             this.excpetion = new DeploymentException("Standalone Container Impl.", e);
@@ -116,7 +116,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
                         EjbPlugin plugin = (EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
                         plugin.setUseInTest(true);
                     }
-                    catch (Throwable e)
+                    catch (Exception e)
                     {
                         // Not worry
                     }
@@ -138,7 +138,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
             this.lifeCycle.startApplication(null);
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             e.printStackTrace();
             this.excpetion = new DeploymentException("Standalone Container Impl.", e);
