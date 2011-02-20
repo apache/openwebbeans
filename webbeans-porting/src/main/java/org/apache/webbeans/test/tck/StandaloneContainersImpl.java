@@ -48,12 +48,16 @@ import org.apache.openejb.jee.StatelessBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.EjbPlugin;
 import org.apache.webbeans.lifecycle.StandaloneLifeCycle;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.test.tck.mock.TCKMetaDataDiscoveryImpl;
 import org.jboss.testharness.api.DeploymentException;
 import org.jboss.testharness.spi.StandaloneContainers;
 
 public class StandaloneContainersImpl implements StandaloneContainers
 {
+    /**Logger instance*/
+    private  final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneContainersImpl.class);
+
     private StandaloneLifeCycle lifeCycle = null;
 
     private DeploymentException excpetion;
@@ -85,7 +89,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(e);
             this.excpetion = new DeploymentException("Standalone Container Impl.", e);
             throw this.excpetion;
         }
@@ -140,7 +144,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(e);
             this.excpetion = new DeploymentException("Standalone Container Impl.", e);
 
             return false;
@@ -171,7 +175,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
                 EjbPlugin plugin = (EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
                 plugin.setUseInTest(false);
             }
-            catch (Throwable e)
+            catch (Exception e)
             {
                 // Not worry
             }
@@ -202,11 +206,19 @@ public class StandaloneContainersImpl implements StandaloneContainers
     @Override
     public boolean deploy(Collection<Class<?>> classes, Collection<URL> xmls)
     {
-        setUp(classes);
+        if (!setUp(classes))
+        {
+            return false;
+        }
+
         return deployInternal(classes, xmls);
     }
 
-    private void setUp(Collection<Class<?>> classes)
+    /**
+     * @param classes
+     * @return <code>true</code> if the setup succeed, <code>false</code> otherwise.
+     */
+    private boolean setUp(Collection<Class<?>> classes)
     {
 
         try
@@ -231,21 +243,20 @@ public class StandaloneContainersImpl implements StandaloneContainers
             properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, InitContextFactory.class.getName());
             new InitialContext(properties);
 
-            try
+            EjbPlugin plugin = (EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
+            if (plugin != null)
             {
-                EjbPlugin plugin = (EjbPlugin) WebBeansContext.getInstance().getPluginLoader().getEjbPlugin();
                 plugin.setUseInTest(true);
-            }
-            catch (Throwable e)
-            {
-                // Not worry
             }
 
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(e);
+            return false;
         }
+
+        return true;
     }
 
     private EjbModule buildTestApp(Collection<Class<?>> classes)
