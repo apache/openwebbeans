@@ -25,16 +25,12 @@ import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 import javassist.bytecode.annotation.Annotation;
+import org.scannotation.archiveiterator.FileIterator;
 import org.scannotation.archiveiterator.Filter;
-import org.scannotation.archiveiterator.IteratorFactory;
+import org.scannotation.archiveiterator.JarIterator;
 import org.scannotation.archiveiterator.StreamIterator;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.Serializable;
+import java.io.*;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -178,57 +174,6 @@ public class AnnotationDB implements Serializable
         }
     }
 
-    /**
-     * Sometimes you want to see if a particular class implements an interface with certain annotations
-     * After you have loaded all your classpaths with the scanArchive() method, call this method to cross reference
-     * a class's implemented interfaces.  The cross references will be added to the annotationIndex and
-     * classIndex indexes
-     *
-     * @throws CrossReferenceException an Exception thrown if referenced interfaces haven't been scanned
-     */
-    public void crossReferenceImplementedInterfaces() throws CrossReferenceException
-    {
-        Set<String> unresolved = new HashSet<String>();
-        for (String clazz : implementsIndex.keySet())
-        {
-            Set<String> intfs = implementsIndex.get(clazz);
-            for (String intf : intfs)
-            {
-                if (ignoreScan(intf))
-                {
-                    continue;
-                }
-
-                Set<String> xrefAnnotations = classIndex.get(intf);
-                if (xrefAnnotations == null)
-                {
-                    unresolved.add(intf);
-                }
-                else
-                {
-                    Set<String> classAnnotations = classIndex.get(clazz);
-                    if (classAnnotations == null)
-                    {
-                        classIndex.put(clazz, xrefAnnotations);
-                    }
-                    else
-                    {
-                        classAnnotations.addAll(xrefAnnotations);
-                    }
-                    for (String annotation : xrefAnnotations)
-                    {
-                        Set<String> classes = annotationIndex.get(annotation);
-                        classes.add(clazz);
-                    }
-                }
-            }
-        }
-        if (unresolved.size() > 0)
-        {
-            throw new CrossReferenceException(unresolved);
-        }
-
-    }
 
     private boolean ignoreScan(String intf)
     {
@@ -243,7 +188,7 @@ public class AnnotationDB implements Serializable
     }
 
     /**
-     * returns a map keyed by the fully qualified string name of a annotation class.  The Set returne is
+     * returns a map keyed by the fully qualified string name of a annotation class.  The Set returned is
      * a list of classes that use that annotation somehow.
      */
     public Map<String, Set<String>> getAnnotationIndex()
@@ -312,38 +257,74 @@ public class AnnotationDB implements Serializable
     {
         for (String urlPath : urls)
         {
-            Filter filter = new Filter()
-            {
-                public boolean accepts(String filename)
-                {
-                    if (filename.endsWith(".class"))
-                    {
-                        if (filename.startsWith("/"))
-                        {
-                            filename = filename.substring(1);
-                        }
-
-                        if (!ignoreScan(filename.replace('/', '.')))
-                        {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            };
-
-            //X TODO drop URL and use native Strings as long as possible!
-            StreamIterator it = IteratorFactory.create(new URL(urlPath), filter);
-
-            InputStream stream;
-            while ((stream = it.next()) != null)
-            {
-                scanClass(stream);
-            }
+            scanUrlPath(urlPath);
         }
 
     }
 
+    /**
+     * Scan all classes from the given url
+     * @param urlPath
+     * @throws IOException
+     */
+    private void scanUrlPath(String urlPath) throws IOException
+    {
+        Filter filter = new Filter()
+        {
+            public boolean accepts(String filename)
+            {
+                if (filename.endsWith(".class"))
+                {
+                    if (filename.startsWith("/"))
+                    {
+                        filename = filename.substring(1);
+                    }
+
+                    if (!ignoreScan(filename.replace('/', '.')))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+
+        //X TODO drop URL and use native Strings as long as possible!
+        StreamIterator it;
+        String jarUrlPath = isJarUrl(urlPath);
+        if (jarUrlPath != null)
+        {
+            it = new JarIterator((new URL(jarUrlPath)).openStream(), filter);
+        }
+        else
+        {
+            //X TODO check %20 for spaces ...
+            File f = new File( (new URL(urlPath)).getFile() );
+            it = new FileIterator(f, filter);
+        }
+
+        InputStream stream;
+        while ((stream = it.next()) != null)
+        {
+            scanClass(stream);
+        }
+    }
+
+    /**
+     * check if the given url path is a Jar
+     * @param urlPath
+     * @return
+     */
+    private String isJarUrl(String urlPath)
+    {
+        if (urlPath.endsWith("!/") && urlPath.length() > 6)
+        {
+            urlPath = urlPath.substring(4, urlPath.length() - 2);
+            return urlPath;
+        }
+
+        return null;
+    }
     /**
      * Parse a .class file for annotations
      *
