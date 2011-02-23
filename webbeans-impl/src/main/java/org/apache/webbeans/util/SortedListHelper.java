@@ -24,8 +24,8 @@ import java.util.Comparator;
 public class SortedListHelper<E>
 {
 
-    List<E> list;
-    Comparator<E> comparator;
+    private List<E> list;
+    private Comparator<E> comparator;
 
     public SortedListHelper(List<E>list, Comparator<E> comparator) 
     {

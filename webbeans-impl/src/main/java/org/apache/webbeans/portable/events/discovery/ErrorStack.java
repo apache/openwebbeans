@@ -32,7 +32,7 @@ public class ErrorStack
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ErrorStack.class);
     
-    public Stack<Throwable> errorStack = new Stack<Throwable>();
+    private Stack<Throwable> errorStack = new Stack<Throwable>();
     
     public ErrorStack()
     {

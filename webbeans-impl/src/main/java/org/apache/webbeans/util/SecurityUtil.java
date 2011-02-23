@@ -106,11 +106,11 @@ public class SecurityUtil
 
     protected static class PrivilegedActionForClass implements PrivilegedAction<Object>
     {
-        Class<?> clazz;
+        private Class<?> clazz;
 
-        Object parameters;
+        private Object parameters;
 
-        int method;
+        private int method;
 
         protected PrivilegedActionForClass(Class<?> clazz, Object parameters, int method)
         {
@@ -161,9 +161,9 @@ public class SecurityUtil
     protected static class PrivilegedActionForAccessibleObject implements PrivilegedAction<Object>
     {
 
-        AccessibleObject object;
+        private AccessibleObject object;
 
-        boolean flag;
+        private boolean flag;
 
         protected PrivilegedActionForAccessibleObject(AccessibleObject object, boolean flag)
         {
@@ -261,7 +261,7 @@ public class SecurityUtil
     
     protected static class PrivilegedActionForObjectCreation implements PrivilegedExceptionAction<Object>
     {
-        Class<?> clazz;
+        private Class<?> clazz;
         
         protected PrivilegedActionForObjectCreation(Class<?> clazz)
         {
@@ -289,7 +289,7 @@ public class SecurityUtil
 
     protected static class PrivilegedActionForProxyFactory implements PrivilegedAction<Object>
     {
-        ProxyFactory factory;
+        private ProxyFactory factory;
 
         protected PrivilegedActionForProxyFactory(ProxyFactory factory)
         {
