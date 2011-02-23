@@ -19,8 +19,6 @@
 package org.apache.webbeans.web.failover;
 
 import java.util.UUID;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
@@ -240,46 +238,5 @@ public class DefaultOwbFailOverService implements FailOverService
                 SerializationHandlerV10.TYPE_PASSIVATION : SerializationHandlerV10.TYPE_FAILOVER);
         }
         return NOT_HANDLED;
-    }
-
-    private static byte[] getBytes(Object obj) 
-    {
-        ByteArrayOutputStream baos = null;
-        ObjectOutputStream oos = null;
-        byte[] buf = new byte[0];
-
-        try 
-        {
-            baos = new ByteArrayOutputStream();
-            oos = new ObjectOutputStream(baos);
-            oos.writeObject(obj);
-            buf = baos.toByteArray();
-    
-            oos.close();
-            baos.close();
-        } 
-        catch (Throwable e) 
-        {
-            e.printStackTrace();
-        }
-
-        return buf;
-    }
-    
-    private static Object getObject(byte[] buf) 
-    {
-        try 
-        {
-            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            Object obj = ois.readObject();
-            ois.close();
-            return obj;
-        } 
-        catch (Exception e) 
-        {
-            e.printStackTrace();
-            return null;
-        }
     }
 }
