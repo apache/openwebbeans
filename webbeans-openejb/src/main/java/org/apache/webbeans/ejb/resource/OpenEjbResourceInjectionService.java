@@ -160,6 +160,8 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
         FailOverService failoverService = webBeansContext.getService(FailOverService.class);
         if (failoverService != null)
         {
+            //X TODO hmm actualResource is definitely null here!
+            //X TODO anyone enlightened enough to point me what this now does actually?
             actualResource = (T) failoverService.handleResource(bean, actualResource, in, null);
             if (actualResource != FailOverService.NOT_HANDLED)
             {
