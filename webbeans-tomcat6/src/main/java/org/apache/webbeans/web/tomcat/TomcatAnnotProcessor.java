@@ -25,9 +25,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.NamingException;
 
 import org.apache.AnnotationProcessor;
+import org.apache.webbeans.logger.WebBeansLogger;
 
 public class TomcatAnnotProcessor implements AnnotationProcessor
 {
+    private final WebBeansLogger logger = WebBeansLogger.getLogger(TomcatAnnotProcessor.class);
+
     private AnnotationProcessor processor;
 
     private ClassLoader loader;
@@ -58,7 +61,7 @@ public class TomcatAnnotProcessor implements AnnotationProcessor
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                logger.error(e);
             }
         }
         processor.preDestroy(obj);
@@ -78,7 +81,7 @@ public class TomcatAnnotProcessor implements AnnotationProcessor
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(e);
         }
     }
 

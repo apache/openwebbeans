@@ -56,11 +56,11 @@ import org.jboss.testharness.spi.StandaloneContainers;
 public class StandaloneContainersImpl implements StandaloneContainers
 {
     /**Logger instance*/
-    private  final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneContainersImpl.class);
+    protected  final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneContainersImpl.class);
 
-    private StandaloneLifeCycle lifeCycle = null;
+    protected StandaloneLifeCycle lifeCycle = null;
 
-    private DeploymentException excpetion;
+    protected DeploymentException excpetion;
 
     public void deployInternal(Iterable<Class<?>> classes) throws DeploymentException
     {

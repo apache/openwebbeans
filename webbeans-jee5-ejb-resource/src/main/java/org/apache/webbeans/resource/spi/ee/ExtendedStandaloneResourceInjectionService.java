@@ -115,7 +115,7 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
 
             if (!beansIterator.hasNext())
             {
-                e.printStackTrace();
+                logger.error(e);
                 throw new RuntimeException("can't find ejb (via jndi) or cdi bean for type "
                         + resourceType.getName(), e);
             }

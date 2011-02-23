@@ -250,8 +250,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         }
         catch(Exception e)
         {
-            logger.fatal(OWBLogConst.FATAL_0001, this);
-            e.printStackTrace();
+            logger.fatal(e, OWBLogConst.FATAL_0001, this);
         }
         finally
         {

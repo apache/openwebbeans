@@ -145,10 +145,16 @@ public final class WebBeansLogger implements Serializable, Externalizable
         this.wblLog(WebBeansLogger.WBL_FATAL, messageKey, args);
     }
 
-    public void fatal(String messageKey, Throwable e)
+    public void fatal(Throwable e, String messageKey)
     {
         this.wblLog(WebBeansLogger.WBL_FATAL, e, messageKey);
     }
+
+    public void fatal(Throwable e, String messageKey, Object... args)
+    {
+        this.wblLog(WebBeansLogger.WBL_FATAL, e, messageKey, args);
+    }
+
 
     public void error(Throwable e)
     {

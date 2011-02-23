@@ -149,7 +149,7 @@ public class XMLUtil
         }
         catch (Exception e)
         {
-            log.fatal(OWBLogConst.FATAL_0002, e);
+            log.fatal(e, OWBLogConst.FATAL_0002);
             throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
         }
     }
@@ -181,7 +181,7 @@ public class XMLUtil
         }
         catch (Exception e)
         {
-            log.fatal(OWBLogConst.FATAL_0002, e);
+            log.fatal(e, OWBLogConst.FATAL_0002);
             throw new WebBeansException(log.getTokenString(OWBLogConst.EXCEPT_0013), e);
         }
     }

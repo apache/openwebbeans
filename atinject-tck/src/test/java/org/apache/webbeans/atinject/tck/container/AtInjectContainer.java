@@ -77,9 +77,10 @@ public class AtInjectContainer extends StandaloneContainersImpl
             
             return Tck.testsFor(car, false, true);
             
-        }catch(DeploymentException e)
+        } catch(DeploymentException e)
         {
-            e.printStackTrace();
+            logger.error(e);
+            excpetion = e;
         }
         
         return null;
