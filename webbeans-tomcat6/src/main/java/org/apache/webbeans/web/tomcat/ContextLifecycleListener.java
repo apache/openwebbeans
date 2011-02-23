@@ -109,7 +109,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }        
     }
 
@@ -186,7 +186,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
     
@@ -381,7 +381,7 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
     }
@@ -457,9 +457,9 @@ public class ContextLifecycleListener implements PropertyChangeListener, Lifecyc
             {
                 return clazz.getDeclaredField((String)parameters);
             }
-            catch (Exception exception)
+            catch (NoSuchFieldException e)
             {
-                return exception;
+                throw new RuntimeException(e);
             }
         }
 
