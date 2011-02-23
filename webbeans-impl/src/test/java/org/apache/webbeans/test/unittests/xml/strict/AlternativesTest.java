@@ -28,7 +28,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.test.TestContext;
-import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.test.xml.strict.Alternative1;
 import org.apache.webbeans.test.xml.strict.Alternative2;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
@@ -47,7 +46,7 @@ public class AlternativesTest extends TestContext
         Bean<Alternative1> alternative1 = defineManagedBean(Alternative1.class);
         Bean<Alternative2> alternative2 = defineManagedBean(Alternative2.class);        
         
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_correct.xml");
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_correct.xml");
         Assert.assertNotNull(stream);
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
@@ -65,7 +64,7 @@ public class AlternativesTest extends TestContext
     @Test(expected=WebBeansConfigurationException.class)
     public void testDoubleAlternativeClass()
     {        
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed.xml");
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed.xml");
         Assert.assertNotNull(stream);
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
@@ -76,7 +75,7 @@ public class AlternativesTest extends TestContext
     @Test(expected=WebBeansConfigurationException.class)
     public void testDoubleAlternativeStereotype()
     {        
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed2.xml");
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed2.xml");
         Assert.assertNotNull(stream);
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
@@ -87,7 +86,7 @@ public class AlternativesTest extends TestContext
     @Test(expected=WebBeansConfigurationException.class)
     public void testNoClass()
     {        
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed3.xml");
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed3.xml");
         Assert.assertNotNull(stream);
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
@@ -98,7 +97,7 @@ public class AlternativesTest extends TestContext
     @Test(expected=WebBeansConfigurationException.class)
     public void testNoStereotype()
     {        
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed4.xml");
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed4.xml");
         Assert.assertNotNull(stream);
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
@@ -109,7 +108,7 @@ public class AlternativesTest extends TestContext
     @Test(expected=WebBeansConfigurationException.class)
     public void testNotAnnotationClass()
     {        
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed5.xml");
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed5.xml");
         Assert.assertNotNull(stream);
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
@@ -120,7 +119,7 @@ public class AlternativesTest extends TestContext
     @Test(expected=WebBeansConfigurationException.class)
     public void testNotStereotype()
     {        
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed6.xml");
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/strict/alternatives_failed6.xml");
         Assert.assertNotNull(stream);
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();

@@ -34,13 +34,10 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.interceptor.Interceptor;
 
-import junit.framework.Assert;
-
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.component.xml.XMLManagedBean;
 import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.DependentContext;
@@ -67,13 +64,8 @@ import org.apache.webbeans.test.sterotype.StereoWithNonScope;
 import org.apache.webbeans.test.sterotype.StereoWithRequestScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope;
 import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
-import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
-import org.apache.webbeans.xml.XMLUtil;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 
 /**
@@ -324,89 +316,6 @@ public abstract class TestContext implements ITestContext
         }
 
         return bean;
-    }
-
-    /**
-     * Defines XML defined new simple webbean.
-     * 
-     * @param simpleClass webbeans class
-     * @param webBeanDecleration element decleration defines simple webbeans
-     */
-    protected <T> XMLManagedBean<T> defineXMLSimpleWebBeans(Class<T> simpleClass, Element webBeanDecleration)
-    {
-        XMLManagedBean<T> bean = null;
-        bean = this.xmlConfigurator.configureSimpleWebBean(simpleClass, webBeanDecleration);
-
-        return bean;
-    }
-
-    /**
-     * Protected helper function which loads a WebBean definition from the given
-     * xmlResourcePath. This will first do a Class lookup and take his
-     * annotations as a base, later overlaying it with the definitions from the
-     * given XML.
-     * 
-     * @param xmlResourcePath
-     * @return XMLComponentImpl<?> with the WebBean definition
-     */
-    protected XMLManagedBean<?> getWebBeanFromXml(String xmlResourcePath)
-    {
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
-        Assert.assertNotNull(stream);
-
-        Element beanElement = null;
-        Element rootElement = XMLUtil.getRootElement(stream);
-        NodeList ns = rootElement.getChildNodes();
-        for(int i = 0; i<=ns.getLength(); i++)
-        {
-        	Node node = ns.item(i);
-        	if (!(node instanceof Element)) continue;
-        	beanElement = (Element)node;
-        	break;
-        }
-        Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
-
-        XMLManagedBean<?> def = defineXMLSimpleWebBeans(clazz, beanElement);
-
-        return def;
-    }
-
-    /**
-     * Private helper function which loads a WebBean definition from the given
-     * xmlResourcePath. This will first do a Class lookup and take his
-     * annotations as a base, later overlaying it with the definitions from the
-     * given XML.
-     * 
-     * @param xmlResourcePath
-     * @return XMLComponentImpl<?> with the WebBean definition
-     */
-    @SuppressWarnings("unchecked")
-    protected AbstractOwbBean<?> getWebBeanFromXml(String xmlResourcePath, Class<?> desiredClazz, Annotation... bindings)
-    {
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream(xmlResourcePath);
-        Assert.assertNotNull(stream);
-
-        Element beanElement;
-        Element rootElement = XMLUtil.getRootElement(stream);
-        NodeList nodes = rootElement.getChildNodes();
-        for(int i=0; i<nodes.getLength(); i++)
-        {
-        	Node node = nodes.item(i);
-        	if (!(node instanceof Element)) {
-        		continue;
-        	}
-        	beanElement = (Element)node;
-            Class<?> clazz = XMLUtil.getElementJavaType(beanElement);
-
-            defineXMLSimpleWebBeans(clazz, beanElement);
-        }
-
-        Set<Bean<?>> beans = getManager().getBeans(desiredClazz, bindings);
-        if (beans != null && beans.size() == 1)
-        {
-            return (AbstractOwbBean<?>) beans.iterator().next();
-        }
-        return null;
     }
 
     /**

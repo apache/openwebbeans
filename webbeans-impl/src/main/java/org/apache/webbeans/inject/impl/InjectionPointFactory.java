@@ -27,7 +27,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.decorator.Delegate;
 import javax.enterprise.event.Observes;
@@ -43,8 +42,6 @@ import javax.inject.Named;
 
 import org.apache.webbeans.annotation.NamedLiteral;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.inject.xml.XMLInjectionModelType;
-import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -56,49 +53,6 @@ public class InjectionPointFactory
     public InjectionPointFactory(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-    }
-
-    /**
-     *
-     * @param owner
-     * @param xmlInjectionModel
-     * @return
-     * @deprecated
-     */
-    public InjectionPoint getXMLInjectionPointData(Bean<?> owner, XMLInjectionPointModel xmlInjectionModel)
-    {
-        Asserts.assertNotNull(owner, "owner parameter can not be null");
-        Asserts.assertNotNull(xmlInjectionModel, "xmlInjectionModel parameter can not be null");
-
-        InjectionPoint injectionPoint = null;
-
-        Set<Annotation> setAnns = xmlInjectionModel.getAnnotations();
-        Annotation[] anns = new Annotation[setAnns.size()];
-        anns = setAnns.toArray(anns);
-
-        boolean available = true;
-
-        if(xmlInjectionModel.getType().equals(XMLInjectionModelType.FIELD))
-        {
-            if(checkFieldApplicable(anns))
-            {
-               available = false;
-            }
-        }
-        else if(xmlInjectionModel.getType().equals(XMLInjectionModelType.METHOD))
-        {
-            if(checkMethodApplicable(anns))
-            {
-                available = false;
-            }
-        }
-
-        if(available)
-        {
-            injectionPoint = getGenericInjectionPoint(owner, anns, xmlInjectionModel.getInjectionGenericType(), xmlInjectionModel.getInjectionMember(),null);
-        }
-
-        return injectionPoint;
     }
 
     public InjectionPoint getFieldInjectionPointData(Bean<?> owner, Field member)

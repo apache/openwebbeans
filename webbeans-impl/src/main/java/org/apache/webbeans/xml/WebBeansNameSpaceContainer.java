@@ -28,7 +28,10 @@ import org.apache.webbeans.util.WebBeansConstants;
 
 /**
  * Defines the web beans name space.
+ * //X TODO DROP this is part of the old-style XML config
  */
+
+@Deprecated
 public class WebBeansNameSpaceContainer
 {
     /** Hold namespace string to package name */

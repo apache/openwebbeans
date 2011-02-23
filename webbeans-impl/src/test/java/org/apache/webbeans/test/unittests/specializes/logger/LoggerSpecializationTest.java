@@ -32,7 +32,6 @@ import org.apache.webbeans.test.component.specializes.logger.MockNotSpecializedL
 import org.apache.webbeans.test.component.specializes.logger.MockSpecializedLogger;
 import org.apache.webbeans.test.component.specializes.logger.SpecializedInjector;
 import org.apache.webbeans.test.component.specializes.logger.SystemLogger;
-import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.junit.Test;
 
@@ -50,7 +49,7 @@ public class LoggerSpecializationTest extends TestContext
 
         WebBeansContext.getInstance().getPluginLoader().startUp();
         
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/specializes/alternatives.xml");
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/specializes/alternatives.xml");
         Assert.assertNotNull(stream);
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();
@@ -86,7 +85,7 @@ public class LoggerSpecializationTest extends TestContext
 
         WebBeansContext.getInstance().getPluginLoader().startUp();
         
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/specializes/alternatives.xml");
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/specializes/alternatives.xml");
         Assert.assertNotNull(stream);
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();

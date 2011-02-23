@@ -30,7 +30,6 @@ import org.apache.webbeans.test.component.inject.alternative.AlternativeComponen
 import org.apache.webbeans.test.component.inject.alternative.AlternativeInjector;
 import org.apache.webbeans.test.component.inject.alternative.IAlternative;
 import org.apache.webbeans.test.component.inject.alternative.NotAlternativeComponent;
-import org.apache.webbeans.test.unittests.xml.XMLTest;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +50,7 @@ public class AlternativeTest extends TestContext
     @Test
     public void testInjectAlternative()
     {
-        InputStream stream = XMLTest.class.getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/alternative/alternatives.xml");
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/apache/webbeans/test/xml/alternative/alternatives.xml");
         Assert.assertNotNull(stream);
 
         WebBeansXMLConfigurator configurator = new WebBeansXMLConfigurator();

@@ -37,8 +37,6 @@ import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.decorator.xml.WebBeansXMLDecorator;
-import org.apache.webbeans.inject.xml.XMLInjectionPointModel;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
@@ -81,13 +79,6 @@ public final class WebBeansDecoratorConfig
         
         logger.debug("Configuring decorator class : [{0}]", delegate.getReturnType());
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
-        delegate.getWebBeansContext().getBeanManagerImpl().addDecorator(decorator);
-    }
-
-    public static <T> void configureXMLDecoratorClass(AbstractInjectionTargetBean<T> delegate, XMLInjectionPointModel model)
-    {
-        logger.debug("Configuring XML decorator class : [{0}]", delegate.getReturnType());
-        WebBeansXMLDecorator<T> decorator = new WebBeansXMLDecorator<T>(delegate, model);
         delegate.getWebBeansContext().getBeanManagerImpl().addDecorator(decorator);
     }
 
