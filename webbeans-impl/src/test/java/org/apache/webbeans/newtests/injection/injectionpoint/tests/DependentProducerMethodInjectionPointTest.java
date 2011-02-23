@@ -20,7 +20,6 @@ package org.apache.webbeans.newtests.injection.injectionpoint.tests;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 

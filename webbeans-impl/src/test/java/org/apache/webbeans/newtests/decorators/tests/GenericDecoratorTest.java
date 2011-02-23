@@ -20,7 +20,6 @@ package org.apache.webbeans.newtests.decorators.tests;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;

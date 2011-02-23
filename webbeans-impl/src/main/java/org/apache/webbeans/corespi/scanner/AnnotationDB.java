@@ -48,6 +48,7 @@ import java.util.Set;
  * <a href="http://sourceforge.net/projects/scannotation/">scannotation</a>
  * which is not actively maintained anymore. Since it has Apache License v2.0,
  * we maintain a bug fixed and highly adoped version on our own.
+ * <p/>
  *
  * The class allows you to scan an arbitrary set of "archives" for .class files.  These class files
  * are parsed to see what annotations they use.  Two indexes are created.  The javax, java, sun, com.sun, and javassist

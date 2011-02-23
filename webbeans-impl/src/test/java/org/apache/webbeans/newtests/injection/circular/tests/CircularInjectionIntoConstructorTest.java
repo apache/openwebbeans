@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.newtests.injection.circular.tests;
 
-import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;

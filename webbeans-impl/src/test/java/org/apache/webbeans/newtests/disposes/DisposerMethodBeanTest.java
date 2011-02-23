@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.newtests.disposes;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
