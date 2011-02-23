@@ -52,6 +52,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private ConcurrentMap<Object, List<EjbInterceptorContext>> ejbInterceptors = null;
 
     /**When bean object is destroyed it is set*/
+    //X TODO refactor. public static variables are utterly ugly
     public static ThreadLocal<Object> currentRemoveObject = new ThreadLocal<Object>();
 
     private WebBeansContext webBeansContext;

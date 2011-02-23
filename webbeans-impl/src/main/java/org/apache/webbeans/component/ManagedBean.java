@@ -41,7 +41,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     /** Constructor of the web bean component */
     private Constructor<T> constructor;
     
-    boolean isAbstractDecorator;
+    protected boolean isAbstractDecorator;
 
     public ManagedBean(Class<T> returnType, WebBeansContext webBeansContext)
     {

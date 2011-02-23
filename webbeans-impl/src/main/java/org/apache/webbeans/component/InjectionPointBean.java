@@ -28,7 +28,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 public class InjectionPointBean extends AbstractOwbBean<InjectionPoint>
 {
-    // TODO refactor. public static variables are uterly ugly
+    //X TODO refactor. public static variables are utterly ugly
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
 
     /**

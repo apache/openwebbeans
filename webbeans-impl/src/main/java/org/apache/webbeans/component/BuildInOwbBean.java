@@ -172,7 +172,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
         // initialize the custom proxy handler class and its constructor.
         AccessController.doPrivileged(new PrivilegedAction<T>() 
         {
-            BuildInOwbBean<T> buildinBean;
+            private BuildInOwbBean<T> buildinBean;
             
             public T run()
             {
@@ -262,7 +262,7 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
          */
         private static final long serialVersionUID = -2442900183095535369L;
 
-        BuildInOwbBean<T> bean;
+        private BuildInOwbBean<T> bean;
         
         private T actualObject = null;
         

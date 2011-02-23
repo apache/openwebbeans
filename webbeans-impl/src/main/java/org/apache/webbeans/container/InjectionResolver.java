@@ -76,7 +76,8 @@ public class InjectionResolver
      * This Map contains all resolved beans via it's ExpressionLanguage name.
      */
     private Map<String, Set<Bean<?>>> resolvedBeansByName = new ConcurrentHashMap<String, Set<Bean<?>>>();
-    
+
+    //X TODO refactor. public static variables are utterly ugly
     public static ThreadLocal<InjectionPoint> injectionPoints = new ThreadLocal<InjectionPoint>();
     
     /**

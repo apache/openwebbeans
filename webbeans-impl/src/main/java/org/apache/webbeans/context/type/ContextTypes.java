@@ -47,16 +47,16 @@ public enum ContextTypes
     DEPENDENT(4),
     SINGLETON(5);
 
-    int name;
+    private int cardinal;
 
-    ContextTypes(int name)
+    ContextTypes(int cardinal)
     {
-        this.name = name;
+        this.cardinal = cardinal;
     }
 
     public int getCardinal()
     {
-        return name;
+        return cardinal;
     }
 
     public String getContextName()

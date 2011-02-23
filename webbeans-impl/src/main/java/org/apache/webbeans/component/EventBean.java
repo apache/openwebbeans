@@ -38,7 +38,7 @@ import org.apache.webbeans.exception.WebBeansException;
  */
 public class EventBean<T> extends AbstractOwbBean<Event<T>>
 {
-    // TODO refactor. public static variables are uterly ugly
+    //X TODO refactor. public static variables are utterly ugly
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
 
     /**
