@@ -19,7 +19,6 @@
 package org.apache.webbeans.newtests.specalization;
 
 import java.lang.annotation.Annotation;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -34,14 +33,13 @@ import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
 
 public class AlternativeSpecializesProducerTest extends AbstractUnitTest {
-	
+
     private static final String PACKAGE_NAME = AlternativeSpecializesProducerTest.class.getPackage().getName();
 
     @Test
     @SuppressWarnings("unchecked")
     public void testAlternativeSpecializeBean()
     {
-    	
         Collection<String> beanXmls = new ArrayList<String>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeSpecializesProducer"));
         

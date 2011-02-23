@@ -1,6 +1,5 @@
 package org.apache.webbeans.newtests.portable;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 

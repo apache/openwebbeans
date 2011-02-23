@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.newtests.portable.events;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 

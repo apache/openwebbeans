@@ -27,7 +27,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 

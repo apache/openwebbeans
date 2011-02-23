@@ -19,7 +19,7 @@
 package org.apache.webbeans.newtests.injection.typeliteral;
 
 import java.lang.annotation.Annotation;
-import java.net.URL;
+;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;

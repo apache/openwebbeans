@@ -19,7 +19,6 @@
 
 package org.apache.webbeans.newtests.managed;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;

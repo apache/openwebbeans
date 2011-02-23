@@ -19,7 +19,6 @@
 package org.apache.webbeans.newtests.producer.specializes;
 
 import java.lang.annotation.Annotation;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;

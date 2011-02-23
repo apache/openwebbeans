@@ -28,7 +28,6 @@ import org.junit.Test;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
