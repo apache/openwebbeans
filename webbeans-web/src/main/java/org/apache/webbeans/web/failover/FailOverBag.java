@@ -18,15 +18,8 @@
  */
 package org.apache.webbeans.web.failover;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Map;
-
-import javassist.util.proxy.ProxyObjectInputStream;
-import javassist.util.proxy.ProxyObjectOutputStream;
 
 import javax.enterprise.context.Conversation;
 import javax.servlet.http.HttpSession;
@@ -51,13 +44,13 @@ public class FailOverBag implements Serializable
      */
     private static final long serialVersionUID = -6314819837009653189L;
     
-    String sessionId;
+    private String sessionId;
 
-    String owbFailoverJVMId;
+    private String owbFailoverJVMId;
     
-    SessionContext sessionContext;
+    private SessionContext sessionContext;
     
-    Map<Conversation, ConversationContext> conversationContextMap;
+    private Map<Conversation, ConversationContext> conversationContextMap;
 
     private final WebBeansContext webBeansContext = WebBeansContext.getInstance();
     
@@ -120,60 +113,5 @@ public class FailOverBag implements Serializable
     {
         return this.owbFailoverJVMId;
     }
-    
-    public static Object testSerializable(Object obj0) 
-    {
-        byte[] buf = getBytes(obj0);
-        Object obj1 = getObject(buf);
-        return obj1;
-    }
 
-    /**
-     * Method getBytes
-     * This method accepts an object and converts it to a byte array.
-     *
-     * @param obj Object instance
-     * @return byte[]
-     */
-    private static byte[] getBytes(Object obj) 
-    {
-
-        ByteArrayOutputStream baos = null;
-        ObjectOutputStream oos = null;
-        byte[] buf = new byte[0];
-
-        try 
-        {
-            baos = new ByteArrayOutputStream();
-            oos = new ProxyObjectOutputStream(baos);
-            oos.writeObject(obj);
-            buf = baos.toByteArray();
-    
-            oos.close();
-            baos.close();
-        } 
-        catch (Throwable e) 
-        {
-            e.printStackTrace();
-        }
-
-        return buf;
-    }
-    
-    private static Object getObject(byte[] buf) 
-    {
-        try 
-        {
-            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-            ObjectInputStream ois = new ProxyObjectInputStream(bais);
-            Object obj = ois.readObject();
-            ois.close();
-            return obj;
-        } 
-        catch (Exception e) 
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

@@ -52,7 +52,6 @@ import javax.faces.event.SystemEventListener;
 import javax.faces.validator.Validator;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.spi.adaptor.ELAdaptor;
 
 public class OwbApplication extends Application
 {
