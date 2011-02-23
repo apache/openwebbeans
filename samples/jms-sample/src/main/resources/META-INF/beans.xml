@@ -17,7 +17,4 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<WebBeans 	xmlns="urn:java:ee"
- 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:schemaLocation="urn:java:ee http://java.sun.com/jee/beans-1.0.xsd">	
-</WebBeans>
+<beans/>

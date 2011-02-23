@@ -228,11 +228,6 @@ org.apache.webbeans.spi.JNDIService=org.apache.webbeans.spi.ee.JNDIServiceEnterp
     				</listitem>
     				
     				<listitem>
-    					<para><emphasis>org.apache.webbeans.useOwbSpecificXmlConfig:</emphasis> Use OpenWebBeans specific configuration or not. Generally it is not required
-    					to change this. Not portable!</para>
-    				</listitem>
-    				
-    				<listitem>
     					<para><emphasis>org.apache.webbeans.fieldInjection.useOwbSpecificInjection:</emphasis>  Use @Inject annotation at injection fields or not. If it is set to true
   						you can inject objects into beans without @Inject annotation. Not portable!</para>
     				</listitem>

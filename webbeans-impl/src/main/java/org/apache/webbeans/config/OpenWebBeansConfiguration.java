@@ -60,10 +60,6 @@ public class OpenWebBeansConfiguration
      */
     public static final String INTERCEPTOR_FORCE_NO_CHECKED_EXCEPTIONS = "org.apache.webbeans.forceNoCheckedExceptions";
 
-    /**Use OWB Specific XML Configuration or Strict Spec XML*/
-    @Deprecated //Not use any more 
-    public static final String USE_OWB_SPECIFIC_XML_CONFIGURATION = "org.apache.webbeans.useOwbSpecificXmlConfig";
-    
     /**Use EJB Discovery or not*/
     public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.useEjbMetaDataDiscoveryService";
     
