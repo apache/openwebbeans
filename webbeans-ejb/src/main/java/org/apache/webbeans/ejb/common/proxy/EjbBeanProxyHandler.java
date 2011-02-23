@@ -237,34 +237,34 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
        
     protected CreationalContext<Object> getContextualCreationalContext()
     {
-        CreationalContext<Object> creationalContext = null;
-        
+
         if(this.creationalContext != null)
         {
-            return (CreationalContext<Object>)this.creationalContext;
+            return (CreationalContext<Object>) this.creationalContext;
         }
         
         OwbBean<Object> contextual = (OwbBean<Object>)this.ejbBean;
         //Context of the bean
         Context webbeansContext = webBeansContext.getBeanManagerImpl().getContext(this.ejbBean.getScope());
+        CreationalContext<Object> cc = null;
         if (webbeansContext instanceof AbstractContext)
         {
             AbstractContext owbContext = (AbstractContext)webbeansContext;
-            creationalContext = owbContext.getCreationalContext(contextual);
+            cc = owbContext.getCreationalContext(contextual);
 
             //No creational context means that no BeanInstanceBag
             //Actually this can be occurs like scenarions
             //@SessionScoped bean injected into @ApplicationScopedBean
             //And session is destroyed and restarted but proxy still
             //contained in @ApplicationScopedBean
-            if(creationalContext == null)
+            if(cc == null)
             {
-                creationalContext = webBeansContext.getCreationalContextFactory().getCreationalContext(contextual);
-                owbContext.initContextualBag((OwbBean<Object>)this.ejbBean, creationalContext);
+                cc = webBeansContext.getCreationalContextFactory().getCreationalContext(contextual);
+                owbContext.initContextualBag((OwbBean<Object>)this.ejbBean, cc);
             }            
         }
                 
-        return creationalContext;
+        return cc;
     }
     
     private void initiateBeanBag(OwbBean<Object> bean, CreationalContext<Object> creationalContext)

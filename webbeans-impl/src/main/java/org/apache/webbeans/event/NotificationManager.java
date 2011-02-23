@@ -127,11 +127,11 @@ public final class NotificationManager
         Set<Annotation> qualifiers = ArrayUtil.asSet(eventQualifiers);
 
         Class<T> eventType = (Class<T>) event.getClass();
-        Set<ObserverMethod<? super T>> observers = filterByType(event,eventType);
+        Set<ObserverMethod<? super T>> observersMethods = filterByType(event,eventType);
 
-        observers = filterByQualifiers(observers, qualifiers);
+        observersMethods = filterByQualifiers(observersMethods, qualifiers);
 
-        return observers;
+        return observersMethods;
     }
 
     private <T> Set<ObserverMethod<? super T>> filterByType(T event, Class<T> eventType)
@@ -436,9 +436,9 @@ public final class NotificationManager
 
     public void fireEvent(Object event, Annotation... qualifiers)
     {
-        Set<ObserverMethod<? super Object>> observers = resolveObservers(event, qualifiers);
+        Set<ObserverMethod<? super Object>> observerMethods = resolveObservers(event, qualifiers);
 
-        for (ObserverMethod<? super Object> observer : observers)
+        for (ObserverMethod<? super Object> observer : observerMethods)
         {
             try
             {

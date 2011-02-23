@@ -96,11 +96,10 @@ class InstanceImpl<T> implements Instance<T>, Serializable
         
         Set<Bean<?>> beans = resolveBeans();
 
-        WebBeansContext webBeansContext = this.webBeansContext;
         webBeansContext.getResolutionUtil().checkResolvedBeans(beans, ClassUtil.getClazz(this.injectionClazz), anns);
 
         Bean<?> bean = beans.iterator().next();
-        instance = (T) webBeansContext.getBeanManagerImpl().getInstance(bean,null);
+        instance = (T) webBeansContext.getBeanManagerImpl().getInstance(bean, null);
 
         return instance;
     }

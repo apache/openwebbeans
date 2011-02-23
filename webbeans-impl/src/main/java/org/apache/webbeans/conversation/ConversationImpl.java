@@ -132,7 +132,6 @@ public class ConversationImpl implements Conversation, Serializable
             this.updateTimeOut();
 
             //Conversation manager
-            WebBeansContext webBeansContext = this.webBeansContext;
             ConversationManager manager = webBeansContext.getConversationManager();
             try
             {

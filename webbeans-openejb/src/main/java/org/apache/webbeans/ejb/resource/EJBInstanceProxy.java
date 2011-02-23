@@ -70,8 +70,8 @@ public class EJBInstanceProxy<T>
         else if (deploymentId != null)
         {
             ContainerSystem containerSystem = SystemInstance.get().getComponent(ContainerSystem.class);
-            DeploymentInfo deploymentInfo = containerSystem.getDeploymentInfo(deploymentId);
-            return deploymentInfo;
+            DeploymentInfo deploymentInfoFromContainer = containerSystem.getDeploymentInfo(deploymentId);
+            return deploymentInfoFromContainer;
         }
         return null;
     }

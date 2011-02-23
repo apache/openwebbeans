@@ -114,10 +114,10 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             return null;
         }
         
-        List<EjbInterceptorContext> ejbInterceptors = this.ejbInterceptors.get(ownerInstance);
-        if(ejbInterceptors != null)
+        List<EjbInterceptorContext> ejbInts = this.ejbInterceptors.get(ownerInstance);
+        if(ejbInts != null)
         {
-            for(EjbInterceptorContext ejbInterceptor : ejbInterceptors)
+            for(EjbInterceptorContext ejbInterceptor : ejbInts)
             {
                 if(ejbInterceptor.getInterceptorClass() == clazz)
                 {
@@ -321,7 +321,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     @SuppressWarnings("unchecked")
     public void removeAllDependents()
     {
-        WebBeansContext webBeansContext = this.webBeansContext;
         Collection<List<DependentCreationalContext<?>>> values = this.dependentObjects.values();
         if(values != null)
         {

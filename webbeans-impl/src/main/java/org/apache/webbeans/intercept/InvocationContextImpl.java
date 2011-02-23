@@ -216,12 +216,12 @@ public class InvocationContextImpl implements InvocationContext
         {
             InterceptorData intc = datas.get(currentMethod - 1);
 
-            Method method = intc.getAroundInvoke();
-            boolean accessible = method.isAccessible();
+            Method aroundInvokeMethod = intc.getAroundInvoke();
+            boolean accessible = aroundInvokeMethod.isAccessible();
             
-            if (!method.isAccessible())
+            if (!aroundInvokeMethod.isAccessible())
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, true);
+                SecurityUtil.doPrivilegedSetAccessible(aroundInvokeMethod, true);
             }
             
             Object t = intc.createNewInstance(this.ccKey != null ? this.ccKey : this.target,
@@ -234,11 +234,11 @@ public class InvocationContextImpl implements InvocationContext
 
             currentMethod++;
             
-            result = method.invoke(t, new Object[] { this });
+            result = aroundInvokeMethod.invoke(t, new Object[] { this });
             
             if(!accessible)
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, false);
+                SecurityUtil.doPrivilegedSetAccessible(aroundInvokeMethod, false);
             }
 
         }
@@ -285,12 +285,12 @@ public class InvocationContextImpl implements InvocationContext
         {
             InterceptorData intc = datas.get(currentMethod - 1);
 
-            Method method = intc.getAroundTimeout();
-            boolean accessible = method.isAccessible();
+            Method aroundTimeoutMethod = intc.getAroundTimeout();
+            boolean accessible = aroundTimeoutMethod.isAccessible();
             
             if (!accessible)
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, true);
+                SecurityUtil.doPrivilegedSetAccessible(aroundTimeoutMethod, true);
             }
             
             Object t = intc.createNewInstance(this.ccKey != null ? this.ccKey : this.target,
@@ -303,11 +303,11 @@ public class InvocationContextImpl implements InvocationContext
 
             currentMethod++;
             
-            result = method.invoke(t, new Object[] { this });
+            result = aroundTimeoutMethod.invoke(t, new Object[] { this });
             
             if(!accessible)
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, false);
+                SecurityUtil.doPrivilegedSetAccessible(aroundTimeoutMethod, false);
             }
 
         }
@@ -315,7 +315,7 @@ public class InvocationContextImpl implements InvocationContext
         {
             if(!(this.owbBean instanceof EnterpriseBeanMarker))
             {
-                boolean accessible = this.method.isAccessible();
+                boolean accessible = method.isAccessible();
                 if(!accessible)
                 {                
                     SecurityUtil.doPrivilegedSetAccessible(method, true);
@@ -355,37 +355,37 @@ public class InvocationContextImpl implements InvocationContext
         if (currentMethod <= datas.size())
         {
             InterceptorData intc = datas.get(currentMethod - 1);
-            Method method = null;
+            Method commonAnnMethod = null;
 
             if (type.equals(InterceptorType.POST_CONSTRUCT))
             {
-                method = intc.getPostConstruct();
+                commonAnnMethod = intc.getPostConstruct();
             }
             else if (type.equals(InterceptorType.POST_ACTIVATE))
             {
-                method = intc.getPostActivate();
+                commonAnnMethod = intc.getPostActivate();
             }
             else if (type.equals(InterceptorType.PRE_PASSIVATE))
             {
-                method = intc.getPrePassivate();
+                commonAnnMethod = intc.getPrePassivate();
             }
             else if (type.equals(InterceptorType.PRE_DESTROY))
             {
-                method = intc.getPreDestroy();
+                commonAnnMethod = intc.getPreDestroy();
             }
             else
             {
                 throw new IllegalArgumentException("Unsupportet InterceptorType: " + type);
             }
 
-            if (method == null)
+            if (commonAnnMethod == null)
             {
                 throw new IllegalArgumentException("Could not find intercepted Method!");
             }
 
-            if (!method.isAccessible())
+            if (!commonAnnMethod.isAccessible())
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, true);                
+                SecurityUtil.doPrivilegedSetAccessible(commonAnnMethod, true);
             }
 
             currentMethod++;
@@ -399,7 +399,7 @@ public class InvocationContextImpl implements InvocationContext
                 if(!(this.owbBean instanceof EnterpriseBeanMarker))
                 {
                     t = target;                
-                    result = method.invoke(t, new Object[] {});
+                    result = commonAnnMethod.invoke(t, new Object[] {});
                     
                     //Continue to call others
                     proceedCommonAnnots(datas, type);                                    
@@ -408,7 +408,7 @@ public class InvocationContextImpl implements InvocationContext
             //In interceptor class
             else
             {
-                result = method.invoke(t, new Object[] { this });
+                result = commonAnnMethod.invoke(t, new Object[] { this });
             }
 
         }
