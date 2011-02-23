@@ -42,8 +42,8 @@ public class AlternativeSpecializesProducerTest extends AbstractUnitTest {
     public void testAlternativeSpecializeBean()
     {
     	
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        beanXmls.add(getXMLUrl(PACKAGE_NAME, "AlternativeSpecializesProducer"));
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeSpecializesProducer"));
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Pen.class);

@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.newtests.concepts.alternatives.tests;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -46,8 +45,8 @@ public class AlternativeOnProducerFieldTest extends AbstractUnitTest
     @Test
     public void testProducerFieldAlternativeNotEnabled()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        beanXmls.add(getXMLUrl(PACKAGE_NAME ,"AlternativeOnProducerFieldTest"));
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeOnProducerFieldTest"));
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(PencilProducerBean.class);

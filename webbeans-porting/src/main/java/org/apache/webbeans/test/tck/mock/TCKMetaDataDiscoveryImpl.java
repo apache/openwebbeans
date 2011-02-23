@@ -56,7 +56,7 @@ public class TCKMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
         }
     }
     
-    public void addBeanXml(URL url)
+    public void addBeanXml(String url)
     {
         Asserts.assertNotNull(url);
         addWebBeansXmlLocation(url);

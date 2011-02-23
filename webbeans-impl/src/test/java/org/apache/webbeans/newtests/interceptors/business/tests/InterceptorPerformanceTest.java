@@ -19,7 +19,6 @@
 package org.apache.webbeans.newtests.interceptors.business.tests;
 
 import junit.framework.Assert;
-import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
@@ -51,8 +50,8 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
     @Test
     public void testInterceptorPerformance()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        beanXmls.add(getXMLUrl(PACKAGE_NAME, "DependingInterceptorTest"));
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "DependingInterceptorTest"));
 
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(TransactionInterceptor.class);

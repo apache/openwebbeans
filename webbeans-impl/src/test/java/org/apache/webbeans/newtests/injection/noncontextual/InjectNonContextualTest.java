@@ -47,7 +47,7 @@ public class InjectNonContextualTest extends AbstractUnitTest
     @Test
     public void testInjectingNonContextualBean()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
 
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(ContextualBean.class);

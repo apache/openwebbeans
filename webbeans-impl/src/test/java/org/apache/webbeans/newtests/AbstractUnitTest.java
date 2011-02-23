@@ -19,7 +19,6 @@
 package org.apache.webbeans.newtests;
 
 import java.lang.annotation.Annotation;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,7 +33,6 @@ import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestLifeCycle;
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
-import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
 
@@ -55,7 +53,7 @@ public abstract class AbstractUnitTest
         startContainer(beanClasses, null);
     }
     
-    protected void startContainer(Collection<Class<?>> beanClasses, Collection<URL> beanXmls)
+    protected void startContainer(Collection<Class<?>> beanClasses, Collection<String> beanXmls)
     {
         WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
         //Creates a new container
@@ -119,7 +117,7 @@ public abstract class AbstractUnitTest
         return (T) getBeanManager().getReference(bean, type, getBeanManager().createCreationalContext(bean));
     }
     
-    protected URL getXMLUrl(String packageName, String fileName)
+    protected String getXmlPath(String packageName, String fileName)
     {
         StringBuilder prefix = new StringBuilder(packageName.replace('.', '/'));
         prefix.append("/");
@@ -127,7 +125,7 @@ public abstract class AbstractUnitTest
         prefix.append(".xml");
         
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        return loader.getResource(prefix.toString());
+        return loader.getResource(prefix.toString()).toExternalForm();
     }
     
     /**

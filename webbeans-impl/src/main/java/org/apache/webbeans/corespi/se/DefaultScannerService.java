@@ -19,16 +19,13 @@
 package org.apache.webbeans.corespi.se;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
 
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.scannotation.ClasspathUrlFinder;
 
 public class DefaultScannerService extends AbstractMetaDataDiscovery
 {
-    
+
     public DefaultScannerService()
     {
         super();
@@ -40,36 +37,14 @@ public class DefaultScannerService extends AbstractMetaDataDiscovery
     }
 
     
-    private void configureAnnotationDB() throws Exception
+    private void configureAnnotationDB() throws IOException
     {
         ClassLoader loader = WebBeansUtil.getCurrentClassLoader();
         //Store collection of beans.xml's before scanning archives
-        configureXML();
 
-        URL[] urls = ClasspathUrlFinder.findResourceBases("META-INF/beans.xml", loader);
+        String[] urlPaths = findBeansXmlBases(META_INF_BEANS_XML, loader);
         
-        this.getAnnotationDB().scanArchives(urls);
-
+        this.getAnnotationDB().scanArchives(urlPaths);
     }
-
-    private void configureXML() throws Exception
-    {
-        try
-        {
-            Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/beans.xml");
-
-            while (resources.hasMoreElements())
-            {
-                URL resource = resources.nextElement();
-                addWebBeansXmlLocation(resource);
-            }
-
-        }
-        catch (IOException e)
-        {
-            throw e;
-        }
-    }
-    
 
 }

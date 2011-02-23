@@ -40,7 +40,7 @@ public class EjbInterceptorTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testEjbInterceptor()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(RequestScopedBean.class);
         beanClasses.add(ManagedBeanWithEjbInterceptor.class);

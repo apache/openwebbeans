@@ -19,7 +19,6 @@
 package org.apache.webbeans.newtests.concepts.alternatives.tests;
 
 import java.lang.annotation.Annotation;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -43,7 +42,7 @@ public class Alternative2Test  extends AbstractUnitTest {
     @SuppressWarnings("unchecked")
     public void testDisposerMethodInAlternativeBean()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(DefaultBeanProducer.class);

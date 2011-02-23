@@ -49,8 +49,8 @@ public class DependentDecoratorDestroyTest extends AbstractUnitTest
         classes.add(TransactionalInterceptor.class);
         classes.add(MyDestory.class);
 
-        Collection<URL> xmls = new ArrayList<URL>();
-        xmls.add(getXMLUrl(PACKAGE_NAME, "DependentDecoratorDestroy"));
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "DependentDecoratorDestroy"));
 
         startContainer(classes, xmls);
         

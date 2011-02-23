@@ -38,7 +38,7 @@ public class ProxyFactoryTest extends AbstractUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testProxyFactoryWithMultipleInterfaces() {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
 
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(MyEntityServiceImpl.class);

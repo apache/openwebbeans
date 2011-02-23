@@ -62,8 +62,8 @@ public class ConversationDecoratorTest extends AbstractUnitTest
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(ConversationDecorator.class);
         
-        Collection<URL> xmls = new ArrayList<URL>();
-        xmls.add(getXMLUrl(PACKAGE_NAME, "ConversationDecoratorTest"));
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "ConversationDecoratorTest"));
         
         startContainer(classes,xmls);
         

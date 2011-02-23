@@ -37,7 +37,7 @@ public class TypeLiteralTest extends AbstractUnitTest
     @Test
     public void testDependentProducerMethodInjectionPoint()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Pencil.class);

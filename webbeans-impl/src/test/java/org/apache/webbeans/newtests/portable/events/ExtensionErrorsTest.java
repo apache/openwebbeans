@@ -35,7 +35,7 @@ public class ExtensionErrorsTest extends AbstractUnitTest
     @Test(expected=WebBeansConfigurationException.class)
     public void testAfterBeanDiscoveryError()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Apple.class);
@@ -55,7 +55,7 @@ public class ExtensionErrorsTest extends AbstractUnitTest
     @Test(expected=WebBeansConfigurationException.class)
     public void testAfterBeanDeploymentValidationError()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Apple.class);

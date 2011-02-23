@@ -55,8 +55,8 @@ public class GenericDecoratorTest extends AbstractUnitTest
         classes.add(Garphly.class);
         classes.add(GarphlyDecorator.class);
         
-        Collection<URL> xmls = new ArrayList<URL>();
-        xmls.add(getXMLUrl(PACKAGE_NAME, "GenericDecoratorTest"));
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "GenericDecoratorTest"));
         
         startContainer(classes,xmls);
         

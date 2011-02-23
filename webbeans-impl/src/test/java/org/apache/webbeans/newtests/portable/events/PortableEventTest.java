@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.newtests.portable.events;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -41,7 +40,7 @@ public class PortableEventTest extends AbstractUnitTest
     @Test
     public void testAppleExtension()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Apple.class);
@@ -58,7 +57,7 @@ public class PortableEventTest extends AbstractUnitTest
 
     public void testNotAppleExtension()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Apple.class);
@@ -76,7 +75,7 @@ public class PortableEventTest extends AbstractUnitTest
 
     public void testRawTypeExtension()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Apple.class);
@@ -94,7 +93,7 @@ public class PortableEventTest extends AbstractUnitTest
 
     public void testTypeVariableExtension()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Apple.class);
@@ -112,7 +111,7 @@ public class PortableEventTest extends AbstractUnitTest
 
     public void testwildcardExtension()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Apple.class);
@@ -130,7 +129,7 @@ public class PortableEventTest extends AbstractUnitTest
 
     public void testWrongTypeVariableExtension()
     {
-       Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Apple.class);
@@ -148,7 +147,7 @@ public class PortableEventTest extends AbstractUnitTest
 
     public void testWrongWildcardTypeExtension()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Apple.class);

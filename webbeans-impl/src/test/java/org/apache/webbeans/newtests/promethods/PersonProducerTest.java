@@ -45,7 +45,7 @@ public class PersonProducerTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testPersonProducer()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Person.class);
@@ -73,7 +73,7 @@ public class PersonProducerTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testNullPersonProducer()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(Person.class);

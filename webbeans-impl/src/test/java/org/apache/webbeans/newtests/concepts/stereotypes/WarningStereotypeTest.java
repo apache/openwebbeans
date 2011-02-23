@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.newtests.concepts.stereotypes;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -34,7 +33,7 @@ public class WarningStereotypeTest extends AbstractUnitTest
         classes.add(MyStereoType1.class);
         classes.add(MyStereoType2.class);
         
-        Collection<URL> xmls = new ArrayList<URL>();
+        Collection<String> xmls = new ArrayList<String>();
         
         startContainer(classes,xmls);
                 

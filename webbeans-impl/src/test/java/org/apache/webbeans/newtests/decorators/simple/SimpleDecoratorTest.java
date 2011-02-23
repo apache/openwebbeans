@@ -20,7 +20,6 @@ package org.apache.webbeans.newtests.decorators.simple;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -46,8 +45,8 @@ public class SimpleDecoratorTest extends AbstractUnitTest
         classes.add(MyLog.class);
         
 
-        Collection<URL> xmls = new ArrayList<URL>();
-        xmls.add(getXMLUrl(PACKAGE_NAME, "SimpleDecoratorTest"));
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "SimpleDecoratorTest"));
 
         startContainer(classes, xmls);
 

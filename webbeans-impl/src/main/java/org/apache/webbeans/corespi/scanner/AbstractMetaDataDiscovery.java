@@ -19,8 +19,11 @@
 package org.apache.webbeans.corespi.scanner;
 
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -34,14 +37,15 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
-import org.scannotation.AnnotationDB;
 
 public abstract class AbstractMetaDataDiscovery implements ScannerService
 {
     protected final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
 
+    public static final String META_INF_BEANS_XML = "META-INF/beans.xml";
+
     /** Location of the beans.xml files. */
-    private final Set<URL> webBeansXmlLocations = new HashSet<URL>();
+    private final Set<String> webBeansXmlLocations = new HashSet<String>();
 
     //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 
@@ -88,6 +92,46 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     
     
     abstract protected void configure() throws Exception;
+
+    /**
+     * Find the base paths of all available resources with the given
+     * resourceName in the classpath.
+     * The returned Strings will <i>NOT</i> contain the resourceName itself!
+     *
+     * @param resourceName the name of the resource, e.g. 'META-INF/beans.xml'
+     * @param loader the ClassLoader which should be used
+     * @return array of Strings with the URL path to the resources.
+     */
+    protected String[] findBeansXmlBases(String resourceName, ClassLoader loader)
+    {
+        ArrayList<String> list = new ArrayList<String>();
+        try
+        {
+            Enumeration<URL> urls = loader.getResources(resourceName);
+
+            while (urls.hasMoreElements())
+            {
+                URL url = urls.nextElement();
+                String urlString = url.toString();
+
+                addWebBeansXmlLocation(urlString);
+
+                int idx = urlString.lastIndexOf(resourceName);
+                urlString = urlString.substring(0, idx);
+
+                list.add(urlString);
+            }
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        return list.toArray(new String[list.size()]);
+
+    }
+
+
     
     public void init(Object object)
     {
@@ -115,15 +159,15 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
     /**
      * add the given beans.xml path to the locations list 
-     * @param file location path
+     * @param beansXmlLocation location path
      */
-    protected void addWebBeansXmlLocation(URL file)
+    protected void addWebBeansXmlLocation(String beansXmlLocation)
     {
         if(this.logger.wblWillLogInfo())
         {
-            this.logger.info("added beans.xml marker: " + file.getFile());
+            this.logger.info("added beans.xml marker: " + beansXmlLocation);
         }
-        webBeansXmlLocations.add(file);
+        webBeansXmlLocations.add(beansXmlLocation);
     }
 
     /* (non-Javadoc)
@@ -155,7 +199,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
      * @see org.apache.webbeans.corespi.ScannerService#getBeanXmls()
      */
     @Override
-    public Set<URL> getBeanXmls()
+    public Set<String> getBeanXmls()
     {
         return Collections.unmodifiableSet(webBeansXmlLocations);
     }

@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.newtests.interceptors.lifecycle;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -44,8 +43,8 @@ public class LifecycleTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testLifecycle()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        beanXmls.add(getXMLUrl(PACKAGE_NAME, "LifecycleTest"));
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "LifecycleTest"));
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(LifecycleInterceptor.class);
@@ -81,8 +80,8 @@ public class LifecycleTest extends AbstractUnitTest
     @Test
     public void testNotannotated()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        beanXmls.add(getXMLUrl(PACKAGE_NAME, "LifecycleTest"));
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "LifecycleTest"));
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(NotAnnotatedBean.class);

@@ -19,17 +19,16 @@
 package org.apache.webbeans.corespi.se;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import javassist.bytecode.ClassFile;
 
+import org.apache.webbeans.corespi.scanner.AnnotationDB;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.ClassUtil;
-import org.scannotation.AnnotationDB;
 
 /**
  * Provides extensions to AnnotationDB that allow the beans.xml
@@ -53,7 +52,7 @@ public class BeansXmlAnnotationDB extends AnnotationDB
     private ScannerService scannerService;
 
     /** Maps a resource (Ex: .jar) to a beans.xml location */
-    Map<URL, URL> beansXmlResources;
+    Map<String, String> beansXmlResources;
 
     public void setBdaBeansXmlScanner(ScannerService scannerService)
     {
@@ -68,7 +67,7 @@ public class BeansXmlAnnotationDB extends AnnotationDB
     public BeansXmlAnnotationDB()
     {
         super();
-        beansXmlResources=new HashMap<URL, URL>();
+        beansXmlResources=new HashMap<String, String>();
     }
 
     @Override
@@ -83,12 +82,12 @@ public class BeansXmlAnnotationDB extends AnnotationDB
     }
 
     @Override
-    public void scanArchives(URL... urls) throws IOException
+    public void scanArchives(String... urls) throws IOException
     {
         scanArchivesBeansXml(urls);
     }
 
-    public void setResourceBeansXml(URL resource,URL beansXml)
+    public void setResourceBeansXml(String resource, String beansXml)
     {
         if(logger.wblWillLogDebug())
         {
@@ -97,11 +96,11 @@ public class BeansXmlAnnotationDB extends AnnotationDB
         beansXmlResources.put(resource, beansXml);
     }
     
-    private void scanArchivesBeansXml(URL... urls) throws IOException
+    private void scanArchivesBeansXml(String... urls) throws IOException
     {
         // Maps a resource (Ex: .jar) to a beans.xml location
         populateResourceToBeansXml(urls);
-        URL currentBeansXml = null;
+        String currentBeansXml = null;
         for (int i = 0; i < urls.length; i++)
         {
             currentBeansXml = beansXmlResources.get(urls[i]);
@@ -110,7 +109,7 @@ public class BeansXmlAnnotationDB extends AnnotationDB
                 throw new IllegalStateException("Could not locate beans.xml for resource: " + urls[i]);
             }
             // set current beans.xml based on archive being scanned
-            setCurrentBeansXml(currentBeansXml.getFile());
+            setCurrentBeansXml(currentBeansXml);
 
             super.scanArchives(urls[i]);
         }
@@ -118,11 +117,11 @@ public class BeansXmlAnnotationDB extends AnnotationDB
     }
     
     
-    private void populateResourceToBeansXml(URL[] resourceURLs) throws IOException
+    private void populateResourceToBeansXml(String[] resourceURLs) throws IOException
     {
-        URL beanXmlUrl;
+        String beanXmlUrl;
         boolean isMatchFound;
-        Iterator<URL> it = scannerService.getBeanXmls().iterator();
+        Iterator<String> it = scannerService.getBeanXmls().iterator();
         while (it.hasNext())
         {
             isMatchFound = false;
@@ -140,7 +139,7 @@ public class BeansXmlAnnotationDB extends AnnotationDB
             
             for (int i = 0; (!isMatchFound && i < resourceURLs.length); i++)
             {
-                if (beanXmlUrl.getFile().startsWith(resourceURLs[i].getFile()))
+                if (beanXmlUrl.startsWith(resourceURLs[i]))
                 {
                     beansXmlResources.put(resourceURLs[i], beanXmlUrl);
                     isMatchFound = true;
@@ -150,7 +149,7 @@ public class BeansXmlAnnotationDB extends AnnotationDB
             {
                 StringBuilder sb = new StringBuilder();
                 sb.append("Could not find resource URL to match beans.xml: ");
-                sb.append(beanXmlUrl.getFile());
+                sb.append(beanXmlUrl);
                 sb.append(", available resource URLs=");
                 for (int i = 0; i < resourceURLs.length; i++)
                 {

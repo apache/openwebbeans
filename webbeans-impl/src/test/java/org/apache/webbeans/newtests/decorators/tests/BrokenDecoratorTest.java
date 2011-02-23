@@ -42,8 +42,8 @@ public class BrokenDecoratorTest extends AbstractUnitTest
         classes.add(BrokenAlternative.class);
         classes.add(BrokenName.class);
         
-        Collection<URL> xmls = new ArrayList<URL>();
-        xmls.add(getXMLUrl(PACKAGE_NAME, "BrokenDecoratorTest"));
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "BrokenDecoratorTest"));
         
         startContainer(classes,xmls);
                 

@@ -26,11 +26,10 @@ import javax.servlet.ServletContext;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.corespi.scanner.AnnotationDB;
 import org.apache.webbeans.corespi.se.BeansXmlAnnotationDB;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.scannotation.AnnotationDB;
-import org.scannotation.ClasspathUrlFinder;
 import org.scannotation.WarUrlFinder;
 
 /**
@@ -61,9 +60,9 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         {
             if (!configure)
             {
-                Set<URL> arcs = getArchieves();
-                URL[] urls = new URL[arcs.size()];
-                arcs.toArray(urls);
+                Set<String> arcs = getArchives();
+                String[] urls = new String[arcs.size()];
+                urls = arcs.toArray(urls);
 
                 getAnnotationDB().scanArchives(urls);
                 
@@ -79,34 +78,36 @@ public class WebScannerService extends AbstractMetaDataDiscovery
 
     }
 
-    /* Collects all URLs */
-    private Set<URL> getArchieves() throws Exception
+    /**
+     *  @return all beans.xml paths
+     */
+    private Set<String> getArchives() throws Exception
     {
-        Set<URL> lists = createURLFromMarkerFile();
-        URL warUrl = createURLFromWARFile();
+        Set<String> lists = createURLFromMarkerFile();
+        String warUrlPath = createURLFromWARFile();
 
-        if (warUrl != null)
+        if (warUrlPath != null)
         {
-            lists.add(warUrl);
+            lists.add(warUrlPath);
         }
 
         return lists;
     }
 
     /* Creates URLs from the marker file */
-    protected Set<URL> createURLFromMarkerFile() throws Exception
+    protected Set<String> createURLFromMarkerFile() throws Exception
     {
-        Set<URL> listURL = new HashSet<URL>();
+        Set<String> listURL = new HashSet<String>();
 
         // Root with beans.xml marker.
-        URL[] urls = ClasspathUrlFinder.findResourceBases("META-INF/beans.xml", WebBeansUtil.getCurrentClassLoader());
+        String[] urls = findBeansXmlBases("META-INF/beans.xml", WebBeansUtil.getCurrentClassLoader());
 
         if (urls != null)
         {
-            URL addPath;
-            for (URL url : urls)
+            String addPath;
+            for (String url : urls)
             {
-                String fileDir = url.getFile();
+                String fileDir = new URL(url).getFile();
                 if (fileDir.endsWith(".jar!/"))
                 {
                     fileDir = fileDir.substring(0, fileDir.lastIndexOf("/")) + "/META-INF/beans.xml";
@@ -124,17 +125,18 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                         logger.debug("OpenWebBeans found the following url while doing web scanning: " + fileDir);
                     }
 
-                    addPath = new URL("jar:" + fileDir);
+                    addPath = "jar:" + fileDir;
 
                     if (logger.wblWillLogDebug())
                     {
                         logger.debug("OpenWebBeans added the following jar based path while doing web scanning: " +
-                                addPath.toString());
+                                addPath);
                     }
                 }
                 else
                 {
-                    addPath = new URL("file:" + url.getFile() + "META-INF/beans.xml");
+                    //X TODO check!
+                    addPath = "file:" + url + "META-INF/beans.xml";
 
                     if (logger.wblWillLogDebug())
                     {
@@ -154,12 +156,13 @@ public class WebScannerService extends AbstractMetaDataDiscovery
     }
 
     /**
-     * Returns <code>URL</code> of the web application class path.
+     * Returns the web application class path if it contains
+     * a beans.xml marker file.
      * 
-     * @return <code>URL</code> of the web application class path
+     * @return the web application class path
      * @throws Exception if any exception occurs
      */
-    protected URL createURLFromWARFile() throws Exception
+    protected String createURLFromWARFile() throws Exception
     {
         if (servletContext == null)
         {
@@ -171,16 +174,22 @@ public class WebScannerService extends AbstractMetaDataDiscovery
 
         if (url != null)
         {
-            addWebBeansXmlLocation(url);
-            URL resourceuUrl = WarUrlFinder.findWebInfClassesPath(this.servletContext);
+            addWebBeansXmlLocation(url.toExternalForm());
+            URL resourceUrl = WarUrlFinder.findWebInfClassesPath(this.servletContext);
+
+            if (resourceUrl == null)
+            {
+                return null;
+            }
+
             //set resource to beans.xml mapping
             AnnotationDB annotationDB = getAnnotationDB();
 
             if(annotationDB instanceof BeansXmlAnnotationDB)
             {
-                ((BeansXmlAnnotationDB)annotationDB).setResourceBeansXml(resourceuUrl, url);
+                ((BeansXmlAnnotationDB)annotationDB).setResourceBeansXml(resourceUrl.toExternalForm(), url.toExternalForm());
             }
-            return resourceuUrl;
+            return resourceUrl.toExternalForm();
         }
 
         return null;

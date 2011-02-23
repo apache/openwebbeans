@@ -19,7 +19,6 @@
 package org.apache.webbeans.newtests.concepts.alternatives.tests;
 
 import java.lang.annotation.Annotation;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -38,18 +37,16 @@ import org.apache.webbeans.newtests.concepts.alternatives.common.QualifierProduc
 import org.junit.Test;
 
 public class Alternative1Test  extends AbstractUnitTest {
-	
+
     @Test
     @SuppressWarnings("unchecked")
     public void testDisposerMethodInAlternativeBean()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(DefaultBeanProducer.class);
         beanClasses.add(AlternativeBeanProducer1.class);
         
-        startContainer(beanClasses, beanXmls);        
+        startContainer(beanClasses, null);
 
         Annotation[] anns = new Annotation[1];
         anns[0] = new AnnotationLiteral<QualifierProducerBased>()

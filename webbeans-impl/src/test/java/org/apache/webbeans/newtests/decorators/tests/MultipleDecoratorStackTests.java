@@ -51,8 +51,8 @@ public class MultipleDecoratorStackTests extends AbstractUnitTest
         classes.add(OutputProvider.class);
         classes.add(RequestStringBuilder.class);
 
-        Collection<URL> xmls = new ArrayList<URL>();
-        xmls.add(getXMLUrl(PACKAGE_NAME, "MultipleDecoratorStack"));
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "MultipleDecoratorStack"));
 
         startContainer(classes, xmls);
 

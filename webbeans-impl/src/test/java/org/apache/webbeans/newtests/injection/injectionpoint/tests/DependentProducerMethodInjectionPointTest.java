@@ -41,7 +41,7 @@ public class DependentProducerMethodInjectionPointTest extends AbstractUnitTest
     @Test
     public void testDependentProducerMethodInjectionPoint() throws Exception
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(InjectionPointMetaDataOwner.class);

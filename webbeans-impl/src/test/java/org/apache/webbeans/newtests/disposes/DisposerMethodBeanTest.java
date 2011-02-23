@@ -38,7 +38,7 @@ public class DisposerMethodBeanTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testDisposerMethod()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(DisposerMethodBean.class);

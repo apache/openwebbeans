@@ -42,7 +42,7 @@ public class SpecializesProducer1Test extends AbstractUnitTest
     @Test
     public void testSpecializedProducer1()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
 
         beanClasses.add(SpecializesProducer1SuperClazz.class);

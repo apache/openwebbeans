@@ -43,7 +43,7 @@ public class InnerClassInjectStringProducerTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testInnerClassProducerInjection()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(StringProducerBean.class);

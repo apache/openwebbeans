@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.newtests.interceptors.dependent;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -46,8 +45,8 @@ public class DependentInterceptorTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testLifecycle()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        beanXmls.add(getXMLUrl(PACKAGE_NAME, "DependentInterceptorTest"));
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "DependentInterceptorTest"));
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(DependentInterceptor.class);

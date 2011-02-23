@@ -48,7 +48,7 @@ public class MethodProducer1Test extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testPersonProducer()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(MethodTypeProduces1.class);
@@ -80,7 +80,7 @@ public class MethodProducer1Test extends AbstractUnitTest
      */
     public void testProducerAddedByWebBeansAnnotatedTypeUtil()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
+        Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         

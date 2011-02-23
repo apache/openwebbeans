@@ -55,8 +55,8 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
         classes.add(MyIntercept.class);
         classes.add(OutputInterceptor.class);
 
-        Collection<URL> xmls = new ArrayList<URL>();
-        xmls.add(getXMLUrl(PACKAGE_NAME, "DecoratorAndInterceptorStack"));
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "DecoratorAndInterceptorStack"));
 
         startContainer(classes, xmls);
 

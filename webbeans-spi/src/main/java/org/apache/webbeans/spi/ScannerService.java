@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.spi;
 
-import java.net.URL;
 import java.util.Set;
 
 
@@ -52,7 +51,7 @@ public interface ScannerService
      * in the deployment archives.
      * @return the locations of the beans.xml files. 
      */
-    public Set<URL> getBeanXmls();
+    public Set<String> getBeanXmls();
     
     /**
      * Gets beans classes that are found in the

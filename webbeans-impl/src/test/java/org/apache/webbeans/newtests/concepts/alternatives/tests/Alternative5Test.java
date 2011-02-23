@@ -19,7 +19,6 @@
 package org.apache.webbeans.newtests.concepts.alternatives.tests;
 
 import java.lang.annotation.Annotation;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -47,8 +46,8 @@ public class Alternative5Test extends AbstractUnitTest  {
     public void testDisposerMethodInAlternativeBean()
     {
      	
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        beanXmls.add(getXMLUrl(PACKAGE_NAME, "AlternativeTest5"));
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeTest5"));
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(DefaultBeanProducerWithoutDisposes.class);

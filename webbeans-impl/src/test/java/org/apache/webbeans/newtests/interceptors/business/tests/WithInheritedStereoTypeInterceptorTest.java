@@ -47,8 +47,8 @@ public class WithInheritedStereoTypeInterceptorTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testInheritedStereoTypeWihtInterceptorBinding()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        beanXmls.add(getXMLUrl(PACKAGE_NAME, "WithInheritedStereoTypeInterceptorTest"));
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "WithInheritedStereoTypeInterceptorTest"));
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(TransactionInterceptor.class);

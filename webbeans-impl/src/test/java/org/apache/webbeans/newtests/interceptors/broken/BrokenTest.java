@@ -39,8 +39,8 @@ public class BrokenTest extends AbstractUnitTest
         classes.add(BrokenAlternative.class);
         classes.add(BrokenName.class);
         
-        Collection<URL> xmls = new ArrayList<URL>();
-        xmls.add(getXMLUrl(PACKAGE_NAME, "BrokenTest"));
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "BrokenTest"));
         
         startContainer(classes,xmls);
                 

@@ -64,13 +64,13 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
      * Those xmls will be scanned by container.
      * @param xmls beans xmls
      */
-    public void deployXMLs(Collection<URL> xmls)
+    public void deployXMLs(Collection<String> xmls)
     {
         if(xmls != null)
         {
-            for(URL url : xmls)
+            for(String xml : xmls)
             {
-                addBeanXml(url);
+                addBeanXml(xml);
             }
         }
     }
@@ -98,13 +98,13 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
     
     /**
      * Adds new beans.xml url for scanning.
-     * @param url new xml url
+     * @param beansXmlPath new beans.xml path
      */
-    private void addBeanXml(URL url)
+    private void addBeanXml(String beansXmlPath)
     {
-        Asserts.assertNotNull(url);
+        Asserts.assertNotNull(beansXmlPath);
         
-        addWebBeansXmlLocation(url);
+        addWebBeansXmlLocation(beansXmlPath);
     }
     
 

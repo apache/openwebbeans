@@ -43,8 +43,8 @@ public class DependingInterceptorTest extends AbstractUnitTest
     @Test
     public void testDependingBeanInterceptor()
     {
-        Collection<URL> beanXmls = new ArrayList<URL>();
-        beanXmls.add(getXMLUrl(PACKAGE_NAME, "DependingInterceptorTest"));
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "DependingInterceptorTest"));
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(TransactionInterceptor.class);
@@ -107,8 +107,8 @@ public class DependingInterceptorTest extends AbstractUnitTest
     @Test
     public void testInterceptorCreation() throws Exception 
     {
-            Collection<URL> beanXmls = new ArrayList<URL>();
-            beanXmls.add(getXMLUrl(PACKAGE_NAME, "DependingInterceptorTest"));
+            Collection<String> beanXmls = new ArrayList<String>();
+            beanXmls.add(getXmlPath(PACKAGE_NAME, "DependingInterceptorTest"));
             
             Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
             beanClasses.add(TransactionInterceptor.class);
