@@ -151,7 +151,7 @@ public final class WebBeansInterceptorConfig
         Set<Interceptor<?>> componentInterceptors = null;
 
         Set<Annotation> bindingTypeSet = new HashSet<Annotation>();
-        Annotation[] anns = new Annotation[0];
+        Annotation[] anns;
         Annotation[] typeAnns = null;
         if(annotations != null)
         {
@@ -307,12 +307,10 @@ public final class WebBeansInterceptorConfig
             OpenWebBeansEjbLCAPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbLCAPlugin();
             Class <? extends Annotation> prePassivateClass = null;
             Class <? extends Annotation> postActivateClass = null;
-            Class <? extends Annotation> aroundTimeoutClass = null;
             if (null != ejbPlugin)
             {
                 prePassivateClass = ejbPlugin.getPrePassivateClass();
                 postActivateClass = ejbPlugin.getPostActivateClass();
-                aroundTimeoutClass = ejbPlugin.getAroundTimeoutClass();
             }
 
             if(annotatedType != null)

@@ -104,8 +104,7 @@ public class ELImpl implements EL
     public ELContext createELContext()
     {   
         ELContext context = new ELContextImpl();
-        ELContextEvent event = new ELContextEvent(context);
-        
+
         return context;
     }
 }

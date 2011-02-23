@@ -62,7 +62,6 @@ public class OwbApplication extends Application
     
     public OwbApplication(Application wrappedApplication)
     {
-        ELAdaptor elAdaptor = WebBeansContext.getInstance().getService(ELAdaptor.class);
         this.wrappedApplication = wrappedApplication;
     }
 
