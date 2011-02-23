@@ -3023,15 +3023,7 @@ public final class WebBeansUtil
 
     public static void initProxyFactoryClassLoaderProvider()
     {
-        ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider()
-        {
-            @Override
-            public ClassLoader get(ProxyFactory pf)
-            {
-                return WebBeansUtil.getCurrentClassLoader();
-            }
-
-        };
+        ProxyFactory.classLoaderProvider = new OpenWebBeansClassLoaderProvider();
     }
 
     /**

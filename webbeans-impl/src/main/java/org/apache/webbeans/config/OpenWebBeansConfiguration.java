@@ -110,8 +110,6 @@ public class OpenWebBeansConfiguration
     
     public static final String PROPERTY_OWB_APPLICATION = "org.apache.webbeans.application.isOwbApplication";
     
-    public static final String USE_JAVASSIST_CLASSLOADERPROVIDER = "org.apache.webbeans.javassist.useClassLoaderProvider";
-
     /**
      * Use BDABeansXmlScanner to determine if interceptors, decorators, and
      * alternatives are enabled in the beans.xml of a given BDA. For an
@@ -314,17 +312,4 @@ public class OpenWebBeansConfiguration
         
         return Boolean.valueOf(value);
     }
-    
-    /**
-     * Gets flag for updating Javasisst ProxyFactory.classLoaderProvider
-     * @return true if use javassist ProxyFactory.classLoaderProvider
-     * update if exception occurn on ProxyFactory.createClass
-     */
-    public boolean isUpdateJavassistClassLoaderProvider()
-    {
-        String value = getProperty(USE_JAVASSIST_CLASSLOADERPROVIDER);
-        
-        return Boolean.valueOf(value);
-    }
-    
 }

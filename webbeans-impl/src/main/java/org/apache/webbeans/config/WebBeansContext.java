@@ -92,6 +92,8 @@ public class WebBeansContext
 
     public WebBeansContext()
     {
+        WebBeansUtil.initProxyFactoryClassLoaderProvider();
+
         // Allow the WebBeansContext itself to be looked up
         managerMap.put(this.getClass(), this);
 

@@ -50,6 +50,7 @@ import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.util.ClassUtil;
+import org.apache.webbeans.util.OpenWebBeansClassLoaderProvider;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -333,7 +334,7 @@ public final class JavassistProxyFactory
 
     public  Class<?> getProxyClass(ProxyFactory factory)
     {
-        ClassLoaderProvider oldProvider = ProxyFactory.classLoaderProvider;
+        ClassLoaderProvider classLoaderProvider = ProxyFactory.classLoaderProvider;
         Class<?> clazz = null;
         try
         {
@@ -341,32 +342,20 @@ public final class JavassistProxyFactory
         }
         catch(RuntimeException e)
         {
-            //Default is false
-            if(WebBeansContext.getInstance().getOpenWebBeansConfiguration().isUpdateJavassistClassLoaderProvider())
-            {                   
-                //Try thread class loader
-                ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider()
-                {                            
-                    @Override
-                    public ClassLoader get(ProxyFactory pf)
-                    {
-                        return WebBeansUtil.getCurrentClassLoader();
-                    }
-                };
-                
-                //try again with updated class loader
-                clazz = SecurityUtil.doPrivilegedCreateClass(factory);  
-            }
-            else
+            if(classLoaderProvider instanceof OpenWebBeansClassLoaderProvider)
             {
-                //Default, throw exception
-                throw e;
+                ((OpenWebBeansClassLoaderProvider)classLoaderProvider).useCurrentClassLoader();
             }
+
+            //try again with updated class loader
+            clazz = SecurityUtil.doPrivilegedCreateClass(factory);
         }
         finally
         {
-            //Switch to old
-            ProxyFactory.classLoaderProvider = oldProvider;            
+            if(classLoaderProvider instanceof OpenWebBeansClassLoaderProvider)
+            {
+                ((OpenWebBeansClassLoaderProvider)classLoaderProvider).reset();
+            }
         }
         
         return clazz; 
