@@ -29,7 +29,6 @@ import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.inject.Default;
@@ -64,11 +63,6 @@ import java.util.Set;
  */
 public final class AnnotationManager
 {
-    public static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
-
-    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-
-    private final XMLAnnotationTypeManager manager;
 
     private final BeanManagerImpl beanManagerImpl;
 
@@ -76,7 +70,6 @@ public final class AnnotationManager
 
     public AnnotationManager(WebBeansContext context)
     {
-        manager = context.getxMLAnnotationTypeManager();
         beanManagerImpl = context.getBeanManagerImpl();
     }
 
@@ -92,11 +85,8 @@ public final class AnnotationManager
     public boolean isInterceptorBindingAnnotation(Class<? extends Annotation> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        if (manager.hasInterceptorBindingType(clazz))
-        {
-            return true;
-        }
-        else if (clazz.isAnnotationPresent(InterceptorBinding.class))
+
+        if (clazz.isAnnotationPresent(InterceptorBinding.class))
         {
             return true;
         }
@@ -181,11 +171,7 @@ public final class AnnotationManager
     public boolean isQualifierAnnotation(Class<? extends Annotation> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        if (manager.hasBindingType(clazz))
-        {
-            return true;
-        }
-        else if (clazz.isAnnotationPresent(Qualifier.class))
+        if (clazz.isAnnotationPresent(Qualifier.class))
         {
             return true;
         }
@@ -410,11 +396,8 @@ public final class AnnotationManager
     public boolean isStereoTypeAnnotation(Class<? extends Annotation> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        if (manager.hasStereoType(clazz))
-        {
-            return true;
-        }
-        else if (clazz.isAnnotationPresent(Stereotype.class))
+
+        if (clazz.isAnnotationPresent(Stereotype.class))
         {
             return true;
         }

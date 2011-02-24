@@ -195,9 +195,9 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
             Set<Annotation> declared = null;
             Annotation[] anns = null;
 
-            if (webBeansContext.getxMLAnnotationTypeManager().hasInterceptorBindingType(clazzAnnot))
+            if (webBeansContext.getXMLAnnotationTypeManager().hasInterceptorBindingType(clazzAnnot))
             {
-                declared = webBeansContext.getxMLAnnotationTypeManager().getInterceptorBindingTypeInherites(clazzAnnot);
+                declared = webBeansContext.getXMLAnnotationTypeManager().getInterceptorBindingTypeInherites(clazzAnnot);
                 anns = new Annotation[declared.size()];
                 anns = declared.toArray(anns);
             }

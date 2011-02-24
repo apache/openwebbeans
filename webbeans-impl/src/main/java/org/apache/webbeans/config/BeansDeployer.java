@@ -640,9 +640,7 @@ public class BeansDeployer
                 webBeansContext.getWebBeansUtil().configureSpecializations(specialClassList);
             }
 
-            // XML Defined Specializations
-            checkXMLSpecializations();
-            
+
             //configure specialized producer beans.
             webBeansContext.getWebBeansUtil().configureProducerMethodSpecializations();
         }
@@ -656,40 +654,6 @@ public class BeansDeployer
     }
 
     
-    /**
-     * Check xml specializations.
-     * NOTE : Currently XML is not used in configuration.
-     */
-    protected void checkXMLSpecializations()
-    {
-        // Check XML specializations
-        Set<Class<?>> clazzes = webBeansContext.getxMLSpecializesManager().getXMLSpecializationClasses();
-        Iterator<Class<?>> it = clazzes.iterator();
-        Class<?> superClass = null;
-        Class<?> specialClass = null;
-        ArrayList<Class<?>> specialClassList = new ArrayList<Class<?>>();
-        while (it.hasNext())
-        {
-            specialClass = it.next();
-
-            if (superClass == null)
-            {
-                superClass = specialClass.getSuperclass();
-            }
-            else
-            {
-                if (superClass.equals(specialClass.getSuperclass()))
-                {
-                    throw new InconsistentSpecializationException(logger.getTokenString(OWBLogConst.EXCEPT_XML) 
-                                                                 + logger.getTokenString(OWBLogConst.EXCEPT_0005)
-                                                                 + superClass.getName());
-                }
-            }
-            specialClassList.add(specialClass);
-        }
-        webBeansContext.getWebBeansUtil().configureSpecializations(specialClassList);
-    }
-
     /**
      * Check passivations.
      */
@@ -751,7 +715,7 @@ public class BeansDeployer
                     Class<? extends Annotation> stereoClass = (Class<? extends Annotation>) beanClass;
                     if (annotationManager.isStereoTypeAnnotation(stereoClass))
                     {
-                        if (!webBeansContext.getxMLAnnotationTypeManager().hasStereoType(stereoClass))
+                        if (!webBeansContext.getXMLAnnotationTypeManager().hasStereoType(stereoClass))
                         {
                             webBeansContext.getAnnotationManager().checkStereoTypeClass(stereoClass, stereoClass.getDeclaredAnnotations());
                             StereoTypeModel model = new StereoTypeModel(webBeansContext, stereoClass);

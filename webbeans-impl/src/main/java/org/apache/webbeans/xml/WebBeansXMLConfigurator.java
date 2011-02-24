@@ -53,11 +53,6 @@ public final class WebBeansXMLConfigurator
     private String CURRENT_SCAN_FILE_NAME = null;
 
     /**
-     * Annotation type manager that manages the XML defined annotations
-     */
-    private XMLAnnotationTypeManager xmlAnnotTypeManager = WebBeansContext.getInstance().getxMLAnnotationTypeManager();
-
-    /**
      * Creates a new instance of the <code>WebBeansXMLConfigurator</code>
      */
     public WebBeansXMLConfigurator()

@@ -71,7 +71,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation... bindingDef)
     {
-        webBeansContext.getxMLAnnotationTypeManager().addInterceotorBindingTypeInheritAnnotation(binding, bindingDef);
+        webBeansContext.getXMLAnnotationTypeManager().addInterceotorBindingTypeInheritAnnotation(binding, bindingDef);
     }
 
     /**
@@ -90,7 +90,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addStereotype(Class<? extends Annotation> stereotype, Annotation... stereotypeDef)
     {
-        if (!webBeansContext.getxMLAnnotationTypeManager().hasStereoType(stereotype))
+        if (!webBeansContext.getXMLAnnotationTypeManager().hasStereoType(stereotype))
         {
             webBeansContext.getAnnotationManager().checkStereoTypeClass(stereotype, stereotypeDef);
             StereoTypeModel model = new StereoTypeModel(webBeansContext, stereotype, stereotypeDef);

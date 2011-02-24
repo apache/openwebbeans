@@ -51,9 +51,7 @@ import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.xml.WebBeansNameSpaceContainer;
 import org.apache.webbeans.xml.XMLAnnotationTypeManager;
-import org.apache.webbeans.xml.XMLSpecializesManager;
 
 /**
  * @version $Rev$ $Date$
@@ -79,8 +77,6 @@ public class WebBeansContext
     private StereoTypeManager stereoTypeManager = new StereoTypeManager();
     private XMLAnnotationTypeManager xmlAnnotationTypeManager = new XMLAnnotationTypeManager(this);
     private AnnotationManager annotationManager = new AnnotationManager(this);
-    private WebBeansNameSpaceContainer webBeansNameSpaceContainer = new WebBeansNameSpaceContainer();
-    private XMLSpecializesManager xmlSpecializesManager = new XMLSpecializesManager();
     private ResolutionUtil resolutionUtil = new ResolutionUtil(this);
     private InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
     private InterceptorUtil interceptorUtil = new InterceptorUtil(this);
@@ -112,9 +108,6 @@ public class WebBeansContext
         managerMap.put(PluginLoader.class, pluginLoader);
         managerMap.put(SerializableBeanVault.class, serializableBeanVault);
         managerMap.put(StereoTypeManager.class, stereoTypeManager);
-        managerMap.put(WebBeansNameSpaceContainer.class, webBeansNameSpaceContainer);
-        managerMap.put(XMLAnnotationTypeManager.class, xmlAnnotationTypeManager);
-        managerMap.put(XMLSpecializesManager.class, xmlSpecializesManager);
     }
 
     @Deprecated
@@ -290,19 +283,9 @@ public class WebBeansContext
         return javassistProxyFactory;
     }
 
-    public WebBeansNameSpaceContainer getWebBeansNameSpaceContainer()
-    {
-        return webBeansNameSpaceContainer;
-    }
-
-    public XMLAnnotationTypeManager getxMLAnnotationTypeManager()
+    public XMLAnnotationTypeManager getXMLAnnotationTypeManager()
     {
         return xmlAnnotationTypeManager;
-    }
-
-    public XMLSpecializesManager getxMLSpecializesManager()
-    {
-        return xmlSpecializesManager;
     }
 
     //candidates for fields

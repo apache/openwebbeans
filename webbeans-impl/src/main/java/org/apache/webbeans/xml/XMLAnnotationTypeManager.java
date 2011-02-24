@@ -28,8 +28,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.deployment.StereoTypeManager;
-import org.apache.webbeans.deployment.XMLStereoTypeModel;
-import org.w3c.dom.Element;
 
 public class XMLAnnotationTypeManager
 {
@@ -52,7 +50,7 @@ public class XMLAnnotationTypeManager
 
     public static XMLAnnotationTypeManager getInstance()
     {
-        return WebBeansContext.getInstance().getxMLAnnotationTypeManager();
+        return WebBeansContext.getInstance().getXMLAnnotationTypeManager();
     }
 
     @Deprecated
@@ -86,6 +84,7 @@ public class XMLAnnotationTypeManager
         return false;
     }
 
+    /*X TODO REMOVE
     public void addStereoType(Class<? extends Annotation> stereoType, Element decleration, String name, String errorMessage)
     {
         webBeansContext.getAnnotationManager().checkStereoTypeClass(stereoType, stereoType.getDeclaredAnnotations());
@@ -95,6 +94,7 @@ public class XMLAnnotationTypeManager
 
         xmlStereoTypes.add(stereoType);
     }
+    */
 
     public boolean hasStereoType(Class<? extends Annotation> stereoType)
     {
