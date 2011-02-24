@@ -20,36 +20,24 @@ package org.apache.webbeans.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.util.List;
 
-import javax.enterprise.context.NormalScope;
-import javax.inject.Scope;
 import javax.interceptor.Interceptor;
 
-import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.component.AbstractOwbBean;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.definition.NonexistentTypeException;
-import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansConstants;
-import org.apache.webbeans.util.WebBeansUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 /**
  * Configures the web beans from the xml declerations.
