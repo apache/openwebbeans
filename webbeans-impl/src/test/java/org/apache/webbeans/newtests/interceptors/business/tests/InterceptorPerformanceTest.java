@@ -26,10 +26,10 @@ import org.apache.webbeans.newtests.interceptors.beans.ApplicationScopedBean;
 import org.apache.webbeans.newtests.interceptors.beans.RequestScopedBean;
 import org.apache.webbeans.newtests.interceptors.common.TransactionInterceptor;
 import org.junit.Test;
+import java.net.URL;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -43,13 +43,14 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
 {
     private static final String PACKAGE_NAME = DependingInterceptorTest.class.getPackage().getName();
 
-    private static final int ITERATIONS = 10000;
+    private static final int ITERATIONS = 30000;
+    private static final int NUM_THREADS = 50;
 
     private static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorPerformanceTest.class);
 
 
     @Test
-    public void testInterceptorPerformance()
+    public void testInterceptorPerformance() throws Exception
     {
         Collection<URL> beanXmls = new ArrayList<URL>();
         beanXmls.add(getXMLUrl(PACKAGE_NAME, "DependingInterceptorTest"));
@@ -63,33 +64,22 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
 
         startContainer(beanClasses, beanXmls);
 
-        Set<Bean<?>> beans = getBeanManager().getBeans(RequestScopedBean.class);
-        Assert.assertNotNull(beans);
-        Bean<RequestScopedBean> bean = (Bean<RequestScopedBean>)beans.iterator().next();
-
-        CreationalContext<RequestScopedBean> ctx = getBeanManager().createCreationalContext(bean);
-
-        Object reference1 = getBeanManager().getReference(bean, RequestScopedBean.class, ctx);
-        Assert.assertNotNull(reference1);
-
-        Assert.assertTrue(reference1 instanceof RequestScopedBean);
-
-        RequestScopedBean beanInstance1 = (RequestScopedBean)reference1;
-
-        TransactionInterceptor.count = 0;
-
         long start = System.nanoTime();
-        long startDek = start;
-        for (int i= 1; i < ITERATIONS; i++)
+
+        //X TODO START THREADS
+        CalculationRunner[] threads = new CalculationRunner[NUM_THREADS];
+        for (int i= 0 ; i < NUM_THREADS; i++)
         {
-            beanInstance1.getMyService().getJ();
-            if (i % 100 == 0)
-            {
-                long endDek = System.nanoTime();
-                logger.info("Executing 100 iterations took {0} ns", endDek - startDek);
-                startDek = endDek;
-            }
+            threads[i] = new CalculationRunner("t" + i);
+            threads[i].start();
         }
+
+        for (int i= 0 ; i < NUM_THREADS; i++)
+        {
+            threads[i].join();
+        }
+
+
         long end = System.nanoTime();
 
         logger.info("Executing {0} iterations took {1} ns", ITERATIONS, end - start);
@@ -102,6 +92,54 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
             Assert.fail("Performance test took more than 20 times longer than it should");
         }
 
+    }
+
+    public class CalculationRunner extends Thread
+    {
+        private String threadName;
+
+        public CalculationRunner(String name)
+        {
+            super(name);
+            threadName = name;
+        }
+
+        @Override
+        public void run()
+        {
+            ContextFactory.initRequestContext(null);
+
+            Set<Bean<?>> beans = getBeanManager().getBeans(RequestScopedBean.class);
+            Assert.assertNotNull(beans);
+            Bean<RequestScopedBean> bean = (Bean<RequestScopedBean>)beans.iterator().next();
+
+            CreationalContext<RequestScopedBean> ctx = getBeanManager().createCreationalContext(bean);
+
+            Object reference1 = getBeanManager().getReference(bean, RequestScopedBean.class, ctx);
+            Assert.assertNotNull(reference1);
+
+            Assert.assertTrue(reference1 instanceof RequestScopedBean);
+
+            RequestScopedBean beanInstance1 = (RequestScopedBean)reference1;
+
+            TransactionInterceptor.count = 0;
+
+            long start = System.nanoTime();
+
+            long startDek = start;
+            for (int i= 1; i < ITERATIONS; i++)
+            {
+                beanInstance1.getMyService().getJ();
+                if (i % 10000 == 0)
+                {
+                    long endDek = System.nanoTime();
+                    logger.info("Thread {0}: Executing 10000 iterations took {1} ns", threadName, endDek - startDek);
+                    startDek = endDek;
+                }
+            }
+
+            ContextFactory.destroyRequestContext(null);
+        }
     }
 
 }
