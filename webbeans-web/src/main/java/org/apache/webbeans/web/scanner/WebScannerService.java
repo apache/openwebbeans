@@ -147,8 +147,6 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                 }
 
                 listURL.add(url);
-
-                addWebBeansXmlLocation(addPath);
             }
         }
 

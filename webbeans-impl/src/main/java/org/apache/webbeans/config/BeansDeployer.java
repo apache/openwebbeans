@@ -544,12 +544,11 @@ public class BeansDeployer
     }
     
     /**
-     * Discovers and deploys classes from XML.
-     * 
-     * NOTE : Currently XML file is just used for configuring.
+     * Discovers and deploys alternatives, interceptors and decorators from XML.
      * 
      * @param scanner discovery scanner
-     * @throws WebBeansDeploymentException if exception
+     *
+     * @throws WebBeansDeploymentException if a problem occurs
      */
     protected void deployFromXML(ScannerService scanner) throws WebBeansDeploymentException
     {

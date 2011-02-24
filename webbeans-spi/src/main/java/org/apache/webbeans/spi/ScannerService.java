@@ -22,14 +22,16 @@ import java.util.Set;
 
 
 /**
- * This SPI is for abstracting the class scanning.  
+ * <p>This SPI is for abstracting the class scanning.</p>
  *
- * In a production environment Many different modules need to perform 
+ * <p>In a production environment Many different modules need to perform
  * class scanning (EJB, JSF, JPA, ...). This SPI allows us to only have one 
  * central class scanner for the whole application server
- * which only performs the scanning once at startup of each WebApp.
- * 
- * @version $Rev$ $Date$
+ * which only performs the scanning once at startup of each WebApp.</p>
+ *
+ * <p>All URL path Strings in this interface contain the the protocol,
+ * e.g. 'file:/...' we get directly from {@link java.net.URL#toExternalForm()}</p>
+ *
  */
 public interface ScannerService
 {
