@@ -500,7 +500,7 @@ public class BeansDeployer
     {
         BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
         
-        List<AnnotatedType<?>> annotatedTypes = beanManager.getAnnotatedTypes();
+        List<AnnotatedType<?>> annotatedTypes = beanManager.getAdditionalAnnotatedTypes();
         
         for(AnnotatedType<?> type : annotatedTypes)
         {
@@ -715,13 +715,10 @@ public class BeansDeployer
                     Class<? extends Annotation> stereoClass = (Class<? extends Annotation>) beanClass;
                     if (annotationManager.isStereoTypeAnnotation(stereoClass))
                     {
-                        if (!webBeansContext.getXMLAnnotationTypeManager().hasStereoType(stereoClass))
-                        {
-                            webBeansContext.getAnnotationManager().checkStereoTypeClass(stereoClass, stereoClass.getDeclaredAnnotations());
-                            StereoTypeModel model = new StereoTypeModel(webBeansContext, stereoClass);
-                            webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
-                        }
-                    }                    
+                        webBeansContext.getAnnotationManager().checkStereoTypeClass(stereoClass, stereoClass.getDeclaredAnnotations());
+                        StereoTypeModel model = new StereoTypeModel(webBeansContext, stereoClass);
+                        webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
+                    }
                 }
             }
         }

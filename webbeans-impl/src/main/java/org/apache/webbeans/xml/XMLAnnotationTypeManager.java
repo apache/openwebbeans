@@ -24,28 +24,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.deployment.StereoTypeManager;
 
 public class XMLAnnotationTypeManager
 {
-    private Set<Class<? extends Annotation>> xmlBindingTypes = new CopyOnWriteArraySet<Class<? extends Annotation>>();
-    
-    private Set<Class<? extends Annotation>> xmlResources = new CopyOnWriteArraySet<Class<? extends Annotation>>();
-
     private Map<Class<? extends Annotation>, Set<Annotation>> xmlInterceptorBindingTypes = new ConcurrentHashMap<Class<? extends Annotation>, Set<Annotation>>();
 
-    private Set<Class<? extends Annotation>> xmlStereoTypes = new CopyOnWriteArraySet<Class<? extends Annotation>>();
-    private final StereoTypeManager manager;
-    private final WebBeansContext webBeansContext;
 
     public XMLAnnotationTypeManager(WebBeansContext webBeansContext)
     {
-
-        this.webBeansContext = webBeansContext;
-        manager = this.webBeansContext.getStereoTypeManager();
     }
 
     public static XMLAnnotationTypeManager getInstance()
@@ -53,58 +41,6 @@ public class XMLAnnotationTypeManager
         return WebBeansContext.getInstance().getXMLAnnotationTypeManager();
     }
 
-    @Deprecated
-    public void addBindingType(Class<? extends Annotation> bindingType)
-    {
-        xmlBindingTypes.add(bindingType);
-    }
-
-    public void addResource(Class<? extends Annotation> resource)
-    {
-        xmlResources.add(resource);
-    }
-
-    public boolean hasBindingType(Class<? extends Annotation> bindingType)
-    {
-        if (xmlBindingTypes.contains(bindingType))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean hasResource(Class<? extends Annotation> resource)
-    {
-        if (xmlResources.contains(resource))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    /*X TODO REMOVE
-    public void addStereoType(Class<? extends Annotation> stereoType, Element decleration, String name, String errorMessage)
-    {
-        webBeansContext.getAnnotationManager().checkStereoTypeClass(stereoType, stereoType.getDeclaredAnnotations());
-
-        XMLStereoTypeModel model = new XMLStereoTypeModel(decleration, name, errorMessage);
-        manager.addStereoTypeModel(model);
-
-        xmlStereoTypes.add(stereoType);
-    }
-    */
-
-    public boolean hasStereoType(Class<? extends Annotation> stereoType)
-    {
-        if (xmlStereoTypes.contains(stereoType))
-        {
-            return true;
-        }
-
-        return false;
-    }
 
     public void addInterceotorBindingTypeInheritAnnotation(Class<? extends Annotation> bindingType, Annotation inherit)
     {
@@ -155,29 +91,10 @@ public class XMLAnnotationTypeManager
         return false;
     }
 
-    public Set<Class<? extends Annotation>> getBindingTypes()
-    {
-        return Collections.unmodifiableSet(xmlBindingTypes);
-    }
-
-    public Set<Class<? extends Annotation>> getResources()
-    {
-        return Collections.unmodifiableSet(xmlResources);
-    }
 
     public Set<Annotation> getInterceptorBindingTypeInherites(Class<? extends Annotation> interceptorBindingType)
     {
         return Collections.unmodifiableSet(xmlInterceptorBindingTypes.get(interceptorBindingType));
-    }
-
-    public Set<Class<? extends Annotation>> getInterceptorBindingTypes()
-    {
-        return Collections.unmodifiableSet(xmlInterceptorBindingTypes.keySet());
-    }
-
-    public Set<Class<? extends Annotation>> getStereotypes()
-    {
-        return Collections.unmodifiableSet(xmlStereoTypes);
     }
 
 }

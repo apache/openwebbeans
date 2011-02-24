@@ -83,4 +83,5 @@ public class StereoTypeManager
 
         return null;
     }
+
 }

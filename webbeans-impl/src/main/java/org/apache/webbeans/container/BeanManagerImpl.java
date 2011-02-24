@@ -142,7 +142,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     
     /**Additional interceptor class*/
     private List<Class<?>> additionalInterceptorClasses = new CopyOnWriteArrayList<Class<?>>();
-    
+
     /**
      * This list contains additional qualifiers which got set via the {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
      * event function.
@@ -1125,16 +1125,19 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
     }
 
+
     public List<ExternalScope> getAdditionalScopes()
     {
         return additionalScopes;
     }
     
-    public List<AnnotatedType<?>> getAnnotatedTypes()
+    public List<AnnotatedType<?>> getAdditionalAnnotatedTypes()
     {
-        return this.additionalAnnotatedTypes;
+        return additionalAnnotatedTypes;
     }
-    
+
+
+
     public void clear()
     {
         this.additionalAnnotatedTypes.clear();

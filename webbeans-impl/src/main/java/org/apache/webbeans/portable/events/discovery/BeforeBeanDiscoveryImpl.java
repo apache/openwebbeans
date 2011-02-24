@@ -90,13 +90,9 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addStereotype(Class<? extends Annotation> stereotype, Annotation... stereotypeDef)
     {
-        if (!webBeansContext.getXMLAnnotationTypeManager().hasStereoType(stereotype))
-        {
-            webBeansContext.getAnnotationManager().checkStereoTypeClass(stereotype, stereotypeDef);
-            StereoTypeModel model = new StereoTypeModel(webBeansContext, stereotype, stereotypeDef);
-            webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
-        }
-        
+        webBeansContext.getAnnotationManager().checkStereoTypeClass(stereotype, stereotypeDef);
+        StereoTypeModel model = new StereoTypeModel(webBeansContext, stereotype, stereotypeDef);
+        webBeansContext.getStereoTypeManager().addStereoTypeModel(model);
     }
 
 }
