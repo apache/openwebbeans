@@ -65,11 +65,11 @@ public class AnnotationDB implements Serializable
     protected Map<String, Set<String>> implementsIndex = new HashMap<String, Set<String>>();
     protected Map<String, Set<String>> classIndex = new HashMap<String, Set<String>>();
 
-    protected transient boolean scanClassAnnotations = true;
-    protected transient boolean scanMethodAnnotations = true;
-    protected transient boolean scanParameterAnnotations = true;
-    protected transient boolean scanFieldAnnotations = true;
-    protected transient String[] ignoredPackages = {"javax", "java", "sun", "com.sun", "javassist"};
+    protected boolean scanClassAnnotations = true;
+    protected boolean scanMethodAnnotations = true;
+    protected boolean scanParameterAnnotations = true;
+    protected boolean scanFieldAnnotations = true;
+    protected String[] ignoredPackages = {"javax", "java", "sun", "com.sun", "javassist"};
 
     public class CrossReferenceException extends Exception
     {
