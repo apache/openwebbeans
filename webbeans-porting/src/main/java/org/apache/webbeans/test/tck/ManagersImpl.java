@@ -27,7 +27,7 @@ import org.jboss.testharness.api.DeploymentException;
 
 public class ManagersImpl implements Managers
 {
-    private static InjectableBeanManager beanManager;
+    private static volatile InjectableBeanManager beanManager;
     
     public static void cleanUp()
     {

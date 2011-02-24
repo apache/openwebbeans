@@ -48,7 +48,7 @@ public class JmsProxyHandler implements MethodHandler
 {
     private JmsBean<?> jmsComponent = null;
 
-    private static ConnectionFactory connectionFactory = null;
+    private static volatile ConnectionFactory connectionFactory = null;
 
     private AtomicBoolean cfSet = new AtomicBoolean(false);
 

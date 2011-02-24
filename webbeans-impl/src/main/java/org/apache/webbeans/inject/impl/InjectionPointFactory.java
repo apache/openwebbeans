@@ -217,22 +217,6 @@ public class InjectionPointFactory
         return lists;
     }
 
-
-
-    private static boolean checkMethodApplicable(Annotation[] annot)
-    {
-        for (Annotation observersAnnot : annot)
-        {
-            if (observersAnnot.annotationType().equals(Observes.class))
-            {
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
     public static InjectionPoint getPartialInjectionPoint(Bean<?> owner,Type type, Member member, Annotated annotated, Annotation...bindings)
     {
         InjectionPointImpl impl = new InjectionPointImpl(owner,type,member,annotated);

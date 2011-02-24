@@ -579,7 +579,7 @@ public final class ClassUtil
 
         return objectMethodNames;
     }
-    private static List objectMethodNames= null;
+    private static volatile List objectMethodNames= null;
     
 
 

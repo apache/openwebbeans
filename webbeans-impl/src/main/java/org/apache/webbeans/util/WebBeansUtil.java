@@ -180,7 +180,7 @@ public final class WebBeansUtil
      * Enforcing that interceptor callbacks should not be
      * able to throw checked exceptions is configurable
      */
-    private static Boolean enforceCheckedException;
+    private static volatile Boolean enforceCheckedException;
 
     private final WebBeansContext webBeansContext;
 
