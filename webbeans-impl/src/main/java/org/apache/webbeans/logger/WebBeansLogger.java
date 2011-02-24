@@ -107,7 +107,7 @@ public final class WebBeansLogger implements Serializable, Externalizable
     {
         if (logger.isLoggable(level))
         {
-            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey);
+            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), messageKey);
         }
     }
 
@@ -115,7 +115,7 @@ public final class WebBeansLogger implements Serializable, Externalizable
     {
         if (logger.isLoggable(level))
         {
-            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey, args);
+            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), messageKey, args);
         }
     }
 
@@ -123,7 +123,7 @@ public final class WebBeansLogger implements Serializable, Externalizable
     {
         if (logger.isLoggable(level))
         {
-            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[4].getMethodName(), messageKey, e);
+            logger.logp(level, this.caller.getName(), Thread.currentThread().getStackTrace()[3].getMethodName(), messageKey, e);
         }
     }
 
