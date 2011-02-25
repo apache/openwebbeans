@@ -18,37 +18,22 @@
  */
 package org.apache.webbeans.newtests.el;
 
+import javax.enterprise.context.RequestScoped;
 import java.io.Serializable;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-@SessionScoped
-@Named
-public class SampleBean implements Serializable
+@RequestScoped
+public class RequestBean implements Serializable
 {
-    private int x=121;
-    private @Inject RequestBean rb;
+    private int y = 323;
 
-    public int getX()
+    public int getY()
     {
-        return x;
+        return y;
     }
 
-    public void setX(int x)
+    public void setY(int y)
     {
-        this.x = x;
-    }
-
-    public RequestBean getRb()
-    {
-        return rb;
-    }
-
-    public void setRb(RequestBean rb)
-    {
-        this.rb = rb;
+        this.y = y;
     }
 }
 
