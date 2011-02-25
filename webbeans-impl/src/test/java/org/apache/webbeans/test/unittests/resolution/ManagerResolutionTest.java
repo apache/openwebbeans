@@ -40,7 +40,7 @@ public class ManagerResolutionTest extends TestContext
     public void beforeTest()
     {
         super.init();
-        getManager().addBean(WebBeansContext.getInstance().getWebBeansUtil().getManagerBean());
+        getManager().addInternalBean(WebBeansContext.getInstance().getWebBeansUtil().getManagerBean());
     }
 
     @Test

@@ -146,7 +146,7 @@ public class BeansDeployer
                 }
 
                 // Register Manager built-in component
-                webBeansContext.getBeanManagerImpl().addBean(webBeansContext.getWebBeansUtil().getManagerBean());
+                webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getWebBeansUtil().getManagerBean());
 
                 //Fire Event
                 fireBeforeBeanDiscoveryEvent();
@@ -200,16 +200,16 @@ public class BeansDeployer
         WebBeansUtil webBeansUtil = webBeansContext.getWebBeansUtil();
 
         // Register Conversation built-in component
-        beanManager.addBean(webBeansUtil.getConversationBean());
+        beanManager.addInternalBean(webBeansUtil.getConversationBean());
         
         // Register InjectionPoint bean
-        beanManager.addBean(webBeansUtil.getInjectionPointBean());
+        beanManager.addInternalBean(webBeansUtil.getInjectionPointBean());
         
         //Register Instance Bean
-        beanManager.addBean(webBeansUtil.getInstanceBean());
+        beanManager.addInternalBean(webBeansUtil.getInstanceBean());
         
         //Register Event Bean
-        beanManager.addBean(webBeansUtil.getEventBean());
+        beanManager.addInternalBean(webBeansUtil.getEventBean());
         
         //REgister Provider Beans
         OpenWebBeansJavaEEPlugin beanEeProvider = webBeansContext.getPluginLoader().getJavaEEPlugin();
@@ -241,7 +241,7 @@ public class BeansDeployer
         
         if(bean != null)
         {
-            manager.addBean(bean);
+            manager.addInternalBean(bean);
         }
     }
     

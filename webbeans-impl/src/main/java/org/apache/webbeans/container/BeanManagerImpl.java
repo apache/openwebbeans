@@ -177,6 +177,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private final WebBeansContext webBeansContext;
 
     /**
+     * This flag will get set to <code>true</code> if a custom bean
+     * (all non-internal beans like {@link org.apache.webbeans.component.BeanManagerBean;} etc)
+     * gets set.
+     */
+    private boolean inUse = false;
+
+    /**
      * Creates a new {@link BeanManager} instance.
      * Called by the system. Do not use outside of the
      * system.
@@ -306,13 +313,25 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     /**
-     * Add new bean.
+     * Add new bean to the BeanManager.
+     * This will also set OWBs {@link #inUse} status.
      * 
      * @param newBean new bean instance
      * @return the this manager
      */
-    
     public BeanManager addBean(Bean<?> newBean)
+    {
+        inUse = true;
+        return addInternalBean(newBean);
+    }
+
+    /**
+     * This method is reserved for adding 'internal beans'
+     * like e.g. a BeanManagerBean,
+     * @param newBean
+     * @return
+     */
+    public BeanManager addInternalBean(Bean<?> newBean)
     {
         if(newBean instanceof AbstractOwbBean)
         {
@@ -325,10 +344,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             addPassivationInfo(bean);
             this.deploymentBeans.add(bean);
         }
-        
 
         return this;
     }
+
 
     /**
      * Check if the bean is has a passivation id and add it to the id store.
@@ -1154,5 +1173,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         this.passivationBeans.clear();
         this.webBeansDecorators.clear();
         this.webBeansInterceptors.clear();
+    }
+
+    public boolean isInUse()
+    {
+        return inUse;
     }
 }

@@ -72,7 +72,7 @@ public class TypeLiteralTest extends TestContext
         clear();
 
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        webBeansContext.getBeanManagerImpl().addBean(webBeansContext.getWebBeansUtil().getInstanceBean());
+        webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getWebBeansUtil().getInstanceBean());
         
         defineManagedBean(StringOrder.class);
         defineManagedBean(IntegerOrder.class);
