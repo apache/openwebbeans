@@ -190,11 +190,10 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
             {
                 // we must not log in this place because this almost takes away half of the performance!
-                //GE : Log on TRACE Level
-                if(logger.wblWillLogTrace())
-                {
-                    logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);   
-                }
+                // if(logger.wblWillLogTrace())
+                // {
+                //    logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);
+                // }
             }
             
             else if (bean instanceof InjectionTargetBean<?>)
