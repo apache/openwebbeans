@@ -23,12 +23,23 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.el.WebBeansELResolver;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.newtests.AbstractUnitTest;
+import org.junit.Assert;
 import org.junit.Test;
+
+import javax.el.ELContext;
 
 public class ELPerformanceTest extends AbstractUnitTest
 {
+    private final static int THREADS = 100;
+    private final static int ITERATIONS = 200;
+
+
+    private static WebBeansLogger logger = WebBeansLogger.getLogger(ELPerformanceTest.class);
+
     /**
      * Test our bean creation for thread safety.
      */
@@ -38,22 +49,32 @@ public class ELPerformanceTest extends AbstractUnitTest
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
 
         classes.add(SampleBean.class);
+        classes.add(RequestBean.class);
+
+        // we need this to enable the EL resolver at all!
+
         startContainer(classes);
-        
+
         List<ParallelBeanStarter> strarters = new ArrayList<ParallelBeanStarter>();
         WebBeansELResolver resolver = new WebBeansELResolver();
-        for(int i=0;i<500;i++)
+
+        long start = System.nanoTime();
+
+        for(int i=0; i<THREADS; i++)
         {
             ParallelBeanStarter starter = new ParallelBeanStarter(resolver);
             strarters.add(starter);
+            starter.start();
         }
         
-        for(ParallelBeanStarter start : strarters)
+        for(ParallelBeanStarter starter : strarters)
         {
-            start.start();
+            starter.join();
         }        
         
-        System.out.println("Completed");
+        long end = System.nanoTime();
+
+        logger.info("Executing {0} threads with {1} iterations took {2} ns", THREADS, ITERATIONS, end - start);
         
         shutDownContainer();
     }
@@ -61,6 +82,7 @@ public class ELPerformanceTest extends AbstractUnitTest
     private static class ParallelBeanStarter extends Thread
     {
         private WebBeansELResolver resolver;
+        private ELContext elctx = new MockELContext();
         private static AtomicInteger n = new AtomicInteger(0);
         
         public ParallelBeanStarter(WebBeansELResolver resolver)
@@ -71,14 +93,28 @@ public class ELPerformanceTest extends AbstractUnitTest
         @Override
         public void run()
         {
+            WebBeansContext.currentInstance().getContextFactory().initRequestContext(null);
+            WebBeansContext.currentInstance().getContextFactory().initSessionContext(null);
+
             try
             {
-                System.out.println(n.incrementAndGet());
-                resolver.getValue(new MockELContext() , null, "sampleBean");
-                
-            }catch(Exception e)
+                for (int i = 0; i < ITERATIONS; i++)
+                {
+                    SampleBean sb = (SampleBean) resolver.getValue(elctx , null, "sampleBean");
+                    sb.getRb().getY();
+                    sb.getX();
+                }
+            }
+            catch(RuntimeException e)
             {
-                e.printStackTrace();
+                logger.error(e);
+                Assert.fail("got an exception: " + e.getMessage());
+                throw e;
+            }
+            finally
+            {
+                WebBeansContext.currentInstance().getContextFactory().destroyRequestContext(null);
+                WebBeansContext.currentInstance().getContextFactory().destroySessionContext(null);
             }
         }
     }
