@@ -18,6 +18,11 @@
  */
 package org.apache.webbeans.portable;
 
+import org.apache.webbeans.util.SecurityUtil;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,13 +45,13 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
     private final Class<X> annotatedClass;
     
     /**Constructors*/
-    private Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>();
+    private Set<AnnotatedConstructor<X>> constructors = null;
     
     /**Fields*/
-    private Set<AnnotatedField<? super X>> fields = new HashSet<AnnotatedField<? super X>>();
+    private Set<AnnotatedField<? super X>> fields = null;
     
     /**Methods*/
-    private Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>();
+    private Set<AnnotatedMethod<? super X>> methods = null;
     
     /**
      * Creates a new instance.
@@ -60,7 +65,48 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
         
         setAnnotations(annotatedClass.getDeclaredAnnotations());
     }
-    
+
+    private synchronized void init()
+    {
+        if (constructors == null)
+        {
+            constructors = new HashSet<AnnotatedConstructor<X>>();
+            fields = new HashSet<AnnotatedField<? super X>>();
+            methods = new HashSet<AnnotatedMethod<? super X>>();
+
+            Field[] decFields = SecurityUtil.doPrivilegedGetDeclaredFields(annotatedClass);
+            Method[] decMethods = SecurityUtil.doPrivilegedGetDeclaredMethods(annotatedClass);
+            Constructor<X>[] decCtxs = SecurityUtil.doPrivilegedGetDeclaredConstructors(annotatedClass);
+            for(Field f : decFields)
+            {
+                AnnotatedField<X> af = new AnnotatedFieldImpl<X>(f, this);
+                fields.add(af);
+            }
+
+            for(Method m : decMethods)
+            {
+                AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(m,this);
+                methods.add(am);
+            }
+
+            for(Constructor<X> ct : decCtxs)
+            {
+                AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(ct,this);
+                constructors.add(ac);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Class<X> getJavaClass()
+    {
+        return this.annotatedClass;
+    }
+
+
     /**
      * Adds new annotated constructor.
      * 
@@ -68,26 +114,38 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
      */
     void addAnnotatedConstructor(AnnotatedConstructor<X> constructor)
     {
+        if (constructors == null)
+        {
+            init();
+        }
         this.constructors.add(constructor);
     }
     
     /**
      * Adds new annotated field.
      * 
-     * @param constructor new field
+     * @param field new field
      */
     void addAnnotatedField(AnnotatedField<? super X> field)
     {
+        if (constructors == null)
+        {
+            init();
+        }
         this.fields.add(field);
     }
 
     /**
      * Adds new annotated method.
      * 
-     * @param constructor new method
+     * @param method new method
      */
     void addAnnotatedMethod(AnnotatedMethod<? super X> method)
     {
+        if (constructors == null)
+        {
+            init();
+        }
         this.methods.add(method);
     }    
     
@@ -97,6 +155,11 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
     @Override
     public Set<AnnotatedConstructor<X>> getConstructors()
     {
+        if (constructors == null)
+        {
+            init();
+        }
+
         return Collections.unmodifiableSet(this.constructors);
     }
 
@@ -106,16 +169,12 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
     @Override
     public Set<AnnotatedField<? super X>> getFields()
     {
-        return Collections.unmodifiableSet(this.fields);
-    }
+        if (constructors == null)
+        {
+            init();
+        }
 
-    /**
-     * {@inheritDoc}
-     */    
-    @Override
-    public Class<X> getJavaClass()
-    {
-        return this.annotatedClass;
+        return Collections.unmodifiableSet(this.fields);
     }
 
     /**
@@ -124,6 +183,11 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
     @Override
     public Set<AnnotatedMethod<? super X>> getMethods()
     {
+        if (constructors == null)
+        {
+            init();
+        }
+
         return Collections.unmodifiableSet(this.methods);
     }
 

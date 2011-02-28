@@ -33,7 +33,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Factory for {@link javax.enterprise.inject.spi.Annotated} elements.
@@ -97,27 +96,6 @@ public final class AnnotatedElementFactory
             {
                 annotatedType = new AnnotatedTypeImpl<X>(annotatedClass);
 
-                Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(annotatedClass);
-                Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(annotatedClass);
-                Constructor<X>[] ctxs = (Constructor<X>[])SecurityUtil.doPrivilegedGetDeclaredConstructors(annotatedClass);
-                for(Field f : fields)
-                {
-                    AnnotatedField<X> af = new AnnotatedFieldImpl<X>(f, annotatedType);
-                    annotatedType.addAnnotatedField(af);
-                }
-
-                for(Method m : methods)
-                {
-                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(m,annotatedType);
-                    annotatedType.addAnnotatedMethod(am);
-                }
-
-                for(Constructor<X> ct : ctxs)
-                {
-                    AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(ct,annotatedType);
-                    annotatedType.addAnnotatedConstructor(ac);
-                }
-                
                 AnnotatedTypeImpl<X> oldType = (AnnotatedTypeImpl<X>)annotatedTypeCache.putIfAbsent(annotatedClass, annotatedType);
                 if(oldType != null)
                 {
