@@ -86,7 +86,7 @@ public final class AnnotatedElementFactory
     public <X> AnnotatedType<X> newAnnotatedType(Class<X> annotatedClass)
     {
         Asserts.assertNotNull(annotatedClass, "annotatedClass is null");
-        AnnotatedTypeImpl<X> annotatedType = null;
+        AnnotatedTypeImpl<X> annotatedType;
         if(annotatedTypeCache.containsKey(annotatedClass))
         {
             annotatedType = (AnnotatedTypeImpl<X>)annotatedTypeCache.get(annotatedClass);

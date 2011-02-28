@@ -178,7 +178,11 @@ public class BeansDeployer
                 //Fire Event
                 fireAfterDeploymentValidationEvent();
 
+
+                // do some cleanup after the deployment
                 scanner.release();
+                webBeansContext.getAnnotatedElementFactory().clear();
+
                 deployed = true;
             }
 

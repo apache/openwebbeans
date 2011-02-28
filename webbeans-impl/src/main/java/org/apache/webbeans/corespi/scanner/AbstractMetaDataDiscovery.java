@@ -66,10 +66,10 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         {
             annotationDB = new AnnotationDB();
             annotationDB.setScanClassAnnotations(true);
-            annotationDB.crossReferenceMetaAnnotations();
             annotationDB.setScanFieldAnnotations(false);
             annotationDB.setScanMethodAnnotations(false);
             annotationDB.setScanParameterAnnotations(false);
+            annotationDB.crossReferenceMetaAnnotations();
         }
         catch(Exception e)
         {
