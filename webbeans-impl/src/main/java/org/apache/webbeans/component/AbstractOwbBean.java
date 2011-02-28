@@ -51,7 +51,7 @@ import org.apache.webbeans.util.ClassUtil;
 public abstract class AbstractOwbBean<T> implements OwbBean<T>
 {
     /**Logger instance*/
-    protected final WebBeansLogger logger = WebBeansLogger.getLogger(getClass());
+    private WebBeansLogger logger = null;
     
     /** Name of the bean */
     protected String name;
@@ -119,7 +119,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         this.returnType = returnType;
         this.webBeansContext = webBeansContext;
     }
-    
+
     /**
      * Creates a new instance.
      * 
@@ -224,11 +224,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         try
         {
-            if (logger.wblWillLogDebug())
-            {
-                logger.debug("Destroying instance : [{0}]", this);
-            }
-            
             InjectionTargetWrapper<T> wrapper = getManager().getInjectionTargetWrapper(this);
             if(wrapper != null)
             {
@@ -250,7 +245,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         }
         catch(Exception e)
         {
-            logger.fatal(e, OWBLogConst.FATAL_0001, this);
+            getLogger().fatal(e, OWBLogConst.FATAL_0001, this);
         }
         finally
         {
@@ -660,10 +655,17 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         
         return builder.toString();
     }
-    
-    protected WebBeansLogger getLogger()
+
+    /**
+     * The Logger should really only be used to log errors!
+     */
+    protected synchronized WebBeansLogger getLogger()
     {
-        return this.logger;
+        if (logger == null)
+        {
+            logger = WebBeansLogger.getLogger(getClass());
+        }
+        return logger;
     }
 
     @Override

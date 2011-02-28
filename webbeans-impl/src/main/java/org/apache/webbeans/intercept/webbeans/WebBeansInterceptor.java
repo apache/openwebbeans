@@ -413,7 +413,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         }
         catch (Exception e)
         {
-            logger.error(e);
+            getLogger().error(e);
             throw new WebBeansException(e);
         }
 

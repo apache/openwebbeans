@@ -322,7 +322,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
 
         //Define annotated parameter
         AnnotatedType<T> annotatedType = (AnnotatedType<T>) annotatedElementFactory.newAnnotatedType(this.bean.getReturnType());
-        AnnotatedMethod<T> annotatedMethod = (AnnotatedMethod<T>)annotatedElementFactory.newAnnotatedMethod(this.observerMethod, annotatedType);
+        AnnotatedMethod<T> annotatedMethod = annotatedElementFactory.newAnnotatedMethod(this.observerMethod, annotatedType);
         
         Type[] types = this.observerMethod.getGenericParameterTypes();
         Annotation[][] annots = this.observerMethod.getParameterAnnotations();

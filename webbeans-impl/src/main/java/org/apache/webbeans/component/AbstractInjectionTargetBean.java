@@ -51,7 +51,6 @@ import org.apache.webbeans.intercept.InterceptorType;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
-import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.util.ClassUtil;
@@ -262,7 +261,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
 
                 catch (Exception e)
                 {
-                    logger.error(OWBLogConst.ERROR_0008, e, "@PostConstruct.");
+                    getLogger().error(OWBLogConst.ERROR_0008, e, "@PostConstruct.");
                     throw new WebBeansException(e);
                 }
             }            
@@ -300,7 +299,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 }
                 catch (Exception e)
                 {
-                    logger.error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
+                    getLogger().error(OWBLogConst.ERROR_0008, e, "@PreDestroy.");
                     throw new WebBeansException(e);
                 }
             }            
@@ -417,9 +416,9 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             }
             catch (Exception e)
             {
-                logger.error(OWBLogConst.ERROR_0023, instance);
+                getLogger().error(OWBLogConst.ERROR_0023, instance);
                 throw new WebBeansException(MessageFormat.format(
-                        logger.getTokenString(OWBLogConst.ERROR_0023), instance), e);
+                        getLogger().getTokenString(OWBLogConst.ERROR_0023), instance), e);
             }
         }
     }
@@ -549,17 +548,6 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
     {
         this.inheritedMetaData = new BeanInheritedMetaData<T>(this);
     }
-    
-    
-    /**
-     * Returns bean logger instance.
-     * 
-     * @return logger
-     */
-    protected WebBeansLogger getLogger()
-    {
-        return this.logger;
-    }
 
     /**
      * {@inheritDoc}
@@ -603,7 +591,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             if(!decorator.isPassivationCapable())
             {
                 throw new WebBeansConfigurationException(MessageFormat.format(
-                        logger.getTokenString(OWBLogConst.EXCEPT_0015), toString()));
+                        getLogger().getTokenString(OWBLogConst.EXCEPT_0015), toString()));
             }
             else
             {
@@ -619,7 +607,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                 if(!interceptor.isPassivationCapable())
                 {
                     throw new WebBeansConfigurationException(MessageFormat.format(
-                            logger.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
+                            getLogger().getTokenString(OWBLogConst.EXCEPT_0016), toString()));
                 }
                 else
                 {
@@ -634,14 +622,14 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                     if(!Serializable.class.isAssignableFrom(interceptorClass))
                     {
                         throw new WebBeansConfigurationException(MessageFormat.format(
-                                logger.getTokenString(OWBLogConst.EXCEPT_0016), toString()));
+                                getLogger().getTokenString(OWBLogConst.EXCEPT_0016), toString()));
                     }               
                     else
                     {
                         if(!AnnotationManager.checkInjectionPointForInterceptorPassivation(interceptorClass))
                         {
                             throw new WebBeansConfigurationException(MessageFormat.format(
-                                    logger.getTokenString(OWBLogConst.EXCEPT_0017), toString(), interceptorClass));
+                                    getLogger().getTokenString(OWBLogConst.EXCEPT_0017), toString(), interceptorClass));
                         }
                     }
                 }

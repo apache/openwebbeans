@@ -147,7 +147,6 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
      * @param proxyInstance The contextual reference 
      * @param ejbInstance The underlying EJB instance to be removed
      */
-    
     protected void destroyStatefulSessionBeanInstance(T proxyInstance, Object ejbInstance)
     {
         Method removeMeth = null;
@@ -164,10 +163,8 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
             }
             catch (NoSuchMethodException e) 
             {
-                if (logger.wblWillLogDebug())
-                {
-                    logger.debug("Error calling remove method: ", e);
-                }
+                getLogger().error("Error calling Stateful Session Bean remove method: ", e);
+                throw new RuntimeException(e);
             }
         }
     }

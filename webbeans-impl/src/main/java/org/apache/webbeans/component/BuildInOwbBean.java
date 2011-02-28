@@ -32,9 +32,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyObject;
 
-import org.apache.webbeans.config.BeansDeployer;
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 
 /**
@@ -58,10 +56,6 @@ import org.apache.webbeans.proxy.JavassistProxyFactory;
 public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
 {
 
-    //Logger instance
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(BeansDeployer.class);
-
-    
     private final HashMap<WebBeansType, String> proxyHandlerMap = new HashMap<WebBeansType, String>();
 
     
@@ -184,15 +178,15 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
                 } 
                 catch (ClassNotFoundException e) 
                 {
-                    logger.error(e);
+                    getLogger().error(e);
                 } 
                 catch (SecurityException e) 
                 {
-                    logger.error(e);
+                    getLogger().error(e);
                 } 
                 catch (NoSuchMethodException e) 
                 {
-                    logger.error(e);
+                    getLogger().error(e);
                 }
                 buildinBean.handlerClass = null;
                 buildinBean.handlerContructor = null;
@@ -237,7 +231,8 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
             } 
             catch (Exception e) 
             {
-                logger.error(e);
+                getLogger().error(e);
+                //X TODO don't we rethrow this Exception?
             }
         }
         return null;

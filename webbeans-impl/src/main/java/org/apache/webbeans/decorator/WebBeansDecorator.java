@@ -83,7 +83,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     
     /**
      * Creates a new decorator bean instance with the given wrapped bean.
-     * @param delegateComponent delegate bean instance
+     * @param wrappedBean wrapped bean instance
      */
     public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean, Decorator<T> customDecorator)
     {
@@ -96,7 +96,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     
     /**
      * Creates a new decorator bean instance with the given wrapped bean.
-     * @param delegateComponent delegate bean instance
+     * @param wrappedBean wrapped bean instance
      */
     public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean)
     {
@@ -322,13 +322,13 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         }
         catch (IllegalArgumentException e)
         {
-            logger.error(OWBLogConst.ERROR_0007, e, instance.getClass().getName());
+            getLogger().error(OWBLogConst.ERROR_0007, e, instance.getClass().getName());
             throw new WebBeansException(e);
 
         }
         catch (IllegalAccessException e)
         {
-            logger.error(OWBLogConst.ERROR_0015, e, delegateField.getName(), instance.getClass().getName());
+            getLogger().error(OWBLogConst.ERROR_0015, e, delegateField.getName(), instance.getClass().getName());
         }
 
     }
