@@ -177,7 +177,8 @@ public class BeansDeployer
                 
                 //Fire Event
                 fireAfterDeploymentValidationEvent();
-                
+
+                scanner.release();
                 deployed = true;
             }
 

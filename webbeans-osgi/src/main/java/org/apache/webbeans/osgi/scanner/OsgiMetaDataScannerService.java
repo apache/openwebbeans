@@ -76,6 +76,14 @@ public class OsgiMetaDataScannerService implements ScannerService
     }
 
     @Override
+    public void release()
+    {
+        beanClasses = new HashSet<Class<?>>();
+        beanXMLs = new HashSet<String>();
+        beanArchiveJarNames = new HashSet<String>();
+    }
+
+    @Override
     public void scan() throws WebBeansDeploymentException
     {
         logger.info("Using OsgiMetaDataScannerService!");

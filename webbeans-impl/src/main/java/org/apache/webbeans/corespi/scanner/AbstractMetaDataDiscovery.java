@@ -57,6 +57,11 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
     protected AbstractMetaDataDiscovery()
     {
+        initAnnotationDB();
+    }
+
+    private void initAnnotationDB()
+    {
         try
         {
             annotationDB = new AnnotationDB();
@@ -69,9 +74,9 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         catch(Exception e)
         {
             throw new WebBeansDeploymentException(e);
-        }                
+        }
     }
-    
+
     /**
      * Configure the Web Beans Container with deployment information and fills
      * annotation database and beans.xml stream database.
@@ -89,8 +94,13 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
             throw new WebBeansDeploymentException(e);
         }
     }
-    
-    
+
+    @Override
+    public void release()
+    {
+        initAnnotationDB();
+    }
+
     abstract protected void configure() throws Exception;
 
     /**

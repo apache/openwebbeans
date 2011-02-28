@@ -47,6 +47,14 @@ public interface ScannerService
      */
     public void scan();
 
+
+    /**
+     * This method will get called once the information found by the current
+     * scan is not needed anymore and the ScannerService might free up
+     * resources.
+     */
+    public void release();
+
     
     /**
      * Gets xml configuration files that are occured

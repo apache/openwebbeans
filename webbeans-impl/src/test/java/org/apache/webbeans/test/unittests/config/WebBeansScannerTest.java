@@ -24,6 +24,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.spi.ScannerService;
 
@@ -41,11 +42,15 @@ public class WebBeansScannerTest extends AbstractUnitTest
     {
         List<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(ScannerTestBean.class);
-        
+
         //Start test container
         startContainer(classes);
-        
-        ScannerService scanner = getWebBeansContext().getScannerService();
+
+        OpenWebBeansTestMetaDataDiscoveryService scanner = (OpenWebBeansTestMetaDataDiscoveryService) getWebBeansContext().getScannerService();
+        scanner.deployClasses(classes);
+
+        scanner.scan();
+
         Set<Class<?>> classMap = scanner.getBeanClasses();
         Assert.assertNotNull(classMap);
         Assert.assertFalse(classMap.isEmpty());
