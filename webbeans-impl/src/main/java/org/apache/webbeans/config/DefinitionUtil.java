@@ -35,6 +35,8 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
@@ -508,7 +510,7 @@ public final class DefinitionUtil
                     // the bean contains at least one CDI feature
                     component.setImplScopeType(new DependentScopeLiteral());
 
-                    if (component instanceof ManagedBean && !useCdiAnnotations(component.getBeanClass()))
+                    if (component instanceof ManagedBean && isPurePojoBean(component.getBeanClass()))
                     {
                         ((ManagedBean) component).setFullInit(false);
                     }
@@ -519,66 +521,65 @@ public final class DefinitionUtil
     }
 
     /**
+     * TODO this should get improved.
+     * It might be enough to check for instanceof Produces and Decorates
+     *
+     *
      * Check if the bean uses CDI features
      * @param cls the Class to check
-     * @return <code>true</code> if the bean uses CDI annotations somewhere
+     * @return <code>false</code> if the bean uses CDI annotations which define other beans somewhere
      */
-    private static boolean useCdiAnnotations(Class<?> cls)
+    private static boolean isPurePojoBean(Class<?> cls)
     {
         Class superClass = cls.getSuperclass();
-        if ( superClass != Object.class && useCdiAnnotations(superClass))
+
+        if ( superClass != Object.class && isPurePojoBean(superClass))
         {
-            return true;
+            return false;
         }
 
-        if (containsCdiAnnotation(cls.getAnnotations()))
+
+        Annotation[] anns = cls.getAnnotations();
+        for (Annotation ann : anns)
         {
-            return true;
+            if (ann instanceof Specializes ||
+                ann instanceof Alternative ||
+                ann instanceof Stereotype   )
+            {
+                return false;
+            }
         }
 
         Field[] fields = cls.getDeclaredFields();
         for (Field field : fields)
         {
-            if (containsCdiAnnotation(field.getAnnotations()))
+            anns = field.getAnnotations();
+            for (Annotation ann : anns)
             {
-                return true;
+                if (ann instanceof Inject ||
+                    ann instanceof Produces )
+                {
+                    return false;
+                }
             }
         }
 
         Method[] methods = cls.getDeclaredMethods();
         for (Method method : methods)
         {
-            if (containsCdiAnnotation(method.getAnnotations()))
+            anns = method.getAnnotations();
+            for (Annotation ann : anns)
             {
-                return true;
-            }
-        }
-
-        //X TODO also check method parameters?
-
-        return false;
-    }
-
-    /**
-     * A CDI annotation must either start with 'javax.inject.' or 'javax.enterprise'
-     * @return true if at least one of the given annotations is a CDI annotation
-     */
-    private static boolean containsCdiAnnotation(Annotation[] annotations)
-    {
-        if (annotations != null && annotations.length > 0)
-        {
-            for (Annotation ann : annotations)
-            {
-                String annName = ann.toString();
-                if (annName.startsWith("@javax.inject") || annName.startsWith("@javax.enterprise"))
+                if (ann instanceof Produces)
                 {
-                    return true;
+                    return false;
                 }
             }
         }
 
-        return false;
+        return true;
     }
+
 
     /**
      * Configure web beans component name.
