@@ -138,6 +138,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.exception.inject.DefinitionException;
+import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
 import org.apache.webbeans.exception.inject.NullableDependencyException;
 import org.apache.webbeans.inject.AlternativesManager;
@@ -2133,6 +2134,11 @@ public final class WebBeansUtil
                                                                     webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
                                                                         clazz.getDeclaredAnnotations()));
             }
+            else
+            {
+                // TODO could probably be a bit more descriptive
+                throw new DeploymentException("Cannot create Interceptor for class" + injectionTargetEvent.getAnnotatedType());
+            }
         }
 
     }
@@ -2168,7 +2174,8 @@ public final class WebBeansUtil
             }
             else
             {
-                logger.trace("Unable to configure decorator with class : [{0}]", clazz);
+                // TODO could probably be a bit more descriptive
+                throw new DeploymentException("Cannot create Decorator for class" + processInjectionTargetEvent.getAnnotatedType());
             }
         }
     }
@@ -2783,6 +2790,11 @@ public final class WebBeansUtil
     {
 
         ManagedBean<T> bean = defineManagedBean(managedBeanCreator, processInjectionTargetEvent);
+        if (bean == null)
+        {
+            // TODO could probably be a bit more descriptive
+            throw new DeploymentException("Cannot create ManagedBean for class" + processInjectionTargetEvent.getAnnotatedType());
+        }
 
         //X TODO move proxy instance creation into JavassistProxyFactory!
         Class clazz = webBeansContext.getJavassistProxyFactory().createAbstractDecoratorProxyClass(bean);
@@ -2802,13 +2814,16 @@ public final class WebBeansUtil
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         Class<T> clazz = annotatedType.getJavaClass();
 
-        managedBeanCreator.defineSerializable();
-
         //Define meta-data
         managedBeanCreator.defineStereoTypes();
         //Scope type
         managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
                 logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
+
+        managedBean.setFullInit(true);
+
+        managedBeanCreator.defineSerializable();
+
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBean);
 
@@ -2932,14 +2947,15 @@ public final class WebBeansUtil
         ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
         managedBeanCreator.setAnnotatedType(type);
 
-        managedBeanCreator.defineSerializable();
-
         //Define meta-data
         managedBeanCreator.defineStereoTypes();
 
         //Scope type
         managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName() +
                 logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));
+
+        managedBeanCreator.defineSerializable();
+
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBean);
         managedBeanCreator.defineApiType();
@@ -3090,14 +3106,25 @@ public final class WebBeansUtil
         AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(managedBean);
         managedBeanCreator.setAnnotatedType(type);
 
-        managedBeanCreator.defineSerializable();
-
         //Define meta-data
         managedBeanCreator.defineStereoTypes();
 
         //Scope type
         managedBeanCreator.defineScopeType(logger.getTokenString(OWBLogConst.TEXT_MB_IMPL) + clazz.getName()
                                            + logger.getTokenString(OWBLogConst.TEXT_SAME_SCOPE));                                        
+
+        if (managedBean.isFullInit())
+        {
+            initializeManagedBean(clazz, managedBean, managedBeanCreator);
+        }
+
+        return managedBean;
+    }
+
+    public void initializeManagedBean(Class<?> clazz, ManagedBean<?> managedBean, AnnotatedTypeBeanCreatorImpl<?> managedBeanCreator)
+    {
+        managedBeanCreator.defineSerializable();
+
         //Check for Enabled via Alternative
         setInjectionTargetBeanEnableFlag(managedBean);
         managedBeanCreator.defineApiType();
@@ -3114,9 +3141,8 @@ public final class WebBeansUtil
         DefinitionUtil.defineBeanInterceptorStack(managedBean);
 
         managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
-
-        return managedBean;
     }
+
 
     @SuppressWarnings("unchecked")
     public <T> ManagedBean<T> defineAbstractDecorator(AnnotatedType<T> type)

@@ -94,7 +94,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     
     /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
-    
+
+
     /**
      * This string will be used for passivating the Bean.
      * It will be created on the first use.
@@ -103,7 +104,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     protected String passivatingId = null;
     
     private final WebBeansContext webBeansContext;
-
 
     /**
      * Constructor definiton. Each subclass redefines its own constructor with

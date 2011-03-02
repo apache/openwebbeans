@@ -58,6 +58,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.EnterpriseBeanMarker;
+import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
@@ -503,11 +504,80 @@ public final class DefinitionUtil
                 }
                 else
                 {
+                    // take the bean as Dependent if
+                    // the bean contains at least one CDI feature
                     component.setImplScopeType(new DependentScopeLiteral());
+
+                    if (component instanceof ManagedBean && !useCdiAnnotations(component.getBeanClass()))
+                    {
+                        ((ManagedBean) component).setFullInit(false);
+                    }
                 }
             }
         }
 
+    }
+
+    /**
+     * Check if the bean uses CDI features
+     * @param cls the Class to check
+     * @return <code>true</code> if the bean uses CDI annotations somewhere
+     */
+    private static boolean useCdiAnnotations(Class<?> cls)
+    {
+        Class superClass = cls.getSuperclass();
+        if ( superClass != Object.class && useCdiAnnotations(superClass))
+        {
+            return true;
+        }
+
+        if (containsCdiAnnotation(cls.getAnnotations()))
+        {
+            return true;
+        }
+
+        Field[] fields = cls.getDeclaredFields();
+        for (Field field : fields)
+        {
+            if (containsCdiAnnotation(field.getAnnotations()))
+            {
+                return true;
+            }
+        }
+
+        Method[] methods = cls.getDeclaredMethods();
+        for (Method method : methods)
+        {
+            if (containsCdiAnnotation(method.getAnnotations()))
+            {
+                return true;
+            }
+        }
+
+        //X TODO also check method parameters?
+
+        return false;
+    }
+
+    /**
+     * A CDI annotation must either start with 'javax.inject.' or 'javax.enterprise'
+     * @return true if at least one of the given annotations is a CDI annotation
+     */
+    private static boolean containsCdiAnnotation(Annotation[] annotations)
+    {
+        if (annotations != null && annotations.length > 0)
+        {
+            for (Annotation ann : annotations)
+            {
+                String annName = ann.toString();
+                if (annName.startsWith("@javax.inject") || annName.startsWith("@javax.enterprise"))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

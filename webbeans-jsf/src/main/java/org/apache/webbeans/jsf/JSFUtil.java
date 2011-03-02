@@ -187,7 +187,9 @@ public final class JSFUtil
         String cid = getJSFRequestParameter("cid");
         return cid;
     }
-    
+
+    /** use {@link org.apache.webbeans.container.BeanManagerImpl#isInUse()} instead */
+    @Deprecated
     public static boolean isOwbApplication()
     {
         ServletContext context = null;

@@ -26,6 +26,7 @@ import javassist.util.proxy.ProxyObject;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Decorator;
 
+import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
 import org.apache.webbeans.inject.InjectableConstructor;
@@ -42,6 +43,17 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     private Constructor<T> constructor;
     
     protected boolean isAbstractDecorator;
+
+    /**
+     * Whether the bean is fully initialized or not yet.
+     * Only beans scanned from the classpath can be lazily initialized,
+     * and only if they do _NOT_ contain any javax.inject or javax.enterprise
+     * annotation! In other words: we can skip eager initialisation for
+     * beans which only could picked up as auto-&#0064;Dependent beans which
+     * do not register/ any other beans (e.g. via &#0064;Produces)
+     */
+    private boolean fullInit = true;
+
 
     public ManagedBean(Class<T> returnType, WebBeansContext webBeansContext)
     {
@@ -69,6 +81,16 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     @Override
     protected T createComponentInstance(CreationalContext<T> creationalContext)
     {
+        if (!fullInit)
+        {
+            AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(this);
+            managedBeanCreator.setAnnotatedType(getAnnotatedType());
+
+            getWebBeansContext().getWebBeansUtil().initializeManagedBean(getBeanClass(), this, managedBeanCreator);
+            fullInit = true;
+        }
+
+
         Constructor<T> con = getConstructor();
         InjectableConstructor<T> ic = new InjectableConstructor<T>(con, this,creationalContext);
 
@@ -83,7 +105,16 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         return instance;
     }
 
- 
+    public boolean isFullInit()
+    {
+        return fullInit;
+    }
+
+    public void setFullInit(boolean fullInit)
+    {
+        this.fullInit = fullInit;
+    }
+
     /**
      * Get constructor.
      * 

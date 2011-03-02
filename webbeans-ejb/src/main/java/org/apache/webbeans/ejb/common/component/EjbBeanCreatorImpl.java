@@ -60,7 +60,7 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
     {
         try
         {
-            super.defineScopeType(errorMessage);   
+            super.defineScopeType(errorMessage);
         }
         catch(WebBeansPassivationException e)
         {

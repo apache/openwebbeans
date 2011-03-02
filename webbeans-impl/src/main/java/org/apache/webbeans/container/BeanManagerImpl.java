@@ -183,6 +183,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     private boolean inUse = false;
 
+
     /**
      * Creates a new {@link BeanManager} instance.
      * Called by the system. Do not use outside of the
@@ -1096,6 +1097,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
         InjectionTargetBean<T> bean = webBeansContext.getWebBeansUtil().defineManagedBean(type);
+
+        if (bean == null)
+        {
+            throw new DefinitionException("Could not create InjectionTargetBean for type " + type.getJavaClass());
+        }
 
         return new InjectionTargetProducer<T>(bean);
     }

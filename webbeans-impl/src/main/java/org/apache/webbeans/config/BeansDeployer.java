@@ -823,7 +823,7 @@ public class BeansDeployer
                 else
                 {
                     webBeansContext.getWebBeansUtil().defineDecorator(managedBeanCreator,
-                                                                                     processInjectionTargetEvent);
+                                                                      processInjectionTargetEvent);
                 }
             }
             //Interceptor
@@ -840,7 +840,7 @@ public class BeansDeployer
                 else
                 {
                     webBeansContext.getWebBeansUtil().defineInterceptor(managedBeanCreator,
-                                                                                       processInjectionTargetEvent);
+                                                                        processInjectionTargetEvent);
                 }
             }
             else
@@ -856,14 +856,14 @@ public class BeansDeployer
                     logger.debug("Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
                 webBeansContext.getWebBeansUtil().defineManagedBean(managedBeanCreator,
-                                                                                   processInjectionTargetEvent);
+                                                                    processInjectionTargetEvent);
             }
             
             return true;
         }
-        //Not a managed bean
         else
         {
+            //Not a managed bean
             return false;
         }
                                 

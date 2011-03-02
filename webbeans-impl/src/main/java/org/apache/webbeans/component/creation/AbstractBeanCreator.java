@@ -47,8 +47,9 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     /**Bean annotations*/
     private final Annotation[] beanAnnotations;
     
-    /**If annotated type is set by ProcessAnnotatedType event, used this annotated type
-     * to define bean instance intead of using class artifacts.
+    /**
+     * If annotated type is set by ProcessAnnotatedType event, used this annotated type
+     * to define bean instance instead of using class artifacts.
      */
     private AnnotatedType<T> annotatedType;
     
