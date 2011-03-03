@@ -38,7 +38,7 @@ abstract class AbstractAnnotated implements Annotated
     private final Type baseType;
     
     /**Type closures*/
-    private Set<Type> typeClosures = new HashSet<Type>();
+    private Set<Type> typeClosures = null;
     
     /**Set of annotations*/
     private Set<Annotation> annotations = new HashSet<Annotation>();
@@ -51,8 +51,6 @@ abstract class AbstractAnnotated implements Annotated
     protected AbstractAnnotated(Type baseType)
     {
         this.baseType = baseType;
-        this.typeClosures.add(Object.class);
-        ClassUtil.setTypeHierarchy(this.typeClosures, this.baseType);
     }
 
     /**
@@ -69,7 +67,7 @@ abstract class AbstractAnnotated implements Annotated
     /**
      * Adds new annotation to set.
      * 
-     * @param annotation new annotation
+     * @param annotations new annotations
      */
     protected void setAnnotations(Annotation[] annotations)
     {        
@@ -123,7 +121,21 @@ abstract class AbstractAnnotated implements Annotated
     @Override
     public Set<Type> getTypeClosure()
     {
-        return this.typeClosures;
+        if (typeClosures == null)
+        {
+            initTypeClosures();
+        }
+        return typeClosures;
+    }
+
+    private synchronized void initTypeClosures()
+    {
+        if (typeClosures == null)
+        {
+            typeClosures = new HashSet<Type>();
+            this.typeClosures.add(Object.class);
+            ClassUtil.setTypeHierarchy(this.typeClosures, this.baseType);
+        }
     }
 
     /**
@@ -148,7 +160,7 @@ abstract class AbstractAnnotated implements Annotated
         StringBuilder builder = new StringBuilder();
         
         builder.append("Base Type : " + baseType.toString() + ",");
-        builder.append("Type Closures : " + typeClosures.toString() + ",");
+        builder.append("Type Closures : " + typeClosures + ",");
         builder.append("Annotations : " + annotations.toString());
         
         return builder.toString();
