@@ -84,6 +84,12 @@ public final class WebBeansDecoratorConfig
 
     public static void configureDecarotors(AbstractInjectionTargetBean<?> component)
     {
+        if (!component.getDecoratorStack().isEmpty())
+        {
+            // only define decorator stack once!
+            return;
+        }
+        
         Set<Annotation> qualifiers = component.getQualifiers();
         Annotation[] anns = new Annotation[qualifiers.size()];
         anns = qualifiers.toArray(anns);
