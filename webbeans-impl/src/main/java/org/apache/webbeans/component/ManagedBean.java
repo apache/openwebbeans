@@ -55,7 +55,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
      * beans which only could picked up as auto-&#0064;Dependent beans which
      * do not register/ any other beans (e.g. via &#0064;Produces)
      */
-    private boolean fullInit = true;
+    private volatile boolean fullInit = true;
 
 
     public ManagedBean(Class<T> returnType, WebBeansContext webBeansContext)
@@ -86,11 +86,7 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     {
         if (!fullInit)
         {
-            ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(this);
-            managedBeanCreator.setAnnotatedType(getAnnotatedType());
-
-            getWebBeansContext().getWebBeansUtil().lazyInitializeManagedBean(getBeanClass(), this, managedBeanCreator);
-            fullInit = true;
+            lazyInit();
         }
 
 
@@ -106,6 +102,18 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
         }
         
         return instance;
+    }
+
+    private synchronized void lazyInit()
+    {
+        if (!fullInit)
+        {
+            fullInit = true;
+            ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(this);
+            managedBeanCreator.setAnnotatedType(getAnnotatedType());
+
+            getWebBeansContext().getWebBeansUtil().lazyInitializeManagedBean(getBeanClass(), this, managedBeanCreator);
+        }
     }
 
     public boolean isFullInit()

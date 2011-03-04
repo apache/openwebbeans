@@ -1140,6 +1140,11 @@ public final class DefinitionUtil
     public static void defineBeanInterceptorStack(AbstractInjectionTargetBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean parameter can no be null");
+        if (!bean.getInterceptorStack().isEmpty())
+        {
+            // the interceptorstack already got defined!
+            return;
+        }
 
         // If bean is not session bean
         if(!(bean instanceof EnterpriseBeanMarker))
