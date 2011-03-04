@@ -559,6 +559,19 @@ public final class DefinitionUtil
                 return false;
             }
         }
+        
+        Constructor<?>[] cts = cls.getDeclaredConstructors();
+        for (Constructor<?> ct : cts)
+        {
+            anns = ct.getAnnotations();
+            for (Annotation ann : anns)
+            {
+                if (ann instanceof Inject)
+                {
+                    return false;
+                }
+            }
+        }
 
         Field[] fields = cls.getDeclaredFields();
         for (Field field : fields)
