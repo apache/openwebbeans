@@ -541,9 +541,9 @@ public final class DefinitionUtil
      */
     private static boolean isPurePojoBean(Class<?> cls)
     {
-        Class superClass = cls.getSuperclass();
+        Class<?> superClass = cls.getSuperclass();
 
-        if ( superClass != Object.class && isPurePojoBean(superClass))
+        if ( superClass == Object.class || !isPurePojoBean(superClass))
         {
             return false;
         }
