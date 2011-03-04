@@ -86,7 +86,7 @@ public interface BeanCreator<T>
      * Check passivation related controls.
      * </p>
      */
-    public void defineScopeType(String errorMessage);
+    public void defineScopeType(String errorMessage, boolean allowLazyInit);
     
     /**
      * Defines qualifier.

@@ -21,6 +21,7 @@ package org.apache.webbeans.sample.bean;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.enterprise.inject.Produces;
@@ -28,8 +29,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.sample.ejb.Echo;
 import org.apache.webbeans.sample.injection.InjectionTargetBean;
 
@@ -39,6 +38,8 @@ import org.apache.webbeans.sample.injection.InjectionTargetBean;
 public class EchoManaged
 {
     private @Inject @Default Echo echo;
+
+    private @Inject BeanManager manager;
     
     private @EJB(name="EchoBean/org.apache.webbeans.sample.ejb.Echo") Echo nonContextual;
     
@@ -60,7 +61,6 @@ public class EchoManaged
 
     public String echo()
     {
-        BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
         Bean<?> b = manager.getBeans("injected").iterator().next();
         InjectionTargetBean bean = (InjectionTargetBean)manager.getReference(b, InjectionTargetBean.class, manager.createCreationalContext(b)); 
         

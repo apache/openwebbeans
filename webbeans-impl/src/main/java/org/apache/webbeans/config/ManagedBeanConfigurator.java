@@ -142,7 +142,7 @@ public final class ManagedBeanConfigurator
 
         DefinitionUtil.defineApiTypes(component, clazz);
         DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName()
-                                                             + " stereotypes must declare same @Scope annotations");
+                                                             + " stereotypes must declare same @Scope annotations", false);
         // we fully initialize the bean in this case.
         component.setFullInit(true);
 

@@ -856,7 +856,7 @@ public class BeansDeployer
                     logger.debug("Found Managed Bean with class name : [{0}]", annotatedType.getJavaClass().getName());
                 }
                 webBeansContext.getWebBeansUtil().defineManagedBean(managedBeanCreator,
-                                                                    processInjectionTargetEvent);
+                                                                    processInjectionTargetEvent, true);
             }
             
             return true;

@@ -453,7 +453,7 @@ public final class WebBeansAnnotatedTypeUtil
                                                                                                       anns);
                     Set<Type> types = annotatedField.getTypeClosure();
                     producerFieldBean.getTypes().addAll(types);
-                    DefinitionUtil.defineScopeType(producerFieldBean, anns, "Annotated producer field: " + annotatedField +  "must declare default @Scope annotation");
+                    DefinitionUtil.defineScopeType(producerFieldBean, anns, "Annotated producer field: " + annotatedField +  "must declare default @Scope annotation", false);
                     webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerFieldBean,
                                                                                              producerFieldBean.getScope());
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
@@ -516,7 +516,8 @@ public final class WebBeansAnnotatedTypeUtil
                 producerMethodBean.getTypes().addAll(types);
                 DefinitionUtil.defineScopeType(producerMethodBean,
                                                AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
-                                                                                    "Annotated producer method : " + annotatedMethod +  "must declare default @Scope annotation");
+                                                                                    "Annotated producer method : " + annotatedMethod +  "must declare default @Scope annotation",
+                                                                                    false);
                 webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerMethodBean,
                                                                                          producerMethodBean.getScope());
                 WebBeansUtil.checkProducerGenericType(producerMethodBean,annotatedMethod.getJavaMember());

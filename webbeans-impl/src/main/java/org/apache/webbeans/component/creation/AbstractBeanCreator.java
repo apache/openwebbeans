@@ -130,15 +130,15 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      * {@inheritDoc}
      */
     @Override
-    public void defineScopeType(String errorMessage)
+    public void defineScopeType(String errorMessage, boolean allowLazyInit)
     {
         if(isDefaultMetaDataProvider())
         {
-            DefinitionUtil.defineScopeType(this.bean, this.beanAnnotations, errorMessage);
+            DefinitionUtil.defineScopeType(this.bean, this.beanAnnotations, errorMessage, allowLazyInit);
         }
         else
         {
-            DefinitionUtil.defineScopeType(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()), errorMessage);
+            DefinitionUtil.defineScopeType(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()), errorMessage, false);
         }
     }
 

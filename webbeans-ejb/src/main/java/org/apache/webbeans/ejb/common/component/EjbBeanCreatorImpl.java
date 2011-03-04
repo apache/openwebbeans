@@ -56,11 +56,11 @@ public class EjbBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator<T> 
      * {@inheritDoc}
      */
     @Override
-    public void defineScopeType(String errorMessage) throws WebBeansPassivationException
+    public void defineScopeType(String errorMessage, boolean allowLazyInit) throws WebBeansPassivationException
     {
         try
         {
-            super.defineScopeType(errorMessage);
+            super.defineScopeType(errorMessage, allowLazyInit);
         }
         catch(WebBeansPassivationException e)
         {

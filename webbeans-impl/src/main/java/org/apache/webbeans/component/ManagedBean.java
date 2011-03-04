@@ -20,13 +20,16 @@ package org.apache.webbeans.component;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.annotation.Annotation;
 
 import javassist.util.proxy.ProxyObject;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Decorator;
 
-import org.apache.webbeans.component.creation.AnnotatedTypeBeanCreatorImpl;
+import org.apache.webbeans.component.creation.ManagedBeanCreatorImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.decorator.AbstractDecoratorMethodHandler;
 import org.apache.webbeans.inject.InjectableConstructor;
@@ -83,10 +86,10 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     {
         if (!fullInit)
         {
-            AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(this);
+            ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(this);
             managedBeanCreator.setAnnotatedType(getAnnotatedType());
 
-            getWebBeansContext().getWebBeansUtil().initializeManagedBean(getBeanClass(), this, managedBeanCreator);
+            getWebBeansContext().getWebBeansUtil().lazyInitializeManagedBean(getBeanClass(), this, managedBeanCreator);
             fullInit = true;
         }
 
@@ -113,6 +116,17 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     public void setFullInit(boolean fullInit)
     {
         this.fullInit = fullInit;
+    }
+
+    @Override
+    public void addQualifier(Annotation qualifier)
+    {
+        if (!(qualifier instanceof Default || qualifier instanceof Any))
+        {
+            // if a bean defines other qualifiers than Default or Any, we need to fully initialize it
+            fullInit = true;
+        }
+        super.addQualifier(qualifier);
     }
 
     /**

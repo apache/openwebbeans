@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
@@ -315,7 +317,8 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param annotations annotations
      */
-    public static <T> void defineScopeType(AbstractOwbBean<T> component, Annotation[] annotations, String exceptionMessage)
+    public static <T> void defineScopeType(AbstractOwbBean<T> component, Annotation[] annotations,
+                                           String exceptionMessage, boolean allowLazyInit)
     {
         boolean found = false;
 
@@ -388,7 +391,7 @@ public final class DefinitionUtil
 
         if (!found)
         {
-            defineDefaultScopeType(component, exceptionMessage);
+            defineDefaultScopeType(component, exceptionMessage, allowLazyInit);
         }
     }
 
@@ -438,7 +441,7 @@ public final class DefinitionUtil
         
     }
 
-    public static void defineDefaultScopeType(OwbBean<?> component, String exceptionMessage)
+    public static void defineDefaultScopeType(OwbBean<?> component, String exceptionMessage, boolean allowLazyInit)
     {
         // Frist look for inherited scope
         IBeanInheritedMetaData metaData = null;
@@ -463,6 +466,13 @@ public final class DefinitionUtil
             if (stereos.size() == 0)
             {
                 component.setImplScopeType(new DependentScopeLiteral());
+
+                if (allowLazyInit && component instanceof ManagedBean && isPurePojoBean(component.getBeanClass()))
+                {
+                    // take the bean as Dependent but we could lazily initialize it
+                    // because the bean doesn't contains any CDI feature
+                    ((ManagedBean) component).setFullInit(false);
+                }
             }
             else
             {
@@ -506,12 +516,12 @@ public final class DefinitionUtil
                 }
                 else
                 {
-                    // take the bean as Dependent if
-                    // the bean contains at least one CDI feature
                     component.setImplScopeType(new DependentScopeLiteral());
 
-                    if (component instanceof ManagedBean && isPurePojoBean(component.getBeanClass()))
+                    if (allowLazyInit && component instanceof ManagedBean && isPurePojoBean(component.getBeanClass()))
                     {
+                        // take the bean as Dependent but we could lazily initialize it
+                        // because the bean doesn't contains any CDI feature
                         ((ManagedBean) component).setFullInit(false);
                     }
                 }
@@ -570,9 +580,25 @@ public final class DefinitionUtil
             anns = method.getAnnotations();
             for (Annotation ann : anns)
             {
-                if (ann instanceof Produces)
+                if (ann instanceof Produces      ||
+                    ann instanceof Inject        ||
+                    ann instanceof PostConstruct ||
+                    ann instanceof PreDestroy      )
                 {
                     return false;
+                }
+
+            }
+
+            Annotation[][] paramsAnns = method.getParameterAnnotations();
+            for (Annotation[] paramAnns: paramsAnns)
+            {
+                for (Annotation ann: paramAnns)
+                {
+                    if (ann instanceof Observes)
+                    {
+                        return false;
+                    }
                 }
             }
         }
@@ -733,7 +759,8 @@ public final class DefinitionUtil
 
     }
 
-    public static <T> ProducerMethodBean<T> createProducerComponent(Class<T> returnType, Method method, InjectionTargetBean<?> parent, boolean isSpecializes)
+    public static <T> ProducerMethodBean<T> createProducerComponent(Class<T> returnType, Method method, InjectionTargetBean<?> parent,
+                                                                    boolean isSpecializes)
     {
         ProducerMethodBean<T> component = new ProducerMethodBean<T>(parent, returnType);
         component.setCreatorMethod(method);
@@ -758,7 +785,7 @@ public final class DefinitionUtil
 
         DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
         DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName()
-                                                              + " must declare default @Scope annotation");
+                                                              + " must declare default @Scope annotation", false);
         webBeansContext.getWebBeansUtil().checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,method);
         DefinitionUtil.defineQualifiers(component, methodAnns);
@@ -815,7 +842,7 @@ public final class DefinitionUtil
 
         DefinitionUtil.defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
         DefinitionUtil.defineScopeType(component, fieldAnns, "WebBeans producer method : " + field.getName() + " in class " + parent.getReturnType().getName()
-                                                             + " must declare default @Scope annotation");
+                                                             + " must declare default @Scope annotation", false);
         webBeansContext.getWebBeansUtil().checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,field);
         DefinitionUtil.defineQualifiers(component, fieldAnns);
@@ -1321,7 +1348,7 @@ public final class DefinitionUtil
 
         DefinitionUtil.defineProducerMethodApiTypes(bean, method.getBaseType(), anns);
         DefinitionUtil.defineScopeType(bean, anns, "Bean producer method : " + method.getJavaMember().getName() + " in class "
-                                                   + parent.getReturnType().getName() + " must declare default @Scope annotation");
+                                                   + parent.getReturnType().getName() + " must declare default @Scope annotation", false);
         WebBeansUtil.checkProducerGenericType(bean,method.getJavaMember());        
         DefinitionUtil.defineQualifiers(bean, anns);
         DefinitionUtil.defineName(bean, anns, WebBeansUtil.getProducerDefaultName(method.getJavaMember().getName()));
