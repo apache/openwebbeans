@@ -26,7 +26,6 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.lifecycle.test.OpenWebBeansTestMetaDataDiscoveryService;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.spi.ScannerService;
 
 import org.junit.Test;
 

@@ -26,7 +26,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.apache.webbeans.test.component.inject.InstanceInjectedComponent;
-import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

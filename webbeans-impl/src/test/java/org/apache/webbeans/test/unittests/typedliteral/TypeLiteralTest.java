@@ -32,7 +32,6 @@ import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean.IntegerOrder;
 import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean.StringOrder;
-import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Before;
 import org.junit.Test;
 
