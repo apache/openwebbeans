@@ -69,6 +69,13 @@ public interface ScannerService
      * @return bean classes
      */
     public Set<Class<?>> getBeanClasses();
+
+
+    /**
+     * @param className
+     * @return all Annotations used in the whole class
+     */
+    public Set<String> getAllAnnotations(String className);
     
     /**
      * Indicates if BDABeansXmlScanner is available. This method 

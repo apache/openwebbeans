@@ -55,6 +55,11 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     protected boolean isBDAScannerEnabled = false;
     protected BDABeansXmlScanner bdaBeansXmlScanner;
 
+    /**
+     * determines if cross referencing already got performed or not
+     */
+    private boolean isCrossReferenzed = false;
+
     protected AbstractMetaDataDiscovery()
     {
         initAnnotationDB();
@@ -66,10 +71,9 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         {
             annotationDB = new AnnotationDB();
             annotationDB.setScanClassAnnotations(true);
-            annotationDB.setScanFieldAnnotations(false);
-            annotationDB.setScanMethodAnnotations(false);
-            annotationDB.setScanParameterAnnotations(false);
-            annotationDB.crossReferenceMetaAnnotations();
+            annotationDB.setScanFieldAnnotations(true);
+            annotationDB.setScanMethodAnnotations(true);
+            annotationDB.setScanParameterAnnotations(true);
         }
         catch(Exception e)
         {
@@ -167,6 +171,13 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         return annotationDB;
     }
 
+    @Override
+    public Set<String> getAllAnnotations(String className)
+    {
+        return annotationDB.getAnnotationIndex().get(className);
+    }
+
+
     /**
      * add the given beans.xml path to the locations list 
      * @param beansXmlLocation location path
@@ -186,6 +197,8 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     @Override
     public Set<Class<?>> getBeanClasses()
     {
+        crossReferenceBeans();
+
         Set<Class<?>> classSet = new HashSet<Class<?>>();
         Map<String,Set<String>> index = this.annotationDB.getClassIndex();
         
@@ -202,12 +215,31 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         }    
         
         return classSet;
-    }    
+    }
+
+    /**
+     * Ensure that all Annotation CrossReferences got resolved.
+     */
+    protected synchronized void crossReferenceBeans()
+    {
+        if (!isCrossReferenzed)
+        {
+            try
+            {
+                annotationDB.crossReferenceMetaAnnotations();
+            }
+            catch (AnnotationDB.CrossReferenceException e)
+            {
+                throw new RuntimeException(e);
+            }
+            isCrossReferenzed = true;
+        }
+    }
 
 
     /* (non-Javadoc)
-     * @see org.apache.webbeans.corespi.ScannerService#getBeanXmls()
-     */
+    * @see org.apache.webbeans.corespi.ScannerService#getBeanXmls()
+    */
     @Override
     public Set<String> getBeanXmls()
     {

@@ -1301,31 +1301,6 @@ public final class ClassUtil
         return true;
     }
 
-    public static boolean classHasMoreThanOneFieldWithName(Class<?> clazz, String fieldName)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(fieldName, "fieldName parameter can not be null");
-
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
-        boolean ok = false;
-        for (Field field : fields)
-        {
-            if (field.getName().equals(fieldName))
-            {
-                if (ok)
-                {
-                    return true;
-                }
-                else
-                {
-                    ok = true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     public static Field getFieldWithName(Class<?> clazz, String fieldName)
     {
         Asserts.nullCheckForClass(clazz);

@@ -32,13 +32,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Stereotype;
 import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
@@ -366,11 +362,9 @@ public final class DefinitionUtil
                 {
                     throw new WebBeansConfigurationException(exceptionMessage);
                 }
-                else
-                {
-                    found = true;
-                    component.setImplScopeType(annotation);
-                }
+
+                found = true;
+                component.setImplScopeType(annotation);
             }
             else
             {
@@ -380,11 +374,9 @@ public final class DefinitionUtil
                     {
                         throw new WebBeansConfigurationException(exceptionMessage);
                     }
-                    else
-                    {
-                        found = true;
-                        component.setImplScopeType(annotation);
-                    }                    
+
+                    found = true;
+                    component.setImplScopeType(annotation);
                 }
             }
         }
@@ -467,7 +459,7 @@ public final class DefinitionUtil
             {
                 component.setImplScopeType(new DependentScopeLiteral());
 
-                if (allowLazyInit && component instanceof ManagedBean && isPurePojoBean(component.getBeanClass()))
+                if (allowLazyInit && component instanceof ManagedBean && isPurePojoBean(component.getWebBeansContext(), component.getBeanClass()))
                 {
                     // take the bean as Dependent but we could lazily initialize it
                     // because the bean doesn't contains any CDI feature
@@ -518,7 +510,7 @@ public final class DefinitionUtil
                 {
                     component.setImplScopeType(new DependentScopeLiteral());
 
-                    if (allowLazyInit && component instanceof ManagedBean && isPurePojoBean(component.getBeanClass()))
+                    if (allowLazyInit && component instanceof ManagedBean && isPurePojoBean(component.getWebBeansContext(), component.getBeanClass()))
                     {
                         // take the bean as Dependent but we could lazily initialize it
                         // because the bean doesn't contains any CDI feature
@@ -539,16 +531,30 @@ public final class DefinitionUtil
      * @param cls the Class to check
      * @return <code>false</code> if the bean uses CDI annotations which define other beans somewhere
      */
-    private static boolean isPurePojoBean(Class<?> cls)
+    private static boolean isPurePojoBean(WebBeansContext webBeansContext, Class<?> cls)
     {
         Class<?> superClass = cls.getSuperclass();
 
-        if ( superClass == Object.class || !isPurePojoBean(superClass))
+        if ( superClass == Object.class || !isPurePojoBean(webBeansContext, superClass))
         {
             return false;
         }
 
+        Set<String> annotations = webBeansContext.getScannerService().getAllAnnotations(cls.getSimpleName());
+        if (annotations != null)
+        {
+            for (String ann : annotations)
+            {
+                if (ann.startsWith("javax.inject") || ann.startsWith("javax.enterprise") || ann.startsWith("javax.interceptors"))
+                {
+                    return false;
+                }
+            }
 
+        }
+
+        return true;
+/*X
         Annotation[] anns = cls.getAnnotations();
         for (Annotation ann : anns)
         {
@@ -617,6 +623,7 @@ public final class DefinitionUtil
         }
 
         return true;
+*/
     }
 
 

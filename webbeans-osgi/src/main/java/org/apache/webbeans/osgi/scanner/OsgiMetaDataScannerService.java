@@ -223,7 +223,14 @@ public class OsgiMetaDataScannerService implements ScannerService
     {
         return beanClasses;
     }
-    
+
+    @Override
+    public Set<String> getAllAnnotations(String className)
+    {
+        //X TODO this needs go get implemented
+        return null;
+    }
+
     @Override
     public BDABeansXmlScanner getBDABeansXmlScanner()
     {
