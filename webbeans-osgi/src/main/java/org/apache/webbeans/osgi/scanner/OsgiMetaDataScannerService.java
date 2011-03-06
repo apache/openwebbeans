@@ -35,9 +35,15 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 import javax.servlet.ServletContext;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 
@@ -65,6 +71,7 @@ public class OsgiMetaDataScannerService implements ScannerService
 
     /**contains all the JARs we found with valid beans.xml in it */
     private Set<String> beanArchiveJarNames = new HashSet<String>();
+    private Map<String, Set<String>> classAnnotations = new HashMap<String, Set<String>>();
 
     @Override
     public void init(Object object)
@@ -81,6 +88,7 @@ public class OsgiMetaDataScannerService implements ScannerService
         beanClasses = new HashSet<Class<?>>();
         beanXMLs = new HashSet<String>();
         beanArchiveJarNames = new HashSet<String>();
+        classAnnotations.clear();
     }
 
     @Override
@@ -152,12 +160,56 @@ public class OsgiMetaDataScannerService implements ScannerService
             try
             {
                 Class<?> cls = mainBundle.loadClass(clsName);
+
+                classAnnotations.put(clsName, collectAnnotations(cls));
+
                 beanClasses.add(cls);
             }
             catch(Exception e)
             {
                 logger.info("cannot load class from bundle: " + clsName);
             }
+        }
+    }
+
+    private Set<String> collectAnnotations(Class<?> cls)
+    {
+        Set<String> annotations = new HashSet<String>();
+
+        addAnnotations(annotations, cls.getAnnotations());
+
+        Constructor[] constructors = cls.getDeclaredConstructors();
+        for (Constructor c : constructors)
+        {
+            addAnnotations(annotations, c.getAnnotations());
+        }
+
+        Field[] fields = cls.getDeclaredFields();
+        for (Field f : fields)
+        {
+            addAnnotations(annotations, f.getAnnotations());
+        }
+
+        Method[] methods = cls.getDeclaredMethods();
+        for (Method m : methods)
+        {
+            addAnnotations(annotations, m.getAnnotations());
+
+            Annotation[][] paramsAnns = m.getParameterAnnotations();
+            for (Annotation[] pAnns : paramsAnns)
+            {
+                addAnnotations(annotations, pAnns);
+            }
+        }
+
+        return annotations;
+    }
+
+    private void addAnnotations(Set<String> annStrings, Annotation[] annotations)
+    {
+        for (Annotation ann : annotations)
+        {
+            annStrings.add(ann.getClass().getSimpleName());
         }
     }
 
@@ -227,8 +279,7 @@ public class OsgiMetaDataScannerService implements ScannerService
     @Override
     public Set<String> getAllAnnotations(String className)
     {
-        //X TODO this needs go get implemented
-        return null;
+        return classAnnotations.get(className);
     }
 
     @Override
