@@ -26,6 +26,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.MessageFormat;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 import javax.enterprise.inject.Produces;
@@ -58,6 +60,11 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(StandaloneResourceInjectionService.class);
 
     private final WebBeansContext webBeansContext;
+
+    /**
+     * Cache the information if a certain class contains any EE resource at all
+     */
+    private final Map<Class<?>, Boolean> classContainsEEResources = new ConcurrentHashMap<Class<?>, Boolean>();
 
     public StandaloneResourceInjectionService(WebBeansContext webBeansContext)
     {
@@ -104,6 +111,13 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     public void injectJavaEEResources(Object managedBeanInstance) throws Exception
     {
         Class currentClass = managedBeanInstance.getClass();
+        Boolean containsEeResource = classContainsEEResources.get(currentClass);
+        if (containsEeResource != null && containsEeResource.booleanValue() == false)
+        {
+            // nothing to do it seems.
+            return;
+        }
+
 
         while (currentClass != null && !Object.class.getName().equals(currentClass.getName()))
         {
@@ -126,6 +140,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
                                 SecurityUtil.doPrivilegedSetAccessible(field, true);
                                 field.set(managedBeanInstance, getResourceReference(resourceRef));
 
+                                containsEeResource = Boolean.TRUE;
                             }
                             catch(Exception e)
                             {
@@ -144,6 +159,13 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
 
             currentClass = currentClass.getSuperclass();
         }
+
+        if (containsEeResource == null)
+        {
+            containsEeResource = Boolean.FALSE;
+        }
+
+        classContainsEEResources.put(managedBeanInstance.getClass(), containsEeResource);
     }
 
     @Override
