@@ -56,7 +56,7 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class AbstractInjectable implements Injectable
 {
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(AbstractInjectable.class);
+    private final static WebBeansLogger logger = WebBeansLogger.getLogger(AbstractInjectable.class);
     
     /** Owner bean of the injection point*/
     protected OwbBean<?> injectionOwnerBean;
@@ -93,7 +93,10 @@ public abstract class AbstractInjectable implements Injectable
      */
     public <T> Object inject(InjectionPoint injectionPoint)
     {
-        logger.debug("Injected into bean : [{0}] with injection point : [{1}]", this.injectionOwnerBean, injectionPoint);
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("Injected into bean : [{0}] with injection point : [{1}]", this.injectionOwnerBean, injectionPoint);
+        }
 
         Object injected = null;               
 
