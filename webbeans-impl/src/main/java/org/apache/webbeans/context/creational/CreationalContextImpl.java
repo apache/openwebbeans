@@ -30,6 +30,7 @@ import javax.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.DependentCreationalContext.DependentType;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -48,17 +49,19 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     private Map<Object, List<DependentCreationalContext<?>>> dependentObjects = null;
 
     /**Contextual bean*/
-    private volatile Contextual<T> contextual = null;
+    private Contextual<T> contextual = null;
         
     /**Ejb interceptors*/
     //contextual instance --> interceptors
     private ConcurrentMap<Object, List<EjbInterceptorContext>> ejbInterceptors = null;
 
-    /**When bean object is destroyed it is set*/
-    //X TODO refactor. public static variables are utterly ugly
-    public static ThreadLocal<Object> currentRemoveObject = new ThreadLocal<Object>();
-
     private WebBeansContext webBeansContext;
+    
+    /**
+     * This flag will get set to <code>true</code> to prevent recursive loops while destroying
+     * the CreationContext.
+     */
+    private boolean destroying = false;
 
     /**
      * Package private
@@ -146,13 +149,14 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     /**
      * Adds given dependent instance to the map.
      * 
+     * @param ownerInstance the contextual instance our dependent instance got injected into
      * @param dependent dependent contextual
      * @param instance dependent instance
      */
     public <K> void addDependent(Object ownerInstance, Contextual<K> dependent, Object instance)
     {
         Asserts.assertNotNull(dependent,"dependent parameter cannot be null");
-        
+
         if(instance != null)
         {
             DependentCreationalContext<K> dependentCreational = new DependentCreationalContext<K>(dependent);
@@ -259,59 +263,17 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             }
         }
         return null;
-    }    
-    
-    /**
-     * Removes dependent objects.
-     */
-    @SuppressWarnings("unchecked")
-    public void  removeDependents(Object ownerInstance)
-    {
-        if(ownerInstance == null || dependentObjects == null)
-        {
-            return;
-        }
-
-
-        synchronized(this)
-        {
-            List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
-            if(values != null)
-            {
-                final CreationalContextFactory contextFactory = webBeansContext.getCreationalContextFactory();
-                Iterator<?> iterator = values.iterator();
-                while(iterator.hasNext())
-                {
-                    DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)iterator.next();
-                    dependent.getContextual().destroy((T)dependent.getInstance(), contextFactory.getCreationalContext(dependent.getContextual()));
-                }
-
-                this.dependentObjects.remove(ownerInstance);
-            }
-        }
-
-        if (this.ejbInterceptors != null)
-        {
-            List<EjbInterceptorContext> interceptors = this.ejbInterceptors.get(ownerInstance);
-            if(interceptors != null)
-            {
-                for(EjbInterceptorContext intereptor : interceptors)
-                {
-                    intereptor.getInjectorInstance().destroy();
-                }
-            }
-
-            this.ejbInterceptors.remove(ownerInstance);
-        }
     }
-    
+
     @SuppressWarnings("unchecked")
     public void removeAllDependents()
     {
-        if (dependentObjects == null)
+        if (dependentObjects == null || destroying)
         {
             return;
         }
+        
+        destroying = true;
 
         synchronized(this)
         {
@@ -320,12 +282,22 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             {
                 for(List<DependentCreationalContext<?>> value : values)
                 {
-                    Iterator<?> iterator = value.iterator();
-                    while(iterator.hasNext())
+                    // this is kind of an emergency valve...
+                    int maxRemoval = value.size() * 3;
+                    while(!value.isEmpty() && maxRemoval > 0)
                     {
-                        DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)iterator.next();
-                        CreationalContextFactory contextFactory = webBeansContext.getCreationalContextFactory();
-                        dependent.getContextual().destroy((T)dependent.getInstance(), contextFactory.getCreationalContext(dependent.getContextual()));
+                        // we don't use an iterator because the destroyal might register a 
+                        // fresh PreDestroy interceptor as dependent object...
+                        DependentCreationalContext<T> dependent = (DependentCreationalContext<T>)value.get(0);
+                        dependent.getContextual().destroy((T)dependent.getInstance(), this);
+                        
+                        value.remove(0);
+                        maxRemoval--;
+                    }
+                    
+                    if (maxRemoval == 0)
+                    {
+                        throw new WebBeansException("infinite loop detected while destroying bean " + contextual);
                     }
                 }
             }
@@ -362,14 +334,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     @Override
     public void release()
     {
-        if(currentRemoveObject.get() == null)
-        {
-            removeAllDependents();
-        }
-        else
-        {
-            removeDependents(currentRemoveObject.get());   
-        }
+        removeAllDependents();
     }
     
     /**

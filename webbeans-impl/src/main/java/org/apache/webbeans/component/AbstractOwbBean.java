@@ -236,21 +236,12 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                 destroyInstance(instance,creationalContext);
             }
             
-            //Setting destroying instance
-            CreationalContextImpl.currentRemoveObject.set(instance);
-            
             //Destory dependent instances
-            creationalContext.release();                
-                                                
+            creationalContext.release();
         }
         catch(Exception e)
         {
             getLogger().fatal(e, OWBLogConst.FATAL_0001, this);
-        }
-        finally
-        {
-            CreationalContextImpl.currentRemoveObject.set(null);
-            CreationalContextImpl.currentRemoveObject.remove();
         }
     }
 

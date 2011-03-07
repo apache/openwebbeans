@@ -45,7 +45,7 @@ public class DependentBean
         model.setValue(true);
         model.setId(index++);
         if (producedModel == null) {
-        	producedModel = model;
+            producedModel = model;
         }
     	System.out.println("produced DependentModel=" + model);
         return model;

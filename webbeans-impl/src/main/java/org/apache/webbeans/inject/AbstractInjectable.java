@@ -145,9 +145,9 @@ public abstract class AbstractInjectable implements Injectable
             if(instanceUnderInjection.get() != null)
             {
                 ((CreationalContextImpl<?>)this.injectionOwnerCreationalContext).addDependent(instanceUnderInjection.get(),injectedBean, injected);   
-            }   
+            }
         }
-            
+
         return injected;
     }
     

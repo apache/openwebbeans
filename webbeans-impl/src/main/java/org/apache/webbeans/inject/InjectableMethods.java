@@ -36,7 +36,6 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.container.InjectionResolver;
-import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.SecurityUtil;
 
@@ -145,15 +144,6 @@ public class InjectableMethods<T> extends AbstractInjectable
         {
             throw new WebBeansException(e);
         }
-    }
-    
-    /**
-     * Destroy dependent objects of the bean.
-     */
-    public void destroyDependentInjectionPoints(Object ownerInstance)
-    {
-        CreationalContextImpl<?> ownerCreational = (CreationalContextImpl<?>) this.injectionOwnerCreationalContext;
-        ownerCreational.removeDependents(ownerInstance);
     }
     
     public Map<Bean<?>,Object> getDependentBeanParameters()

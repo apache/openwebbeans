@@ -29,6 +29,10 @@ import javax.enterprise.context.spi.Contextual;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansUtil;
 
+/**
+ * This class contains creation information about &#0064;Dependent scoped 
+ * contextual instances.
+ */
 public class DependentCreationalContext<S> implements Serializable
 {
     private static final long serialVersionUID = 1L;
