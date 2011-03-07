@@ -340,7 +340,10 @@ public class InjectionResolver
         {
             resolvedBeansByName.put(cacheKey, resolvedComponents);
         }
-        logger.debug("DEBUG_ADD_BYNAME_CACHE_BEANS", cacheKey);
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("DEBUG_ADD_BYNAME_CACHE_BEANS", cacheKey);
+        }
 
         return resolvedComponents;
     }
@@ -511,7 +514,10 @@ public class InjectionResolver
         }
         
         resolvedBeansByType.put(cacheKey, resolvedComponents);
-        logger.debug("DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
+        }
         
         return resolvedComponents;
     }
