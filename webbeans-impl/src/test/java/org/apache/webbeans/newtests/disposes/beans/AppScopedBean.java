@@ -31,7 +31,7 @@ import org.apache.webbeans.newtests.disposes.common.HttpHeader;
 
 @ApplicationScoped
 @Named("DependentBean")
-public class DependentBean
+public class AppScopedBean
 {
     public static boolean OK = false;
 

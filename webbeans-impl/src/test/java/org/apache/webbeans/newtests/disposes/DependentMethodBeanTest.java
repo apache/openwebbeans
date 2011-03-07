@@ -25,7 +25,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import junit.framework.Assert;
 import org.apache.webbeans.newtests.AbstractUnitTest;
-import org.apache.webbeans.newtests.disposes.beans.DependentBean;
+import org.apache.webbeans.newtests.disposes.beans.AppScopedBean;
 import org.apache.webbeans.newtests.disposes.beans.RequestBean;
 import org.apache.webbeans.newtests.disposes.common.RequestModel;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class DependentMethodBeanTest extends AbstractUnitTest
         Collection<String> beanXmls = new ArrayList<String>();
         
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(DependentBean.class);
+        beanClasses.add(AppScopedBean.class);
         beanClasses.add(RequestBean.class);
         
         startContainer(beanClasses, beanXmls);        
@@ -51,7 +51,7 @@ public class DependentMethodBeanTest extends AbstractUnitTest
         
         shutDownContainer();
         
-        Assert.assertTrue(DependentBean.OK);
+        Assert.assertTrue(AppScopedBean.OK);
         
     }
 
