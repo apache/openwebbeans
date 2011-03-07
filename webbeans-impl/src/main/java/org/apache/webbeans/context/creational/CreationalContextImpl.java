@@ -208,22 +208,19 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             return null;
         }
 
-        synchronized(this)
+        List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
+        if(values != null && !values.isEmpty())
         {
-            List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
-            if(values != null && !values.isEmpty())
+            Iterator<DependentCreationalContext<?>> it = values.iterator();
+            while(it.hasNext())
             {
-                Iterator<DependentCreationalContext<?>> it = values.iterator();
-                while(it.hasNext())
+                DependentCreationalContext<?> dc = it.next();
+                if(dc.getDependentType().equals(DependentType.INTERCEPTOR) &&
+                   dc.getContextual().equals(interceptor))
                 {
-                    DependentCreationalContext<?> dc = it.next();
-                    if(dc.getDependentType().equals(DependentType.INTERCEPTOR) &&
-                       dc.getContextual().equals(interceptor))
-                    {
-                        return dc.getInstance();
-                    }
-
+                    return dc.getInstance();
                 }
+
             }
         }
 
@@ -244,24 +241,22 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             return null;
         }
 
-        synchronized(this)
+        List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
+        if (values != null && values.size() > 0)
         {
-            List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
-            if (values != null && values.size() > 0)
+            Iterator<DependentCreationalContext<?>> it = values.iterator();
+            while (it.hasNext())
             {
-                Iterator<DependentCreationalContext<?>> it = values.iterator();
-                while (it.hasNext())
-                {
-                    DependentCreationalContext<?> dc = it.next();
+                DependentCreationalContext<?> dc = it.next();
 
-                    if(dc.getDependentType().equals(DependentType.DECORATOR) &&
-                       dc.getContextual().equals(decorator))
-                    {
-                        return dc.getInstance();
-                    }
+                if(dc.getDependentType().equals(DependentType.DECORATOR) &&
+                   dc.getContextual().equals(decorator))
+                {
+                    return dc.getInstance();
                 }
             }
         }
+
         return null;
     }
 
@@ -275,7 +270,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         
         destroying = true;
 
-        synchronized(this)
+        //X synchronized(this)
         {
             Collection<List<DependentCreationalContext<?>>> values = this.dependentObjects.values();
             if(values != null)
