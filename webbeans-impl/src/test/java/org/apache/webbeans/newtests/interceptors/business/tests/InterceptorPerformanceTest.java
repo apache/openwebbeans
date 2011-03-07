@@ -42,8 +42,8 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
 {
     private static final String PACKAGE_NAME = DependingInterceptorTest.class.getPackage().getName();
 
-    private static final int ITERATIONS = 2000;
-    private static final int NUM_THREADS = 150;
+    private static final int ITERATIONS = 700;
+    private static final int NUM_THREADS = 50;
 
     private static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorPerformanceTest.class);
 
@@ -86,7 +86,7 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
 
         shutDownContainer();
 
-        if ((end - start) / 1e6 > ITERATIONS*5)
+        if ((end - start) / 1e6 > ITERATIONS*10)
         {
             // if it takes longer than 1ms for each iteration, then this is really a performance blocker! 
             Assert.fail("Performance test took more than 20 times longer than it should");

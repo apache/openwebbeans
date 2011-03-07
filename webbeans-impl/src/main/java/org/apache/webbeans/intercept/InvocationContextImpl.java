@@ -219,7 +219,7 @@ public class InvocationContextImpl implements InvocationContext
             Method aroundInvokeMethod = intc.getAroundInvoke();
             boolean accessible = aroundInvokeMethod.isAccessible();
             
-            if (!aroundInvokeMethod.isAccessible())
+            if (!accessible)
             {
                 SecurityUtil.doPrivilegedSetAccessible(aroundInvokeMethod, true);
             }

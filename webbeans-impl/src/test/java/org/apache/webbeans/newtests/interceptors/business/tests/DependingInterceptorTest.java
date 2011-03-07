@@ -130,12 +130,12 @@ public class DependingInterceptorTest extends AbstractUnitTest
             ApplicationScopedBean app = (ApplicationScopedBean) reference1;
 
             app.getJ();
-            Assert.assertTrue(TransactionInterceptor.interceptorCount == 1);
+            Assert.assertEquals(1, TransactionInterceptor.interceptorCount);
 
             app.getJ();
-            Assert.assertTrue(TransactionInterceptor.interceptorCount == 1);
+            Assert.assertEquals(2, TransactionInterceptor.interceptorCount);
 
             app.getJ();
-            Assert.assertTrue(TransactionInterceptor.interceptorCount == 1);
+            Assert.assertEquals(3, TransactionInterceptor.interceptorCount);
 }
 }
