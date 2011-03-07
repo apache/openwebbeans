@@ -42,8 +42,8 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
 {
     private static final String PACKAGE_NAME = DependingInterceptorTest.class.getPackage().getName();
 
-    private static final int ITERATIONS = 3000;
-    private static final int NUM_THREADS = 50;
+    private static final int ITERATIONS = 2000;
+    private static final int NUM_THREADS = 150;
 
     private static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorPerformanceTest.class);
 
@@ -76,6 +76,7 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
         for (int i= 0 ; i < NUM_THREADS; i++)
         {
             threads[i].join();
+            Assert.assertFalse(threads[i].isFailed());
         }
 
 
@@ -97,51 +98,57 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
     {
         private String threadName;
 
+        private boolean failed = false;
+
         public CalculationRunner(String name)
         {
             super(name);
             threadName = name;
         }
 
+        public boolean isFailed() {
+            return failed;
+        }
+
         @Override
         public void run()
         {
-            for (int req = 0; req < 5; req++)
+            try
             {
-                WebBeansContext.currentInstance().getContextFactory().initRequestContext(null);
-
-                Set<Bean<?>> beans = getBeanManager().getBeans(RequestScopedBean.class);
-                Assert.assertNotNull(beans);
-                Bean<RequestScopedBean> bean = (Bean<RequestScopedBean>)beans.iterator().next();
-
-                CreationalContext<RequestScopedBean> ctx = getBeanManager().createCreationalContext(bean);
-
-                Object reference1 = getBeanManager().getReference(bean, RequestScopedBean.class, ctx);
-                Assert.assertNotNull(reference1);
-
-                Assert.assertTrue(reference1 instanceof RequestScopedBean);
-
-                RequestScopedBean beanInstance1 = (RequestScopedBean)reference1;
-
-                TransactionInterceptor.count = 0;
-
-                long start = System.nanoTime();
-
-                long startDek = start;
-                for (int i= 1; i < ITERATIONS; i++)
+                for (int req = 0; req < 5; req++)
                 {
-                    beanInstance1.getMyService().getJ();
-    /*X
-                    if (i % 10000 == 0)
-                    {
-                        long endDek = System.nanoTime();
-                        logger.info("Thread {0}: Executing 10000 iterations took {1} ns", threadName, endDek - startDek);
-                        startDek = endDek;
-                    }
-    */
-                }
+                    WebBeansContext.currentInstance().getContextFactory().initRequestContext(null);
 
-                WebBeansContext.currentInstance().getContextFactory().destroyRequestContext(null);
+                    Set<Bean<?>> beans = getBeanManager().getBeans(RequestScopedBean.class);
+                    Assert.assertNotNull(beans);
+                    Bean<RequestScopedBean> bean = (Bean<RequestScopedBean>)beans.iterator().next();
+
+                    CreationalContext<RequestScopedBean> ctx = getBeanManager().createCreationalContext(bean);
+
+                    Object reference1 = getBeanManager().getReference(bean, RequestScopedBean.class, ctx);
+                    Assert.assertNotNull(reference1);
+
+                    Assert.assertTrue(reference1 instanceof RequestScopedBean);
+
+                    RequestScopedBean beanInstance1 = (RequestScopedBean)reference1;
+
+                    TransactionInterceptor.count = 0;
+
+                    long start = System.nanoTime();
+
+                    long startDek = start;
+                    for (int i= 1; i < ITERATIONS; i++)
+                    {
+                        beanInstance1.getMyService().getJ();
+                    }
+
+                    WebBeansContext.currentInstance().getContextFactory().destroyRequestContext(null);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.error("Concurrency problem in InterceptorPerformanceTest detected in thread " + threadName, e);
+                failed = true;
             }
         }
     }
