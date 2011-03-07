@@ -39,7 +39,6 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.creational.DependentCreationalContext;
-import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -56,8 +55,6 @@ import org.apache.webbeans.util.WebBeansUtil;
  */
 public abstract class AbstractInjectable implements Injectable
 {
-    private final static WebBeansLogger logger = WebBeansLogger.getLogger(AbstractInjectable.class);
-    
     /** Owner bean of the injection point*/
     protected OwbBean<?> injectionOwnerBean;
     
@@ -93,12 +90,7 @@ public abstract class AbstractInjectable implements Injectable
      */
     public <T> Object inject(InjectionPoint injectionPoint)
     {
-        if (logger.wblWillLogDebug())
-        {
-            logger.debug("Injected into bean : [{0}] with injection point : [{1}]", this.injectionOwnerBean, injectionPoint);
-        }
-
-        Object injected = null;               
+        Object injected = null;
 
         //Injected contextual beam
         InjectionResolver instance = injectionOwnerBean.getWebBeansContext().getBeanManagerImpl().getInjectionResolver();

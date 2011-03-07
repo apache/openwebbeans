@@ -22,8 +22,8 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -63,6 +63,11 @@ public final class InterceptorUtil
     private final Class<? extends Annotation> prePassivateClass;
     private final Class<? extends Annotation> postActivateClass;
 
+    /**
+     * all the bit flags of private static and final modifiers
+     */
+    private final int MODIFIER_STATIC_FINAL_PRIVATE = Modifier.STATIC | Modifier.FINAL | Modifier.PRIVATE;
+
     private final WebBeansContext webBeansContext;
 
     public InterceptorUtil(WebBeansContext webBeansContext)
@@ -93,8 +98,9 @@ public final class InterceptorUtil
 
         int modifiers = method.getModifiers();
 
-        if (ClassUtil.isStatic(modifiers) || ClassUtil.isPrivate(modifiers) || ClassUtil.isFinal(modifiers))
+        if ((modifiers & MODIFIER_STATIC_FINAL_PRIVATE) != 0)
         {
+            // static, final and private methods are NO business methods!
             return false;
         }
 
@@ -466,12 +472,7 @@ public final class InterceptorUtil
     @SuppressWarnings("unchecked")
     public static List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptorType type)
     {
-        List<InterceptorData> ai = new ArrayList<InterceptorData>();  // AroundInvoke
-        List<InterceptorData> at = new ArrayList<InterceptorData>();  // AroundTimeout
-        List<InterceptorData> pa = new ArrayList<InterceptorData>();  // PostActivate
-        List<InterceptorData> pc = new ArrayList<InterceptorData>();  // PostConstruct
-        List<InterceptorData> pd = new ArrayList<InterceptorData>();  // PreDestroy
-        List<InterceptorData> pp = new ArrayList<InterceptorData>();  // PrePassivate
+        List<InterceptorData> interceptors = new ArrayList<InterceptorData>();
 
         Iterator<InterceptorData> it = stack.iterator();
         while (it.hasNext())
@@ -482,85 +483,34 @@ public final class InterceptorUtil
             if (type.equals(InterceptorType.AROUND_INVOKE))
             {
                 m = data.getAroundInvoke();
-                if (m != null)
-                {
-                    ai.add(data);
-                }
-
             }
             else if (type.equals(InterceptorType.AROUND_TIMEOUT))
             {
                 m = data.getAroundTimeout();
-                if (m != null)
-                {
-                    at.add(data);
-                }
-
             }
             else if (type.equals(InterceptorType.POST_ACTIVATE))
             {
                 m = data.getPostActivate();
-                if (m != null)
-                {
-                    pa.add(data);
-                }
-
             }
             else if (type.equals(InterceptorType.POST_CONSTRUCT))
             {
                 m = data.getPostConstruct();
-                if (m != null)
-                {
-                    pc.add(data);
-                }
-
             }
             else if (type.equals(InterceptorType.PRE_DESTROY))
             {
                 m = data.getPreDestroy();
-                if (m != null)
-                {
-                    pd.add(data);
-                }
-
             }
             else if (type.equals(InterceptorType.PRE_PASSIVATE))
             {
                 m = data.getPrePassivate();
-                if (m != null)
-                {
-                    pp.add(data);
-                }
-
+            }
+            if (m != null)
+            {
+                interceptors.add(data);
             }
         }
 
-        if (type.equals(InterceptorType.AROUND_INVOKE))
-        {
-            return ai;
-        }
-        else if (type.equals(InterceptorType.AROUND_TIMEOUT))
-        {
-            return at;
-        }
-        else if (type.equals(InterceptorType.POST_ACTIVATE))
-        {
-            return pa;
-        }
-        else if (type.equals(InterceptorType.POST_CONSTRUCT))
-        {
-            return pc;
-        }
-        else if (type.equals(InterceptorType.PRE_DESTROY))
-        {
-            return pd;
-        }
-        else if (type.equals(InterceptorType.PRE_PASSIVATE))
-        {
-            return pp;
-        }
-
-        return Collections.EMPTY_LIST;
+        return interceptors;
     }
 
     /**
@@ -709,16 +659,20 @@ public final class InterceptorUtil
     public static void filterOverridenAroundInvokeInterceptor(Class<?> beanClass, List<InterceptorData> stack)
     {
 
-        List<InterceptorData> overridenInterceptors = new ArrayList<InterceptorData>();
+        List<InterceptorData> overridenInterceptors = null;
         Iterator<InterceptorData> it = stack.iterator();
         while (it.hasNext())
         {
             InterceptorData interceptorData = it.next();
-            if (false == interceptorData.isLifecycleInterceptor())
+            if (interceptorData.getAroundInvoke() != null)
             {
                 InterceptorData overridenInterceptor = getOverridenInterceptor(beanClass, interceptorData, stack);
                 if (null != overridenInterceptor)
                 {
+                    if (overridenInterceptors == null)
+                    {
+                        overridenInterceptors = new ArrayList<InterceptorData>();
+                    }
                     overridenInterceptors.add(overridenInterceptor);
                     if (logger.wblWillLogDebug())
                     {
@@ -729,7 +683,10 @@ public final class InterceptorUtil
             }
         }
 
-        stack.removeAll(overridenInterceptors);
+        if (overridenInterceptors != null)
+        {
+            stack.removeAll(overridenInterceptors);
+        }
     }
 
     /**
@@ -765,10 +722,6 @@ public final class InterceptorUtil
 
                 if (null != childInterceptorMethod && ClassUtil.isOverriden(childInterceptorMethod, superInterceptorMethod))
                 {
-                    if (logger.wblWillLogDebug())
-                    {
-                        logger.debug("KEEPING child " + interceptorData);
-                    }
                     return superInterceptorData;
                 }
             }

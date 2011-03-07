@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
@@ -45,7 +45,6 @@ import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.SecurityUtil;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Logic for how interceptors & decorators work in OWB.
@@ -57,8 +56,10 @@ import org.apache.webbeans.util.WebBeansUtil;
  * class via methods <code>defineManagedBean(class)</code> and Those methods further call
  * <code>defineInterceptor(interceptor class)</code> and <code>defineDecorator(decorator class)</code>
  * methods. Those methods finally call
- * {@link WebBeansUtil#defineInterceptor(org.apache.webbeans.component.creation.ManagedBeanCreatorImpl, javax.enterprise.inject.spi.ProcessInjectionTarget)} and
- * {@link WebBeansUtil#defineDecorator(org.apache.webbeans.component.creation.ManagedBeanCreatorImpl, javax.enterprise.inject.spi.ProcessInjectionTarget)}
+ * {@link org.apache.webbeans.util.WebBeansUtil#defineInterceptor(org.apache.webbeans.component.creation.ManagedBeanCreatorImpl,
+ *        javax.enterprise.inject.spi.ProcessInjectionTarget)} and
+ * {@link org.apache.webbeans.util.WebBeansUtil#defineDecorator(org.apache.webbeans.component.creation.ManagedBeanCreatorImpl,
+ *        javax.enterprise.inject.spi.ProcessInjectionTarget)}
  * methods for actual configuration.
  * <p>
  * Let's look at the "WebBeansUtil's" methods; 
@@ -92,8 +93,9 @@ import org.apache.webbeans.util.WebBeansUtil;
  * instantiated by the container first time. This method can be found in the
  * AbstractInjectionTargetBean" class "afterConstructor()" method. Actual
  * configuration is done by the
- * {@link DefinitionUtil#defineBeanInterceptorStack(AbstractOwbBean)} and
- * {@link DefinitionUtil#defineDecoratorStack}. In
+ * {@link org.apache.webbeans.config.DefinitionUtil#defineBeanInterceptorStack
+ *        (org.apache.webbeans.component.AbstractInjectionTargetBean)} and
+ * {@link org.apache.webbeans.config.DefinitionUtil#defineDecoratorStack}. In
  * "DefinitionUtil.defineBeanInterceptorStack", firstly it configures
  * "EJB spec. interceptors" after that configures "JSR-299 spec. interceptors."
  * In "DefinitionUtil.defineDecoratorStack", it configures
@@ -148,7 +150,8 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     protected OwbBean<?> bean = null;
     
     /**Intercepted methods*/
-    protected transient Map<Method, List<InterceptorData>> interceptedMethodMap = null;
+    protected transient volatile Map<Method, List<InterceptorData>> interceptedMethodMap = null;
+
     private WebBeansContext webBeansContext;
 
     /**
@@ -187,16 +190,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             //Calling method name on Proxy
             String methodName = method.getName();
             
-            if(ClassUtil.isObjectMethod(methodName) && !methodName.equals("toString"))
-            {
-                // we must not log in this place because this almost takes away half of the performance!
-                // if(logger.wblWillLogTrace())
-                // {
-                //    logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);
-                // }
-            }
-            
-            else if (bean instanceof InjectionTargetBean<?>)
+            if (!ClassUtil.isObjectMethod(methodName) && bean instanceof InjectionTargetBean<?>)
             {
                 InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) this.bean;
                 DelegateHandler delegateHandler = null;
@@ -206,7 +200,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                 if (webBeansContext.getInterceptorUtil().isWebBeansBusinessMethod(method))
                 {
                     List<Object> decorators = null;
-                    if (injectionTarget.getDecoratorStack().size() > 0)
+                    if (!injectionTarget.getDecoratorStack().isEmpty())
                     {
                         Class<?> proxyClass = webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().get(bean);
                         if (proxyClass == null)
@@ -227,12 +221,12 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
 
                     // Run around invoke chain
                     List<InterceptorData> interceptorStack = injectionTarget.getInterceptorStack();
-                    if (interceptorStack.size() > 0)
+                    if (!interceptorStack.isEmpty())
                     {
                         if (this.interceptedMethodMap == null)
                         {
                             // lazy initialisation, because creating a WeakHashMap is expensive!
-                            this.interceptedMethodMap = new WeakHashMap<Method, List<InterceptorData>>();
+                            this.interceptedMethodMap = new ConcurrentHashMap<Method, List<InterceptorData>>();
                         }
                         
                         if (decorators != null)
@@ -243,29 +237,38 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             decoratorInterceptorDataImpl.setDefinedInInterceptorClass(true);
                             decoratorInterceptorDataImpl.setAroundInvoke(SecurityUtil.doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
                         }
-                        if (this.interceptedMethodMap.get(method) == null)
+
+                        List<InterceptorData> interceptorMethods = this.interceptedMethodMap.get(method);
+                        if (interceptorMethods == null)
                         {
                             //Holds filtered interceptor stack
-                            List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
+                            List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>();
+                            for (InterceptorData interceptData : interceptorStack)
+                            {
+                                if (interceptData.getAroundInvoke() !=null)
+                                {
+                                    filteredInterceptorStack.add(interceptData);
+                                }
+                            }
         
                             // Filter both EJB and WebBeans interceptors
                             InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
                             InterceptorUtil.filterOverridenAroundInvokeInterceptor(bean.getBeanClass(), filteredInterceptorStack);
                             this.interceptedMethodMap.put(method, filteredInterceptorStack);
+                            interceptorMethods = filteredInterceptorStack;
                         }
                         
-                        List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(this.interceptedMethodMap.get(method));
                         if (decoratorInterceptorDataImpl != null)
                         {
                             // created an intereceptor to run our decorators, add it to the calculated stack
-                            filteredInterceptorStack.add(decoratorInterceptorDataImpl);
+                            interceptorMethods = new ArrayList<InterceptorData>(interceptorMethods);
+                            interceptorMethods.add(decoratorInterceptorDataImpl);
                         }
 
                         // Call Around Invokes
-                        if (WebBeansUtil.isContainsInterceptorMethod(filteredInterceptorStack, InterceptorType.AROUND_INVOKE))
+                        if (!interceptorMethods.isEmpty())
                         {
-                            return callAroundInvokes(method, arguments, InterceptorUtil.getInterceptorMethods(filteredInterceptorStack,
-                                                                                                              InterceptorType.AROUND_INVOKE));
+                            return callAroundInvokes(method, arguments, interceptorMethods);
                         }
                     }
                     
@@ -282,7 +285,10 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             //If not interceptor or decorator calls
             //Do normal calling
             boolean access = method.isAccessible();
-            SecurityUtil.doPrivilegedSetAccessible(method, true);
+            if (!access)
+            {
+                SecurityUtil.doPrivilegedSetAccessible(method, true);
+            }
             try
             {
                 result = method.invoke(instance, arguments);
@@ -290,7 +296,10 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             }
             finally
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, access);
+                if (!access)
+                {
+                    SecurityUtil.doPrivilegedSetAccessible(method, access);
+                }
             }
             
         }

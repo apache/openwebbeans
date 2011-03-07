@@ -298,7 +298,7 @@ public final class ClassUtil
     /**
      * Check the class is inner or not
      * 
-     * @param modifier modifier
+     * @param clazz to check
      * @return true or false
      */
     public static boolean isInnerClazz(Class<?> clazz)
@@ -561,12 +561,12 @@ public final class ClassUtil
         return method.getParameterTypes();
     }
 
-    public static List<String> getObjectMethodNames()
+    private static Set<String> getObjectMethodNames()
     {
         if (objectMethodNames == null)
         {
             // not much syncronisation needed...
-            List<String> list = new ArrayList<String>();
+            Set<String> list = new HashSet<String>();
             Class<?> clazz = Object.class;
 
             Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
@@ -579,7 +579,7 @@ public final class ClassUtil
 
         return objectMethodNames;
     }
-    private static volatile List objectMethodNames= null;
+    private static volatile Set<String> objectMethodNames= null;
     
 
 
