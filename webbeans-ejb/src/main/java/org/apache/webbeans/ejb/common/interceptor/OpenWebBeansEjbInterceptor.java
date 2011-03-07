@@ -575,7 +575,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     public Object callAroundTimeouts(InvocationContext context) throws Exception
     {
         Object rv = null;
-        if (logger.wblWillLogTrace())
+        if (logger.wblWillLogDebug())
         {
             logger.debug("OWBEI:: @AroundTimeout entry. Trying to run Interceptors.");            
         }

@@ -76,8 +76,11 @@ public final class WebBeansDecoratorConfig
             }                
         }            
 
-        
-        logger.debug("Configuring decorator class : [{0}]", delegate.getReturnType());
+
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("Configuring decorator class : [{0}]", delegate.getReturnType());
+        }
         WebBeansDecorator<T> decorator = new WebBeansDecorator<T>(delegate);
         delegate.getWebBeansContext().getBeanManagerImpl().addDecorator(decorator);
     }

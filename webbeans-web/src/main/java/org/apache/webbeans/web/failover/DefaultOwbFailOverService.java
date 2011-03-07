@@ -95,7 +95,7 @@ public class DefaultOwbFailOverService implements FailOverService
             } 
             catch (Exception e) 
             {
-                logger.debug("DefaultOwbFailOverService could not instanciate: [{0}]", value);
+                logger.error("DefaultOwbFailOverService could not instanciate: [{0}]", e, value);
             }
         }
         
@@ -166,7 +166,10 @@ public class DefaultOwbFailOverService implements FailOverService
             (FailOverBagWrapper)session.getAttribute(getFailOverAttributeName());
         if (bagWrapper != null) 
         {
-            logger.debug("DefaultOwbFailOverService restoreBeans for session: [{0}]", session);
+            if (logger.wblWillLogDebug())
+            {
+                logger.debug("DefaultOwbFailOverService restoreBeans for session: [{0}]", session);
+            }
             bagWrapper.restore();
             session.removeAttribute(getFailOverAttributeName());
         }

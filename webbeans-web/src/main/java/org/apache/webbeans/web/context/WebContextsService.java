@@ -653,7 +653,10 @@ public class WebContextsService extends AbstractContextsService
     private Context lazyStartSessionContext()
     {
 
-        logger.debug(">lazyStartSessionContext");
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug(">lazyStartSessionContext");
+        }
 
         Context webContext = null;
         Context context = getCurrentContext(RequestScoped.class);
@@ -672,7 +675,10 @@ public class WebContextsService extends AbstractContextsService
                         failoverService.sessionIsInUse(currentSession);
                     }
 
-                    logger.debug("Lazy SESSION context initialization SUCCESS");
+                    if (logger.wblWillLogDebug())
+                    {
+                        logger.debug("Lazy SESSION context initialization SUCCESS");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -690,7 +696,10 @@ public class WebContextsService extends AbstractContextsService
             logger.warn("Could NOT lazily initialize session context because of "+context+" RequestContext");
         }
 
-        logger.debug("<lazyStartSessionContext "+ webContext);
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("<lazyStartSessionContext "+ webContext);
+        }
         return webContext;
     }
 }

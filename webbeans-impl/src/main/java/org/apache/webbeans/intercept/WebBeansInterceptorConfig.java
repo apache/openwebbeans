@@ -102,7 +102,10 @@ public final class WebBeansInterceptorConfig
             }
         }
 
-        logger.debug("Configuring interceptor class : [{0}]", delegate.getReturnType());
+        if (logger.wblWillLogDebug())
+        {
+            logger.debug("Configuring interceptor class : [{0}]", delegate.getReturnType());
+        }
         WebBeansInterceptor<T> interceptor = new WebBeansInterceptor<T>(delegate);
 
         List<Annotation> anns = Arrays.asList(interceptorBindingTypes);
