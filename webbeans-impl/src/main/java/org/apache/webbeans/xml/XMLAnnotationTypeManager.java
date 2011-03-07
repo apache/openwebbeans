@@ -27,6 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.webbeans.config.WebBeansContext;
 
+/**
+ * TODO This class actually has nothing to do with XML anymore!
+ * @deprecated The addInterceotorBindingTypeInheritAnnotation should get moved to the BeanManagerImpl or similar place.
+ */
 public class XMLAnnotationTypeManager
 {
     private Map<Class<? extends Annotation>, Set<Annotation>> xmlInterceptorBindingTypes = new ConcurrentHashMap<Class<? extends Annotation>, Set<Annotation>>();
@@ -42,21 +46,6 @@ public class XMLAnnotationTypeManager
     }
 
 
-    public void addInterceotorBindingTypeInheritAnnotation(Class<? extends Annotation> bindingType, Annotation inherit)
-    {
-        Set<Annotation> inherits = xmlInterceptorBindingTypes.get(bindingType);
-        if (inherits == null)
-        {
-            inherits = new HashSet<Annotation>();
-            inherits.add(inherit);
-            xmlInterceptorBindingTypes.put(bindingType, inherits);
-        }
-        else
-        {
-            inherits.add(inherit);
-        }
-    }
-    
     public void addInterceotorBindingTypeInheritAnnotation(Class<? extends Annotation> bindingType, Annotation... inheritsArray)
     {
         Set<Annotation> inherits = xmlInterceptorBindingTypes.get(bindingType);
