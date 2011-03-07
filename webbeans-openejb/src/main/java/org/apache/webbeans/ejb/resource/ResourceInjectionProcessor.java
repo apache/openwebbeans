@@ -79,8 +79,7 @@ class ResourceInjectionProcessor
                         
             String intf = null;
             if(annotation.beanInterface() != null 
-                    && annotation.beanInterface() != Object.class
-                    && !annotation.beanInterface().equals(""))
+                    && annotation.beanInterface() != Object.class)
             {
                 intf = annotation.beanInterface().getName();
             }

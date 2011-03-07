@@ -141,7 +141,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
                     if (logger.wblWillLogDebug())
                     {
                         logger.debug("OpenWebBeans added the following file based path while doing web scanning: " +
-                                addPath.toString());
+                                addPath);
                     }
 
                 }
