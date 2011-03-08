@@ -28,6 +28,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.conversation.ConversationManager;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.web.context.SessionContextManager;
 import org.apache.webbeans.web.context.WebContextsService;
@@ -44,6 +45,10 @@ public class FailOverBag implements Serializable
      */
     private static final long serialVersionUID = -6314819837009653189L;
     
+    /**Logger instance*/
+    protected  final WebBeansLogger logger = 
+            WebBeansLogger.getLogger(FailOverBag.class);
+    
     private String sessionId;
 
     private String owbFailoverJVMId;
@@ -52,14 +57,17 @@ public class FailOverBag implements Serializable
     
     private Map<Conversation, ConversationContext> conversationContextMap;
 
-    private final WebBeansContext webBeansContext = WebBeansContext.getInstance();
+    private transient WebBeansContext webBeansContext;
     
     public FailOverBag()
     {
+        webBeansContext = WebBeansContext.getInstance();
     }
     
     public FailOverBag(HttpSession session, FailOverService service) 
     {
+        webBeansContext = WebBeansContext.getInstance();
+        
         sessionId = session.getId();
         owbFailoverJVMId = service.getJVMId();
         updateOwbFailOverBag(session, service);
@@ -80,6 +88,9 @@ public class FailOverBag implements Serializable
     {
         try 
         {
+            //Transient, so we need to look this up again during restore.
+            webBeansContext = WebBeansContext.getInstance();
+            
             if (sessionContext != null) 
             {
                 SessionContextManager sessionManager = ((WebContextsService)webBeansContext.getContextsService()).getSessionContextManager();
@@ -100,7 +111,7 @@ public class FailOverBag implements Serializable
         } 
         catch (Exception e)
         {
-            
+            logger.error(e);
         }
     }
 

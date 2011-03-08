@@ -38,7 +38,6 @@ import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionActivationListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -48,7 +47,7 @@ import javax.servlet.http.HttpSessionListener;
  * 
  * @version $Rev: 910075 $ $Date: 2010-02-14 23:17:23 +0200 (Sun, 14 Feb 2010) $
  */
-public class WebBeansConfigurationListener implements ServletContextListener, ServletRequestListener, HttpSessionListener,HttpSessionActivationListener
+public class WebBeansConfigurationListener implements ServletContextListener, ServletRequestListener, HttpSessionListener
 {
     /**Logger instance*/
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansConfigurationListener.class);
@@ -208,28 +207,5 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
 
         ConversationManager conversationManager = WebBeansContext.getInstance().getConversationManager();
         conversationManager.destroyConversationContextWithSessionId(event.getSession().getId());
-    }
-
-    @Override
-    public void sessionWillPassivate(HttpSessionEvent event) 
-    {
-        if (failoverService != null &&
-            failoverService.isSupportPassivation())
-        {
-            HttpSession session = event.getSession();
-            failoverService.sessionWillPassivate(session);
-        }
-
-    }
-
-    @Override
-    public void sessionDidActivate(HttpSessionEvent event)
-    {
-        if (failoverService.isSupportFailOver() ||
-            failoverService.isSupportPassivation())
-        {
-            HttpSession session = event.getSession();
-            failoverService.restoreBeans(session);
-        }
     }
 }

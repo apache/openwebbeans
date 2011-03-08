@@ -21,14 +21,16 @@ package org.apache.webbeans.web.failover;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Externalizable;
-import java.io.Serializable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionActivationListener;
+import javax.servlet.http.HttpSessionEvent;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -38,7 +40,7 @@ import org.apache.webbeans.spi.FailOverService;
  * Use javassist Proxy streams to serialize and restore failover bean bag.
  * 
  */
-public class FailOverBagWrapper implements Serializable, Externalizable 
+public class FailOverBagWrapper implements Serializable, Externalizable, HttpSessionActivationListener
 {
     /**Logger instance*/
     protected  final WebBeansLogger logger = 
@@ -142,5 +144,26 @@ public class FailOverBagWrapper implements Serializable, Externalizable
         oos.close();
         baos.close();
         out.writeObject(buf);
+    }
+    
+    @Override
+    public void sessionWillPassivate(HttpSessionEvent event)
+    {
+        if (failoverService != null && failoverService.isSupportPassivation())
+        {
+            HttpSession session = event.getSession();
+            failoverService.sessionWillPassivate(session);
+        }
+
+    }
+
+    @Override
+    public void sessionDidActivate(HttpSessionEvent event)
+    {
+        if (failoverService != null && failoverService.isSupportFailOver() || failoverService.isSupportPassivation())
+        {
+            HttpSession session = event.getSession();
+            failoverService.restoreBeans(session);
+        }
     }
 }
