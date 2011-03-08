@@ -26,6 +26,10 @@ import javax.enterprise.inject.spi.Bean;
 import junit.framework.Assert;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.disposes.beans.AppScopedBean;
+import org.apache.webbeans.newtests.disposes.beans.DependentProducer;
+import org.apache.webbeans.newtests.disposes.beans.DisposerMethodBean;
+import org.apache.webbeans.newtests.disposes.beans.InjectedIntoBean;
+import org.apache.webbeans.newtests.disposes.beans.IntermediateDependentBean;
 import org.apache.webbeans.newtests.disposes.beans.RequestBean;
 import org.apache.webbeans.newtests.disposes.common.RequestModel;
 import org.junit.Test;
@@ -54,5 +58,31 @@ public class DependentMethodBeanTest extends AbstractUnitTest
         Assert.assertTrue(AppScopedBean.OK);
         
     }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testDisposerMethodWithIntermediateDependent()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(DependentProducer.class);
+        beanClasses.add(InjectedIntoBean.class);
+        beanClasses.add(IntermediateDependentBean.class);
+        
+        startContainer(beanClasses, beanXmls);        
+        Bean<InjectedIntoBean> bean = (Bean<InjectedIntoBean>)getBeanManager().getBeans("injectedIntoBean").iterator().next();
+         
+        CreationalContext<InjectedIntoBean> cc = getBeanManager().createCreationalContext(bean);
+        
+        InjectedIntoBean model = (InjectedIntoBean) getBeanManager().getReference(bean, InjectedIntoBean.class, cc);
+        
+        Assert.assertFalse(model.isBeanNull());
+        
+        shutDownContainer();
+        
+        //Disposer should only be called once
+        Assert.assertEquals(1, DependentProducer.disposerCount); 
+    } 
 
 }

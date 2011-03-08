@@ -139,15 +139,6 @@ public abstract class AbstractInjectable implements Injectable
             }
         }
         
-        // add this dependent into bean dependent list
-        if (!WebBeansUtil.isStaticInjection(injectionPoint) && WebBeansUtil.isDependent(injectedBean))
-        {
-            if(instanceUnderInjection.get() != null)
-            {
-                ((CreationalContextImpl<?>)this.injectionOwnerCreationalContext).addDependent(instanceUnderInjection.get(),injectedBean, injected);   
-            }
-        }
-
         return injected;
     }
     
