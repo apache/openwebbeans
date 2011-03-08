@@ -203,7 +203,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
     {
         Asserts.assertNotNull(interceptor,"Interceptor parameter can not be null");
         
-        if(ownerInstance != null || dependentObjects == null)
+        if(ownerInstance == null || dependentObjects == null)
         {
             return null;
         }
