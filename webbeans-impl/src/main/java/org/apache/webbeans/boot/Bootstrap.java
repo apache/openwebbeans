@@ -44,7 +44,7 @@ public class Bootstrap
         this.containerLifecycle = WebBeansContext.getInstance().getService(ContainerLifecycle.class);
     }
     
-    public void start() throws Exception
+    public void start() throws InterruptedException
     {
         log.info(OWBLogConst.INFO_0005);
         long begin = System.currentTimeMillis();
@@ -69,7 +69,7 @@ public class Bootstrap
         log.info(OWBLogConst.INFO_0009);
     }
     
-    public static void main(String []args) throws Exception
+    public static void main(String []args)
     {
         Bootstrap boot = new Bootstrap();
         boot.init(System.getProperties());

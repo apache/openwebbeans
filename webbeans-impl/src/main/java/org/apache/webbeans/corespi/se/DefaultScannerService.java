@@ -21,6 +21,7 @@ package org.apache.webbeans.corespi.se;
 import java.io.IOException;
 
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.WebBeansUtil;
 
 public class DefaultScannerService extends AbstractMetaDataDiscovery
@@ -31,20 +32,27 @@ public class DefaultScannerService extends AbstractMetaDataDiscovery
         super();
     }
 
-    protected void configure() throws Exception
+    protected void configure()
     {
         configureAnnotationDB();
     }
 
     
-    private void configureAnnotationDB() throws IOException
+    private void configureAnnotationDB()
     {
         ClassLoader loader = WebBeansUtil.getCurrentClassLoader();
         //Store collection of beans.xml's before scanning archives
 
         String[] urlPaths = findBeansXmlBases(META_INF_BEANS_XML, loader);
-        
-        this.getAnnotationDB().scanArchives(urlPaths);
+
+        try
+        {
+            this.getAnnotationDB().scanArchives(urlPaths);
+        }
+        catch (IOException e)
+        {
+            throw new WebBeansConfigurationException("Error while scanning the JAR archives", e);
+        }
     }
 
 }

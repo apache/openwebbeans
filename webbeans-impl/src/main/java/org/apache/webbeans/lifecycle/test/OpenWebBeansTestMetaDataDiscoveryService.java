@@ -40,7 +40,7 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
     }
 
     @Override
-    protected void configure() throws Exception
+    protected void configure()
     {
         //Nothing we scan
     }

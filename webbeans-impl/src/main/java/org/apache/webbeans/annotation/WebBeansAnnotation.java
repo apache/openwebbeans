@@ -19,6 +19,7 @@
 package org.apache.webbeans.annotation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
@@ -77,7 +78,8 @@ public class WebBeansAnnotation implements Annotation, MethodHandler
      * @param args method arguments
      * @throws Exception if any exception occurs
      */
-    public Object invoke(Object self, Method m, Method proceed, Object[] args) throws Exception
+    public Object invoke(Object self, Method m, Method proceed, Object[] args)
+    throws InvocationTargetException, IllegalAccessException
     {
         WebBeansAnnotation anno = (WebBeansAnnotation) self;
 

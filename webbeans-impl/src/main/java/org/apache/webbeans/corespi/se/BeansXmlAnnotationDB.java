@@ -100,7 +100,7 @@ public class BeansXmlAnnotationDB extends AnnotationDB
     {
         // Maps a resource (Ex: .jar) to a beans.xml location
         populateResourceToBeansXml(urls);
-        String currentBeansXml = null;
+        String currentBeansXml;
         for (int i = 0; i < urls.length; i++)
         {
             currentBeansXml = beansXmlResources.get(urls[i]);

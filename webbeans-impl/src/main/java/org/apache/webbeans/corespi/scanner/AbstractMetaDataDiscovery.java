@@ -105,7 +105,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         initAnnotationDB();
     }
 
-    abstract protected void configure() throws Exception;
+    abstract protected void configure();
 
     /**
      * Find the base paths of all available resources with the given

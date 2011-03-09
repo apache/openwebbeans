@@ -35,10 +35,8 @@ public class TCKMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
     }
     
     @Override
-    protected void configure() throws Exception
+    protected void configure()
     {
-        
-        
     }
 
     public void addBeanClass(Class<?> clazz)

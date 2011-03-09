@@ -28,6 +28,7 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
 import org.apache.webbeans.corespi.scanner.AnnotationDB;
 import org.apache.webbeans.corespi.se.BeansXmlAnnotationDB;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.scannotation.WarUrlFinder;
@@ -54,7 +55,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         this.servletContext = (ServletContext) context;        
     }
     
-    protected void configure() throws Exception
+    protected void configure()
     {
         try
         {
@@ -72,8 +73,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         }
         catch (Exception e)
         {
-            logger.error(OWBLogConst.ERROR_0002, e);
-            throw e;
+            throw new WebBeansConfigurationException(logger.getTokenString(OWBLogConst.ERROR_0002), e);
         }
 
     }

@@ -262,7 +262,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void startApplicationContext(Object instance) throws Exception
+    private void startApplicationContext(Object instance)
     {
         ApplicationContext ctx = new ApplicationContext();
         ctx.setActive(true);
@@ -271,7 +271,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void startConversationContext(Object object) throws Exception
+    private void startConversationContext(Object object)
     {
         ConversationContext ctx = new ConversationContext();
         ctx.setActive(true);
@@ -281,7 +281,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void startRequestContext(Object instance) throws Exception
+    private void startRequestContext(Object instance)
     {
         
         RequestContext ctx = new RequestContext();
@@ -291,7 +291,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void startSessionContext(Object instance) throws Exception
+    private void startSessionContext(Object instance)
     {
         SessionContext ctx = new SessionContext();
         ctx.setActive(true);
@@ -300,7 +300,7 @@ public class DefaultContextsService extends AbstractContextsService
     }
 
     
-    private void startSingletonContext(Object object) throws Exception
+    private void startSingletonContext(Object object)
     {
         
         SingletonContext ctx = new SingletonContext();

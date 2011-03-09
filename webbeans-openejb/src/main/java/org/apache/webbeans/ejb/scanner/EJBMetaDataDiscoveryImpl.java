@@ -24,10 +24,8 @@ public class EJBMetaDataDiscoveryImpl extends AbstractMetaDataDiscovery
 {
 
     @Override
-    protected void configure() throws Exception
+    protected void configure()
     {
-        
-        
     }
 
 }

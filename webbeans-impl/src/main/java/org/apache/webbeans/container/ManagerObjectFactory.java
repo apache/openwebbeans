@@ -28,7 +28,7 @@ import org.apache.webbeans.config.WebBeansContext;
 public class ManagerObjectFactory implements ObjectFactory
 {
 
-    public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception
+    public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
     {
         return new InjectableBeanManager(WebBeansContext.getInstance().getBeanManagerImpl());
     }
