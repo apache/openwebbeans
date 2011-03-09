@@ -71,7 +71,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
      * {@inheritDoc}
      */
     @Override
-    public void startApplication(Object startupObject) throws Exception
+    public void startApplication(Object startupObject)
     {
         ServletContext servletContext = getServletContext(startupObject);
         super.startApplication(servletContext);
@@ -90,7 +90,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     /**
      * {@inheritDoc}
      */
-    protected void afterStartApplication(final Object startupObject) throws Exception
+    protected void afterStartApplication(final Object startupObject)
     {
         String strDelay = getWebBeansContext().getOpenWebBeansConfiguration().getProperty(OpenWebBeansConfiguration.CONVERSATION_PERIODIC_DELAY,"150000");
         long delay = Long.parseLong(strDelay);
@@ -141,7 +141,7 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     /**
      * {@inheritDoc}
      */
-    protected void beforeStopApplication(Object stopObject) throws Exception
+    protected void beforeStopApplication(Object stopObject)
     {
         if(service != null)
         {
@@ -152,9 +152,9 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
     /**
      * {@inheritDoc}
      */
-    protected void afterStopApplication(Object stopObject) throws Exception
+    protected void afterStopApplication(Object stopObject)
     {
-        ServletContext servletContext = null;
+        ServletContext servletContext;
 
         if(stopObject instanceof ServletContext)
         {

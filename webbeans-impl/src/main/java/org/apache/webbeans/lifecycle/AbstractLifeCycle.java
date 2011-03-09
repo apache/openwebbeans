@@ -96,7 +96,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     }
     
     @Override
-    public void startApplication(Object startupObject) throws Exception
+    public void startApplication(Object startupObject)
     {
         // Initalize Application Context
         logger.info(OWBLogConst.INFO_0005);
@@ -253,22 +253,22 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
         //Do nothing as default
     }
         
-    protected void afterStartApplication(Object startupObject) throws Exception
+    protected void afterStartApplication(Object startupObject)
     {
         //Do nothing as default
     }
 
-    protected void afterStopApplication(Object stopObject) throws Exception
+    protected void afterStopApplication(Object stopObject)
     {
         //Do nothing as default
     }
     
-    protected void beforeStartApplication(Object startupObject) throws Exception
+    protected void beforeStartApplication(Object startupObject)
     {
         //Do nothing as default
     }
 
-    protected void beforeStopApplication(Object stopObject) throws Exception
+    protected void beforeStopApplication(Object stopObject)
     {
         //Do nothing as default
     }    

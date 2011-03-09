@@ -63,9 +63,8 @@ public interface ContainerLifecycle
      * developer.
      * </p>
      * @param startupObject any startup object.
-     * @throws Exception exception thrown by startup
      */
-    public void startApplication(Object startupObject) throws Exception;
+    public void startApplication(Object startupObject);
         
     /**
      * Stops means that container removes all bean instances
