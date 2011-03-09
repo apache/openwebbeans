@@ -61,15 +61,15 @@ import java.util.Set;
  */
 public class AnnotationDB implements Serializable
 {
-    protected Map<String, Set<String>> annotationIndex = new HashMap<String, Set<String>>();
-    protected Map<String, Set<String>> implementsIndex = new HashMap<String, Set<String>>();
-    protected Map<String, Set<String>> classIndex = new HashMap<String, Set<String>>();
+    private Map<String, Set<String>> annotationIndex = new HashMap<String, Set<String>>();
+    private Map<String, Set<String>> implementsIndex = new HashMap<String, Set<String>>();
+    private Map<String, Set<String>> classIndex = new HashMap<String, Set<String>>();
 
-    protected boolean scanClassAnnotations = true;
-    protected boolean scanMethodAnnotations = true;
-    protected boolean scanParameterAnnotations = true;
-    protected boolean scanFieldAnnotations = true;
-    protected String[] ignoredPackages = {"javax", "java", "sun", "com.sun", "javassist"};
+    private boolean scanClassAnnotations = true;
+    private boolean scanMethodAnnotations = true;
+    private boolean scanParameterAnnotations = true;
+    private boolean scanFieldAnnotations = true;
+    private String[] ignoredPackages = {"javax", "java", "sun", "com.sun", "javassist"};
 
     public class CrossReferenceException extends Exception
     {
