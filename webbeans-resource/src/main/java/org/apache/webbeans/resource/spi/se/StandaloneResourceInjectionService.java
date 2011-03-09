@@ -108,7 +108,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
     }
 
     @Override
-    public void injectJavaEEResources(Object managedBeanInstance) throws Exception
+    public void injectJavaEEResources(Object managedBeanInstance)
     {
         Class currentClass = managedBeanInstance.getClass();
         Boolean containsEeResource = classContainsEEResources.get(currentClass);

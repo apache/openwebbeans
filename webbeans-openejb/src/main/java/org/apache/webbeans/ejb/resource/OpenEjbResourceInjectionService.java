@@ -82,7 +82,7 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
     }
 
     @Override
-    public void injectJavaEEResources(Object managedBeanInstance) throws Exception
+    public void injectJavaEEResources(Object managedBeanInstance)
     {
         Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(managedBeanInstance.getClass());
         for(Field field : fields)

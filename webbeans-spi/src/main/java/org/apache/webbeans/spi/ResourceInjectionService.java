@@ -49,7 +49,7 @@ public interface ResourceInjectionService
      * </p>
      * @param managedBeanInstance managed bean instance
      */
-    public void injectJavaEEResources(Object managedBeanInstance) throws Exception;
+    public void injectJavaEEResources(Object managedBeanInstance);
     
     /**
      * Gets resource for the given resource reference.

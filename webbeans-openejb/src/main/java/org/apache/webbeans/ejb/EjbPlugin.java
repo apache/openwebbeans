@@ -35,7 +35,6 @@ import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.openejb.Container;
 import org.apache.openejb.DeploymentInfo;
-import org.apache.openejb.OpenEJBException;
 import org.apache.openejb.assembler.classic.AppInfo;
 import org.apache.openejb.assembler.classic.Assembler;
 import org.apache.openejb.assembler.classic.DeploymentListener;
@@ -122,7 +121,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
      * @see org.apache.webbeans.plugins.AbstractOwbPlugin#shutDown()
      */
     @Override
-    public void shutDown() throws WebBeansConfigurationException
+    public void shutDown()
     {
         try
         {
@@ -159,7 +158,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
      * @see org.apache.webbeans.plugins.AbstractOwbPlugin#startUp()
      */
     @Override
-    public void startUp() throws WebBeansConfigurationException
+    public void startUp()
     {
         try
         {
@@ -417,7 +416,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     /**
      * {@inheritDoc}
      */
-    public void isManagedBean(Class<?> clazz) throws WebBeansConfigurationException
+    public void isManagedBean(Class<?> clazz)
     {
         if (isSessionBean(clazz))
         {
@@ -495,9 +494,8 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
      * @param deployments deployments
      * @param deployment deployment
      * @return strategy
-     * @throws OpenEJBException if any exception
      */
-    public JndiNameStrategy createStrategy(AppInfo appInfo, List<DeploymentInfo> deployments, DeploymentInfo deployment) throws OpenEJBException
+    public JndiNameStrategy createStrategy(AppInfo appInfo, List<DeploymentInfo> deployments, DeploymentInfo deployment)
     {
         JndiNameStrategy strategy = nameStrategies.get(deployment.getModuleID());
         if (strategy != null)

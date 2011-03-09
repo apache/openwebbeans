@@ -40,9 +40,8 @@ public interface OpenWebBeansPlugin
     /**
      * initialise the plugin.
      * This is called once after the very plugin has been loaded.
-     * @throws WebBeansConfigurationException
      */
-    public void startUp() throws Exception;
+    public void startUp();
 
     /**
      * At shutdown, the plugin must release all locked resources.
@@ -50,7 +49,7 @@ public interface OpenWebBeansPlugin
      * This is usually the case when the WebApplication gets stopped.
      * @throws WebBeansConfigurationException
      */
-    public void shutDown() throws Exception;
+    public void shutDown();
     
 
     /**
@@ -59,7 +58,7 @@ public interface OpenWebBeansPlugin
      * @param clazz the class to check
      * @throws WebBeansConfigurationException if the given clazz cannot be used as simple web bean.
      */
-    public void isManagedBean(Class<?> clazz) throws Exception;
+    public void isManagedBean(Class<?> clazz);
     
     /**
      * Returns true if plugin provides given service implementation

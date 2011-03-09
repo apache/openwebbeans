@@ -37,7 +37,7 @@ public abstract class AbstractOwbPlugin implements OpenWebBeansPlugin
     }
 
     /** @{inheritDoc} */
-    public void isManagedBean(Class<?> clazz) throws Exception
+    public void isManagedBean(Class<?> clazz)
     {
     }
     
@@ -48,12 +48,12 @@ public abstract class AbstractOwbPlugin implements OpenWebBeansPlugin
     }
 
     /** @{inheritDoc} */
-    public void shutDown() throws Exception
+    public void shutDown()
     {
     }
 
     /** @{inheritDoc} */
-    public void startUp() throws Exception
+    public void startUp()
     {
     }
     
