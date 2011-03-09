@@ -160,7 +160,7 @@ public class FailOverBagWrapper implements Serializable, Externalizable, HttpSes
     @Override
     public void sessionDidActivate(HttpSessionEvent event)
     {
-        if (failoverService != null && failoverService.isSupportFailOver() || failoverService.isSupportPassivation())
+        if (failoverService != null && (failoverService.isSupportFailOver() || failoverService.isSupportPassivation()))
         {
             HttpSession session = event.getSession();
             failoverService.restoreBeans(session);
