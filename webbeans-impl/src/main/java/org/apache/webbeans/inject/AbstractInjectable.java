@@ -37,6 +37,7 @@ import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.creational.DependentCreationalContext;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -138,6 +139,15 @@ public abstract class AbstractInjectable implements Injectable
             }
         }
         
+        // add this dependent into bean dependent list
+        if (!WebBeansUtil.isStaticInjection(injectionPoint) && WebBeansUtil.isDependent(injectedBean))
+        {
+            if(instanceUnderInjection.get() != null)
+            {
+                ((CreationalContextImpl<?>)this.injectionOwnerCreationalContext).addDependent(instanceUnderInjection.get(),injectedBean, injected);
+            }
+        }
+
         return injected;
     }
     
