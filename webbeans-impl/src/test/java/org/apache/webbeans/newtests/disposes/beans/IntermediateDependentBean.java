@@ -25,9 +25,10 @@ import org.apache.webbeans.newtests.disposes.common.HttpHeader;
 
 public class IntermediateDependentBean
 {
-    @Inject @HttpHeader DependentModel bean;
+    private @Inject @HttpHeader DependentModel bean;
     
-    public DependentModel getBean(){
+    public DependentModel getBean()
+    {
         return bean;
     }
 }

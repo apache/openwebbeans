@@ -203,23 +203,15 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
             ThreadLocal<Object> injectionTargetInstance = AbstractInjectable.instanceUnderInjection;
             if(isInjectionToAnotherBean)
             {
-                if(oldDependents == null)
-                {
-                    if (injectionTargetInstance != null && injectionTargetInstance.get() != null)
-                    {
-                        ((CreationalContextImpl)creationalContext).
-                                addDependent(injectionTargetInstance.get(), this , instance);
-                    }
-                }
-                else
+                if(oldDependents != null)
                 {
                     DependentCreationalContext<Object> dependentCreational =
                             new DependentCreationalContext<Object>((Contextual<Object>)this);
                     dependentCreational.setInstance(instance);
                     dependentCreational.setDependentType(DependentType.BEAN);
 
-                    oldDependents.add(dependentCreational);                    
-                }                
+                    oldDependents.add(dependentCreational);
+                }
             }
             else
             {
@@ -278,6 +270,7 @@ public class ProducerMethodBean<T> extends AbstractProducerBean<T>
         {
             if (getParent().getScope().equals(Dependent.class))
             {
+                // this handles dependent scoped producer methods and fields
                 destroyBean(getParent(), parentInstance, parentCreational);
             }
             

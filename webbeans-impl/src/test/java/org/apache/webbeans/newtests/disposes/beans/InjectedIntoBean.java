@@ -26,7 +26,7 @@ import javax.inject.Named;
 @RequestScoped
 public class InjectedIntoBean
 {
-    @Inject  IntermediateDependentBean bean;
+    private @Inject  IntermediateDependentBean bean;
     
     public boolean isBeanNull(){
         return bean == null;

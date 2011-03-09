@@ -769,7 +769,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {        
             //Using owner creational context
             //Dependents use parent creational context
-            instance = getReference(injectedBean, injectionPoint.getType(), ownerCreationalContext);            
+            instance = getReference(injectedBean, injectionPoint.getType(), ownerCreationalContext);
         }
         
         else
