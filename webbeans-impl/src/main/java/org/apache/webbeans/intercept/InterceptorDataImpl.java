@@ -47,7 +47,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 public class InterceptorDataImpl implements InterceptorData
 {
     // Logger instance
-    private final WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorDataImpl.class);
+    private final static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorDataImpl.class);
 
     /** Around invokes method */
     private Method aroundInvoke = null;
@@ -410,13 +410,6 @@ public class InterceptorDataImpl implements InterceptorData
     @SuppressWarnings("unchecked")
     public Object createNewInstance(Object ownerInstance, CreationalContextImpl<?> ownerCreationalContext)
     {
-        if (logger.wblWillLogDebug())
-        {
-            logger.debug("> " + ownerInstance + " " + ownerCreationalContext + " " + this);
-            logger.debug("isDefinedWithWebBeansInterceptor " + isDefinedWithWebBeansInterceptor);
-            logger.debug("definedInInterceptorClass " + definedInInterceptorClass);
-        }
-
         // check for this InterceptorData is defined by interceptor class
         if (this.isDefinedWithWebBeansInterceptor && this.definedInInterceptorClass)
         {
@@ -425,11 +418,6 @@ public class InterceptorDataImpl implements InterceptorData
             // Means that it is the last interceptor added by InterceptorHandler
             if (this.webBeansInterceptor == null)
             {
-                if (logger.wblWillLogDebug())
-                {
-                    logger.debug("< " + decoratorInterceptor);
-                }
-
                 return this.decoratorInterceptor;
             }
 
@@ -447,11 +435,6 @@ public class InterceptorDataImpl implements InterceptorData
 
                 ownerCreationalContext.addDependent(ownerInstance, (WebBeansInterceptor<Object>) this.webBeansInterceptor, interceptor);
             }
-            if (logger.wblWillLogDebug())
-            {
-                logger.debug("< " + interceptor);
-            }
-
             return interceptor;
         }
 
@@ -461,19 +444,9 @@ public class InterceptorDataImpl implements InterceptorData
         if (this.definedInInterceptorClass)
         {
             ctx = ownerCreationalContext.getEjbInterceptor(ownerInstance, this.interceptorClass);
-            if (logger.wblWillLogDebug())
-            {
-                logger.debug("EjbInterceptor Context " + ctx);
-            }
-
             if (ctx == null)
             {
                 interceptor = WebBeansUtil.newInstanceForced(this.interceptorClass);
-                if (logger.wblWillLogDebug())
-                {
-                    logger.debug("EjbInterceptor newInstanceForced  " + interceptor);
-                }
-
                 try
                 {
                     OWBInjector injector = new OWBInjector(webBeansContext);
@@ -494,18 +467,8 @@ public class InterceptorDataImpl implements InterceptorData
             else
             {
                 interceptor = ctx.getInterceptorInstance();
-                if (logger.wblWillLogDebug())
-                {
-                    logger.debug("EjbInterceptor existing " + interceptor);
-                }
-
             }
         }
-        if (logger.wblWillLogDebug())
-        {
-            logger.debug("< " + interceptor);
-        }
-
         return interceptor;
     }
 
