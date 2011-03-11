@@ -41,7 +41,6 @@ import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
 import org.apache.webbeans.context.type.ContextTypes;
-import org.apache.webbeans.util.Asserts;
 
 /**
  * Abstract implementation of the {@link WebBeansContext} interfaces.
@@ -236,10 +235,10 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     @SuppressWarnings("unchecked")
     public <T> CreationalContext<T> getCreationalContext(Contextual<T> contextual)
     {
-        Asserts.assertNotNull(contextual);
-        if(this.componentInstanceMap.containsKey(contextual))
+        BeanInstanceBag<?> bag = componentInstanceMap.get(contextual);
+        if (bag != null)
         {
-            return (CreationalContext<T>)this.componentInstanceMap.get(contextual).getBeanCreationalContext();
+            return (CreationalContext<T>) bag.getBeanCreationalContext();
         }
         
         return null;
