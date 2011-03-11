@@ -43,6 +43,8 @@ public final class ContextFactory
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ContextFactory.class);
     private final WebBeansContext webBeansContext;
 
+    private ContextsService contextsService = null;
+
     public ContextFactory(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
@@ -53,7 +55,11 @@ public final class ContextFactory
      */
     private ContextsService getContextsService()
     {
-        return webBeansContext.getService(ContextsService.class);
+        if (contextsService == null)
+        {
+            contextsService = webBeansContext.getService(ContextsService.class);
+        }
+        return contextsService;
     }
 
     public void initRequestContext(Object request)

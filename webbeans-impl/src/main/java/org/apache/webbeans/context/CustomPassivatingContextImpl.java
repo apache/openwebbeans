@@ -30,6 +30,8 @@ import javax.enterprise.context.spi.CreationalContext;
  */
 public class CustomPassivatingContextImpl extends CustomContextImpl
 {
+    private SerializableBeanVault sbv = null;
+
     CustomPassivatingContextImpl(Context context)
     {
         super(context);
@@ -37,15 +39,21 @@ public class CustomPassivatingContextImpl extends CustomContextImpl
 
     public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
-        SerializableBeanVault sbv = WebBeansContext.getInstance().getSerializableBeanVault();
-        
-        return super.get(sbv.getSerializableBean(contextual), creationalContext);
+        return super.get(getSerializableBeanVault().getSerializableBean(contextual), creationalContext);
     }
 
     public <T> T get(Contextual<T> contextual)
     {
-        SerializableBeanVault sbv = org.apache.webbeans.config.WebBeansContext.getInstance().getSerializableBeanVault();
-        return super.get(sbv.getSerializableBean(contextual));
+        return super.get(getSerializableBeanVault().getSerializableBean(contextual));
     }
 
+    private SerializableBeanVault getSerializableBeanVault()
+    {
+        if (sbv == null)
+        {
+            sbv = WebBeansContext.getInstance().getSerializableBeanVault();
+        }
+
+        return sbv;
+    }
 }
