@@ -74,7 +74,7 @@ public final class WebBeansInterceptorConfig
     /**
      * Configures WebBeans specific interceptor class.
      *
-     * @param interceptorClazz interceptor class
+     * @param interceptorBindingTypes interceptor class
      */
     public static <T> void configureInterceptorClass(AbstractInjectionTargetBean<T> delegate, Annotation[] interceptorBindingTypes)
     {
@@ -612,8 +612,8 @@ public final class WebBeansInterceptorConfig
     {
         Set<Interceptor<?>> set = new HashSet<Interceptor<?>>();
 
-        Iterator<Interceptor<?>> it = Collections.unmodifiableSet(webBeansContext.getBeanManagerImpl().getInterceptors()).iterator();
-        WebBeansInterceptor<?> interceptor = null;
+        Iterator<Interceptor<?>> it = webBeansContext.getBeanManagerImpl().getInterceptors().iterator();
+        WebBeansInterceptor<?> interceptor;
 
         List<Class<? extends Annotation>> bindingTypes = new ArrayList<Class<? extends Annotation>>();
         List<Annotation> listAnnot = new ArrayList<Annotation>();

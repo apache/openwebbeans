@@ -24,6 +24,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.el.ELResolver;
@@ -113,14 +113,31 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 {
     private static final long serialVersionUID = 1L;
 
-    /**Holds the context with key scope*/
-    private Map<Class<? extends Annotation>, List<Context>> contextMap = new ConcurrentHashMap<Class<? extends Annotation>, List<Context>>();
+    /**
+     * Holds the non-standard contexts with key = scope type
+     * This will get used if more than 1 scope exists.
+     * Since the contexts will only get added through the
+     * {@link org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl}
+     * we don't even need a ConcurrentHashMap.
+     * @see #singleContextMap
+     */
+    private Map<Class<? extends Annotation>, List<Context>> contextMap = new HashMap<Class<? extends Annotation>, List<Context>>();
+
+    /**
+     * This will hold non-standard contexts where only one Context implementation got registered
+     * for the given key = scope type
+     * Since the contexts will only get added through the
+     * {@link org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl}
+     * we don't even need a ConcurrentHashMap.
+     * @see #contextMap
+     */
+    private Map<Class<? extends Annotation>, Context> singleContextMap = new HashMap<Class<? extends Annotation>, Context>();
 
     /**Deployment archive beans*/
     private Set<Bean<?>> deploymentBeans = new CopyOnWriteArraySet<Bean<?>>();
 
     /**Activity interceptors*/
-    private Set<Interceptor<?>> webBeansInterceptors = new CopyOnWriteArraySet<Interceptor<?>>();
+    private List<Interceptor<?>> webBeansInterceptors = new ArrayList<Interceptor<?>>();
     
     /**Normal scoped cache proxies*/
     private Map<Contextual<?>, Object> cacheProxies = new ConcurrentHashMap<Contextual<?>, Object>();
@@ -138,26 +155,26 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private WebBeansXMLConfigurator xmlConfigurator = null;
     
     /**Additional decorator class*/
-    private List<Class<?>> additionalDecoratorClasses = new CopyOnWriteArrayList<Class<?>>();
+    private List<Class<?>> additionalDecoratorClasses = new ArrayList<Class<?>>();
     
     /**Additional interceptor class*/
-    private List<Class<?>> additionalInterceptorClasses = new CopyOnWriteArrayList<Class<?>>();
+    private List<Class<?>> additionalInterceptorClasses = new ArrayList<Class<?>>();
 
     /**
      * This list contains additional qualifiers which got set via the {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
      * event function.
      */
-    private List<Class<? extends Annotation>> additionalQualifiers = Collections.synchronizedList(new ArrayList<Class<? extends Annotation>>());
+    private List<Class<? extends Annotation>> additionalQualifiers = new ArrayList<Class<? extends Annotation>>();
     
     /**
      * This list contains additional scopes which got set via the 
      * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
      */
-    private List<ExternalScope> additionalScopes =  Collections.synchronizedList(new ArrayList<ExternalScope>());
+    private List<ExternalScope> additionalScopes =  new ArrayList<ExternalScope>();
     
     private ErrorStack errorStack = new ErrorStack();
     
-    private List<AnnotatedType<?>> additionalAnnotatedTypes = new CopyOnWriteArrayList<AnnotatedType<?>>();
+    private List<AnnotatedType<?>> additionalAnnotatedTypes = new ArrayList<AnnotatedType<?>>();
 
     /**
      * This map stores all beans along with their unique {@link javax.enterprise.inject.spi.PassivationCapable} id.
@@ -277,15 +294,26 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         Asserts.assertNotNull(scopeType, "scopeType paramter can not be null");
 
-        Context standardContext = null;
-
-        standardContext = webBeansContext.getContextFactory().getStandardContext(scopeType);
+        Context standardContext = webBeansContext.getContextFactory().getStandardContext(scopeType);
 
         if(standardContext != null && standardContext.isActive())
         {
             return standardContext;
         }
-        
+
+        // this is by far the most case
+        Context singleContext = singleContextMap.get(scopeType);
+        if (singleContext != null)
+        {
+            if (!singleContext.isActive())
+            {
+                throw new ContextNotActiveException("WebBeans context with scope type annotation @" + scopeType.getSimpleName() + " does not exist within current thread");
+            }
+            return singleContext;
+        }
+
+        // the spec also allows for multiple contexts existing for the same scope type
+        // but in this case only one must be active at a time (for the current thread)
         List<Context> others = contextMap.get(scopeType);
         Context found = null;
 
@@ -612,7 +640,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return this.deploymentBeans;
     }
     
-    public Set<Interceptor<?>> getInterceptors()
+    public List<Interceptor<?>> getInterceptors()
     {
         return this.webBeansInterceptors;
     }
@@ -632,10 +660,21 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         
         if(contextList == null)
         {
-            contextList = new CopyOnWriteArrayList<Context>();
-            contextList.add(context);
-            
-            contextMap.put(scopeType, contextList);
+            Context singleContext = singleContextMap.get(scopeType);
+            if (singleContext == null)
+            {
+                // first put them into the singleContextMap
+                singleContextMap.put(scopeType, context);
+            }
+            else
+            {
+                // from the 2nd Context for this scopetype on, we need to maintain a List for them
+                contextList = new ArrayList<Context>();
+                contextList.add(singleContext);
+                contextList.add(context);
+
+                contextMap.put(scopeType, contextList);
+            }
         }
         else
         {
@@ -1171,6 +1210,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         this.additionalQualifiers.clear();
         this.additionalScopes.clear();
         this.cacheProxies.clear();
+        this.singleContextMap.clear();
         this.contextMap.clear();
         this.deploymentBeans.clear();
         this.errorStack.clear();
