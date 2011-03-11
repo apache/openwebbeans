@@ -175,6 +175,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
             dependentCreational.setInstance(instance);
 
+            //X TODO maybe better with ReentrantReadWriteLock?
             synchronized(this)
             {
                 if (dependentObjects == null)
@@ -208,22 +209,25 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             return null;
         }
 
-        List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
-        if(values != null && !values.isEmpty())
+        //X TODO maybe better with ReentrantReadWriteLock?
+        synchronized(this)
         {
-            Iterator<DependentCreationalContext<?>> it = values.iterator();
-            while(it.hasNext())
+            List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
+            if(values != null && !values.isEmpty())
             {
-                DependentCreationalContext<?> dc = it.next();
-                if(dc.getDependentType().equals(DependentType.INTERCEPTOR) &&
-                   dc.getContextual().equals(interceptor))
+                Iterator<DependentCreationalContext<?>> it = values.iterator();
+                while(it.hasNext())
                 {
-                    return dc.getInstance();
-                }
+                    DependentCreationalContext<?> dc = it.next();
+                    if(dc.getDependentType().equals(DependentType.INTERCEPTOR) &&
+                       dc.getContextual().equals(interceptor))
+                    {
+                        return dc.getInstance();
+                    }
 
+                }
             }
         }
-
         return null;
     }
 
@@ -270,7 +274,7 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         
         destroying = true;
 
-        //X synchronized(this)
+        synchronized(this)
         {
             Collection<List<DependentCreationalContext<?>>> values = this.dependentObjects.values();
             if(values != null)
