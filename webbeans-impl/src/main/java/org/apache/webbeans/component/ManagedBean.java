@@ -159,16 +159,21 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
     
     public boolean isPassivationCapable()
     {
+        if (isPassivationCapable != null)
+        {
+            return isPassivationCapable.booleanValue();
+        }
         if(Serializable.class.isAssignableFrom(this.returnType))
         {
             for(Decorator<?> dec : this.decorators)
             {
                 if(dec.getBeanClass() != null && !Serializable.class.isAssignableFrom(dec.getBeanClass()))
                 {
+                    isPassivationCapable = Boolean.FALSE;
                     return false;
                 }
             }
-            
+
             for(InterceptorData interceptorData : this.interceptorStack)
             {
                 if(interceptorData.isDefinedInInterceptorClass())
@@ -176,16 +181,22 @@ public class ManagedBean<T> extends AbstractInjectionTargetBean<T> implements In
                     Class<?> interceptor = interceptorData.getInterceptorClass();
                     if(!Serializable.class.isAssignableFrom(interceptor))
                     {
+                        isPassivationCapable = Boolean.FALSE;
                         return false;
-                    }                    
+                    }
                 }
             }
-            
+
+            isPassivationCapable = Boolean.TRUE;
             return true;
         }
-        
+
+        isPassivationCapable = Boolean.FALSE;
         return false;
     }
+
+    /** cache previously calculated result */
+    private Boolean isPassivationCapable = null;
     
     public void setIsAbstractDecorator(boolean flag)
     {
