@@ -97,22 +97,22 @@ abstract class AbstractBeanInheritedMetaData<T> implements IBeanInheritedMetaDat
      
     
     /**
-     * @param inheritedBindingTypes the inheritedBindingTypes to set
+     * Internally set the inheritedBindingTypes
      */
-    abstract protected void setInheritedQualifiers();
+    protected abstract void setInheritedQualifiers();
 
     /**
-     * @param inheritedStereoTypes the inheritedStereoTypes to set
+     * Internally set the inheritedStereoTypes
      */
-    abstract protected void setInheritedStereoTypes();
+    protected abstract void setInheritedStereoTypes();
 
     /**
-     * @param inheritedInterceptorBindings the inheritedInterceptorBindingTypes to set
+     * Internally set the inheritedInterceptorBindingTypes
      */
-    abstract protected void setInheritedInterceptorBindings();
+    protected abstract void setInheritedInterceptorBindings();
 
     /**
-     * @param inheritedScopeType the inheritedScopeType to set
+     * Internally set the inheritedScopeType.
      */
-    abstract protected void setInheritedScopeType();
+    protected abstract void setInheritedScopeType();
 }

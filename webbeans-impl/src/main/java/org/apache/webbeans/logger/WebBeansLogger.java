@@ -50,12 +50,12 @@ public final class WebBeansLogger implements Serializable, Externalizable
      *  CONFIG, INFO, WARNING, SEVERE).
      */
     /* JDK util logger mappings */
-    public final static Level WBL_DEBUG = Level.FINER;
-    public final static Level WBL_TRACE = Level.FINE;
-    public final static Level WBL_INFO = Level.INFO;
-    public final static Level WBL_WARN = Level.WARNING;
-    public final static Level WBL_ERROR = Level.SEVERE;
-    public final static Level WBL_FATAL = Level.SEVERE;
+    public static final Level WBL_DEBUG = Level.FINER;
+    public static final Level WBL_TRACE = Level.FINE;
+    public static final Level WBL_INFO = Level.INFO;
+    public static final Level WBL_WARN = Level.WARNING;
+    public static final Level WBL_ERROR = Level.SEVERE;
+    public static final Level WBL_FATAL = Level.SEVERE;
        
     /** Inner logger object to log actual log messages */
     private transient Logger logger = null;
