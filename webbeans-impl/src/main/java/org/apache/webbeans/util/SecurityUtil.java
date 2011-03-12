@@ -34,19 +34,19 @@ import org.apache.webbeans.exception.WebBeansException;
 public class SecurityUtil
 {
 
-    private final static int METHOD_CLASS_GETDECLAREDCONSTRUCTOR = 0x01;
+    private static final int METHOD_CLASS_GETDECLAREDCONSTRUCTOR = 0x01;
 
-    private final static int METHOD_CLASS_GETDECLAREDCONSTRUCTORS = 0x02;
+    private static final int METHOD_CLASS_GETDECLAREDCONSTRUCTORS = 0x02;
 
-    private final static int METHOD_CLASS_GETDECLAREDMETHOD = 0x03;
+    private static final int METHOD_CLASS_GETDECLAREDMETHOD = 0x03;
 
-    private final static int METHOD_CLASS_GETDECLAREDMETHODS = 0x04;
+    private static final int METHOD_CLASS_GETDECLAREDMETHODS = 0x04;
 
-    private final static int METHOD_CLASS_GETDECLAREDFIELD = 0x05;
+    private static final int METHOD_CLASS_GETDECLAREDFIELD = 0x05;
 
-    private final static int METHOD_CLASS_GETDECLAREDFIELDS = 0x06;
+    private static final int METHOD_CLASS_GETDECLAREDFIELDS = 0x06;
     
-    private final static PrivilegedActionGetSystemProperties SYSTEM_PROPERTY_ACTION = new PrivilegedActionGetSystemProperties();
+    private static final PrivilegedActionGetSystemProperties SYSTEM_PROPERTY_ACTION = new PrivilegedActionGetSystemProperties();
 
     @SuppressWarnings("unchecked")
     public static <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) throws NoSuchMethodException
