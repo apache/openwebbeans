@@ -21,9 +21,10 @@ package org.apache.webbeans.ejb.service;
 import java.security.Principal;
 
 import org.apache.openejb.loader.SystemInstance;
+import org.apache.webbeans.corespi.SimpleSecurityService;
 import org.apache.webbeans.spi.SecurityService;
 
-public class OpenEJBSecurityService implements SecurityService
+public class OpenEJBSecurityService extends SimpleSecurityService implements SecurityService
 {
     public OpenEJBSecurityService()
     {

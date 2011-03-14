@@ -37,7 +37,6 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.util.SecurityUtil;
 
 @SuppressWarnings("unchecked")
 public class InjectableMethods<T> extends AbstractInjectable
@@ -134,7 +133,7 @@ public class InjectableMethods<T> extends AbstractInjectable
         {
             if (!method.isAccessible())
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, true);
+                injectionOwnerBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
             }
 
             return (T) method.invoke(instance, list.toArray(new Object[list.size()]));

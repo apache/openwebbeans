@@ -249,7 +249,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
             // Call Post Construct
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.POST_CONSTRUCT))
             {
-                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null,
+                InvocationContextImpl impl = new InvocationContextImpl(getWebBeansContext(), null, instance, null, null,
                         InterceptorUtil.getInterceptorMethods(getInterceptorStack(),
                                                               InterceptorType.POST_CONSTRUCT),
                                                               InterceptorType.POST_CONSTRUCT);
@@ -288,7 +288,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
         {
             if (WebBeansUtil.isContainsInterceptorMethod(getInterceptorStack(), InterceptorType.PRE_DESTROY))
             {                
-                InvocationContextImpl impl = new InvocationContextImpl(null, instance, null, null,
+                InvocationContextImpl impl = new InvocationContextImpl(getWebBeansContext(), null, instance, null, null,
                         InterceptorUtil.getInterceptorMethods(getInterceptorStack(),
                                                               InterceptorType.PRE_DESTROY),
                                                               InterceptorType.PRE_DESTROY);

@@ -31,9 +31,9 @@ import javax.interceptor.InvocationContext;
 
 import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Implementation of the {@link InvocationContext} interface.
@@ -66,6 +66,7 @@ public class InvocationContextImpl implements InvocationContext
     
     private OwbBean<?> owbBean;
     private InvocationContext ejbInvocationContext;
+    private WebBeansContext webBeansContext;
 
     
     /** alternate key to be used for dependent creational contexts */
@@ -81,8 +82,10 @@ public class InvocationContextImpl implements InvocationContext
      * @param datas interceptor stack
      * @param type interceptor type
      */
-    public InvocationContextImpl(OwbBean<?> bean, Object instance, Method method, Object[] parameters, List<InterceptorData> datas, InterceptorType type)
+    public InvocationContextImpl(WebBeansContext webBeansContext, OwbBean<?> bean, Object instance, Method method,
+                                 Object[] parameters, List<InterceptorData> datas, InterceptorType type)
     {
+        this.webBeansContext = webBeansContext;
         this.owbBean = bean;
         this.method = method;
         this.parameters = parameters;
@@ -221,7 +224,7 @@ public class InvocationContextImpl implements InvocationContext
             
             if (!accessible)
             {
-                SecurityUtil.doPrivilegedSetAccessible(aroundInvokeMethod, true);
+                owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundInvokeMethod, true);
             }
             
             Object t = intc.createNewInstance(this.ccKey != null ? this.ccKey : this.target,
@@ -238,7 +241,7 @@ public class InvocationContextImpl implements InvocationContext
             
             if(!accessible)
             {
-                SecurityUtil.doPrivilegedSetAccessible(aroundInvokeMethod, false);
+                owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundInvokeMethod, false);
             }
 
         }
@@ -249,14 +252,14 @@ public class InvocationContextImpl implements InvocationContext
                 boolean accessible = this.method.isAccessible();
                 if(!accessible)
                 {                
-                    SecurityUtil.doPrivilegedSetAccessible(method, true);
+                    owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
                 }
                 
                 result = this.method.invoke(target, parameters);
                 
                 if(!accessible)
                 {
-                    SecurityUtil.doPrivilegedSetAccessible(method, false);
+                    owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, false);
                 }                
             }
             else 
@@ -290,7 +293,7 @@ public class InvocationContextImpl implements InvocationContext
             
             if (!accessible)
             {
-                SecurityUtil.doPrivilegedSetAccessible(aroundTimeoutMethod, true);
+                owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundTimeoutMethod, true);
             }
             
             Object t = intc.createNewInstance(this.ccKey != null ? this.ccKey : this.target,
@@ -307,7 +310,7 @@ public class InvocationContextImpl implements InvocationContext
             
             if(!accessible)
             {
-                SecurityUtil.doPrivilegedSetAccessible(aroundTimeoutMethod, false);
+                owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundTimeoutMethod, false);
             }
 
         }
@@ -318,14 +321,14 @@ public class InvocationContextImpl implements InvocationContext
                 boolean accessible = method.isAccessible();
                 if(!accessible)
                 {                
-                    SecurityUtil.doPrivilegedSetAccessible(method, true);
+                    owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
                 }
                 
                 result = this.method.invoke(target, parameters);
                 
                 if(!accessible)
                 {
-                    SecurityUtil.doPrivilegedSetAccessible(method, false);
+                    owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, false);
                 }                
             }
             else 
@@ -385,7 +388,7 @@ public class InvocationContextImpl implements InvocationContext
 
             if (!commonAnnMethod.isAccessible())
             {
-                SecurityUtil.doPrivilegedSetAccessible(commonAnnMethod, true);
+                webBeansContext.getSecurityService().doPrivilegedSetAccessible(commonAnnMethod, true);
             }
 
             currentMethod++;

@@ -219,7 +219,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         {
             if ((this.contextual != null) && WebBeansUtil.isContainsInterceptorMethod(this.contextual.getInterceptorStack(), interceptorType))
             {
-                InvocationContextImpl impl = new InvocationContextImpl(this.contextual, context.getTarget(), null, null, 
+                InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, this.contextual, context.getTarget(), null, null,
                         InterceptorUtil.getInterceptorMethods(this.contextual.getInterceptorStack(), interceptorType), interceptorType);
                 impl.setCreationalContext(this.cc);
                 impl.setEJBInvocationContext(context); // If the final 299 interceptor calls ic.proceed, the InvocationContext calls the ejbContext.proceed()
@@ -498,7 +498,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             {
                 logger.debug("Obtaining a delegate");
             }
-            Class<?> proxyClass = WebBeansContext.getInstance().getJavassistProxyFactory().getInterceptorProxyClasses().get(injectionTarget);
+            Class<?> proxyClass = webBeansContext.getJavassistProxyFactory().getInterceptorProxyClasses().get(injectionTarget);
             if (proxyClass == null)
             {
                 JavassistProxyFactory proxyFactory = webBeansContext.getJavassistProxyFactory();
@@ -560,7 +560,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             // Call Around Invokes, 
             //      If there were decorators, the DelegatHandler will handle the  ejbcontext.proceed at the top of the stack.
             //      If there were no decorators, we will fall off the end of our own InvocationContext and take care of ejbcontext.proceed.
-            rv = InterceptorUtil.callAroundInvokes(this.contextual, instance, (CreationalContextImpl<?>) this.cc, method, 
+            rv = InterceptorUtil.callAroundInvokes(webBeansContext, this.contextual, instance, (CreationalContextImpl<?>) this.cc, method,
                     arguments, InterceptorUtil.getInterceptorMethods(filteredInterceptorStack, InterceptorType.AROUND_INVOKE), ejbContext, this.ccKey);
         }
         
@@ -584,7 +584,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
         {           
             try
             {
-                    InvocationContextImpl impl = new InvocationContextImpl(null, context.getTarget(), null, null, 
+                    InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, null, context.getTarget(), null, null,
                             InterceptorUtil.getInterceptorMethods(this.contextual.getInterceptorStack(), InterceptorType.AROUND_TIMEOUT), InterceptorType.AROUND_TIMEOUT);
                     impl.setCreationalContext(this.cc);
                     impl.setEJBInvocationContext(context);

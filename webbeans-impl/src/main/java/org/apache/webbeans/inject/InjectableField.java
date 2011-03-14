@@ -25,7 +25,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Field type injection.
@@ -54,7 +53,7 @@ public class InjectableField extends AbstractInjectable
             
             if (!field.isAccessible())
             {
-                SecurityUtil.doPrivilegedSetAccessible(field, true);
+                injectionOwnerBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(field, true);
             }
 
             Object object = inject(injectedField);

@@ -31,6 +31,7 @@ import java.util.Properties;
 import javassist.util.proxy.ProxyFactory;
 import org.apache.webbeans.exception.WebBeansException;
 
+/** @deprecated  use SecurityService instaed */
 public class SecurityUtil
 {
 
@@ -61,6 +62,7 @@ public class SecurityUtil
     }
 
     @SuppressWarnings("unchecked")
+    /** @deprecated  use SecurityService instaed */
     public static <T> Constructor<T>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz)
     {
         Object obj = AccessController.doPrivileged(

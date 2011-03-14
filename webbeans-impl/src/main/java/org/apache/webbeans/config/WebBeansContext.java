@@ -48,6 +48,7 @@ import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.ScannerService;
+import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -58,6 +59,9 @@ import org.apache.webbeans.xml.XMLAnnotationTypeManager;
  */
 public class WebBeansContext
 {
+    private final Map<Class<?>, Object> managerMap = new HashMap<Class<?>, Object>();
+
+    private final Map<Class<?>, Object> serviceMap = new HashMap<Class<?>, Object>();
 
     private WebBeansUtil webBeansUtil = new WebBeansUtil(this);
     private ContextFactory contextFactory = new ContextFactory(this);
@@ -81,10 +85,7 @@ public class WebBeansContext
     private InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
     private InterceptorUtil interceptorUtil = new InterceptorUtil(this);
     private ManagedBeanConfigurator managedBeanConfigurator = new ManagedBeanConfigurator(this);
-
-    private final Map<Class<?>, Object> managerMap = new HashMap<Class<?>, Object>();
-
-    private final Map<Class<?>, Object> serviceMap = new HashMap<Class<?>, Object>();
+    private SecurityService securityService = getService(SecurityService.class);
 
     public WebBeansContext()
     {
@@ -169,10 +170,6 @@ public class WebBeansContext
                 }
             }
 
-//            if (logger.wblWillLogWarn())
-//            {
-//                logger.warn(OWBLogConst.WARN_0009, serviceInterface.getName());
-//            }
             return null;
         }
         return serviceInterface.cast(get(implName));
@@ -297,6 +294,11 @@ public class WebBeansContext
     public ContextsService getContextsService()
     {
         return getService(ContextsService.class);
+    }
+
+    public SecurityService getSecurityService()
+    {
+        return securityService;
     }
 
     private Object get(String singletonName)

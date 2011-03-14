@@ -152,7 +152,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     /**Intercepted methods*/
     protected transient volatile Map<Method, List<InterceptorData>> interceptedMethodMap = null;
 
-    private WebBeansContext webBeansContext;
+    protected WebBeansContext webBeansContext;
 
     /**
      * Creates a new handler.
@@ -287,7 +287,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             boolean access = method.isAccessible();
             if (!access)
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, true);
+                webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, true);
             }
             try
             {
@@ -298,7 +298,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             {
                 if (!access)
                 {
-                    SecurityUtil.doPrivilegedSetAccessible(method, access);
+                    webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, access);
                 }
             }
             
