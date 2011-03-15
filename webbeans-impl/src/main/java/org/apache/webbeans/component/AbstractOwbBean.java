@@ -38,7 +38,6 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Abstract implementation of the {@link OwbBean} contract. 
@@ -186,7 +185,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         }
         catch (Exception re)
         {
-            Throwable throwable = ClassUtil.getRootException(re);
+            Throwable throwable = getRootException(re);
             
             if(!(throwable instanceof RuntimeException))
             {
@@ -196,6 +195,18 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         }
 
         return instance;
+    }
+
+    private Throwable getRootException(Throwable throwable)
+    {
+        if(throwable.getCause() == null || throwable.getCause() == throwable)
+        {
+            return throwable;
+        }
+        else
+        {
+            return getRootException(throwable.getCause());
+        }
     }
 
     /**

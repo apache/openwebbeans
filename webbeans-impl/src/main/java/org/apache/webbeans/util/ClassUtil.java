@@ -1780,18 +1780,7 @@ public final class ClassUtil
         
     }
  
-    public static Throwable getRootException(Throwable throwable)
-    {
-        if(throwable.getCause() == null)
-        {
-            return throwable;
-        }
-        else
-        {
-            return getRootException(throwable.getCause());
-        }
-    }
-    
+
     /**
      * Returns injection point raw type.
      * 
