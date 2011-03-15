@@ -53,7 +53,7 @@ import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.SecurityUtil;
+
 
 public final class InterceptorUtil
 {
@@ -201,7 +201,7 @@ public final class InterceptorUtil
     public boolean isBusinessMethodInterceptor(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
+        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
         for (Method method : methods)
         {
             if (AnnotationUtil.hasMethodAnnotation(method, AroundInvoke.class))
@@ -233,7 +233,7 @@ public final class InterceptorUtil
     public boolean isLifecycleMethodInterceptor(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
+        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
         for (Method method : methods)
         {
             if (AnnotationUtil.hasMethodAnnotation(method, PostConstruct.class) || AnnotationUtil.hasMethodAnnotation(method, PreDestroy.class)
@@ -339,7 +339,7 @@ public final class InterceptorUtil
     {
         Asserts.nullCheckForClass(clazz);
 
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
+        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
         for(Method method : methods)
         {
             if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
@@ -433,7 +433,7 @@ public final class InterceptorUtil
             throw new WebBeansConfigurationException("Final Simple class with name : " + clazz.getName() + " can not define any InterceptorBindings");
         }
 
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
+        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
 
         for (Method method : methods)
         {

@@ -63,12 +63,14 @@ public final class WebBeansInterceptorConfig
     /** Logger instance */
     private static WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansInterceptorConfig.class);
 
+    private WebBeansContext webBeansContext;
+
     /*
      * Private
      */
     public WebBeansInterceptorConfig(WebBeansContext webBeansContext)
     {
-
+        this.webBeansContext = webBeansContext;
     }
 
     /**

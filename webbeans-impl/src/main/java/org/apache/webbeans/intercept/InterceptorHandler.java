@@ -44,7 +44,6 @@ import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.decorator.WebBeansDecoratorInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Logic for how interceptors & decorators work in OWB.
@@ -238,7 +237,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
                             decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor, webBeansContext);
                             decoratorInterceptorDataImpl.setDefinedInInterceptorClass(true);
-                            decoratorInterceptorDataImpl.setAroundInvoke(SecurityUtil.doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
+                            decoratorInterceptorDataImpl.setAroundInvoke(webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
                         }
 
                         List<InterceptorData> interceptorMethods = this.interceptedMethodMap.get(method);
