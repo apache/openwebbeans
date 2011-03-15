@@ -43,13 +43,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.decorator.Decorator;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Conversation;
-import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.NormalScope;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -135,7 +131,6 @@ import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.DeploymentException;
@@ -430,7 +425,7 @@ public final class WebBeansUtil
      * @return constructor
      * @throws WebBeansConfigurationException any configuration exception
      */
-    public static <T> Constructor<T> defineConstructor(Class<T> clazz) throws WebBeansConfigurationException
+    public <T> Constructor<T> defineConstructor(Class<T> clazz) throws WebBeansConfigurationException
     {
         Asserts.nullCheckForClass(clazz);
         Constructor<T>[] constructors = ClassUtil.getConstructors(clazz);
@@ -440,7 +435,7 @@ public final class WebBeansUtil
     }
 
 
-    public static <T>  Constructor<T> defineConstructor(Constructor<T>[] constructors, Class<T> clazz)
+    public <T> Constructor<T> defineConstructor(Constructor<T>[] constructors, Class<T> clazz)
     {
         Constructor<T> result = null;
 
@@ -463,7 +458,7 @@ public final class WebBeansUtil
 
         if (result == null)
         {
-            result = ClassUtil.isContaintNoArgConstructor(clazz);
+            result = getNoArgConstructor(clazz);
 
             if(result == null)
             {
@@ -502,11 +497,11 @@ public final class WebBeansUtil
      * @throws WebBeansConfigurationException if the web beans has incompatible
      *             constructor
      */
-    public static boolean isConstructureOk(Class<?> clazz) throws WebBeansConfigurationException
+    public boolean isConstructureOk(Class<?> clazz) throws WebBeansConfigurationException
     {
         Asserts.nullCheckForClass(clazz);
 
-        if (ClassUtil.isContaintNoArgConstructor(clazz) != null)
+        if (getNoArgConstructor(clazz) != null)
         {
             return true;
         }
@@ -572,66 +567,6 @@ public final class WebBeansUtil
     }
 
     /**
-     * Check conditions for the new binding.
-     * @param annotations annotations
-     * @return Annotation[] with all binding annotations
-     * @throws WebBeansConfigurationException if New plus any other binding annotation is set
-     */
-    @Deprecated
-    public static Annotation[] checkForNewQualifierForDeployment(Type type, Class<?> clazz, String name,
-                                                                 Annotation[] annotations)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().checkForNewQualifierForDeployment(type, clazz, name, annotations);
-    }
-
-    /**
-     * Returns true if src scope encloses the target.
-     *
-     * @param src src scope
-     * @param target target scope
-     * @return true if src scope encloses the target
-     */
-    public static boolean isScopeEncloseOther(Class<? extends Annotation> src, Class<? extends Annotation> target)
-    {
-        Asserts.assertNotNull(src, "Src argument can not be null");
-        Asserts.assertNotNull(target, "Target argument can not be null");
-
-        if (src.equals(ConversationScoped.class))
-        {
-            return true;
-        }
-        else if (src.equals(ApplicationScoped.class))
-        {
-            if (target.equals(ConversationScoped.class) || (target.equals(ApplicationScoped.class)))
-            {
-                return false;
-            }
-            return true;
-
-        }
-        else if (src.equals(SessionScoped.class))
-        {
-            if (target.equals(ConversationScoped.class) ||
-                target.equals(ApplicationScoped.class) ||
-                target.equals(SessionScoped.class))
-            {
-                return false;
-            }
-            return true;
-
-        }
-        else if (src.equals(RequestScoped.class))
-        {
-            return false;
-        }
-        else
-        {
-            throw new WebBeansException("Scope is not correct");
-        }
-
-    }
-
-    /**
      * New WebBeans component class.
      *
      * @param <T>
@@ -648,7 +583,7 @@ public final class WebBeansUtil
         {
             comp = new NewBean<T>(clazz, WebBeansType.MANAGED, webBeansContext);
             comp.setImplScopeType(new DependentScopeLiteral());
-            comp.setConstructor(WebBeansUtil.defineConstructor(clazz));
+            comp.setConstructor(defineConstructor(clazz));
             DefinitionUtil.addConstructorInjectionPointMetaData(comp, comp.getConstructor());
 
             DefinitionUtil.defineInjectedFields(comp);
@@ -1200,7 +1135,7 @@ public final class WebBeansUtil
         {
             if(definedInInterceptorClass)
             {
-                Constructor<?> ct = ClassUtil.isContaintNoArgConstructor(interceptorClass);
+                Constructor<?> ct = getNoArgConstructor(interceptorClass);
                 if (ct == null)
                 {
                     throw new WebBeansConfigurationException("class : " + interceptorClass.getName()
@@ -1296,10 +1231,10 @@ public final class WebBeansUtil
      * @return
      * @throws WebBeansConfigurationException
      */
-    public static <T> T newInstanceForced(Class<T> clazz) throws WebBeansConfigurationException
+    public <T> T newInstanceForced(Class<T> clazz) throws WebBeansConfigurationException
     {
         // FIXME: This new instance should have JCDI injection performed
-        Constructor<T> ct = ClassUtil.isContaintNoArgConstructor(clazz);
+        Constructor<T> ct = getNoArgConstructor(clazz);
         if (ct == null)
         {
             throw new WebBeansConfigurationException("class : " + clazz.getName() + " must have no-arg constructor");
@@ -1944,7 +1879,7 @@ public final class WebBeansUtil
 
                     if(!violationMessage.containsViolation())
                     {
-                        Constructor<?> cons = ClassUtil.isContaintNoArgConstructor(beanClass);
+                        Constructor<?> cons = getNoArgConstructor(beanClass);
 
                         if (ClassUtil.isFinal(beanClass.getModifiers()))
                         {
@@ -1973,6 +1908,11 @@ public final class WebBeansUtil
                 }
             }
         }
+    }
+
+    private <T> Constructor<T> getNoArgConstructor(Class<T> clazz)
+    {
+        return webBeansContext.getSecurityService().doPrivilegedGetDeclaredConstructor(clazz, new Class<?>[] {});
     }
 
     public static void checkNullable(Class<?> type, AbstractOwbBean<?> component)
@@ -2799,7 +2739,7 @@ public final class WebBeansUtil
         //X TODO move proxy instance creation into JavassistProxyFactory!
         Class clazz = webBeansContext.getJavassistProxyFactory().createAbstractDecoratorProxyClass(bean);
 
-        bean.setConstructor(WebBeansUtil.defineConstructor(clazz));
+        bean.setConstructor(defineConstructor(clazz));
         bean.setIsAbstractDecorator(true);
         return bean;
     }

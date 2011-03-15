@@ -240,16 +240,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             String methodName = in.readUTF();
             Class<?>[] parameters = (Class<?>[])in.readObject();
             
-            Method method;
-            try
-            {
-                method = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(beanClass, methodName, parameters);
-            }
-            catch (NoSuchMethodException e)
-            {
-                // just ignore
-                method = null;
-            }
+            Method method = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(beanClass, methodName, parameters);
             this.injectionMember = method;
             
             AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(beanClass);

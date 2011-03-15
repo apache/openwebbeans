@@ -37,7 +37,6 @@ import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
-import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Abstract implementation of the {@link InterceptorData} api contract.
@@ -446,7 +445,7 @@ public class InterceptorDataImpl implements InterceptorData
             ctx = ownerCreationalContext.getEjbInterceptor(ownerInstance, this.interceptorClass);
             if (ctx == null)
             {
-                interceptor = WebBeansUtil.newInstanceForced(this.interceptorClass);
+                interceptor = webBeansContext.getWebBeansUtil().newInstanceForced(this.interceptorClass);
                 try
                 {
                     OWBInjector injector = new OWBInjector(webBeansContext);

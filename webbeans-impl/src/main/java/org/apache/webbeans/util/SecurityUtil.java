@@ -50,18 +50,6 @@ public class SecurityUtil
     private static final PrivilegedActionGetSystemProperties SYSTEM_PROPERTY_ACTION = new PrivilegedActionGetSystemProperties();
 
     @SuppressWarnings("unchecked")
-    public static <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) throws NoSuchMethodException
-    {
-        Object obj = AccessController.doPrivileged(
-                new PrivilegedActionForClass(clazz, parameterTypes, METHOD_CLASS_GETDECLAREDCONSTRUCTOR));
-        if (obj instanceof NoSuchMethodException)
-        {
-            throw (NoSuchMethodException)obj;
-        }
-        return (Constructor<T>)obj;
-    }
-
-    @SuppressWarnings("unchecked")
     /** @deprecated  use SecurityService instaed */
     public static <T> Constructor<T>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz)
     {

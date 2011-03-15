@@ -718,16 +718,8 @@ public final class InterceptorUtil
 
                 // get the interceptor method of the parent
                 Method superInterceptorMethod = superInterceptorData.getInterceptorMethod();
-                Method childInterceptorMethod = null;
-                try
-                {
-                    childInterceptorMethod = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(interceptorClass,
-                            superInterceptorMethod.getName(), superInterceptorMethod.getParameterTypes());
-                }
-                catch (NoSuchMethodException e)
-                {
-                    childInterceptorMethod = null;
-                }
+                Method childInterceptorMethod = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(interceptorClass,
+                                              superInterceptorMethod.getName(), superInterceptorMethod.getParameterTypes());
 
                 if (null != childInterceptorMethod && ClassUtil.isOverriden(childInterceptorMethod, superInterceptorMethod))
                 {
@@ -766,12 +758,9 @@ public final class InterceptorUtil
 
         if (!declaringClass.equals(clazz) && checkInInterceptorHierarchy(clazz, declaringClass))
         {
-            Method found = null;
-            try
-            {
-                found = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(clazz, interceptor.getName(), interceptor.getParameterTypes());
-            }
-            catch (NoSuchMethodException e)
+            Method found = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(clazz, interceptor.getName(), interceptor.getParameterTypes());
+
+            if (found == null)
             {
                 Class<?> superClass = clazz.getSuperclass();
                 if (superClass != null && !superClass.equals(Object.class))

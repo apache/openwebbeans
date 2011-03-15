@@ -62,13 +62,13 @@ public class ManagedSecurityService implements SecurityService
     }
 
     @Override
-    public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) throws NoSuchMethodException
+    public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes)
     {
         Object obj = AccessController.doPrivileged(
                 new PrivilegedActionForClass(clazz, parameterTypes, METHOD_CLASS_GETDECLAREDCONSTRUCTOR));
         if (obj instanceof NoSuchMethodException)
         {
-            throw (NoSuchMethodException)obj;
+            return null;
         }
         return (Constructor<T>)obj;
     }
@@ -83,13 +83,12 @@ public class ManagedSecurityService implements SecurityService
 
     @Override
     public <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes)
-    throws NoSuchMethodException
     {
         Object obj = AccessController.doPrivileged(
                 new PrivilegedActionForClass(clazz, new Object[] {name, parameterTypes}, METHOD_CLASS_GETDECLAREDMETHOD));
         if (obj instanceof NoSuchMethodException)
         {
-            throw (NoSuchMethodException)obj;
+            return null;
         }
         return (Method)obj;
     }
@@ -103,13 +102,13 @@ public class ManagedSecurityService implements SecurityService
     }
 
     @Override
-    public <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name) throws NoSuchFieldException
+    public <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name)
     {
         Object obj = AccessController.doPrivileged(
                 new PrivilegedActionForClass(clazz, name, METHOD_CLASS_GETDECLAREDFIELD));
         if (obj instanceof NoSuchFieldException)
         {
-            throw (NoSuchFieldException)obj;
+            return null;
         }
         return (Field)obj;
     }

@@ -445,21 +445,6 @@ public final class ClassUtil
 
     }
 
-    public static <T> Constructor<T> isContaintNoArgConstructor(Class<T> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        try
-        {
-            return SecurityUtil.doPrivilegedGetDeclaredConstructor(clazz, new Class<?>[] {});
-
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-
-    }
-
     /**
      * Check the modifiers contains the public keyword.
      * 

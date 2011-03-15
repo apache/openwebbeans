@@ -50,8 +50,7 @@ public interface SecurityService
     /**
      * @see Class#getDeclaredConstructor(Class[])
      */
-    public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes)
-    throws NoSuchMethodException;
+    public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes);
 
     /**
      * @see Class#getDeclaredConstructors()
@@ -61,8 +60,7 @@ public interface SecurityService
     /**
      * @see Class#getDeclaredMethod(String, Class[])
      */
-    public <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes)
-    throws NoSuchMethodException;
+    public <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes);
 
     /**
      * @see Class#getDeclaredMethods()
@@ -72,7 +70,7 @@ public interface SecurityService
     /**
      * @see Class#getDeclaredField(String)
      */
-    public <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name) throws NoSuchFieldException;
+    public <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name);
 
     /**
      * @see Class#getDeclaredFields()

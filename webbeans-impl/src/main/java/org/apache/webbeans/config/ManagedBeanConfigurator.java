@@ -150,7 +150,7 @@ public final class ManagedBeanConfigurator
         DefinitionUtil.defineQualifiers(component, clazzAnns);
         DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
 
-        Constructor<T> constructor = WebBeansUtil.defineConstructor(clazz);
+        Constructor<T> constructor = webBeansContext.getWebBeansUtil().defineConstructor(clazz);
         component.setConstructor(constructor);
         DefinitionUtil.addConstructorInjectionPointMetaData(component, constructor);
 

@@ -46,9 +46,16 @@ public class SimpleSecurityService implements SecurityService
     }
 
     @Override
-    public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) throws NoSuchMethodException
+    public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes)
     {
-        return clazz.getDeclaredConstructor(parameterTypes);
+        try
+        {
+            return clazz.getDeclaredConstructor(parameterTypes);
+        }
+        catch (NoSuchMethodException e)
+        {
+            return null;
+        }
     }
 
     @Override
@@ -58,9 +65,16 @@ public class SimpleSecurityService implements SecurityService
     }
 
     @Override
-    public <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException
+    public <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes)
     {
-        return clazz.getDeclaredMethod(name, parameterTypes);
+        try
+        {
+            return clazz.getDeclaredMethod(name, parameterTypes);
+        }
+        catch (NoSuchMethodException e)
+        {
+            return null;
+        }
     }
 
     @Override
@@ -70,9 +84,16 @@ public class SimpleSecurityService implements SecurityService
     }
 
     @Override
-    public <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name) throws NoSuchFieldException
+    public <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name)
     {
-        return clazz.getDeclaredField(name);
+        try
+        {
+            return clazz.getDeclaredField(name);
+        }
+        catch (NoSuchFieldException e)
+        {
+            return null;
+        }
     }
 
     @Override
