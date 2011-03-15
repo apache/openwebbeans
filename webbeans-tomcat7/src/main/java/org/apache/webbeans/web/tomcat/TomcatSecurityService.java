@@ -20,7 +20,7 @@ package org.apache.webbeans.web.tomcat;
 
 import java.security.Principal;
 
-import org.apache.webbeans.corespi.SimpleSecurityService;
+import org.apache.webbeans.corespi.security.SimpleSecurityService;
 import org.apache.webbeans.spi.SecurityService;
 
 public class TomcatSecurityService extends SimpleSecurityService implements SecurityService

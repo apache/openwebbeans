@@ -48,6 +48,12 @@ public interface SecurityService
     public Principal getCurrentPrincipal();
 
     /**
+     * @see Class#getDeclaredConstructor(Class[])
+     */
+    public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes)
+    throws NoSuchMethodException;
+
+    /**
      * @see Class#getDeclaredConstructors()
      */
     public <T> Constructor<?>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz);
@@ -55,7 +61,8 @@ public interface SecurityService
     /**
      * @see Class#getDeclaredMethod(String, Class[])
      */
-    public <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes)  throws NoSuchMethodException;
+    public <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes)
+    throws NoSuchMethodException;
 
     /**
      * @see Class#getDeclaredMethods()

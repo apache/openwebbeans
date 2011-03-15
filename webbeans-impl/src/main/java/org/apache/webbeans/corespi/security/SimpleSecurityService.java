@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.corespi;
+package org.apache.webbeans.corespi.security;
 
 import org.apache.webbeans.spi.SecurityService;
 
@@ -43,6 +43,12 @@ public class SimpleSecurityService implements SecurityService
     public Principal getCurrentPrincipal()
     {
         return null;
+    }
+
+    @Override
+    public <T> Constructor<T> doPrivilegedGetDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) throws NoSuchMethodException
+    {
+        return clazz.getDeclaredConstructor(parameterTypes);
     }
 
     @Override
