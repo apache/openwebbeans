@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.util;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -28,19 +27,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.security.PrivilegedActionException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,8 +53,6 @@ import org.apache.webbeans.logger.WebBeansLogger;
 @SuppressWarnings("unchecked")
 public final class ClassUtil
 {
-    public static final String WEBBEANS_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
-
     public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP = new HashMap<Class<?>, Class<?>>();
 
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ClassUtil.class);
@@ -628,33 +617,6 @@ public final class ClassUtil
     }
 
     /**
-     * Returns true if class has a default constructor.
-     * 
-     * @param <T> type argument of class
-     * @param clazz class type
-     * @return true if class has a default constructor.
-     */
-    public static <T> boolean hasDefaultConstructor(Class<T> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        
-        try
-        {
-            SecurityUtil.doPrivilegedGetDeclaredConstructor(clazz, new Class<?>[] {});
-        }
-        catch (SecurityException e)
-        {
-            throw new WebBeansException(e);
-        }
-        catch (NoSuchMethodException e)
-        {
-            return false;
-        }
-
-        return true;
-    }
-    
-    /**
      * See specification 5.2.3.
      * @param beanType bean type
      * @param requiredType required type
@@ -1122,28 +1084,6 @@ public final class ClassUtil
         return false;
     }
 
-
-    public static boolean classHasFieldWithName(Class<?> clazz, String fieldName)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(fieldName, "fieldName parameter can not be null");
-        try
-        {
-            SecurityUtil.doPrivilegedGetDeclaredField(clazz, fieldName);
-        }
-        catch (SecurityException e)
-        {
-            // we must throw here!
-            throw new WebBeansException(e);
-        }
-        catch (NoSuchFieldException e2)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
     public static Field getFieldWithName(Class<?> clazz, String fieldName)
     {
         Asserts.nullCheckForClass(clazz);
@@ -1281,24 +1221,6 @@ public final class ClassUtil
         return null;
     }
 
-    public static boolean hasMethodWithName(Class<?> clazz, String methodName)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(methodName, "methodName parameter can not be null");
-
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
-
-        for (Method method : methods)
-        {
-            if (method.getName().equals(methodName))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public static boolean isPrimitive(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
@@ -1313,124 +1235,6 @@ public final class ClassUtil
         return clazz.isArray();
     }
 
-    /**
-     * Gets the primitive/wrapper value of the parsed {@link String} parameter.
-     * 
-     * @param type primitive or wrapper of the primitive type
-     * @param value value of the type
-     * @return the parse of the given {@link String} value into the
-     *         corresponding value, if any exception occurs, returns null as the
-     *         value.
-     */
-    public static Object isValueOkForPrimitiveOrWrapper(Class<?> type, String value)
-    {
-        if (type.equals(Integer.TYPE) || type.equals(Integer.class))
-        {
-            return Integer.valueOf(value);
-        }
-
-        if (type.equals(Float.TYPE) || type.equals(Float.class))
-        {
-            return Float.valueOf(value);
-        }
-
-        if (type.equals(Double.TYPE) || type.equals(Double.class))
-        {
-            return Double.valueOf(value);
-        }
-
-        if (type.equals(Character.TYPE) || type.equals(Character.class))
-        {
-            return value.toCharArray()[0];
-        }
-
-        if (type.equals(Long.TYPE) || type.equals(Long.class))
-        {
-            return Long.valueOf(value);
-        }
-
-        if (type.equals(Byte.TYPE) || type.equals(Byte.class))
-        {
-            return Byte.valueOf(value);
-        }
-
-        if (type.equals(Short.TYPE) || type.equals(Short.class))
-        {
-            return Short.valueOf(value);
-        }
-
-        if (type.equals(Boolean.TYPE) || type.equals(Boolean.class))
-        {
-            return Boolean.valueOf(value);
-        }
-
-        return null;
-    }
-
-    public static Enum isValueOkForEnum(Class clazz, String value)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(value, "value parameter can not be null");
-
-        return Enum.valueOf(clazz, value);
-    }
-
-    public static Date isValueOkForDate(String value) throws ParseException
-    {
-        try
-        {
-            Asserts.assertNotNull(value, "value parameter can not be null");
-            return DateFormat.getDateTimeInstance().parse(value);
-
-        }
-        catch (ParseException e)
-        {
-            // Check for simple date format
-            SimpleDateFormat format = new SimpleDateFormat(WEBBEANS_DATE_FORMAT);
-
-            return format.parse(value);
-        }
-    }
-
-    public static Calendar isValueOkForCalendar(String value) throws ParseException
-    {
-        Calendar calendar = null;
-
-        Asserts.assertNotNull(value, "value parameter can not be null");
-        Date date = isValueOkForDate(value);
-
-        if (date == null)
-        {
-            return null;
-        }
-        else
-        {
-            calendar = Calendar.getInstance();
-            calendar.setTime(date);
-        }
-
-        return calendar;
-    }
-
-    public static Object isValueOkForBigDecimalOrInteger(Class<?> type, String value)
-    {
-        Asserts.assertNotNull(type);
-        Asserts.assertNotNull(value);
-
-        if (type.equals(BigInteger.class))
-        {
-            return new BigInteger(value);
-        }
-        else if (type.equals(BigDecimal.class))
-        {
-            return new BigDecimal(value);
-        }
-        else
-        {
-            return new WebBeansException(new IllegalArgumentException("Argument is not valid"));
-        }
-    }
-
     public static boolean isDefinitionConstainsTypeVariables(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
@@ -1438,29 +1242,6 @@ public final class ClassUtil
         return (clazz.getTypeParameters().length > 0) ? true : false;
     }
     
-    
-    public static TypeVariable<?>[] getTypeVariables(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        
-        return clazz.getTypeParameters();
-    }
-
-    public static Type[] getActualTypeArguements(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        if (clazz.getGenericSuperclass() instanceof ParameterizedType)
-        {
-            return ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments();
-
-        }
-        else
-        {
-            return new Type[0];
-        }
-    }
-
     public static Type[] getActualTypeArguements(Type type)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
@@ -1476,18 +1257,6 @@ public final class ClassUtil
         }
     }
 
-    public static Class<?> getFirstRawType(Type type)
-    {
-        Asserts.assertNotNull(type, "type argument can not be null");
-
-        if (type instanceof ParameterizedType)
-        {
-            ParameterizedType pt = (ParameterizedType) type;
-            return (Class<?>) pt.getRawType();
-        }
-
-        return (Class<?>) type;
-    }
 
     public static Set<Type> setTypeHierarchy(Set<Type> set, Type clazz)
     {
@@ -1498,8 +1267,6 @@ public final class ClassUtil
         return set;
     }
 
-    
-    
     /**
      * Return raw class type for given type.
      * @param type base type instance
@@ -1526,24 +1293,6 @@ public final class ClassUtil
         
         return raw;
     }
-    
-    //For Ejb API Type
-    public static Set<Type> setClassTypeHierarchy(Set<Type> set, Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        set.add(clazz);
-
-        Class<?> sc = clazz.getSuperclass();
-
-        if (sc != null)
-        {
-            setTypeHierarchy(set, sc);
-        }
-
-        return set;
-    }
-    
 
     public static Set<Type> setInterfaceTypeHierarchy(Set<Type> set, Class<?> clazz)
     {
@@ -1563,28 +1312,6 @@ public final class ClassUtil
         } while (clazz != null && clazz != Object.class);
 
         return set;
-    }
-
-    public static Type[] getGenericSuperClassTypeArguments(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Type type = clazz.getGenericSuperclass();
-
-        if (type != null)
-        {
-            if (type instanceof ParameterizedType)
-            {
-                ParameterizedType pt = (ParameterizedType) type;
-
-                //if (checkParametrizedType(pt))
-                //{
-                    return pt.getActualTypeArguments();
-                //}
-            }
-        }
-
-        return new Type[0];
-
     }
 
     /**
@@ -1615,68 +1342,6 @@ public final class ClassUtil
         return true;
     }
 
-    public static boolean isFirstParametricTypeArgGeneric(ParameterizedType type)
-    {
-        Asserts.assertNotNull(type, "type parameter can not be null");
-        
-        Type[] args = type.getActualTypeArguments();
-        
-        if(args.length == 0)
-        {
-            return false;
-        }
-        
-        Type arg = args[0];
-
-        if ((arg instanceof TypeVariable) || (arg instanceof WildcardType))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    public static List<Type[]> getGenericSuperInterfacesTypeArguments(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        List<Type[]> list = new ArrayList<Type[]>();
-
-        Type[] types = clazz.getGenericInterfaces();
-        for (Type type : types)
-        {
-            if (type instanceof ParameterizedType)
-            {
-                ParameterizedType pt = (ParameterizedType) type;
-
-                //if (checkParametrizedType(pt))
-                //{
-                    list.add(pt.getActualTypeArguments());
-                //}
-            }
-        }
-
-        return list;
-    }
-
-    public static Field getFieldWithAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(annotation, "annotation parameter can not be null");
-
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
-        for (Field field : fields)
-        {
-            if (AnnotationUtil.hasAnnotation(field.getAnnotations(), annotation))
-            {
-                return field;
-            }
-
-        }
-
-        return null;
-
-    }
-    
     public static Field[] getFieldsWithType(Class<?> clazz, Type type)
     {
         Asserts.nullCheckForClass(clazz);
@@ -1694,65 +1359,6 @@ public final class ClassUtil
 
         return fieldsWithType.toArray(new Field[fieldsWithType.size()]);
 
-    }
-    
-
-    public static boolean checkForTypeArguments(Class<?> src, Type[] typeArguments, Class<?> target)
-    {
-        Asserts.assertNotNull(src, "src parameter can not be null");
-        Asserts.assertNotNull(typeArguments, "typeArguments parameter can not be null");
-        Asserts.assertNotNull(target, "target parameter can not be null");
-
-        Type[] types = getGenericSuperClassTypeArguments(target);
-
-        boolean found = false;
-
-        if (Arrays.equals(typeArguments, types))
-        {
-            return true;
-        }
-        else
-        {
-            Class<?> superClazz = target.getSuperclass();
-            if (superClazz != null)
-            {
-                found = checkForTypeArguments(src, typeArguments, superClazz);
-            }
-        }
-
-        if (!found)
-        {
-            List<Type[]> list = getGenericSuperInterfacesTypeArguments(target);
-            if (!list.isEmpty())
-            {
-                Iterator<Type[]> it = list.iterator();
-                while (it.hasNext())
-                {
-                    types = it.next();
-                    if (Arrays.equals(typeArguments, types))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-            }
-        }
-
-        if (!found)
-        {
-            Class<?>[] superInterfaces = target.getInterfaces();
-            for (Class<?> inter : superInterfaces)
-            {
-                found = checkForTypeArguments(src, typeArguments, inter);
-                if (found)
-                {
-                    break;
-                }
-            }
-        }
-
-        return found;
     }
     
     public static void setField(Object instance, Field field, Object value)
@@ -1780,7 +1386,6 @@ public final class ClassUtil
         
     }
  
-
     /**
      * Returns injection point raw type.
      * 
@@ -1833,16 +1438,4 @@ public final class ClassUtil
         return false;
     }
     
-    public static Constructor<?> getConstructor(Class<?> clazz, Class<?>[] parameterTypes)
-    {
-        try
-        {
-            return clazz.getConstructor(parameterTypes);
-            
-        }
-        catch(NoSuchMethodException e)
-        {
-            return null;
-        }
-    }    
 }

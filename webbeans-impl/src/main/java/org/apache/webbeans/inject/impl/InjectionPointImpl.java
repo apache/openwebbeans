@@ -264,7 +264,15 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         else if(c == 2)
         {
             Class<?>[] parameters = (Class<?>[])in.readObject();            
-            this.injectionMember = ClassUtil.getConstructor(beanClass, parameters);
+            try
+            {
+                this.injectionMember = beanClass.getConstructor(parameters);
+
+            }
+            catch(NoSuchMethodException e)
+            {
+                this.injectionMember = null;
+            }
 
             AnnotatedType<Object> annotatedType = (AnnotatedType<Object>)annotatedElementFactory.newAnnotatedType(beanClass);
             AnnotatedConstructor<Object> am =  (AnnotatedConstructor<Object>)annotatedElementFactory
