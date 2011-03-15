@@ -1833,19 +1833,6 @@ public final class ClassUtil
         return false;
     }
     
-    public static Method getDeclaredMethod(Class<?> clazz, String methodName, Class<?>[] parameters)
-    {
-        try
-        {
-            return SecurityUtil.doPrivilegedGetDeclaredMethod(clazz,methodName, parameters);
-            
-        }
-        catch(NoSuchMethodException e)
-        {
-            return null;
-        }
-    }
-    
     public static Constructor<?> getConstructor(Class<?> clazz, Class<?>[] parameterTypes)
     {
         try
