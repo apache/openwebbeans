@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.portable;
 
+import org.apache.webbeans.config.WebBeansContext;
+
 import java.lang.reflect.Field;
 
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -36,23 +38,12 @@ public class AnnotatedFieldImpl<X> extends AbstractAnnotatedMember<X> implements
     /**
      * Creates a new instance
      * 
-     * @param baseType base type
+     * @param declaringType base type
      * @param javaMember field
      */
-    AnnotatedFieldImpl(Field javaMember)
+    AnnotatedFieldImpl(WebBeansContext webBeansContext, Field javaMember, AnnotatedType<X> declaringType)
     {
-        this(javaMember, null);
-    }    
-    
-    /**
-     * Creates a new instance
-     * 
-     * @param baseType base type
-     * @param javaMember field
-     */
-    AnnotatedFieldImpl(Field javaMember, AnnotatedType<X> declaringType)
-    {
-        super(javaMember.getGenericType(), javaMember,declaringType);
+        super(webBeansContext, javaMember.getGenericType(), javaMember,declaringType);
         
         setAnnotations(javaMember.getDeclaredAnnotations());
     }

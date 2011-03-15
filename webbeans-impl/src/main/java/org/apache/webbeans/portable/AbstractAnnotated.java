@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.Annotated;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -42,15 +43,19 @@ abstract class AbstractAnnotated implements Annotated
     
     /**Set of annotations*/
     private Set<Annotation> annotations = new HashSet<Annotation>();
+
+    private WebBeansContext webBeansContext;
     
     /**
      * Createa a new annotated element.
-     * 
+     *
+     * @param webBeansContext our WebBeansContext
      * @param baseType annotated element type
      */
-    protected AbstractAnnotated(Type baseType)
+    protected AbstractAnnotated(WebBeansContext webBeansContext, Type baseType)
     {
         this.baseType = baseType;
+        this.webBeansContext = webBeansContext;
     }
 
     /**
@@ -62,7 +67,11 @@ abstract class AbstractAnnotated implements Annotated
     {
         this.annotations.add(annotation);
     }
-    
+
+    protected WebBeansContext getWebBeansContext()
+    {
+        return webBeansContext;
+    }
 
     /**
      * Adds new annotation to set.

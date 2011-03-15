@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.portable;
 
+import org.apache.webbeans.config.WebBeansContext;
+
 import java.lang.reflect.Type;
 
 import javax.enterprise.inject.spi.AnnotatedCallable;
@@ -38,9 +40,9 @@ class AnnotatedParameterImpl<X> extends AbstractAnnotated implements AnnotatedPa
     /**Parameter position*/
     private final int position;
     
-    AnnotatedParameterImpl(Type baseType, AnnotatedCallable<X> declaringCallable, int position)
+    AnnotatedParameterImpl(WebBeansContext webBeansContext, Type baseType, AnnotatedCallable<X> declaringCallable, int position)
     {
-        super(baseType);
+        super(webBeansContext, baseType);
         this.declaringCallable = declaringCallable;
         this.position = position;
     }

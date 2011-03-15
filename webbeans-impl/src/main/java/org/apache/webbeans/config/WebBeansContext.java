@@ -67,7 +67,7 @@ public class WebBeansContext
     private WebBeansUtil webBeansUtil = new WebBeansUtil(this);
     private ContextFactory contextFactory = new ContextFactory(this);
     private AlternativesManager alternativesManager = new AlternativesManager(this);
-    private AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory();
+    private AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory(this);
     private BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
     private ConversationManager conversationManager = new ConversationManager(this);
     private CreationalContextFactory creationalContextFactory = new CreationalContextFactory(this);

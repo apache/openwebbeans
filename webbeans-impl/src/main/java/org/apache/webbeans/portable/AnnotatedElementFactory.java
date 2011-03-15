@@ -66,12 +66,15 @@ public final class AnnotatedElementFactory
     //Cache of AnnotatedField
     private ConcurrentMap<Field, AnnotatedField<?>> annotatedFieldCache =
         new ConcurrentHashMap<Field, AnnotatedField<?>>();
+
+    private WebBeansContext webBeansContext;
     
     /**
      * No instantiate.
      */
-    public AnnotatedElementFactory()
+    public AnnotatedElementFactory(WebBeansContext webBeansContext)
     {
+        this.webBeansContext = webBeansContext;
     }
 
     /**
@@ -94,7 +97,7 @@ public final class AnnotatedElementFactory
         {
             try
             {
-                annotatedType = new AnnotatedTypeImpl<X>(annotatedClass);
+                annotatedType = new AnnotatedTypeImpl<X>(webBeansContext, annotatedClass);
 
                 AnnotatedTypeImpl<X> oldType = (AnnotatedTypeImpl<X>)annotatedTypeCache.putIfAbsent(annotatedClass, annotatedType);
                 if(oldType != null)
@@ -153,7 +156,7 @@ public final class AnnotatedElementFactory
         }
         else
         {
-            annConstructor = new AnnotatedConstructorImpl<X>(constructor, declaringClass);
+            annConstructor = new AnnotatedConstructorImpl<X>(webBeansContext, constructor, declaringClass);
             AnnotatedConstructorImpl<X> old = (AnnotatedConstructorImpl<X>)annotatedConstructorCache.putIfAbsent(constructor, annConstructor);
             if(old != null)
             {
@@ -185,7 +188,7 @@ public final class AnnotatedElementFactory
         }
         else
         {
-            annotField = new AnnotatedFieldImpl<X>(field, declaringClass);
+            annotField = new AnnotatedFieldImpl<X>(webBeansContext, field, declaringClass);
             AnnotatedFieldImpl<X> old = (AnnotatedFieldImpl<X>) annotatedFieldCache.putIfAbsent(field, annotField);
             if(old != null)
             {
@@ -217,7 +220,7 @@ public final class AnnotatedElementFactory
         }
         else
         {
-            annotMethod = new AnnotatedMethodImpl<X>(method, declaringType);
+            annotMethod = new AnnotatedMethodImpl<X>(webBeansContext, method, declaringType);
             AnnotatedMethodImpl<X> old = (AnnotatedMethodImpl<X>) annotatedMethodCache.putIfAbsent(method, annotMethod);
             if(old != null)
             {

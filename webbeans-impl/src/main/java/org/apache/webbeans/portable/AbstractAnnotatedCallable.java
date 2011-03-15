@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.portable;
 
+import org.apache.webbeans.config.WebBeansContext;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.lang.reflect.Type;
@@ -40,20 +42,9 @@ abstract class AbstractAnnotatedCallable<X> extends AbstractAnnotatedMember<X> i
     /**Annotated parameters*/
     private List<AnnotatedParameter<X>> annotatedParameters = new ArrayList<AnnotatedParameter<X>>();
     
-    /**
-     * Creates a new instance.
-     * 
-     * @param baseType base type
-     * @param javaMember member
-     */
-    AbstractAnnotatedCallable(Type baseType, Member javaMember)
+    AbstractAnnotatedCallable(WebBeansContext webBeansContext, Type baseType, Member javaMember, AnnotatedType<X> declaringType)
     {
-        this(baseType, javaMember, null);
-    }
-    
-    AbstractAnnotatedCallable(Type baseType, Member javaMember, AnnotatedType<X> declaringType)
-    {
-        super(baseType,javaMember,declaringType);
+        super(webBeansContext, baseType,javaMember,declaringType);
     }
     
     protected void setAnnotatedParameters(Type[] genericParameterTypes,Annotation[][] parameterAnnotations)
@@ -62,7 +53,7 @@ abstract class AbstractAnnotatedCallable<X> extends AbstractAnnotatedMember<X> i
         
         for(Type genericParameter : genericParameterTypes)
         {
-            AnnotatedParameterImpl<X> parameterImpl = new AnnotatedParameterImpl<X>(genericParameter,this,i);
+            AnnotatedParameterImpl<X> parameterImpl = new AnnotatedParameterImpl<X>(getWebBeansContext(), genericParameter,this,i);
             parameterImpl.setAnnotations(parameterAnnotations[i]);
             
             addAnnotatedParameter(parameterImpl);

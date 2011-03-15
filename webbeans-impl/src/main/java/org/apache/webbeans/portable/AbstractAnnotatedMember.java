@@ -48,27 +48,16 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
     /**Member type*/
     protected final Member javaMember;
     
-    /**
-     * Creates a new instance.
-     * 
-     * @param baseType base type
-     * @param javaMember member
-     */
-    AbstractAnnotatedMember(Type baseType, Member javaMember)
+    @SuppressWarnings("unchecked")
+    AbstractAnnotatedMember(WebBeansContext webBeansContext, Type baseType, Member javaMember, AnnotatedType<X> declaringType)
     {
-        this(baseType, javaMember, null);
-    }
-    
-    @SuppressWarnings("unchecked")    
-    AbstractAnnotatedMember(Type baseType, Member javaMember, AnnotatedType<X> declaringType)
-    {
-        super(baseType);
+        super(webBeansContext, baseType);
         
         this.javaMember = javaMember;
         
         if(declaringType == null)
         {
-            this.declaringType = (AnnotatedType<X>) WebBeansContext.getInstance().getAnnotatedElementFactory().newAnnotatedType(this.javaMember.getDeclaringClass());
+            this.declaringType = (AnnotatedType<X>) getWebBeansContext().getAnnotatedElementFactory().newAnnotatedType(this.javaMember.getDeclaringClass());
             
             AnnotatedTypeImpl<X> impl = (AnnotatedTypeImpl<X>)this.declaringType;
             

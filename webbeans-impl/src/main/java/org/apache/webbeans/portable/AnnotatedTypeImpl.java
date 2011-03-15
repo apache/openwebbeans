@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.portable;
 
-import org.apache.webbeans.util.SecurityUtil;
+import org.apache.webbeans.config.WebBeansContext;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -58,9 +58,9 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
      * 
      * @param annotatedClass class
      */
-    AnnotatedTypeImpl(Class<X> annotatedClass)
+    AnnotatedTypeImpl(WebBeansContext webBeansContext, Class<X> annotatedClass)
     {
-        super(annotatedClass);        
+        super(webBeansContext, annotatedClass);
         this.annotatedClass = annotatedClass;     
         
         setAnnotations(annotatedClass.getDeclaredAnnotations());
@@ -74,24 +74,24 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
             fields = new HashSet<AnnotatedField<? super X>>();
             methods = new HashSet<AnnotatedMethod<? super X>>();
 
-            Field[] decFields = SecurityUtil.doPrivilegedGetDeclaredFields(annotatedClass);
-            Method[] decMethods = SecurityUtil.doPrivilegedGetDeclaredMethods(annotatedClass);
-            Constructor<X>[] decCtxs = SecurityUtil.doPrivilegedGetDeclaredConstructors(annotatedClass);
+            Field[] decFields = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredFields(annotatedClass);
+            Method[] decMethods = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredMethods(annotatedClass);
+            Constructor<?>[] decCtxs = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
             for(Field f : decFields)
             {
-                AnnotatedField<X> af = new AnnotatedFieldImpl<X>(f, this);
+                AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, this);
                 fields.add(af);
             }
 
             for(Method m : decMethods)
             {
-                AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(m,this);
+                AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m,this);
                 methods.add(am);
             }
 
-            for(Constructor<X> ct : decCtxs)
+            for(Constructor<?> ct : decCtxs)
             {
-                AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(ct,this);
+                AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(getWebBeansContext(), (Constructor<X>) ct,this);
                 constructors.add(ac);
             }
         }
