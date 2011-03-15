@@ -31,7 +31,7 @@ import java.util.Properties;
 import javassist.util.proxy.ProxyFactory;
 import org.apache.webbeans.exception.WebBeansException;
 
-/** @deprecated  use SecurityService instaed */
+/** @deprecated  use SecurityService instead */
 public class SecurityUtil
 {
 
@@ -50,7 +50,6 @@ public class SecurityUtil
     private static final PrivilegedActionGetSystemProperties SYSTEM_PROPERTY_ACTION = new PrivilegedActionGetSystemProperties();
 
     @SuppressWarnings("unchecked")
-    /** @deprecated  use SecurityService instaed */
     public static <T> Constructor<T>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz)
     {
         Object obj = AccessController.doPrivileged(
@@ -58,16 +57,6 @@ public class SecurityUtil
         return (Constructor<T>[])obj;
     }
 
-    public static <T> Method doPrivilegedGetDeclaredMethod(Class<T> clazz, String name, Class<?>... parameterTypes)  throws NoSuchMethodException
-    {
-        Object obj = AccessController.doPrivileged(
-                new PrivilegedActionForClass(clazz, new Object[] {name, parameterTypes}, METHOD_CLASS_GETDECLAREDMETHOD));
-        if (obj instanceof NoSuchMethodException)
-        {
-            throw (NoSuchMethodException)obj;
-        }
-        return (Method)obj;
-    }
 
     public static <T> Method[] doPrivilegedGetDeclaredMethods(Class<T> clazz)
     {
@@ -187,11 +176,6 @@ public class SecurityUtil
         return AccessController.doPrivileged(new PrivilegedActionForObjectCreation(clazz));
     }
 
-    public static void doPrivilegedSetSystemProperty(String propertyName, String value)
-    {
-        AccessController.doPrivileged(new PrivilegedActionForSetProperty(propertyName, value));
-    }
-
     public static Properties doPrivilegedGetSystemProperties()
     {
         return AccessController.doPrivileged(SYSTEM_PROPERTY_ACTION);
@@ -216,27 +200,6 @@ public class SecurityUtil
         }
         
     }
-    
-    protected static class PrivilegedActionForSetProperty implements PrivilegedAction<Object>
-    {
-        private final String propertyName;
-        
-        private final String value;
-
-        protected PrivilegedActionForSetProperty(String propertyName, String value)
-        {
-            this.propertyName = propertyName;
-            this.value = value;
-        }
-        
-        @Override
-        public String run()
-        {
-            System.setProperty(propertyName, value);
-            return null;            
-        }
-        
-    }    
     
     protected static class PrivilegedActionGetSystemProperties implements PrivilegedAction<Properties>
     {
