@@ -192,12 +192,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      */
     protected boolean isDefaultMetaDataProvider()
     {
-        if(this.metadataProvider.equals(MetaDataProvider.DEFAULT))
-        {
-            return true;
-        }
-        
-        return false;
+        return this.metadataProvider.equals(MetaDataProvider.DEFAULT);
     }
 
     /**

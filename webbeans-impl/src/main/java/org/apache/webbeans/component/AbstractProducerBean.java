@@ -172,7 +172,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
             return false;
         }
         
-        if(ClassUtil.isPrimitive(returnType) || Serializable.class.isAssignableFrom(returnType))
+        if(returnType.isPrimitive() || Serializable.class.isAssignableFrom(returnType))
         {
             return true;
         }

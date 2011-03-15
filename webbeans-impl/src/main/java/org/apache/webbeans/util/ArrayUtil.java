@@ -71,7 +71,7 @@ public final class ArrayUtil
                 Object o2 = arr2[i2];
 
                 // if they are equal and not found already
-                if (o1.equals(o2) && found2[i2] == false)
+                if (o1.equals(o2) && !found2[i2])
                 {
                     // mark the entries in both arrays as found
                     found1[i1] = true;

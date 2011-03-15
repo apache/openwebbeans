@@ -86,12 +86,7 @@ public final class AnnotationManager
     {
         Asserts.nullCheckForClass(clazz);
 
-        if (clazz.isAnnotationPresent(InterceptorBinding.class))
-        {
-            return true;
-        }
-
-        return false;
+        return clazz.isAnnotationPresent(InterceptorBinding.class);
     }
 
     /**
@@ -397,12 +392,7 @@ public final class AnnotationManager
     {
         Asserts.nullCheckForClass(clazz);
 
-        if (clazz.isAnnotationPresent(Stereotype.class))
-        {
-            return true;
-        }
-
-        return false;
+        return clazz.isAnnotationPresent(Stereotype.class);
     }
 
     public boolean hasStereoTypeMetaAnnotation(Annotation[] anns)
@@ -468,12 +458,7 @@ public final class AnnotationManager
         Set<Annotation> set = component.getOwbStereotypes();
         Annotation[] anns = new Annotation[set.size()];
         anns = set.toArray(anns);
-        if (hasStereoTypeMetaAnnotation(anns))
-        {
-            return true;
-        }
-
-        return false;
+        return hasStereoTypeMetaAnnotation(anns);
     }
 
     /**
@@ -542,7 +527,7 @@ public final class AnnotationManager
 
             if (annotType.isAnnotationPresent(NormalScope.class) || annotType.isAnnotationPresent(Scope.class))
             {
-                if (scopeTypeFound == true)
+                if (scopeTypeFound)
                 {
                     throw new WebBeansConfigurationException("@StereoType annotation can not contain more " +
                             "than one @Scope/@NormalScope annotation");

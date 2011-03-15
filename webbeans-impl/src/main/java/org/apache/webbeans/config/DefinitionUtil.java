@@ -242,11 +242,7 @@ public final class DefinitionUtil
                     }
                 }
 
-                if (find == false)
-                {
-                    find = true;
-                }
-
+                find = true;
                 component.addQualifier(annotation);
             }
         }

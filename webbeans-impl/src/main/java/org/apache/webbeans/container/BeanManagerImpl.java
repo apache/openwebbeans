@@ -1034,12 +1034,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             }
         }
         
-        if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class))
-        {
-            return true;
-        }
-     
-        return false;
+        return AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), NormalScope.class);
     }
     
     @Override
@@ -1066,12 +1061,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public boolean isStereotype(Class<? extends Annotation> annotationType)
     {
-        if(AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Stereotype.class))
-        {
-            return true;
-        }
-     
-        return false;
+        return AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Stereotype.class);
     }
 
     @Override

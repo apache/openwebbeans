@@ -445,7 +445,7 @@ public final class WebBeansUtil
         {
             if (constructor.getAnnotation(Inject.class) != null)
             {
-                if (inAnnotation == true)// duplicate @In
+                if (inAnnotation)// duplicate @In
                 {
                     throw new WebBeansConfigurationException("There are more than one Constructor with "
                                                              + "Initializer annotation in class " + clazz.getName());
@@ -811,7 +811,7 @@ public final class WebBeansUtil
                     continue;
                 }
 
-                if (found == true)
+                if (found)
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotation is declared more than one method in the class : " + clazz.getName());
@@ -882,7 +882,7 @@ public final class WebBeansUtil
                     continue;
                 }
 
-                if (found == true)
+                if (found)
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotation is declared more than one method in the class : " + clazz.getName());
@@ -979,7 +979,7 @@ public final class WebBeansUtil
                     continue;
                 }
 
-                if (found == true)
+                if (found)
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName()
                             + " annotation is declared more than one method in the class : " + clazz.getName());
@@ -1038,7 +1038,7 @@ public final class WebBeansUtil
                     continue;
                 }
 
-                if (found == true)
+                if (found)
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName()
                             + " annotation is declared more than one method in the class : "
@@ -1866,7 +1866,7 @@ public final class WebBeansUtil
 
                 if(!beanClass.isInterface() && beanClass != Object.class)
                 {
-                    if(ClassUtil.isPrimitive(beanClass))
+                    if(beanClass.isPrimitive())
                     {
                         violationMessage.addLine("It isn't possible to use a primitive type (" + beanClass.getName(), ")");
                     }

@@ -93,7 +93,7 @@ public final class WebBeansAnnotatedTypeUtil
             {
                 if(annConst.isAnnotationPresent(Inject.class))
                 {
-                    if (found == true)
+                    if (found)
                     {
                         throw new WebBeansConfigurationException("There are more than one constructor with @Inject annotation in annotation type : "
                                                                  + type);
@@ -441,7 +441,7 @@ public final class WebBeansAnnotatedTypeUtil
                     ProducerFieldBean<X> producerFieldBean = new ProducerFieldBean<X>(bean, (Class<X>)ClassUtil.getClass(annotatedField.getBaseType()));
                     producerFieldBean.setProducerField(field);
                     
-                    if (ClassUtil.isPrimitive(ClassUtil.getClass(annotatedField.getBaseType())))
+                    if (ClassUtil.getClass(annotatedField.getBaseType()).isPrimitive())
                     {
                         producerFieldBean.setNullable(false);
                     }                    
@@ -501,7 +501,7 @@ public final class WebBeansAnnotatedTypeUtil
                     configureProducerSpecialization(producerMethodBean, (AnnotatedMethod<X>)annotatedMethod);
                 }
                 
-                if (ClassUtil.isPrimitive(ClassUtil.getClass(annotatedMethod.getBaseType())))
+                if (ClassUtil.getClass(annotatedMethod.getBaseType()).isPrimitive())
                 {
                     producerMethodBean.setNullable(false);
                 }

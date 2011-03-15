@@ -267,13 +267,7 @@ public final class ClassUtil
     {
         Asserts.nullCheckForMethod(method);
 
-        Class<?>[] types = method.getParameterTypes();
-        if (types.length != 0)
-        {
-            return true;
-        }
-
-        return false;
+        return method.getParameterTypes().length > 0;
     }
 
     /**
@@ -426,21 +420,16 @@ public final class ClassUtil
         Asserts.nullCheckForClass(clazz);
 
         Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
-        int i = 0;
+        int methodCount = 0;
         for (Method m : methods)
         {
             if (m.getName().equals(methodName))
             {
-                i++;
+                methodCount++;
             }
         }
 
-        if (i > 1)
-        {
-            return true;
-        }
-
-        return false;
+        return methodCount > 1;
 
     }
 
@@ -486,12 +475,7 @@ public final class ClassUtil
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
         
-        if (type instanceof WildcardType)
-        {
-            return true;
-        }
-
-        return false;
+        return type instanceof WildcardType;
     }
     
     public static boolean isUnboundedTypeVariable(Type type)
@@ -545,13 +529,7 @@ public final class ClassUtil
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
 
-        if (type instanceof TypeVariable)
-        {
-            return true;
-        }
-
-        return false;
-
+        return type instanceof TypeVariable;
     }
     
 
@@ -1178,13 +1156,6 @@ public final class ClassUtil
         }
 
         return null;
-    }
-
-    public static boolean isPrimitive(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        return clazz.isPrimitive();
     }
 
     public static boolean isArray(Class<?> clazz)

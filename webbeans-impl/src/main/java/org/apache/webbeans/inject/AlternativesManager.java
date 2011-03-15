@@ -116,12 +116,7 @@ public class AlternativesManager
 
     public boolean isStereoAlternative(Class<? extends Annotation> stereo)
     {
-        if(this.stereoAlternatives.contains(stereo))
-        {
-            return true;
-        }
-        
-        return false;
+        return this.stereoAlternatives.contains(stereo);
     }
 
     public boolean isBeanHasAlternative(Bean<?> bean)

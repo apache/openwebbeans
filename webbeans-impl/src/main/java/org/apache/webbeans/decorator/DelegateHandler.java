@@ -177,7 +177,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
      * @return True if the method exists in any of the interfaces of the
      *         Decorator
      */
-    private boolean checkForMethodInInterfaces(Class<? extends Object> class1, Method m)
+    private boolean checkForMethodInInterfaces(Class<?> class1, Method m)
     {
         Class<?>[] interfaces = class1.getInterfaces();
         for (int i = 0; i < interfaces.length; i++)

@@ -28,11 +28,11 @@ import javax.inject.Named;
 @Named("literalBean")
 public class InstanceTypeLiteralBean
 {
-    public static interface IOrder<T>{};
+    public static interface IOrder<T>{}
     
-    public static class StringOrder implements IOrder<String>{};
+    public static class StringOrder implements IOrder<String>{}
     
-    public static class IntegerOrder implements IOrder<Integer>{};
+    public static class IntegerOrder implements IOrder<Integer>{}
 
     private @Inject Instance<IOrder<?>> instance;
     

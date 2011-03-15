@@ -89,7 +89,7 @@ public class DependingInterceptorTest extends AbstractUnitTest
         Assert.assertTrue(reference2 instanceof RequestScopedBean);
         
         RequestScopedBean beanInstance2 = (RequestScopedBean)reference2;
-        beanInstance2.getMyService().getJ();;
+        beanInstance2.getMyService().getJ();
         RequestScopedBean realInstance2 = beanInstance2.getInstance();
 
         Assert.assertTrue(TransactionInterceptor.ECHO);

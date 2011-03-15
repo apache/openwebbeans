@@ -116,7 +116,7 @@ public class SecurityUtil
     {
         AccessController.doPrivileged(new PrivilegedActionForAccessibleObject(obj, flag));
         return null;
-    };
+    }
 
     protected static class PrivilegedActionForAccessibleObject implements PrivilegedAction<Object>
     {
