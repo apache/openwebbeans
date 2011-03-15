@@ -44,7 +44,6 @@ import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
 import org.apache.webbeans.decorator.WebBeansDecoratorConfig;
 import org.apache.webbeans.deployment.StereoTypeModel;
-import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.portable.events.generics.GProcessAnnotatedType;
@@ -337,7 +336,7 @@ public abstract class TestContext implements ITestContext
         webBeansContext.getInterceptorsManager().addNewInterceptor(clazz);
         webBeansContext.getInterceptorUtil().checkInterceptorConditions(clazz);
         component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.INTERCEPTOR);
-        WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component,
+        webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass((ManagedBean<Object>) component,
                                                             webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
                                                                 clazz.getDeclaredAnnotations()));
 

@@ -41,6 +41,7 @@ import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
+import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -75,6 +76,7 @@ public class WebBeansContext
     private EJBInterceptorConfig ejbInterceptorConfig = new EJBInterceptorConfig(this);
     private ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private InterceptorsManager interceptorsManager = new InterceptorsManager(this);
+    private WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
     private JMSManager jmsManager = new JMSManager();
     private JavassistProxyFactory javassistProxyFactory = new JavassistProxyFactory();
     private OpenWebBeansConfiguration openWebBeansConfiguration = new OpenWebBeansConfiguration();
@@ -245,6 +247,11 @@ public class WebBeansContext
     public DecoratorsManager getDecoratorsManager()
     {
         return decoratorsManager;
+    }
+
+    public WebBeansInterceptorConfig getWebBeansInterceptorConfig()
+    {
+        return webBeansInterceptorConfig;
     }
 
     public EJBInterceptorConfig getEJBInterceptorConfig()

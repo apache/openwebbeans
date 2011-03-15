@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.util;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -443,17 +442,6 @@ public final class ClassUtil
 
         return false;
 
-    }
-
-    /**
-     * Check the modifiers contains the public keyword.
-     * 
-     * @param modifs modifiers
-     * @return true or false
-     */
-    public static boolean isPublic(int modifs)
-    {
-        return Modifier.isPublic(modifs);
     }
 
     /**

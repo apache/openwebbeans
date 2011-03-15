@@ -353,7 +353,7 @@ public final class WebBeansAnnotatedTypeUtil
             
             Field field = annotatedField.getJavaMember();
             Annotation[] anns = AnnotationUtil.getAnnotationsFromSet(annotatedField.getAnnotations());
-            if(ClassUtil.isPublic(field.getModifiers()))
+            if(Modifier.isPublic(field.getModifiers()))
             {
                 if(!bean.getScope().equals(Dependent.class))
                 {

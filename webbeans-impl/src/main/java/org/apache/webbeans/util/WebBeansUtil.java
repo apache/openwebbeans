@@ -140,7 +140,6 @@ import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.intercept.InterceptorType;
-import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.plugins.PluginLoader;
@@ -2070,9 +2069,9 @@ public final class WebBeansUtil
 
             if (component != null)
             {
-                WebBeansInterceptorConfig.configureInterceptorClass((ManagedBean<Object>) component,
-                                                                    webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
-                                                                        clazz.getDeclaredAnnotations()));
+                webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass((ManagedBean<Object>) component,
+                        webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
+                                clazz.getDeclaredAnnotations()));
             }
             else
             {
@@ -3195,8 +3194,8 @@ public final class WebBeansUtil
                 Set<Annotation> annTypeSet = annotatedType.getAnnotations();
                 Annotation[] anns = annTypeSet.toArray(new Annotation[annTypeSet.size()]);
                 AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
-                WebBeansInterceptorConfig.configureInterceptorClass(delegate,
-                                                                    annotationManager.getInterceptorBindingMetaAnnotations(anns));
+                webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass(delegate,
+                                                               annotationManager.getInterceptorBindingMetaAnnotations(anns));
             }
             else
             {

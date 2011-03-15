@@ -72,7 +72,6 @@ import org.apache.webbeans.event.EventUtil;
 import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorData;
-import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -985,7 +984,7 @@ public final class DefinitionUtil
             for (Field field : fields)
             {
                 //Check for public fields
-                if(ClassUtil.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers()))
+                if(Modifier.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers()))
                 {
                     if(webBeansContext.getBeanManagerImpl().isNormalScope(component.getScope()))
                     {
@@ -1189,7 +1188,7 @@ public final class DefinitionUtil
         }
 
         // For every injection target bean
-        WebBeansInterceptorConfig.configure(bean, bean.getInterceptorStack());
+        bean.getWebBeansContext().getWebBeansInterceptorConfig().configure(bean, bean.getInterceptorStack());
     }
 
     /**

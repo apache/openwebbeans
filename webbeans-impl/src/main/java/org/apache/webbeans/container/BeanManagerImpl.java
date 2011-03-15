@@ -79,7 +79,6 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.definition.DuplicateDefinitionException;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.intercept.InterceptorComparator;
-import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.plugins.OpenWebBeansJmsPlugin;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -614,7 +613,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         webBeansContext.getAnnotationManager().checkInterceptorResolverParams(interceptorBindings);
 
-        Set<Interceptor<?>> intsSet = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(interceptorBindings, webBeansContext);
+        Set<Interceptor<?>> intsSet = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(interceptorBindings, webBeansContext);
         Iterator<Interceptor<?>> itSet = intsSet.iterator();
 
         List<Interceptor<?>> interceptorList = new ArrayList<Interceptor<?>>();

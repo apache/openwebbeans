@@ -29,9 +29,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.intercept.OwbInterceptor;
-import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.context.spi.Context;
@@ -109,7 +107,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
      */
     public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation annot)
     {
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(binding);
+        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(binding);
 
         for (Method method : methods)
         {
@@ -216,7 +214,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
             if (anns != null && anns.length > 0)
             {
                 // For example : @Transactional @Action Interceptor
-                Set<Interceptor<?>> metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(anns, webBeansContext);
+                Set<Interceptor<?>> metas = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(anns, webBeansContext);
                 set.addAll(metas);
 
                 // For each @Transactional and @Action Interceptor
@@ -224,7 +222,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
                 {
                     Annotation[] simple = new Annotation[1];
                     simple[0] = ann;
-                    metas = WebBeansInterceptorConfig.findDeployedWebBeansInterceptor(simple, webBeansContext);
+                    metas = webBeansContext.getWebBeansInterceptorConfig().findDeployedWebBeansInterceptor(simple, webBeansContext);
                     set.addAll(metas);
                 }
 
