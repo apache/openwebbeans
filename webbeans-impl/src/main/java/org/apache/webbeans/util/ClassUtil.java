@@ -31,8 +31,6 @@ import java.lang.reflect.WildcardType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.PrivilegedActionException;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -64,44 +62,16 @@ import org.apache.webbeans.logger.WebBeansLogger;
 @SuppressWarnings("unchecked")
 public final class ClassUtil
 {
-    public static final Map<Class<?>, Object> PRIMITIVE_CLASS_DEFAULT_VALUES = new HashMap<Class<?>, Object>();;
-
-    public static final Set<Class<?>> VALUE_TYPES = new HashSet<Class<?>>();
+    public static final String WEBBEANS_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP = new HashMap<Class<?>, Class<?>>();
 
-    public static final String WEBBEANS_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
-    
     public static final Object[] OBJECT_EMPTY = new Object[0];
     
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ClassUtil.class);
 
     static
-    { 
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(Integer.class, Integer.MIN_VALUE);
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(Float.class, Float.MIN_VALUE);
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(Double.class, Double.MIN_VALUE);
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(Character.class, Character.MIN_VALUE);
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(String.class, new String());
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(BigDecimal.class, BigDecimal.ZERO);
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(BigInteger.class, BigInteger.ZERO);
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(Long.class, Long.MIN_VALUE);
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(Byte.class, Byte.MIN_VALUE);
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(Short.class, Short.MIN_VALUE);
-        PRIMITIVE_CLASS_DEFAULT_VALUES.put(Boolean.class, Boolean.FALSE);
-
-        VALUE_TYPES.add(String.class);
-        VALUE_TYPES.add(Date.class);
-        VALUE_TYPES.add(Calendar.class);
-        VALUE_TYPES.add(Class.class);
-        VALUE_TYPES.add(List.class);
-        VALUE_TYPES.add(Enum.class);
-        VALUE_TYPES.add(java.sql.Date.class);
-        VALUE_TYPES.add(Time.class);
-        VALUE_TYPES.add(Timestamp.class);
-        VALUE_TYPES.add(BigDecimal.class);
-        VALUE_TYPES.add(BigInteger.class);
-        
+    {
         PRIMITIVE_TO_WRAPPERS_MAP.put(Integer.TYPE,Integer.class);
         PRIMITIVE_TO_WRAPPERS_MAP.put(Float.TYPE,Float.class);
         PRIMITIVE_TO_WRAPPERS_MAP.put(Double.TYPE,Double.class);
@@ -347,32 +317,6 @@ public final class ClassUtil
         return Modifier.isPrivate(modifier);
     }
 
-    /**
-     * Gets the Java Standart Class default value.
-     * 
-     * @param <T> parametrized type
-     * @param clazz class instance
-     * @return default value of the class
-     */
-    public static <T> T defaultJavaValues(Class<T> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        Set<Class<?>> keySet = PRIMITIVE_CLASS_DEFAULT_VALUES.keySet();
-        Iterator<Class<?>> it = keySet.iterator();
-        while (it.hasNext())
-        {
-            Class<?> obj = it.next();
-            if (clazz.equals(obj))
-            {
-                return (T) PRIMITIVE_CLASS_DEFAULT_VALUES.get(obj);
-            }
-        }
-
-        return null;
-
-    }
-    
     public static Class<?>  getPrimitiveWrapper(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
@@ -381,22 +325,6 @@ public final class ClassUtil
 
     }
     
-    public static Class<?> getWrapperPrimitive(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        
-        Set<Class<?>> keySet = PRIMITIVE_TO_WRAPPERS_MAP.keySet();
-        
-        for(Class<?> key : keySet)
-        {
-             if(PRIMITIVE_TO_WRAPPERS_MAP.get(key).equals(clazz))
-             {
-                 return key;
-             }
-        }
-        
-        return null;
-    }
 
     /**
      * Gets the class of the given type arguments.
@@ -1463,44 +1391,11 @@ public final class ClassUtil
         return clazz.isPrimitive();
     }
 
-    public static boolean isPrimitiveWrapper(Class<?> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-
-        return PRIMITIVE_TO_WRAPPERS_MAP.containsValue(clazz);
-
-    }
-
     public static boolean isArray(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
 
         return clazz.isArray();
-    }
-
-    public static boolean isEnum(Class<?> clazz)
-    {
-        return clazz.isEnum();
-    }
-
-    public static boolean isInValueTypes(Class<?> clazz)
-    {
-        boolean result = VALUE_TYPES.contains(clazz);
-
-        if (!result)
-        {
-            result = clazz.isPrimitive();
-        }
-
-        if (!result)
-        {
-            if (Enum.class.isAssignableFrom(clazz))
-            {
-                return true;
-            }
-        }
-
-        return result;
     }
 
     /**
