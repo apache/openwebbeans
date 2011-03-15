@@ -19,7 +19,6 @@
 package org.apache.webbeans.util;
 
 import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -34,11 +33,6 @@ import org.apache.webbeans.exception.WebBeansException;
 /** @deprecated  use SecurityService instead */
 public class SecurityUtil
 {
-
-    private static final int METHOD_CLASS_GETDECLAREDCONSTRUCTOR = 0x01;
-
-    private static final int METHOD_CLASS_GETDECLAREDCONSTRUCTORS = 0x02;
-
     private static final int METHOD_CLASS_GETDECLAREDMETHOD = 0x03;
 
     private static final int METHOD_CLASS_GETDECLAREDMETHODS = 0x04;
@@ -95,10 +89,6 @@ public class SecurityUtil
             {
                 switch (method)
                 {
-                    case METHOD_CLASS_GETDECLAREDCONSTRUCTOR:
-                        return clazz.getDeclaredConstructor((Class<?>[])parameters);
-                    case METHOD_CLASS_GETDECLAREDCONSTRUCTORS:
-                        return clazz.getDeclaredConstructors();
                     case METHOD_CLASS_GETDECLAREDMETHOD:
                         String name = (String)((Object[])parameters)[0];
                         Class<?>[] realParameters = (Class<?>[])((Object[])parameters)[1];
