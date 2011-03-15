@@ -22,7 +22,6 @@ import junit.framework.Assert;
 
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.test.TestContext;
 import org.apache.webbeans.test.component.intercept.MultpleInterceptor;
 import org.junit.Before;
@@ -49,7 +48,7 @@ public class EJBInterceptorExceptionComponentTest extends TestContext
         {
             AbstractInjectionTargetBean<MultpleInterceptor> component = defineManagedBean(MultpleInterceptor.class);
 
-            EJBInterceptorConfig.configure(component.getReturnType(), component.getInterceptorStack(), component);
+            getWebBeansContext().getEJBInterceptorConfig().configure(component.getReturnType(), component.getInterceptorStack());
         }
         catch (WebBeansConfigurationException e)
         {

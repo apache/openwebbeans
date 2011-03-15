@@ -73,7 +73,6 @@ import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.WebBeansInterceptorConfig;
-import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -1169,20 +1168,21 @@ public final class DefinitionUtil
         // If bean is not session bean
         if(!(bean instanceof EnterpriseBeanMarker))
         {
-            EJBInterceptorConfig.configure(((AbstractOwbBean)bean).getReturnType(), bean.getInterceptorStack(), bean);
+            bean.getWebBeansContext().getEJBInterceptorConfig().configure(((AbstractOwbBean)bean).getReturnType(), bean.getInterceptorStack());
         }
         else
         {
             //Check for injected fields in EJB @Interceptors
             List<InterceptorData> stack = new ArrayList<InterceptorData>();
-            EJBInterceptorConfig.configure(bean.getBeanClass(), stack, bean);
+            bean.getWebBeansContext().getEJBInterceptorConfig().configure(bean.getBeanClass(), stack);
             for(InterceptorData data : stack)
             {
                 if(data.isDefinedInInterceptorClass())
                 {
                     if(!AnnotationManager.checkInjectionPointForInterceptorPassivation(data.getInterceptorClass()))
                     {
-                        throw new WebBeansConfigurationException("Enterprise bean : " + bean.toString() + " interceptors must have serializable injection points");
+                        throw new WebBeansConfigurationException("Enterprise bean : " + bean.toString() +
+                                                                 " interceptors must have serializable injection points");
                     }
                 }
             }

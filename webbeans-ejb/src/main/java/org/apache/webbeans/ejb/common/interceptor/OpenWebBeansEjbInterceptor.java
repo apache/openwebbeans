@@ -60,7 +60,6 @@ import org.apache.webbeans.inject.OWBInjector;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
 import org.apache.webbeans.intercept.InterceptorType;
-import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
@@ -110,7 +109,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
     
     /** cache of associated WebBeansContext */
     private transient WebBeansContext webBeansContext;
-    
+
     /* EJB InvocationContext.getTarget() provides underlying bean instance, which we do not want to hold a reference to */
     private CreationalKey ccKey;
     /**
@@ -220,7 +219,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             if ((this.contextual != null) && WebBeansUtil.isContainsInterceptorMethod(this.contextual.getInterceptorStack(), interceptorType))
             {
                 InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, this.contextual, context.getTarget(), null, null,
-                        InterceptorUtil.getInterceptorMethods(this.contextual.getInterceptorStack(), interceptorType), interceptorType);
+                        webBeansContext.getInterceptorUtil().getInterceptorMethods(this.contextual.getInterceptorStack(), interceptorType), interceptorType);
                 impl.setCreationalContext(this.cc);
                 impl.setEJBInvocationContext(context); // If the final 299 interceptor calls ic.proceed, the InvocationContext calls the ejbContext.proceed()
                 impl.setCcKey(this.ccKey);
@@ -541,8 +540,8 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                 List<InterceptorData> filteredInterceptorStack = new ArrayList<InterceptorData>(interceptorStack);
 
                 // Filter both EJB and WebBeans interceptors
-                InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
-                InterceptorUtil.filterOverridenAroundInvokeInterceptor(injectionTarget.getBeanClass(), filteredInterceptorStack);
+                webBeansContext.getInterceptorUtil().filterCommonInterceptorStackList(filteredInterceptorStack, method);
+                webBeansContext.getInterceptorUtil().filterOverridenAroundInvokeInterceptor(injectionTarget.getBeanClass(), filteredInterceptorStack);
 
                 this.interceptedMethodMap.put(method, filteredInterceptorStack);
             }
@@ -560,8 +559,9 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             // Call Around Invokes, 
             //      If there were decorators, the DelegatHandler will handle the  ejbcontext.proceed at the top of the stack.
             //      If there were no decorators, we will fall off the end of our own InvocationContext and take care of ejbcontext.proceed.
-            rv = InterceptorUtil.callAroundInvokes(webBeansContext, this.contextual, instance, (CreationalContextImpl<?>) this.cc, method,
-                    arguments, InterceptorUtil.getInterceptorMethods(filteredInterceptorStack, InterceptorType.AROUND_INVOKE), ejbContext, this.ccKey);
+            rv = webBeansContext.getInterceptorUtil().callAroundInvokes(webBeansContext, this.contextual, instance, (CreationalContextImpl<?>) this.cc, method,
+                    arguments, webBeansContext.getInterceptorUtil().getInterceptorMethods(filteredInterceptorStack, InterceptorType.AROUND_INVOKE),
+                                                                                          ejbContext, this.ccKey);
         }
         
         return rv;
@@ -585,7 +585,9 @@ public class OpenWebBeansEjbInterceptor implements Serializable
             try
             {
                     InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, null, context.getTarget(), null, null,
-                            InterceptorUtil.getInterceptorMethods(this.contextual.getInterceptorStack(), InterceptorType.AROUND_TIMEOUT), InterceptorType.AROUND_TIMEOUT);
+                            webBeansContext.getInterceptorUtil().getInterceptorMethods(this.contextual.getInterceptorStack(),
+                                                                                       InterceptorType.AROUND_TIMEOUT),
+                                                                                       InterceptorType.AROUND_TIMEOUT);
                     impl.setCreationalContext(this.cc);
                     impl.setEJBInvocationContext(context);
                     impl.setCcKey((Object)this.ccKey);

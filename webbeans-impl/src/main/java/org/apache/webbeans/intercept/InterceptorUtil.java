@@ -159,7 +159,7 @@ public final class InterceptorUtil
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> boolean isBusinessMethodInterceptor(AnnotatedType<T> annotatedType)
+    public <T> boolean isBusinessMethodInterceptor(AnnotatedType<T> annotatedType)
     {
         Set<AnnotatedMethod<? super T>> methods = annotatedType.getMethods();
         for(AnnotatedMethod<? super T> methodA : methods)
@@ -198,7 +198,7 @@ public final class InterceptorUtil
     }
 
 
-    public static boolean isBusinessMethodInterceptor(Class<?> clazz)
+    public boolean isBusinessMethodInterceptor(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
         Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
@@ -470,7 +470,7 @@ public final class InterceptorUtil
      * @return list of interceptor
      */
     @SuppressWarnings("unchecked")
-    public static List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptorType type)
+    public List<InterceptorData> getInterceptorMethods(List<InterceptorData> stack, InterceptorType type)
     {
         List<InterceptorData> interceptors = new ArrayList<InterceptorData>();
 
@@ -520,7 +520,7 @@ public final class InterceptorUtil
      * @param method called method
      * @return true if this interceptor data is not related
      */
-    private static boolean shouldRemoveInterceptorCommon(InterceptorData id, Method method)
+    private boolean shouldRemoveInterceptorCommon(InterceptorData id, Method method)
     {
         boolean isMethodAnnotatedWithExcludeInterceptorClass = false;
         if (AnnotationUtil.hasMethodAnnotation(method, ExcludeClassInterceptors.class))
@@ -552,7 +552,7 @@ public final class InterceptorUtil
      * @param stack interceptor stack
      * @param method called method on proxy
      */
-    public static void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method)
+    public void filterCommonInterceptorStackList(List<InterceptorData> stack, Method method)
     {
         Iterator<InterceptorData> it = stack.iterator();
         while (it.hasNext())
@@ -566,7 +566,7 @@ public final class InterceptorUtil
         }
     }
 
-    public static Object callAroundInvokes(WebBeansContext webBeansContext, InjectionTargetBean<?> bean,Object instance, CreationalContextImpl<?> creationalContext,
+    public Object callAroundInvokes(WebBeansContext webBeansContext, InjectionTargetBean<?> bean,Object instance, CreationalContextImpl<?> creationalContext,
             Method proceed, Object[] arguments, List<InterceptorData> stack, InvocationContext ejbInvocationContext, Object altKey) throws Exception
     {
         InvocationContextImpl impl = new InvocationContextImpl(webBeansContext, bean, instance,
@@ -597,7 +597,7 @@ public final class InterceptorUtil
      * @return true if candidate class is a super class of given interceptor
      *         class
      */
-    public static boolean checkInInterceptorHierarchy(Class<?> interceptorClass, Class<?> candidateClass)
+    public boolean checkInInterceptorHierarchy(Class<?> interceptorClass, Class<?> candidateClass)
     {
         Class<?> superClassInterceptor = interceptorClass.getSuperclass();
         if (superClassInterceptor != null && !superClassInterceptor.equals(Object.class))
@@ -623,7 +623,7 @@ public final class InterceptorUtil
      * @param beanClass bean class
      * @param stack bean interceptor stack
      */
-    public static void filterOverridenLifecycleInterceptor(Class<?> beanClass, List<InterceptorData> stack)
+    public void filterOverridenLifecycleInterceptor(Class<?> beanClass, List<InterceptorData> stack)
     {
         List<InterceptorData> overridenInterceptors = new ArrayList<InterceptorData>();
         Iterator<InterceptorData> it = stack.iterator();
@@ -656,7 +656,7 @@ public final class InterceptorUtil
      * @param beanClass bean class
      * @param stack bean interceptor stack
      */
-    public static void filterOverridenAroundInvokeInterceptor(Class<?> beanClass, List<InterceptorData> stack)
+    public void filterOverridenAroundInvokeInterceptor(Class<?> beanClass, List<InterceptorData> stack)
     {
 
         List<InterceptorData> overridenInterceptors = null;
@@ -699,7 +699,7 @@ public final class InterceptorUtil
      * @param stack
      * @return the overriden InterceptorData that represents the parent
      */
-    private static InterceptorData getOverridenInterceptor(Class<?> clazz, InterceptorData interceptorData, List<InterceptorData> stack)
+    private InterceptorData getOverridenInterceptor(Class<?> clazz, InterceptorData interceptorData, List<InterceptorData> stack)
     {
         Method interceptor = interceptorData.getInterceptorMethod();
         Class<?> interceptorClass = interceptor.getDeclaringClass();
@@ -718,7 +718,16 @@ public final class InterceptorUtil
 
                 // get the interceptor method of the parent
                 Method superInterceptorMethod = superInterceptorData.getInterceptorMethod();
-                Method childInterceptorMethod = ClassUtil.getDeclaredMethod(interceptorClass, superInterceptorMethod.getName(), superInterceptorMethod.getParameterTypes());
+                Method childInterceptorMethod = null;
+                try
+                {
+                    childInterceptorMethod = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(interceptorClass,
+                            superInterceptorMethod.getName(), superInterceptorMethod.getParameterTypes());
+                }
+                catch (NoSuchMethodException e)
+                {
+                    childInterceptorMethod = null;
+                }
 
                 if (null != childInterceptorMethod && ClassUtil.isOverriden(childInterceptorMethod, superInterceptorMethod))
                 {
@@ -744,7 +753,7 @@ public final class InterceptorUtil
      * @param interceptorData
      * @return
      */
-    private static InterceptorData removeInheritedButOverridenInterceptor(Class<?> clazz, InterceptorData interceptorData)
+    private InterceptorData removeInheritedButOverridenInterceptor(Class<?> clazz, InterceptorData interceptorData)
     {
         Method interceptor = interceptorData.getInterceptorMethod();
         Class<?> declaringClass = interceptor.getDeclaringClass();
@@ -757,16 +766,12 @@ public final class InterceptorUtil
 
         if (!declaringClass.equals(clazz) && checkInInterceptorHierarchy(clazz, declaringClass))
         {
-            Method found = ClassUtil.getDeclaredMethod(clazz, interceptor.getName(), interceptor.getParameterTypes());
-            if (found != null)
+            Method found = null;
+            try
             {
-                if (logger.wblWillLogDebug())
-                {
-                    logger.debug("KEEPING child " + clazz);
-                }
-                return interceptorData;
+                found = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(clazz, interceptor.getName(), interceptor.getParameterTypes());
             }
-            else
+            catch (NoSuchMethodException e)
             {
                 Class<?> superClass = clazz.getSuperclass();
                 if (superClass != null && !superClass.equals(Object.class))
@@ -774,6 +779,8 @@ public final class InterceptorUtil
                     return removeInheritedButOverridenInterceptor(superClass, interceptorData);
                 }
             }
+
+            return interceptorData;
         }
 
         return null;
@@ -786,7 +793,7 @@ public final class InterceptorUtil
      * @param candidateClass interceptor candidate class
      * @return true if given candidate is listed in interceptors list
      */
-    public static boolean checkGivenClassIsInInterceptorList(Class<?> mainClass, Class<?> candidateClass)
+    public boolean checkGivenClassIsInInterceptorList(Class<?> mainClass, Class<?> candidateClass)
     {
         if (AnnotationUtil.hasClassAnnotation(mainClass, Interceptors.class))
         {

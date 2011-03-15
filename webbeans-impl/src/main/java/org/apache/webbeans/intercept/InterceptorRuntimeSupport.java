@@ -29,7 +29,7 @@ import org.apache.webbeans.component.OwbBean;
  * evaluating and performing interceptor handling for those
  * contextual instances at runtime</p>
  * 
- * <p>For each {@link OwbBean<T>} which is either decorated with a
+ * <p>For each {@link OwbBean} which is either decorated with a
  * {@link javax.enterprise.inject.spi.Decorator} or intercepted
  * by a {@link javax.enterprise.inject.spi.Interceptor} we 
  * dynamically create a subclass and use bytecode creation to 
@@ -51,8 +51,9 @@ public class InterceptorRuntimeSupport
      * @param <T>
      * @param bean
      * @return the interceptor subclass or <code>null</code> if there is no need to.
+     * TODO this is part of the unfinished subclassing work, see OWB-344
      */
-    public static final <T> Class<? extends T> getInterceptorSubClass(OwbBean<T> bean)
+    public final <T> Class<? extends T> getInterceptorSubClass(OwbBean<T> bean)
     {
         if (!(bean instanceof AbstractInjectionTargetBean<?>))
         {
@@ -63,9 +64,11 @@ public class InterceptorRuntimeSupport
         AbstractInjectionTargetBean<T> interceptableBean = (AbstractInjectionTargetBean<T>) bean;
         
         List<InterceptorData> interceptorStack =  interceptableBean.getInterceptorStack();
-        
+
+        InterceptorUtil interceptorUtil = bean.getWebBeansContext().getInterceptorUtil();
+
         // we only subclass
-        List<InterceptorData> aroundInvokes = InterceptorUtil.getInterceptorMethods(interceptorStack, InterceptorType.AROUND_INVOKE);
+        List<InterceptorData> aroundInvokes = interceptorUtil.getInterceptorMethods(interceptorStack, InterceptorType.AROUND_INVOKE);
         
         if (aroundInvokes == null || aroundInvokes.size() == 0)
         {

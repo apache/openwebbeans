@@ -41,6 +41,7 @@ import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.inject.impl.InjectionPointFactory;
 import org.apache.webbeans.intercept.InterceptorUtil;
 import org.apache.webbeans.intercept.InterceptorsManager;
+import org.apache.webbeans.intercept.ejb.EJBInterceptorConfig;
 import org.apache.webbeans.jms.JMSManager;
 import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
@@ -71,6 +72,7 @@ public class WebBeansContext
     private ConversationManager conversationManager = new ConversationManager(this);
     private CreationalContextFactory creationalContextFactory = new CreationalContextFactory(this);
     private DecoratorsManager decoratorsManager = new DecoratorsManager(this);
+    private EJBInterceptorConfig ejbInterceptorConfig = new EJBInterceptorConfig(this);
     private ExtensionLoader extensionLoader = new ExtensionLoader(this);
     private InterceptorsManager interceptorsManager = new InterceptorsManager(this);
     private JMSManager jmsManager = new JMSManager();
@@ -243,6 +245,11 @@ public class WebBeansContext
     public DecoratorsManager getDecoratorsManager()
     {
         return decoratorsManager;
+    }
+
+    public EJBInterceptorConfig getEJBInterceptorConfig()
+    {
+        return ejbInterceptorConfig;
     }
 
     public StereoTypeManager getStereoTypeManager()

@@ -154,6 +154,8 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
 
     protected WebBeansContext webBeansContext;
 
+    protected InterceptorUtil interceptorUtil;
+
     /**
      * Creates a new handler.
      * @param bean proxied bean
@@ -162,6 +164,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     {
         this.bean = bean;
         this.webBeansContext = bean.getWebBeansContext();
+        this.interceptorUtil = webBeansContext.getInterceptorUtil();
     }
 
     /**
@@ -252,8 +255,8 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             }
         
                             // Filter both EJB and WebBeans interceptors
-                            InterceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
-                            InterceptorUtil.filterOverridenAroundInvokeInterceptor(bean.getBeanClass(), filteredInterceptorStack);
+                            interceptorUtil.filterCommonInterceptorStackList(filteredInterceptorStack, method);
+                            interceptorUtil.filterOverridenAroundInvokeInterceptor(bean.getBeanClass(), filteredInterceptorStack);
                             this.interceptedMethodMap.put(method, filteredInterceptorStack);
                             interceptorMethods = filteredInterceptorStack;
                         }

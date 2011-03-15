@@ -67,7 +67,6 @@ import org.apache.webbeans.test.sterotype.StereoWithSessionScope2;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.WebBeansXMLConfigurator;
 
-
 /**
  * Superclass of all the unit test classes. It defines some methods for
  * subclasses and also do some initializtions for running the tests succesfully.
@@ -87,7 +86,7 @@ public abstract class TestContext implements ITestContext
 
     /**
      * All unit test classes. It is defined for starting the tests from the
-     * {@link ServletContextListener} methods
+     * ServletContextListener methods
      */
     private static Set<ITestContext> testContexts = new HashSet<ITestContext>();
 
@@ -100,6 +99,8 @@ public abstract class TestContext implements ITestContext
     /** Use for XML tests */
     protected WebBeansXMLConfigurator xmlConfigurator = null;
 
+    private WebBeansContext webBeansContext;
+
     /**
      * Creates new test class.
      * 
@@ -111,7 +112,8 @@ public abstract class TestContext implements ITestContext
         TestContext.testContexts.add(this);
         this.manager = new MockManager();
         this.xmlConfigurator = new WebBeansXMLConfigurator();
-        WebBeansContext.getInstance().getPluginLoader().startUp();
+        this.webBeansContext = WebBeansContext.getInstance();
+        webBeansContext.getPluginLoader().startUp();
     }
     
 
@@ -209,7 +211,7 @@ public abstract class TestContext implements ITestContext
 
     /**
      * This will be called whenever the test is failed. NOT : This method is
-     * used for running the tests from the {@link ServletContextListener}. It is
+     * used for running the tests from the ServletContextListener. It is
      * not used for normal unit tests.
      * 
      * @see TestListener
@@ -223,7 +225,7 @@ public abstract class TestContext implements ITestContext
 
     /**
      * This will be called whenever the test is passed. NOT : This method is
-     * used for running the tests from the {@link ServletContextListener}. It is
+     * used for running the tests from the ServletContextListener. It is
      * not used for normal unit tests.
      * 
      * @see TestListener
@@ -237,7 +239,7 @@ public abstract class TestContext implements ITestContext
 
     /**
      * Initialize all tests. NOT : This method is used for initializing the all
-     * tests classes from the {@link ServletContextListener}. It is not used for
+     * tests classes from the ServletContextListener. It is not used for
      * normal unit tests.
      * 
      * @see TestListener
@@ -255,7 +257,7 @@ public abstract class TestContext implements ITestContext
 
     /**
      * Start all tests. NOT : This method is used for starting the all tests
-     * classes from the {@link ServletContextListener}. It is not used for
+     * classes from the ServletContextListener. It is not used for
      * normal unit tests.
      * 
      * @see TestListener
@@ -273,7 +275,7 @@ public abstract class TestContext implements ITestContext
 
     /**
      * Ending all tests. NOT : This method is used for ending the all tests
-     * classes from the {@link ServletContextListener}. It is not used for
+     * classes from the ServletContextListener. It is not used for
      * normal unit tests.
      * 
      * @see TestListener
@@ -441,6 +443,11 @@ public abstract class TestContext implements ITestContext
         return manager;
     }
 
+    protected WebBeansContext getWebBeansContext()
+    {
+        return webBeansContext;
+    }
+
     /**
      * Return new {@link MockHttpSession}
      * 
@@ -448,6 +455,7 @@ public abstract class TestContext implements ITestContext
      */
     protected Object getSession()
     {
+        //X TODO huh? WTF...
         return new Object();
     }
 
@@ -499,7 +507,7 @@ public abstract class TestContext implements ITestContext
 
     /**
      * End tests for sub-class. NOTE : This method is used for ending the all
-     * test methods in sub-class from the {@link ServletContextListener}. It is
+     * test methods in sub-class from the ServletContextListener. It is
      * not used for normal unit tests.
      * 
      * @see TestListener
@@ -512,7 +520,7 @@ public abstract class TestContext implements ITestContext
 
     /**
      * Start tests for sub-class. NOTE : This method is used for starting the all
-     * test methods in sub-class from the {@link ServletContextListener}. It is
+     * test methods in sub-class from the ServletContextListener. It is
      * not used for normal unit tests.
      * 
      * @see TestListener
