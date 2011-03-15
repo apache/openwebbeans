@@ -428,21 +428,21 @@ public final class WebBeansUtil
     public <T> Constructor<T> defineConstructor(Class<T> clazz) throws WebBeansConfigurationException
     {
         Asserts.nullCheckForClass(clazz);
-        Constructor<T>[] constructors = ClassUtil.getConstructors(clazz);
+        Constructor<?>[] constructors = webBeansContext.getSecurityService().doPrivilegedGetDeclaredConstructors(clazz);
 
         return defineConstructor(constructors, clazz);
 
     }
 
 
-    public <T> Constructor<T> defineConstructor(Constructor<T>[] constructors, Class<T> clazz)
+    public <T> Constructor<T> defineConstructor(Constructor<?>[] constructors, Class<T> clazz)
     {
         Constructor<T> result = null;
 
         boolean inAnnotation = false;
 
         /* Check for @Initializer */
-        for (Constructor<T> constructor : constructors)
+        for (Constructor<?> constructor : constructors)
         {
             if (constructor.getAnnotation(Inject.class) != null)
             {
@@ -452,7 +452,7 @@ public final class WebBeansUtil
                                                              + "Initializer annotation in class " + clazz.getName());
                 }
                 inAnnotation = true;
-                result = constructor;
+                result = (Constructor<T>) constructor;
             }
         }
 
@@ -506,7 +506,7 @@ public final class WebBeansUtil
             return true;
         }
 
-        Constructor<?>[] constructors = ClassUtil.getConstructors(clazz);
+        Constructor<?>[] constructors = webBeansContext.getSecurityService().doPrivilegedGetDeclaredConstructors(clazz);
 
         for (Constructor<?> constructor : constructors)
         {

@@ -49,15 +49,6 @@ public class SecurityUtil
     
     private static final PrivilegedActionGetSystemProperties SYSTEM_PROPERTY_ACTION = new PrivilegedActionGetSystemProperties();
 
-    @SuppressWarnings("unchecked")
-    public static <T> Constructor<T>[] doPrivilegedGetDeclaredConstructors(Class<T> clazz)
-    {
-        Object obj = AccessController.doPrivileged(
-                new PrivilegedActionForClass(clazz, null, METHOD_CLASS_GETDECLAREDCONSTRUCTORS));
-        return (Constructor<T>[])obj;
-    }
-
-
     public static <T> Method[] doPrivilegedGetDeclaredMethods(Class<T> clazz)
     {
         Object obj = AccessController.doPrivileged(

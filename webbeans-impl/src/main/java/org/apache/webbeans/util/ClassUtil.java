@@ -588,20 +588,6 @@ public final class ClassUtil
     }
 
     /**
-     * Returns class constructor array.
-     * 
-     * @param <T> class type arfument
-     * @param clazz class that is searched for constructor.
-     * @return class constructor array
-     */
-    public static <T> Constructor<T>[] getConstructors(Class<T> clazz)
-    {
-        Asserts.nullCheckForClass(clazz);
-        
-        return (Constructor<T>[])SecurityUtil.doPrivilegedGetDeclaredConstructors(clazz);
-    }
-
-    /**
      * See specification 5.2.3.
      * @param beanType bean type
      * @param requiredType required type
