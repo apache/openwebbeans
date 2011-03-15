@@ -341,7 +341,7 @@ public final class WebBeansUtil
 
         int modifier = clazz.getModifiers();
 
-        if (!ClassUtil.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
+        if (!Modifier.isStatic(modifier) && ClassUtil.isInnerClazz(clazz))
         {
             throw new WebBeansConfigurationException("Bean implementation class : "
                                                      + clazz.getName() + " can not be non-static inner class");
@@ -918,7 +918,7 @@ public final class WebBeansUtil
                             + " can not throw any checked exception");
                 }
 
-                if (ClassUtil.isStatic(method.getModifiers()))
+                if (Modifier.isStatic(method.getModifiers()))
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotated method : " + method.getName() + " in class : "
@@ -1002,7 +1002,7 @@ public final class WebBeansUtil
                             + " can not throw any checked exception");
                 }
 
-                if (ClassUtil.isStatic(method.getModifiers()))
+                if (Modifier.isStatic(method.getModifiers()))
                 {
                     throw new WebBeansConfigurationException("@" + commonAnnotation.getSimpleName()
                             + " annotated method : " + method.getName() + " in class : " + clazz.getName()
@@ -1075,7 +1075,7 @@ public final class WebBeansUtil
                             + method.getName() + " in class : " + clazz.getName() + " must throw Exception");
                 }
 
-                if (ClassUtil.isStatic(method.getModifiers()) || ClassUtil.isFinal(method.getModifiers()))
+                if (Modifier.isStatic(method.getModifiers()) || ClassUtil.isFinal(method.getModifiers()))
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
                             + method.getName() + " in class : " + clazz.getName() + " can not be static or final");
@@ -1144,7 +1144,7 @@ public final class WebBeansUtil
                             + " must throw Exception");
                 }
 
-                if (ClassUtil.isStatic(method.getJavaMember().getModifiers()) ||
+                if (Modifier.isStatic(method.getJavaMember().getModifiers()) ||
                     ClassUtil.isFinal(method.getJavaMember().getModifiers()))
                 {
                     throw new WebBeansConfigurationException("@" + annot.getSimpleName() + " annotated method : "
@@ -1959,7 +1959,7 @@ public final class WebBeansUtil
                             violationMessage.addLine(beanClass.getName(), " has no explicit no-arg constructor!",
                                     "A public or protected constructor without args is required!");
                         }
-                        else if (ClassUtil.isPrivate(cons.getModifiers()))
+                        else if (Modifier.isPrivate(cons.getModifiers()))
                         {
                             violationMessage.addLine(beanClass.getName(), " has a >private< no-arg constructor! CDI doesn't allow that.");
                         }
@@ -3329,7 +3329,7 @@ public final class WebBeansUtil
         {
             Method method = methodA.getJavaMember();
             int modifiers = method.getModifiers();
-            if (!ClassUtil.isStatic(modifiers) && !ClassUtil.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
+            if (!Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
             {
                 if (hasClassInterceptors)
                 {

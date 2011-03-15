@@ -22,6 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 import javax.enterprise.inject.spi.AnnotatedConstructor;
@@ -31,7 +32,6 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.util.ClassUtil;
 
 /**
  * Implementation of {@link AnnotatedMember} interface.
@@ -116,7 +116,7 @@ abstract class AbstractAnnotatedMember<X> extends AbstractAnnotated implements A
     @Override
     public boolean isStatic()
     {
-        return ClassUtil.isStatic(this.javaMember.getModifiers());
+        return Modifier.isStatic(this.javaMember.getModifiers());
     }
 
     public String toString()

@@ -66,8 +66,6 @@ public final class ClassUtil
 
     public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP = new HashMap<Class<?>, Class<?>>();
 
-    public static final Object[] OBJECT_EMPTY = new Object[0];
-    
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(ClassUtil.class);
 
     static
@@ -91,50 +89,6 @@ public final class ClassUtil
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Check the parametrized type actual arguments equals with the class type
-     * variables at the injection point.
-     * 
-     * @param variables type variable
-     * @param types type
-     * @return
-     */
-    public static boolean checkEqual(TypeVariable<?>[] variables, Type[] types)
-    {
-        Asserts.assertNotNull(variables, "variables parameter can not be null");
-        Asserts.assertNotNull(types, "types parameter can not be null");
-
-        for (TypeVariable<?> variable : variables)
-        {
-            for (Type type : types)
-            {
-                if (type instanceof TypeVariable)
-                {
-                    TypeVariable<?> t = ((TypeVariable<?>) type);
-                    if (t.getGenericDeclaration().equals(variable.getGenericDeclaration()))
-                    {
-                        if (t.getName().equals(variable.getName()))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
-
-    }
-    
     public static Object newInstance(Class<?> clazz)
     {
         try
@@ -276,45 +230,6 @@ public final class ClassUtil
         Asserts.nullCheckForClass(clazz);
 
         return clazz.isMemberClass();
-    }
-
-    /**
-     * Check the modifier contains static keyword.
-     * 
-     * @param modifier modifier
-     * @return true or false
-     */
-    public static boolean isStatic(Integer modifier)
-    {
-        Asserts.nullCheckForModifier(modifier);
-
-        return Modifier.isStatic(modifier);
-    }
-
-    /**
-     * Check the modifier contains static keyword.
-     * 
-     * @param modifier modifier
-     * @return true or false
-     */
-    public static boolean isPublic(Integer modifier)
-    {
-        Asserts.nullCheckForModifier(modifier);
-
-        return Modifier.isPublic(modifier);
-    }
-
-    /**
-     * Check the modifier contains static keyword.
-     * 
-     * @param modifier modifier
-     * @return true or false
-     */
-    public static boolean isPrivate(Integer modifier)
-    {
-        Asserts.nullCheckForModifier(modifier);
-
-        return Modifier.isPrivate(modifier);
     }
 
     public static Class<?>  getPrimitiveWrapper(Class<?> clazz)

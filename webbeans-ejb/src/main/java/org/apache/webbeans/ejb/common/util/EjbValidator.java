@@ -20,6 +20,7 @@ package org.apache.webbeans.ejb.common.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -156,7 +157,7 @@ public final class EjbValidator
                 
                 if(!found)
                 {
-                    if(!ClassUtil.isStatic(method.getModifiers()))
+                    if(!Modifier.isStatic(method.getModifiers()))
                     {
                         throw new WebBeansConfigurationException("Observer method : " + method.getName() + " in session bean class : " + 
                                 bean.getBeanClass() + " must be business method");                                            

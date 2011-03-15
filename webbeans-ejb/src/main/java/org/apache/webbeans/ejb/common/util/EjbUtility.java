@@ -20,6 +20,7 @@ package org.apache.webbeans.ejb.common.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,6 @@ import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
 import org.apache.webbeans.portable.events.generics.GProcessSessionBean;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 @SuppressWarnings("unchecked")
@@ -189,7 +189,7 @@ public final class EjbUtility
         for(ProducerMethodBean<?> producerMethodBean : producerMethodBeans)
         {
             Method producerMethod = producerMethodBean.getCreatorMethod();
-            if(!ClassUtil.isStatic(producerMethod.getModifiers()))
+            if(!Modifier.isStatic(producerMethod.getModifiers()))
             {
                 if(!isBusinessMethod(producerMethod, bean))
                 {

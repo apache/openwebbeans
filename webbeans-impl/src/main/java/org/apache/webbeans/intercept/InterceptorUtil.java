@@ -183,7 +183,7 @@ public final class InterceptorUtil
                             {
                                 if (!ClassUtil.isMethodHasCheckedException(method.getJavaMember()))
                                 {
-                                    if (!ClassUtil.isStatic(method.getJavaMember().getModifiers()) && !ClassUtil.isFinal(method.getJavaMember().getModifiers()))
+                                    if (!Modifier.isStatic(method.getJavaMember().getModifiers()) && !ClassUtil.isFinal(method.getJavaMember().getModifiers()))
                                     {
                                         return true;
                                     }
@@ -215,7 +215,7 @@ public final class InterceptorUtil
                         {
                             if (ClassUtil.isMethodHasException(method))
                             {
-                                if (!ClassUtil.isStatic(method.getModifiers()) && !ClassUtil.isFinal(method.getModifiers()))
+                                if (!Modifier.isStatic(method.getModifiers()) && !ClassUtil.isFinal(method.getModifiers()))
                                 {
                                     return true;
                                 }
@@ -250,7 +250,7 @@ public final class InterceptorUtil
                         {
                             if (!ClassUtil.isMethodHasCheckedException(method))
                             {
-                                if (!ClassUtil.isStatic(method.getModifiers()))
+                                if (!Modifier.isStatic(method.getModifiers()))
                                 {
                                     return true;
                                 }
@@ -293,7 +293,7 @@ public final class InterceptorUtil
                             {
                                 if (!ClassUtil.isMethodHasCheckedException(method.getJavaMember()))
                                 {
-                                    if (!ClassUtil.isStatic(method.getJavaMember().getModifiers()))
+                                    if (!Modifier.isStatic(method.getJavaMember().getModifiers()))
                                     {
                                         return true;
                                     }
@@ -438,7 +438,7 @@ public final class InterceptorUtil
         for (Method method : methods)
         {
             int modifiers = method.getModifiers();
-            if (!ClassUtil.isStatic(modifiers) && !ClassUtil.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
+            if (!Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
             {
                 if (hasClassInterceptors)
                 {

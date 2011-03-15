@@ -415,7 +415,7 @@ public final class WebBeansAnnotatedTypeUtil
                 {                    
                     //Check for valid resource annotation
                     //WebBeansUtil.checkForValidResources(annotatedField.getDeclaringType().getJavaClass(), field.getType(), field.getName(), anns);
-                    if(!ClassUtil.isStatic(field.getModifiers()))
+                    if(!Modifier.isStatic(field.getModifiers()))
                     {
                         ResourceReference<X,Annotation> resourceRef = new ResourceReference<X, Annotation>(bean.getBeanClass(), field.getName(),
                                                                                                            (Class<X>)field.getType(), resourceAnnotation);

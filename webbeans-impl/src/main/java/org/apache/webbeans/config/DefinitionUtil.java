@@ -759,7 +759,7 @@ public final class DefinitionUtil
 
             if (AnnotationUtil.hasMethodAnnotation(declaredMethod, Specializes.class))
             {
-                if (ClassUtil.isStatic(declaredMethod.getModifiers()))
+                if (Modifier.isStatic(declaredMethod.getModifiers()))
                 {
                     throw new WebBeansConfigurationException("Specializing producer method : " + declaredMethod.getName() + " in class : " + clazz.getName()
                                                              + " can not be static");
@@ -824,7 +824,7 @@ public final class DefinitionUtil
         {
             //Check for valid resource annotation
             //WebBeansUtil.checkForValidResources(field.getDeclaringClass(), field.getType(), field.getName(), field.getDeclaredAnnotations());
-            if(!ClassUtil.isStatic(field.getModifiers()))
+            if(!Modifier.isStatic(field.getModifiers()))
             {
                 ResourceReference<T,Annotation> resourceRef = new ResourceReference<T, Annotation>(field.getDeclaringClass(), field.getName(),returnType, resourceAnnotation);
 
@@ -986,7 +986,7 @@ public final class DefinitionUtil
             for (Field field : fields)
             {
                 //Check for public fields
-                if(ClassUtil.isPublic(field.getModifiers()) && !ClassUtil.isStatic(field.getModifiers()))
+                if(ClassUtil.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers()))
                 {
                     if(webBeansContext.getBeanManagerImpl().isNormalScope(component.getScope()))
                     {
@@ -1077,7 +1077,7 @@ public final class DefinitionUtil
             if (isInitializer)
             {
                 //Do not support static
-                if(ClassUtil.isStatic(method.getModifiers()))
+                if(Modifier.isStatic(method.getModifiers()))
                 {
                     continue;
                 }
@@ -1329,7 +1329,7 @@ public final class DefinitionUtil
             
             if (AnnotationUtil.hasAnnotation(anns, Specializes.class))
             {
-                if (ClassUtil.isStatic(annotatedMethod.getJavaMember().getModifiers()))
+                if (Modifier.isStatic(annotatedMethod.getJavaMember().getModifiers()))
                 {
                     throw new WebBeansConfigurationException("Specializing producer method : " + annotatedMethod.getJavaMember().getName() + " in class : " + clazz.getName()
                                                              + " can not be static");

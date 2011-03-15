@@ -41,6 +41,8 @@ import org.apache.webbeans.util.ClassUtil;
  */
 public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> implements EnterpriseBeanMarker
 {
+    public static final Object[] OBJECT_EMPTY = new Object[0];
+
     /**Session bean type*/
     protected final SessionBeanType ejbType;
     
@@ -152,14 +154,14 @@ public abstract class BaseEjbBean<T> extends AbstractInjectionTargetBean<T> impl
         Method removeMeth = null;
         for (Method m : getRemoveMethods())
         {   
-            // FIXME: This needs to call an API from the EJB
+            // TODO FIXME: This needs to call an API from the EJB
             // container to remove the EJB instance directly,
             // not via a remove method.  For now, just call 1 
             // remove method directly on the EJB
             try 
             { 
                 removeMeth = proxyInstance.getClass().getMethod(m.getName(), m.getParameterTypes());
-                ClassUtil.callInstanceMethod(removeMeth, proxyInstance, ClassUtil.OBJECT_EMPTY);
+                ClassUtil.callInstanceMethod(removeMeth, proxyInstance, OBJECT_EMPTY);
             }
             catch (NoSuchMethodException e) 
             {

@@ -20,6 +20,7 @@ package org.apache.webbeans.decorator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -114,7 +115,7 @@ public final class DecoratorUtil
             for (Method method : methods)
             {
                 int modifiers = method.getModifiers();
-                if (!ClassUtil.isStatic(modifiers) && !ClassUtil.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
+                if (!Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
                 {
                     // Check decorator implements this
                     Iterator<Decorator<?>> itDecorator = decoratorList.iterator();
