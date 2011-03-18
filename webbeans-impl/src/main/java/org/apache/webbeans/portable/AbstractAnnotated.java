@@ -23,9 +23,12 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.Annotated;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
@@ -144,6 +147,42 @@ abstract class AbstractAnnotated implements Annotated
             typeClosures = new HashSet<Type>();
             this.typeClosures.add(Object.class);
             ClassUtil.setTypeHierarchy(this.typeClosures, this.baseType);
+
+            Annotation[] anns = annotations.toArray(new Annotation[annotations.size()]);
+            if(AnnotationUtil.hasAnnotation(anns, Typed.class))
+            {
+                Typed beanTypes = (Typed) AnnotationUtil.getAnnotation(anns, Typed.class);
+                Class<?>[] types = beanTypes.value();
+
+                //New api types
+                Set<Type> newTypes = new HashSet<Type>();
+                for(Class<?> type : types)
+                {
+                    Type foundType = null;
+
+                    for(Type apiType : typeClosures)
+                    {
+                        if(ClassUtil.getClazz(apiType) == type)
+                        {
+                            foundType = apiType;
+                            break;
+                        }
+                    }
+
+                    if(foundType == null)
+                    {
+                        throw new WebBeansConfigurationException("@Type values must be in bean api types of class: " + baseType);
+                    }
+
+                    newTypes.add(foundType);
+                }
+
+                typeClosures.clear();
+                typeClosures.addAll(newTypes);
+
+                typeClosures.add(Object.class);
+            }
+
         }
     }
 
