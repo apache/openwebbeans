@@ -797,7 +797,6 @@ public class BeansDeployer
             {
                 annotationTypeSet = true;
                 managedBean.setAnnotatedType(annotatedType);
-                annotatedType = processAnnotatedEvent.getAnnotatedType();
                 managedBeanCreator.setAnnotatedType(annotatedType);
                 managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
             }            
