@@ -45,7 +45,6 @@ import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
-import org.apache.webbeans.util.SecurityUtil;
 
 public class StandaloneResourceInjectionService implements ResourceInjectionService
 {
@@ -121,7 +120,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
 
         while (currentClass != null && !Object.class.getName().equals(currentClass.getName()))
         {
-            Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(currentClass);
+            Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(currentClass);
 
             for(Field field : fields)
             {
@@ -137,7 +136,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
                             boolean acess = field.isAccessible();
                             try
                             {
-                                SecurityUtil.doPrivilegedSetAccessible(field, true);
+                                webBeansContext.getSecurityService().doPrivilegedSetAccessible(field, true);
                                 field.set(managedBeanInstance, getResourceReference(resourceRef));
 
                                 containsEeResource = Boolean.TRUE;
@@ -150,7 +149,7 @@ public class StandaloneResourceInjectionService implements ResourceInjectionServ
                             }
                             finally
                             {
-                                SecurityUtil.doPrivilegedSetAccessible(field, acess);
+                                webBeansContext.getSecurityService().doPrivilegedSetAccessible(field, acess);
                             }
                         }
                     }

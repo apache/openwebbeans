@@ -35,7 +35,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javassist.util.proxy.MethodHandler;
@@ -93,7 +92,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
                 {
                     if (!decMethod.isAccessible())
                     {
-                        SecurityUtil.doPrivilegedSetAccessible(decMethod, true);
+                        bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(decMethod, true);
                     }
 
                     Object returnValue = decMethod.invoke(decorator, arguments);
@@ -134,7 +133,7 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
 
         if (!method.isAccessible())
         {
-            SecurityUtil.doPrivilegedSetAccessible(method, true);
+            bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
         }
 
         Object result = null;
@@ -172,8 +171,8 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
     /**
      * Helper method to locate method in any of the interfaces of the Decorator.
      * 
-     * @param Class whose interfaces we want to check
-     * @param Method to check for in Interfaces
+     * @param class1 whose interfaces we want to check
+     * @param m to check for in Interfaces
      * @return True if the method exists in any of the interfaces of the
      *         Decorator
      */

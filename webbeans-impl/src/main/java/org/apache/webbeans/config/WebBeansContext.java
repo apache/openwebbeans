@@ -86,6 +86,7 @@ public class WebBeansContext
     private ResolutionUtil resolutionUtil = new ResolutionUtil(this);
     private InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
     private InterceptorUtil interceptorUtil = new InterceptorUtil(this);
+    private DefinitionUtil definitionUtil = new DefinitionUtil(this);
     private ManagedBeanConfigurator managedBeanConfigurator = new ManagedBeanConfigurator(this);
     private SecurityService securityService = getService(SecurityService.class);
 
@@ -185,6 +186,11 @@ public class WebBeansContext
     public InterceptorUtil getInterceptorUtil()
     {
         return interceptorUtil;
+    }
+
+    public DefinitionUtil getDefinitionUtil()
+    {
+        return definitionUtil;
     }
 
     public InjectionPointFactory getInjectionPointFactory()

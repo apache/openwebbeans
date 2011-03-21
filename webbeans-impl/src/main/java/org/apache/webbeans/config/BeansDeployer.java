@@ -369,7 +369,7 @@ public class BeansDeployer
                     //If intercepted marker
                     if(bean instanceof InterceptedMarker)
                     {
-                        DefinitionUtil.defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);   
+                        webBeansContext.getDefinitionUtil().defineBeanInterceptorStack((AbstractInjectionTargetBean<Object>)bean);
                     }                                                            
                 }                
                 

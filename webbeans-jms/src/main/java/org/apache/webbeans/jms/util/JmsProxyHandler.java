@@ -40,7 +40,6 @@ import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.jms.JMSModel.JMSType;
 import org.apache.webbeans.jms.component.JmsBean;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.SecurityUtil;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -257,7 +256,7 @@ public class JmsProxyHandler implements MethodHandler
                 
                 if(!method.isAccessible())
                 {
-                    SecurityUtil.doPrivilegedSetAccessible(method, true);
+                    jmsComponent.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
                 }
                 
                 method.invoke(this.jmsObject, new Object[]{});                

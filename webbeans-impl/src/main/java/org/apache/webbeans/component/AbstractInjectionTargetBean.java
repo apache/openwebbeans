@@ -35,7 +35,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
@@ -625,7 +624,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                     }               
                     else
                     {
-                        if(!AnnotationManager.checkInjectionPointForInterceptorPassivation(interceptorClass))
+                        if(!getWebBeansContext().getAnnotationManager().checkInjectionPointForInterceptorPassivation(interceptorClass))
                         {
                             throw new WebBeansConfigurationException(MessageFormat.format(
                                     getLogger().getTokenString(OWBLogConst.EXCEPT_0017), toString(), interceptorClass));

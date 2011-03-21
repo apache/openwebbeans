@@ -56,7 +56,6 @@ import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -209,7 +208,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             boolean isPrivateMethod = !this.observerMethod.isAccessible();
             if (isPrivateMethod)
             {
-                SecurityUtil.doPrivilegedSetAccessible(observerMethod, true);
+                bean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(observerMethod, true);
             }
 
             obargs = new ObserverParams[methodArgsMap.size()];

@@ -86,9 +86,11 @@ import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedR
 @SuppressWarnings("unchecked")
 public final class DefinitionUtil
 {
-    private DefinitionUtil()
-    {
+    private final WebBeansContext webBeansContext;
 
+    public DefinitionUtil(WebBeansContext webBeansContext)
+    {
+        this.webBeansContext = webBeansContext;
     }
     
     /**
@@ -1151,7 +1153,7 @@ public final class DefinitionUtil
      * Configure bean instance interceptor stack.
      * @param bean bean instance
      */
-    public static void defineBeanInterceptorStack(AbstractInjectionTargetBean<?> bean)
+    public void defineBeanInterceptorStack(AbstractInjectionTargetBean<?> bean)
     {
         Asserts.assertNotNull(bean, "bean parameter can no be null");
         if (!bean.getInterceptorStack().isEmpty())
@@ -1174,7 +1176,8 @@ public final class DefinitionUtil
             {
                 if(data.isDefinedInInterceptorClass())
                 {
-                    if(!AnnotationManager.checkInjectionPointForInterceptorPassivation(data.getInterceptorClass()))
+                    AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+                    if(!annotationManager.checkInjectionPointForInterceptorPassivation(data.getInterceptorClass()))
                     {
                         throw new WebBeansConfigurationException("Enterprise bean : " + bean.toString() +
                                                                  " interceptors must have serializable injection points");

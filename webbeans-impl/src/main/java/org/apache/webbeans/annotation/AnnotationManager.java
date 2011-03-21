@@ -27,7 +27,6 @@ import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;
-import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.context.NormalScope;
@@ -65,11 +64,13 @@ public final class AnnotationManager
 {
 
     private final BeanManagerImpl beanManagerImpl;
+    private final WebBeansContext webBeansContext;
 
     // No instantiate
 
     public AnnotationManager(WebBeansContext context)
     {
+        this.webBeansContext = context;
         beanManagerImpl = context.getBeanManagerImpl();
     }
 
@@ -359,7 +360,7 @@ public final class AnnotationManager
 
     private void checkQualifierConditions(Annotation ann)
     {
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(ann.annotationType());
+        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(ann.annotationType());
 
         for (Method method : methods)
         {
@@ -792,7 +793,7 @@ public final class AnnotationManager
     public void checkInjectionPointForInjectInjectionPoint(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
+        Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(clazz);
         for(Field field : fields)
         {
             if(field.getAnnotation(Inject.class) != null)
@@ -814,10 +815,10 @@ public final class AnnotationManager
      * @param clazz class info
      * @return true if class is serializable
      */
-    public static boolean checkInjectionPointForInterceptorPassivation(Class<?> clazz)
+    public boolean checkInjectionPointForInterceptorPassivation(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
+        Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(clazz);
         for(Field field : fields)
         {
             if(field.getAnnotation(Inject.class) != null)

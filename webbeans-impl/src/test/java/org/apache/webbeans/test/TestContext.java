@@ -38,7 +38,6 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.decorator.DecoratorUtil;
@@ -307,7 +306,7 @@ public abstract class TestContext implements ITestContext
             manager.addBean(WebBeansUtil.createNewBean(bean));
             DecoratorUtil.checkManagedBeanDecoratorConditions(bean,null);
             WebBeansDecoratorConfig.configureDecarotors(bean);
-            DefinitionUtil.defineBeanInterceptorStack(bean);
+            webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(bean);
 
             getComponents().add((AbstractOwbBean<?>) bean);
             manager.addBean(bean);

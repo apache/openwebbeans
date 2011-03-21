@@ -30,7 +30,6 @@ import org.apache.webbeans.inject.InjectableField;
 import org.apache.webbeans.inject.InjectableMethods;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.SecurityUtil;
 
 import javax.decorator.Delegate;
 import javax.enterprise.context.spi.Context;
@@ -312,7 +311,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     {
         if (!delegateField.isAccessible())
         {
-            SecurityUtil.doPrivilegedSetAccessible(delegateField, true);
+            getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(delegateField, true);
         }
 
         try

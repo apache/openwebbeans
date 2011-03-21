@@ -42,7 +42,6 @@ import org.apache.webbeans.ejb.common.component.BaseEjbBean;
 import org.apache.webbeans.ejb.common.interceptor.OpenWebBeansEjbInterceptor;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.SecurityUtil;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -120,7 +119,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
             }
             
             boolean access = method.isAccessible();
-            SecurityUtil.doPrivilegedSetAccessible(method, true);
+            webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, true);
             try
             {
                 return proceed.invoke(proxyInstance, arguments);
@@ -128,7 +127,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
             }
             finally
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, access);
+                webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, access);
             }            
         }
                 
@@ -192,7 +191,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
             //Call actual method on proxy
             //Actually it is called from OWB Proxy --> EJB Proxy --> Actual Bean Instance
             boolean access = method.isAccessible();
-            SecurityUtil.doPrivilegedSetAccessible(method, true);
+            webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, true);
             try
             {
                 result = method.invoke(webbeansInstance, arguments);
@@ -200,7 +199,7 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
             }
             finally
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, access);
+                webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, access);
             }            
             
         }

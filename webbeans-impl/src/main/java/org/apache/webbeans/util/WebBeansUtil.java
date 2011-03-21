@@ -1241,7 +1241,7 @@ public final class WebBeansUtil
 
         if (!ct.isAccessible())
         {
-            SecurityUtil.doPrivilegedSetAccessible(ct, true);
+            webBeansContext.getSecurityService().doPrivilegedSetAccessible(ct, true);
         }
 
         try
@@ -2931,7 +2931,7 @@ public final class WebBeansUtil
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
         DefinitionUtil.defineDecoratorStack(managedBean);
-        DefinitionUtil.defineBeanInterceptorStack(managedBean);
+        webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(managedBean);
 
         managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
 
@@ -3090,8 +3090,8 @@ public final class WebBeansUtil
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
-        DefinitionUtil.defineDecoratorStack(managedBean);
-        DefinitionUtil.defineBeanInterceptorStack(managedBean);
+        webBeansContext.getDefinitionUtil().defineDecoratorStack(managedBean);
+        webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(managedBean);
 
         managedBeanCreator.defineDisposalMethods(); //Define disposal method after adding producers
 
@@ -3106,8 +3106,8 @@ public final class WebBeansUtil
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
-        DefinitionUtil.defineDecoratorStack(managedBean);
-        DefinitionUtil.defineBeanInterceptorStack(managedBean);
+        webBeansContext.getDefinitionUtil().defineDecoratorStack(managedBean);
+        webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(managedBean);
 
         managedBeanCreator.defineDisposalMethods(); //Define disposal method after adding producers
     }
