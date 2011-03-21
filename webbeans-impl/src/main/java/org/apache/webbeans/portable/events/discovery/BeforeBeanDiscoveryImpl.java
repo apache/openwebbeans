@@ -71,7 +71,7 @@ public class BeforeBeanDiscoveryImpl implements BeforeBeanDiscovery
     @Override
     public void addInterceptorBinding(Class<? extends Annotation> binding, Annotation... bindingDef)
     {
-        webBeansContext.getXMLAnnotationTypeManager().addInterceotorBindingTypeInheritAnnotation(binding, bindingDef);
+        webBeansContext.getBeanManagerImpl().addInterceptorBindingType(binding, bindingDef);
     }
 
     /**

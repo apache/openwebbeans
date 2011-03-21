@@ -54,7 +54,6 @@ import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.webbeans.xml.XMLAnnotationTypeManager;
 
 /**
  * @version $Rev$ $Date$
@@ -83,7 +82,6 @@ public class WebBeansContext
     private PluginLoader pluginLoader = new PluginLoader();
     private SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
     private StereoTypeManager stereoTypeManager = new StereoTypeManager();
-    private XMLAnnotationTypeManager xmlAnnotationTypeManager = new XMLAnnotationTypeManager(this);
     private AnnotationManager annotationManager = new AnnotationManager(this);
     private ResolutionUtil resolutionUtil = new ResolutionUtil(this);
     private InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
@@ -292,11 +290,6 @@ public class WebBeansContext
     public JavassistProxyFactory getJavassistProxyFactory()
     {
         return javassistProxyFactory;
-    }
-
-    public XMLAnnotationTypeManager getXMLAnnotationTypeManager()
-    {
-        return xmlAnnotationTypeManager;
     }
 
     //candidates for fields

@@ -110,7 +110,7 @@ import static org.apache.webbeans.util.InjectionExceptionUtils.throwAmbiguousRes
 @SuppressWarnings("unchecked")
 public class BeanManagerImpl implements BeanManager, Referenceable
 {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * Holds the non-standard contexts with key = scope type
@@ -159,6 +159,9 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**Additional interceptor class*/
     private List<Class<?>> additionalInterceptorClasses = new ArrayList<Class<?>>();
 
+    /**Additional interceptor binding types we got via Extensions */
+    private Map<Class<? extends Annotation>, Set<Annotation>> additionalInterceptorBindingTypes = new HashMap<Class<? extends Annotation>, Set<Annotation>>();
+
     /**
      * This list contains additional qualifiers which got set via the {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
      * event function.
@@ -170,11 +173,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
      */
     private List<ExternalScope> additionalScopes =  new ArrayList<ExternalScope>();
-    
-    private ErrorStack errorStack = new ErrorStack();
-    
+
     private List<AnnotatedType<?>> additionalAnnotatedTypes = new ArrayList<AnnotatedType<?>>();
 
+
+    private ErrorStack errorStack = new ErrorStack();
+    
     /**
      * This map stores all beans along with their unique {@link javax.enterprise.inject.spi.PassivationCapable} id.
      * This is used as a reference for serialization.
@@ -428,6 +432,32 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         Asserts.nullCheckForClass(clazz);
         return this.additionalDecoratorClasses.contains(clazz);
+    }
+
+    public void addInterceptorBindingType(Class<? extends Annotation> bindingType, Annotation... inheritsArray)
+    {
+        Set<Annotation> inherits = additionalInterceptorBindingTypes.get(bindingType);
+        if (inherits == null)
+        {
+            inherits = new HashSet<Annotation>();
+            additionalInterceptorBindingTypes.put(bindingType, inherits);
+        }
+        for(Annotation ann : inheritsArray)
+        {
+            inherits.add(ann);
+        }
+
+    }
+
+    public boolean hasInterceptorBindingType(Class<? extends Annotation> bindingType)
+    {
+        return additionalInterceptorBindingTypes.keySet().contains(bindingType);
+    }
+
+
+    public Set<Annotation> getInterceptorBindingTypeMetaAnnotations(Class<? extends Annotation> interceptorBindingType)
+    {
+        return Collections.unmodifiableSet(additionalInterceptorBindingTypes.get(interceptorBindingType));
     }
 
     /**
@@ -1196,6 +1226,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         this.additionalAnnotatedTypes.clear();
         this.additionalDecoratorClasses.clear();
         this.additionalInterceptorClasses.clear();
+        this.additionalInterceptorBindingTypes.clear();
         this.additionalQualifiers.clear();
         this.additionalScopes.clear();
         this.cacheProxies.clear();

@@ -22,11 +22,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.interceptor.Interceptor;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -145,7 +148,7 @@ public final class WebBeansXMLConfigurator
                 CURRENT_SCAN_FILE_NAME = fileName;
 
                 //Get root element of the XML document
-                Element webBeansRoot = XMLUtil.getSpecStrictRootElement(xmlStream);
+                Element webBeansRoot = getSpecStrictRootElement(xmlStream);
 
                 //Start configuration
                 configureSpecSpecific(webBeansRoot,fileName,scanner);
@@ -155,6 +158,44 @@ public final class WebBeansXMLConfigurator
         {
             throw new WebBeansConfigurationException(e);
         }
+    }
+
+    /**
+     * Gets the root element of the parsed document.
+     *
+     * @param stream parsed document
+     * @return root element of the document
+     * @throws WebBeansException if any runtime exception occurs
+     */
+    private Element getSpecStrictRootElement(InputStream stream) throws WebBeansException
+    {
+        try
+        {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setCoalescing(false);
+            factory.setExpandEntityReferences(true);
+            factory.setIgnoringComments(true);
+            factory.setIgnoringElementContentWhitespace(true);
+            factory.setNamespaceAware(true);
+            factory.setValidating(false);
+            DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+            documentBuilder.setErrorHandler(new WebBeansErrorHandler());
+            documentBuilder.setEntityResolver(new WebBeansResolver());
+
+            Element root = documentBuilder.parse(stream).getDocumentElement();
+            return root;
+        }
+        catch (Exception e)
+        {
+            logger.fatal(e, OWBLogConst.FATAL_0002);
+            throw new WebBeansException(logger.getTokenString(OWBLogConst.EXCEPT_0013), e);
+        }
+    }
+
+    private String getName(Element element)
+    {
+        Asserts.assertNotNull(element, "element argument can not be null");
+        return element.getLocalName();
     }
 
     /**
@@ -177,16 +218,16 @@ public final class WebBeansXMLConfigurator
             child = (Element) node;
 
             /* <Interceptors> element decleration */
-            if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT))
+            if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_INTERCEPTORS_ELEMENT))
             {
                 configureInterceptorsElement(child,fileName,scanner);
             }
             /* <Decorators> element decleration */
-            else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_DECORATORS_ELEMENT))
+            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_DECORATORS_ELEMENT))
             {
                 configureDecoratorsElement(child,fileName,scanner);
             }
-            else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES))
+            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_ALTERNATIVES))
             {
                 configureAlternativesElement(child,fileName,scanner);
             }
@@ -311,13 +352,13 @@ public final class WebBeansXMLConfigurator
             }
             child = (Element) node;
 
-            if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE) ||
-                XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_STEREOTYPE))
+            if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_STEREOTYPE) ||
+                getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_STEREOTYPE))
             {
                 addAlternative(child, true,fileName,scanner);
             }
-            else if (XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_CLASS)
-                     || XMLUtil.getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_CLASS))
+            else if (getName(child).equals(WebBeansConstants.WEB_BEANS_XML_SPEC_SPECIFIC_CLASS)
+                     || getName(child).equals(WebBeansConstants.WEB_BEANS_XML_OWB_SPECIFIC_CLASS))
             {
                 addAlternative(child, false,fileName,scanner);
             }
@@ -325,7 +366,7 @@ public final class WebBeansXMLConfigurator
             {
                 if (logger.wblWillLogWarn())
                 {
-                    logger.warn(OWBLogConst.WARN_0002, XMLUtil.getName(child));
+                    logger.warn(OWBLogConst.WARN_0002, getName(child));
                 }
             }
         }
@@ -339,7 +380,7 @@ public final class WebBeansXMLConfigurator
 
         if (clazz == null)
         {
-            throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Alternative class : " + XMLUtil.getName(child) + " not found");
+            throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Alternative class : " + getName(child) + " not found");
         }
         else
         {
