@@ -298,8 +298,17 @@ public class AnnotationDB implements Serializable
         }
         else
         {
-            //X TODO check %20 for spaces ...
             File f = new File( (new URL(urlPath)).getFile() );
+            if (!f.exists())
+            {
+                // try a fallback if the URL contains %20 -> spaces
+                if (urlPath.contains("%20"))
+                {
+                    urlPath = urlPath.replaceAll("%20", " ");
+                    f = new File( (new URL(urlPath)).getFile() );
+                }
+
+            }
             it = new FileIterator(f, filter);
         }
 
