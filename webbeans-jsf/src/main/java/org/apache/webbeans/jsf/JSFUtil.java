@@ -18,16 +18,11 @@
  */
 package org.apache.webbeans.jsf;
 
-import javax.faces.application.Application;
-import javax.faces.application.FacesMessage;
-import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.util.Asserts;
 
 
@@ -65,46 +60,6 @@ public final class JSFUtil
         }
         
         return null; 
-    }
-
-    public static boolean isPostBack()
-    {
-        return getCurrentFacesContext().getRenderKit().getResponseStateManager().isPostback(getCurrentFacesContext());
-    }
-
-    /**
-     * @return the viewId of the viewRoot, e.g. '/user/menu.xhtml'
-     */
-    public static String getViewId()
-    {
-        UIViewRoot viewRoot = getCurrentFacesContext().getViewRoot();
-        if (viewRoot == null)
-        {
-            return null;
-        }
-        return viewRoot.getViewId();
-    }
-
-    public static ViewHandler getViewHandler()
-    {
-        return getCurrentFacesContext().getApplication().getViewHandler();
-    }
-
-    public static Application getApplication()
-    {
-        FacesContext context = getCurrentFacesContext();
-        if(context != null)
-        {
-            return context.getApplication();
-        }
-        
-        return null;
-    }
-    
-    public static void addInfoMessage(String message)
-    {
-        FacesMessage fm = new FacesMessage(FacesMessage.SEVERITY_INFO,message,"");
-        getCurrentFacesContext().addMessage(null, fm);
     }
 
     public static String getRedirectViewIdWithCid(String redirectId, String cid)
@@ -188,25 +143,4 @@ public final class JSFUtil
         return cid;
     }
 
-    /** use {@link org.apache.webbeans.container.BeanManagerImpl#isInUse()} instead */
-    @Deprecated
-    public static boolean isOwbApplication()
-    {
-        ServletContext context = null;
-        if(getExternalContext() != null)
-        {
-            context = (ServletContext) getExternalContext().getContext();
-        }
-        
-        if(context != null)
-        {
-            Object value = context.getAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION);
-            if(value != null)
-            {
-                return Boolean.valueOf(value.toString());
-            }            
-        }
-        
-        return false;
-    }
 }

@@ -44,7 +44,9 @@ public class WebBeansPhaseListener implements PhaseListener
 
     /**Logger instance*/
     private final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansPhaseListener.class);
-    
+
+    private Boolean owbApplication = null;
+
     /**
      * {@inheritDoc}
      */
@@ -53,7 +55,7 @@ public class WebBeansPhaseListener implements PhaseListener
         if (phaseEvent.getPhaseId().equals(PhaseId.RENDER_RESPONSE) ||
                 phaseEvent.getFacesContext().getResponseComplete())
         {
-            if(!JSFUtil.isOwbApplication())
+            if(!isOwbApplication())
             {
                 return;
             }
@@ -87,7 +89,7 @@ public class WebBeansPhaseListener implements PhaseListener
      */
     public void beforePhase(PhaseEvent phaseEvent)
     {
-        if (phaseEvent.getPhaseId().equals(PhaseId.RESTORE_VIEW) && JSFUtil.isOwbApplication())
+        if (phaseEvent.getPhaseId().equals(PhaseId.RESTORE_VIEW) && isOwbApplication())
         {
             //It looks for cid parameter in the JSF request.
             //If request contains cid, then it must restore conversation
@@ -140,4 +142,15 @@ public class WebBeansPhaseListener implements PhaseListener
     {
         return PhaseId.ANY_PHASE;
     }
+
+    private boolean isOwbApplication()
+    {
+        if (owbApplication == null)
+        {
+            owbApplication = Boolean.valueOf(WebBeansContext.getInstance().getBeanManagerImpl().isInUse());
+        }
+
+        return owbApplication.booleanValue();
+    }
+
 }
