@@ -18,6 +18,8 @@
  */
 package org.apache.webbeans.jsf12;
 
+import org.apache.webbeans.config.WebBeansContext;
+
 import javax.faces.application.Application;
 import javax.faces.application.ApplicationFactory;
 
@@ -35,7 +37,7 @@ public class OwbApplicationFactory extends ApplicationFactory
     @Override
     public Application getApplication()
     {
-        if(!JSFUtil.isOwbApplication())
+        if(WebBeansContext.getInstance().getBeanManagerImpl().isInUse())
         {
             return wrapped.getApplication();
         }

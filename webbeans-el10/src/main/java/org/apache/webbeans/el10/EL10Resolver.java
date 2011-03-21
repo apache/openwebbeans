@@ -34,10 +34,15 @@ import javax.enterprise.inject.spi.Bean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.el.ELContextStore;
-import org.apache.webbeans.spi.plugins.AbstractOwbJsfPlugin;
 
 public class EL10Resolver extends ELResolver
 {
+    private WebBeansContext webBeansContext;
+
+    public EL10Resolver()
+    {
+        webBeansContext = WebBeansContext.getInstance();
+    }
 
     @Override
     public Class<?> getCommonPropertyType(ELContext arg0, Object arg1)
@@ -64,28 +69,8 @@ public class EL10Resolver extends ELResolver
     @SuppressWarnings({"unchecked","deprecation"})
     public Object getValue(ELContext context, Object obj, Object property) throws NullPointerException, PropertyNotFoundException, ELException
     {
-        //Check that application is OWB enabled
-        //For JSF applications that are not
-        //OWB enabled, no need to go with this resolver....
-        WebBeansContext webBeansContext = WebBeansContext.getInstance();
-        AbstractOwbJsfPlugin jsfPlugin = webBeansContext.getPluginLoader().getJsfPlugin();
-        
-        //No JSF plugin, sure that not OWB  
-        if(jsfPlugin == null && !(webBeansContext.getOpenWebBeansConfiguration().isJspApplication()))
-        {
-            return null;
-        }        
-
-        //If PluginLoader is called by application explicitly
-        //But not OWB application
-        else if(jsfPlugin != null)
-        {
-            if(!jsfPlugin.isOwbApplication())
-            {
-                return null;
-            }
-        }
-        else
+        // Check if the OWB actually got used in this application
+        if (!webBeansContext.getBeanManagerImpl().isInUse())
         {
             return null;
         }

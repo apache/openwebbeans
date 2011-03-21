@@ -20,16 +20,11 @@ package org.apache.webbeans.jsf12.plugin;
 
 
 import javax.faces.component.UIComponent;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
-
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import org.apache.webbeans.spi.plugins.AbstractOwbJsfPlugin;
+import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.util.ClassUtil;
 
-public class OpenWebBeansJsfPlugin extends AbstractOwbJsfPlugin
+public class OpenWebBeansJsfPlugin extends AbstractOwbPlugin
 {
     /** {@inheritDoc} */
     public void isManagedBean( Class<?> clazz ) throws WebBeansConfigurationException 
@@ -40,27 +35,4 @@ public class OpenWebBeansJsfPlugin extends AbstractOwbJsfPlugin
                                                      + " can not implement JSF UIComponent");
         }
     }
-
-    @Override
-    public boolean isOwbApplication()
-    {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        if(facesContext == null)
-        {
-            //This application is not JSF, probably JSP based OWB application
-            //WebBeansELResolver for JSP has been registered on booting
-            //phase of OWB
-            return true;
-        }
-        
-        //If this application is JSF, check that OWB has booted
-        ExternalContext ext = facesContext.getExternalContext();
-        ServletContext servletContext = (ServletContext) ext.getContext();
-        Object attribute = servletContext.getAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION);
-        
-        return attribute != null ? true : false;
-    }
-    
-    
-    
 }

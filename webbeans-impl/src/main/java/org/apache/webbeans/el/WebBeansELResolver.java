@@ -57,7 +57,6 @@ public class WebBeansELResolver extends ELResolver
 
     public WebBeansELResolver()
     {
-
         webBeansContext = WebBeansContext.getInstance();
     }
     

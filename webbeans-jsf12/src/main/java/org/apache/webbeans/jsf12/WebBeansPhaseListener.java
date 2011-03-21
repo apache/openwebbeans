@@ -44,13 +44,15 @@ public class WebBeansPhaseListener implements PhaseListener
 
     /**Logger instance*/
     private final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansPhaseListener.class);
-    
+
+    private Boolean owbApplication = null;
+
     /**
      * {@inheritDoc}
      */
     public void afterPhase(PhaseEvent phaseEvent)
     {
-        if(!JSFUtil.isOwbApplication())
+        if(!isOwbApplication())
         {
             return;
         }
@@ -87,7 +89,7 @@ public class WebBeansPhaseListener implements PhaseListener
      */
     public void beforePhase(PhaseEvent phaseEvent)
     {
-        if(!JSFUtil.isOwbApplication())
+        if(!isOwbApplication())
         {
             return;
         }
@@ -145,4 +147,15 @@ public class WebBeansPhaseListener implements PhaseListener
     {
         return PhaseId.ANY_PHASE;
     }
+
+    private boolean isOwbApplication()
+    {
+        if (owbApplication == null)
+        {
+            owbApplication = Boolean.valueOf(WebBeansContext.getInstance().getBeanManagerImpl().isInUse());
+        }
+
+        return owbApplication.booleanValue();
+    }
+
 }

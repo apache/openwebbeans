@@ -20,7 +20,6 @@ package org.apache.webbeans.servlet;
 
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
@@ -77,10 +76,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         try
         {
                 this.lifeCycle.startApplication(event);
-                
-                //If there is no beans.xml, not an owb application
-                boolean isOwbApplication = !webBeansContext.getScannerService().getBeanXmls().isEmpty();
-                event.getServletContext().setAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION, Boolean.toString(isOwbApplication));
         }
         catch (Exception e)
         {
@@ -97,7 +92,6 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     {
         this.lifeCycle.stopApplication(event);
         this.lifeCycle = null;
-        event.getServletContext().setAttribute(OpenWebBeansConfiguration.PROPERTY_OWB_APPLICATION, "false");
     }
 
     /**

@@ -107,9 +107,7 @@ public class OpenWebBeansConfiguration
     
     /**EL Adaptor*/
     public static final String EL_ADAPTOR_CLASS = "org.apache.webbeans.spi.adaptor.ELAdaptor";
-    
-    public static final String PROPERTY_OWB_APPLICATION = "org.apache.webbeans.application.isOwbApplication";
-    
+
     /**
      * Use BDABeansXmlScanner to determine if interceptors, decorators, and
      * alternatives are enabled in the beans.xml of a given BDA. For an
@@ -136,7 +134,7 @@ public class OpenWebBeansConfiguration
      */
     private void loadFromSystemProperties()
     {
-        Properties properties = null;
+        Properties properties;
         if(System.getSecurityManager() != null)
         {
             properties = SecurityUtil.doPrivilegedGetSystemProperties();
@@ -210,7 +208,7 @@ public class OpenWebBeansConfiguration
     /**
      * (re)read the configuration from the resources in the classpath.
      * @see #DEFAULT_CONFIG_PROPERTIES_NAME
-     * @see #CONFIG_PROPERTIES_NAME 
+     * @see #DEFAULT_CONFIG_PROPERTIES_NAME
      */
     public synchronized void parseConfiguration() throws WebBeansConfigurationException
     {

@@ -29,7 +29,6 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.spi.plugins.AbstractOwbJsfPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
@@ -201,30 +200,6 @@ public class PluginLoader
         return null;
     }
     
-    /**
-     * Gets JSF plugin.
-     * 
-     * @return JSF plugin
-     */
-    public AbstractOwbJsfPlugin getJsfPlugin()
-    {
-        if(!pluginsExist())
-        {
-            return null;
-        }
-        
-        for(OpenWebBeansPlugin plugin : this.plugins)
-        {
-            if(plugin instanceof AbstractOwbJsfPlugin)
-            {
-                return (AbstractOwbJsfPlugin)plugin;
-            }
-        }
-        
-        return null;
-    }   
-    
- 
     /**
      * Gets ejb lifecycle annotations plugin
      * 

@@ -30,6 +30,8 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
 {
     private final ViewHandler delegate;
 
+    private Boolean owbApplication = null;
+
     public ConversationAwareViewHandler(ViewHandler delegate)
     {
         this.delegate = delegate;
@@ -41,7 +43,7 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
     @Override
     public String getActionURL(FacesContext context, String viewId)
     {
-        if(!JSFUtil.isOwbApplication())
+        if(isOwbApplication())
         {
             return delegate.getActionURL(context, viewId);
         }
@@ -56,6 +58,16 @@ public class ConversationAwareViewHandler extends ViewHandlerWrapper
         }
 
         return url;
+    }
+
+    private boolean isOwbApplication()
+    {
+        if (owbApplication == null)
+        {
+            owbApplication = Boolean.valueOf(WebBeansContext.getInstance().getBeanManagerImpl().isInUse());
+        }
+
+        return owbApplication.booleanValue();
     }
 
     /**
