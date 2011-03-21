@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.corespi.security;
 
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.spi.SecurityService;
 
@@ -52,7 +53,16 @@ public class ManagedSecurityService implements SecurityService
 
     private static final PrivilegedActionGetSystemProperties SYSTEM_PROPERTY_ACTION = new PrivilegedActionGetSystemProperties();
 
-
+    public ManagedSecurityService()
+    {
+        // we need to make sure that only WebBeansContext gets used to create us!
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        String declaringClass = stackTrace[6].getClassName();
+        if (!declaringClass.equals(WebBeansContext.class.getName()))
+        {
+            throw new SecurityException("ManagedSecurityService must directly get created by WebBeansContext!");
+        }
+    }
 
     @Override
     public Principal getCurrentPrincipal()
