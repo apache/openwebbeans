@@ -141,7 +141,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             beforeStopApplication(endObject);
 
             //Set up the thread local for Application scoped as listeners will be App scoped.
-            this.contextsService.startContext(ApplicationScoped.class, endObject);   
+            this.contextsService.startContext(ApplicationScoped.class, endObject);
             
             //Fire shut down
             this.beanManager.fireEvent(new BeforeShutdownImpl(), new Annotation[0]);

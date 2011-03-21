@@ -73,7 +73,9 @@ public class DependentInterceptorTest extends AbstractUnitTest
         
         DependentScopedBean dbean = (DependentScopedBean)reference;
         dbean.sayHello();
-        //X TODO this should finally work! Assert.assertTrue(DependentInterceptor.refCount == 1);
+
+        //X TODO this should finally work!
+        //X Assert.assertTrue(DependentInterceptor.refCount == 1);
         
         Assert.assertTrue(DependentScopedBean.SAY_HELLO);
                 

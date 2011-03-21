@@ -43,6 +43,9 @@ import javax.servlet.http.HttpSessionListener;
 /**
  * Initializing the beans container for using in an web application
  * environment.
+ *
+ * This is the main entry point for starting the CDI container
+ * for a servlet.
  * 
  * @version $Rev: 910075 $ $Date: 2010-02-14 23:17:23 +0200 (Sun, 14 Feb 2010) $
  */
@@ -92,6 +95,9 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
     {
         this.lifeCycle.stopApplication(event);
         this.lifeCycle = null;
+
+        // just to be sure that we didn't lazily create anything...
+        cleanupRequestThreadLocals();
     }
 
     /**
@@ -133,7 +139,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
 
     /**
      * Ensures that all ThreadLocals, which could have been set in this
-     * request's Thread, are removed in order to prevent memory leaks. 
+     * requests Thread, are removed in order to prevent memory leaks.
      */
     private void cleanupRequestThreadLocals()
     {
@@ -158,8 +164,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
             this.lifeCycle.getContextService().startContext(RequestScoped.class, event);
 
             // we don't initialise the Session here but do it lazily if it gets requested
-            // the first time. See OWB-457            
-
+            // the first time. See OWB-457
         }
         catch (Exception e)
         {

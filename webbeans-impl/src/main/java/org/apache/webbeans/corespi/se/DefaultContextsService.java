@@ -217,7 +217,6 @@ public class DefaultContextsService extends AbstractContextsService
         conversationContext.remove();
         dependentContext.remove();
         singletonContext.remove();
-        
     }
     
     

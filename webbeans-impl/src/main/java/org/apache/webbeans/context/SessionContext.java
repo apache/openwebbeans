@@ -68,10 +68,10 @@ public class SessionContext extends AbstractContext implements Serializable, Ext
         Contextual<?> contextual = null;
         while(it.hasNext()) 
         {
-            String id = (String)it.next();
+            String id = it.next();
             if (id != null)
             {
-                contextual = (Contextual<?>) webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
+                contextual = webBeansContext.getBeanManagerImpl().getPassivationCapableBean(id);
             }
             if (contextual != null) 
             {
