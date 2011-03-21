@@ -103,7 +103,6 @@ public class WebContextsService extends AbstractContextsService
         //Dependent context is always active
         dependentContext = new DependentContext();
         dependentContext.setActive(true);
-
     }
 
     /**
@@ -379,20 +378,25 @@ public class WebContextsService extends AbstractContextsService
      */
     private void initSessionContext(HttpSession session)
     {
+        if (session == null)
+        {
+            // no session -> no SessionContext
+            return;
+        }
+
         String sessionId = session.getId();
         //Current context
         SessionContext currentSessionContext = sessionCtxManager.getSessionContextWithSessionId(sessionId);
-        
+
         //No current context
         if (currentSessionContext == null)
         {
             currentSessionContext = new SessionContext();
             sessionCtxManager.addNewSessionContext(sessionId, currentSessionContext);
         }
-
         //Activate
         currentSessionContext.setActive(true);
-        
+
         //Set thread local
         sessionContext.set(currentSessionContext);
     }
@@ -404,22 +408,24 @@ public class WebContextsService extends AbstractContextsService
      */
     private void destroySessionContext(HttpSession session)
     {
-        //Get current session context
-        SessionContext context = sessionContext.get();
-
-        //Destroy context
-        if (context != null)
+        if (session != null)
         {
-            context.destroy();
+            //Get current session context
+            SessionContext context = sessionContext.get();
+
+            //Destroy context
+            if (context != null)
+            {
+                context.destroy();
+            }
+
+            //Clear thread locals
+            sessionContext.set(null);
+            sessionContext.remove();
+
+            //Remove session from manager
+            sessionCtxManager.destroySessionContextWithSessionId(session.getId());
         }
-
-        //Clear thread locals
-        sessionContext.set(null);
-        sessionContext.remove();
-        
-        //Remove session from manager
-        sessionCtxManager.destroySessionContextWithSessionId(session.getId());
-
     }
 
     /**
