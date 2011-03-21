@@ -312,8 +312,11 @@ public class DefaultContextsService extends AbstractContextsService
     
     private void stopApplicationContext(Object object)
     {
-        applicationContext.destroy();
-        applicationContext = null;
+        if(applicationContext != null)
+        {
+            applicationContext.destroy();
+            applicationContext = null;
+        }
     }
 
     
