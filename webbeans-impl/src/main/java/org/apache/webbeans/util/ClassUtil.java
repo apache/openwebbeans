@@ -1021,28 +1021,6 @@ public final class ClassUtil
         return false;
     }
 
-    public static Field getFieldWithName(Class<?> clazz, String fieldName)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(fieldName, "fieldName parameter can not be null");
-        try
-        {
-
-            return SecurityUtil.doPrivilegedGetDeclaredField(clazz,fieldName);
-
-        }
-        catch (SecurityException e)
-        {
-            // we must throw here!
-            throw new WebBeansException(e);
-        }
-        catch (NoSuchFieldException e2)
-        {
-            return null;
-        }
-
-    }
-
     /**
      * @param clazz webbeans implementation class
      * @param methodName name of the method that is searched

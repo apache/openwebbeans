@@ -50,17 +50,6 @@ public class SecurityUtil
         return (Method[])obj;
     }
 
-    public static <T> Field doPrivilegedGetDeclaredField(Class<T> clazz, String name) throws NoSuchFieldException
-    {
-        Object obj = AccessController.doPrivileged(
-                new PrivilegedActionForClass(clazz, name, METHOD_CLASS_GETDECLAREDFIELD));
-        if (obj instanceof NoSuchFieldException)
-        {
-            throw (NoSuchFieldException)obj;
-        }
-        return (Field)obj;
-    }
-
     public static <T> Field[] doPrivilegedGetDeclaredFields(Class<T> clazz)
     {
         Object obj = AccessController.doPrivileged(

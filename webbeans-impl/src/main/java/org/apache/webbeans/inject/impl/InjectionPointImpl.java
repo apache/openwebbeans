@@ -44,7 +44,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 class InjectionPointImpl implements InjectionPoint, Serializable
@@ -226,7 +225,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
         if(c == 0)
         {
             String fieldName = in.readUTF();
-            Field field = ClassUtil.getFieldWithName(beanClass, fieldName);
+            Field field = webBeansContext.getSecurityService().doPrivilegedGetDeclaredField(beanClass, fieldName);
             
             this.injectionMember = field;
             
