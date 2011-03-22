@@ -49,6 +49,7 @@ import org.apache.openejb.core.stateful.StatefulContainer;
 import org.apache.openejb.core.stateless.StatelessContainer;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.ejb.common.util.EjbDefinitionUtility;
 import org.apache.webbeans.ejb.common.util.EjbUtility;
 import org.apache.webbeans.ejb.component.OpenEjbBean;
@@ -61,7 +62,6 @@ import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.TransactionService;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
-import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -106,6 +106,8 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
     
     /**JNDI Name strategy*/
     private final Map<String, JndiNameStrategy> nameStrategies = new TreeMap<String, JndiNameStrategy>();
+
+    private Boolean pluginInTest = null;
 
     // This is here for standalone tests are correctly run
     // Not used in anywhere
@@ -376,7 +378,7 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         
         for (DeploymentInfo deployment : deployments)
         {
-            boolean inTest = Boolean.valueOf(SecurityUtil.doPrivilegedGetSystemProperty("EjbPlugin.test", "false"));
+            boolean inTest = isInTest();
             classLoaderEquality = deployment.getBeanClass().getClassLoader().equals(WebBeansUtil.getCurrentClassLoader());
 
             // Yes, this EJB archive is deployed within this web
@@ -412,7 +414,22 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
 
         return classLoaderEquality;
     }
-    
+
+    /**
+     * TODO: only migrated this over from a static method to SecurityService.
+     * TODO: we should finally get rid of this property!
+     * @Deprecated
+     */
+    private boolean isInTest()
+    {
+        if (pluginInTest == null)
+        {
+            pluginInTest = Boolean.valueOf(WebBeansContext.currentInstance().getSecurityService().doPrivilegedGetSystemProperty("EjbPlugin.test", "false"));
+        }
+
+        return pluginInTest.booleanValue();
+    }
+
     /**
      * {@inheritDoc}
      */

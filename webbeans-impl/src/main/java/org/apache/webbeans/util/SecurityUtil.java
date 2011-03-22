@@ -41,8 +41,6 @@ public class SecurityUtil
 
     private static final int METHOD_CLASS_GETDECLAREDFIELDS = 0x06;
     
-    private static final PrivilegedActionGetSystemProperties SYSTEM_PROPERTY_ACTION = new PrivilegedActionGetSystemProperties();
-
     public static <T> Method[] doPrivilegedGetDeclaredMethods(Class<T> clazz)
     {
         Object obj = AccessController.doPrivileged(
@@ -133,55 +131,13 @@ public class SecurityUtil
         Class<?> ret = (Class<?>)AccessController.doPrivileged(new PrivilegedActionForProxyFactory(factory));
         return ret;
     }
-    
-    public static String doPrivilegedGetSystemProperty(String propertyName, String defaultValue)
-    {
-        String value = AccessController.doPrivileged(new PrivilegedActionForProperty(propertyName, defaultValue));
-        
-        return value;
-    }
-    
+
     public static Object doPrivilegedObjectCreate(Class<?> clazz) throws PrivilegedActionException
     {
         return AccessController.doPrivileged(new PrivilegedActionForObjectCreation(clazz));
     }
 
-    public static Properties doPrivilegedGetSystemProperties()
-    {
-        return AccessController.doPrivileged(SYSTEM_PROPERTY_ACTION);
-    }
 
-    protected static class PrivilegedActionForProperty implements PrivilegedAction<String>
-    {
-        private final String propertyName;
-        
-        private final String defaultValue;
-
-        protected PrivilegedActionForProperty(String propertyName, String defaultValue)
-        {
-            this.propertyName = propertyName;
-            this.defaultValue = defaultValue;
-        }
-        
-        @Override
-        public String run()
-        {
-            return System.getProperty(this.propertyName,this.defaultValue);
-        }
-        
-    }
-    
-    protected static class PrivilegedActionGetSystemProperties implements PrivilegedAction<Properties>
-    {
-        
-        @Override
-        public Properties run()
-        {
-            return System.getProperties();
-        }
-        
-    }
-    
     protected static class PrivilegedActionForObjectCreation implements PrivilegedExceptionAction<Object>
     {
         private Class<?> clazz;

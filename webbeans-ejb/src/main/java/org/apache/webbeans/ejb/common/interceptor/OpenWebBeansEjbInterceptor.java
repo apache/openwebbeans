@@ -64,7 +64,6 @@ import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContextsService;
-import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -552,7 +551,7 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                 WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
                 decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor, webBeansContext);
                 decoratorInterceptorDataImpl.setDefinedInInterceptorClass(true);
-                decoratorInterceptorDataImpl.setAroundInvoke(SecurityUtil.doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
+                decoratorInterceptorDataImpl.setAroundInvoke(webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
                 filteredInterceptorStack.add(decoratorInterceptorDataImpl);
             }
             

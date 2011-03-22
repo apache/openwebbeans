@@ -18,11 +18,12 @@
  */
 package org.apache.webbeans.config;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Properties;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.util.SecurityUtil;
 
 /**
  * Defines configuration for OpenWebBeans.
@@ -137,7 +138,7 @@ public class OpenWebBeansConfiguration
         Properties properties;
         if(System.getSecurityManager() != null)
         {
-            properties = SecurityUtil.doPrivilegedGetSystemProperties();
+            properties = doPrivilegedGetSystemProperties();
         }
         else
         {
@@ -196,6 +197,22 @@ public class OpenWebBeansConfiguration
         setPropertyFromSystemProperty(USE_BDA_BEANSXML_SCANNER, value);
 
     }
+
+    private Properties doPrivilegedGetSystemProperties()
+    {
+        return AccessController.doPrivileged(
+                new PrivilegedAction<Properties>()
+                    {
+                        @Override
+                        public Properties run()
+                        {
+                            return System.getProperties();
+                        }
+
+                    }
+                );
+    }
+
      
     private void setPropertyFromSystemProperty(String key, String value)
     {
