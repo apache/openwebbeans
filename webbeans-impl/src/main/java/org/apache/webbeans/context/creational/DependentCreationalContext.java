@@ -100,14 +100,6 @@ public class DependentCreationalContext<S> implements Serializable
         return contextual;
     }
 
-    /**
-     * @param contextual the contextual to set
-     */
-    public void setContextual(Contextual<S> contextual)
-    {
-        this.contextual = contextual;
-    }
-    
     private synchronized void writeObject(ObjectOutputStream s)
     throws IOException
     {

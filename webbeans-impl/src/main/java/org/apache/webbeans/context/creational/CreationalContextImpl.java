@@ -245,18 +245,21 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             return null;
         }
 
-        List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
-        if (values != null && values.size() > 0)
+        synchronized(this)
         {
-            Iterator<DependentCreationalContext<?>> it = values.iterator();
-            while (it.hasNext())
+            List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
+            if (values != null && values.size() > 0)
             {
-                DependentCreationalContext<?> dc = it.next();
-
-                if(dc.getDependentType().equals(DependentType.DECORATOR) &&
-                   dc.getContextual().equals(decorator))
+                Iterator<DependentCreationalContext<?>> it = values.iterator();
+                while (it.hasNext())
                 {
-                    return dc.getInstance();
+                    DependentCreationalContext<?> dc = it.next();
+
+                    if(dc.getDependentType().equals(DependentType.DECORATOR) &&
+                       dc.getContextual().equals(decorator))
+                    {
+                        return dc.getInstance();
+                    }
                 }
             }
         }
