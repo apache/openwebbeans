@@ -412,7 +412,7 @@ public class InterceptorDataImpl implements InterceptorData
         // check for this InterceptorData is defined by interceptor class
         if (this.isDefinedWithWebBeansInterceptor && this.definedInInterceptorClass)
         {
-            Object interceptor = null;
+            Object interceptor;
 
             // Means that it is the last interceptor added by InterceptorHandler
             if (this.webBeansInterceptor == null)
@@ -437,7 +437,7 @@ public class InterceptorDataImpl implements InterceptorData
             return interceptor;
         }
 
-        EjbInterceptorContext ctx = null;
+        EjbInterceptorContext ctx ;
         Object interceptor = null;
         // control for this InterceptorData is defined by interceptor class
         if (this.definedInInterceptorClass)

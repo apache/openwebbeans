@@ -94,8 +94,6 @@ public final class InterceptorUtil
      */
     public boolean isWebBeansBusinessMethod(Method method)
     {
-        Asserts.nullCheckForMethod(method);
-
         int modifiers = method.getModifiers();
 
         if ((modifiers & MODIFIER_STATIC_FINAL_PRIVATE) != 0)

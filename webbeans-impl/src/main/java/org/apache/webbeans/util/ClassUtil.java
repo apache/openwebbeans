@@ -390,7 +390,7 @@ public final class ClassUtil
     {
         if (objectMethodNames == null)
         {
-            // not much syncronisation needed...
+            // not much synchronisation needed...
             Set<String> list = new HashSet<String>();
             Class<?> clazz = Object.class;
 
@@ -410,7 +410,6 @@ public final class ClassUtil
 
     public static boolean isObjectMethod(String methodName)
     {
-        Asserts.assertNotNull(methodName, "methodName parameter can not be null");
         return getObjectMethodNames().contains(methodName);
     }
 
