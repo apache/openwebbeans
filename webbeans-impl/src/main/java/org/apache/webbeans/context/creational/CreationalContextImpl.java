@@ -175,7 +175,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
 
             dependentCreational.setInstance(instance);
 
-            //X TODO maybe better with ReentrantReadWriteLock?
             synchronized(this)
             {
                 if (dependentObjects == null)
@@ -209,7 +208,6 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
             return null;
         }
 
-        //X TODO maybe better with ReentrantReadWriteLock?
         synchronized(this)
         {
             List<DependentCreationalContext<?>> values = this.dependentObjects.get(ownerInstance);
