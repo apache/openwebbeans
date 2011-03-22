@@ -107,7 +107,7 @@ public final class DefinitionUtil
         //Looking for bean types
         if(AnnotationUtil.hasAnnotation(annots, Typed.class))
         {
-            Typed beanTypes = (Typed) AnnotationUtil.getAnnotation(annots, Typed.class);
+            Typed beanTypes = AnnotationUtil.getAnnotation(annots, Typed.class);
             defineUserDefinedBeanTypes(bean, null, beanTypes);            
         }
         else
@@ -183,7 +183,7 @@ public final class DefinitionUtil
         //Looking for bean types
         if(AnnotationUtil.hasAnnotation(annots, Typed.class))
         {
-            Typed beanTypes = (Typed) AnnotationUtil.getAnnotation(annots, Typed.class);
+            Typed beanTypes = AnnotationUtil.getAnnotation(annots, Typed.class);
             defineUserDefinedBeanTypes(producerBean, type, beanTypes);
         }
         
@@ -221,7 +221,6 @@ public final class DefinitionUtil
     {
         final AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
 
-        boolean find = false;
         for (Annotation annotation : annotations)
         {
             Class<? extends Annotation> type = annotation.annotationType();
@@ -244,7 +243,6 @@ public final class DefinitionUtil
                     }
                 }
 
-                find = true;
                 component.addQualifier(annotation);
             }
         }
@@ -473,7 +471,7 @@ public final class DefinitionUtil
                     if (AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), NormalScope.class) ||
                             AnnotationUtil.hasMetaAnnotation(stero.getDeclaredAnnotations(), Scope.class))
                     {                        
-                        Annotation next = null;
+                        Annotation next;
                         
                         if(containsNormal)
                         {
@@ -1196,7 +1194,7 @@ public final class DefinitionUtil
      */
     public static void defineDecoratorStack(AbstractInjectionTargetBean<?> bean)
     {
-        WebBeansDecoratorConfig.configureDecarotors((AbstractInjectionTargetBean<Object>)bean);
+        WebBeansDecoratorConfig.configureDecarotors(bean);
     }
 
     public static <T> Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> component, Class<T> clazz)

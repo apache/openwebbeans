@@ -65,10 +65,10 @@ public class ConversationContext extends AbstractContext implements Externalizab
         Contextual<?> contextual = null;
         while(it.hasNext()) 
         {
-            String id = (String)it.next();
+            String id = it.next();
             if (id != null)
             {
-                contextual = (Contextual<?>) org.apache.webbeans.config.WebBeansContext.currentInstance().getBeanManagerImpl().getPassivationCapableBean(id);
+                contextual = org.apache.webbeans.config.WebBeansContext.currentInstance().getBeanManagerImpl().getPassivationCapableBean(id);
             }
             if (contextual != null) 
             {

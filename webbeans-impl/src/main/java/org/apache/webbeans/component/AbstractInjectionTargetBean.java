@@ -109,7 +109,7 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
      */
     protected T createInstance(CreationalContext<T> creationalContext)
     {
-        T instance = null;
+        T instance;
 
         //Default creation phases
         instance = createDefaultInstance(creationalContext);

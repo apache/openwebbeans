@@ -343,7 +343,7 @@ public class AnnotationDB implements Serializable
     public void scanClass(InputStream bits) throws IOException
     {
         DataInputStream dstream = new DataInputStream(new BufferedInputStream(bits));
-        ClassFile cf = null;
+        ClassFile cf;
         try
         {
             cf = new ClassFile(dstream);

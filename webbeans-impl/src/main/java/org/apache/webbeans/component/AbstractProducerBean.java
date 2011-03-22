@@ -104,7 +104,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     {
         // return getManager().getInstance(this.ownerComponent);
 
-        Object parentInstance = null;
+        Object parentInstance;
 
         Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(),
                 (AbstractOwbBean<T>) this.ownerComponent);
@@ -125,7 +125,7 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
     @SuppressWarnings("unchecked")
     protected Object getParentInstanceFromContext(CreationalContext<?> creationalContext)
     {
-        Object parentInstance = null;
+        Object parentInstance;
 
         Bean<?> specialize = WebBeansUtil.getMostSpecializedBean(getManager(),
                 (AbstractOwbBean<T>) this.ownerComponent);

@@ -265,7 +265,7 @@ class InjectionPointImpl implements InjectionPoint, Serializable
             }
 
             AnnotatedType<Object> annotatedType = (AnnotatedType<Object>)annotatedElementFactory.newAnnotatedType(beanClass);
-            AnnotatedConstructor<Object> am =  (AnnotatedConstructor<Object>)annotatedElementFactory
+            AnnotatedConstructor<Object> am =  annotatedElementFactory
                                             .newAnnotatedConstructor((Constructor<Object>)this.injectionMember,annotatedType);
             List<AnnotatedParameter<Object>> annParameters = am.getParameters();
             

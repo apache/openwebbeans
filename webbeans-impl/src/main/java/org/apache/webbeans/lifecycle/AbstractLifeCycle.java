@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.lifecycle;
 
-import java.lang.annotation.Annotation;
 import java.util.Properties;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -144,7 +143,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             this.contextsService.startContext(ApplicationScoped.class, endObject);
             
             //Fire shut down
-            this.beanManager.fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
+            this.beanManager.fireEvent(new BeforeShutdownImpl() );
             
             //Destroys context
             this.contextsService.destroy(endObject);

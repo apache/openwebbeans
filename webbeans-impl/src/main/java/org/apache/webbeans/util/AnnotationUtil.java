@@ -133,7 +133,7 @@ public final class AnnotationUtil
         Asserts.nullCheckForClass(clazz);
 
         List<Type> list = new ArrayList<Type>();
-        Type[] result = null;
+        Type[] result;
 
         Annotation[][] parameterAnns = method.getParameterAnnotations();
         Type[] genericTypes = method.getGenericParameterTypes();
@@ -167,7 +167,7 @@ public final class AnnotationUtil
         Asserts.nullCheckForClass(clazz);
 
         List<Type> list = new ArrayList<Type>();
-        Type[] result = null;
+        Type[] result;
 
         Annotation[][] parameterAnns = constructor.getParameterAnnotations();
         Type[] genericTypes = constructor.getGenericParameterTypes();
@@ -524,8 +524,8 @@ public final class AnnotationUtil
      */
     private static boolean checkEquality(Object value1, Object value2)
     {
-        if ((value1 == null && value2 != null)
-                || (value1 != null && value2 == null))
+        if ((value1 == null && value2 != null) ||
+            (value1 != null && value2 == null))
         {
             return false;
         }
@@ -748,7 +748,7 @@ public final class AnnotationUtil
 
         Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
         List<Method> list = new ArrayList<Method>();
-        Method[] rMethod = null;
+        Method[] rMethod  ;
 
         for (Method m : methods)
         {
@@ -847,7 +847,7 @@ public final class AnnotationUtil
     public static Annotation[] getMetaAnnotations(Annotation[] anns, Class<? extends Annotation> metaAnnotation)
     {
         List<Annotation> annots = new ArrayList<Annotation>();
-        Annotation[] result = null;
+        Annotation[] result;
         Asserts.assertNotNull(anns, "Anns argument can not be null");
         Asserts.assertNotNull(metaAnnotation, "MetaAnnotation argument can not be null");
 

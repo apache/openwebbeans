@@ -407,7 +407,7 @@ public class WebBeansInterceptor<T> extends AbstractOwbBean<T> implements OwbInt
         Method method = getMethod(type);
         try
         {
-            method.invoke(instance,new Object[]{ctx});
+            method.invoke(instance, ctx);
         }
         catch (Exception e)
         {

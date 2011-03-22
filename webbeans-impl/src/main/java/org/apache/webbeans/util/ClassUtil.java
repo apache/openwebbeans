@@ -94,7 +94,7 @@ public final class ClassUtil
             Throwable cause = e;
             if(e instanceof PrivilegedActionException)
             {
-                cause = ((PrivilegedActionException)e).getCause();
+                cause = e.getCause();
             }
             
             String error = "Error is occured while creating an instance of class : " + clazz.getName(); 

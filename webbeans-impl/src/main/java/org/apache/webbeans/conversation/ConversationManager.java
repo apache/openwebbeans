@@ -231,7 +231,7 @@ public class ConversationManager
                     {
                         if(logger.wblWillLogInfo())
                         {
-                            logger.info(logger.getTokenString(OWBLogConst.INFO_0011),new Object[]{conv.getId()});
+                            logger.info(logger.getTokenString(OWBLogConst.INFO_0011),conv.getId());
                         }
                         ctx.destroy();
                     }

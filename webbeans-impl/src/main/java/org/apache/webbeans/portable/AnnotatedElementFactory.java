@@ -149,7 +149,7 @@ public final class AnnotatedElementFactory
         Asserts.assertNotNull(constructor, "constructor is null");
         Asserts.assertNotNull(declaringClass, "declaringClass is null");
         
-        AnnotatedConstructorImpl<X> annConstructor = null;
+        AnnotatedConstructorImpl<X> annConstructor;
         if(annotatedConstructorCache.containsKey(constructor))
         {
             annConstructor = (AnnotatedConstructorImpl<X>)annotatedConstructorCache.get(constructor);
@@ -181,7 +181,7 @@ public final class AnnotatedElementFactory
         Asserts.assertNotNull(field, "field is null");
         Asserts.assertNotNull(declaringClass, "declaringClass is null");
         
-        AnnotatedFieldImpl<X> annotField = null;
+        AnnotatedFieldImpl<X> annotField;
         if(annotatedFieldCache.containsKey(field))
         {
             annotField = (AnnotatedFieldImpl<X>)annotatedFieldCache.get(field);
@@ -213,7 +213,7 @@ public final class AnnotatedElementFactory
         Asserts.assertNotNull(method, "method is null");
         Asserts.assertNotNull(declaringType, "declaringType is null");
         
-        AnnotatedMethodImpl<X> annotMethod = null;
+        AnnotatedMethodImpl<X> annotMethod;
         if(annotatedMethodCache.containsKey(method))
         {
             annotMethod = (AnnotatedMethodImpl<X>)annotatedMethodCache.get(method);

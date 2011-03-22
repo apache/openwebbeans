@@ -68,7 +68,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
     @SuppressWarnings("unchecked")
     public T produce(CreationalContext<T> creationalContext)
     {
-        T instance = null;
+        T instance;
         if(!(creationalContext instanceof CreationalContextImpl))
         {
             creationalContext = bean.getWebBeansContext().getCreationalContextFactory().wrappedCreationalContext(creationalContext, this.bean);

@@ -108,7 +108,7 @@ public class StereoTypeModel implements IStereoTypeModel
                 {
                     if(logger.wblWillLogWarn())
                     {
-                        logger.warn(OWBLogConst.WARN_0017, new Object[]{clazz.getName(),qualifier.annotationType().getName()});
+                        logger.warn(OWBLogConst.WARN_0017, clazz.getName(),qualifier.annotationType().getName());
                     }
                 }
             }            

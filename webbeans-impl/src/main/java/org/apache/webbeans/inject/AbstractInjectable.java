@@ -90,12 +90,12 @@ public abstract class AbstractInjectable implements Injectable
      */
     public <T> Object inject(InjectionPoint injectionPoint)
     {
-        Object injected = null;
+        Object injected;
 
         //Injected contextual beam
         InjectionResolver instance = injectionOwnerBean.getWebBeansContext().getBeanManagerImpl().getInjectionResolver();
 
-        Bean<?> injectedBean = (Bean<?>) instance.getInjectionPointBean(injectionPoint);
+        Bean<?> injectedBean = instance.getInjectionPointBean(injectionPoint);
         if(isInstanceProviderInjection(injectionPoint))
         {
             InstanceBean.local.set(injectionPoint);

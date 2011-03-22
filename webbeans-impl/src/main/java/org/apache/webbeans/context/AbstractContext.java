@@ -196,7 +196,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
     @SuppressWarnings("unchecked")
     protected <T> T getInstance(Contextual<T> contextual, CreationalContext<T> creationalContext)
     {
-        T instance = null;
+        T instance;
         
         //Look for bag
         BeanInstanceBag<T> bag = (BeanInstanceBag<T>)componentInstanceMap.get(contextual);        
@@ -266,7 +266,7 @@ public abstract class AbstractContext implements WebBeansContext, Serializable
         Set<Entry<Contextual<?>, BeanInstanceBag<?>>> entrySet = componentInstanceMap.entrySet();
         Iterator<Entry<Contextual<?>, BeanInstanceBag<?>>> it = entrySet.iterator();
 
-        Contextual<?> contextual = null;
+        Contextual<?> contextual;
         while (it.hasNext())
         {
             contextual = it.next().getKey();

@@ -151,7 +151,7 @@ abstract class AbstractAnnotated implements Annotated
             Annotation[] anns = annotations.toArray(new Annotation[annotations.size()]);
             if(AnnotationUtil.hasAnnotation(anns, Typed.class))
             {
-                Typed beanTypes = (Typed) AnnotationUtil.getAnnotation(anns, Typed.class);
+                Typed beanTypes = AnnotationUtil.getAnnotation(anns, Typed.class);
                 Class<?>[] types = beanTypes.value();
 
                 //New api types

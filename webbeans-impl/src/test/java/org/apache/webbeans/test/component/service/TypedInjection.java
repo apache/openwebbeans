@@ -33,7 +33,7 @@ public class TypedInjection implements Serializable
 
     public ITyped2<String, Object> getV()
     {
-        return (ITyped2<String, Object>) v;
+        return v;
     }
 
 }

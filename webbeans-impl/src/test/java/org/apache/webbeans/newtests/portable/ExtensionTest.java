@@ -74,7 +74,7 @@ public class ExtensionTest extends AbstractUnitTest
         Assert.assertTrue(getBeanManager().isPassivatingScope(ExternalTestScoped.class));
         
         //Fire shut down
-        getBeanManager().fireEvent(new BeforeShutdownImpl(), new Annotation[0]);
+        getBeanManager().fireEvent(new BeforeShutdownImpl());
 
         webBeansContext.getContextFactory().destroyApplicationContext(null);
 

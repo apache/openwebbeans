@@ -74,7 +74,7 @@ public class PreDestroyComponentTest extends TestContext
         Assert.assertTrue(object instanceof CheckWithCheckPayment);
         Assert.assertTrue(object2 instanceof PreDestroyComponent);
 
-        PreDestroyComponent pcc = (PreDestroyComponent) object2;
+        PreDestroyComponent pcc = object2;
         CheckWithCheckPayment payment = (CheckWithCheckPayment) pcc.getP();
         payment.setValue(true);
 

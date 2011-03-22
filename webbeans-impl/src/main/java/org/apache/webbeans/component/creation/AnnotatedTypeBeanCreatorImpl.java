@@ -43,7 +43,7 @@ public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
     @Override
     public void defineConstructor()
     {
-        Constructor<T> constructor = null;
+        Constructor<T> constructor;
         try
         {
             AnnotatedConstructor<T> annotated = WebBeansAnnotatedTypeUtil.getBeanConstructor(getAnnotatedType());

@@ -122,7 +122,7 @@ public final class OWBInjector implements Serializable
                 return this;
             }
             
-            AnnotatedType<Object> annotated = (AnnotatedType<Object>) beanManager.createAnnotatedType(injectableComponentClass);
+            AnnotatedType<Object> annotated = beanManager.createAnnotatedType(injectableComponentClass);
             Set<InjectionPoint> injectionPoints = WebBeansAnnotatedTypeUtil.getJavaEeComponentInstanceInjectionPoints(webBeansContext, annotated);
             if(injectionPoints != null && injectionPoints.size() > 0)
             {

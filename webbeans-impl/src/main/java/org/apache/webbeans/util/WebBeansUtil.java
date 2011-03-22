@@ -1911,7 +1911,7 @@ public final class WebBeansUtil
 
     private <T> Constructor<T> getNoArgConstructor(Class<T> clazz)
     {
-        return webBeansContext.getSecurityService().doPrivilegedGetDeclaredConstructor(clazz, new Class<?>[] {});
+        return webBeansContext.getSecurityService().doPrivilegedGetDeclaredConstructor(clazz);
     }
 
     public static void checkNullable(Class<?> type, AbstractOwbBean<?> component)
@@ -2069,7 +2069,7 @@ public final class WebBeansUtil
 
             if (component != null)
             {
-                webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass((ManagedBean<Object>) component,
+                webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass(component,
                         webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
                                 clazz.getDeclaredAnnotations()));
             }
@@ -2109,7 +2109,7 @@ public final class WebBeansUtil
 
             if (delegate != null)
             {
-                WebBeansDecoratorConfig.configureDecoratorClass((ManagedBean<Object>) delegate);
+                WebBeansDecoratorConfig.configureDecoratorClass(delegate);
             }
             else
             {
@@ -2841,7 +2841,7 @@ public final class WebBeansUtil
 
             //Fires ProcessManagedBean
             ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean, annotatedType);
-            beanManager.fireEvent(processBeanEvent, new Annotation[0]);
+            beanManager.fireEvent(processBeanEvent);
             inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
                     "managed beans. Look at logs for further details");
 
@@ -2886,7 +2886,7 @@ public final class WebBeansUtil
 
             //Fires ProcessManagedBean
             ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(managedBean, annotatedType);
-            beanManager.fireEvent(processBeanEvent, new Annotation[0]);
+            beanManager.fireEvent(processBeanEvent);
             inspectErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
                     "managed beans. Look at logs for further details");
             if(!isAnnotatedTypeDecoratorOrInterceptor(annotatedType))

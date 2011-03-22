@@ -256,7 +256,7 @@ public class BeansDeployer
     private void fireBeforeBeanDiscoveryEvent()
     {
         BeanManager manager = webBeansContext.getBeanManagerImpl();
-        manager.fireEvent(new BeforeBeanDiscoveryImpl(webBeansContext),new Annotation[0]);
+        manager.fireEvent(new BeforeBeanDiscoveryImpl(webBeansContext));
     }
     
     /**
@@ -265,7 +265,7 @@ public class BeansDeployer
     private void fireAfterBeanDiscoveryEvent()
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        manager.fireEvent(new AfterBeanDiscoveryImpl(webBeansContext),new Annotation[0]);
+        manager.fireEvent(new AfterBeanDiscoveryImpl(webBeansContext));
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
             "There are errors that are added by AfterBeanDiscovery event observers. Look at logs for further details");
@@ -277,7 +277,7 @@ public class BeansDeployer
     private void fireAfterDeploymentValidationEvent()
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
-        manager.fireEvent(new AfterDeploymentValidationImpl(manager),new Annotation[0]);
+        manager.fireEvent(new AfterDeploymentValidationImpl(manager));
 
         webBeansContext.getWebBeansUtil().inspectErrorStack(
             "There are errors that are added by AfterDeploymentValidation event observers. Look at logs for further details");
@@ -620,7 +620,7 @@ public class BeansDeployer
                 //superClassList is used to handle the case: Car, CarToyota, Bus, SchoolBus, CarFord
                 //for which case, the owb should throw exception that both CarToyota and CarFord are 
                 //specialize Car. 
-                Class<?> superClass = null;
+                Class<?> superClass;
                 ArrayList<Class<?>> superClassList = new ArrayList<Class<?>>();
                 ArrayList<Class<?>> specialClassList = new ArrayList<Class<?>>();
                 for(Class<?> specialClass : beanClasses)
