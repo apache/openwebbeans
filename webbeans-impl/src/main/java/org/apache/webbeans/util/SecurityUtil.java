@@ -25,7 +25,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.Properties;
 
 import javassist.util.proxy.ProxyFactory;
 import org.apache.webbeans.exception.WebBeansException;
