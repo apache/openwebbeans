@@ -35,7 +35,11 @@ import java.util.Properties;
 
 /**
  * This version of the {@link SecurityService} uses the java.lang.SecurityManager
- * to check low level access to the underlying functions via a doPriviliged block.
+ * to check low level access to the underlying functions via doPriviliged blocks.
+ *
+ * The most secure way is to just copy the source over to your own class and configure
+ * it in openwebbeans.properties. This way you can add whatever security features
+ * you like to use.
  */
 public class ManagedSecurityService implements SecurityService
 {
@@ -57,10 +61,32 @@ public class ManagedSecurityService implements SecurityService
     {
         // we need to make sure that only WebBeansContext gets used to create us!
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        String declaringClass = stackTrace[6].getClassName();
-        if (!declaringClass.equals(WebBeansContext.class.getName()))
+
+        // in the Sun Java VM-1.6 the parent ct is alwasys entry [6]
+        // but we cannot rely on that because it might differ for
+        // other VMs.
+        boolean isCalledFromWebBeansContext = false;
+        for (int i = 3; i < 20; i++)
+        {
+            String declaringClass = stackTrace[i].getClassName();
+            String methodName = stackTrace[i].getMethodName();
+            if (declaringClass.equals(WebBeansContext.class.getName()) &&
+                methodName.equals("<init>"))
+            {
+                isCalledFromWebBeansContext = true;
+                break;
+            }
+        }
+        if (!isCalledFromWebBeansContext)
         {
             throw new SecurityException("ManagedSecurityService must directly get created by WebBeansContext!");
+        }
+
+        // we also need to make sure that this very class didn't get subclassed
+        // to prevent man in the middle attacks
+        if (this.getClass() != ManagedSecurityService.class)
+        {
+            throw new SecurityException("ManagedSecurityService must not get subclassed!");
         }
     }
 
