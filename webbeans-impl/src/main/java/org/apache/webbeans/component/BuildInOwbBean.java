@@ -75,11 +75,6 @@ public abstract class BuildInOwbBean<T> extends AbstractOwbBean<T>
     private static final String PROXY_HANDLER_VALUE_DEFAULT="default";
 
     /**
-     * Initialize build-in config.
-     */
-    private boolean initialized;
-
-    /**
      * The handler class name.
      */
     protected String handlerClassName;

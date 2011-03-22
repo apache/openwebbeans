@@ -57,8 +57,6 @@ public class OsgiMetaDataScannerService implements ScannerService
 {
     private WebBeansLogger logger = WebBeansLogger.getLogger(OsgiMetaDataScannerService.class);
 
-    private boolean configured = false;
-
     protected ServletContext servletContext = null;
     private static final String META_INF_BEANS_XML = "META-INF/beans.xml";
     private static final String WEB_INF_BEANS_XML = "WEB-INF/beans.xml";
