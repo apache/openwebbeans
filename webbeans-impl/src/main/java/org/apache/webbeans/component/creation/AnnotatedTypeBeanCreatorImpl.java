@@ -46,9 +46,10 @@ public class AnnotatedTypeBeanCreatorImpl<T> extends ManagedBeanCreatorImpl<T>
         Constructor<T> constructor;
         try
         {
-            AnnotatedConstructor<T> annotated = WebBeansAnnotatedTypeUtil.getBeanConstructor(getAnnotatedType());
+            WebBeansAnnotatedTypeUtil annotatedTypeUtil = getBean().getWebBeansContext().getAnnotatedTypeUtil();
+            AnnotatedConstructor<T> annotated = annotatedTypeUtil.getBeanConstructor(getAnnotatedType());
             constructor = annotated.getJavaMember();
-            WebBeansAnnotatedTypeUtil.addConstructorInjectionPointMetaData(getBean(), annotated);
+            annotatedTypeUtil.addConstructorInjectionPointMetaData(getBean(), annotated);
             
             getBean().setConstructor(constructor);
             

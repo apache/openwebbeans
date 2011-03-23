@@ -241,7 +241,7 @@ public class BeansDeployer
         Class<?> beanClass = ClassUtil.getClassFromName(className);
         if(beanClass != null)
         {
-            bean  = (Bean)ClassUtil.newInstance(beanClass);
+            bean  = (Bean)ClassUtil.newInstance(webBeansContext, beanClass);
         }
         
         if(bean != null)
@@ -363,7 +363,7 @@ public class BeansDeployer
                             !(bean instanceof javax.enterprise.inject.spi.Interceptor) &&
                             !(bean instanceof NewBean))
                     {
-                        DefinitionUtil.defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);   
+                        webBeansContext.getDefinitionUtil().defineDecoratorStack((AbstractInjectionTargetBean<Object>)bean);
                     }
                     
                     //If intercepted marker

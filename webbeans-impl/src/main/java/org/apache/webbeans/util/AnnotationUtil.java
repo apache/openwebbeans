@@ -27,11 +27,13 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.Nonbinding;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -614,9 +616,9 @@ public final class AnnotationUtil
 
         try
         {
-            if (!accessible)
+            if (!accessible )
             {
-                SecurityUtil.doPrivilegedSetAccessible(method, true);
+                doPrivilegedSetAccessible(method, true);
             }
 
             return method.invoke(instance, EMPTY_OBJECT_ARRAY);
@@ -628,7 +630,33 @@ public final class AnnotationUtil
         finally
         {
             // reset accessible value
-            SecurityUtil.doPrivilegedSetAccessible(method, accessible);
+            doPrivilegedSetAccessible(method, accessible);
+        }
+    }
+
+    private static Object doPrivilegedSetAccessible(AccessibleObject obj, boolean flag)
+    {
+        AccessController.doPrivileged(new PrivilegedActionForAccessibleObject(obj, flag));
+        return null;
+    }
+
+    private static class PrivilegedActionForAccessibleObject implements PrivilegedAction<Object>
+    {
+
+        private AccessibleObject object;
+
+        private boolean flag;
+
+        protected PrivilegedActionForAccessibleObject(AccessibleObject object, boolean flag)
+        {
+            this.object = object;
+            this.flag = flag;
+        }
+
+        public Object run()
+        {
+            object.setAccessible(flag);
+            return null;
         }
     }
 
@@ -734,35 +762,6 @@ public final class AnnotationUtil
         return rMethod;
     }
 
-    /**
-     * Gets array of methods that has given annotation type.
-     * 
-     * @param clazz class for check
-     * @param annotation for check
-     * @return array of methods
-     */
-    public static Method[] getMethodsWithAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
-    {
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(annotation, "Annotation argument can not be null");
-
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
-        List<Method> list = new ArrayList<Method>();
-        Method[] rMethod  ;
-
-        for (Method m : methods)
-        {
-            if (hasMethodAnnotation(m, annotation))
-            {
-                list.add(m);
-            }
-        }
-
-        rMethod = new Method[list.size()];
-        rMethod = list.toArray(rMethod);
-
-        return rMethod;
-    }
 
     /**
      * Check whether or not class contains the given annotation.
@@ -865,58 +864,6 @@ public final class AnnotationUtil
         return result;
     }
 
-    public static Field[] getClazzFieldsWithGivenAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
-    {
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
-        List<Field> list = new ArrayList<Field>();
-
-        if (fields.length != 0)
-        {
-            for (Field field : fields)
-            {
-                if (field.isAnnotationPresent(annotation))
-                {
-                    list.add(field);
-                }
-            }
-        }
-
-        fields = new Field[list.size()];
-        fields = list.toArray(fields);
-
-        return fields;
-    }
-
-    @Deprecated
-    public static void checkQualifierConditions(Annotation... qualifierAnnots)
-    {
-        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(qualifierAnnots);
-    }
-
-    /**
-     * This function obviously cannot check for duplicate annotations.
-     * So this must have been done before!
-     * @param qualifierAnnots
-     */
-    @Deprecated
-    public static void checkQualifierConditions(Set<Annotation> qualifierAnnots)
-    {
-        WebBeansContext.getInstance().getAnnotationManager().checkQualifierConditions(qualifierAnnots);
-    }
-
-    /**
-     * Returns true if the annotation is defined in xml or annotated with
-     * {@link javax.inject.Qualifier} false otherwise.
-     *
-     * @param clazz type of the annotation
-     * @return true if the annotation is defined in xml or annotated with
-     *         {@link javax.inject.Qualifier} false otherwise
-     */
-    @Deprecated
-    public static boolean isQualifierAnnotation(Class<? extends Annotation> clazz)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().isQualifierAnnotation(clazz);
-    }
 
     /**
      * Returns true if any binding exist

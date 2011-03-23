@@ -18,13 +18,9 @@
  */
 package org.apache.webbeans.util;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 
 import javassist.util.proxy.ProxyFactory;
 import org.apache.webbeans.exception.WebBeansException;
@@ -32,14 +28,9 @@ import org.apache.webbeans.exception.WebBeansException;
 /** @deprecated  use SecurityService instead */
 public class SecurityUtil
 {
-    private static final int METHOD_CLASS_GETDECLAREDMETHOD = 0x03;
 
     private static final int METHOD_CLASS_GETDECLAREDMETHODS = 0x04;
 
-    private static final int METHOD_CLASS_GETDECLAREDFIELD = 0x05;
-
-    private static final int METHOD_CLASS_GETDECLAREDFIELDS = 0x06;
-    
     public static <T> Method[] doPrivilegedGetDeclaredMethods(Class<T> clazz)
     {
         Object obj = AccessController.doPrivileged(
@@ -47,25 +38,15 @@ public class SecurityUtil
         return (Method[])obj;
     }
 
-    public static <T> Field[] doPrivilegedGetDeclaredFields(Class<T> clazz)
-    {
-        Object obj = AccessController.doPrivileged(
-                new PrivilegedActionForClass(clazz, null, METHOD_CLASS_GETDECLAREDFIELDS));
-        return (Field[])obj;
-    }
-
     protected static class PrivilegedActionForClass implements PrivilegedAction<Object>
     {
         private Class<?> clazz;
-
-        private Object parameters;
 
         private int method;
 
         protected PrivilegedActionForClass(Class<?> clazz, Object parameters, int method)
         {
             this.clazz = clazz;
-            this.parameters = parameters;
             this.method = method;
         }
 
@@ -75,16 +56,8 @@ public class SecurityUtil
             {
                 switch (method)
                 {
-                    case METHOD_CLASS_GETDECLAREDMETHOD:
-                        String name = (String)((Object[])parameters)[0];
-                        Class<?>[] realParameters = (Class<?>[])((Object[])parameters)[1];
-                        return clazz.getDeclaredMethod(name, realParameters);
                     case METHOD_CLASS_GETDECLAREDMETHODS:
                         return clazz.getDeclaredMethods();
-                    case METHOD_CLASS_GETDECLAREDFIELD:
-                        return clazz.getDeclaredField((String)parameters);
-                    case METHOD_CLASS_GETDECLAREDFIELDS:
-                        return clazz.getDeclaredFields();
 
                     default:
                         return new WebBeansException("unknown security method: " + method);
@@ -98,72 +71,12 @@ public class SecurityUtil
 
     }
 
-    public static Object doPrivilegedSetAccessible(AccessibleObject obj, boolean flag)
-    {
-        AccessController.doPrivileged(new PrivilegedActionForAccessibleObject(obj, flag));
-        return null;
-    }
-
-    protected static class PrivilegedActionForAccessibleObject implements PrivilegedAction<Object>
-    {
-
-        private AccessibleObject object;
-
-        private boolean flag;
-
-        protected PrivilegedActionForAccessibleObject(AccessibleObject object, boolean flag)
-        {
-            this.object = object;
-            this.flag = flag;
-        }
-
-        public Object run()
-        {
-            object.setAccessible(flag);
-            return null;
-        }
-    }
-
-
     public static Class<?> doPrivilegedCreateClass(ProxyFactory factory)
     {
         Class<?> ret = (Class<?>)AccessController.doPrivileged(new PrivilegedActionForProxyFactory(factory));
         return ret;
     }
 
-    public static Object doPrivilegedObjectCreate(Class<?> clazz) throws PrivilegedActionException
-    {
-        return AccessController.doPrivileged(new PrivilegedActionForObjectCreation(clazz));
-    }
-
-
-    protected static class PrivilegedActionForObjectCreation implements PrivilegedExceptionAction<Object>
-    {
-        private Class<?> clazz;
-        
-        protected PrivilegedActionForObjectCreation(Class<?> clazz)
-        {
-            this.clazz = clazz;
-        }
-
-        @Override
-        public Object run() throws Exception
-        {
-            try
-            {
-                return clazz.newInstance();
-            }
-            catch (InstantiationException e)
-            {
-                throw e;
-            }
-            catch (IllegalAccessException e)
-            {
-                throw e;
-            }
-        }
-        
-    }
 
     protected static class PrivilegedActionForProxyFactory implements PrivilegedAction<Object>
     {

@@ -189,7 +189,7 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         }
         else
         {
-            Field[] fields = ClassUtil.getFieldsWithType(returnType, delegateType);
+            Field[] fields = ClassUtil.getFieldsWithType(wrappedBean.getWebBeansContext(), returnType, delegateType);
             if(fields.length == 0)
             {
                 throw new WebBeansConfigurationException("Delegate injection field is not found for decorator : " + toString());

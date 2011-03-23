@@ -73,10 +73,12 @@ import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedR
 public final class WebBeansAnnotatedTypeUtil
 {
     private static final WebBeansLogger logger = WebBeansLogger.getLogger(WebBeansAnnotatedTypeUtil.class);
-    
-    private WebBeansAnnotatedTypeUtil()
+
+    private final WebBeansContext webBeansContext;
+
+    public WebBeansAnnotatedTypeUtil(WebBeansContext webBeansContext)
     {
-        
+        this.webBeansContext = webBeansContext;
     }
     
     public static <T> AnnotatedConstructor<T> getBeanConstructor(AnnotatedType<T> type)
@@ -142,23 +144,23 @@ public final class WebBeansAnnotatedTypeUtil
         return result;
     }
     
-    public static <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, AnnotatedConstructor<T> constructor)
+    public <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, AnnotatedConstructor<T> constructor)
     {
         InjectionPointFactory injectionPointFactory = owner.getWebBeansContext().getInjectionPointFactory();
         List<InjectionPoint> injectionPoints = injectionPointFactory.getConstructorInjectionPointData(owner, constructor);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
-            DefinitionUtil.addImplicitComponentForInjectionPoint(injectionPoint);
+            webBeansContext.getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
             owner.addInjectionPoint(injectionPoint);
         }
     }
     
-    public static <T,X> void addMethodInjectionPointMetaData(OwbBean<T> owner, AnnotatedMethod<X> method)
+    public <T,X> void addMethodInjectionPointMetaData(OwbBean<T> owner, AnnotatedMethod<X> method)
     {
         List<InjectionPoint> injectionPoints = owner.getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(owner, method);
         for (InjectionPoint injectionPoint : injectionPoints)
         {
-            DefinitionUtil.addImplicitComponentForInjectionPoint(injectionPoint);
+            webBeansContext.getDefinitionUtil().addImplicitComponentForInjectionPoint(injectionPoint);
             owner.addInjectionPoint(injectionPoint);
         }
     }
@@ -169,7 +171,7 @@ public final class WebBeansAnnotatedTypeUtil
     }
     
     @SuppressWarnings("unchecked")
-    public static <X> Set<ObserverMethod<?>> defineObserverMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
+    public <X> Set<ObserverMethod<?>> defineObserverMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
     {
         WebBeansContext webBeansContext = bean.getWebBeansContext();
         Set<ObserverMethod<?>> definedObservers = new HashSet<ObserverMethod<?>>();
@@ -223,7 +225,7 @@ public final class WebBeansAnnotatedTypeUtil
     }
     
     @SuppressWarnings("unchecked")
-    public static <X> void defineDisposalMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
+    public <X> void defineDisposalMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
     {
         final AnnotationManager annotationManager = bean.getWebBeansContext().getAnnotationManager();
         Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();    
@@ -298,7 +300,7 @@ public final class WebBeansAnnotatedTypeUtil
     }
     
     @SuppressWarnings("unchecked")
-    public static <X> void defineInjectedMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
+    public <X> void defineInjectedMethods(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
     {
         Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
         
@@ -330,7 +332,7 @@ public final class WebBeansAnnotatedTypeUtil
             }
         }
         
-        DefinitionUtil.defineInternalInjectedMethodsRecursively(bean, annotatedType.getJavaClass());
+        webBeansContext.getDefinitionUtil().defineInternalInjectedMethodsRecursively(bean, annotatedType.getJavaClass());
     }
     
     public static <X> void defineInjectedFields(AbstractInjectionTargetBean<X> bean,AnnotatedType<X> annotatedType)
@@ -381,14 +383,14 @@ public final class WebBeansAnnotatedTypeUtil
             }                                    
         }
         
-        DefinitionUtil.defineInternalInjectedFieldsRecursively(bean, annotatedType.getJavaClass());
+        bean.getWebBeansContext().getDefinitionUtil().defineInternalInjectedFieldsRecursively(bean, annotatedType.getJavaClass());
     }
     
     
     @SuppressWarnings("unchecked")
-    public static <X> Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
+    public <X> Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
     {
-        WebBeansContext webBeansContext = bean.getWebBeansContext();
+        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
         Set<ProducerFieldBean<?>> producerBeans = new HashSet<ProducerFieldBean<?>>();
         Set<AnnotatedField<? super X>> annotatedFields = annotatedType.getFields();        
         for(AnnotatedField<? super X> annotatedField: annotatedFields)
@@ -429,7 +431,7 @@ public final class WebBeansAnnotatedTypeUtil
                         ResourceBean<X,Annotation> resourceBean = new ResourceBean((Class<X>)field.getType(),bean, resourceRef);
                         
                         resourceBean.getTypes().addAll(annotatedField.getTypeClosure());
-                        DefinitionUtil.defineQualifiers(resourceBean, anns);                    
+                        definitionUtil.defineQualifiers(resourceBean, anns);
                         resourceBean.setImplScopeType(new DependentScopeLiteral());
                         resourceBean.setProducerField(field);
                         
@@ -445,20 +447,20 @@ public final class WebBeansAnnotatedTypeUtil
                     {
                         producerFieldBean.setNullable(false);
                     }                    
-                    
-                    DefinitionUtil.defineSerializable(producerFieldBean);
-                    DefinitionUtil.defineStereoTypes(producerFieldBean, anns);
+
+                    definitionUtil.defineSerializable(producerFieldBean);
+                    definitionUtil.defineStereoTypes(producerFieldBean, anns);
                     webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
                                                                                                       producerFieldBean,
                                                                                                       anns);
                     Set<Type> types = annotatedField.getTypeClosure();
                     producerFieldBean.getTypes().addAll(types);
-                    DefinitionUtil.defineScopeType(producerFieldBean, anns, "Annotated producer field: " + annotatedField +  "must declare default @Scope annotation", false);
+                    definitionUtil.defineScopeType(producerFieldBean, anns, "Annotated producer field: " + annotatedField +  "must declare default @Scope annotation", false);
                     webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerFieldBean,
                                                                                              producerFieldBean.getScope());
                     WebBeansUtil.checkProducerGenericType(producerFieldBean,annotatedField.getJavaMember());
-                    DefinitionUtil.defineQualifiers(producerFieldBean, anns);
-                    DefinitionUtil.defineName(producerFieldBean, anns, WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
+                    definitionUtil.defineQualifiers(producerFieldBean, anns);
+                    definitionUtil.defineName(producerFieldBean, anns, WebBeansUtil.getProducerDefaultName(annotatedField.getJavaMember().getName()));
                     
                     producerBeans.add(producerFieldBean);
                 }
@@ -470,10 +472,9 @@ public final class WebBeansAnnotatedTypeUtil
     
     
     @SuppressWarnings("unchecked")
-    public static <X> Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
+    public <X> Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
     {
-        WebBeansContext webBeansContext = bean.getWebBeansContext();
-
+        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
         Set<ProducerMethodBean<?>> producerBeans = new HashSet<ProducerMethodBean<?>>();
         Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
         
@@ -506,8 +507,8 @@ public final class WebBeansAnnotatedTypeUtil
                     producerMethodBean.setNullable(false);
                 }
                 
-                DefinitionUtil.defineSerializable(producerMethodBean);
-                DefinitionUtil.defineStereoTypes(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
+                definitionUtil.defineSerializable(producerMethodBean);
+                definitionUtil.defineStereoTypes(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
                 webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(bean,
                                                                                                   producerMethodBean,
                                                                                                   AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
@@ -521,8 +522,8 @@ public final class WebBeansAnnotatedTypeUtil
                 webBeansContext.getWebBeansUtil().checkUnproxiableApiType(producerMethodBean,
                                                                                          producerMethodBean.getScope());
                 WebBeansUtil.checkProducerGenericType(producerMethodBean,annotatedMethod.getJavaMember());
-                DefinitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
-                DefinitionUtil.defineName(producerMethodBean,
+                definitionUtil.defineQualifiers(producerMethodBean, AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()));
+                definitionUtil.defineName(producerMethodBean,
                                           AnnotationUtil.getAnnotationsFromSet(annotatedMethod.getAnnotations()),
                                                                                WebBeansUtil.getProducerDefaultName(annotatedMethod.getJavaMember().getName()));
                 

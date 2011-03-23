@@ -43,6 +43,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -146,7 +147,7 @@ public final class OWBInjector implements Serializable
                         
                         //Set field
                         Field field = (Field)injectionPoint.getMember();
-                        ClassUtil.setField(javaEeComponentInstance, field, object);
+                        setField(javaEeComponentInstance, field, object);
                     }                        
                 }
                 
@@ -162,7 +163,8 @@ public final class OWBInjector implements Serializable
         
         return null;
     }
-    
+
+
     /**
      * Release dependents.
      */
@@ -189,7 +191,28 @@ public final class OWBInjector implements Serializable
             }            
         }        
     }
-    
+
+    private void setField(Object instance, Field field, Object value)
+    {
+        if(!field.isAccessible())
+        {
+            webBeansContext.getSecurityService().doPrivilegedSetAccessible(field, true);
+        }
+
+        try
+        {
+            field.set(instance, value);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new WebBeansException(e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new WebBeansException(e);
+        }
+    }
+
     /**
      * Gets injected object reference.
      * @param injectionPoint injection point of javaee instance

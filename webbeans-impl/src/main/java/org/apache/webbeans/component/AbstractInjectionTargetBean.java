@@ -51,7 +51,6 @@ import org.apache.webbeans.intercept.InvocationContextImpl;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ResourceInjectionService;
-import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
@@ -329,12 +328,33 @@ public abstract class AbstractInjectionTargetBean<T> extends AbstractOwbBean<T> 
                     Object reference = getManager().getReference(injectionPointBean, InjectionPoint.class,
                                              getManager().createCreationalContext(injectionPointBean));
                     
-                    ClassUtil.setField(instance, field, reference);
+                    setField(instance, field, reference);
                 }
             }
         }                
     }
-    
+
+    private void setField(T instance, Field field, Object value)
+    {
+        if(!field.isAccessible())
+        {
+            getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(field, true);
+        }
+
+        try
+        {
+            field.set(instance, value);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new WebBeansException(e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new WebBeansException(e);
+        }
+    }
+
     public void injectSuperFields(T instance, CreationalContext<T> creationalContext)
     {
         Set<Field> fields = getInjectedFromSuperFields();

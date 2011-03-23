@@ -25,7 +25,6 @@ import javax.enterprise.inject.spi.ObserverMethod;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 
 /**
@@ -54,13 +53,15 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     @Override
     public void defineDisposalMethods()
     {
+        AbstractInjectionTargetBean bean = getBean();
         if(isDefaultMetaDataProvider())
         {
-            DefinitionUtil.defineDisposalMethods(getBean());   
+
+            bean.getWebBeansContext().getDefinitionUtil().defineDisposalMethods(getBean());
         }
         else
         {
-            WebBeansAnnotatedTypeUtil.defineDisposalMethods(getBean(), getAnnotatedType());
+            bean.getWebBeansContext().getAnnotatedTypeUtil().defineDisposalMethods(getBean(), getAnnotatedType());
         }
         
     }
@@ -71,13 +72,14 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     @Override
     public void defineInjectedFields()
     {
+        AbstractInjectionTargetBean bean = getBean();
         if(isDefaultMetaDataProvider())
         {
-            DefinitionUtil.defineInjectedFields(getBean());   
+            bean.getWebBeansContext().getDefinitionUtil().defineInjectedFields(bean);
         }
         else
         {
-            WebBeansAnnotatedTypeUtil.defineInjectedFields(getBean(), getAnnotatedType());
+            WebBeansAnnotatedTypeUtil.defineInjectedFields(bean, getAnnotatedType());
         }
         
     }
@@ -88,13 +90,14 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     @Override
     public void defineInjectedMethods()
     {
+        AbstractInjectionTargetBean bean = getBean();
         if(isDefaultMetaDataProvider())
         {
-            DefinitionUtil.defineInjectedMethods(getBean());
+            bean.getWebBeansContext().getDefinitionUtil().defineInjectedMethods(bean);
         }
         else
         {
-            WebBeansAnnotatedTypeUtil.defineInjectedMethods(getBean(), getAnnotatedType());
+            bean.getWebBeansContext().getAnnotatedTypeUtil().defineInjectedMethods(bean, getAnnotatedType());
         }
         
     }
@@ -105,13 +108,14 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     @Override
     public Set<ObserverMethod<?>> defineObserverMethods()
     {   
+        AbstractInjectionTargetBean bean = getBean();
         if(isDefaultMetaDataProvider())
         {
-            return DefinitionUtil.defineObserverMethods(getBean(), getBean().getReturnType());
+            return bean.getWebBeansContext().getDefinitionUtil().defineObserverMethods(bean, bean.getReturnType());
         }
         else
         {
-            return WebBeansAnnotatedTypeUtil.defineObserverMethods(getBean(), getAnnotatedType());
+            return bean.getWebBeansContext().getAnnotatedTypeUtil().defineObserverMethods(bean, getAnnotatedType());
         }
     }
 
@@ -121,13 +125,14 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     @Override
     public Set<ProducerFieldBean<?>> defineProducerFields()
     {
+        AbstractInjectionTargetBean bean = getBean();
         if(isDefaultMetaDataProvider())
         {
-            return DefinitionUtil.defineProduerFields(getBean());
+            return bean.getWebBeansContext().getDefinitionUtil().defineProduerFields(bean);
         }
         else
         {
-            return WebBeansAnnotatedTypeUtil.defineProducerFields(getBean(), getAnnotatedType());
+            return bean.getWebBeansContext().getAnnotatedTypeUtil().defineProducerFields(bean, getAnnotatedType());
         }
     }
 
@@ -137,13 +142,14 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
     @Override
     public Set<ProducerMethodBean<?>> defineProducerMethods()
     {
+        AbstractInjectionTargetBean bean = getBean();
         if(isDefaultMetaDataProvider())
         {
-            return DefinitionUtil.defineProducerMethods(getBean());
+            return bean.getWebBeansContext().getDefinitionUtil().defineProducerMethods(bean);
         }
         else
         {
-            return WebBeansAnnotatedTypeUtil.defineProducerMethods(getBean(), getAnnotatedType());
+            return bean.getWebBeansContext().getAnnotatedTypeUtil().defineProducerMethods(bean, getAnnotatedType());
         }
     }
     

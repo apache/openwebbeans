@@ -111,6 +111,8 @@ public final class ManagedBeanConfigurator
     public <T> ManagedBean<T> define(Class<T> clazz, WebBeansType type) throws WebBeansConfigurationException
     {
         BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
+
 
         int modifier = clazz.getModifiers();
 
@@ -135,29 +137,29 @@ public final class ManagedBeanConfigurator
 
         webBeansContext.getWebBeansUtil().setInjectionTargetBeanEnableFlag(component);
 
-        DefinitionUtil.defineSerializable(component);
-        DefinitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
+        definitionUtil.defineSerializable(component);
+        definitionUtil.defineStereoTypes(component, clazz.getDeclaredAnnotations());
 
         Annotation[] clazzAnns = clazz.getDeclaredAnnotations();
 
-        DefinitionUtil.defineApiTypes(component, clazz);
-        DefinitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName()
+        definitionUtil.defineApiTypes(component, clazz);
+        definitionUtil.defineScopeType(component, clazzAnns, "Simple WebBean Component implementation class : " + clazz.getName()
                                                              + " stereotypes must declare same @Scope annotations", false);
         // we fully initialize the bean in this case.
         component.setFullInit(true);
 
         WebBeansUtil.checkGenericType(component);
-        DefinitionUtil.defineQualifiers(component, clazzAnns);
-        DefinitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
+        definitionUtil.defineQualifiers(component, clazzAnns);
+        definitionUtil.defineName(component, clazzAnns, WebBeansUtil.getManagedBeanDefaultName(clazz.getSimpleName()));
 
         Constructor<T> constructor = webBeansContext.getWebBeansUtil().defineConstructor(clazz);
         component.setConstructor(constructor);
-        DefinitionUtil.addConstructorInjectionPointMetaData(component, constructor);
+        definitionUtil.addConstructorInjectionPointMetaData(component, constructor);
 
         //Dropped from the speicification
         //WebBeansUtil.checkSteroTypeRequirements(component, clazz.getDeclaredAnnotations(), "Simple WebBean Component implementation class : " + clazz.getName());
 
-        Set<ProducerMethodBean<?>> producerMethods = DefinitionUtil.defineProducerMethods(component);
+        Set<ProducerMethodBean<?>> producerMethods = definitionUtil.defineProducerMethods(component);
         for (ProducerMethodBean<?> producerMethod : producerMethods)
         {
             // add them one after the other to enable serialization handling et al
@@ -165,7 +167,7 @@ public final class ManagedBeanConfigurator
             manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(new ProducerBeansProducer(producerMethod)));
         }
 
-        Set<ProducerFieldBean<?>> producerFields = DefinitionUtil.defineProduerFields(component);
+        Set<ProducerFieldBean<?>> producerFields = definitionUtil.defineProduerFields(component);
         for (ProducerFieldBean<?> producerField : producerFields)
         {
             // add them one after the other to enable serialization handling et al
@@ -174,10 +176,10 @@ public final class ManagedBeanConfigurator
         }
 
 
-        DefinitionUtil.defineDisposalMethods(component);
-        DefinitionUtil.defineInjectedFields(component);
-        DefinitionUtil.defineInjectedMethods(component);
-        DefinitionUtil.defineObserverMethods(component, clazz);
+        definitionUtil.defineDisposalMethods(component);
+        definitionUtil.defineInjectedFields(component);
+        definitionUtil.defineInjectedMethods(component);
+        definitionUtil.defineObserverMethods(component, clazz);
 
         return component;
     }

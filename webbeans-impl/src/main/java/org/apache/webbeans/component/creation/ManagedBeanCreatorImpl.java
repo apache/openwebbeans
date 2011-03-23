@@ -23,7 +23,6 @@ import java.lang.reflect.Constructor;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.WebBeansAnnotatedTypeUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -82,13 +81,13 @@ public class ManagedBeanCreatorImpl<T> extends AbstractInjectedTargetBeanCreator
         if(isDefaultMetaDataProvider())
         {
             constructor = webBeansContext.getWebBeansUtil().defineConstructor(getBean().getReturnType());
-            DefinitionUtil.addConstructorInjectionPointMetaData(getBean(), constructor);
+            webBeansContext.getDefinitionUtil().addConstructorInjectionPointMetaData(getBean(), constructor);
         }
         else
         {
            AnnotatedConstructor<T> annotated = WebBeansAnnotatedTypeUtil.getBeanConstructor(getAnnotatedType());
            constructor = annotated.getJavaMember();
-           WebBeansAnnotatedTypeUtil.addConstructorInjectionPointMetaData(getBean(), annotated);
+           webBeansContext.getAnnotatedTypeUtil().addConstructorInjectionPointMetaData(getBean(), annotated);
         }
         
         getBean().setConstructor(constructor);

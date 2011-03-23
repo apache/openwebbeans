@@ -78,7 +78,7 @@ public final class EjbDefinitionUtility
                 clazz = bean.getWebBeansContext().getJavassistProxyFactory().defineEjbBeanProxyClass(bean, iface, factory);
             }
             
-            proxyInstance = (T) ClassUtil.newInstance(clazz);
+            proxyInstance = (T) ClassUtil.newInstance(bean.getWebBeansContext(), clazz);
             
             EjbBeanProxyHandler handler = new EjbBeanProxyHandler(bean, creationalContext);
             ((ProxyObject)proxyInstance).setHandler(handler);

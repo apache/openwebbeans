@@ -42,7 +42,8 @@ public class BeansImpl implements Beans
     @SuppressWarnings("unchecked")
     public <T> Bean<T> createProducerMethodBean(Method method, Bean<?> declaringBean)
     {
-        return DefinitionUtil.createProducerComponent((Class<T>)method.getReturnType(), method, (InjectionTargetBean<?>)declaringBean, false);
+        DefinitionUtil definitionUtil = ((InjectionTargetBean<?>)declaringBean).getWebBeansContext().getDefinitionUtil();
+        return definitionUtil.createProducerComponent((Class<T>)method.getReturnType(), method, (InjectionTargetBean<?>)declaringBean, false);
         
     }
 

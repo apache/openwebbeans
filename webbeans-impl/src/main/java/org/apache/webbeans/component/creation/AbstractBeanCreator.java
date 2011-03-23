@@ -52,6 +52,8 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
      * to define bean instance instead of using class artifacts.
      */
     private AnnotatedType<T> annotatedType;
+
+    private final DefinitionUtil definitionUtil;
     
     /**
      * Creates a bean instance.
@@ -62,7 +64,8 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     public AbstractBeanCreator(AbstractOwbBean<T> bean, Annotation[] beanAnnotations)
     {
         this.bean = bean;
-        this.beanAnnotations = beanAnnotations;           
+        this.beanAnnotations = beanAnnotations;
+        this.definitionUtil = bean.getWebBeansContext().getDefinitionUtil();
     }
 
     /**
@@ -99,11 +102,11 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     {
         if(isDefaultMetaDataProvider())
         {
-            DefinitionUtil.defineQualifiers(this.bean, this.beanAnnotations);
+            definitionUtil.defineQualifiers(this.bean, this.beanAnnotations);
         }
         else
         {
-            DefinitionUtil.defineQualifiers(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()));
+            definitionUtil.defineQualifiers(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()));
         }
         
     }
@@ -116,11 +119,11 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     {
         if(isDefaultMetaDataProvider())
         {
-            DefinitionUtil.defineName(this.bean, this.beanAnnotations, defaultName);
+            definitionUtil.defineName(this.bean, this.beanAnnotations, defaultName);
         }
         else
         {
-            DefinitionUtil.defineName(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()), 
+            definitionUtil.defineName(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()),
                     WebBeansUtil.getManagedBeanDefaultName(annotatedType.getJavaClass().getSimpleName()));
         }
         
@@ -134,11 +137,11 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     {
         if(isDefaultMetaDataProvider())
         {
-            DefinitionUtil.defineScopeType(this.bean, this.beanAnnotations, errorMessage, allowLazyInit);
+            definitionUtil.defineScopeType(this.bean, this.beanAnnotations, errorMessage, allowLazyInit);
         }
         else
         {
-            DefinitionUtil.defineScopeType(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()), errorMessage, false);
+            definitionUtil.defineScopeType(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()), errorMessage, false);
         }
     }
 
@@ -148,7 +151,7 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     @Override
     public void defineSerializable()
     {
-        DefinitionUtil.defineSerializable(this.bean);        
+        definitionUtil.defineSerializable(this.bean);
     }
 
     /**
@@ -159,11 +162,11 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
     {
         if(isDefaultMetaDataProvider())
         {
-            DefinitionUtil.defineStereoTypes(this.bean, this.beanAnnotations);
+            definitionUtil.defineStereoTypes(this.bean, this.beanAnnotations);
         }
         else
         {
-            DefinitionUtil.defineStereoTypes(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()));
+            definitionUtil.defineStereoTypes(this.bean, AnnotationUtil.getAnnotationsFromSet(this.annotatedType.getAnnotations()));
         }
         
     }

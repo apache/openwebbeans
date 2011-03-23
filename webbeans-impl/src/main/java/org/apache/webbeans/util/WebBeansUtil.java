@@ -576,17 +576,19 @@ public final class WebBeansUtil
     {
         Asserts.nullCheckForClass(clazz);
 
-        NewBean<T> comp = null;
+        NewBean<T> comp;
+        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
+
 
         if (webBeansContext.getManagedBeanConfigurator().isManagedBean(clazz))
         {
             comp = new NewBean<T>(clazz, WebBeansType.MANAGED, webBeansContext);
             comp.setImplScopeType(new DependentScopeLiteral());
             comp.setConstructor(defineConstructor(clazz));
-            DefinitionUtil.addConstructorInjectionPointMetaData(comp, comp.getConstructor());
+            definitionUtil.addConstructorInjectionPointMetaData(comp, comp.getConstructor());
 
-            DefinitionUtil.defineInjectedFields(comp);
-            DefinitionUtil.defineInjectedMethods(comp);
+            definitionUtil.defineInjectedFields(comp);
+            definitionUtil.defineInjectedMethods(comp);
         }
         else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))
         {
@@ -630,12 +632,13 @@ public final class WebBeansUtil
         comp = new ExtensionBean<T>(clazz, webBeansContext);
         comp.setEnabled(true);
 
-        DefinitionUtil.defineApiTypes(comp, clazz);
+        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
+        definitionUtil.defineApiTypes(comp, clazz);
 
         comp.setImplScopeType(new ApplicationScopeLiteral());
         comp.addQualifier(new DefaultLiteral());
 
-        DefinitionUtil.defineObserverMethods(comp, clazz);
+        definitionUtil.defineObserverMethods(comp, clazz);
 
         return comp;
     }
@@ -2930,8 +2933,10 @@ public final class WebBeansUtil
         managedBeanCreator.defineInjectedFields();
         managedBeanCreator.defineInjectedMethods();
         managedBeanCreator.defineObserverMethods();
-        DefinitionUtil.defineDecoratorStack(managedBean);
-        webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(managedBean);
+
+        DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
+        definitionUtil.defineDecoratorStack(managedBean);
+        definitionUtil.defineBeanInterceptorStack(managedBean);
 
         managedBeanCreator.defineDisposalMethods();//Define disposal method after adding producers
 

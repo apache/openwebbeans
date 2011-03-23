@@ -40,6 +40,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Provider;
 
 import org.apache.webbeans.config.BeanTypeSetResolver;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLogger;
 
@@ -77,13 +78,13 @@ public final class ClassUtil
         throw new UnsupportedOperationException();
     }
 
-    public static Object newInstance(Class<?> clazz)
+    public static Object newInstance(WebBeansContext webBeansContext, Class<?> clazz)
     {
         try
         {
             if(System.getSecurityManager() != null)
             {
-                return SecurityUtil.doPrivilegedObjectCreate(clazz);
+                return webBeansContext.getSecurityService().doPrivilegedObjectCreate(clazz);
             }            
             
             return clazz.newInstance();
@@ -1249,13 +1250,13 @@ public final class ClassUtil
         return true;
     }
 
-    public static Field[] getFieldsWithType(Class<?> clazz, Type type)
+    public static Field[] getFieldsWithType(WebBeansContext webBeansContext, Class<?> clazz, Type type)
     {
         Asserts.nullCheckForClass(clazz);
         Asserts.assertNotNull(type, "type parameter can not be null");
 
         List<Field> fieldsWithType = new ArrayList<Field>();
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
+        Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(clazz);
         for (Field field : fields)
         {
             if(field.getType().equals(type))
@@ -1267,32 +1268,7 @@ public final class ClassUtil
         return fieldsWithType.toArray(new Field[fieldsWithType.size()]);
 
     }
-    
-    public static void setField(Object instance, Field field, Object value)
-    {
-        Asserts.assertNotNull(instance);
-        Asserts.assertNotNull(field);
-        
-        if(!field.isAccessible())
-        {
-            SecurityUtil.doPrivilegedSetAccessible(field, true);
-        }
-        
-        try
-        {
-            field.set(instance, value);
-        }
-        catch (IllegalArgumentException e)
-        {
-            throw new WebBeansException(e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new WebBeansException(e);
-        }
-        
-    }
- 
+
     /**
      * Returns injection point raw type.
      * 

@@ -76,7 +76,6 @@ import org.apache.webbeans.spi.api.ResourceReference;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.util.SecurityUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import static org.apache.webbeans.util.InjectionExceptionUtils.throwUnsatisfiedResolutionException;
 
@@ -217,7 +216,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param annotations annotations
      */
-    public static <T> void defineQualifiers(AbstractOwbBean<T> component, Annotation[] annotations)
+    public <T> void defineQualifiers(AbstractOwbBean<T> component, Annotation[] annotations)
     {
         final AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
 
@@ -227,7 +226,7 @@ public final class DefinitionUtil
 
             if (annotationManager.isQualifierAnnotation(type))
             {
-                Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(type);
+                Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(type);
 
                 for (Method method : methods)
                 {
@@ -627,7 +626,7 @@ public final class DefinitionUtil
      * @param component configuring web beans component
      * @param defaultName default name of the web bean
      */
-    public static <T> void defineName(AbstractOwbBean<T> component, Annotation[] anns, String defaultName)
+    public <T> void defineName(AbstractOwbBean<T> component, Annotation[] anns, String defaultName)
     {
         Named nameAnnot = null;
         boolean isDefault = false;
@@ -676,16 +675,16 @@ public final class DefinitionUtil
      * @param component producer field owner component
      * @return the set of producer field components
      */
-    public static Set<ProducerFieldBean<?>> defineProduerFields(InjectionTargetBean<?> component)
+    public Set<ProducerFieldBean<?>> defineProduerFields(InjectionTargetBean<?> component)
     {
         Set<ProducerFieldBean<?>> producerFields = new HashSet<ProducerFieldBean<?>>();
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(component.getReturnType());
+        Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(component.getReturnType());
         createProducerField(component, producerFields, fields);
 
         return producerFields;
     }
 
-    private static void createProducerField(InjectionTargetBean<?> component, Set<ProducerFieldBean<?>> producerFields, Field[] fields)
+    private void createProducerField(InjectionTargetBean<?> component, Set<ProducerFieldBean<?>> producerFields, Field[] fields)
     {
         for (Field field : fields)
         {        
@@ -723,14 +722,14 @@ public final class DefinitionUtil
      * @return the set of producer components
      * @throws WebBeansConfigurationException if any exception occurs
      */
-    public static Set<ProducerMethodBean<?>> defineProducerMethods(AbstractInjectionTargetBean<?> component)
+    public Set<ProducerMethodBean<?>> defineProducerMethods(AbstractInjectionTargetBean<?> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
         Set<ProducerMethodBean<?>> producerComponents = new HashSet<ProducerMethodBean<?>>();
 
         Class<?> clazz = component.getReturnType();
-        Method[] declaredMethods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
+        Method[] declaredMethods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
 
         // This methods defined in the class
         for (Method declaredMethod : declaredMethods)
@@ -741,7 +740,7 @@ public final class DefinitionUtil
         return producerComponents;
     }
 
-    private static <T> void createProducerComponents(InjectionTargetBean<T> component, Set<ProducerMethodBean<?>> producerComponents,
+    private <T> void createProducerComponents(InjectionTargetBean<T> component, Set<ProducerMethodBean<?>> producerComponents,
                                                      Method declaredMethod, Class<?> clazz)
     {
         boolean isSpecializes = false;
@@ -773,7 +772,7 @@ public final class DefinitionUtil
 
     }
 
-    public static <T> ProducerMethodBean<T> createProducerComponent(Class<T> returnType, Method method, InjectionTargetBean<?> parent,
+    public <T> ProducerMethodBean<T> createProducerComponent(Class<T> returnType, Method method, InjectionTargetBean<?> parent,
                                                                     boolean isSpecializes)
     {
         ProducerMethodBean<T> component = new ProducerMethodBean<T>(parent, returnType);
@@ -797,18 +796,18 @@ public final class DefinitionUtil
         WebBeansContext webBeansContext = parent.getWebBeansContext();
         webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(parent, component, methodAnns);
 
-        DefinitionUtil.defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
-        DefinitionUtil.defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName()
+        defineProducerMethodApiTypes(component, method.getGenericReturnType(), methodAnns);
+        defineScopeType(component, methodAnns, "WebBeans producer method : " + method.getName() + " in class " + parent.getReturnType().getName()
                                                               + " must declare default @Scope annotation", false);
         webBeansContext.getWebBeansUtil().checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,method);
-        DefinitionUtil.defineQualifiers(component, methodAnns);
-        DefinitionUtil.defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
+        defineQualifiers(component, methodAnns);
+        defineName(component, methodAnns, WebBeansUtil.getProducerDefaultName(method.getName()));
 
         return component;
     }
 
-    private static <T> ProducerFieldBean<T> createProducerFieldComponent(Class<T> returnType, Field field, InjectionTargetBean<?> parent)
+    private <T> ProducerFieldBean<T> createProducerFieldComponent(Class<T> returnType, Field field, InjectionTargetBean<?> parent)
     {
         ProducerFieldBean<T> component = new ProducerFieldBean<T>(parent, returnType);
         
@@ -859,13 +858,13 @@ public final class DefinitionUtil
                                                              + " must declare default @Scope annotation", false);
         webBeansContext.getWebBeansUtil().checkUnproxiableApiType(component, component.getScope());
         WebBeansUtil.checkProducerGenericType(component,field);
-        DefinitionUtil.defineQualifiers(component, fieldAnns);
-        DefinitionUtil.defineName(component, fieldAnns, field.getName());
+        defineQualifiers(component, fieldAnns);
+        defineName(component, fieldAnns, field.getName());
 
         return component;
     }
 
-    public static <T> void defineDisposalMethods(AbstractOwbBean<T> component)
+    public <T> void defineDisposalMethods(AbstractOwbBean<T> component)
     {
         Class<?> clazz = component.getReturnType();
 
@@ -876,7 +875,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void createDisposalMethods(AbstractOwbBean<T> component, Method[] methods, Class<?> clazz)
+    private <T> void createDisposalMethods(AbstractOwbBean<T> component, Method[] methods, Class<?> clazz)
     {
         final AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
 
@@ -939,7 +938,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void defineInjectedFields(AbstractInjectionTargetBean<T> component)
+    public <T> void defineInjectedFields(AbstractInjectionTargetBean<T> component)
     {
         Class<T> clazz = component.getReturnType();
 
@@ -951,7 +950,7 @@ public final class DefinitionUtil
 
     }
 
-    public static <T> void defineInternalInjectedFieldsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
+    public <T> void defineInternalInjectedFieldsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
     {
         // From inheritance
         Class<?> superClazz = clazz.getSuperclass();
@@ -967,13 +966,13 @@ public final class DefinitionUtil
 
     }
 
-    public static <T> void defineInternalInjectedFields(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromSuperClazz)
+    public <T> void defineInternalInjectedFields(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromSuperClazz)
     {
 
         WebBeansContext webBeansContext = component.getWebBeansContext();
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
-        Field[] fields = SecurityUtil.doPrivilegedGetDeclaredFields(clazz);
+        Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(clazz);
 
         if (fields.length != 0)
         {
@@ -1031,7 +1030,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void defineInjectedMethods(AbstractInjectionTargetBean<T> bean)
+    public <T> void defineInjectedMethods(AbstractInjectionTargetBean<T> bean)
     {
         Asserts.assertNotNull(bean, "bean parameter can not be null");
 
@@ -1044,7 +1043,7 @@ public final class DefinitionUtil
         defineInternalInjectedMethodsRecursively(bean, clazz);
     }
 
-    public static <T> void defineInternalInjectedMethodsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
+    public <T> void defineInternalInjectedMethodsRecursively(AbstractInjectionTargetBean<T> component, Class<T> clazz)
     {
         // From inheritance
         Class<?> superClazz = clazz.getSuperclass();
@@ -1059,10 +1058,10 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void defineInternalInjectedMethods(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromInherited)
+    private <T> void defineInternalInjectedMethods(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromInherited)
     {
 
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
+        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
         
         for (Method method : methods)
         {
@@ -1092,7 +1091,7 @@ public final class DefinitionUtil
                 }
                 else
                 {                    
-                    Method[] beanMethods = SecurityUtil.doPrivilegedGetDeclaredMethods(component.getReturnType());
+                    Method[] beanMethods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(component.getReturnType());
                     boolean defined = false;
                     for (Method beanMethod : beanMethods)
                     {
@@ -1192,12 +1191,12 @@ public final class DefinitionUtil
      * Defines decorator stack of given bean.
      * @param bean injection target bean
      */
-    public static void defineDecoratorStack(AbstractInjectionTargetBean<?> bean)
+    public void defineDecoratorStack(AbstractInjectionTargetBean<?> bean)
     {
         WebBeansDecoratorConfig.configureDecarotors(bean);
     }
 
-    public static <T> Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> component, Class<T> clazz)
+    public <T> Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> component, Class<T> clazz)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         Asserts.nullCheckForClass(clazz);
@@ -1213,7 +1212,7 @@ public final class DefinitionUtil
 
     }
 
-    private static <T> void createObserverMethods(InjectionTargetBean<T> component, Class<?> clazz, Method[] candidateMethods)
+    private <T> void createObserverMethods(InjectionTargetBean<T> component, Class<?> clazz, Method[] candidateMethods)
     {
 
         for (Method candidateMethod : candidateMethods)
@@ -1238,7 +1237,7 @@ public final class DefinitionUtil
 
     }
 
-    public static <T> void defineSerializable(AbstractOwbBean<T> component)
+    public <T> void defineSerializable(AbstractOwbBean<T> component)
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
         if (ClassUtil.isClassAssignable(Serializable.class, component.getReturnType()))
@@ -1247,7 +1246,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void addFieldInjectionPointMetaData(AbstractOwbBean<T> owner, Field field)
+    public <T> void addFieldInjectionPointMetaData(AbstractOwbBean<T> owner, Field field)
     {
         InjectionPoint injectionPoint = owner.getWebBeansContext().getInjectionPointFactory().getFieldInjectionPointData(owner, field);
         if (injectionPoint != null)
@@ -1257,7 +1256,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void addMethodInjectionPointMetaData(AbstractOwbBean<T> owner, Method method)
+    public <T> void addMethodInjectionPointMetaData(AbstractOwbBean<T> owner, Method method)
     {
         List<InjectionPoint> injectionPoints = owner.getWebBeansContext().getInjectionPointFactory().getMethodInjectionPointData(owner, method);
         for (InjectionPoint injectionPoint : injectionPoints)
@@ -1267,7 +1266,7 @@ public final class DefinitionUtil
         }
     }
 
-    public static <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, Constructor<T> constructor)
+    public <T> void addConstructorInjectionPointMetaData(AbstractOwbBean<T> owner, Constructor<T> constructor)
     {
         List<InjectionPoint> injectionPoints = owner.getWebBeansContext().getInjectionPointFactory().getConstructorInjectionPointData(owner, constructor);
         for (InjectionPoint injectionPoint : injectionPoints)
@@ -1277,7 +1276,7 @@ public final class DefinitionUtil
         }
     }
     
-    public static void addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
+    public void addImplicitComponentForInjectionPoint(InjectionPoint injectionPoint)
     {
         if(!WebBeansUtil.checkObtainsInjectionPointConditions(injectionPoint))
         {
@@ -1285,7 +1284,7 @@ public final class DefinitionUtil
         }        
     }
     
-    public static <X> Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
+    public <X> Set<ProducerMethodBean<?>> defineProducerMethods(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
     {
         Set<ProducerMethodBean<?>> producerComponents = new HashSet<ProducerMethodBean<?>>();
         Set<AnnotatedMethod<? super X>> annotatedMethods = annotatedType.getMethods();
@@ -1298,7 +1297,7 @@ public final class DefinitionUtil
         return producerComponents;
     }
     
-    private static <X> void createProducerBeansFromAnnotatedType(InjectionTargetBean<X> bean, Set<ProducerMethodBean<?>> producerComponents,
+    private <X> void createProducerBeansFromAnnotatedType(InjectionTargetBean<X> bean, Set<ProducerMethodBean<?>> producerComponents,
                                                                  AnnotatedMethod<X> annotatedMethod, Class<?> clazz, boolean isSpecializes)
     {
         Set<Annotation> annSet = annotatedMethod.getAnnotations();
@@ -1345,7 +1344,7 @@ public final class DefinitionUtil
 
     }
 
-    public static <X> ProducerMethodBean<X> createProducerBeanFromAnnotatedType(Class<X> returnType, AnnotatedMethod<X> method,
+    public <X> ProducerMethodBean<X> createProducerBeanFromAnnotatedType(Class<X> returnType, AnnotatedMethod<X> method,
                                                                                 InjectionTargetBean<?> parent, boolean isSpecializes)
     {
         ProducerMethodBean<X> bean = new ProducerMethodBean<X>(parent, returnType);
@@ -1371,8 +1370,8 @@ public final class DefinitionUtil
         DefinitionUtil.defineScopeType(bean, anns, "Bean producer method : " + method.getJavaMember().getName() + " in class "
                                                    + parent.getReturnType().getName() + " must declare default @Scope annotation", false);
         WebBeansUtil.checkProducerGenericType(bean,method.getJavaMember());        
-        DefinitionUtil.defineQualifiers(bean, anns);
-        DefinitionUtil.defineName(bean, anns, WebBeansUtil.getProducerDefaultName(method.getJavaMember().getName()));
+        defineQualifiers(bean, anns);
+        defineName(bean, anns, WebBeansUtil.getProducerDefaultName(method.getJavaMember().getName()));
 
         return bean;
     }
