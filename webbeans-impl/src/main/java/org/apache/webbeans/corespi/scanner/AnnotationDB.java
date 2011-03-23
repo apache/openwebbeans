@@ -294,18 +294,18 @@ public class AnnotationDB implements Serializable
         String jarUrlPath = isJarUrl(urlPath);
         if (jarUrlPath != null)
         {
-            it = new JarIterator((new URL(jarUrlPath)).openStream(), filter);
+            it = new JarIterator((new URL(ensureCorrectUrlFormat(jarUrlPath))).openStream(), filter);
         }
         else
         {
-            File f = new File( (new URL(urlPath)).getFile() );
+            File f = new File( (new URL(ensureCorrectUrlFormat(urlPath))).getFile() );
             if (!f.exists())
             {
                 // try a fallback if the URL contains %20 -> spaces
                 if (urlPath.contains("%20"))
                 {
                     urlPath = urlPath.replaceAll("%20", " ");
-                    f = new File( (new URL(urlPath)).getFile() );
+                    f = new File( (new URL(ensureCorrectUrlFormat(urlPath))).getFile() );
                 }
 
             }
@@ -527,4 +527,13 @@ public class AnnotationDB implements Serializable
         }
     }
 
+    private String ensureCorrectUrlFormat(String url)
+    {
+        //fix for wls
+        if(!url.startsWith("file:/"))
+        {
+            url = "file:/" + url;
+        }
+        return url;
+    }
 }
