@@ -23,7 +23,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import javassist.util.proxy.ProxyFactory;
-import org.apache.webbeans.exception.WebBeansException;
 
 /** @deprecated  use SecurityService instead */
 public class SecurityUtil
@@ -42,26 +41,16 @@ public class SecurityUtil
     {
         private Class<?> clazz;
 
-        private int method;
-
         protected PrivilegedActionForClass(Class<?> clazz, Object parameters, int method)
         {
             this.clazz = clazz;
-            this.method = method;
         }
 
         public Object run()
         {
             try
             {
-                switch (method)
-                {
-                    case METHOD_CLASS_GETDECLAREDMETHODS:
-                        return clazz.getDeclaredMethods();
-
-                    default:
-                        return new WebBeansException("unknown security method: " + method);
-                }
+                return clazz.getDeclaredMethods();
             }
             catch (Exception exception)
             {
