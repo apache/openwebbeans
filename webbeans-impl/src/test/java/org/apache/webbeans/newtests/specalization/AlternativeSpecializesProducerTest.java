@@ -32,7 +32,8 @@ import junit.framework.Assert;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.junit.Test;
 
-public class AlternativeSpecializesProducerTest extends AbstractUnitTest {
+public class AlternativeSpecializesProducerTest extends AbstractUnitTest
+{
 
     private static final String PACKAGE_NAME = AlternativeSpecializesProducerTest.class.getPackage().getName();
 
@@ -65,7 +66,6 @@ public class AlternativeSpecializesProducerTest extends AbstractUnitTest {
         Assert.assertTrue(pen.getID().contains("premium"));
         
         shutDownContainer();
-    	
     }
 
 }

@@ -135,7 +135,6 @@ import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.exception.inject.DefinitionException;
 import org.apache.webbeans.exception.inject.DeploymentException;
 import org.apache.webbeans.exception.inject.InconsistentSpecializationException;
-import org.apache.webbeans.exception.inject.NullableDependencyException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.intercept.InterceptorDataImpl;
@@ -1319,39 +1318,6 @@ public final class WebBeansUtil
         return false;
     }
 
-    /**
-     * Returns true if array contains the StereoType meta annotation
-     *
-     * @return true if array contains the StereoType meta annotation
-     */
-    @Deprecated
-    public static boolean isComponentHasStereoType(OwbBean<?> component)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().isComponentHasStereoType(component);
-    }
-
-    /**
-     * Returns bean stereotypes.
-     * @param bean bean instance
-     * @return bean stereotypes
-     */
-    @Deprecated
-    public static Annotation[] getComponentStereoTypes(OwbBean<?> bean)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().getComponentStereoTypes(bean);
-    }
-
-    /**
-     * Returns true if name exists,false otherwise.
-     * @param bean bean instance
-     * @return true if name exists
-     */
-    @Deprecated
-    public static boolean hasNamedOnStereoTypes(OwbBean<?> bean)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().hasNamedOnStereoTypes(bean);
-    }
-
     public static String getManagedBeanDefaultName(String clazzName)
     {
         Asserts.assertNotNull(clazzName);
@@ -1396,28 +1362,6 @@ public final class WebBeansUtil
             buffer.setCharAt(0, Character.toLowerCase(buffer.charAt(0)));
             return buffer.toString();
         }
-    }
-
-    /**
-     * Validates that given class obeys stereotype model
-     * defined by the specification.
-     * @param clazz stereotype class
-     */
-    @Deprecated
-    public static void checkStereoTypeClass(Class<? extends Annotation> clazz)
-    {
-        WebBeansContext.getInstance().getAnnotationManager().checkStereoTypeClass(clazz, clazz.getDeclaredAnnotations());
-    }
-
-    /**
-     * Validates that given class obeys stereotype model
-     * defined by the specification.
-     * @param clazz stereotype class
-     */
-    @Deprecated
-    public static void checkStereoTypeClass(Class<? extends Annotation> clazz, Annotation...annotations)
-    {
-        WebBeansContext.getInstance().getAnnotationManager().checkStereoTypeClass(clazz, annotations);
     }
 
     /**
@@ -1917,21 +1861,6 @@ public final class WebBeansUtil
         return webBeansContext.getSecurityService().doPrivilegedGetDeclaredConstructor(clazz);
     }
 
-    public static void checkNullable(Class<?> type, AbstractOwbBean<?> component)
-    {
-        Asserts.assertNotNull(type, "type parameter can not be null");
-        Asserts.assertNotNull(component, "component parameter can not be null");
-
-        if (type.isPrimitive())
-        {
-            if (component.isNullable())
-            {
-                throw new NullableDependencyException("Injection point for primitive type resolves webbeans component "
-                        + "with return type : " + component.getReturnType().getName() + " with nullable");
-            }
-        }
-    }
-
     /**
      * Configures the producer method specialization.
      *
@@ -1989,18 +1918,6 @@ public final class WebBeansUtil
 
     }
 
-    @Deprecated
-    public static void checkInterceptorResolverParams(Annotation... interceptorBindings)
-    {
-        WebBeansContext.getInstance().getAnnotationManager().checkInterceptorResolverParams(interceptorBindings);
-    }
-
-    @Deprecated
-    public static void checkDecoratorResolverParams(Set<Type> apiTypes, Annotation... qualifiers)
-    {
-        WebBeansContext.getInstance().getAnnotationManager().checkDecoratorResolverParams(apiTypes, qualifiers);
-    }
-
     /**
      * Returns true if instance injection point false otherwise.
      *
@@ -2027,7 +1944,7 @@ public final class WebBeansUtil
             return false;
         }
 
-        Class<?> rawType = null;
+        Class<?> rawType;
 
         if(ClassUtil.isParametrizedType(injectionPoint.getType()))
         {
@@ -2065,7 +1982,7 @@ public final class WebBeansUtil
         Class<?> clazz = injectionTargetEvent.getAnnotatedType().getJavaClass();
         if (webBeansContext.getInterceptorsManager().isInterceptorEnabled(clazz))
         {
-            ManagedBean<T> component = null;
+            ManagedBean<T> component;
 
             webBeansContext.getInterceptorUtil().checkInterceptorConditions(clazz);
             component = defineManagedBean(managedBeanCreator, injectionTargetEvent, false);
@@ -2200,88 +2117,6 @@ public final class WebBeansUtil
             }
         }
     }
-
-    public static boolean isManagedBean(AbstractOwbBean<?> component)
-    {
-        if(component.getWebBeansType().equals(WebBeansType.MANAGED) ||
-                component.getWebBeansType().equals(WebBeansType.INTERCEPTOR) ||
-                component.getWebBeansType().equals(WebBeansType.DECORATOR))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    public static boolean isProducerBean(AbstractOwbBean<?> bean)
-    {
-        if(bean.getWebBeansType().equals(WebBeansType.PRODUCERFIELD) ||
-                bean.getWebBeansType().equals(WebBeansType.PRODUCERMETHOD))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if bean is an enterprise bean, false otherwise.
-     * @param bean bean instance
-     * @return true if bean is an enterprise bean
-     */
-    public static boolean isEnterpriseBean(AbstractOwbBean<?> bean)
-    {
-        Asserts.assertNotNull(bean,"Bean is null");
-
-        if(bean.getWebBeansType().equals(WebBeansType.ENTERPRISE))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-//    public static void addInjectedImplicitEventComponent(InjectionPoint injectionPoint)
-//    {
-//        Type type = injectionPoint.getType();
-//
-//        if(!(type instanceof ParameterizedType))
-//        {
-//            return;
-//        }
-//
-//        Type[] args = new Type[0];
-//
-//        Class<?> clazz = null;
-//        if (type instanceof ParameterizedType)
-//        {
-//            ParameterizedType pt = (ParameterizedType) type;
-//            args = pt.getActualTypeArguments();
-//        }
-//
-//        clazz = (Class<?>)args[0];
-//
-//        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
-//        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
-//
-//        Bean<?> bean = createObservableImplicitComponent(EventImpl.class, clazz, qualifiers);
-//        BeanManagerImpl.getManager().addBean(bean);
-//    }
-
-
-//    public static <T> void addInjectedImplicitInstanceComponent(InjectionPoint injectionPoint)
-//    {
-//        ParameterizedType genericType = (ParameterizedType)injectionPoint.getType();
-//
-//        Class<Instance<T>> clazz = (Class<Instance<T>>)genericType.getRawType();
-//
-//        Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
-//        qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
-//
-//        Bean<Instance<T>> bean = createInstanceComponent(genericType,clazz, genericType.getActualTypeArguments()[0], qualifiers);
-//        BeanManagerImpl.getManager().addBean(bean);
-//
-//    }
 
     public static Bean<?> getMostSpecializedBean(BeanManager manager, Bean<?> component)
     {
@@ -2434,24 +2269,6 @@ public final class WebBeansUtil
             //Fire ProcessProducer
             webBeansContext.getBeanManagerImpl().fireEvent(processProducerFieldEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
         }
-    }
-
-    /**
-     * Returns true if bean instance is an enterprise bean instance
-     * false otherwise.
-     * @param beanInstance bean instance
-     * @return true if bean instance is an enterprise bean instance
-     */
-    public static boolean isBeanHasEnterpriseMarker(Object beanInstance)
-    {
-        Asserts.assertNotNull(beanInstance,"Bean instance is null");
-
-        if(beanInstance instanceof EnterpriseBeanMarker)
-        {
-            return true;
-        }
-
-        return false;
     }
 
     public static void checkInjectionPointNamedQualifier(InjectionPoint injectionPoint)
@@ -3116,7 +2933,6 @@ public final class WebBeansUtil
 
         managedBeanCreator.defineDisposalMethods(); //Define disposal method after adding producers
     }
-
 
     @SuppressWarnings("unchecked")
     public <T> ManagedBean<T> defineAbstractDecorator(AnnotatedType<T> type)

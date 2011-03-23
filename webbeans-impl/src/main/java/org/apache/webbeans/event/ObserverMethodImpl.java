@@ -187,12 +187,16 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     {
         logger.trace("Notifying with event payload : [{0}]", event);
         
-        AbstractOwbBean<Object> baseComponent = (AbstractOwbBean<Object>) bean;
-        AbstractOwbBean<Object> specializedComponent = null;
+        AbstractOwbBean<Object> component = (AbstractOwbBean<Object>) bean;
+        if (!bean.isEnabled())
+        {
+            return;
+        }
+
         Object object = null;
         
         CreationalContext<Object> creationalContext = null;
-        List<ObserverParams> methodArgsMap = null;
+        List<ObserverParams> methodArgsMap;
         if(annotatedMethod == null)
         {
             methodArgsMap = getMethodArguments(event);
@@ -229,11 +233,10 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
             else
             {
                 BeanManagerImpl manager = bean.getWebBeansContext().getBeanManagerImpl();
-                specializedComponent = (AbstractOwbBean<Object>)WebBeansUtil.getMostSpecializedBean(manager, baseComponent);        
-                Context context = null;
+                Context context;
                 try
                 {
-                    context = manager.getContext(specializedComponent.getScope());
+                    context = manager.getContext(component.getScope());
                 }
                 catch (ContextNotActiveException cnae)
                 {
@@ -244,14 +247,14 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                 
 
                 // on Reception.IF_EXISTS: ignore this bean if a the contextual instance doesn't already exist
-                object = context.get(specializedComponent);
+                object = context.get(component);
 
                 if (ifExist && object == null)
                 {
                     return;
                 }
 
-                creationalContext = manager.createCreationalContext(specializedComponent);
+                creationalContext = manager.createCreationalContext(component);
 
                 if (isPrivateMethod)
                 {
@@ -260,7 +263,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     // proxy private methods (thus the invocation on the contextual reference would fail)
                     if (object == null)
                     {
-                        object = context.get(specializedComponent, creationalContext);
+                        object = context.get(component, creationalContext);
                     }
                 }
                 else
@@ -269,7 +272,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     // we need to pick the contextual reference because of section 7.2:
                     //  "Invocations of producer, disposer and observer methods by the container are
                     //  business method invocations and are in- tercepted by method interceptors and decorators."
-                    object = manager.getReference(specializedComponent, specializedComponent.getBeanClass(), creationalContext);
+                    object = manager.getReference(component, component.getBeanClass(), creationalContext);
                 }
 
                 if (object != null)
@@ -286,9 +289,9 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
         finally
         {
             //Destory bean instance
-            if (baseComponent.getScope().equals(Dependent.class) && object != null)
+            if (component.getScope().equals(Dependent.class) && object != null)
             {
-                baseComponent.destroy(object,creationalContext);
+                component.destroy(object, creationalContext);
             }
             
             //Destroy observer method dependent instances
