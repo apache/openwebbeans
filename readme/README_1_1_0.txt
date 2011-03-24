@@ -49,7 +49,8 @@ OpenWebBeans 1.1.0 Release Features
 * revised internal logging
 * upgrade to JPA-2 and JSF-2 support
 * support for direct CDI usage in tomcat-6 and tomcat-7 environments
-
+* optional lenient lifecycle interceptor checking
+* automatically detect if BeanManager#isInUse()
 
 
 - 1.1.0 release does not support the following features
@@ -421,26 +422,27 @@ This section explains a content of the distribution bundle, OWB plugins and its
 dependent libraries. 
 
 ---------------------------------------------
-1.0.0 Distribution Content
+1.1.0 Distribution Content
 ---------------------------------------------
 There are several jars in the OpenWebBeans 1.0.0 distribution;
 
- - openwebbeans-impl-1.0.0.jar     --> Includes Core Dependency Injection Service.
- - openwebbeans-ejb-1.0.0.jar      --> EJB Plugin(Supports EJBs in OpenEJB embedded in Tomcat).
- - openwebbeans-openejb-1.0.0.jar  --> OpenEJB specific Plugin SPI implementations as extension to openwebbeans-ejb
- - openwebbeans-jms-1.0.0.jar      --> JMS Plugin(Supports injection of JMS related artifacts,i.e, ConnectionFactory, Session, Connection etc.)
- - openwebbeans-jsf-1.0.0.jar      --> JSF-2.0 Plugin(JSF Conversation Scoped Support).
- - openwebbeans-jsf12-1.0.0.jar    --> JSF-1.2 Plugin(JSF Conversation Scoped Support).
- - openwebbeans-resource-1.0.0.jar --> Java EE Resource Injection for Web Projects (Includes @PersistenceContext,@PersistenceUnit
+ - openwebbeans-impl-1.1.0.jar     --> Includes Core Dependency Injection Service.
+ - openwebbeans-ejb-1.1.0.jar      --> EJB Plugin(Supports EJBs in OpenEJB embedded in Tomcat).
+ - openwebbeans-openejb-1.1.0.jar  --> OpenEJB specific Plugin SPI implementations as extension to openwebbeans-ejb
+ - openwebbeans-jms-1.1.0.jar      --> JMS Plugin(Supports injection of JMS related artifacts,i.e, ConnectionFactory, Session, Connection etc.)
+ - openwebbeans-jsf-1.1.0.jar      --> JSF-2.0 Plugin(JSF Conversation Scoped Support).
+ - openwebbeans-jsf12-1.1.0.jar    --> JSF-1.2 Plugin(JSF Conversation Scoped Support).
+ - openwebbeans-resource-1.1.0.jar --> Java EE Resource Injection for Web Projects (Includes @PersistenceContext,@PersistenceUnit
                                           and @Resource injection into the Managed Beans. @Resource injections use java:/comp/env of the
                                           Web application component. @PersistenceContext is based on extended EntityManager.
- - openwebbeans-spi-1.0.0.jar      --> OpenWebBeans Server Provider Interfaces. They are implemented by runtime environments that would
+ - openwebbeans-spi-1.1.0.jar      --> OpenWebBeans Server Provider Interfaces. They are implemented by runtime environments that would
                                           like to use OpenWebBeans as a JSR-299 implementation.
  - samples                            --> Includes source code of the samples. Samples are mavenized project  therefore you can easily build and run
                                           them from your environment that has maven runtime.
- - openwebbeans-osgi-1.0.0.jar     --> ClassPath ScannerService SPI implementation for OSGI environments like Apache Geronimo-3
- - openwebbeans-web-1.0.0.jar      --> Basic Servlet integration
- - openwebbeans-tomcat6-1.0.0.jar  --> Support for deeper integration into Apache Tomcat-6
+ - openwebbeans-osgi-1.1.0.jar     --> ClassPath ScannerService SPI implementation for OSGI environments like Apache Geronimo-3
+ - openwebbeans-web-1.1.0.jar      --> Basic Servlet integration
+ - openwebbeans-tomcat6-1.1.0.jar  --> Support for deeper integration into Apache Tomcat-6
+ - openwebbeans-tomcat7-1.1.0.jar  --> Support for deeper integration into Apache Tomcat-7
 
 
 
@@ -453,10 +455,12 @@ OpenWebBeans has been developed with a plugin architecture. The Core dependency 
 is provided with openwebbeans-impl. If you need further service functionality, 
 you have to add respective plugin jars into the application classpath. OpenWebBeans 
 uses the Java SE 6.0 java.util.ServiceLoader mechanism to pickup plugins at runtime.
+Please do not confuse OWB plugins with portable Extensions! OWB plugins are for
+internal use only whereas portable CDI Extensions will run on any JSR-299 container.
 
 Current Plugins:
 ---------------------
-Look at "1.0.0 Distribution Content" above.
+Look at "1.1.0 Distribution Content" above.
 
 ------------------------------------------
 Dependent Libraries
@@ -517,7 +521,7 @@ Third party        : openwebbeans-impl and its dependencies
 Container Provided : jsf
 
 NOTE : We are trying to decrease dependent libraries of the our core, i.e, openwebbeans-impl. 
-At 1.0.0, dependent third party libraries will be decreased. We have a plan to create profile
+At 1.1.0, dependent third party libraries will be decreased. We have a plan to create profile
 plugins, therefore each profile plugin provides its own dependent libraries. For example, in 
 fully Java EE Profile Plugin, Transaction API is supported but this will not be the case
 for Java Web Profile Plugin or Java SE Profile Plugin. Stay Tuned!
@@ -651,6 +655,11 @@ Configuration Names and Their Default Values :
    Description   : The interceptors spec defines that @PostConstruct & Co must not throw checked Exceptions. Setting this configuration to 'false' disables this check.
    Values        : false, true
    Default       : true
+
+- "org.apache.webbeans.spi.SecurityService"
+   Description   : Service to provide methods which must be guarded via doPrivileged blocks.
+   Values        : org.apache.webbeans.corespi.security.SimpleSercurityService or org.apache.webbeans.corespi.security.ManagedSecurityService
+   Default       : org.apache.webbeans.corespi.security.SimpleSercurityService
 
 
 ---------------------------------------------
@@ -833,7 +842,7 @@ Go to the source directory of the standalone sample:
 >mvn clean package;
 >cd target;
 >jar -xvf standalone-sample.jar
->java -jar standalone-sample-1.0.0-SNAPSHOT.jar
+>java -jar standalone-sample-1.1.0-SNAPSHOT.jar
 >Enjoy :)
 
 -----------------------------------------------
