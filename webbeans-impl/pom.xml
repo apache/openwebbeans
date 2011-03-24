@@ -29,28 +29,7 @@
     <name>OpenWebBeans Core</name>
     <description>Apache OpenWebBeans Implementation core module</description>
 
-    <repositories>
-        <!-- TODO: this must get removed once javassist is released to maven.central -->
-        <repository>
-            <id>jboss.brew</id>
-            <url>http://repository.jboss.org/maven2-brew</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-
     <dependencies>
-<!--
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-        </dependency>
--->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-el_2.2_spec</artifactId>
