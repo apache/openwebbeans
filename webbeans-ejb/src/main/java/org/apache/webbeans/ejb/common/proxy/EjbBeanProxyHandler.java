@@ -118,23 +118,11 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
                 logger.trace("Calling method on proxy is restricted except Object.toString(), but current method is Object. [{0}]", methodName);   
             }
             
-            boolean access = method.isAccessible();
-            if (!access)
+            if (!method.isAccessible())
             {
                 webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, true);
             }
-            try
-            {
-                return proceed.invoke(proxyInstance, arguments);
-                
-            }
-            finally
-            {
-                if (!access)
-                {
-                    webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, false);
-                }
-            }
+            return proceed.invoke(proxyInstance, arguments);
         }
                 
         try
@@ -196,24 +184,11 @@ public class EjbBeanProxyHandler implements MethodHandler, Serializable, Externa
 
             //Call actual method on proxy
             //Actually it is called from OWB Proxy --> EJB Proxy --> Actual Bean Instance
-            boolean access = method.isAccessible();
-            if (!access)
+            if (!method.isAccessible())
             {
                 webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, true);
             }
-            try
-            {
-                result = method.invoke(webbeansInstance, arguments);
-                
-            }
-            finally
-            {
-                if (!access)
-                {
-                    webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, false);
-                }
-            }            
-            
+            result = method.invoke(webbeansInstance, arguments);
         }
         finally
         {

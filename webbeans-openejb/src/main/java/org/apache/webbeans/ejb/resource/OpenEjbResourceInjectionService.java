@@ -95,10 +95,12 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
                     {
                         @SuppressWarnings("unchecked")
                         ResourceReference<Object, ?> resourceRef = new ResourceReference(field.getDeclaringClass(), field.getName(), field.getType(), ann);
-                        boolean acess = field.isAccessible();
                         try
                         {
-                            webBeansContext.getSecurityService().doPrivilegedSetAccessible(field, true);
+                            if(!field.isAccessible())
+                            {
+                                webBeansContext.getSecurityService().doPrivilegedSetAccessible(field, true);
+                            }
                             field.set(managedBeanInstance, getResourceReference(resourceRef));
                             
                         }
@@ -108,12 +110,8 @@ public class OpenEjbResourceInjectionService implements ResourceInjectionService
                             throw new WebBeansException(MessageFormat.format(logger.getTokenString(OWBLogConst.ERROR_0025), field), e);
                             
                         }
-                        finally
-                        {
-                            webBeansContext.getSecurityService().doPrivilegedSetAccessible(field, acess);
-                        }                                            
                     }
-                }                
+                }
             }
         }
     }
