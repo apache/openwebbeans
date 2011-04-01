@@ -284,24 +284,11 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             //If here call actual method            
             //If not interceptor or decorator calls
             //Do normal calling
-            boolean access = method.isAccessible();
-            if (!access)
+            if (!method.isAccessible())
             {
                 webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, true);
             }
-            try
-            {
-                result = method.invoke(instance, arguments);
-                
-            }
-            finally
-            {
-                if (!access)
-                {
-                    webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, access);
-                }
-            }
-            
+            result = method.invoke(instance, arguments);
         }
         catch (InvocationTargetException e)
         {

@@ -612,11 +612,9 @@ public final class AnnotationUtil
      */
     private static Object callMethod(Object instance, Method method)
     {
-        boolean accessible = method.isAccessible();
-
         try
         {
-            if (!accessible )
+            if (!method.isAccessible())
             {
                 doPrivilegedSetAccessible(method, true);
             }
@@ -626,11 +624,6 @@ public final class AnnotationUtil
         catch (Exception e)
         {
             throw new WebBeansException("Exception in method call : " + method.getName(), e);
-        }
-        finally
-        {
-            // reset accessible value
-            doPrivilegedSetAccessible(method, accessible);
         }
     }
 

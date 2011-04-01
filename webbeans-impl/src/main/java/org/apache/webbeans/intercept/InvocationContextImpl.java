@@ -220,9 +220,8 @@ public class InvocationContextImpl implements InvocationContext
             InterceptorData intc = datas.get(currentMethod - 1);
 
             Method aroundInvokeMethod = intc.getAroundInvoke();
-            boolean accessible = aroundInvokeMethod.isAccessible();
-            
-            if (!accessible)
+
+            if (!aroundInvokeMethod.isAccessible())
             {
                 owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundInvokeMethod, true);
             }
@@ -239,28 +238,17 @@ public class InvocationContextImpl implements InvocationContext
             
             result = aroundInvokeMethod.invoke(t, new Object[] { this });
             
-            if(!accessible)
-            {
-                owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundInvokeMethod, false);
-            }
-
         }
         else
         {
             if(!(this.owbBean instanceof EnterpriseBeanMarker))
             {
-                boolean accessible = this.method.isAccessible();
-                if(!accessible)
+                if(!this.method.isAccessible())
                 {                
                     owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
                 }
                 
                 result = this.method.invoke(target, parameters);
-                
-                if(!accessible)
-                {
-                    owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, false);
-                }                
             }
             else 
             { 
@@ -289,9 +277,8 @@ public class InvocationContextImpl implements InvocationContext
             InterceptorData intc = datas.get(currentMethod - 1);
 
             Method aroundTimeoutMethod = intc.getAroundTimeout();
-            boolean accessible = aroundTimeoutMethod.isAccessible();
-            
-            if (!accessible)
+
+            if (!aroundTimeoutMethod.isAccessible())
             {
                 owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundTimeoutMethod, true);
             }
@@ -307,29 +294,17 @@ public class InvocationContextImpl implements InvocationContext
             currentMethod++;
             
             result = aroundTimeoutMethod.invoke(t, new Object[] { this });
-            
-            if(!accessible)
-            {
-                owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(aroundTimeoutMethod, false);
-            }
-
         }
         else
         {
             if(!(this.owbBean instanceof EnterpriseBeanMarker))
             {
-                boolean accessible = method.isAccessible();
-                if(!accessible)
+                if(!method.isAccessible())
                 {                
                     owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
                 }
                 
                 result = this.method.invoke(target, parameters);
-                
-                if(!accessible)
-                {
-                    owbBean.getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, false);
-                }                
             }
             else 
             { 
