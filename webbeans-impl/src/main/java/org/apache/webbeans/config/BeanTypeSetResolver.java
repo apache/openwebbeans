@@ -69,7 +69,7 @@ public class BeanTypeSetResolver
     private void normalClassConfiguration(Class<?> beanClass)
     {
         //Bean class contains TypeVariables
-        if(ClassUtil.isDefinitionConstainsTypeVariables(beanClass))
+        if(ClassUtil.isDefinitionContainsTypeVariables(beanClass))
         {
             //TypeVariables
             OwbParametrizedTypeImpl pt = new OwbParametrizedTypeImpl(beanClass.getDeclaringClass(),beanClass);

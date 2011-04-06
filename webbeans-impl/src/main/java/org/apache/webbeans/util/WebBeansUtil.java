@@ -230,7 +230,7 @@ public final class WebBeansUtil
 
         Class<?> clazz = bean.getBeanClass();
 
-        if (ClassUtil.isDefinitionConstainsTypeVariables(clazz))
+        if (ClassUtil.isDefinitionContainsTypeVariables(clazz))
         {
             if(!bean.getScope().equals(Dependent.class))
             {
@@ -295,7 +295,7 @@ public final class WebBeansUtil
 
         if(ClassUtil.isParametrizedType(type))
         {
-            Type[] actualTypes = ClassUtil.getActualTypeArguements(type);
+            Type[] actualTypes = ClassUtil.getActualTypeArguments(type);
 
             if(actualTypes.length == 0)
             {

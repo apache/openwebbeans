@@ -295,7 +295,7 @@ public final class NotificationManager
         }
         else if(ClassUtil.isWildCardType(observerTypeActualArg))
         {
-            return ClassUtil.checkRequiredTypeisWildCard(beanClass, observerTypeActualArg);
+            return ClassUtil.checkRequiredTypeIsWildCard(beanClass, observerTypeActualArg);
         }
         else if(observerTypeActualArg instanceof Class)
         {

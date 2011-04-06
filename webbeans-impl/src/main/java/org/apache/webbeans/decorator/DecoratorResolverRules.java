@@ -78,7 +78,7 @@ public final class DecoratorResolverRules
           //Item -2 and Item-3 in 8.3.1
             else if(ClassUtil.isWildCardType(delegateTypeArg))
             {
-                return  ClassUtil.checkRequiredTypeisWildCard(beanTypeArg, delegateTypeArg);
+                return  ClassUtil.checkRequiredTypeIsWildCard(beanTypeArg, delegateTypeArg);
             }
 
             //Item-4 in 8.3.1

@@ -465,7 +465,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      */
     public void fireEvent(Object event, Annotation... bindings)
     {                
-        if (ClassUtil.isDefinitionConstainsTypeVariables(event.getClass()))
+        if (ClassUtil.isDefinitionContainsTypeVariables(event.getClass()))
         {
             throw new IllegalArgumentException("Event class : " + event.getClass().getName() + " can not be defined as generic type");
         }
@@ -1167,7 +1167,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public <T> Set<ObserverMethod<? super T>> resolveObserverMethods( T event, Annotation... qualifiers ) 
     {
-        if(ClassUtil.isDefinitionConstainsTypeVariables(event.getClass()))
+        if(ClassUtil.isDefinitionContainsTypeVariables(event.getClass()))
         {
             throw new IllegalArgumentException("Event type can not contain type variables. Event class is : " + event.getClass());
         }

@@ -98,7 +98,7 @@ public final class ClassUtil
                 cause = e.getCause();
             }
             
-            String error = "Error is occured while creating an instance of class : " + clazz.getName(); 
+            String error = "Error occurred while creating an instance of class : " + clazz.getName(); 
             logger.error(error, cause);
             throw new WebBeansException(error,cause); 
         
@@ -792,12 +792,12 @@ public final class ClassUtil
             //Required type is parametrized and bean type is parametrized
             if(ClassUtil.isParametrizedType(requiredTypeArg) && ClassUtil.isParametrizedType(beanTypeArg))
             {
-                return checkBeanAndRequiredTypeisParametrized(beanTypeArg, requiredTypeArg);
+                return checkBeanAndRequiredTypeIsParametrized(beanTypeArg, requiredTypeArg);
             }
             //Required type is wildcard
             else if(ClassUtil.isWildCardType(requiredTypeArg))
             {
-                return checkRequiredTypeisWildCard(beanTypeArg, requiredTypeArg);
+                return checkRequiredTypeIsWildCard(beanTypeArg, requiredTypeArg);
             }
             //Required type is actual type and bean type is type variable
             else if(requiredTypeArg instanceof Class && ClassUtil.isTypeVariable(beanTypeArg))
@@ -834,8 +834,23 @@ public final class ClassUtil
      * @param beanTypeArg parametrized bean type
      * @param requiredTypeArg parametrized required type
      * @return true if types are assignables
+     * @deprecated use {@link #checkBeanAndRequiredTypeIsParametrized(Type, Type)}
      */
+    @Deprecated
     public static boolean checkBeanAndRequiredTypeisParametrized(Type beanTypeArg, Type requiredTypeArg)
+    {
+        return checkBeanAndRequiredTypeIsParametrized(beanTypeArg, requiredTypeArg);
+    }
+
+    /**
+     * Check parametrized bean type and parametrized
+     * required types.
+     * @param beanTypeArg parametrized bean type
+     * @param requiredTypeArg parametrized required type
+     * @return true if types are assignables
+     * @since 1.1.1
+     */
+    public static boolean checkBeanAndRequiredTypeIsParametrized(Type beanTypeArg, Type requiredTypeArg)
     {
         ParameterizedType ptRequiredTypeArg = (ParameterizedType)requiredTypeArg;
         ParameterizedType ptBeanTypeArg = (ParameterizedType)beanTypeArg;
@@ -867,9 +882,26 @@ public final class ClassUtil
      * </p>
      * @param beanTypeArg bean type
      * @param requiredTypeArg required type
-     * @return true if contdition satisfies
+     * @return true if condition satisfies
+     * @deprecated use {@link #checkRequiredTypeIsWildCard(Type, Type)}
      */
+    @Deprecated
     public static boolean checkRequiredTypeisWildCard(Type beanTypeArg, Type requiredTypeArg)
+    {
+        return checkRequiredTypeIsWildCard(beanTypeArg, requiredTypeArg);
+    }
+
+    /**
+     * Check bean type and required type.
+     * <p>
+     * Required type is a wildcard type.
+     * </p>
+     * @param beanTypeArg bean type
+     * @param requiredTypeArg required type
+     * @return true if condition satisfies
+     * @since 1.1.1
+     */
+    public static boolean checkRequiredTypeIsWildCard(Type beanTypeArg, Type requiredTypeArg)
     {
         WildcardType wctRequiredTypeArg = (WildcardType)requiredTypeArg;
         Type upperBoundRequiredTypeArg =  wctRequiredTypeArg.getUpperBounds()[0];
@@ -1143,14 +1175,54 @@ public final class ClassUtil
         return clazz.isArray();
     }
 
+    /**
+     * Learn whether the specified class is defined with type parameters.
+     * @param clazz to check
+     * @return true if there are type parameters
+     * @deprecated use {@link #isDefinitionContainsTypeVariables(Class)}
+     */
+    @Deprecated
     public static boolean isDefinitionConstainsTypeVariables(Class<?> clazz)
+    {
+        return isDefinitionContainsTypeVariables(clazz);
+    }
+
+    /**
+     * Learn whether the specified class is defined with type parameters.
+     * @param clazz to check
+     * @return true if there are type parameters
+     * @since 1.1.1
+     */
+    public static boolean isDefinitionContainsTypeVariables(Class<?> clazz)
     {
         Asserts.nullCheckForClass(clazz);
         
         return (clazz.getTypeParameters().length > 0) ? true : false;
     }
-    
+
+    /**
+     * Returns declared type arguments if {@code type} is a
+     * {@link ParameterizedType} instance, else an empty array.
+     * Get the actual type arguments of a type.
+     * @param type
+     * @return array of type arguments available
+     * @deprecated use {@link #getActualTypeArguments(Type)}
+     */
+    @Deprecated
     public static Type[] getActualTypeArguements(Type type)
+    {
+        return getActualTypeArguments(type);
+    }
+
+    /**
+     * Returns declared type arguments if {@code type} is a
+     * {@link ParameterizedType} instance, else an empty array.
+     * Get the actual type arguments of a type.
+     * @param type
+     * @return array of type arguments available
+     * @since 1.1.1
+     */
+    public static Type[] getActualTypeArguments(Type type)
     {
         Asserts.assertNotNull(type, "type parameter can not be null");
 
@@ -1293,7 +1365,27 @@ public final class ClassUtil
         return rawType;
     }
 
+    /**
+     * Learn whether <code>superClassMethod</code> is overridden by <code>subClassMethod</code>.
+     * @param subClassMethod potentially overriding
+     * @param superClassMethod potentially overridden
+     * @return true if overridden
+     * @deprecated use {@link #isOverridden(Method, Method)}
+     */
+    @Deprecated
     public static boolean isOverriden(Method subClassMethod, Method superClassMethod)
+    {
+        return isOverridden(subClassMethod, superClassMethod);
+    }
+
+    /**
+     * Learn whether <code>superClassMethod</code> is overridden by <code>subClassMethod</code>.
+     * @param subClassMethod potentially overriding
+     * @param superClassMethod potentially overridden
+     * @return true if overridden
+     * @since 1.1.1
+     */
+    public static boolean isOverridden(Method subClassMethod, Method superClassMethod)
     {
         if (subClassMethod.getName().equals(superClassMethod.getName()) && Arrays.equals(subClassMethod.getParameterTypes(), superClassMethod.getParameterTypes()))
         {

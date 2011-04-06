@@ -41,7 +41,7 @@ public class ClassTest extends TestContext
     @Test
     public void testTypeVariableTest()
     {
-        boolean result = ClassUtil.isDefinitionConstainsTypeVariables(Map.class);
+        boolean result = ClassUtil.isDefinitionContainsTypeVariables(Map.class);
         
         Assert.assertEquals(true, result);
         

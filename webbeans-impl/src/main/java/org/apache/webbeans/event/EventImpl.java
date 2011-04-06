@@ -123,7 +123,7 @@ public class EventImpl<T> implements Event<T>, Serializable
     @Override
     public <U extends T> Event<U> select(Class<U> subtype, Annotation... bindings)
     {
-        if(ClassUtil.isDefinitionConstainsTypeVariables(subtype))
+        if(ClassUtil.isDefinitionContainsTypeVariables(subtype))
         {
             throw new IllegalArgumentException("Class : " + subtype + " cannot contain type variable");
         }

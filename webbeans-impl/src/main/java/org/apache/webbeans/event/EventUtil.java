@@ -52,7 +52,7 @@ public final class EventUtil
     {
         Asserts.assertNotNull(eventType, "eventType parameter can not be null");
 
-        if (ClassUtil.isDefinitionConstainsTypeVariables(eventType))
+        if (ClassUtil.isDefinitionContainsTypeVariables(eventType))
         {
             throw new IllegalArgumentException("Event type : " + eventType.getName() + " can not be generic");
         }

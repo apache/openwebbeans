@@ -120,7 +120,7 @@ public final class EjbValidator
         Asserts.assertNotNull(ejbClass, "ejbClass parameter can not be null");
         Asserts.assertNotNull(ejbClass, "scopeType parameter can not be null");
         
-        if(ClassUtil.isDefinitionConstainsTypeVariables(ejbClass))
+        if(ClassUtil.isDefinitionContainsTypeVariables(ejbClass))
         {
             if(!scopeType.equals(Dependent.class))
             {

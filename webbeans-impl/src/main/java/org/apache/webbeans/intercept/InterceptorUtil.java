@@ -719,7 +719,7 @@ public final class InterceptorUtil
                 Method childInterceptorMethod = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(interceptorClass,
                                               superInterceptorMethod.getName(), superInterceptorMethod.getParameterTypes());
 
-                if (null != childInterceptorMethod && ClassUtil.isOverriden(childInterceptorMethod, superInterceptorMethod))
+                if (null != childInterceptorMethod && ClassUtil.isOverridden(childInterceptorMethod, superInterceptorMethod))
                 {
                     return superInterceptorData;
                 }

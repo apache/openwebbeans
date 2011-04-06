@@ -1095,7 +1095,7 @@ public final class DefinitionUtil
                     boolean defined = false;
                     for (Method beanMethod : beanMethods)
                     {
-                        if(ClassUtil.isOverriden(beanMethod, method))                        
+                        if(ClassUtil.isOverridden(beanMethod, method))                        
                         {
                             defined = true;
                             break;
