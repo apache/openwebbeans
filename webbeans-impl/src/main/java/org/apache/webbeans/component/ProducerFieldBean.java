@@ -187,6 +187,17 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T> implements IBe
         return isPassivationCapable(this.producerField.getType(),this.producerField.getModifiers());
     }
     
+    @Override
+    public String getId()
+    {
+        if (passivatingId == null)
+        {
+            String id = super.getId();
+            
+            passivatingId = id + "#" + producerField.toGenericString();
+        }
+        return passivatingId;
+    }
 
     /**
      * {@inheritDoc}
