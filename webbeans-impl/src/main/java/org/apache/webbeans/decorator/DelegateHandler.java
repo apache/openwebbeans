@@ -113,15 +113,27 @@ public class DelegateHandler implements MethodHandler, Serializable, Externaliza
             }
             catch (InvocationTargetException e)
             {
+                Throwable cause = e.getCause();
                 //If the wrapped exception tells us the method didn't exist, continue
-                if(e.getCause() instanceof NoSuchMethodException)
+                if(cause instanceof NoSuchMethodException)
                 {
                     continue;
                 }
                 
                 logger.error(OWBLogConst.ERROR_0012, e.getTargetException(), method.getName(), decorator.getClass().getName());
 
-                throw new WebBeansException(e);
+                if (cause instanceof Exception)
+                {
+                    throw (Exception) cause;
+                }
+                else if (cause instanceof Error)
+                {
+                    throw (Error) cause;
+                }
+                else
+                {
+                    throw new WebBeansException(e);
+                }
             }
             catch (IllegalAccessException e)
             {
