@@ -32,6 +32,12 @@ public class ExternalTestScopeContext implements Context
 {
     private static final Map<Contextual<?>, Object> instances = new HashMap<Contextual<?>, Object>();
     
+    private boolean active;
+    
+    public ExternalTestScopeContext(boolean active)
+    {
+        this.active = active;
+    }
     
     @SuppressWarnings("unchecked")
     @Override
@@ -62,7 +68,7 @@ public class ExternalTestScopeContext implements Context
     @Override
     public boolean isActive()
     {
-        return true;
+        return active;
     }
     
     public void endContext(@Observes BeforeShutdown beforeShutdown)

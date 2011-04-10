@@ -703,6 +703,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
                 contextList.add(context);
 
                 contextMap.put(scopeType, contextList);
+                singleContextMap.remove(scopeType);
             }
         }
         else

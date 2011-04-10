@@ -34,6 +34,7 @@ public class ExternalTestScopeExtension implements Extension
     
     public void registerViewContext(@Observes AfterBeanDiscovery afterBeanDiscovery)
     {
-        afterBeanDiscovery.addContext(new ExternalTestScopeContext());
+        afterBeanDiscovery.addContext(new ExternalTestScopeContext(true));
+        afterBeanDiscovery.addContext(new ExternalTestScopeContext(false));
     }
 }
