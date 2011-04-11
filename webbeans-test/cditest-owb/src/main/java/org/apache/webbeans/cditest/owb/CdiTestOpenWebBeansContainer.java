@@ -21,13 +21,21 @@ package org.apache.webbeans.cditest.owb;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.ResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Singleton;
 
 import org.apache.webbeans.cditest.CdiTestContainer;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.ContextFactory;
+import org.apache.webbeans.context.type.ContextTypes;
+import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import static org.apache.webbeans.util.InjectionExceptionUtils.*;
 
@@ -36,6 +44,7 @@ import static org.apache.webbeans.util.InjectionExceptionUtils.*;
  */
 public class CdiTestOpenWebBeansContainer implements CdiTestContainer 
 {
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(CdiTestOpenWebBeansContainer.class);
 
     private ContainerLifecycle  lifecycle = null;
     private MockServletContext  servletContext = null;
@@ -120,11 +129,23 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        contextFactory.destroyRequestContext(null);
-        contextFactory.destroyConversationContext();
-        contextFactory.destroySessionContext(session);
-        contextFactory.destroyApplicationContext(servletContext);
-        contextFactory.destroySingletonContext(servletContext);
+        stopSessionScope();
+        stopConversationScope();
+        stopRequestScope();
+        stopApplicationScope();
+
+        Context context = contextFactory.getStandardContext(ContextTypes.SINGLETON);
+        if(context != null && context.isActive())
+        {
+            contextFactory.destroySingletonContext(servletContext);
+        }
+        else
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn("destroy was called for an inactive context (" + Singleton.class.getName() + ")");
+            }
+        }
 
         //Comment out for OWB-502
         //ContextFactory.cleanUpContextFactory();
@@ -136,7 +157,18 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        contextFactory.destroyApplicationContext(servletContext);
+        Context context = contextFactory.getStandardContext(ContextTypes.APPLICATION);
+        if(context != null && context.isActive())
+        {
+            contextFactory.destroyApplicationContext(servletContext);
+        }
+        else
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn("destroy was called for an inactive context (" + ApplicationScoped.class.getName() + ")");
+            }
+        }
     }
 
     @Override
@@ -145,7 +177,18 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        contextFactory.destroyConversationContext();
+        Context context = contextFactory.getStandardContext(ContextTypes.CONVERSATION);
+        if(context != null && context.isActive())
+        {
+            contextFactory.destroyConversationContext();
+        }
+        else
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn("destroy was called for an inactive context (" + ConversationScoped.class.getName() + ")");
+            }
+        }
     }
 
     @Override
@@ -160,7 +203,18 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        contextFactory.destroyRequestContext(null);
+        Context context = contextFactory.getStandardContext(ContextTypes.REQUEST);
+        if(context != null && context.isActive())
+        {
+            contextFactory.destroyRequestContext(null);
+        }
+        else
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn("destroy was called for an inactive context (" + RequestScoped.class.getName() + ")");
+            }
+        }
     }
 
     @Override
@@ -169,7 +223,18 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         ContextFactory contextFactory = webBeansContext.getContextFactory();
 
-        contextFactory.destroySessionContext(session);
+        Context context = contextFactory.getStandardContext(ContextTypes.SESSION);
+        if(context != null && context.isActive())
+        {
+            contextFactory.destroySessionContext(session);
+        }
+        else
+        {
+            if(logger.wblWillLogWarn())
+            {
+                logger.warn("destroy was called for an inactive context (" + SessionScoped.class.getName() + ")");
+            }
+        }
     }
     
     public  BeanManager getBeanManager() 
