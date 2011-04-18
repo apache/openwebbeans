@@ -2181,8 +2181,7 @@ public final class WebBeansUtil
     {
         AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getReturnType());
         InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(bean);
-        return new GProcessInjectionTarget(injectionTarget,
-                                                                                          annotatedType);
+        return new GProcessInjectionTarget(injectionTarget, annotatedType);
     }
 
 
