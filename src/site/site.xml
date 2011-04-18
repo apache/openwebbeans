@@ -32,7 +32,7 @@
     
     <publishDate format="dd MMM yyyy" />
     <version position="left"/>
-    
+
     <body>
         <breadcrumbs>
             <item name="Apache" href="http://www.apache.org"/>

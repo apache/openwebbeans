@@ -9,7 +9,7 @@
 ~~ distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 ~~ KIND, either express or implied. See the License for the specific language
 ~~ governing permissions and limitations under the License.
-Welcome to OpenWebBeans
+Welcome to Apache OpenWebBeans
 
   
 * What is OpenWebBeans?
@@ -22,7 +22,17 @@ Welcome to OpenWebBeans
   Apache Software Foundation projects.
 
 * Recent News
- 
+
+  * We are currently working towards an OpenWebBeans 1.1.1 release
+
+  * 09.04.2011 - New PMC members: Gerhard Petracek, David Jencks
+
+  * 30.03.2011 - 1.1.0 released
+
+  * 07.11.2010 - New Committer: David Jencks
+
+  * 08.10.2010 - New Committers: Paul J Reder, Rohit Kelapure
+
   * 03.09.2010 - alpha-2 released
 
   * 03.08.2010 - New committer: Gerhard Petracek
