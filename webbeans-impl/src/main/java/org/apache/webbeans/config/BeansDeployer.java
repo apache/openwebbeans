@@ -67,6 +67,7 @@ import org.apache.webbeans.portable.events.ProcessInjectionTargetImpl;
 import org.apache.webbeans.portable.events.discovery.AfterBeanDiscoveryImpl;
 import org.apache.webbeans.portable.events.discovery.AfterDeploymentValidationImpl;
 import org.apache.webbeans.portable.events.discovery.BeforeBeanDiscoveryImpl;
+import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.spi.JNDIService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansJavaEEPlugin;
@@ -791,7 +792,7 @@ public class BeansDeployer
             //Temporary managed bean instance creationa
             ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, webBeansContext);                  
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
-            
+
             boolean annotationTypeSet = false;
             if(processAnnotatedEvent.isSet())
             {
@@ -799,15 +800,16 @@ public class BeansDeployer
                 managedBean.setAnnotatedType(annotatedType);
                 managedBeanCreator.setAnnotatedType(annotatedType);
                 managedBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
-            }            
-            
-            //If ProcessInjectionTargetEvent is not set, set it
+            }
+
+            GProcessInjectionTarget processInjectionTarget = null;
             if(processInjectionTargetEvent == null)
             {
-                processInjectionTargetEvent =
-                    webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(managedBean);
-            }    
-            
+                processInjectionTarget = webBeansContext.getWebBeansUtil().createProcessInjectionTargetEvent(managedBean);
+                processInjectionTargetEvent = processInjectionTarget;
+            }
+
+
             //Decorator
             if(WebBeansUtil.isAnnotatedTypeDecorator(annotatedType))
             {
@@ -857,7 +859,12 @@ public class BeansDeployer
                 webBeansContext.getWebBeansUtil().defineManagedBean(managedBeanCreator,
                                                                     processInjectionTargetEvent, true);
             }
-            
+
+            if(processInjectionTarget != null)
+            {
+                webBeansContext.getWebBeansUtil().fireProcessInjectionTargetEvent(processInjectionTarget);
+            }
+
             return true;
         }
         else

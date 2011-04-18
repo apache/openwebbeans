@@ -2163,17 +2163,28 @@ public final class WebBeansUtil
      */
     public <T> GProcessInjectionTarget fireProcessInjectionTargetEvent(AbstractInjectionTargetBean<T> bean)
     {
-        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getReturnType());
-        InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(bean);
-        GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,
-                                                                                          annotatedType);
+        GProcessInjectionTarget processInjectionTargetEvent = createProcessInjectionTargetEvent(bean);
+        return fireProcessInjectionTargetEvent(processInjectionTargetEvent);
 
+
+    }
+
+    public GProcessInjectionTarget fireProcessInjectionTargetEvent(GProcessInjectionTarget processInjectionTargetEvent)
+    {
         //Fires ProcessInjectionTarget
         webBeansContext.getBeanManagerImpl().fireEvent(processInjectionTargetEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
 
         return processInjectionTargetEvent;
-
     }
+
+    public <T> GProcessInjectionTarget createProcessInjectionTargetEvent(AbstractInjectionTargetBean<T> bean)
+    {
+        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(bean.getReturnType());
+        InjectionTargetProducer<T> injectionTarget = new InjectionTargetProducer<T>(bean);
+        return new GProcessInjectionTarget(injectionTarget,
+                                                                                          annotatedType);
+    }
+
 
     /**
      * Returns <code>ProcessInjectionTarget</code> event.
@@ -2187,9 +2198,7 @@ public final class WebBeansUtil
         GProcessInjectionTarget processInjectionTargetEvent = new GProcessInjectionTarget(injectionTarget,annotatedType);
 
         //Fires ProcessInjectionTarget
-        webBeansContext.getBeanManagerImpl().fireEvent(processInjectionTargetEvent, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-
-        return processInjectionTargetEvent;
+        return fireProcessInjectionTargetEvent(processInjectionTargetEvent);
 
     }
 
