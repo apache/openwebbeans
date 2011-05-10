@@ -28,6 +28,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.util.Nonbinding;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -67,7 +68,8 @@ public final class AnnotationUtil
      */
     public static boolean hasMethodAnnotation(Method method, Class<? extends Annotation> clazz)
     {
-        Annotation[] anns = method.getDeclaredAnnotations();
+        final AnnotatedElement element = method;
+        Annotation[] anns = getDeclaredAnnotations(element);
         for (Annotation annotation : anns)
         {
             if (annotation.annotationType().equals(clazz))
@@ -78,6 +80,36 @@ public final class AnnotationUtil
 
         return false;
 
+    }
+
+    /**
+     * Utility method to get around some errors caused by
+     * interactions between the Equinox class loaders and
+     * the OpenJPA transformation process.  There is a window
+     * where the OpenJPA transformation process can cause
+     * an annotation being processed to get defined in a
+     * classloader during the actual defineClass call for
+     * that very class (e.g., recursively).  This results in
+     * a LinkageError exception.  If we see one of these,
+     * retry the request.  Since the annotation will be
+     * defined on the second pass, this should succeed.  If
+     * we get a second exception, then it's likely some
+     * other problem.
+     *
+     * @param element The AnnotatedElement we need information for.
+     *
+     * @return An array of the Annotations defined on the element.
+     */
+    private static Annotation[] getDeclaredAnnotations(AnnotatedElement element)
+    {
+        try
+        {
+            return element.getDeclaredAnnotations();
+        }
+        catch (LinkageError e)
+        {
+            return element.getDeclaredAnnotations();
+        }
     }
 
 
@@ -458,7 +490,7 @@ public final class AnnotationUtil
         {
             for (Annotation param : parameters)
             {
-                Annotation[] btype = param.annotationType().getDeclaredAnnotations();
+                Annotation[] btype = getDeclaredAnnotations(param.annotationType());
 
                 for (Annotation b : btype)
                 {
@@ -672,8 +704,7 @@ public final class AnnotationUtil
 
             for (Method qualifierMethod : qualifierMethods)
             {
-                Annotation[] qualifierMethodAnnotations
-                        = qualifierMethod.getDeclaredAnnotations();
+                Annotation[] qualifierMethodAnnotations = getDeclaredAnnotations(qualifierMethod);
 
                 if (qualifierMethodAnnotations.length > 0)
                 {
