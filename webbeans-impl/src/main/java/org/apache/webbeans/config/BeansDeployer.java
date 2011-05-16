@@ -794,7 +794,7 @@ public class BeansDeployer
             ManagedBeanCreatorImpl<T> managedBeanCreator = new ManagedBeanCreatorImpl<T>(managedBean);
 
             boolean annotationTypeSet = false;
-            if(processAnnotatedEvent.isSet())
+            if(processAnnotatedEvent.isModifiedAnnotatedType())
             {
                 annotationTypeSet = true;
                 managedBean.setAnnotatedType(annotatedType);

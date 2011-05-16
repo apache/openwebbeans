@@ -79,7 +79,7 @@ public final class EjbUtility
             return;
         }
         
-        if(processAnnotatedEvent.isSet())
+        if(processAnnotatedEvent.isModifiedAnnotatedType())
         {
             ejbBeanCreator.setMetaDataProvider(MetaDataProvider.THIRDPARTY);
         }

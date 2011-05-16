@@ -36,8 +36,12 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     /**veto or not*/
     private boolean veto = false;
     
-    /**set or not*/
-    private boolean set = false;
+    /**
+     * This field gets set to <code>true</code> when a custom AnnotatedType
+     * got set in an Extension. In this case we must now take this modified
+     * AnnotatedType for our further processing!
+     */
+    private boolean modifiedAnnotatedType = false;
 
     /**
      * Creates a new instance with the given annotated type.
@@ -65,7 +69,7 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
     public void setAnnotatedType(AnnotatedType<X> type)
     {
         this.annotatedType = type;
-        this.set = true;
+        this.modifiedAnnotatedType = true;
     }
     
     /**
@@ -73,9 +77,9 @@ public class ProcessAnnotatedTypeImpl<X> implements ProcessAnnotatedType<X>
      * 
      * @return set or not
      */
-    public boolean isSet()
+    public boolean isModifiedAnnotatedType()
     {
-        return this.set;
+        return this.modifiedAnnotatedType;
     }
 
     /**
