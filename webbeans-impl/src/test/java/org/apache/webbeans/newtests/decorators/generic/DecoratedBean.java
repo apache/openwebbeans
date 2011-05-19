@@ -16,12 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.component.decorator.generic;
+package org.apache.webbeans.newtests.decorators.generic;
 
-import java.lang.annotation.Annotation;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Scope;
 
-public interface GenericInterface<A extends Annotation>
+@ApplicationScoped
+public class DecoratedBean implements GenericInterface<Scope>
 {
-    boolean isDecoratorCalled();
 
+    public boolean isDecoratorCalled()
+    {
+        return false;
+    }
 }

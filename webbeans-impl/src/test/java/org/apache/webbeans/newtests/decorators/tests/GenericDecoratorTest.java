@@ -35,6 +35,9 @@ import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.decorators.common.Cow;
 import org.apache.webbeans.newtests.decorators.common.Garphly;
 import org.apache.webbeans.newtests.decorators.common.GarphlyDecorator;
+import org.apache.webbeans.newtests.decorators.generic.DecoratedBean;
+import org.apache.webbeans.newtests.decorators.generic.GenericInterface;
+import org.apache.webbeans.newtests.decorators.generic.SampleDecorator;
 import org.junit.Test;
 
 public class GenericDecoratorTest extends AbstractUnitTest
@@ -67,4 +70,21 @@ public class GenericDecoratorTest extends AbstractUnitTest
         
         shutDownContainer();
     }
+
+    //X TODO currently broken @Test
+    public void injection() throws Exception {
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(DecoratedBean.class);
+        classes.add(GenericInterface.class);
+        classes.add(SampleDecorator.class);
+
+        Collection<String> xmls = new ArrayList<String>();
+        xmls.add(getXmlPath(PACKAGE_NAME, "GenericDecoratorTest"));
+
+        startContainer(classes, xmls);
+
+        DecoratedBean decoratedBean = (DecoratedBean) getInstance(DecoratedBean.class);
+        Assert.assertTrue(decoratedBean.isDecoratorCalled());
+    }
+
 }

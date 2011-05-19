@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.component.decorator.generic;
+package org.apache.webbeans.newtests.decorators.generic;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 
 @Decorator
-public class TestDecorator<T extends Annotation> implements GenericInterface<T>
+public class SampleDecorator<T extends Annotation> implements GenericInterface<T>
 {
 
     @Inject
