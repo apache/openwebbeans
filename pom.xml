@@ -148,7 +148,7 @@
             <organization>Oracle, Germany</organization>
             <organizationUrl>http://www.oracle.com/</organizationUrl>
             <roles>
-                <role>Committer</role>
+                <role>Committer,Mentor</role>
             </roles>
         </developer>
         <developer>
@@ -182,20 +182,20 @@
             <organization>IRIAN.at, Austria</organization>
             <organizationUrl>http://www.irian.at/</organizationUrl>
             <roles>
-                <role>Committer</role>
+                <role>PMC</role>
             </roles>
             <timezone>+1</timezone>
         </developer>
         <developer>
-        	<id>kelapure</id>
-        	<name>Rohit Kelapure</name>
-        	<email>kelapure at apache dot org</email>
-        	<url>http://www.linkedin.com/in/rohitkelapure</url>
-        	<organization>IBM</organization>
-        	<organizationUrl>http://wasdynacache.blogspot.com</organizationUrl>
-        	<roles>
-        		<role>Committer</role>
-        	</roles>
+       	    <id>kelapure</id>
+       	    <name>Rohit Kelapure</name>
+            <email>kelapure at apache dot org</email>
+       	    <url>http://www.linkedin.com/in/rohitkelapure</url>
+       	    <organization>IBM</organization>
+       	    <organizationUrl>http://wasdynacache.blogspot.com</organizationUrl>
+       	    <roles>
+       	        <role>Committer</role>
+       	    </roles>
         </developer>
         <developer>
             <id>rederpj</id>
@@ -203,6 +203,22 @@
             <email>rederpj at apache dot org</email>
             <roles>
                 <role>Committer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>djencks</id>
+            <name>David Jencks</name>
+            <email>djencks at apache dot org</email>
+            <roles>
+                <role>PMC</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>rederpj</id>
+            <name>Adonis Raduca</name>
+            <email>adonis.raduca at codebeat.ro</email>
+            <roles>
+                <role>Contributor,Logo-creator</role>
             </roles>
         </developer>
     </developers>
