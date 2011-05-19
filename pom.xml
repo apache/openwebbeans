@@ -213,15 +213,17 @@
                 <role>PMC</role>
             </roles>
         </developer>
-        <developer>
-            <id>rederpj</id>
+    </developers>
+
+    <contributors>
+        <contributor>
             <name>Adonis Raduca</name>
             <email>adonis.raduca at codebeat.ro</email>
             <roles>
-                <role>Contributor,Logo-creator</role>
+                <role>Logo-creator</role>
             </roles>
-        </developer>
-    </developers>
+        </contributor>
+    </contributors>
 
     <build>
         <defaultGoal>install</defaultGoal>
