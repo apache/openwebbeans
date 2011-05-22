@@ -460,16 +460,14 @@ public class InjectionResolver
 
         if (isInstanceOrEventInjection(injectionPointType))
         {
-            qualifiers = new Annotation[1];
-            qualifiers[0] = new AnyLiteral();
+            qualifiers = new Annotation[]{new AnyLiteral()};
         }
 
         else
         {
             if (qualifiers.length == 0)
             {
-                qualifiers = new Annotation[1];
-                qualifiers[0] = new DefaultLiteral();
+                qualifiers = new Annotation[]{new DefaultLiteral()};
                 currentQualifier = true;
             }
         }
