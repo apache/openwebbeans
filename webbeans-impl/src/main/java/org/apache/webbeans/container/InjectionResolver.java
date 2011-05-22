@@ -33,6 +33,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+
 import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
@@ -48,14 +49,14 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Injection point resolver class. 
- * 
+ * Injection point resolver class.
+ * <p/>
  * <p>
  * It is a singleton class per ClassLoader per JVM. It is
- * responsible for resolving the bean instances at the injection points for 
+ * responsible for resolving the bean instances at the injection points for
  * its bean manager.
  * </p>
- * 
+ *
  * @version $Rev$ $Date$
  * @see org.apache.webbeans.config.WebBeansFinder
  */
@@ -63,15 +64,17 @@ public class InjectionResolver
 {
     private final WebBeansLogger logger = WebBeansLogger.getLogger(InjectionResolver.class);
 
-    /**Bean Manager*/
+    /**
+     * Bean Manager
+     */
     private WebBeansContext webBeansContext;
-    
+
     /**
      * This Map contains all resolved beans via it's type and qualifiers.
      * If a bean have resolved as not existing, the entry will contain <code>null</code> as value.
      */
     private Map<String, Set<Bean<?>>> resolvedBeansByType = new ConcurrentHashMap<String, Set<Bean<?>>>();
-    
+
     /**
      * This Map contains all resolved beans via it's ExpressionLanguage name.
      */
@@ -79,10 +82,10 @@ public class InjectionResolver
 
     //X TODO refactor. public static variables are utterly ugly
     public static ThreadLocal<InjectionPoint> injectionPoints = new ThreadLocal<InjectionPoint>();
-    
+
     /**
      * Creates a new injection resolve for given bean manager.
-     * 
+     *
      * @param webBeansContext WebBeansContext
      */
     public InjectionResolver(WebBeansContext webBeansContext)
@@ -90,7 +93,7 @@ public class InjectionResolver
         this.webBeansContext = webBeansContext;
 
     }
-    
+
     /**
      * Clear caches.
      */
@@ -102,125 +105,124 @@ public class InjectionResolver
 
     /**
      * Returns bean manager injection resolver.
-     * 
+     *
      * @return bean manager injection resolver
      * @see org.apache.webbeans.config.WebBeansFinder
      */
     public static InjectionResolver getInstance()
     {
         InjectionResolver instance = WebBeansContext.getInstance().getBeanManagerImpl().getInjectionResolver();
-        
+
         return instance;
     }
-    
+
     /**
      * Check the type of the injection point.
      * <p>
      * Injection point type can not be {@link java.lang.reflect.TypeVariable}.
      * </p>
-     * 
+     *
      * @param injectionPoint injection point
      * @throws WebBeansConfigurationException if not obey the rule
      */
     public void checkInjectionPointType(InjectionPoint injectionPoint)
     {
         Type type = injectionPoint.getType();
-        
+
         //Check for injection point type variable
-        if(ClassUtil.isTypeVariable(type))
+        if (ClassUtil.isTypeVariable(type))
         {
-            throw new WebBeansConfigurationException("Injection point type : " + injectionPoint +  " can not define Type Variable generic type");
+            throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " can not define Type Variable generic type");
         }
-        
+
     }
 
     /**
      * Check that bean exist in the deployment for given
      * injection point definition.
-     * 
+     *
      * @param injectionPoint injection point
      * @throws WebBeansConfigurationException If bean is not avialable in the current deployment for given injection
      */
     public void checkInjectionPoints(InjectionPoint injectionPoint)
-    {        
+    {
         WebBeansUtil.checkInjectionPointNamedQualifier(injectionPoint);
-        
-        Type type = injectionPoint.getType();        
+
+        Type type = injectionPoint.getType();
         Class<?> clazz = null;
-        
-        if(ClassUtil.isTypeVariable(type))
+
+        if (ClassUtil.isTypeVariable(type))
         {
-           throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " type can not be defined as Typevariable or Wildcard type!");
+            throw new WebBeansConfigurationException("Injection point type : " + injectionPoint + " type can not be defined as Typevariable or Wildcard type!");
         }
-        
+
         if (type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType) type;
-            
+
             clazz = (Class<?>) pt.getRawType();
         }
         else
         {
             clazz = (Class<?>) type;
         }
-        
+
         Annotation[] qualifiers = new Annotation[injectionPoint.getQualifiers().size()];
         qualifiers = injectionPoint.getQualifiers().toArray(qualifiers);
-        
-        Set<Bean<?>> beanSet = implResolveByType(type,injectionPoint.getBean().getBeanClass(),qualifiers);
-        
-        if(beanSet.isEmpty())
+
+        Set<Bean<?>> beanSet = implResolveByType(type, injectionPoint.getBean().getBeanClass(), qualifiers);
+
+        if (beanSet.isEmpty())
         {
-            if(qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
+            if (qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
             {
-                New newQualifier =  (New)qualifiers[0];
-                
-                if(newQualifier.value() == New.class)
+                New newQualifier = (New) qualifiers[0];
+
+                if (newQualifier.value() == New.class)
                 {
                     beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(clazz, type));
                 }
                 else
                 {
-                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newQualifier.value(),null));
+                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newQualifier.value(), null));
                 }
-                
+
             }
         }
 
-        webBeansContext.getResolutionUtil().checkResolvedBeans(beanSet, clazz, qualifiers,
-                                                                              injectionPoint);
+        webBeansContext.getResolutionUtil().checkResolvedBeans(beanSet, clazz, qualifiers, injectionPoint);
 
         Bean<?> bean = beanSet.iterator().next();
-        
-        if(clazz.isPrimitive())
+
+        if (clazz.isPrimitive())
         {
-            if(bean.isNullable())
+            if (bean.isNullable())
             {
                 throw new NullableDependencyException("Injection point type : " + injectionPoint + " type is primitive but resolved bean can have nullable objects!");
             }
         }
-        
+
     }
-    
-        
+
+
     /**
      * Returns bean for injection point.
-     * 
+     *
      * @param injectionPoint injection point declaration
      * @return bean for injection point
      */
     public Bean<?> getInjectionPointBean(InjectionPoint injectionPoint)
     {
 
-        Type type = injectionPoint.getType();        
+        Type type = injectionPoint.getType();
         Class<?> clazz = null;
-        
+
         if (type instanceof ParameterizedType)
         {
-            ParameterizedType pt = (ParameterizedType) type;            
+            ParameterizedType pt = (ParameterizedType) type;
             clazz = (Class<?>) pt.getRawType();
-                        
-            
+
+
         }
         else
         {
@@ -229,62 +231,61 @@ public class InjectionResolver
 
         Set<Annotation> qualSet = injectionPoint.getQualifiers();
         Annotation[] qualifiers = qualSet.toArray(new Annotation[qualSet.size()]);
-        if(isInstanceOrEventInjection(type))
+        if (isInstanceOrEventInjection(type))
         {
             qualifiers = new Annotation[1];
             qualifiers[0] = new AnyLiteral();
         }
-        
-        Set<Bean<?>> beanSet = implResolveByType(type, injectionPoint.getBean().getBeanClass(),qualifiers);
-        
-        if(beanSet.isEmpty())
+
+        Set<Bean<?>> beanSet = implResolveByType(type, injectionPoint.getBean().getBeanClass(), qualifiers);
+
+        if (beanSet.isEmpty())
         {
-            if(qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
+            if (qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
             {
-                New newQualifier =  (New)qualifiers[0];
-                
-                if(newQualifier.value() == New.class)
+                New newQualifier = (New) qualifiers[0];
+
+                if (newQualifier.value() == New.class)
                 {
-                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(clazz,type));
+                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(clazz, type));
                 }
                 else
                 {
-                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newQualifier.value(),null));
+                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newQualifier.value(), null));
                 }
 
             }
         }
 
-        webBeansContext.getResolutionUtil().checkResolvedBeans(beanSet, clazz, qualifiers,
-                                                                              injectionPoint);
+        webBeansContext.getResolutionUtil().checkResolvedBeans(beanSet, clazz, qualifiers, injectionPoint);
 
         return beanSet.iterator().next();
-        
-    }    
-    
-    
+
+    }
+
+
     private boolean isInstanceOrEventInjection(Type type)
     {
         Class<?> clazz = null;
         boolean injectInstanceOrEventProvider = false;
         if (type instanceof ParameterizedType)
         {
-            ParameterizedType pt = (ParameterizedType) type;            
+            ParameterizedType pt = (ParameterizedType) type;
             clazz = (Class<?>) pt.getRawType();
-                        
-            if(clazz.isAssignableFrom(Instance.class) || clazz.isAssignableFrom(Event.class))
+
+            if (clazz.isAssignableFrom(Instance.class) || clazz.isAssignableFrom(Event.class))
             {
                 injectInstanceOrEventProvider = true;
-            }            
+            }
         }
-        
+
         return injectInstanceOrEventProvider;
     }
-    
-        
+
+
     /**
      * Returns set of beans for given bean name.
-     * 
+     *
      * @param name bean name
      * @return set of beans for given bean name
      */
@@ -297,12 +298,12 @@ public class InjectionResolver
         Set<Bean<?>> resolvedComponents = resolvedBeansByName.get(cacheKey);
         if (resolvedComponents != null)
         {
-            return resolvedComponents; 
+            return resolvedComponents;
         }
 
-        resolvedComponents = new HashSet<Bean<?>>();        
+        resolvedComponents = new HashSet<Bean<?>>();
         Set<Bean<?>> deployedComponents = this.webBeansContext.getBeanManagerImpl().getBeans();
-        
+
         Iterator<Bean<?>> it = deployedComponents.iterator();
         //Finding all beans with given name
         while (it.hasNext())
@@ -312,31 +313,31 @@ public class InjectionResolver
             {
                 if (component.getName().equals(name))
                 {
-                     resolvedComponents.add(component);
+                    resolvedComponents.add(component);
                 }
             }
         }
-        
+
         //Look for enable/disable
         resolvedComponents = findByEnabled(resolvedComponents);
 
         //Still Ambigious, check for specialization
-        if(resolvedComponents.size() > 1)
+        if (resolvedComponents.size() > 1)
         {
             //Check for specialization
             Set<Bean<?>> specializedComponents = findSpecializedForNameResolution(resolvedComponents);
-            if(specializedComponents.size() > 0)
+            if (specializedComponents.size() > 0)
             {
-                resolvedComponents =  specializedComponents;
-            }            
+                resolvedComponents = specializedComponents;
+            }
         }
-        
-        if (resolvedComponents.isEmpty()) 
+
+        if (resolvedComponents.isEmpty())
         {
             // maintain negative cache but use standard empty set so we can garbage collect
             resolvedBeansByName.put(cacheKey, Collections.EMPTY_SET);
         }
-        else 
+        else
         {
             resolvedBeansByName.put(cacheKey, resolvedComponents);
         }
@@ -347,58 +348,58 @@ public class InjectionResolver
 
         return resolvedComponents;
     }
-     
+
     private Set<Bean<?>> findByEnabled(Set<Bean<?>> resolvedComponents)
     {
-        Set<Bean<?>> specializedComponents = new HashSet<Bean<?>>(); 
-        if(resolvedComponents.size() > 0)
+        Set<Bean<?>> specializedComponents = new HashSet<Bean<?>>();
+        if (resolvedComponents.size() > 0)
         {
-            for(Bean<?> bean : resolvedComponents)
+            for (Bean<?> bean : resolvedComponents)
             {
-                AbstractOwbBean<?> component = (AbstractOwbBean<?>)bean;
-                
-                if(component.isEnabled())
+                AbstractOwbBean<?> component = (AbstractOwbBean<?>) bean;
+
+                if (component.isEnabled())
                 {
                     specializedComponents.add(component);
                 }
             }
         }
-        
+
         return specializedComponents;
-        
+
     }
-    
-    
+
+
     /**
      * Returns filtered set by specialization.
-     * 
+     *
      * @param resolvedComponents result beans
      * @return filtered set by specialization
      */
     private Set<Bean<?>> findSpecializedForNameResolution(Set<Bean<?>> resolvedComponents)
     {
-        Set<Bean<?>> specializedComponents = new HashSet<Bean<?>>(); 
-        if(resolvedComponents.size() > 0)
+        Set<Bean<?>> specializedComponents = new HashSet<Bean<?>>();
+        if (resolvedComponents.size() > 0)
         {
-            for(Bean<?> bean : resolvedComponents)
+            for (Bean<?> bean : resolvedComponents)
             {
-                AbstractOwbBean<?> component = (AbstractOwbBean<?>)bean;
-                
-                if(component.isSpecializedBean())
+                AbstractOwbBean<?> component = (AbstractOwbBean<?>) bean;
+
+                if (component.isSpecializedBean())
                 {
                     specializedComponents.add(component);
                 }
             }
         }
-        
+
         return specializedComponents;
     }
-    
+
     /**
      * Resolution by type.
-     * 
+     *
      * @param injectionPointType injection point api type
-     * @param qualifiers qualifiers of the injection point
+     * @param qualifiers         qualifiers of the injection point
      * @return set of resolved beans
      */
     public Set<Bean<?>> implResolveByType(Type injectionPointType, Annotation... qualifiers)
@@ -417,18 +418,18 @@ public class InjectionResolver
         BDABeansXmlScanner beansXMLScanner = scannerService.getBDABeansXmlScanner();
         return beansXMLScanner.getBeansXml(injectionPointBeanClass);
     }
-    
+
     /**
      * Resolution by type.
-     * 
+     *
      * @param injectionPointType injection point api type
-     * @param qualifiers qualifiers of the injection point
+     * @param qualifiers         qualifiers of the injection point
      * @return set of resolved beans
      */
     public Set<Bean<?>> implResolveByType(Type injectionPointType, Class<?> injectinPointClass, Annotation... qualifiers)
     {
         ScannerService scannerService = webBeansContext.getScannerService();
-        String bdaBeansXMLFilePath =null;
+        String bdaBeansXMLFilePath = null;
         if (scannerService.isBDABeansXmlScanningEnabled())
         {
             if (injectinPointClass == null)
@@ -444,26 +445,25 @@ public class InjectionResolver
         }
 
         //X TODO maybe we need to stringify the qualifiers manually im a loop...
-        String cacheKey = getBeanCacheKey(injectionPointType,bdaBeansXMLFilePath,qualifiers);
+        String cacheKey = getBeanCacheKey(injectionPointType, bdaBeansXMLFilePath, qualifiers);
 
-        
         Set<Bean<?>> resolvedComponents = resolvedBeansByType.get(cacheKey);
         if (resolvedComponents != null)
         {
-            return resolvedComponents; 
+            return resolvedComponents;
         }
-        
+
         resolvedComponents = new HashSet<Bean<?>>();
-        
+
         boolean currentQualifier = false;
         boolean returnAll = false;
-        
-        if(isInstanceOrEventInjection(injectionPointType))
+
+        if (isInstanceOrEventInjection(injectionPointType))
         {
             qualifiers = new Annotation[1];
             qualifiers[0] = new AnyLiteral();
         }
-        
+
         else
         {
             if (qualifiers.length == 0)
@@ -471,9 +471,9 @@ public class InjectionResolver
                 qualifiers = new Annotation[1];
                 qualifiers[0] = new DefaultLiteral();
                 currentQualifier = true;
-            }                        
+            }
         }
-        
+
         if (injectionPointType.equals(Object.class) && currentQualifier)
         {
             returnAll = true;
@@ -498,30 +498,29 @@ public class InjectionResolver
                 }
             }
         }
- 
+
         // Look for qualifiers
         resolvedComponents = findByQualifier(resolvedComponents, qualifiers);
-        
-        // Look for alternative
-        resolvedComponents = findByAlternatives(resolvedComponents,bdaBeansXMLFilePath);
 
-        
+        // Look for alternative
+        resolvedComponents = findByAlternatives(resolvedComponents, bdaBeansXMLFilePath);
+
         // Ambigious resolution, check for specialization
-        if(resolvedComponents.size() > 1)
+        if (resolvedComponents.size() > 1)
         {
             //Look for specialization
             resolvedComponents = findBySpecialization(resolvedComponents);
         }
-        
+
         resolvedBeansByType.put(cacheKey, resolvedComponents);
         if (logger.wblWillLogDebug())
         {
             logger.debug("DEBUG_ADD_BYTYPE_CACHE_BEANS", cacheKey);
         }
-        
+
         return resolvedComponents;
     }
-    
+
     private String getBeanCacheKey(Type injectionPointType, String bdaBeansXMLPath, Annotation... qualifiers)
     {
         StringBuilder cacheKey = new StringBuilder(injectionPointType.toString());
@@ -538,7 +537,7 @@ public class InjectionResolver
 
     /**
      * Returns specialized beans if exists, otherwise return input result
-     * 
+     *
      * @param result result beans
      * @return specialized beans if exists, otherwise return input result
      */
@@ -546,26 +545,27 @@ public class InjectionResolver
     {
         Iterator<Bean<?>> it = result.iterator();
         Set<Bean<?>> res = new HashSet<Bean<?>>();
-        
-        while(it.hasNext())
+
+        while (it.hasNext())
         {
-            AbstractOwbBean<?> component = (AbstractOwbBean<?>)it.next();
-            if(component.isSpecializedBean() && component.isEnabled())
+            AbstractOwbBean<?> component = (AbstractOwbBean<?>) it.next();
+            if (component.isSpecializedBean() && component.isEnabled())
             {
                 res.add(component);
             }
         }
-        
-        if(res.size() > 0)
+
+        if (res.size() > 0)
         {
             return res;
         }
-        
+
         return result;
     }
-        
+
     /**
      * Gets alternatives from set.
+     *
      * @param result resolved set
      * @return containes alternatives
      */
@@ -573,9 +573,10 @@ public class InjectionResolver
     {
         return findByAlternatives(result, null);
     }
-    
+
     /**
      * Gets alternatives from set.
+     *
      * @param result resolved set
      * @return containes alternatives
      */
@@ -584,7 +585,7 @@ public class InjectionResolver
         Set<Bean<?>> alternativeSet = new HashSet<Bean<?>>();
         Set<Bean<?>> enableSet = new HashSet<Bean<?>>();
         boolean containsAlternative = false;
-        
+
         if (bdaBeansXMLFilePath != null)
         {
             // per BDA beans.xml
@@ -638,12 +639,12 @@ public class InjectionResolver
                 }
             }
         }
-        
-        if(containsAlternative)
+
+        if (containsAlternative)
         {
             return alternativeSet;
         }
-        
+
         return enableSet;
     }
 
@@ -676,9 +677,9 @@ public class InjectionResolver
 
     /**
      * Returns filtered bean set according to the qualifiers.
-     * 
+     *
      * @param remainingSet bean set for filtering by qualifier
-     * @param annotations qualifiers on injection point
+     * @param annotations  qualifiers on injection point
      * @return filtered bean set according to the qualifiers
      */
     private Set<Bean<?>> findByQualifier(Set<Bean<?>> remainingSet, Annotation... annotations)
