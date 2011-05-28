@@ -1169,6 +1169,18 @@ public final class DefinitionUtil
             //Check for injected fields in EJB @Interceptors
             List<InterceptorData> stack = new ArrayList<InterceptorData>();
             bean.getWebBeansContext().getEJBInterceptorConfig().configure(bean.getBeanClass(), stack);
+            for(InterceptorData data : stack)
+            {
+                if(data.isDefinedInInterceptorClass())
+                {
+                    AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
+                    if(!annotationManager.checkInjectionPointForInterceptorPassivation(data.getInterceptorClass()))
+                    {
+                        throw new WebBeansConfigurationException("Enterprise bean : " + bean.toString() +
+                                                                 " interceptors must have serializable injection points");
+                    }
+                }
+            }
         }
 
         // For every injection target bean
