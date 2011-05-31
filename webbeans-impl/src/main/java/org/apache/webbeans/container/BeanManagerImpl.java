@@ -658,7 +658,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
         }
 
-        Collections.sort(interceptorList, new InterceptorComparator());
+        Collections.sort(interceptorList, new InterceptorComparator(webBeansContext));
 
         return interceptorList;
     }
