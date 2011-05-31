@@ -611,8 +611,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public String toString()
     {
         StringBuilder builder = new StringBuilder();        
-        builder.append("Name:").append(getName()).append(",WebBeans Type:").append(getWebBeansType());
-        builder.append(",API Types:[");
+        builder.append("Name:").append(getName()).append(", WebBeans Type:").append(getWebBeansType());
+        builder.append(", API Types:[");
         
         int size = getTypes().size();
         int index = 1;
@@ -636,7 +636,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             index++;                        
         }
         
-        builder.append("],");
+        builder.append("], ");
         builder.append("Qualifiers:[");
         
         size = getQualifiers().size();
