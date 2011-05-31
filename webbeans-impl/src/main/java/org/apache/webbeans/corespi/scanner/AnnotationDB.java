@@ -326,9 +326,11 @@ public class AnnotationDB implements Serializable
      */
     private String isJarUrl(String urlPath)
     {
-        if (urlPath.endsWith("!/") && urlPath.length() > 6)
+      // common prefixes of the url are: jar: (tomcat), zip: (weblogic) and wsjar: (websphere)
+      final int jarColon = urlPath.indexOf(':');
+      if (urlPath.endsWith("!/") && jarColon > 0)
         {
-            urlPath = urlPath.substring(4, urlPath.length() - 2);
+            urlPath = urlPath.substring(jarColon + 1, urlPath.length() - 2);
             return urlPath;
         }
 
