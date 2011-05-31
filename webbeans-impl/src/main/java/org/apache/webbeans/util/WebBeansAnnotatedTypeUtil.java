@@ -716,6 +716,7 @@ public final class WebBeansAnnotatedTypeUtil
                 
                 //Just creating temporary for getting injected fields
                 ManagedBean<T> managedBean = new ManagedBean<T>(clazz,WebBeansType.MANAGED, webBeansContext);
+                managedBean.setImplScopeType(new DependentScopeLiteral());
                 managedBean.setAnnotatedType(type);
                             
                 AnnotatedTypeBeanCreatorImpl<T> managedBeanCreator = new AnnotatedTypeBeanCreatorImpl<T>(managedBean);            
