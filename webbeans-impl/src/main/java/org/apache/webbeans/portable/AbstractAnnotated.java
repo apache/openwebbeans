@@ -47,7 +47,7 @@ abstract class AbstractAnnotated implements Annotated
     /**Set of annotations*/
     private Set<Annotation> annotations = new HashSet<Annotation>();
 
-    private WebBeansContext webBeansContext;
+    private final WebBeansContext webBeansContext;
     
     /**
      * Createa a new annotated element.
@@ -57,6 +57,14 @@ abstract class AbstractAnnotated implements Annotated
      */
     protected AbstractAnnotated(WebBeansContext webBeansContext, Type baseType)
     {
+        if (webBeansContext == null)
+        {
+            throw new NullPointerException("no WebBeansContext");
+        }
+        if (baseType == null)
+        {
+            throw new NullPointerException("no base type");
+        }
         this.baseType = baseType;
         this.webBeansContext = webBeansContext;
     }
