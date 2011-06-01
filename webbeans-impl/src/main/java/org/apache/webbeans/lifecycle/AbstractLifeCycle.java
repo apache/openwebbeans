@@ -70,16 +70,21 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     
     protected AbstractLifeCycle(Properties properties)
     {
+        this(properties, WebBeansContext.getInstance());
+    }
+
+    protected AbstractLifeCycle(Properties properties, WebBeansContext webBeansContext)
+    {
         beforeInitApplication(properties);
 
-        webBeansContext = WebBeansContext.getInstance();
-        this.beanManager = webBeansContext.getBeanManagerImpl();
+        this.webBeansContext = webBeansContext;
+        this.beanManager = this.webBeansContext.getBeanManagerImpl();
         this.xmlDeployer = new WebBeansXMLConfigurator();
-        this.deployer = new BeansDeployer(xmlDeployer, webBeansContext);
-        this.jndiService = webBeansContext.getService(JNDIService.class);
+        this.deployer = new BeansDeployer(xmlDeployer, this.webBeansContext);
+        this.jndiService = this.webBeansContext.getService(JNDIService.class);
         this.beanManager.setXMLConfigurator(this.xmlDeployer);
-        this.scannerService = webBeansContext.getScannerService();
-        this.contextsService = webBeansContext.getService(ContextsService.class);
+        this.scannerService = this.webBeansContext.getScannerService();
+        this.contextsService = this.webBeansContext.getService(ContextsService.class);
         initApplication(properties);
     }
 
@@ -197,44 +202,12 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
     }
 
     /**
-     * @return the scannerService
-     */
-//    protected ScannerService getScannerService()
-//    {
-//        return scannerService;
-//    }
-
-    /**
      * @return the contextsService
      */
     public ContextsService getContextService()
     {
         return contextsService;
     }
-
-    /**
-     * @return the deployer
-     */
-//    protected BeansDeployer getDeployer()
-//    {
-//        return deployer;
-//    }
-
-    /**
-     * @return the xmlDeployer
-     */
-//    protected WebBeansXMLConfigurator getXmlDeployer()
-//    {
-//        return xmlDeployer;
-//    }
-
-    /**
-     * @return the jndiService
-     */
-//    protected JNDIService getJndiService()
-//    {
-//        return jndiService;
-//    }
 
     @Override
     public void initApplication(Properties properties)

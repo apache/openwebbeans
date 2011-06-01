@@ -44,7 +44,7 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
     @Override
     public void beforeInitApplication(Properties properties)
     {
-        WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
+//        WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
     }
     
     @Override
@@ -74,5 +74,10 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
             elStore.destroyELContextStore();
         }
     }
-    
+
+    @Override
+    protected void afterStopApplication(Object stopObject)
+    {
+        WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
+    }
 }

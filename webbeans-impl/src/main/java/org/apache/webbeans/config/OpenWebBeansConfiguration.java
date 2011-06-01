@@ -118,6 +118,16 @@ public class OpenWebBeansConfiguration
     public static final String USE_BDA_BEANSXML_SCANNER = "org.apache.webbeans.useBDABeansXMLScanner";
 
     /**
+     * you can configure this externally as well.
+     *
+     * @param properties
+     */
+    public OpenWebBeansConfiguration(Properties properties)
+    {
+        configProperties.putAll(properties);
+    }
+
+    /**
      * Parse configuration.
      */
     public OpenWebBeansConfiguration()

@@ -66,6 +66,16 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         this.logger = WebBeansLogger.getLogger(WebContainerLifecycle.class);
     }
 
+    /**
+     * Creates a new lifecycle instance and initializes
+     * the instance variables.
+     */
+    public WebContainerLifecycle(WebBeansContext webBeansContext)
+    {
+        super(null, webBeansContext);
+        this.logger = WebBeansLogger.getLogger(WebContainerLifecycle.class);
+    }
+
 
     /**
      * {@inheritDoc}

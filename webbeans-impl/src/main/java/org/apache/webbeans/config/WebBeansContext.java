@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -31,9 +32,6 @@ import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
-//import org.apache.webbeans.corespi.se.DefaultContextsService;
-//import org.apache.webbeans.corespi.se.DefaultJndiService;
-//import org.apache.webbeans.corespi.se.DefaultScannerService;
 import org.apache.webbeans.decorator.DecoratorsManager;
 import org.apache.webbeans.deployment.StereoTypeManager;
 import org.apache.webbeans.exception.WebBeansException;
@@ -65,35 +63,58 @@ public class WebBeansContext
 
     private final Map<Class<?>, Object> serviceMap = new HashMap<Class<?>, Object>();
 
-    private WebBeansUtil webBeansUtil = new WebBeansUtil(this);
-    private ContextFactory contextFactory = new ContextFactory(this);
-    private AlternativesManager alternativesManager = new AlternativesManager(this);
-    private AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory(this);
-    private BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
-    private ConversationManager conversationManager = new ConversationManager(this);
-    private CreationalContextFactory creationalContextFactory = new CreationalContextFactory(this);
-    private DecoratorsManager decoratorsManager = new DecoratorsManager(this);
-    private EJBInterceptorConfig ejbInterceptorConfig = new EJBInterceptorConfig(this);
-    private ExtensionLoader extensionLoader = new ExtensionLoader(this);
-    private InterceptorsManager interceptorsManager = new InterceptorsManager(this);
-    private WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
-    private JMSManager jmsManager = new JMSManager();
-    private JavassistProxyFactory javassistProxyFactory = new JavassistProxyFactory();
-    private OpenWebBeansConfiguration openWebBeansConfiguration = new OpenWebBeansConfiguration();
-    private PluginLoader pluginLoader = new PluginLoader();
-    private SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
-    private StereoTypeManager stereoTypeManager = new StereoTypeManager();
-    private AnnotationManager annotationManager = new AnnotationManager(this);
-    private ResolutionUtil resolutionUtil = new ResolutionUtil(this);
-    private InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
-    private InterceptorUtil interceptorUtil = new InterceptorUtil(this);
-    private DefinitionUtil definitionUtil = new DefinitionUtil(this);
-    private WebBeansAnnotatedTypeUtil annotatedTypeUtil = new WebBeansAnnotatedTypeUtil(this);
-    private ManagedBeanConfigurator managedBeanConfigurator = new ManagedBeanConfigurator(this);
-    private SecurityService securityService = getService(SecurityService.class);
+    private final WebBeansUtil webBeansUtil = new WebBeansUtil(this);
+    private final ContextFactory contextFactory = new ContextFactory(this);
+    private final AlternativesManager alternativesManager = new AlternativesManager(this);
+    private final AnnotatedElementFactory annotatedElementFactory = new AnnotatedElementFactory(this);
+    private final BeanManagerImpl beanManagerImpl = new BeanManagerImpl(this);
+    private final ConversationManager conversationManager = new ConversationManager(this);
+    private final CreationalContextFactory creationalContextFactory = new CreationalContextFactory(this);
+    private final DecoratorsManager decoratorsManager = new DecoratorsManager(this);
+    private final EJBInterceptorConfig ejbInterceptorConfig = new EJBInterceptorConfig(this);
+    private final ExtensionLoader extensionLoader = new ExtensionLoader(this);
+    private final InterceptorsManager interceptorsManager = new InterceptorsManager(this);
+    private final WebBeansInterceptorConfig webBeansInterceptorConfig = new WebBeansInterceptorConfig(this);
+    private final JMSManager jmsManager = new JMSManager();
+    private final JavassistProxyFactory javassistProxyFactory = new JavassistProxyFactory();
+    private final OpenWebBeansConfiguration openWebBeansConfiguration;
+    private final PluginLoader pluginLoader = new PluginLoader();
+    private final SerializableBeanVault serializableBeanVault = new SerializableBeanVault();
+    private final StereoTypeManager stereoTypeManager = new StereoTypeManager();
+    private final AnnotationManager annotationManager = new AnnotationManager(this);
+    private final ResolutionUtil resolutionUtil = new ResolutionUtil(this);
+    private final InjectionPointFactory injectionPointFactory = new InjectionPointFactory(this);
+    private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
+    private final DefinitionUtil definitionUtil = new DefinitionUtil(this);
+    private final WebBeansAnnotatedTypeUtil annotatedTypeUtil = new WebBeansAnnotatedTypeUtil(this);
+    private final ManagedBeanConfigurator managedBeanConfigurator = new ManagedBeanConfigurator(this);
+    private final SecurityService securityService;
 
     public WebBeansContext()
     {
+        this(null, new OpenWebBeansConfiguration());
+    }
+
+    public WebBeansContext(Map<Class<?>, Object> initialServices, Properties properties)
+    {
+        this(initialServices, new OpenWebBeansConfiguration(properties));
+    }
+
+    private WebBeansContext(Map<Class<?>, Object> initialServices, OpenWebBeansConfiguration openWebBeansConfiguration)
+    {
+        this.openWebBeansConfiguration = openWebBeansConfiguration;
+        if (initialServices != null)
+        {
+            for (Map.Entry<Class<?>, Object> entry: initialServices.entrySet())
+            {
+                if (!entry.getKey().isAssignableFrom(entry.getValue().getClass()))
+                {
+                    throw new IllegalArgumentException("Initial service claiming to be of type " + entry.getKey() + " is a " + entry.getValue().getClass());
+                }
+                serviceMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+        this.securityService = getService(SecurityService.class);
         WebBeansUtil.initProxyFactoryClassLoaderProvider();
 
         // Allow the WebBeansContext itself to be looked up
