@@ -24,8 +24,7 @@ import org.apache.webbeans.spi.SingletonService;
 import org.apache.webbeans.util.WebBeansUtil;
 
 /**
- * Holds singletons based on the deployment
- * class loader.
+ * Holds the SingletonService that tracks WebBeansContext instances
  * 
  * @version $Rev$ $Date$
  *
