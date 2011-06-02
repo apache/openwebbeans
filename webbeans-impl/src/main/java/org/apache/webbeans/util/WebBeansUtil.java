@@ -1831,9 +1831,13 @@ public final class WebBeansUtil
                         {
                             violationMessage.addLine(beanClass.getName(), " is a final class! CDI doesn't allow that.");
                         }
-                        if (ClassUtil.hasFinalMethod(beanClass))
+                        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(beanClass);
+                        for (Method m : methods)
                         {
-                            violationMessage.addLine(beanClass.getName(), " has final methods! CDI doesn't allow that.");
+                            if (ClassUtil.isFinal(m.getModifiers()))
+                            {
+                                violationMessage.addLine(beanClass.getName(), " has final method "+ m + " CDI doesn't allow that.");
+                            }
                         }
                         if (cons == null)
                         {
