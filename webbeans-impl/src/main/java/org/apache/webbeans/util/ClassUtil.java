@@ -157,7 +157,7 @@ public final class ClassUtil
     {
         Asserts.nullCheckForModifier(modifier);
 
-        return Modifier.isFinal(modifier)  && ((modifier & 4096) == 0);
+        return Modifier.isFinal(modifier);
     }
 
     /**
