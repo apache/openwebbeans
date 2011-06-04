@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.interceptor.InvocationContext;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
@@ -234,7 +235,10 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                             WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
                             decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor, webBeansContext);
                             decoratorInterceptorDataImpl.setDefinedInInterceptorClass(true);
-                            decoratorInterceptorDataImpl.setAroundInvoke(webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
+                            decoratorInterceptorDataImpl.setAroundInvoke(
+                                    webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(lastInterceptor.getClass(),
+                                            "invokeDecorators",
+                                            new Class[] {InvocationContext.class}));
                         }
 
                         List<InterceptorData> interceptorMethods = this.interceptedMethodMap.get(method);

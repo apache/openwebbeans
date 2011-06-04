@@ -118,6 +118,13 @@ public class OpenWebBeansConfiguration
     public static final String USE_BDA_BEANSXML_SCANNER = "org.apache.webbeans.useBDABeansXMLScanner";
 
     /**
+     * a comma-separated list of fully qualified class names that should be ignored
+     * when determining if a decorator matches its delegate.  These are typically added by
+     * weaving or bytecode modification.
+     */
+    public static final String IGNORED_DECORATOR_INTERFACES = "org.apache.webbeans.ignoredDecoratorInterfaces";
+
+    /**
      * you can configure this externally as well.
      *
      * @param properties

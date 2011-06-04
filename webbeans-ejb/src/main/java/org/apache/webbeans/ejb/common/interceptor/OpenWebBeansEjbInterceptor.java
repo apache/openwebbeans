@@ -551,7 +551,10 @@ public class OpenWebBeansEjbInterceptor implements Serializable
                 WebBeansDecoratorInterceptor lastInterceptor = new WebBeansDecoratorInterceptor(delegateHandler, instance);
                 decoratorInterceptorDataImpl = new InterceptorDataImpl(true, lastInterceptor, webBeansContext);
                 decoratorInterceptorDataImpl.setDefinedInInterceptorClass(true);
-                decoratorInterceptorDataImpl.setAroundInvoke(webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(lastInterceptor.getClass())[0]);
+                decoratorInterceptorDataImpl.setAroundInvoke(
+                        webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethod(lastInterceptor.getClass(),
+                                "invokeDecorators",
+                                new Class[] {InvocationContext.class}));
                 filteredInterceptorStack.add(decoratorInterceptorDataImpl);
             }
             

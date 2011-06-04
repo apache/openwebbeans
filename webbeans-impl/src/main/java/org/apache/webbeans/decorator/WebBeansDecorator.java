@@ -23,6 +23,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -46,7 +47,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -79,20 +83,23 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
     
     /**Custom Decorator*/
     private Decorator<T> customDecorator = null;
+
+    private final Set<String> ignoredDecoratorInterfaces;
     
     /**
-     * Creates a new decorator bean instance with the given wrapped bean.
+     * Creates a new decorator bean instance with the given wrapped bean and custom decorator bean.
      * @param wrappedBean wrapped bean instance
+     * @param customDecorator custom decorator
      */
     public WebBeansDecorator(AbstractInjectionTargetBean<T> wrappedBean, Decorator<T> customDecorator)
     {
         super(WebBeansType.DECORATOR,wrappedBean.getReturnType(), wrappedBean.getWebBeansContext());
         this.wrappedBean = wrappedBean;
         this.customDecorator = customDecorator;
+        this.ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces(wrappedBean);
         initDelegate();
     }
 
-    
     /**
      * Creates a new decorator bean instance with the given wrapped bean.
      * @param wrappedBean wrapped bean instance
@@ -103,17 +110,36 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
         
         this.wrappedBean = wrappedBean;
         this.clazz = wrappedBean.getReturnType();
+        this.ignoredDecoratorInterfaces = getIgnoredDecoratorInterfaces(wrappedBean);
 
         init();
     }
-    
+
+    private static <T> Set<String> getIgnoredDecoratorInterfaces(AbstractInjectionTargetBean<T> wrappedBean)
+    {
+        OpenWebBeansConfiguration config = wrappedBean.getWebBeansContext().getOpenWebBeansConfiguration();
+        String ignoredDecoratorInterfacesString = config.getProperty(OpenWebBeansConfiguration.IGNORED_DECORATOR_INTERFACES);
+        if (ignoredDecoratorInterfacesString != null)
+        {
+            return new HashSet<String>(Arrays.asList(ignoredDecoratorInterfacesString.split("[,\\p{javaWhitespace}]")));
+        }
+        else
+        {
+            return Collections.singleton(Serializable.class.getName());
+        }
+    }
+
     protected void init()
     {
         ClassUtil.setInterfaceTypeHierarchy(this.decoratedTypes, this.clazz);
 
-        if (this.decoratedTypes.contains(Serializable.class))
+        for (Iterator<Type> i = this.decoratedTypes.iterator(); i.hasNext(); )
         {
-            this.decoratedTypes.remove(Serializable.class);
+            Type t = i.next();
+            if (t instanceof Class<?> && ignoredDecoratorInterfaces.contains(((Class) t).getName()))
+            {
+                i.remove();
+            }
         }
 
         initDelegate();
