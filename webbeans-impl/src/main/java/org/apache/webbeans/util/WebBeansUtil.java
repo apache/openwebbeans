@@ -1834,7 +1834,7 @@ public final class WebBeansUtil
                         Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(beanClass);
                         for (Method m : methods)
                         {
-                            if (ClassUtil.isFinal(m.getModifiers()))
+                            if (ClassUtil.isFinal(m.getModifiers()) && !m.isSynthetic() && !m.isBridge())
                             {
                                 violationMessage.addLine(beanClass.getName(), " has final method "+ m + " CDI doesn't allow that.");
                             }
