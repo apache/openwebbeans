@@ -79,20 +79,29 @@ class AnnotatedTypeImpl<X> extends AbstractAnnotated implements AnnotatedType<X>
             Constructor<?>[] decCtxs = getWebBeansContext().getSecurityService().doPrivilegedGetDeclaredConstructors(annotatedClass);
             for(Field f : decFields)
             {
-                AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, this);
-                fields.add(af);
+                if (!f.isSynthetic())
+                {
+                    AnnotatedField<X> af = new AnnotatedFieldImpl<X>(getWebBeansContext(), f, this);
+                    fields.add(af);
+                }
             }
 
             for(Method m : decMethods)
             {
-                AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m,this);
-                methods.add(am);
+                if (!m.isSynthetic() && !m.isBridge())
+                {
+                    AnnotatedMethod<X> am = new AnnotatedMethodImpl<X>(getWebBeansContext(), m,this);
+                    methods.add(am);
+                }
             }
 
             for(Constructor<?> ct : decCtxs)
             {
-                AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(getWebBeansContext(), (Constructor<X>) ct,this);
-                constructors.add(ac);
+                if (!ct.isSynthetic())
+                {
+                    AnnotatedConstructor<X> ac = new AnnotatedConstructorImpl<X>(getWebBeansContext(), (Constructor<X>) ct,this);
+                    constructors.add(ac);
+                }
             }
         }
     }
