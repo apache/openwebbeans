@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -112,10 +113,24 @@ public final class DefinitionUtil
         else
         {
             defineNormalApiTypes(bean, clazz);
-        }        
+        }
+        removeIgnoredInterfaces(bean);
     }
-     
-    
+
+    private static <T> void removeIgnoredInterfaces(AbstractOwbBean<T> bean)
+    {
+        Set<String> ignoredInterfaces = bean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces();
+        for (Iterator<Type> i = bean.getTypes().iterator(); i.hasNext(); )
+        {
+            Type t = i.next();
+            if (t instanceof Class && ignoredInterfaces.contains(((Class<?>) t).getName()))
+            {
+                i.remove();
+            }
+        }
+    }
+
+
     private static <T> void defineNormalApiTypes(AbstractOwbBean<T> bean, Class<T> clazz)
     {
         bean.getTypes().add(Object.class);
@@ -189,7 +204,8 @@ public final class DefinitionUtil
         else
         {
             defineNormalProducerMethodApi(producerBean, type);
-        }        
+        }
+        removeIgnoredInterfaces(producerBean);
     }
     
     private static <T> void defineNormalProducerMethodApi(AbstractProducerBean<T> producerBean, Type type)
@@ -675,7 +691,7 @@ public final class DefinitionUtil
      * @param component producer field owner component
      * @return the set of producer field components
      */
-    public Set<ProducerFieldBean<?>> defineProduerFields(InjectionTargetBean<?> component)
+    public Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<?> component)
     {
         Set<ProducerFieldBean<?>> producerFields = new HashSet<ProducerFieldBean<?>>();
         Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(component.getReturnType());
@@ -1193,7 +1209,7 @@ public final class DefinitionUtil
      */
     public void defineDecoratorStack(AbstractInjectionTargetBean<?> bean)
     {
-        WebBeansDecoratorConfig.configureDecarotors(bean);
+        WebBeansDecoratorConfig.configureDecorators(bean);
     }
 
     public <T> Set<ObserverMethod<?>> defineObserverMethods(InjectionTargetBean<T> component, Class<T> clazz)

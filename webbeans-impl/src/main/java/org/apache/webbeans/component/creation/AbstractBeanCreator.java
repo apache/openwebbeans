@@ -20,6 +20,7 @@ package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -91,6 +92,15 @@ public class AbstractBeanCreator<T> implements BeanCreator<T>
         {
             Set<Type> types = this.annotatedType.getTypeClosure();
             this.bean.getTypes().addAll(types);
+        }
+        Set<String> ignored = bean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces();
+        for (Iterator<Type> i = bean.getTypes().iterator(); i.hasNext();)
+        {
+            Type t = i.next();
+            if (t instanceof Class && ignored.contains(((Class<?>)t).getName()))
+            {
+                i.remove();
+            }
         }
     }
 

@@ -23,7 +23,6 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -47,8 +46,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -117,16 +114,9 @@ public class WebBeansDecorator<T> extends AbstractInjectionTargetBean<T> impleme
 
     private static <T> Set<String> getIgnoredDecoratorInterfaces(AbstractInjectionTargetBean<T> wrappedBean)
     {
-        OpenWebBeansConfiguration config = wrappedBean.getWebBeansContext().getOpenWebBeansConfiguration();
-        String ignoredDecoratorInterfacesString = config.getProperty(OpenWebBeansConfiguration.IGNORED_DECORATOR_INTERFACES);
-        if (ignoredDecoratorInterfacesString != null)
-        {
-            return new HashSet<String>(Arrays.asList(ignoredDecoratorInterfacesString.split("[,\\p{javaWhitespace}]")));
-        }
-        else
-        {
-            return Collections.singleton(Serializable.class.getName());
-        }
+        Set<String> result = new HashSet<String>(wrappedBean.getWebBeansContext().getOpenWebBeansConfiguration().getIgnoredInterfaces());
+        result.add(Serializable.class.getName());
+        return result;
     }
 
     protected void init()

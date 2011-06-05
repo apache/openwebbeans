@@ -20,7 +20,11 @@ package org.apache.webbeans.config;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -122,7 +126,9 @@ public class OpenWebBeansConfiguration
      * when determining if a decorator matches its delegate.  These are typically added by
      * weaving or bytecode modification.
      */
-    public static final String IGNORED_DECORATOR_INTERFACES = "org.apache.webbeans.ignoredDecoratorInterfaces";
+    public static final String IGNORED_INTERFACES = "org.apache.webbeans.ignoredDecoratorInterfaces";
+
+    private Set<String> ignoredInterfaces;
 
     /**
      * you can configure this externally as well.
@@ -344,4 +350,22 @@ public class OpenWebBeansConfiguration
         
         return Boolean.valueOf(value);
     }
+
+    public synchronized Set<String> getIgnoredInterfaces()
+    {
+        if (ignoredInterfaces == null)
+        {
+            String ignoredInterfacesString = getProperty(IGNORED_INTERFACES);
+            if (ignoredInterfacesString != null)
+            {
+                ignoredInterfaces = new HashSet<String>(Arrays.asList(ignoredInterfacesString.split("[,\\p{javaWhitespace}]")));
+            }
+            else
+            {
+                ignoredInterfaces = Collections.emptySet();
+            }
+        }
+        return ignoredInterfaces;
+    }
+
 }

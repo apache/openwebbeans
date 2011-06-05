@@ -305,7 +305,7 @@ public abstract class TestContext implements ITestContext
         {
             manager.addBean(WebBeansUtil.createNewBean(bean));
             DecoratorUtil.checkManagedBeanDecoratorConditions(bean,null);
-            WebBeansDecoratorConfig.configureDecarotors(bean);
+            WebBeansDecoratorConfig.configureDecorators(bean);
             webBeansContext.getDefinitionUtil().defineBeanInterceptorStack(bean);
 
             getComponents().add((AbstractOwbBean<?>) bean);

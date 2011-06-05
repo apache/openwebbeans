@@ -128,7 +128,7 @@ public abstract class AbstractInjectedTargetBeanCreator<T> extends AbstractBeanC
         AbstractInjectionTargetBean bean = getBean();
         if(isDefaultMetaDataProvider())
         {
-            return bean.getWebBeansContext().getDefinitionUtil().defineProduerFields(bean);
+            return bean.getWebBeansContext().getDefinitionUtil().defineProducerFields(bean);
         }
         else
         {

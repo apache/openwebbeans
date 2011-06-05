@@ -21,6 +21,7 @@ package org.apache.webbeans.portable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.enterprise.inject.Typed;
@@ -155,6 +156,15 @@ abstract class AbstractAnnotated implements Annotated
             typeClosures = new HashSet<Type>();
             this.typeClosures.add(Object.class);
             ClassUtil.setTypeHierarchy(this.typeClosures, this.baseType);
+            Set<String> ignoredInterfaces = webBeansContext.getOpenWebBeansConfiguration().getIgnoredInterfaces();
+            for (Iterator<Type> i = this.typeClosures.iterator(); i.hasNext(); )
+            {
+                Type t = i.next();
+                if (t instanceof Class && ignoredInterfaces.contains(((Class<?>)t).getName()))
+                {
+                    i.remove();
+                }
+            }
 
             Annotation[] anns = annotations.toArray(new Annotation[annotations.size()]);
             if(AnnotationUtil.hasAnnotation(anns, Typed.class))

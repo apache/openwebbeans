@@ -85,7 +85,7 @@ public final class WebBeansDecoratorConfig
         delegate.getWebBeansContext().getBeanManagerImpl().addDecorator(decorator);
     }
 
-    public static void configureDecarotors(AbstractInjectionTargetBean<?> component)
+    public static void configureDecorators(AbstractInjectionTargetBean<?> component)
     {
         if (!component.getDecoratorStack().isEmpty())
         {

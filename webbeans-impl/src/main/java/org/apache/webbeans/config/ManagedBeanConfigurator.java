@@ -167,7 +167,7 @@ public final class ManagedBeanConfigurator
             manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(new ProducerBeansProducer(producerMethod)));
         }
 
-        Set<ProducerFieldBean<?>> producerFields = definitionUtil.defineProduerFields(component);
+        Set<ProducerFieldBean<?>> producerFields = definitionUtil.defineProducerFields(component);
         for (ProducerFieldBean<?> producerField : producerFields)
         {
             // add them one after the other to enable serialization handling et al
