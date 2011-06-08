@@ -77,7 +77,16 @@ public class ExtensionLoader
      */
     public void loadExtensionServices()
     {
-        ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, WebBeansUtil.getCurrentClassLoader());
+        loadExtensionServices(WebBeansUtil.getCurrentClassLoader());
+    }
+
+    /**
+     * Load extension services.
+     * @param classLoader
+     */
+    public void loadExtensionServices(ClassLoader classLoader)
+    {
+        ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, classLoader);
         Iterator<Extension> iterator = loader.iterator();
         while(iterator.hasNext())
         {
