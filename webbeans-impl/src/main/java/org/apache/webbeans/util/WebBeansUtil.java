@@ -754,6 +754,7 @@ public final class WebBeansUtil
 
     /**
      * Returns new conversation bean instance.
+     * The name is explicitly specified in 6.7.2 and is not the normal default name.
      * @return new conversation bean
      */
     public ConversationBean getConversationBean()
