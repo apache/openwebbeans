@@ -20,6 +20,7 @@ package org.apache.webbeans.portable.events.generics;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.ProcessSessionBean;
 import javax.enterprise.inject.spi.SessionBeanType;
 
 import org.apache.webbeans.portable.events.ProcessSessionBeanImpl;
@@ -32,9 +33,27 @@ public class GProcessSessionBean extends ProcessSessionBeanImpl implements Gener
         super(bean, annotatedType, name, type);
     }
 
+    /**
+     * This is an exceptional case due to the definition
+     * ProcessSessionBean<X>  extends ProcessManagedBean<Object>
+     *
+     * If we are thinking of this event as a ProcessSessionBean then the bean class is X
+     * but if we are thinking of it as a ProcessManagedBean or superclass then the bean class
+     * is Object.  See https://issues.jboss.org/browse/CDITCK-215
+     *
+     * @param eventClass the class of event we are treating this event as
+     * @return X.class or Object.class
+     */
     @Override
-    public Class<?> getBeanClass()
+    public Class<?> getBeanClassFor(Class<?> eventClass)
     {
-        return getBean().getBeanClass();
+        if (ProcessSessionBean.class.isAssignableFrom(eventClass))
+        {
+            return getBean().getBeanClass();
+        }
+        else
+        {
+            return Object.class;
+        }
     }
 }

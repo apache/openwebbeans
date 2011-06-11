@@ -32,7 +32,7 @@ public class GProcessManagedBean extends ProcessManagedBeanImpl implements Gener
     }
 
     @Override
-    public Class<?> getBeanClass()
+    public Class<?> getBeanClassFor(Class<?> eventClass)
     {
         return getBean().getBeanClass();
     }

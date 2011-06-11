@@ -202,7 +202,7 @@ public final class NotificationManager
                         if(WebBeansUtil.isDefaultExtensionBeanEventType(observerClass))
                         {                
                             GenericBeanEvent genericBeanEvent = (GenericBeanEvent)event;
-                            beanClass = genericBeanEvent.getBeanClass();
+                            beanClass = genericBeanEvent.getBeanClassFor(observerClass);
                             
                             if(ClassUtil.isParametrizedType(type))
                             {

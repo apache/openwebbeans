@@ -32,7 +32,7 @@ public class GProcessBean extends ProcessBeanImpl implements GenericBeanEvent
     }
 
     @Override
-    public Class<?> getBeanClass()
+    public Class<?> getBeanClassFor(Class<?> eventClass)
     {
         return getBean().getBeanClass();
     }

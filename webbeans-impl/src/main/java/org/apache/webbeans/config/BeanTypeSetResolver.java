@@ -44,7 +44,7 @@ public class BeanTypeSetResolver
      */
     public void startConfiguration()
     {
-        if(this.beanType == Object.class)
+        if(this.beanType == Object.class || (beanType instanceof Class && ((Class)beanType).isSynthetic()))
         {
             return;
         }

@@ -31,7 +31,7 @@ public class GProcessAnnotatedType extends ProcessAnnotatedTypeImpl implements G
     }
 
     @Override
-    public Class<?> getBeanClass()
+    public Class<?> getBeanClassFor(Class<?> eventClass)
     {
         return getAnnotatedType().getJavaClass();
     }

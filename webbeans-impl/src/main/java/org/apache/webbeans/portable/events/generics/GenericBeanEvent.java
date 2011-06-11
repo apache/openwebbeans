@@ -20,5 +20,13 @@ package org.apache.webbeans.portable.events.generics;
 
 public interface GenericBeanEvent
 {
-    public Class<?> getBeanClass();    
+
+    /**
+     * If this is a Foo<X> event and we are considering it as a Bar<Y> event,
+     * returns the generic type of Foo as a Bar.  Normally this is X, but in at least one case
+     * (ProcessSessionBean) the generic type is different.
+     * @param eventClass the class of event we are treating this event as
+     * @return the generic type parameter of this event considered as an "eventClass"
+     */
+    public Class<?> getBeanClassFor(Class<?> eventClass);
 }

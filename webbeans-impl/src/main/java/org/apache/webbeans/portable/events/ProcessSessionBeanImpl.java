@@ -30,7 +30,7 @@ import javax.enterprise.inject.spi.SessionBeanType;
  *
  * @param <X> ejb class info
  */
-public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implements ProcessSessionBean<Object>
+public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implements ProcessSessionBean<X>
 {
     /**Session bean annotated type*/
     private final AnnotatedType<Object> annotatedBeanClass;
