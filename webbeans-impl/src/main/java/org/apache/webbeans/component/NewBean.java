@@ -18,55 +18,10 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.context.spi.CreationalContext;
-
-import org.apache.webbeans.config.WebBeansContext;
-
 /**
- * Component definition with {@link javax.enterprise.inject.New} binding annotation.
- * 
- * <p>
- * It is defined as concrete java class component.
- * </p>
- * 
+ * Marker interface for @New based beans
  */
-public class NewBean<T> extends ManagedBean<T>
+public interface NewBean<T> 
 {
-    private WebBeansType definedType;
-
-    public NewBean(Class<T> returnType, WebBeansType definedType, WebBeansContext webBeansContext)
-    {
-        super(returnType, webBeansContext);
-        this.definedType = definedType;        
-    }
-
-    @Override
-    protected T createInstance(CreationalContext<T> creationalContext)
-    {
-        return super.createInstance(creationalContext);
-    }
-
-    @Override
-    protected void destroyInstance(T instance, CreationalContext<T> creationalContext)
-    {
-        super.destroyInstance(instance, creationalContext);
-    }
-
-    /**
-     * @return the definedType
-     */
-    public WebBeansType getDefinedType()
-    {
-        return definedType;
-    }
-
-    /**
-     * always true for New qualifier
-     */
-    @Override
-    public boolean isDependent()
-    {
-        return true;
-    }
 
 }

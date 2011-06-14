@@ -170,14 +170,8 @@ public final class EjbUtility
             "There are errors that are added by ProcessObserverMethod event observers for observer methods. Look at logs for further details");
 
         manager.addBean(ejbBean);
-        try
-        {
-            manager.addBean(WebBeansUtil.createNewBean(ejbBean));
-        }
-        catch (DuplicateDefinitionException ignore)
-        {
-        }
         
+        // Let the plugin handle adding the new bean instance as it knows more about its EJB Bean
         
         manager.getBeans().addAll(producerMethodBeans);
         ejbBeanCreator.defineDisposalMethods();

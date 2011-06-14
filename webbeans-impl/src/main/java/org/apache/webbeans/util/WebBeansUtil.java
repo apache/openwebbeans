@@ -111,6 +111,7 @@ import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.NewBean;
+import org.apache.webbeans.component.NewManagedBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
@@ -571,17 +572,17 @@ public final class WebBeansUtil
      * @param clazz impl. class
      * @return the new component
      */
-    public <T> NewBean<T> createNewComponent(Class<T> clazz, Type apiType)
+    public <T> NewManagedBean<T> createNewComponent(Class<T> clazz, Type apiType)
     {
         Asserts.nullCheckForClass(clazz);
 
-        NewBean<T> comp;
+        NewManagedBean<T> comp;
         DefinitionUtil definitionUtil = webBeansContext.getDefinitionUtil();
 
 
         if (webBeansContext.getManagedBeanConfigurator().isManagedBean(clazz))
         {
-            comp = new NewBean<T>(clazz, WebBeansType.MANAGED, webBeansContext);
+            comp = new NewManagedBean<T>(clazz, WebBeansType.MANAGED, webBeansContext);
             comp.setImplScopeType(new DependentScopeLiteral());
             comp.setConstructor(defineConstructor(clazz));
             definitionUtil.addConstructorInjectionPointMetaData(comp, comp.getConstructor());
@@ -591,7 +592,7 @@ public final class WebBeansUtil
         }
         else if (EJBWebBeansConfigurator.isSessionBean(clazz, webBeansContext))
         {
-            comp = new NewBean<T>(clazz, WebBeansType.ENTERPRISE, webBeansContext);
+            comp = new NewManagedBean<T>(clazz, WebBeansType.ENTERPRISE, webBeansContext);
             comp.setImplScopeType(new DependentScopeLiteral());
         }
         else
@@ -650,13 +651,13 @@ public final class WebBeansUtil
      * @param bean bean instance
      * @return the new bean from given managed bean
      */
-    public static <T> NewBean<T> createNewBean(AbstractInjectionTargetBean<T> bean)
+    public static <T> NewManagedBean<T> createNewBean(AbstractInjectionTargetBean<T> bean)
     {
         Asserts.assertNotNull(bean, "bean argument can not be null");
 
-        NewBean<T> comp = null;
+        NewManagedBean<T> comp = null;
 
-        comp = new NewBean<T>(bean.getReturnType(), WebBeansType.NEW, bean.getWebBeansContext());
+        comp = new NewManagedBean<T>(bean.getReturnType(), WebBeansType.NEW, bean.getWebBeansContext());
 
         comp.getTypes().addAll(bean.getTypes());
 
