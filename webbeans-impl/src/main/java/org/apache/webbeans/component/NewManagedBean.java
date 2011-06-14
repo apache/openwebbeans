@@ -30,7 +30,7 @@ import org.apache.webbeans.config.WebBeansContext;
  * </p>
  * 
  */
-public class NewManagedBean<T> extends ManagedBean<T> implements NewBean
+public class NewManagedBean<T> extends ManagedBean<T> implements NewBean<T>
 {
     private WebBeansType definedType;
 
