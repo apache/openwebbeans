@@ -18,18 +18,21 @@
  */
 package org.apache.webbeans.ejb;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.SessionBeanType;
 
@@ -49,14 +52,19 @@ import org.apache.openejb.core.stateful.StatefulContainer;
 import org.apache.openejb.core.stateless.StatelessContainer;
 import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.ContainerSystem;
+import org.apache.webbeans.annotation.DependentScopeLiteral;
+import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.common.util.EjbDefinitionUtility;
 import org.apache.webbeans.ejb.common.util.EjbUtility;
+import org.apache.webbeans.ejb.component.NewOpenEjbBean;
 import org.apache.webbeans.ejb.component.OpenEjbBean;
 import org.apache.webbeans.ejb.resource.EJBInstanceProxy;
 import org.apache.webbeans.ejb.service.OpenEJBSecurityService;
 import org.apache.webbeans.ejb.service.OpenEJBTransactionService;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.TransactionService;
@@ -322,6 +330,11 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         bean.setDeploymentInfo(info);
 
         EjbUtility.fireEvents(clazz, bean, processAnnotatedTypeEvent);
+        
+        //Add the @New Bean as we are temporarily bypassing this in EJBUtility.fireEvents
+        WebBeansContext webBeansContext = bean.getWebBeansContext();
+        BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+        manager.addBean(createNewBean(bean));
 
         return bean;
     }
@@ -583,6 +596,49 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         }
 
         return bindings;
+    }
+    
+    /**
+     * Creates a version of the OpenEjbBean that implements the NewBean
+     * interface and has the properties of a NewBean
+     */
+    public <T> OpenEjbBean<T> createNewBean(OpenEjbBean<T> ejbBean)
+    {
+
+        OpenEjbBean<T> atNewEjb = new NewOpenEjbBean<T>((Class<T>) ejbBean.getBeanClass(), ejbBean.getEjbType());
+
+        Class clazz = ejbBean.getBeanClass();
+
+        atNewEjb.setImplScopeType(new DependentScopeLiteral());
+        atNewEjb.addQualifier(new NewLiteral(clazz));
+
+        atNewEjb.getTypes().addAll(ejbBean.getTypes());
+
+        for (Field injectedField : ejbBean.getInjectedFields())
+        {
+            atNewEjb.addInjectedField(injectedField);
+        }
+
+        for (Method injectedMethod : ejbBean.getInjectedMethods())
+        {
+            atNewEjb.addInjectedMethod(injectedMethod);
+        }
+
+        List<InterceptorData> interceptorList = ejbBean.getInterceptorStack();
+        if (!interceptorList.isEmpty())
+        {
+            atNewEjb.getInterceptorStack().addAll(interceptorList);
+        }
+
+        Set<InjectionPoint> injectionPoints = ejbBean.getInjectionPoints();
+        for (InjectionPoint injectionPoint : injectionPoints)
+        {
+            atNewEjb.addInjectionPoint(injectionPoint);
+        }
+
+        atNewEjb.setDeploymentInfo(ejbBean.getDeploymentInfo());
+
+        return atNewEjb;
     }
 
 }
