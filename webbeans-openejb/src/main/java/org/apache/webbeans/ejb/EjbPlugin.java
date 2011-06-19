@@ -641,4 +641,9 @@ public class EjbPlugin extends AbstractOwbPlugin implements OpenWebBeansEjbPlugi
         return atNewEjb;
     }
 
+    public Method resolveViewMethod(javax.enterprise.inject.spi.Bean<?> bean, java.lang.reflect.Method method)
+    {
+        return method;
+    }
+
 }

@@ -610,7 +610,12 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      */    
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();        
+        StringBuilder builder = new StringBuilder();
+        if (returnType != null)
+        {
+            final String simpleName = returnType.getSimpleName();
+            builder.append(simpleName).append(", ");
+        }
         builder.append("Name:").append(getName()).append(", WebBeans Type:").append(getWebBeansType());
         builder.append(", API Types:[");
         
@@ -701,5 +706,176 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         }
     }
 
-    
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((apiTypes == null) ? 0 : apiTypes.hashCode());
+        result = prime * result + (enabled ? 1231 : 1237);
+        result = prime * result + (isAlternative() ? 1289 : 1273);
+        result = prime * result + ((implQualifiers == null) ? 0 : implQualifiers.hashCode());
+        result = prime * result + ((implScopeType == null) ? 0 : implScopeType.hashCode());
+        result = prime * result + ((injectionPoints == null) ? 0 : injectionPoints.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + (nullable ? 1231 : 1237);
+        result = prime * result + ((returnType == null) ? 0 : returnType.hashCode());
+        result = prime * result + ((scopeClass == null) ? 0 : scopeClass.hashCode());
+        result = prime * result + (serializable ? 1231 : 1237);
+        result = prime * result + (specializedBean ? 1231 : 1237);
+        result = prime * result + ((stereoTypeClasses == null) ? 0 : stereoTypeClasses.hashCode());
+        result = prime * result + ((stereoTypes == null) ? 0 : stereoTypes.hashCode());
+        result = prime * result + ((webBeansType == null) ? 0 : webBeansType.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (obj == null)
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        AbstractOwbBean other = (AbstractOwbBean) obj;
+        if (apiTypes == null)
+        {
+            if (other.apiTypes != null)
+            {
+                return false;
+            }
+        }
+        else if (!apiTypes.equals(other.apiTypes))
+        {
+            return false;
+        }
+        if (enabled != other.enabled)
+        {
+            return false;
+        }
+        if (isAlternative() != other.isAlternative())
+        {
+            return false;
+        }
+        if (implQualifiers == null)
+        {
+            if (other.implQualifiers != null)
+            {
+                return false;
+            }
+        }
+        else if (!implQualifiers.equals(other.implQualifiers))
+        {
+            return false;
+        }
+        if (implScopeType == null)
+        {
+            if (other.implScopeType != null)
+            {
+                return false;
+            }
+        }
+        else if (!implScopeType.equals(other.implScopeType))
+        {
+            return false;
+        }
+        if (injectionPoints == null)
+        {
+            if (other.injectionPoints != null)
+            {
+                return false;
+            }
+        }
+        else if (!injectionPoints.equals(other.injectionPoints))
+        {
+            return false;
+        }
+        if (name == null)
+        {
+            if (other.name != null)
+            {
+                return false;
+            }
+        }
+        else if (!name.equals(other.name))
+        {
+            return false;
+        }
+        if (nullable != other.nullable)
+        {
+            return false;
+        }
+        if (returnType == null)
+        {
+            if (other.returnType != null)
+            {
+                return false;
+            }
+        }
+        else if (!returnType.equals(other.returnType))
+        {
+            return false;
+        }
+        if (scopeClass == null)
+        {
+            if (other.scopeClass != null)
+            {
+                return false;
+            }
+        }
+        else if (!scopeClass.equals(other.scopeClass))
+        {
+            return false;
+        }
+        if (serializable != other.serializable)
+        {
+            return false;
+        }
+        if (specializedBean != other.specializedBean)
+        {
+            return false;
+        }
+        if (stereoTypeClasses == null)
+        {
+            if (other.stereoTypeClasses != null)
+            {
+                return false;
+            }
+        }
+        else if (!stereoTypeClasses.equals(other.stereoTypeClasses))
+        {
+            return false;
+        }
+        if (stereoTypes == null)
+        {
+            if (other.stereoTypes != null)
+            {
+                return false;
+            }
+        }
+        else if (!stereoTypes.equals(other.stereoTypes))
+        {
+            return false;
+        }
+        if (webBeansType == null)
+        {
+            if (other.webBeansType != null)
+            {
+                return false;
+            }
+        }
+        else if (!webBeansType.equals(other.webBeansType))
+        {
+            return false;
+        }
+        return true;
+    }
+
 }

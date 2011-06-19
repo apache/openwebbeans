@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.Interceptor;
 
@@ -387,4 +388,26 @@ public class CreationalContextImpl<T> implements CreationalContext<T>, Serializa
         ejbInterceptors = (ConcurrentMap<Object, List<EjbInterceptorContext>>) s.readObject();
     }
 
+//    private static volatile int ids = 0;
+//    private final int id = ids++;
+
+    @Override
+    public String toString()
+    {
+
+        final String name;
+
+        if (contextual instanceof Bean)
+        {
+            Bean bean = (Bean) contextual;
+            name = bean.getBeanClass().getSimpleName();
+        }
+        else
+        {
+            name = "unknown";
+        }
+
+        return String.format("CreationalContext{name=%s}", name);
+//        return String.format("CreationalContext{id=%s, name=%s}", id, name);
+    }
 }

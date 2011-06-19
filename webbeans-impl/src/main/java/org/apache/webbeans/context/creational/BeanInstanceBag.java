@@ -88,4 +88,10 @@ public class BeanInstanceBag<T> implements Serializable
         
         return beanInstance; 
     }
+
+    @Override
+    public String toString()
+    {
+        return "Bag:" + beanCreationalContext + ", Instance: " + beanInstance;
+    }
 }

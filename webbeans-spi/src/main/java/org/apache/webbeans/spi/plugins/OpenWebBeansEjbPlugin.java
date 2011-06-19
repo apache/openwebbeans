@@ -21,6 +21,7 @@ package org.apache.webbeans.spi.plugins;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import java.lang.reflect.Method;
 
 /**
  * Session bean related plugin contract.
@@ -77,4 +78,6 @@ public interface OpenWebBeansEjbPlugin extends OpenWebBeansPlugin
      * @return session bean proxy
      */
     public Object getSessionBeanProxy(Bean<?> bean, Class<?> iface, CreationalContext<?> creationalContext);
+
+    Method resolveViewMethod(Bean<?> component, Method declaredMethod);
 }

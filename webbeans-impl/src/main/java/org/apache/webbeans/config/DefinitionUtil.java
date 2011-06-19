@@ -74,6 +74,7 @@ import org.apache.webbeans.event.NotificationManager;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorData;
 import org.apache.webbeans.spi.api.ResourceReference;
+import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
@@ -779,6 +780,14 @@ public final class DefinitionUtil
 
             ProducerMethodBean<?> newComponent = createProducerComponent(declaredMethod.getReturnType(), declaredMethod, component, isSpecializes);
 
+            if (component instanceof EnterpriseBeanMarker)
+            {
+                final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
+
+                Method method = ejbPlugin.resolveViewMethod(component, declaredMethod);
+                newComponent.setCreatorMethod(method);
+            }
+
             if (newComponent != null)
             {
                 producerComponents.add(newComponent);
@@ -939,17 +948,25 @@ public final class DefinitionUtil
                 }
             }
 
+            addMethodInjectionPointMetaData(component, declaredMethod);
+
+            if (component instanceof EnterpriseBeanMarker)
+            {
+                final OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
+                declaredMethod = ejbPlugin.resolveViewMethod(component, declaredMethod);
+            }
+
+            pr.setDisposalMethod(declaredMethod);
+
             Method producerMethod = pr.getCreatorMethod();
+
             //Disposer methods and producer methods must be in the same class
             if(!producerMethod.getDeclaringClass().getName().equals(declaredMethod.getDeclaringClass().getName()))
             {
                 throw new WebBeansConfigurationException("Producer method component of the disposal method : " + declaredMethod.getName() + " in class : "
                                                          + clazz.getName() + " must be in the same class!");
             }
-            
-            pr.setDisposalMethod(declaredMethod);
 
-            addMethodInjectionPointMetaData(component, declaredMethod);
 
         }
     }
@@ -1185,15 +1202,22 @@ public final class DefinitionUtil
             //Check for injected fields in EJB @Interceptors
             List<InterceptorData> stack = new ArrayList<InterceptorData>();
             bean.getWebBeansContext().getEJBInterceptorConfig().configure(bean.getBeanClass(), stack);
-            for(InterceptorData data : stack)
+
+            final OpenWebBeansEjbPlugin ejbPlugin = bean.getWebBeansContext().getPluginLoader().getEjbPlugin();
+            final boolean isStateful = ejbPlugin.isStatefulBean(bean.getBeanClass());
+
+            if (isStateful)
             {
-                if(data.isDefinedInInterceptorClass())
+                for (InterceptorData data : stack)
                 {
-                    AnnotationManager annotationManager = WebBeansContext.getInstance().getAnnotationManager();
-                    if(!annotationManager.checkInjectionPointForInterceptorPassivation(data.getInterceptorClass()))
+                    if (data.isDefinedInInterceptorClass())
                     {
-                        throw new WebBeansConfigurationException("Enterprise bean : " + bean.toString() +
-                                                                 " interceptors must have serializable injection points");
+                        AnnotationManager annotationManager = bean.getWebBeansContext().getAnnotationManager();
+                        if (!annotationManager.checkInjectionPointForInterceptorPassivation(data.getInterceptorClass()))
+                        {
+                            throw new WebBeansConfigurationException("Enterprise bean : " + bean.toString() +
+                                                                         " interceptors must have serializable injection points");
+                        }
                     }
                 }
             }
