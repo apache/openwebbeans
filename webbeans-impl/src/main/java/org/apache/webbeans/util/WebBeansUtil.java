@@ -3103,7 +3103,7 @@ public final class WebBeansUtil
         {
             Method method = methodA.getJavaMember();
             int modifiers = method.getModifiers();
-            if (!Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
+            if (!method.isSynthetic() && !method.isBridge() && !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
             {
                 if (hasClassInterceptors)
                 {

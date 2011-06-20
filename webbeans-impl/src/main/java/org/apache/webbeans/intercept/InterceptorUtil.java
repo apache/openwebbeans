@@ -436,7 +436,7 @@ public final class InterceptorUtil
         for (Method method : methods)
         {
             int modifiers = method.getModifiers();
-            if (!Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
+            if (!method.isSynthetic() && !method.isBridge() && !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers) && ClassUtil.isFinal(modifiers))
             {
                 if (hasClassInterceptors)
                 {
