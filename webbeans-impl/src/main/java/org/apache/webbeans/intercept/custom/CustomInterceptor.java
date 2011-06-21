@@ -138,4 +138,42 @@ public class CustomInterceptor<T> extends WebBeansInterceptor<T> implements Inte
         
     }
 
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((actualInterceptor == null) ? 0 : actualInterceptor.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (!super.equals(obj))
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        CustomInterceptor other = (CustomInterceptor) obj;
+        if (actualInterceptor == null)
+        {
+            if (other.actualInterceptor != null)
+            {
+                return false;
+            }
+        }
+        else if (!actualInterceptor.equals(other.actualInterceptor))
+        {
+            return false;
+        }
+        return true;
+    }
 }
