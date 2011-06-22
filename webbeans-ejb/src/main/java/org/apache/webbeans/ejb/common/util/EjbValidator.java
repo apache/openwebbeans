@@ -150,6 +150,8 @@ public final class EjbValidator
                     }
                     else
                     {
+                        //Should only be a single method that matches the names & params
+                        obs.setObserverMethod(methods.get(0));
                         found = true;
                         break;
                     }

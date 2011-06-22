@@ -47,6 +47,7 @@ import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractInjectionTargetBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -89,7 +90,7 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     private final InjectionTargetBean<?> bean;
 
     /**Event observer method*/
-    private final Method observerMethod;
+    private Method observerMethod;
 
     /**Using existing bean instance or not*/
     private final boolean ifExist;
@@ -272,7 +273,17 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
                     // we need to pick the contextual reference because of section 7.2:
                     //  "Invocations of producer, disposer and observer methods by the container are
                     //  business method invocations and are in- tercepted by method interceptors and decorators."
-                    object = manager.getReference(component, component.getBeanClass(), creationalContext);
+                    
+                    Type t = component.getBeanClass();
+
+                    // If the bean is an EJB, its beanClass may not be one of
+                    // its types. Instead pick a local interface
+                    if (component.getWebBeansType() == WebBeansType.ENTERPRISE)
+                    {
+                        t = (Type) component.getTypes().toArray()[0];
+                    }
+
+                    object = manager.getReference(component, t, creationalContext);
                 }
 
                 if (object != null)
@@ -510,5 +521,17 @@ public class ObserverMethodImpl<T> implements ObserverMethod<T>
     protected WebBeansContext getWebBeansContext()
     {
         return bean.getWebBeansContext();
+    }
+    
+    /**
+     * Provides a way to set the observer method. This may need to be done for
+     * EJBs so that the method used will be from an interface and not the
+     * EJB class that likely can not be invoked on the EJB proxy
+     * 
+     * @param method to be invoked as the observer
+     */
+    public void setObserverMethod(Method m)
+    {
+        this.observerMethod = m;
     }
 }
