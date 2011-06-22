@@ -28,10 +28,10 @@ import org.apache.webbeans.component.BuildInOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.spi.SecurityService;
 
-public class PrinicipalBean extends BuildInOwbBean<Principal>
+public class PrincipalBean extends BuildInOwbBean<Principal>
 {
 
-    public PrinicipalBean()
+    public PrincipalBean()
     {
         super(WebBeansType.PRINCIPAL, Principal.class);
         addApiType(Object.class);
