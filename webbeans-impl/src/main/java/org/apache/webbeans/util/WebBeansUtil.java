@@ -2126,8 +2126,34 @@ public final class WebBeansUtil
 
     public static Bean<?> getMostSpecializedBean(BeanManager manager, Bean<?> component)
     {
-        Set<Bean<?>> beans = manager.getBeans(component.getBeanClass(),
-                AnnotationUtil.getAnnotationsFromSet(component.getQualifiers()));
+         Set<Bean<?>> beans;
+
+         if (component instanceof EnterpriseBeanMarker)
+         {
+             beans = new HashSet<Bean<?>>();
+             Set<Bean<?>> allBeans = ((BeanManagerImpl)(manager)).getBeans(Object.class, AnnotationUtil.getAnnotationsFromSet(component.getQualifiers()));
+
+             for(Bean<?> candidateBean : allBeans)
+             {
+                 if (candidateBean instanceof EnterpriseBeanMarker)
+                 {
+                     /*
+                      * If a bean class of a session bean X is annotated @Specializes, then the bean class of X must directly extend
+                      * the bean class of another session bean Y. Then X directly specializes Y, as defined in Section 4.3, ‚"Specialization".
+                      */
+                     Class<?> candidateSuperClass = candidateBean.getBeanClass().getSuperclass();
+                     if (candidateSuperClass.equals(component.getBeanClass()))
+                     {
+                         beans.add(candidateBean);
+                     }
+                 }
+             }
+         }
+         else
+         {
+             beans = manager.getBeans(component.getBeanClass(),
+                     AnnotationUtil.getAnnotationsFromSet(component.getQualifiers()));
+         }
 
         for(Bean<?> bean : beans)
         {
