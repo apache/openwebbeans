@@ -36,6 +36,7 @@ import org.apache.webbeans.component.EventBean;
 import org.apache.webbeans.component.InjectionPointBean;
 import org.apache.webbeans.component.InstanceBean;
 import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.context.creational.DependentCreationalContext;
@@ -91,9 +92,10 @@ public abstract class AbstractInjectable implements Injectable
     public <T> Object inject(InjectionPoint injectionPoint)
     {
         Object injected;
+        BeanManagerImpl beanManager = injectionOwnerBean.getWebBeansContext().getBeanManagerImpl();
 
         //Injected contextual beam
-        InjectionResolver instance = injectionOwnerBean.getWebBeansContext().getBeanManagerImpl().getInjectionResolver();
+        InjectionResolver instance = beanManager.getInjectionResolver();
 
         Bean<?> injectedBean = instance.getInjectionPointBean(injectionPoint);
         if(isInstanceProviderInjection(injectionPoint))
@@ -128,16 +130,18 @@ public abstract class AbstractInjectable implements Injectable
         }        
         
         //Gets injectable reference for injected bean
-        injected = injectionOwnerBean.getWebBeansContext().getBeanManagerImpl().getInjectableReference(injectionPoint, this.injectionOwnerCreationalContext);
-        
+        injected = beanManager.getInjectableReference(injectionPoint, this.injectionOwnerCreationalContext);
+
+        /*X TODO see spec issue CDI-140 */
         if(dependentProducer)
         {
             if(injected != null && !Serializable.class.isAssignableFrom(injected.getClass()))
             {
                 throw new IllegalProductException("If a producer method or field of scope @Dependent returns an serializable object for injection " +
-                                                        "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
+                                                  "into an injection point "+ injectionPoint +" that requires a passivation capable dependency");
             }
         }
+
         
         // add this dependent into bean dependent list
         if (!WebBeansUtil.isStaticInjection(injectionPoint) && WebBeansUtil.isDependent(injectedBean))
