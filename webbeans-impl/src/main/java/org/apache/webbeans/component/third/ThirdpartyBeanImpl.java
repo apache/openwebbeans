@@ -179,4 +179,26 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T> implements Bean<T>
         return false;
     }
 
+    /**
+     * We need to override the hash code from the AbstractOwbBean
+     * and delegate to the shaded instance.
+     *
+     * @return the hash mixed with the shadowed bean.
+     */
+    @Override
+    public int hashCode()
+    {
+        return 29 * this.bean.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if (other instanceof ThirdpartyBeanImpl)
+        {
+            return ((ThirdpartyBeanImpl) other).bean.equals(bean);
+        }
+
+        return bean.equals(other);
+    }
 }
