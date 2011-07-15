@@ -37,6 +37,7 @@ import org.apache.webbeans.component.InjectionTargetWrapper;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.creation.BeanCreator.MetaDataProvider;
+import org.apache.webbeans.config.DefinitionUtil;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.ejb.common.component.BaseEjbBean;
@@ -177,6 +178,75 @@ public final class EjbUtility
         manager.getBeans().addAll(producerFieldBeans);
     }
     
+    public static <T> void defineSpecializedData(Class<T> clazz, BaseEjbBean<T> ejbBean)
+    {
+        final String message = "There are errors that are added by %s event observers for %s. Look at logs for further details";
+
+        final WebBeansContext webBeansContext = ejbBean.getWebBeansContext();
+        final BeanManagerImpl manager = webBeansContext.getBeanManagerImpl();
+
+        final AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
+
+        final AnnotatedType<T> annotatedType = annotatedElementFactory.newAnnotatedType(clazz);
+
+        final DefinitionUtil util = webBeansContext.getDefinitionUtil();
+
+        final Set<ProducerMethodBean<?>> producerMethodBeans = util.defineProducerMethods(ejbBean, clazz);
+
+        final Set<ProducerFieldBean<?>> producerFieldBeans = util.defineProducerFields(ejbBean, clazz);
+
+        checkProducerMethods(producerMethodBeans, ejbBean);
+
+        // PRODUCER METHODS
+        Map<ProducerMethodBean<?>, AnnotatedMethod<?>> annotatedMethods = new HashMap<ProducerMethodBean<?>, AnnotatedMethod<?>>();
+        for(ProducerMethodBean<?> producerMethod : producerMethodBeans)
+        {
+            AnnotatedMethod<?> method = annotatedElementFactory.newAnnotatedMethod(producerMethod.getCreatorMethod(), annotatedType);
+
+            ProcessProducerImpl<?, ?> producerEvent = webBeansContext.getWebBeansUtil().fireProcessProducerEventForMethod(producerMethod, method);
+
+            webBeansContext.getWebBeansUtil().inspectErrorStack(String.format(message, "ProcessProducer", "ProducerMethods"));
+
+            annotatedMethods.put(producerMethod, method);
+            manager.putInjectionTargetWrapper(producerMethod, new InjectionTargetWrapper(producerEvent.getProducer()));
+
+            producerEvent.setProducerSet(false);
+        }
+
+        // PRODUCER FIELDS
+        Map<ProducerFieldBean<?>, AnnotatedField<?>> annotatedFields = new HashMap<ProducerFieldBean<?>, AnnotatedField<?>>();
+        for(ProducerFieldBean<?> producerField : producerFieldBeans)
+        {
+            AnnotatedField<?> field = annotatedElementFactory.newAnnotatedField(producerField.getCreatorField(), annotatedType);
+
+            ProcessProducerImpl<?, ?> producerEvent = webBeansContext.getWebBeansUtil().fireProcessProducerEventForField(producerField, field);
+
+            webBeansContext.getWebBeansUtil().inspectErrorStack(String.format(message, "ProcessProducer", "ProducerFields"));
+
+            annotatedFields.put(producerField, field);
+            manager.putInjectionTargetWrapper(producerField, new InjectionTargetWrapper(producerEvent.getProducer()));
+
+
+            producerEvent.setProducerSet(false);
+        }
+
+        //Fires ProcessProducerMethod
+        webBeansContext.getWebBeansUtil().fireProcessProducerMethodBeanEvent(annotatedMethods, annotatedType);
+        webBeansContext.getWebBeansUtil().inspectErrorStack(String.format(message, "ProcessProducerMethod", "producer method beans"));
+
+        //Fires ProcessProducerField
+        webBeansContext.getWebBeansUtil().fireProcessProducerFieldBeanEvent(annotatedFields);
+        webBeansContext.getWebBeansUtil().inspectErrorStack(String.format(message, "ProcessProducerField", "producer field beans"));
+
+        // Let the plugin handle adding the new bean instance as it knows more about its EJB Bean
+
+        manager.getBeans().addAll(producerMethodBeans);
+        manager.getBeans().addAll(producerFieldBeans);
+
+        util.defineDisposalMethods(ejbBean, clazz);
+
+    }
+
     private static void checkProducerMethods(Set<ProducerMethodBean<?>> producerMethodBeans, BaseEjbBean<?> bean)
     {
         for(ProducerMethodBean<?> producerMethodBean : producerMethodBeans)

@@ -694,41 +694,45 @@ public final class DefinitionUtil
      */
     public Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<?> component)
     {
-        Set<ProducerFieldBean<?>> producerFields = new HashSet<ProducerFieldBean<?>>();
-        Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(component.getReturnType());
-        createProducerField(component, producerFields, fields);
 
-        return producerFields;
+        final Class<?> returnType = component.getReturnType();
+
+        return defineProducerFields(component, returnType);
     }
 
-    private void createProducerField(InjectionTargetBean<?> component, Set<ProducerFieldBean<?>> producerFields, Field[] fields)
+    public Set<ProducerFieldBean<?>> defineProducerFields(InjectionTargetBean<?> component, Class<?> returnType)
     {
+        final Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(returnType);
+
+        final Set<ProducerFieldBean<?>> producerFields = new HashSet<ProducerFieldBean<?>>();
+
         for (Field field : fields)
-        {        
-            Type genericType = field.getGenericType();
-            
+        {
+            final Type genericType = field.getGenericType();
+
             // Producer field
             if (AnnotationUtil.hasAnnotation(field.getDeclaredAnnotations(), Produces.class))
-            {                
+            {
                 if(ClassUtil.isParametrizedType(genericType))
                 {
                     if(!ClassUtil.checkParametrizedType((ParameterizedType)genericType))
                     {
-                        throw new WebBeansConfigurationException("Producer field : " + field.getName() + " return type in class : " + 
+                        throw new WebBeansConfigurationException("Producer field : " + field.getName() + " return type in class : " +
                                 field.getDeclaringClass().getName() + " can not be Wildcard type or Type variable");
                     }
                 }
-                
-                ProducerFieldBean<?> newComponent = createProducerFieldComponent(field.getType(), field, component);
+
+                final ProducerFieldBean<?> newComponent = createProducerFieldComponent(field.getType(), field, component);
 
                 if (newComponent != null)
                 {
                     producerFields.add(newComponent);
-                }                    
+                }
             }
 
         }
 
+        return producerFields;
     }
 
     /**
@@ -743,17 +747,23 @@ public final class DefinitionUtil
     {
         Asserts.assertNotNull(component, "component parameter can not be null");
 
-        Set<ProducerMethodBean<?>> producerComponents = new HashSet<ProducerMethodBean<?>>();
-
         Class<?> clazz = component.getReturnType();
+
+        return defineProducerMethods(component, clazz);
+    }
+
+    public Set<ProducerMethodBean<?>> defineProducerMethods(AbstractInjectionTargetBean<?> component, Class<?> clazz)
+    {
         Method[] declaredMethods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
+
+        Set<ProducerMethodBean<?>> producerComponents = new HashSet<ProducerMethodBean<?>>();
 
         // This methods defined in the class
         for (Method declaredMethod : declaredMethods)
         {
             createProducerComponents(component, producerComponents, declaredMethod, clazz);
         }
-        
+
         return producerComponents;
     }
 
@@ -893,11 +903,16 @@ public final class DefinitionUtil
     {
         Class<?> clazz = component.getReturnType();
 
+        defineDisposalMethods(component, clazz);
+
+    }
+
+    public <T> void defineDisposalMethods(AbstractOwbBean<T> component, Class<?> clazz)
+    {
         Method[] methods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Disposes.class);
 
         // From Normal
         createDisposalMethods(component, methods, clazz);
-
     }
 
     private <T> void createDisposalMethods(AbstractOwbBean<T> component, Method[] methods, Class<?> clazz)
@@ -1254,7 +1269,7 @@ public final class DefinitionUtil
 
     private <T> void createObserverMethods(InjectionTargetBean<T> component, Class<?> clazz, Method[] candidateMethods)
     {
-
+        // TODO Overriding an event method disables it (cdi 1.0: section 4.2)
         for (Method candidateMethod : candidateMethods)
         {
 
