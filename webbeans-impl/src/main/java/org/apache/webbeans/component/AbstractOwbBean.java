@@ -94,6 +94,14 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /**Beans injection points*/
     protected Set<InjectionPoint> injectionPoints = new HashSet<InjectionPoint>();
 
+    /**
+     * We gonna cache the hashCode since it is used millions of times per second.
+     * Beans are pretty much static once they got constructed. So it's easy to
+     * cache it and reset the cache to the default of 0 on a change
+     * which means it should get recalculated.
+     */
+    private int cachedHashCode = 0;
+
 
     /**
      * This string will be used for passivating the Bean.
@@ -346,6 +354,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     {
         this.implScopeType = scopeType;
         this.scopeClass = this.implScopeType.annotationType();
+        cachedHashCode = 0;
     }
 
     /**
@@ -378,6 +387,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         this.stereoTypeClasses = null; // will get rebuilt on the next request
 
         this.stereoTypes.add(stereoType);
+        cachedHashCode = 0;
     }
 
     /**
@@ -388,6 +398,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void addApiType(Class<?> apiType)
     {
         this.apiTypes.add(apiType);
+        cachedHashCode = 0;
     }
 
     /**
@@ -418,6 +429,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void addQualifier(Annotation qualifier)
     {
         this.implQualifiers.add(qualifier);
+        cachedHashCode = 0;
     }
 
     /**
@@ -430,6 +442,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         if (this.name == null)
         {
             this.name = name;
+            cachedHashCode = 0;
         }
         else
         {
@@ -480,6 +493,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void setNullable(boolean nullable)
     {
         this.nullable = nullable;
+        cachedHashCode = 0;
     }
 
     /**
@@ -489,7 +503,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void setSerializable(boolean serializable)
     {
         this.serializable = serializable;
-
+        cachedHashCode = 0;
     }
 
     /**
@@ -498,7 +512,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     @Override
     public boolean isNullable()
     {
-
         return this.nullable;
     }
     
@@ -533,6 +546,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void setSpecializedBean(boolean specialized)
     {
         this.specializedBean = specialized;
+        cachedHashCode = 0;
     }
     
     /**
@@ -541,6 +555,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
+        cachedHashCode = 0;
     }
     
     /**
@@ -709,6 +724,11 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     @Override
     public int hashCode()
     {
+        if (cachedHashCode != 0)
+        {
+            return cachedHashCode;
+        }
+
         final int prime = 31;
         int result = 1;
         result = prime * result + ((apiTypes == null) ? 0 : apiTypes.hashCode());
@@ -726,6 +746,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         result = prime * result + ((stereoTypeClasses == null) ? 0 : stereoTypeClasses.hashCode());
         result = prime * result + ((stereoTypes == null) ? 0 : stereoTypes.hashCode());
         result = prime * result + ((webBeansType == null) ? 0 : webBeansType.hashCode());
+        cachedHashCode = result;
         return result;
     }
 
