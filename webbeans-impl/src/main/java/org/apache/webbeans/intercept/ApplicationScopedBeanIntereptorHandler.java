@@ -24,7 +24,7 @@ import org.apache.webbeans.component.OwbBean;
 
 
 /**
- * <p>This is a {@link javassist.util.proxy.MethodHandler.MethodHandler} especially
+ * <p>This is a {@link javassist.util.proxy.MethodHandler} especially
  * made for &#064;ApplicationScoped beans.</p>
  * 
  * <p>Since there is only one single contextual instance of an &#064;ApplicationScoped bean,
@@ -36,7 +36,13 @@ public class ApplicationScopedBeanIntereptorHandler extends NormalScopedBeanInte
     /**default serial id*/
     private static final long serialVersionUID = 1L;
 
-    /**Cached bean instance*/
+    /**
+     * Cached bean instance. Please note that it is only allowed to
+     * use this special proxy if you don't use OpenWebBeans in an EAR
+     * scenario. In this case we must not cache &#064;ApplicationScoped
+     * contextual instances because they could be injected into EJBs or other
+     * shared instances which span over multiple web-apps.
+     */
     private transient Object cachedInstance = null;
     
     /**
@@ -52,7 +58,7 @@ public class ApplicationScopedBeanIntereptorHandler extends NormalScopedBeanInte
     /**
      * {@inheritDoc}
      */
-    protected Object getContextualInstance(OwbBean<Object> bean)
+    protected Object getContextualInstance()
     {
         if (cachedInstance == null) 
         {
