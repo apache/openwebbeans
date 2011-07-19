@@ -784,19 +784,5 @@
             </reporting>
         </profile>
 
-        <profile>
-            <id>jsr330-tck</id>
-            <modules>
-                <module>atinject-tck</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>jsr299-tck</id>
-            <modules>
-                <module>webbeans-tck</module>
-            </modules>
-        </profile>
-
     </profiles>
 </project>
