@@ -19,12 +19,22 @@
 package org.apache.webbeans.newtests.interceptors.lifecycle;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.util.AnnotationLiteral;
 
 public class InterceptorExtension implements Extension
 {
+    /**
+     * we add the InterceptorBinding via Extension to test OWB-593
+     * @param event
+     */
+    public void registerInterceptorBinding(@Observes BeforeBeanDiscovery event)
+    {
+        event.addInterceptorBinding(LifecycleBinding.class);
+    }
+
     @SuppressWarnings("serial")
     public void observe(@Observes ProcessAnnotatedType<NotAnnotatedBean> process)
     {

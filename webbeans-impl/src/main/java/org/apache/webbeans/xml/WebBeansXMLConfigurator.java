@@ -243,7 +243,8 @@ public final class WebBeansXMLConfigurator
      */
     private void configureInterceptorsElement(Element interceptorsElement, String fileName,ScannerService scanner)
     {
-        InterceptorsManager manager = WebBeansContext.getInstance().getInterceptorsManager();
+        WebBeansContext webBeansContext = WebBeansContext.getInstance();
+        InterceptorsManager manager = webBeansContext.getInterceptorsManager();
         Node node;
         Element child;
         NodeList ns = interceptorsElement.getChildNodes();
@@ -267,12 +268,14 @@ public final class WebBeansXMLConfigurator
             else
             {
                 if (AnnotationUtil.hasAnnotation(clazz.getDeclaredAnnotations(), Interceptor.class) &&
-                    !AnnotationUtil.hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
+                    !webBeansContext.getAnnotationManager().
+                            hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
                 {
                     throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " +
                                                              child.getTextContent().trim() +
-                                                             " must have at least one @InterceptorBindingType");
+                                                             " must have at least one @InterceptorBinding");
                 }
+
                 boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
                 if ((!isBDAScanningEnabled && manager.isInterceptorEnabled(clazz)) ||
                         (isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addInterceptor(clazz, fileName)))

@@ -49,7 +49,9 @@ public class LifecycleTest extends AbstractUnitTest
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
         beanClasses.add(LifecycleInterceptor.class);
         beanClasses.add(LifecycleBean.class);
-        
+
+        addExtension(new InterceptorExtension());
+
         startContainer(beanClasses, beanXmls);        
         
         Set<Bean<?>> beans = getBeanManager().getBeans("org.apache.webbeans.newtests.interceptors.lifecycle.LifecycleBean");

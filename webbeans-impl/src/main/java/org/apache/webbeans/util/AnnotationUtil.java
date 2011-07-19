@@ -943,20 +943,6 @@ public final class AnnotationUtil
     }
 
     /**
-     * If any Annotations in the input is an interceptor binding annotation type then return
-     * true, false otherwise.
-     *
-     * @param anns array of Annotations to check
-     * @return true if one or moe of the input annotations are an interceptor binding annotation
-     *         type false otherwise
-     */
-    @Deprecated
-    public static boolean hasInterceptorBindingMetaAnnotation(Annotation[] anns)
-    {
-        return WebBeansContext.getInstance().getAnnotationManager().hasInterceptorBindingMetaAnnotation(anns);
-    }
-
-    /**
      * Collect the interceptor bindings from an array of annotations, including
      * transitively defined interceptor bindings.
      * @param anns An array of annotations

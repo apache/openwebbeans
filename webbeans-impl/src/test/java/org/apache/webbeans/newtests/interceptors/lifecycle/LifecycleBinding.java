@@ -23,9 +23,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.interceptor.InterceptorBinding;
 
-@InterceptorBinding
+// we add the @InterceptorBinding via Extension to test for OWB-593
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.TYPE})
 public @interface LifecycleBinding 

@@ -74,21 +74,25 @@ public final class AnnotationManager
         beanManagerImpl = context.getBeanManagerImpl();
     }
 
-
     /**
      * Returns true if the annotation is defined in xml or annotated with
-     * {@link javax.interceptor.InterceptorBinding} false otherwise.
+     * {@link javax.interceptor.InterceptorBinding} or an InterceptorBinding
+     * registered via {@link javax.enterprise.inject.spi.BeforeBeanDiscovery}.
+     * False otherwise.
      *
      * @param clazz type of the annotation
      * @return true if the annotation is defined in xml or annotated with
-     *         {@link javax.interceptor.InterceptorBinding} false otherwise
+     *         {@link javax.interceptor.InterceptorBinding}, false otherwise
      */
     public boolean isInterceptorBindingAnnotation(Class<? extends Annotation> clazz)
     {
         Asserts.nullCheckForClass(clazz);
 
-        return clazz.isAnnotationPresent(InterceptorBinding.class);
+        return clazz.isAnnotationPresent(InterceptorBinding.class)
+               || beanManagerImpl.hasInterceptorBindingType(clazz);
     }
+
+
 
     /**
      * If any Annotations in the input is an interceptor binding annotation type then return
@@ -573,8 +577,7 @@ public final class AnnotationManager
         Annotation old = null;
         for (Annotation interceptorBinding : interceptorBindings)
         {
-            if (!this.isInterceptorBindingAnnotation(
-                interceptorBinding.annotationType()))
+            if (!this.isInterceptorBindingAnnotation(interceptorBinding.annotationType()))
             {
                 throw new IllegalArgumentException("Manager.resolveInterceptors() method parameter interceptor" +
                         " bindings array can not contain other annotation that is not @InterceptorBinding");
