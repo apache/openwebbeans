@@ -78,6 +78,33 @@ public final class AnnotatedElementFactory
     }
 
     /**
+     * Get an already registered AnnotatedType. This will NOT create a new one!
+     * @param annotatedClass
+     * @param <X>
+     * @return AnnotatedType
+     */
+    public <X> AnnotatedType<X> getAnnotatedType(Class<X> annotatedClass)
+    {
+        return (AnnotatedType<X>) annotatedTypeCache.get(annotatedClass);
+    }
+
+    /**
+     * This method will get used to manually add AnnoatedTypes to our storage.
+     * Those AnnotatedTypes are coming from Extensions and get registered e.g. via
+     * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addAnnotatedType(AnnotatedType)}
+     *
+     * Sets the annotatedType and replace the given one.
+     * @param annotatedType
+     * @param <X>
+     * @return the previously registered AnnotatedType or null if not previously defined.
+     */
+    public <X> AnnotatedType<X> setAnnotatedType(AnnotatedType<X> annotatedType)
+    {
+        return (AnnotatedType<X>) annotatedTypeCache.put(annotatedType.getJavaClass(), annotatedType);
+    }
+
+
+    /**
      * Creates and configures new annotated type.
      * 
      * @param <X> class info
@@ -88,10 +115,10 @@ public final class AnnotatedElementFactory
     public <X> AnnotatedType<X> newAnnotatedType(Class<X> annotatedClass)
     {
         Asserts.assertNotNull(annotatedClass, "annotatedClass is null");
-        AnnotatedTypeImpl<X> annotatedType;
+        AnnotatedType<X> annotatedType;
         if(annotatedTypeCache.containsKey(annotatedClass))
         {
-            annotatedType = (AnnotatedTypeImpl<X>)annotatedTypeCache.get(annotatedClass);
+            annotatedType = (AnnotatedType<X>)annotatedTypeCache.get(annotatedClass);
         }
         else
         {
@@ -99,7 +126,7 @@ public final class AnnotatedElementFactory
             {
                 annotatedType = new AnnotatedTypeImpl<X>(webBeansContext, annotatedClass);
 
-                AnnotatedTypeImpl<X> oldType = (AnnotatedTypeImpl<X>)annotatedTypeCache.putIfAbsent(annotatedClass, annotatedType);
+                AnnotatedType<X> oldType = (AnnotatedType<X>)annotatedTypeCache.putIfAbsent(annotatedClass, annotatedType);
                 if(oldType != null)
                 {
                     annotatedType = oldType;

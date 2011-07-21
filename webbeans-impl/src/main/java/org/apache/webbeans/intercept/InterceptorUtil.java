@@ -333,31 +333,40 @@ public final class InterceptorUtil
     }
 
 
-    public void checkInterceptorConditions(Class<?> clazz)
+    public void checkInterceptorConditions(AnnotatedType annotatedType)
     {
-        Asserts.nullCheckForClass(clazz);
+        Asserts.assertNotNull(annotatedType);
 
-        Method[] methods = webBeansContext.getSecurityService().doPrivilegedGetDeclaredMethods(clazz);
-        for(Method method : methods)
+        Set<AnnotatedMethod> methods = annotatedType.getMethods();
+        for(AnnotatedMethod method : methods)
         {
-            if(AnnotationUtil.hasMethodAnnotation(method, Produces.class))
+            List<AnnotatedParameter> parms = method.getParameters();
+            for (AnnotatedParameter parameter : parms)
             {
-                throw new WebBeansConfigurationException("Interceptor class : " + clazz + " can not have producer methods but it has one with name : "
-                                                         + method.getName());
+                if (parameter.isAnnotationPresent(Produces.class))
+                {
+                    throw new WebBeansConfigurationException("Interceptor class : " + annotatedType.getJavaClass()
+                            + " can not have producer methods but it has one with name : "
+                            + method.getJavaMember().getName());
+                }
             }
         }
 
-        if (!webBeansContext.getAnnotationManager().hasInterceptorBindingMetaAnnotation(
-            clazz.getDeclaredAnnotations()))
+
+        Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[annotatedType.getAnnotations().size()]);
+        if (!webBeansContext.getAnnotationManager().hasInterceptorBindingMetaAnnotation(anns))
         {
-            throw new WebBeansConfigurationException("WebBeans Interceptor class : " + clazz.getName()
+            throw new WebBeansConfigurationException("WebBeans Interceptor class : " + annotatedType.getJavaClass()
                                                      + " must have at least one @InterceptorBinding annotation");
         }
 
-        checkLifecycleConditions(clazz, clazz.getDeclaredAnnotations(), "Lifecycle interceptor : " + clazz.getName()
-                                                                        + " interceptor binding type must be defined as @Target{TYPE}");
+        checkLifecycleConditions(annotatedType.getJavaClass(), anns, "Lifecycle interceptor : " + annotatedType.getJavaClass()
+                                              + " interceptor binding type must be defined as @Target{TYPE}");
     }
 
+    /**
+     * @param clazz AUTSCH! we should use the AnnotatedType for all that stuff!
+     */
     public <T> void checkLifecycleConditions(Class<T> clazz, Annotation[] annots, String errorMessage)
     {
         Asserts.nullCheckForClass(clazz);

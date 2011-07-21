@@ -20,7 +20,10 @@ package org.apache.webbeans.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.interceptor.Interceptor;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,6 +36,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLogger;
+import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -267,13 +271,37 @@ public final class WebBeansXMLConfigurator
             }
             else
             {
-                if (AnnotationUtil.hasAnnotation(clazz.getDeclaredAnnotations(), Interceptor.class) &&
-                    !webBeansContext.getAnnotationManager().
-                            hasInterceptorBindingMetaAnnotation(clazz.getDeclaredAnnotations()))
+                Annotation[] classAnnotations;
+                AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
+
+                ProcessAnnotatedTypeImpl<?> processAnnotatedEvent =
+                    webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
+
+                // if veto() is called
+                if (processAnnotatedEvent.isVeto())
                 {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " +
-                                                             child.getTextContent().trim() +
-                                                             " must have at least one @InterceptorBinding");
+                    return;
+                }
+
+                annotatedType = processAnnotatedEvent.getAnnotatedType();
+
+                Set<Annotation> annTypeAnnotations = annotatedType.getAnnotations();
+                if (annTypeAnnotations != null)
+                {
+                    classAnnotations = annTypeAnnotations.toArray(new Annotation[annTypeAnnotations.size()]);
+                }
+                else
+                {
+                    classAnnotations = new Annotation[0];
+                }
+
+                if (AnnotationUtil.hasAnnotation(classAnnotations, Interceptor.class) &&
+                    !webBeansContext.getAnnotationManager().
+                            hasInterceptorBindingMetaAnnotation(classAnnotations))
+                {
+                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : "
+                                                             + child.getTextContent().trim()
+                                                             + " must have at least one @InterceptorBinding");
                 }
 
                 boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());

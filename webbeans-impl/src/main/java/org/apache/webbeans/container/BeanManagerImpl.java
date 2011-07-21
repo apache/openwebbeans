@@ -1190,9 +1190,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
             additionalQualifiers.add(qualifier);
         }
     }
-    
+
     public void addAdditionalAnnotatedType(AnnotatedType<?> annotatedType)
     {
+        webBeansContext.getAnnotatedElementFactory().setAnnotatedType(annotatedType);
         this.additionalAnnotatedTypes.add(annotatedType);
     }
 
@@ -1214,7 +1215,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         return additionalScopes;
     }
-    
+
     public List<AnnotatedType<?>> getAdditionalAnnotatedTypes()
     {
         return additionalAnnotatedTypes;

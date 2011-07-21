@@ -1986,18 +1986,20 @@ public final class WebBeansUtil
     public <T> void defineInterceptor(ManagedBeanCreatorImpl<T> managedBeanCreator, ProcessInjectionTarget<T> injectionTargetEvent)
     {
         Class<?> clazz = injectionTargetEvent.getAnnotatedType().getJavaClass();
+        AnnotatedType annotatedType = injectionTargetEvent.getAnnotatedType();
+
         if (webBeansContext.getInterceptorsManager().isInterceptorEnabled(clazz))
         {
             ManagedBean<T> component;
 
-            webBeansContext.getInterceptorUtil().checkInterceptorConditions(clazz);
+            webBeansContext.getInterceptorUtil().checkInterceptorConditions(annotatedType);
             component = defineManagedBean(managedBeanCreator, injectionTargetEvent, false);
 
             if (component != null)
             {
+                Annotation[] anns = annotatedType.getAnnotations().toArray(new Annotation[annotatedType.getAnnotations().size()]);
                 webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass(component,
-                        webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
-                                clazz.getDeclaredAnnotations()));
+                        webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(anns));
             }
             else
             {
@@ -2183,6 +2185,11 @@ public final class WebBeansUtil
 
         //Fires ProcessAnnotatedType
         webBeansContext.getBeanManagerImpl().fireEvent(processAnnotatedEvent,AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+
+        if (processAnnotatedEvent.isModifiedAnnotatedType())
+        {
+            webBeansContext.getAnnotatedElementFactory().setAnnotatedType(processAnnotatedEvent.getAnnotatedType());
+        }
 
         return processAnnotatedEvent;
     }

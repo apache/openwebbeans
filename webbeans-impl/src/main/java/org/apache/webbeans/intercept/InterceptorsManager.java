@@ -21,6 +21,7 @@ package org.apache.webbeans.intercept;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.interceptor.Interceptor;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -31,12 +32,14 @@ import org.apache.webbeans.util.Asserts;
 public class InterceptorsManager
 {
     private List<Class<?>> enabledInterceptors = new CopyOnWriteArrayList<Class<?>>();
+    private final WebBeansContext webBeansContext;
+
     private final BeanManagerImpl manager;
 
     public InterceptorsManager(WebBeansContext webBeansContext)
     {
-
-        manager = webBeansContext.getBeanManagerImpl();
+        this.webBeansContext = webBeansContext;
+        this.manager = webBeansContext.getBeanManagerImpl();
     }
 
     @Deprecated
@@ -92,12 +95,14 @@ public class InterceptorsManager
     
     public void validateInterceptorClasses()
     {
-        for(Class<?> decoratorClazz : enabledInterceptors)
+        for(Class<?> interceptorClass : enabledInterceptors)
         {
+            AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory().getAnnotatedType(interceptorClass);
+
             //Validate decorator classes
-            if(!decoratorClazz.isAnnotationPresent(Interceptor.class) && !manager.containsCustomInterceptorClass(decoratorClazz))
+            if(!annotatedType.isAnnotationPresent(Interceptor.class) && !manager.containsCustomInterceptorClass(interceptorClass))
             {
-                throw new WebBeansConfigurationException("Given class : " + decoratorClazz + " is not a interceptor class");
+                throw new WebBeansConfigurationException("Given class : " + interceptorClass + " is not a interceptor class");
             }   
         }                
     }    

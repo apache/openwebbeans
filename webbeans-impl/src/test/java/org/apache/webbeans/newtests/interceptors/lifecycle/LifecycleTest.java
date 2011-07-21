@@ -109,5 +109,51 @@ public class LifecycleTest extends AbstractUnitTest
         
         shutDownContainer();
     }
-    
+
+    /**
+     * Test an interceptor with no annotations but instead dynamically
+     * add the InterceptorBinding and stuff via AnnotatedType.
+     * Bbd stands for BeforeBeanDiscovery
+     */
+    @Test
+    public void testDynamicInterceptorBeforeBeanDiscovery()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "LifecycleTestBbd"));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(NotAnnotatedBean.class);
+        beanClasses.add(LifecycleInterceptor.class);
+
+
+        addExtension(new InterceptorExtension());
+
+        startContainer(beanClasses, beanXmls);
+
+        shutDownContainer();
+    }
+
+    /**
+     * Test an interceptor with no annotations but instead dynamically
+     * add the InterceptorBinding and stuff via AnnotatedType.
+     * Bbd stands for BeforeBeanDiscovery
+     */
+    @Test
+    public void testDynamicInterceptorProcessAnnotatedType()
+    {
+        Collection<String> beanXmls = new ArrayList<String>();
+        beanXmls.add(getXmlPath(PACKAGE_NAME, "LifecycleTestPat"));
+
+        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        beanClasses.add(NotAnnotatedBean.class);
+        beanClasses.add(LifecycleInterceptor.class);
+
+
+        addExtension(new InterceptorExtension());
+
+        startContainer(beanClasses, beanXmls);
+
+        shutDownContainer();
+    }
+
 }
