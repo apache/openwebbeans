@@ -29,6 +29,7 @@ import javax.decorator.Decorator;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -333,7 +334,8 @@ public abstract class TestContext implements ITestContext
         webBeansContext.getManagedBeanConfigurator().checkManagedBeanCondition(clazz);
 
         webBeansContext.getInterceptorsManager().addNewInterceptor(clazz);
-        webBeansContext.getInterceptorUtil().checkInterceptorConditions(clazz);
+        AnnotatedType annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(clazz);
+        webBeansContext.getInterceptorUtil().checkInterceptorConditions(annotatedType);
         component = webBeansContext.getManagedBeanConfigurator().define(clazz, WebBeansType.INTERCEPTOR);
         webBeansContext.getWebBeansInterceptorConfig().configureInterceptorClass((ManagedBean<Object>) component,
                                                             webBeansContext.getAnnotationManager().getInterceptorBindingMetaAnnotations(
