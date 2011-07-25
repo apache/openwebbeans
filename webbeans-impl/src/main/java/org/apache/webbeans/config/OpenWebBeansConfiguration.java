@@ -113,6 +113,9 @@ public class OpenWebBeansConfiguration
     /**EL Adaptor*/
     public static final String EL_ADAPTOR_CLASS = "org.apache.webbeans.spi.adaptor.ELAdaptor";
 
+    /** prefix followed by the fully qualified scope name, for configuring InterceptorHandlers for our proxies.*/
+    public static final String PROXY_MAPPING_PREFIX = "org.apache.webbeans.proxy.mapping.";
+
     /**
      * Use BDABeansXmlScanner to determine if interceptors, decorators, and
      * alternatives are enabled in the beans.xml of a given BDA. For an

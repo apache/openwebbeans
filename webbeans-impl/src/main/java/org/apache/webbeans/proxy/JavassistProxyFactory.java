@@ -20,6 +20,8 @@ package org.apache.webbeans.proxy;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,7 +31,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
@@ -41,12 +42,14 @@ import org.apache.webbeans.annotation.WebBeansAnnotation;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ResourceBean;
+import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.decorator.WebBeansDecorator;
-import org.apache.webbeans.intercept.ApplicationScopedBeanIntereptorHandler;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.DependentScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.InterceptorData;
+import org.apache.webbeans.intercept.InterceptorHandler;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.webbeans.WebBeansInterceptor;
 import org.apache.webbeans.util.ClassUtil;
@@ -67,7 +70,15 @@ public final class JavassistProxyFactory
     private ConcurrentMap<OwbBean<?>, Class<?>> interceptorProxyClasses = new ConcurrentHashMap<OwbBean<?>, Class<?>>();
     private ConcurrentMap<ResourceBean<?, ?>, Class<?>> resourceBeanProxyClasses = new ConcurrentHashMap<ResourceBean<?,?>, Class<?>>();
     // second level map is indexed on local interface
-    private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();    
+    private ConcurrentMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>> ejbProxyClasses = new ConcurrentHashMap<OwbBean<?>, ConcurrentMap<Class<?>, Class<?>>>();
+
+    /**
+     * This map contains all configured special Scope->InterceptorHandler mappings.
+     * If no mapping is configured, a {@link org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler} will get created.
+     */
+    private Map<String, Class<? extends InterceptorHandler>> interceptorHandlerClasses =
+            new ConcurrentHashMap<String, Class<? extends InterceptorHandler>>();
+
     
     public   Map<OwbBean<?>, Class<?>> getInterceptorProxyClasses()
     {
@@ -205,14 +216,7 @@ public final class JavassistProxyFactory
             
             if (!(bean instanceof WebBeansDecorator<?>) && !(bean instanceof WebBeansInterceptor<?>))
             {
-                if (bean.getScope().equals(ApplicationScoped.class))
-                {
-                    ((ProxyObject)result).setHandler(new ApplicationScopedBeanIntereptorHandler(bean, creationalContext));
-                }
-                else 
-                {
-                    ((ProxyObject)result).setHandler(new NormalScopedBeanInterceptorHandler(bean, creationalContext));
-                }
+                setInterceptorMethodHandler((ProxyObject) result, bean, creationalContext);
             }
         }
         catch (Exception e)
@@ -222,7 +226,95 @@ public final class JavassistProxyFactory
 
         return result;
     }
-    
+
+    /**
+     * This helper method will set the correct InterceptorHandler into our proxy.
+     * @param proxyObject
+     * @param bean
+     * @param creationalContext
+     */
+    private void setInterceptorMethodHandler(ProxyObject proxyObject, OwbBean<?> bean, CreationalContext<?> creationalContext)
+    {
+        InterceptorHandler interceptorHandler = null;
+        String scopeClassName = bean.getScope().getName();
+        Class<? extends InterceptorHandler> interceptorHandlerClass = null;
+        if (!interceptorHandlerClasses.containsKey(scopeClassName))
+        {
+            String proxyMappingConfigKey = OpenWebBeansConfiguration.PROXY_MAPPING_PREFIX + scopeClassName;
+            String className = bean.getWebBeansContext().getOpenWebBeansConfiguration().getProperty(proxyMappingConfigKey);
+            if (className != null)
+            {
+                try
+                {
+                    interceptorHandlerClass = (Class<? extends InterceptorHandler>) Class.forName(className, true, WebBeansUtil.getCurrentClassLoader());
+                }
+                catch (ClassNotFoundException e)
+                {
+                    throw new WebBeansConfigurationException("Configured InterceptorHandler "
+                                                             + className
+                                                             +" cannot be found",
+                                                             e);
+                }
+            }
+            else
+            {
+                // we need to explicitely store a class because ConcurrentHashMap will throw a NPE if value == null
+                interceptorHandlerClass = NormalScopedBeanInterceptorHandler.class;
+            }
+
+            interceptorHandlerClasses.put(scopeClassName, interceptorHandlerClass);
+        }
+        else
+        {
+            interceptorHandlerClass = interceptorHandlerClasses.get(scopeClassName);
+        }
+
+        if (interceptorHandlerClass.equals(NormalScopedBeanInterceptorHandler.class))
+        {
+            // this is faster that way...
+            interceptorHandler = new NormalScopedBeanInterceptorHandler(bean, creationalContext);
+        }
+        else
+        {
+            try
+            {
+                Constructor ct = interceptorHandlerClass.getConstructor(OwbBean.class, CreationalContext.class);
+                interceptorHandler = (InterceptorHandler) ct.newInstance(bean, creationalContext);
+            }
+            catch (NoSuchMethodException e)
+            {
+                throw new WebBeansConfigurationException("Configured InterceptorHandler "
+                                                         + interceptorHandlerClass.getName()
+                                                         +" has the wrong contructor",
+                                                         e);
+            }
+            catch (InvocationTargetException e)
+            {
+                throw new WebBeansConfigurationException("Configured InterceptorHandler "
+                                                         + interceptorHandlerClass.getName()
+                                                         +" has the wrong contructor",
+                                                         e);
+            }
+            catch (InstantiationException e)
+            {
+                throw new WebBeansConfigurationException("Configured InterceptorHandler "
+                                                         + interceptorHandlerClass.getName()
+                                                         +" has the wrong contructor",
+                                                         e);
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new WebBeansConfigurationException("Configured InterceptorHandler "
+                                                         + interceptorHandlerClass.getName()
+                                                         +" has the wrong contructor",
+                                                         e);
+            }
+        }
+
+
+        proxyObject.setHandler(interceptorHandler);
+    }
+
     public Object createBuildInBeanProxy(OwbBean<?> bean) 
     {
         Object result = null;
