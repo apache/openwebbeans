@@ -235,7 +235,7 @@ public final class DefinitionUtil
      */
     public <T> void defineQualifiers(AbstractOwbBean<T> component, Annotation[] annotations)
     {
-        final AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
+        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         for (Annotation annotation : annotations)
         {
@@ -564,76 +564,6 @@ public final class DefinitionUtil
         }
 
         return true;
-/*X
-        Annotation[] anns = cls.getAnnotations();
-        for (Annotation ann : anns)
-        {
-            if (ann instanceof Specializes ||
-                ann instanceof Alternative ||
-                ann instanceof Stereotype   )
-            {
-                return false;
-            }
-        }
-        
-        Constructor<?>[] cts = cls.getDeclaredConstructors();
-        for (Constructor<?> ct : cts)
-        {
-            anns = ct.getAnnotations();
-            for (Annotation ann : anns)
-            {
-                if (ann instanceof Inject)
-                {
-                    return false;
-                }
-            }
-        }
-
-        Field[] fields = cls.getDeclaredFields();
-        for (Field field : fields)
-        {
-            anns = field.getAnnotations();
-            for (Annotation ann : anns)
-            {
-                if (ann instanceof Inject ||
-                    ann instanceof Produces )
-                {
-                    return false;
-                }
-            }
-        }
-
-        Method[] methods = cls.getDeclaredMethods();
-        for (Method method : methods)
-        {
-            anns = method.getAnnotations();
-            for (Annotation ann : anns)
-            {
-                if (ann instanceof Produces      ||
-                    ann instanceof Inject        ||
-                    ann instanceof PostConstruct ||
-                    ann instanceof PreDestroy      )
-                {
-                    return false;
-                }
-
-            }
-
-            Annotation[][] paramsAnns = method.getParameterAnnotations();
-            for (Annotation[] paramAnns: paramsAnns)
-            {
-                for (Annotation ann: paramAnns)
-                {
-                    if (ann instanceof Observes)
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
-*/
     }
 
 
@@ -659,7 +589,7 @@ public final class DefinitionUtil
         if (nameAnnot == null) // no @Named
         {
             // Check for stereottype
-            if (component.getWebBeansContext().getAnnotationManager().hasNamedOnStereoTypes(component))
+            if (webBeansContext.getAnnotationManager().hasNamedOnStereoTypes(component))
             {
                 isDefault = true;
             }
@@ -885,7 +815,6 @@ public final class DefinitionUtil
 
         Annotation[] fieldAnns = field.getDeclaredAnnotations();
 
-        WebBeansContext webBeansContext = parent.getWebBeansContext();
         webBeansContext.getWebBeansUtil().setBeanEnableFlagForProducerBean(parent, component, fieldAnns);
 
         DefinitionUtil.defineProducerMethodApiTypes(component, field.getGenericType(), fieldAnns);
@@ -917,7 +846,7 @@ public final class DefinitionUtil
 
     private <T> void createDisposalMethods(AbstractOwbBean<T> component, Method[] methods, Class<?> clazz)
     {
-        final AnnotationManager annotationManager = component.getWebBeansContext().getAnnotationManager();
+        final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         ProducerMethodBean<?> previous = null;
         for (Method declaredMethod : methods)
@@ -928,7 +857,7 @@ public final class DefinitionUtil
             Type type = AnnotationUtil.getMethodFirstParameterWithAnnotation(declaredMethod, Disposes.class);
             Annotation[] annot = annotationManager.getMethodFirstParameterQualifierWithGivenAnnotation(declaredMethod, Disposes.class);
 
-            InjectionResolver instance = component.getWebBeansContext().getBeanManagerImpl().getInjectionResolver();
+            InjectionResolver instance = webBeansContext.getBeanManagerImpl().getInjectionResolver();
 
             Set<Bean<?>> set = instance.implResolveByType(type, annot);
             if (set.isEmpty())
@@ -1017,7 +946,6 @@ public final class DefinitionUtil
     public <T> void defineInternalInjectedFields(AbstractInjectionTargetBean<T> component, Class<T> clazz, boolean fromSuperClazz)
     {
 
-        WebBeansContext webBeansContext = component.getWebBeansContext();
         final AnnotationManager annotationManager = webBeansContext.getAnnotationManager();
 
         Field[] fields = webBeansContext.getSecurityService().doPrivilegedGetDeclaredFields(clazz);
@@ -1123,7 +1051,7 @@ public final class DefinitionUtil
                     continue;
                 }
                 
-                checkForInjectedInitializerMethod(clazz, method, component.getWebBeansContext());
+                checkForInjectedInitializerMethod(clazz, method, webBeansContext);
             }
             else
             {
@@ -1256,7 +1184,7 @@ public final class DefinitionUtil
         Asserts.assertNotNull(component, "component parameter can not be null");
         Asserts.nullCheckForClass(clazz);
 
-        NotificationManager manager = component.getWebBeansContext().getBeanManagerImpl().getNotificationManager();
+        NotificationManager manager = webBeansContext.getBeanManagerImpl().getNotificationManager();
 
         Method[] candidateMethods = AnnotationUtil.getMethodsWithParameterAnnotation(clazz, Observes.class);
 
