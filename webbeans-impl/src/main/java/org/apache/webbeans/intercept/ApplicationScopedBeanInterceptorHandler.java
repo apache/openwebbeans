@@ -44,6 +44,11 @@ public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInt
      * shared instances which span over multiple web-apps.
      */
     private transient Object cachedInstance = null;
+
+    /**
+     * We also cache the CreationalContext of the very bean.
+     */
+    private transient CreationalContext<Object> creationalContext = null;
     
     /**
      * Creates a new handler.
@@ -66,5 +71,16 @@ public class ApplicationScopedBeanInterceptorHandler extends NormalScopedBeanInt
         }
         
         return cachedInstance;
+    }
+
+    @Override
+    protected CreationalContext<Object> getContextualCreationalContext()
+    {
+        if (creationalContext == null)
+        {
+            creationalContext = super.getContextualCreationalContext();
+        }
+
+        return creationalContext;
     }
 }

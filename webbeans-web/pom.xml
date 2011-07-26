@@ -60,6 +60,14 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-impl</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jsp_2.1_spec</artifactId>
             <optional>true</optional>
@@ -82,6 +90,11 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-interceptor_1.1_spec</artifactId>
+            <optional>true</optional>
+        </dependency>
 
     </dependencies>
     

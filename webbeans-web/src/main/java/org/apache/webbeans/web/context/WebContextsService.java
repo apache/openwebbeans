@@ -31,6 +31,7 @@ import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.FailOverService;
+import org.apache.webbeans.web.intercept.RequestScopedBeanInterceptorHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextException;
@@ -115,6 +116,7 @@ public class WebContextsService extends AbstractContextsService
         applicationContext.remove();
         conversationContext.remove();
         singletonContext.remove();
+        RequestScopedBeanInterceptorHandler.removeThreadLocals();
     }
     
     /**
