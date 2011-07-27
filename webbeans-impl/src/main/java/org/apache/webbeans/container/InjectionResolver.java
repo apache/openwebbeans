@@ -237,7 +237,12 @@ public class InjectionResolver
             qualifiers[0] = new AnyLiteral();
         }
 
-        Set<Bean<?>> beanSet = implResolveByType(type, injectionPoint.getBean().getBeanClass(), qualifiers);
+        Class injectionPointClass = null;
+        if (injectionPoint.getBean() != null)
+        {
+            injectionPointClass = injectionPoint.getBean().getBeanClass();
+        }
+        Set<Bean<?>> beanSet = implResolveByType(type, injectionPointClass, qualifiers);
 
         if (beanSet.isEmpty())
         {
