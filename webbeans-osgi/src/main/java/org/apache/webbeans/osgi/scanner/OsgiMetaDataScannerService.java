@@ -65,7 +65,7 @@ public class OsgiMetaDataScannerService implements ScannerService
     private Set<Class<?>> beanClasses = new HashSet<Class<?>>();
 
     /** the paths of all META-INF/beans.xml files */
-    private Set<String> beanXMLs = new HashSet<String>();
+    private Set<URL> beanXMLs = new HashSet<URL>();
 
     /**contains all the JARs we found with valid beans.xml in it */
     private Set<String> beanArchiveJarNames = new HashSet<String>();
@@ -84,7 +84,7 @@ public class OsgiMetaDataScannerService implements ScannerService
     public void release()
     {
         beanClasses = new HashSet<Class<?>>();
-        beanXMLs = new HashSet<String>();
+        beanXMLs = new HashSet<URL>();
         beanArchiveJarNames = new HashSet<String>();
         classAnnotations.clear();
     }
@@ -222,17 +222,16 @@ public class OsgiMetaDataScannerService implements ScannerService
             public void foundInDirectory(Bundle bundle, String basePath, URL url) throws Exception
             {
                 logger.info("adding the following beans.xml URL: " + url);
-                beanXMLs.add(url.toExternalForm());
+                beanXMLs.add(url);
             }
 
             public void foundInJar(Bundle bundle, String jarName, ZipEntry entry, InputStream in) throws Exception
             {
                 URL jarURL = bundle.getEntry(jarName);
-                String beansUrlPath = "jar:" + jarURL.toString() + "!/" + entry.getName();
 
-                logger.info("adding the following beans.xml URL: " + beansUrlPath);
+                logger.info("adding the following beans.xml URL: " + jarURL.toExternalForm());
 
-                beanXMLs.add(beansUrlPath);
+                beanXMLs.add(jarURL);
                 beanArchiveJarNames.add(jarName);
             }
 
@@ -257,13 +256,13 @@ public class OsgiMetaDataScannerService implements ScannerService
             }
 
             logger.info("adding the following WEB-INF/beans.xml URL: " + webBeansXml);
-            beanXMLs.add(webBeansXml.toExternalForm());
+            beanXMLs.add(webBeansXml);
             webBeansXmlFound = true;
         }
     }
 
     @Override
-    public Set<String> getBeanXmls()
+    public Set<URL> getBeanXmls()
     {
         return beanXMLs;
     }

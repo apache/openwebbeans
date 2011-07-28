@@ -19,7 +19,6 @@
 package org.apache.webbeans.test.tck;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
@@ -97,7 +96,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
 
     }
 
-    public boolean deployInternal(Iterable<Class<?>> classes, Iterable<String> beansXmls)
+    public boolean deployInternal(Iterable<Class<?>> classes, Iterable<URL> beansXmls)
     {
         try
         {
@@ -135,7 +134,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
                 discovery.addBeanClass(it.next());
             }
 
-            Iterator<String> itUrl = beansXmls.iterator();
+            Iterator<URL> itUrl = beansXmls.iterator();
             while (itUrl.hasNext())
             {
                 discovery.addBeanXml(itUrl.next());
@@ -212,16 +211,7 @@ public class StandaloneContainersImpl implements StandaloneContainers
             return false;
         }
 
-        Collection<String> xmlPaths = new ArrayList<String>();
-        if (xmls != null)
-        {
-            for(URL url : xmls)
-            {
-                xmlPaths.add(url.toExternalForm());
-            }
-        }
-
-        return deployInternal(classes, xmlPaths);
+        return deployInternal(classes, xmls);
     }
 
     /**

@@ -19,12 +19,14 @@
 package org.apache.webbeans.lifecycle.test;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 
 import javassist.ClassPool;
 
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
+import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.util.Asserts;
 
 /**
@@ -68,9 +70,16 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
     {
         if(xmls != null)
         {
-            for(String xml : xmls)
+            for(String url : xmls)
             {
-                addBeanXml(xml);
+                try
+                {
+                    addBeanXml(new URL(url));
+                }
+                catch (MalformedURLException e)
+                {
+                    throw new WebBeansDeploymentException("could not convert to URL: " + url, e);
+                }
             }
         }
     }
@@ -98,13 +107,13 @@ public class OpenWebBeansTestMetaDataDiscoveryService extends AbstractMetaDataDi
     
     /**
      * Adds new beans.xml url for scanning.
-     * @param beansXmlPath new beans.xml path
+     * @param url new xml url
      */
-    private void addBeanXml(String beansXmlPath)
+    private void addBeanXml(URL url)
     {
-        Asserts.assertNotNull(beansXmlPath);
+        Asserts.assertNotNull(url);
         
-        addWebBeansXmlLocation(beansXmlPath);
+        addWebBeansXmlLocation(url);
     }
     
 

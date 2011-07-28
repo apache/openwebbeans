@@ -45,7 +45,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     public static final String META_INF_BEANS_XML = "META-INF/beans.xml";
 
     /** Location of the beans.xml files. */
-    private final Set<String> webBeansXmlLocations = new HashSet<String>();
+    private final Set<URL> webBeansXmlLocations = new HashSet<URL>();
 
     //private Map<String, InputStream> EJB_XML_LOCATIONS = new HashMap<String, InputStream>();
 
@@ -126,10 +126,10 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
             while (urls.hasMoreElements())
             {
                 URL url = urls.nextElement();
+
+                addWebBeansXmlLocation(url);
+
                 String urlString = url.toString();
-
-                addWebBeansXmlLocation(urlString);
-
                 int idx = urlString.lastIndexOf(resourceName);
                 urlString = urlString.substring(0, idx);
 
@@ -180,15 +180,15 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
 
     /**
      * add the given beans.xml path to the locations list 
-     * @param beansXmlLocation location path
+     * @param beansXmlUrl location path
      */
-    protected void addWebBeansXmlLocation(String beansXmlLocation)
+    protected void addWebBeansXmlLocation(URL beansXmlUrl)
     {
         if(this.logger.wblWillLogInfo())
         {
-            this.logger.info("added beans.xml marker: " + beansXmlLocation);
+            this.logger.info("added beans.xml marker: " + beansXmlUrl.toExternalForm());
         }
-        webBeansXmlLocations.add(beansXmlLocation);
+        webBeansXmlLocations.add(beansXmlUrl);
     }
 
     /* (non-Javadoc)
@@ -241,7 +241,7 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     * @see org.apache.webbeans.corespi.ScannerService#getBeanXmls()
     */
     @Override
-    public Set<String> getBeanXmls()
+    public Set<URL> getBeanXmls()
     {
         return Collections.unmodifiableSet(webBeansXmlLocations);
     }

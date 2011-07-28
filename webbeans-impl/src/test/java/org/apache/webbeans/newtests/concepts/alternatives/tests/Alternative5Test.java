@@ -38,14 +38,13 @@ import org.apache.webbeans.newtests.concepts.alternatives.common.QualifierProduc
 import org.junit.Test;
 
 public class Alternative5Test extends AbstractUnitTest  {
-	
+
     private static final String PACKAGE_NAME = Alternative5Test.class.getPackage().getName();
     
     @Test
     @SuppressWarnings("unchecked")
     public void testDisposerMethodInAlternativeBean()
     {
-     	
         Collection<String> beanXmls = new ArrayList<String>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeTest5"));
         

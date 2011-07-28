@@ -560,28 +560,28 @@ public class BeansDeployer
     {
         logger.debug("Deploying configurations from XML files has started.");
 
-        Set<String> xmlLocations = scanner.getBeanXmls();
-        Iterator<String> it = xmlLocations.iterator();
+        Set<URL> xmlLocations = scanner.getBeanXmls();
+        Iterator<URL> it = xmlLocations.iterator();
 
         while (it.hasNext())
         {
-            String fileName = it.next();
+            URL url = it.next();
 
             if (logger.wblWillLogDebug())
             {
-                logger.debug("OpenWebBeans BeansDeployer configuring filename: " + fileName);
+                logger.debug("OpenWebBeans BeansDeployer configuring: " + url.toExternalForm());
             }
 
             InputStream fis = null;
             try
             {
-                fis = new URL(fileName).openStream();
+                fis = url.openStream();
 
-                this.xmlConfigurator.configure(fis, fileName, scanner);
+                this.xmlConfigurator.configure(fis, url.toExternalForm(), scanner);
             }
             catch (IOException e)
             {
-                throw new WebBeansDeploymentException("Error configuring: filename: " + fileName , e);
+                throw new WebBeansDeploymentException("Error configuring: filename: " + url.toExternalForm() , e);
             }
             finally
             {

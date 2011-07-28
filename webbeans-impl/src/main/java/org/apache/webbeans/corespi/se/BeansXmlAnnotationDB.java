@@ -19,6 +19,7 @@
 package org.apache.webbeans.corespi.se;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -121,11 +122,11 @@ public class BeansXmlAnnotationDB extends AnnotationDB
     {
         String beanXmlUrl;
         boolean isMatchFound;
-        Iterator<String> it = scannerService.getBeanXmls().iterator();
+        Iterator<URL> it = scannerService.getBeanXmls().iterator();
         while (it.hasNext())
         {
             isMatchFound = false;
-            beanXmlUrl = it.next();
+            beanXmlUrl = it.next().toExternalForm();
             
             //See if mapping was already assigned for this beans.xml
             if(beansXmlResources.containsValue(beanXmlUrl))

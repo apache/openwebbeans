@@ -172,7 +172,7 @@ public class WebScannerService extends AbstractMetaDataDiscovery
 
         if (url != null)
         {
-            addWebBeansXmlLocation(url.toExternalForm());
+            addWebBeansXmlLocation(url);
             URL resourceUrl = WarUrlFinder.findWebInfClassesPath(this.servletContext);
 
             if (resourceUrl == null)
