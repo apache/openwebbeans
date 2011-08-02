@@ -165,6 +165,34 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
     }
 
     /**
+     * This method provides a way to implement a negative cache for methods
+     * which are known to become intercepted or decorated.
+     * This is useful since the calculation actually takes a lot of time.
+     * @param method which should get invoked
+     * @return <code>true</code> if the method is known to not get intercepted,
+     *         <code>false</code> we dont know or it gets intercepted
+     * @see #setNotInterceptedOrDecoratedMethod(java.lang.reflect.Method)
+     */
+    protected boolean isNotInterceptedOrDecoratedMethod(Method method)
+    {
+        return false;
+    }
+
+    /**
+     * This method will get called after the interceptorStack got evaluated and we
+     * found out that it isnt intercepted nor decorated.
+     * The information might get cache to skip the evaluation in a later invocation.
+     * @param method
+     *
+     * @see #isNotInterceptedOrDecoratedMethod(java.lang.reflect.Method)
+     */
+    protected void setNotInterceptedOrDecoratedMethod(Method method)
+    {
+        // do nothing by default
+    }
+
+
+    /**
      * Calls decorators and interceptors and actual
      * bean method.
      * @param instance actual bean instance
@@ -187,10 +215,12 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
         
         try
         {
+            boolean isNotInterceptedOrDecoratedMethod = isNotInterceptedOrDecoratedMethod(method);
+
             //Calling method name on Proxy
             String methodName = method.getName();
-            
-            if (!ClassUtil.isObjectMethod(methodName) && bean instanceof InjectionTargetBean<?>)
+            if (!isNotInterceptedOrDecoratedMethod &&
+                !ClassUtil.isObjectMethod(methodName) && bean instanceof InjectionTargetBean<?>)
             {
                 InjectionTargetBean<?> injectionTarget = (InjectionTargetBean<?>) this.bean;
                 DelegateHandler delegateHandler = null;
@@ -283,7 +313,10 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
                         return delegateHandler.invoke(instance, method, proceed, arguments);
                     }
                 }
+
+                setNotInterceptedOrDecoratedMethod(method);
             }
+
             
             //If here call actual method            
             //If not interceptor or decorator calls
@@ -292,6 +325,7 @@ public abstract class InterceptorHandler implements MethodHandler, Serializable
             {
                 webBeansContext.getSecurityService().doPrivilegedSetAccessible(method, true);
             }
+
             result = method.invoke(instance, arguments);
         }
         catch (InvocationTargetException e)

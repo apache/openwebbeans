@@ -20,6 +20,7 @@ package org.apache.webbeans.intercept;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.Context;
@@ -44,7 +45,10 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     /**Serial id*/
     private static final long serialVersionUID = 1L;
     private static final String FINALIZE = "finalize".intern();
-    
+
+    /** this stores the {@link java.lang.reflect.Method#hashCode()} of intercepted methods */
+    private CopyOnWriteArrayList<Integer> cachedInterceptorMethods = new CopyOnWriteArrayList<Integer>();
+
     /**
      * Creates a new bean instance
      * @param bean bean 
@@ -74,7 +78,28 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
             //Nothing
         }
     }
-    
+
+    @Override
+    protected boolean isNotInterceptedOrDecoratedMethod(Method method)
+    {
+        int currentHash = method.hashCode();
+        if (cachedInterceptorMethods.contains(currentHash))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void setNotInterceptedOrDecoratedMethod(Method method)
+    {
+        Integer hashCode = method.hashCode();
+        if (!cachedInterceptorMethods.contains(hashCode))
+        {
+            cachedInterceptorMethods.add(hashCode);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */

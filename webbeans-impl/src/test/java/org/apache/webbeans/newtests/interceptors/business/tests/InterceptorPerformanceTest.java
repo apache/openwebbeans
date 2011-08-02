@@ -42,7 +42,7 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
 {
     private static final String PACKAGE_NAME = DependingInterceptorTest.class.getPackage().getName();
 
-    private static final int ITERATIONS = 700;
+    private static final int ITERATIONS = 1000;
     private static final int NUM_THREADS = 50;
 
     private static WebBeansLogger logger = WebBeansLogger.getLogger(InterceptorPerformanceTest.class);
@@ -136,9 +136,9 @@ public class InterceptorPerformanceTest extends AbstractUnitTest
 
                     long start = System.nanoTime();
 
-                    long startDek = start;
                     for (int i= 1; i < ITERATIONS; i++)
                     {
+                        beanInstance1.getI();
                         beanInstance1.getMyService().getJ();
                     }
 
