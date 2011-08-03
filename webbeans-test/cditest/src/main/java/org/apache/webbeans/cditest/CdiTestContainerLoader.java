@@ -34,7 +34,8 @@ public class CdiTestContainerLoader
     public static CdiTestContainer getCdiContainer() 
     {
         CdiTestContainer testContainer = null;
-        
+
+        //doesn't support the implementation loader (there is no dependency to owb-impl
         ServiceLoader<CdiTestContainer> cdiContainerLoader = ServiceLoader.load(CdiTestContainer.class);
         Iterator<CdiTestContainer> cdiIt = cdiContainerLoader.iterator();
         if (cdiIt.hasNext())

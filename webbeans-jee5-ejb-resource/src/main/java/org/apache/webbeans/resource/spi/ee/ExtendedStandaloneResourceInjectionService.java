@@ -24,7 +24,6 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.resource.spi.se.StandaloneResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
-import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.ejb.EJB;
 import javax.enterprise.inject.spi.Bean;
@@ -35,7 +34,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ServiceLoader;
 
 /**
  * Allows to use @EJB in JEE 5 app servers
@@ -50,8 +48,8 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
     {
         super(webBeansContext);
 
-        ServiceLoader<EjbResolver> ejbResolverServiceLoader =
-                ServiceLoader.load(EjbResolver.class, WebBeansUtil.getCurrentClassLoader());
+        List<EjbResolver> ejbResolverServiceLoader =
+                webBeansContext.getImplementationLoaderService().load(EjbResolver.class);
 
         for (EjbResolver ejbResolver : ejbResolverServiceLoader)
         {

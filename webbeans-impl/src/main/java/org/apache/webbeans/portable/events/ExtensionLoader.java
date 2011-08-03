@@ -19,9 +19,8 @@
 package org.apache.webbeans.portable.events;
 
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -86,21 +85,19 @@ public class ExtensionLoader
      */
     public void loadExtensionServices(ClassLoader classLoader)
     {
-        ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, classLoader);
-        Iterator<Extension> iterator = loader.iterator();
-        while(iterator.hasNext())
+        List<Extension> loader = this.webBeansContext.getImplementationLoaderService().load(Extension.class);
+        for (Extension extension : loader)
         {
-            Extension ext = iterator.next();
-            if (!extensionClasses.contains(ext.getClass()))
+            if (!extensionClasses.contains(extension.getClass()))
             {
-                extensionClasses.add(ext.getClass());
+                extensionClasses.add(extension.getClass());
                 try
                 {
-                    addExtension(ext);
+                    addExtension(extension);
                 }
                 catch (Exception e)
                 {
-                    throw new WebBeansException("Error occurred while reading Extension service list",e);
+                    throw new WebBeansException("Error occurred while reading Extension service list", e);
                 }
             }
         }        

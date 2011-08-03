@@ -47,6 +47,7 @@ import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
 import org.apache.webbeans.spi.ContextsService;
+import org.apache.webbeans.spi.ImplementationLoaderService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
@@ -89,6 +90,7 @@ public class WebBeansContext
     private final WebBeansAnnotatedTypeUtil annotatedTypeUtil = new WebBeansAnnotatedTypeUtil(this);
     private final ManagedBeanConfigurator managedBeanConfigurator = new ManagedBeanConfigurator(this);
     private final SecurityService securityService;
+    private final ImplementationLoaderService implementationLoaderService;
 
     public WebBeansContext()
     {
@@ -103,6 +105,13 @@ public class WebBeansContext
     private WebBeansContext(Map<Class<?>, Object> initialServices, OpenWebBeansConfiguration openWebBeansConfiguration)
     {
         this.openWebBeansConfiguration = openWebBeansConfiguration;
+
+        //pluggable service-loader
+        String implementationLoaderServiceName =
+                openWebBeansConfiguration.getProperty(ImplementationLoaderService.class.getName());
+        implementationLoaderService = ImplementationLoaderService.class.cast(get(implementationLoaderServiceName));
+        registerService(ImplementationLoaderService.class, implementationLoaderService);
+
         if (initialServices != null)
         {
             for (Map.Entry<Class<?>, Object> entry: initialServices.entrySet())
@@ -415,5 +424,10 @@ public class WebBeansContext
     public void clear()
     {
         managerMap.clear();
+    }
+
+    public ImplementationLoaderService getImplementationLoaderService()
+    {
+        return this.implementationLoaderService;
     }
 }

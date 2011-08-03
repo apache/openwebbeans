@@ -20,9 +20,7 @@ package org.apache.webbeans.plugins;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -83,24 +81,22 @@ public class PluginLoader
             logger.debug("PluginLoader startUp called.");
             ArrayList<OpenWebBeansPlugin> ps = new ArrayList<OpenWebBeansPlugin>();
 
-            ServiceLoader<OpenWebBeansPlugin> owbPluginsLoader = ServiceLoader.load(OpenWebBeansPlugin.class);
-            Iterator<OpenWebBeansPlugin> pluginIter = owbPluginsLoader.iterator();
-            while(pluginIter.hasNext()) 
+            List<OpenWebBeansPlugin> pluginList = WebBeansContext.getInstance().getImplementationLoaderService().load(OpenWebBeansPlugin.class);
+            for (OpenWebBeansPlugin plugin : pluginList)
             {
-              OpenWebBeansPlugin plugin = pluginIter.next();
-              if (logger.wblWillLogInfo())
-              {
-                  logger.info(OWBLogConst.INFO_0004, plugin.getClass().getSimpleName());
-              }
-              try
-            {
-                plugin.startUp();
-            }
-            catch (Exception e)
-            {
-                throwsException(e);
-            }
-              ps.add(plugin);
+                if (logger.wblWillLogInfo())
+                {
+                    logger.info(OWBLogConst.INFO_0004, plugin.getClass().getSimpleName());
+                }
+                try
+                {
+                    plugin.startUp();
+                }
+                catch (Exception e)
+                {
+                    throwsException(e);
+                }
+                ps.add(plugin);
             }   
             
             // just to make sure the plugins aren't modified afterwards
