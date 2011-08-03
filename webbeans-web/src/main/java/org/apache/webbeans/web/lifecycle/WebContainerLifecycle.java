@@ -27,6 +27,7 @@ import org.apache.webbeans.lifecycle.AbstractLifeCycle;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
+import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
 import javax.el.ELResolver;
 import javax.enterprise.inject.spi.BeanManager;
@@ -110,7 +111,8 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
             @Override
             public Thread newThread(Runnable runable)
             {
-                Thread t = new Thread(runable, "OwbConversationCleaner-" + ((ServletContext)(startupObject)).getContextPath());
+              Thread t = new Thread(runable, "OwbConversationCleaner-"
+                  + ServletCompatibilityUtil.getServletInfo((ServletContext) (startupObject)));
                 t.setDaemon(true);
                 return t;                
             }
@@ -189,11 +191,11 @@ public final class WebContainerLifecycle extends AbstractLifeCycle
         
         if (logger.wblWillLogInfo())
         {
-            logger.info(OWBLogConst.INFO_0002, servletContext != null ? servletContext.getContextPath() : "null");
+          logger.info(OWBLogConst.INFO_0002, ServletCompatibilityUtil.getServletInfo(servletContext));
         }
     }
 
-    /**
+  /**
      * Ensures that all ThreadLocals, which could have been set in this
      * (shutdown-) Thread, are removed in order to prevent memory leaks.
      */

@@ -28,6 +28,7 @@ import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.spi.FailOverService;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.web.context.WebContextsService;
+import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
@@ -82,7 +83,7 @@ public class WebBeansConfigurationListener implements ServletContextListener, Se
         }
         catch (Exception e)
         {
-             logger.error(OWBLogConst.ERROR_0018, event.getServletContext().getContextPath());
+             logger.error(OWBLogConst.ERROR_0018, ServletCompatibilityUtil.getServletInfo(event.getServletContext()));
              WebBeansUtil.throwRuntimeExceptions(e);
         }
     }
