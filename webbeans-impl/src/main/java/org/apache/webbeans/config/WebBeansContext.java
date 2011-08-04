@@ -108,17 +108,19 @@ public class WebBeansContext
         this.openWebBeansConfiguration = openWebBeansConfiguration;
 
         //pluggable service-loader
-        String implementationLoaderServiceName =
-                openWebBeansConfiguration.getProperty(ImplementationLoaderService.class.getName());
-        if (implementationLoaderServiceName == null)
+        if (initialServices == null || !initialServices.containsKey(ImplementationLoaderService.class))
         {
-            implementationLoaderService = new DefaultImplementationLoaderService();
+            String implementationLoaderServiceName =
+                    openWebBeansConfiguration.getProperty(ImplementationLoaderService.class.getName());
+            if (implementationLoaderServiceName == null)
+            {
+                serviceMap.put(ImplementationLoaderService.class, new DefaultImplementationLoaderService());
+            }
+            else
+            {
+                serviceMap.put(ImplementationLoaderService.class, ImplementationLoaderService.class.cast(get(implementationLoaderServiceName)));
+            }
         }
-        else
-        {
-            implementationLoaderService = ImplementationLoaderService.class.cast(get(implementationLoaderServiceName));
-        }
-        registerService(ImplementationLoaderService.class, implementationLoaderService);
 
         if (initialServices != null)
         {
@@ -131,6 +133,7 @@ public class WebBeansContext
                 serviceMap.put(entry.getKey(), entry.getValue());
             }
         }
+        this.implementationLoaderService = getService(ImplementationLoaderService.class);
         this.securityService = getService(SecurityService.class);
         WebBeansUtil.initProxyFactoryClassLoaderProvider();
 
