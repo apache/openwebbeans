@@ -46,6 +46,7 @@ import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
+import org.apache.webbeans.service.DefaultImplementationLoaderService;
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.spi.ImplementationLoaderService;
 import org.apache.webbeans.spi.ScannerService;
@@ -109,7 +110,14 @@ public class WebBeansContext
         //pluggable service-loader
         String implementationLoaderServiceName =
                 openWebBeansConfiguration.getProperty(ImplementationLoaderService.class.getName());
-        implementationLoaderService = ImplementationLoaderService.class.cast(get(implementationLoaderServiceName));
+        if (implementationLoaderServiceName == null)
+        {
+            implementationLoaderService = new DefaultImplementationLoaderService();
+        }
+        else
+        {
+            implementationLoaderService = ImplementationLoaderService.class.cast(get(implementationLoaderServiceName));
+        }
         registerService(ImplementationLoaderService.class, implementationLoaderService);
 
         if (initialServices != null)
