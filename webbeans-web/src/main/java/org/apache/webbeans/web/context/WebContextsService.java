@@ -311,6 +311,7 @@ public class WebContextsService extends AbstractContextsService
         rq.setActive(true);
 
         requestContext.set(rq);// set thread local
+
         if(event != null)
         {
             HttpServletRequest request = (HttpServletRequest) event.getServletRequest();
@@ -332,6 +333,14 @@ public class WebContextsService extends AbstractContextsService
                 //Init thread local sigleton context
                 initSingletonContext(event.getServletContext());
             }            
+        }
+        else
+        {
+                //Init thread local application context
+                initApplicationContext(null);
+
+                //Init thread local sigleton context
+                initSingletonContext(null);
         }
     }
     
