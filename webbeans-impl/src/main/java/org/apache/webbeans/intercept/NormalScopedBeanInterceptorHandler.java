@@ -47,7 +47,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     private static final String FINALIZE = "finalize".intern();
 
     /** this stores the {@link java.lang.reflect.Method#hashCode()} of intercepted methods */
-    private CopyOnWriteArrayList<Integer> cachedInterceptorMethods = new CopyOnWriteArrayList<Integer>();
+    private CopyOnWriteArrayList<Integer> cachedInterceptedMethods = new CopyOnWriteArrayList<Integer>();
 
     /**
      * Creates a new bean instance
@@ -83,7 +83,7 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     protected boolean isNotInterceptedOrDecoratedMethod(Method method)
     {
         int currentHash = method.hashCode();
-        if (cachedInterceptorMethods.contains(currentHash))
+        if (cachedInterceptedMethods.contains(currentHash))
         {
             return true;
         }
@@ -94,9 +94,9 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     protected void setNotInterceptedOrDecoratedMethod(Method method)
     {
         Integer hashCode = method.hashCode();
-        if (!cachedInterceptorMethods.contains(hashCode))
+        if (!cachedInterceptedMethods.contains(hashCode))
         {
-            cachedInterceptorMethods.add(hashCode);
+            cachedInterceptedMethods.add(hashCode);
         }
     }
 
