@@ -67,6 +67,11 @@ public class WebContextsService extends AbstractContextsService
     /**Current application context*/
     private static ThreadLocal<ApplicationContext> applicationContext = null;
 
+    /**
+     * This applicationContext will be used for all non servlet-request threads
+     */
+    private ApplicationContext sharedApplicationContext ;
+
     /**Current conversation context*/
     private static ThreadLocal<ConversationContext> conversationContext = null;
     
@@ -127,6 +132,9 @@ public class WebContextsService extends AbstractContextsService
         supportsConversation =  webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
         failoverService = webBeansContext.getService(FailOverService.class);
         conversationManager = webBeansContext.getConversationManager();
+
+        sharedApplicationContext = new ApplicationContext();
+        sharedApplicationContext.setActive(true);
     }
 
     public SessionContextManager getSessionContextManager()
@@ -155,6 +163,9 @@ public class WebContextsService extends AbstractContextsService
     {
         //Destroy application context
         endContext(ApplicationScoped.class, destroyObject);
+
+        // we also need to destroy the shared ApplicationContext
+        sharedApplicationContext.destroy();
         
         //Destroy singleton context
         endContext(Singleton.class, destroyObject);
@@ -446,23 +457,27 @@ public class WebContextsService extends AbstractContextsService
     private void initApplicationContext(ServletContext servletContext)
     {
         
-        if(servletContext != null && currentApplicationContexts.containsKey(servletContext))
+        if(servletContext != null)
         {
-            applicationContext.set(currentApplicationContexts.get(servletContext));
+            if (currentApplicationContexts.containsKey(servletContext))
+            {
+                applicationContext.set(currentApplicationContexts.get(servletContext));
+            }
+            else
+            {
+                ApplicationContext currentApplicationContext = new ApplicationContext();
+                currentApplicationContext.setActive(true);
+                currentApplicationContexts.put(servletContext, currentApplicationContext);
+
+                applicationContext.set(currentApplicationContext);
+            }
         }
-        
         else
         {
-            ApplicationContext currentApplicationContext = new ApplicationContext();         
-            currentApplicationContext.setActive(true);
-            
-            if(servletContext != null)
-            {
-                currentApplicationContexts.put(servletContext, currentApplicationContext);
-                
-            }
-            
-            applicationContext.set(currentApplicationContext);
+            // if we are in a thread which is not related to a Servlet request,
+            // then we use a shared ApplicationContext.
+            // this happens for asynchronous jobs and JMS invocations, etc.
+            applicationContext.set(sharedApplicationContext);
         }
     }
 
@@ -629,7 +644,6 @@ public class WebContextsService extends AbstractContextsService
      */
     private  SessionContext getSessionContext()
     {
-
         SessionContext context = sessionContext.get();
         if (null == context)
         {
@@ -721,4 +735,29 @@ public class WebContextsService extends AbstractContextsService
     }
 
 
+    /**
+     * This might be needed when you aim to start a new thread in a WebApp.
+     * @param scopeType
+     */
+    @Override
+    public void activateContext(Class<? extends Annotation> scopeType)
+    {
+        if (scopeType.equals(ApplicationScoped.class))
+        {
+            if (applicationContext.get() == null)
+            {
+                applicationContext.set(sharedApplicationContext);
+            }
+        }
+        else
+        {
+            super.activateContext(scopeType);
+        }
+    }
+
+    @Override
+    public void deActivateContext(Class<? extends Annotation> scopeType)
+    {
+        super.deActivateContext(scopeType);
+    }
 }
