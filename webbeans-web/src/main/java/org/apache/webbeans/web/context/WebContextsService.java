@@ -719,4 +719,18 @@ public class WebContextsService extends AbstractContextsService
         }
         return webContext;
     }
+
+
+    @Override
+    public void activateContext(Class<? extends Annotation> scopeType)
+    {
+        if (scopeType.equals(ApplicationS))
+        super.activateContext(scopeType);
+    }
+
+    @Override
+    public void deActivateContext(Class<? extends Annotation> scopeType)
+    {
+        super.deActivateContext(scopeType);
+    }
 }
