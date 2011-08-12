@@ -400,24 +400,31 @@ public class WebContextsService extends AbstractContextsService
      */
     private void initSessionContext(HttpSession session)
     {
+        SessionContext currentSessionContext;
+
         if (session == null)
         {
-            // no session -> no SessionContext
-            return;
-        }
-
-        String sessionId = session.getId();
-        //Current context
-        SessionContext currentSessionContext = sessionCtxManager.getSessionContextWithSessionId(sessionId);
-
-        //No current context
-        if (currentSessionContext == null)
-        {
+            // no session -> create a dummy SessionContext
+            // this is handy if you create asynchronous tasks or
+            // batches which use a 'admin' user.
             currentSessionContext = new SessionContext();
-            sessionCtxManager.addNewSessionContext(sessionId, currentSessionContext);
         }
-        //Activate
-        currentSessionContext.setActive(true);
+        else
+        {
+            String sessionId = session.getId();
+
+            //Current context
+            currentSessionContext = sessionCtxManager.getSessionContextWithSessionId(sessionId);
+
+            //No current context
+            if (currentSessionContext == null)
+            {
+                currentSessionContext = new SessionContext();
+                sessionCtxManager.addNewSessionContext(sessionId, currentSessionContext);
+            }
+            //Activate
+            currentSessionContext.setActive(true);
+        }
 
         //Set thread local
         sessionContext.set(currentSessionContext);
