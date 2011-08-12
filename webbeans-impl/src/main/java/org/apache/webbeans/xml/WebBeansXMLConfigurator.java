@@ -21,6 +21,7 @@ package org.apache.webbeans.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -245,12 +246,18 @@ public final class WebBeansXMLConfigurator
      *
      * @param interceptorsElement interceptors element
      */
-    private void configureInterceptorsElement(Element interceptorsElement, String fileName,ScannerService scanner)
+    private void configureInterceptorsElement(Element interceptorsElement, String fileName, ScannerService scanner)
     {
         WebBeansContext webBeansContext = WebBeansContext.getInstance();
         InterceptorsManager manager = webBeansContext.getInterceptorsManager();
         Node node;
         Element child;
+
+        // the interceptors in this beans.xml
+        // this gets used to detect multiple definitions of the
+        // same interceptor in one beans.xml file.
+        Set<Class> interceptorsInFile = new HashSet<Class>();
+
         NodeList ns = interceptorsElement.getChildNodes();
         for (int i = 0; i < ns.getLength(); i++)
         {
@@ -304,15 +311,25 @@ public final class WebBeansXMLConfigurator
                                                              + " must have at least one @InterceptorBinding");
                 }
 
+                // check if the interceptor got defined twice in this beans.xml
+                if (interceptorsInFile.contains(clazz))
+                {
+                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : "
+                                                             + child.getTextContent().trim()
+                                                             + " already defined in this beans.xml file!");
+                }
+                interceptorsInFile.add(clazz);
+
                 boolean isBDAScanningEnabled=(scanner!=null && scanner.isBDABeansXmlScanningEnabled());
                 if ((!isBDAScanningEnabled && manager.isInterceptorEnabled(clazz)) ||
                         (isBDAScanningEnabled && !scanner.getBDABeansXmlScanner().addInterceptor(clazz, fileName)))
                 {
-                    throw new WebBeansConfigurationException(createConfigurationFailedMessage() + "Interceptor class : " +
-                                                             child.getTextContent().trim() + " is already defined");
+                    logger.warn( "Interceptor class : " + child.getTextContent().trim() + " is already defined");
                 }
-
-                manager.addNewInterceptor(clazz);
+                else
+                {
+                    manager.addNewInterceptor(clazz);
+                }
             }
 
         }
