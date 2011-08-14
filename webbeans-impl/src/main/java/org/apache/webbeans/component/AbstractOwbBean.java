@@ -714,7 +714,8 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
                         }
                         throw new WebBeansConfigurationException(
                                 "Passivation capable beans must satisfy passivation capable dependencies. " +
-                                "Bean : " + toString() + " does not satisfy.");
+                                "Bean : " + toString() + " does not satisfy. Details about the Injection-point: " +
+                                        injectionPoint.toString());
                     }
                 }
             }            
