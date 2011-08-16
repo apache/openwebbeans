@@ -422,9 +422,10 @@ public class WebContextsService extends AbstractContextsService
                 currentSessionContext = new SessionContext();
                 sessionCtxManager.addNewSessionContext(sessionId, currentSessionContext);
             }
-            //Activate
-            currentSessionContext.setActive(true);
         }
+
+        //Activate
+        currentSessionContext.setActive(true);
 
         //Set thread local
         sessionContext.set(currentSessionContext);
