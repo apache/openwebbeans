@@ -46,9 +46,9 @@ import org.apache.webbeans.plugins.PluginLoader;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
 import org.apache.webbeans.portable.events.ExtensionLoader;
 import org.apache.webbeans.proxy.JavassistProxyFactory;
-import org.apache.webbeans.service.DefaultImplementationLoaderService;
+import org.apache.webbeans.service.DefaultLoaderService;
 import org.apache.webbeans.spi.ContextsService;
-import org.apache.webbeans.spi.ImplementationLoaderService;
+import org.apache.webbeans.spi.LoaderService;
 import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.SecurityService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
@@ -91,7 +91,7 @@ public class WebBeansContext
     private final WebBeansAnnotatedTypeUtil annotatedTypeUtil = new WebBeansAnnotatedTypeUtil(this);
     private final ManagedBeanConfigurator managedBeanConfigurator = new ManagedBeanConfigurator(this);
     private final SecurityService securityService;
-    private final ImplementationLoaderService implementationLoaderService;
+    private final LoaderService loaderService;
 
     public WebBeansContext()
     {
@@ -108,17 +108,17 @@ public class WebBeansContext
         this.openWebBeansConfiguration = openWebBeansConfiguration;
 
         //pluggable service-loader
-        if (initialServices == null || !initialServices.containsKey(ImplementationLoaderService.class))
+        if (initialServices == null || !initialServices.containsKey(LoaderService.class))
         {
             String implementationLoaderServiceName =
-                    openWebBeansConfiguration.getProperty(ImplementationLoaderService.class.getName());
+                    openWebBeansConfiguration.getProperty(LoaderService.class.getName());
             if (implementationLoaderServiceName == null)
             {
-                serviceMap.put(ImplementationLoaderService.class, new DefaultImplementationLoaderService());
+                serviceMap.put(LoaderService.class, new DefaultLoaderService());
             }
             else
             {
-                serviceMap.put(ImplementationLoaderService.class, ImplementationLoaderService.class.cast(get(implementationLoaderServiceName)));
+                serviceMap.put(LoaderService.class, LoaderService.class.cast(get(implementationLoaderServiceName)));
             }
         }
 
@@ -133,7 +133,7 @@ public class WebBeansContext
                 serviceMap.put(entry.getKey(), entry.getValue());
             }
         }
-        this.implementationLoaderService = getService(ImplementationLoaderService.class);
+        this.loaderService = getService(LoaderService.class);
         this.securityService = getService(SecurityService.class);
         WebBeansUtil.initProxyFactoryClassLoaderProvider();
 
@@ -437,8 +437,8 @@ public class WebBeansContext
         managerMap.clear();
     }
 
-    public ImplementationLoaderService getImplementationLoaderService()
+    public LoaderService getLoaderService()
     {
-        return this.implementationLoaderService;
+        return this.loaderService;
     }
 }

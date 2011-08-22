@@ -19,7 +19,7 @@
 package org.apache.webbeans.service;
 
 import org.apache.webbeans.logger.WebBeansLogger;
-import org.apache.webbeans.spi.ImplementationLoaderService;
+import org.apache.webbeans.spi.LoaderService;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import java.util.ArrayList;
@@ -30,9 +30,9 @@ import java.util.ServiceLoader;
  * Default implementation which delegates to the s{@link ServiceLoader} of Java 1.6 and
  * uses a fallback for Java 1.5
  */
-public class DefaultImplementationLoaderService implements ImplementationLoaderService
+public class DefaultLoaderService implements LoaderService
 {
-    private static final WebBeansLogger logger = WebBeansLogger.getLogger(DefaultImplementationLoaderService.class);
+    private static final WebBeansLogger logger = WebBeansLogger.getLogger(DefaultLoaderService.class);
 
     private static final boolean JAVA_6_AVAILABLE = isJava6();
 

@@ -85,7 +85,7 @@ public class ExtensionLoader
      */
     public void loadExtensionServices(ClassLoader classLoader)
     {
-        List<Extension> loader = this.webBeansContext.getImplementationLoaderService().load(Extension.class, classLoader);
+        List<Extension> loader = this.webBeansContext.getLoaderService().load(Extension.class, classLoader);
         for (Extension extension : loader)
         {
             if (!extensionClasses.contains(extension.getClass()))

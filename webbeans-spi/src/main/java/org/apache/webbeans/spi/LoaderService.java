@@ -24,7 +24,7 @@ import java.util.List;
  * Decouples OpenWebBeans from the Service-Loader approach.
  * It allows to provide custom loaders with custom mechanisms as well as support for Java 1.5
  */
-public interface ImplementationLoaderService
+public interface LoaderService
 {
     /**
      * Loads all active implementations for the given service-type

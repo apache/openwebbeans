@@ -49,7 +49,7 @@ public class ExtendedStandaloneResourceInjectionService extends StandaloneResour
         super(webBeansContext);
 
         List<EjbResolver> ejbResolverServiceLoader =
-                webBeansContext.getImplementationLoaderService().load(EjbResolver.class);
+                webBeansContext.getLoaderService().load(EjbResolver.class);
 
         for (EjbResolver ejbResolver : ejbResolverServiceLoader)
         {

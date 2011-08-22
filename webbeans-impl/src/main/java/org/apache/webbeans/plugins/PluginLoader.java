@@ -81,7 +81,7 @@ public class PluginLoader
             logger.debug("PluginLoader startUp called.");
             ArrayList<OpenWebBeansPlugin> ps = new ArrayList<OpenWebBeansPlugin>();
 
-            List<OpenWebBeansPlugin> pluginList = WebBeansContext.getInstance().getImplementationLoaderService().load(OpenWebBeansPlugin.class);
+            List<OpenWebBeansPlugin> pluginList = WebBeansContext.getInstance().getLoaderService().load(OpenWebBeansPlugin.class);
             for (OpenWebBeansPlugin plugin : pluginList)
             {
                 if (logger.wblWillLogInfo())
