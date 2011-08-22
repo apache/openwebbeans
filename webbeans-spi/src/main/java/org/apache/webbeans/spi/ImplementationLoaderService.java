@@ -33,4 +33,13 @@ public interface ImplementationLoaderService
      * @return all active implementations for the given service-type
      */
     <T> List<T> load(Class<T> serviceType);
+
+    /**
+     * Loads all active implementations for the given service-type
+     * @param serviceType base type of the services which should be loaded
+     * @param classLoader
+     * @param <T> current type
+     * @return all active implementations for the given service-type
+     */
+    <T> List<T> load(Class<T> serviceType, ClassLoader classLoader);
 }

@@ -38,10 +38,15 @@ public class DefaultImplementationLoaderService implements ImplementationLoaderS
 
     public <T> List<T> load(Class<T> serviceType)
     {
+        return load(serviceType, WebBeansUtil.getCurrentClassLoader());
+    }
+
+    public <T> List<T> load(Class<T> serviceType, ClassLoader classLoader)
+    {
         if(JAVA_6_AVAILABLE)
         {
             List<T> result = new ArrayList<T>();
-            ServiceLoader<T> services = ServiceLoader.load(serviceType, WebBeansUtil.getCurrentClassLoader());
+            ServiceLoader<T> services = ServiceLoader.load(serviceType, classLoader);
 
             for (T service : services)
             {
@@ -51,8 +56,7 @@ public class DefaultImplementationLoaderService implements ImplementationLoaderS
             return result;
         }
 
-        return new ManualImplementationLoaderService<T>
-                (serviceType, WebBeansUtil.getCurrentClassLoader()).loadServiceImplementations();
+        return new ManualImplementationLoaderService<T>(serviceType, classLoader).loadServiceImplementations();
     }
 
     private static boolean isJava6()
