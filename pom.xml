@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>9</version>
+        <version>10</version>
     </parent>
 
     <groupId>org.apache.openwebbeans</groupId>
@@ -68,7 +68,7 @@
         <geronimo_servlet.version>1.2</geronimo_servlet.version>
         <dom4j.version>1.6.1</dom4j.version>
         <geronimo_ejb.version>1.0.2</geronimo_ejb.version>
-        <geronimo_el.version>1.0.1</geronimo_el.version>
+        <geronimo_el.version>1.0.2</geronimo_el.version>
         <scannatation.version>1.0.2</scannatation.version>
         <geronimo_annotation.version>1.0.1</geronimo_annotation.version>
         <geronimo_jpa.version>1.1</geronimo_jpa.version>
