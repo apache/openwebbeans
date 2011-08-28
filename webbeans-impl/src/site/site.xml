@@ -21,8 +21,8 @@
 <project name="OpenWebBeans-Impl">
     <bannerLeft>
         <name>Apache OpenWebBeans</name>
-        <src>http://incubator.apache.org/openwebbeans/images/openwebbeans.png</src>
-        <href>http://incubator.apache.org/openwebbeans</href>
+        <src>http://openwebbeans.apache.org/images/openwebbeans.png</src>
+        <href>http://openwebbeans.apache.org</href>
     </bannerLeft>
     
     <bannerRight>

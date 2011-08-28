@@ -36,9 +36,9 @@
     
     <body>
         <breadcrumbs>
-            <item name="Incubator" href="http://incubator.apache.org"/>
-            <item name="OpenWebBeans" href="http://incubator.apache.org/openwebbeans"/>
-            <item name="CDI-Test" href="http://incubator.apache.org/openwebbeans/${project.version}/webbeans-test"/>
+            <item name="Apache" href="http://apache.org"/>
+            <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
+            <item name="CDI-Test" href="http://openwebbeans.apache.org/${project.version}/webbeans-test"/>
         </breadcrumbs>
         
         <menu ref="modules" />
