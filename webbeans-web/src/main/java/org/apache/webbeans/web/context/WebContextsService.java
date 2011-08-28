@@ -22,11 +22,13 @@ import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContextsService;
 import org.apache.webbeans.context.ApplicationContext;
+import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.context.DependentContext;
 import org.apache.webbeans.context.RequestContext;
 import org.apache.webbeans.context.SessionContext;
 import org.apache.webbeans.context.SingletonContext;
+import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLogger;
@@ -35,6 +37,7 @@ import org.apache.webbeans.web.intercept.RequestScopedBeanInterceptorHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.ContextException;
+import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
@@ -97,6 +100,8 @@ public class WebContextsService extends AbstractContextsService
     
     protected FailOverService failoverService = null;
 
+    private WebBeansContext webBeansContext;
+
     /**Initialize thread locals*/
     static
     {
@@ -129,6 +134,7 @@ public class WebContextsService extends AbstractContextsService
      */
     public WebContextsService(WebBeansContext webBeansContext)
     {
+        this.webBeansContext = webBeansContext;
         supportsConversation =  webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
         failoverService = webBeansContext.getService(FailOverService.class);
         conversationManager = webBeansContext.getConversationManager();
@@ -361,6 +367,13 @@ public class WebContextsService extends AbstractContextsService
      */
     private void destroyRequestContext(ServletRequestEvent request)
     {
+        // cleanup open conversations first
+        if (supportsConversation)
+        {
+            cleanupConversations();
+        }
+
+
         //Get context
         RequestContext context = getRequestContext();
 
@@ -376,7 +389,7 @@ public class WebContextsService extends AbstractContextsService
         {
             elStore.destroyELContextStore();
         }
-        
+
         //Clear thread locals
         requestContext.set(null);
         requestContext.remove();
@@ -392,6 +405,42 @@ public class WebContextsService extends AbstractContextsService
         //Conversation context
         conversationContext.set(null);
         conversationContext.remove();
+    }
+
+    private void cleanupConversations()
+    {
+        ConversationContext conversationContext = getConversationContext();
+
+        if (conversationContext == null)
+        {
+            return;
+        }
+
+        ConversationManager conversationManager = webBeansContext.getConversationManager();
+        Conversation conversation = conversationManager.getConversationBeanReference();
+
+        if (conversation == null)
+        {
+            return;
+        }
+
+        if (conversation.isTransient())
+        {
+            if (logger.wblWillLogDebug())
+            {
+                logger.debug("Destroying the conversation context with cid : [{0}]", conversation.getId());
+            }
+            ContextFactory contextFactory = webBeansContext.getContextFactory();
+            contextFactory.destroyConversationContext();
+        }
+        else
+        {
+            //Conversation must be used by one thread at a time
+            ConversationImpl owbConversation = (ConversationImpl)conversation;
+            owbConversation.updateTimeOut();
+            //Other threads can now access propogated conversation.
+            owbConversation.setInUsed(false);
+        }
     }
 
     /**

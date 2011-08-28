@@ -151,7 +151,7 @@ public class ConversationManager
         Asserts.assertNotNull(conversationId, "conversationId parameter can not be null");
         Asserts.assertNotNull(sessionId,"sessionId parameter can not be null");
 
-        ConversationImpl conv = null;
+        ConversationImpl conv;
         Set<Conversation> set = conversations.keySet();
         Iterator<Conversation> it = set.iterator();
 
@@ -175,7 +175,7 @@ public class ConversationManager
     {
         Asserts.assertNotNull(sessionId, "sessionId parameter can not be null");
 
-        ConversationImpl conv = null;
+        ConversationImpl conv;
         Set<Conversation> set = conversations.keySet();
         Iterator<Conversation> it = set.iterator();
 

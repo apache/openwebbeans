@@ -107,6 +107,15 @@ public class LoginBean
     }
 
     /**
+     * This method got introduced to test OWB-595
+     * @return null and always throws a RuntimeException
+     */
+    public String createError()
+    {
+        throw new RuntimeException("Just to show OWB-595");
+    }
+
+    /**
      * @param userName the userName to set
      */
     public void setUserName(String userName)

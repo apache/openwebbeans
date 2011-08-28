@@ -62,6 +62,7 @@ under the License.
             <h:panelGroup>
                 <h:commandButton action="#{loginBean.login}" value="Login" />
                 <h:commandButton action="false" value="Clear Form" onclick="document.forms[0].reset();document.getElementById('form:userName').focus();return false;" />
+                <h:commandButton action="#{loginBean.createError}" value="Create an Error" />
             </h:panelGroup>
 
             <h:outputLink value="#{facesContext.externalContext.requestContextPath}/register.xhtml">
