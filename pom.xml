@@ -80,7 +80,7 @@
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <javassist.version>3.12.0.GA</javassist.version>
         <openejb.version>3.1.4</openejb.version>
-        <myfaces.version>2.0.3</myfaces.version>
+        <myfaces.version>2.0.7</myfaces.version>
         <siteId>/OWB/1.0.0-alpha-2/plugins</siteId>
     </properties>
     
