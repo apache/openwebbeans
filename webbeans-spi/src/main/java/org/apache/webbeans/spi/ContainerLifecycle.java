@@ -23,9 +23,14 @@ import java.util.Properties;
 import javax.enterprise.inject.spi.BeanManager;
 
 /**
- * JSR-299 Container lifecycle.
- *  
- * @version $Rev$ $Date$
+ * <h3>JSR-299 Container lifecycle.</h3>
+ * <p>
+ * Implement this interface to provide own container initialization logic.
+ * </p>
+ * <p>
+ * From the application point of view this interface can be used to start
+ * and stop OpenWebBeans.
+ * </p>
  *
  */
 public interface ContainerLifecycle
@@ -42,11 +47,11 @@ public interface ContainerLifecycle
     
     /**
      * Starts container. It discovers all beans
-     * in the deployment archive. 
+     * in the deployed application classpath.
      * <p>
      * For Java EE artifact deployment, it scans all classes
-     * and libraries in the deployment archive. There are several
-     * types of deployment arhives;
+     * and libraries in all deployment archives in the classpath.
+     * There are several types of deployment archives;
      * <ul>
      *  <li>EAR archive</li>
      *  <li>EJB archive</li>
@@ -55,33 +60,43 @@ public interface ContainerLifecycle
      *  <li>Application client archive. <b>OPTIONAL</b></li> 
      * </ul>
      * </p>
-     * 
+     *
      * <p>
-     * Container uses metadata discovery SPI for scanning archives
+     * Container uses {@link ScannerService} SPI for scanning archives
      * and act accordingly. If there is an exception while starting,
      * it must abort the deployment and provides information to the
      * developer.
      * </p>
+     *
      * @param startupObject any startup object.
      */
     public void startApplication(Object startupObject);
         
     /**
-     * Stops means that container removes all bean instances
-     * it store, remove contexts and does necessary final actions.
-     * @param endObject any onject provided by implementors
+     * <p>
+     * Stopping the Application means that the container destroys all bean instances
+     * it stores, cleans and removes all contexts and does other necessary
+     * cleanup actions.
+     * </p>
+     * <p>
+     * <b>Attention:</b> Accessing the BeanManager or any bean proxy after the shutdown
+     * will result in non-portable behaviour!
+     * </p>
+     * @param endObject any object provided by application implementor. This can be a ServletContext, etc
      */
     public void stopApplication(Object endObject);
     
     /**
-     * Gets deployment bean manager instance. There is 1-1 correspondence
-     * between bean manager and deployment archive.
+     * Get the underlying {@link BeanManager} instance for the current application.
+     * There is 1-1 correspondence between a bean manager and a deployed (web-) application.
      * @return deployment {@link BeanManager} instance
      */
     public BeanManager getBeanManager();
     
     /**
      * Gets container's context service implementation.
+     * This allows to manually start and end specific contexts.
+     *
      * @return container contexts service
      */
     public ContextsService getContextService();
