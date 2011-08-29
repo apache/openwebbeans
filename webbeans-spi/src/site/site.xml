@@ -38,7 +38,7 @@
         <breadcrumbs>
             <item name="Apache" href="http://www.apache.org"/>
             <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
-            <item name="OWB-SPI" href="http://openwebbeans.apache.org/${project.version}/webbeans-spi"/>
+            <item name="OWB-SPI" href="http://openwebbeans.apache.org/${project.version}/openwebbeans-spi"/>
         </breadcrumbs>
 
         <menu ref="reports"/>

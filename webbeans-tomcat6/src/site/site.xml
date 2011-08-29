@@ -38,7 +38,7 @@
         <breadcrumbs>
             <item name="Apache" href="http://www.apache.org"/>
             <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
-            <item name="OWB-Tomcat-6" href="http://openwebbeans.apache.org/${project.version}/webbeans-tomcat6"/>
+            <item name="OWB-Tomcat-6" href="http://openwebbeans.apache.org/${project.version}/openwebbeans-tomcat6"/>
         </breadcrumbs>
         
         <menu ref="reports"/>

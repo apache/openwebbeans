@@ -38,7 +38,7 @@
         <breadcrumbs>
             <item name="Apache" href="http://www.apache.org"/>
             <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
-            <item name="OWB-Resource" href="http://openwebbeans.apache.org/${project.version}/webbeans-jee5-ejb-resource"/>
+            <item name="OWB-Resource" href="http://openwebbeans.apache.org/${project.version}/openwebbeans-jee5-ejb-resource"/>
         </breadcrumbs>
 
         <menu ref="reports"/>

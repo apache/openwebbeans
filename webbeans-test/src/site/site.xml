@@ -38,7 +38,7 @@
         <breadcrumbs>
             <item name="Apache" href="http://apache.org"/>
             <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
-            <item name="CDI-Test" href="http://openwebbeans.apache.org/${project.version}/webbeans-test"/>
+            <item name="CDI-Test" href="http://openwebbeans.apache.org/${project.version}/openwebbeans-test"/>
         </breadcrumbs>
         
         <menu ref="modules" />
