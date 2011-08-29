@@ -37,7 +37,7 @@ import org.apache.webbeans.context.ContextFactory;
 import org.apache.webbeans.context.type.ContextTypes;
 import org.apache.webbeans.logger.WebBeansLogger;
 import org.apache.webbeans.spi.ContainerLifecycle;
-import static org.apache.webbeans.util.InjectionExceptionUtils.*;
+import org.apache.webbeans.util.InjectionExceptionUtils;
 
 /**
  * OpenWebBeans specific implementation of {@link CdiTestContainer}.
@@ -249,12 +249,12 @@ public class CdiTestOpenWebBeansContainer implements CdiTestContainer
         Set<Bean<?>> beans = getBeanManager().getBeans(type, qualifiers);
         if (beans == null || beans.isEmpty()) 
         {
-            throwBeanNotFoundException(type, qualifiers);
+            InjectionExceptionUtils.throwBeanNotFoundException(type, qualifiers);
         }
 
         if (beans.size() > 1) 
         {
-            throwAmbiguousResolutionException(beans, type, null, qualifiers);
+            InjectionExceptionUtils.throwAmbiguousResolutionException(beans, type, null, qualifiers);
         }
 
         @SuppressWarnings("unchecked")

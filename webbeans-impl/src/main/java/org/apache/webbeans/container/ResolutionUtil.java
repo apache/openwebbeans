@@ -30,7 +30,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
-import static org.apache.webbeans.util.InjectionExceptionUtils.*;
+import org.apache.webbeans.util.InjectionExceptionUtils;
 
 public final class ResolutionUtil
 {
@@ -95,12 +95,12 @@ public final class ResolutionUtil
     {
         if (resolvedSet.isEmpty())
         {
-            throwUnsatisfiedResolutionException(type, injectionPoint, qualifiers);
+            InjectionExceptionUtils.throwUnsatisfiedResolutionException(type, injectionPoint, qualifiers);
         }
 
         if (resolvedSet.size() > 1)
         {
-            throwAmbiguousResolutionException(resolvedSet, type, injectionPoint, qualifiers);
+            InjectionExceptionUtils.throwAmbiguousResolutionException(resolvedSet, type, injectionPoint, qualifiers);
         }
 
         Bean<?> bean = resolvedSet.iterator().next();
