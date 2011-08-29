@@ -39,7 +39,7 @@ under the License.
         <source>
           Speaking more abstractly, a bean is a source of contextual objects which define 
           application state and/or logic. These objects are called contextual instances of the bean.
-	</source>
+    </source>
       </answer>
     </faq>
 

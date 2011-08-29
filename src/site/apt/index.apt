@@ -14,16 +14,26 @@ Welcome to Apache OpenWebBeans
   
 * What is OpenWebBeans?
 
-  OpenWebBeans is an ASL-licensed implementation of the JSR-299
-  "Contexts and Dependency Injection for the Java (TM) EE platform" spezification.
+  OpenWebBeans is an Apache License v2.0 implementation of the JSR-299
+  "Contexts and Dependency Injection for the Java (TM) EE platform" specification.
   
   In addition to the implementation of the specification, the project provides a set
   of WebBeans components and integration plugins exposing functionality of other
   Apache Software Foundation projects.
 
+  Apache OpenWebBeans is based on a plugin architecture. The OpenWebBeans Core is
+  strictly Java SE only. Additional functionality, like JSF-1 support, JSF-2 support
+  JPA support, JMS support, etc can be added by simply dropping the respective
+  OpenWebBeans plugin into your classpath.
+
+
 * Recent News
 
   * We are currently working towards an OpenWebBeans 1.1.1 release
+
+  * 04.08.2011 - Added backward compat support for Java5 for running OWB with older EE containers
+
+  * 19.05.2001 - We got a new Logo, designed by Adonis Raduca and sponsored by Irian.at
 
   * 09.04.2011 - New PMC members: Gerhard Petracek, David Jencks
 
