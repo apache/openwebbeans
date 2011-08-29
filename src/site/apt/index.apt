@@ -24,7 +24,7 @@ Welcome to Apache OpenWebBeans
   Apache OpenWebBeans is based on a plugin architecture. The OpenWebBeans Core is
   strictly Java SE only. Additional functionality, like JSF-1 support, JSF-2 support
   JPA support, JMS support, etc can be added by simply dropping the respective
-  OpenWebBeans plugin into your classpath.
+  OpenWebBeans plugin JAR into your classpath.
 
 
 * Recent News

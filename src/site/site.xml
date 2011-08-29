@@ -56,10 +56,6 @@
 
         <menu ref="modules" />
 
-        <menu name="Examples">
-            <item name="guess" href="examples/guess.html" />
-        </menu>
-
         <menu ref="reports"/>
     </body>
 </project>
