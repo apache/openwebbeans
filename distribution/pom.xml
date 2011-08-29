@@ -39,7 +39,6 @@
     </description>
 
     <properties>
-        <siteId>/OWB/1.0.0-SNAPSHOT/distribution</siteId>
         <skipReports>true</skipReports>
     </properties>
 
