@@ -13,10 +13,11 @@ Apache OpenWebBeans Service Provider Interfaces
 
 * Architectural Overview
 
-  Apache OpenWebBeans is modular built using Java interfaces with multiple available
+  Apache OpenWebBeans is built in a modular fashion, using Java interfaces with multiple available
   implementations.
 
-  The implementation to use can be set via our
+  Most interfaces in the SPI module represent a specific Service.
+  The desired implementation to use can be set via our
   {{{./configuration.html}Configuration Mechanism}}
 
 

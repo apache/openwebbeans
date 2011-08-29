@@ -27,7 +27,9 @@
     <artifactId>openwebbeans-impl</artifactId>
   <version> 1.1.1-SNAPSHOT</version>
     <name>OpenWebBeans Core</name>
-    <description>Apache OpenWebBeans Implementation core module</description>
+    <description>
+        Apache OpenWebBeans Implementation core module
+    </description>
 
     <dependencies>
         <dependency>
