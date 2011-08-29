@@ -81,7 +81,6 @@
         <javassist.version>3.12.0.GA</javassist.version>
         <openejb.version>3.1.4</openejb.version>
         <myfaces.version>2.0.7</myfaces.version>
-        <siteId>/OWB/1.0.0-alpha-2/plugins</siteId>
     </properties>
     
     <mailingLists>
@@ -250,7 +249,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>2.1.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
