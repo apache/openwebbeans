@@ -24,11 +24,11 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openwebbeans-jee5-ejb-resource</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
 
     <name>EE Resource plugin</name>
     <description>Apache OpenWebBeans EE 5 Resource Integration</description>
