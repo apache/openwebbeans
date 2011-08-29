@@ -21,7 +21,7 @@
 <project name="OpenWebBeans">
     <bannerLeft>
         <name>Apache OpenWebBeans</name>
-        <src>http://openwebbeans.apache.org/owb/images/logos/openwebbeans.png</src>
+        <src>http://openwebbeans.apache.org/owb/images/logos/openwebbeans_hor.png</src>
         <href>http://openwebbeans.apache.org</href>
     </bannerLeft>
     
