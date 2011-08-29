@@ -14,6 +14,10 @@ JSR-330 Dependency Injection for Java
   The purpose of the JSR-330 'atinject' specification is to provide basic dependency
   injection annotations for Java.
 
+  It is nowadays to a large degree the basic foundation of the JSR-299 specification.
+  Please note that JSR-330 only defines the very basic annotation syntax and almost
+  no behavior!
+
 * Official Resources
     
   *  {{{http://www.jcp.org/en/jsr/detail?id=330}Java Specification Request 330}}

@@ -13,7 +13,16 @@ JSR-299 Contexts and Dependency Injection for the Java EE platform
 
   The purpose of the WebBeans specification is to unify the JSF managed bean component model 
   with the EJB component model, resulting in a significantly simplified programming model 
-  for web-based applications. 
+  for web-based applications.
+
+  Over the time, JSR-299 has evolved into a IOC framework which is more web agnostic.
+  The JSR-299 specification has finally changed it's name to
+  "Contexts and Dependency Injection for the Java (TM) EE platform" to better reflect
+  it's comprehensive features.
+
+  While the specification is targeted to Java EE environments,
+  Apache OpenWebBeans also works very well even in pure Java SE applications!
+
 
 * Official Resources
     
