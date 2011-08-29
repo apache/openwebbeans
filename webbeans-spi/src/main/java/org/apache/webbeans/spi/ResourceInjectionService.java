@@ -58,14 +58,15 @@ public interface ResourceInjectionService
      * For example;
      * <p>
      * <code>
-     * {@link @Produces} @MyPersistenceContext PersistenceContext EntityManager manager;  
+     * {@link @Produces} &#064;MyPersistenceContext PersistenceContext EntityManager manager;
      * </code>
      * </p>
      * <p>
      * See section 3.5 of the JSR-299 specification.
      * </p> 
      * </p>
-     * @param <T> resource type, @EJB, @Resource, @WebServiceRef, @PersistenceContext or @PersistenceUnit 
+     * @param <T> resource type, &#064;EJB, &#064;Resource, &#064;WebServiceRef,
+     *        &#064;PersistenceContext or &#064;PersistenceUnit
      * @param resourceReference
      * @return resource for the given resource reference
      */
