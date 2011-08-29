@@ -29,7 +29,7 @@ under the License.
     <groupId>org.apache.openwebbeans.samples</groupId>
     <artifactId>jsf2sample</artifactId>
     <packaging>war</packaging>
-    <name>Apache OpenWebBeans :: Sample JSF2 Application</name>
+    <name>Sample JSF2 Application</name>
 
     <dependencies>
 

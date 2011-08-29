@@ -29,7 +29,7 @@ under the License.
     <groupId>org.apache.openwebbeans.samples</groupId>
     <artifactId>ejb-sample</artifactId>
     <packaging>war</packaging>
-    <name>Apache OpenWebBeans :: Sample Ejb Demo On OpenEJB in Tomcat</name>
+    <name>Sample Ejb Demo On OpenEJB in Tomcat</name>
     <description>Sample Ejb Demo</description>
 
     <build>

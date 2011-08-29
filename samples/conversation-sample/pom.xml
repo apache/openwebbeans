@@ -30,7 +30,7 @@ under the License.
     <groupId>org.apache.openwebbeans.samples</groupId>
     <artifactId>conversation-sample</artifactId>
     <packaging>war</packaging>
-    <name>Apache OpenWebBeans :: JSF Conversation Sample</name>
+    <name>JSF Conversation Sample</name>
 
     <dependencies>
 

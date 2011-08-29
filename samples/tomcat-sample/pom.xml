@@ -30,7 +30,7 @@ under the License.
     <groupId>org.apache.openwebbeans.samples</groupId>
     <artifactId>tomcat-sample</artifactId>
     <packaging>war</packaging>
-    <name>Apache OpenWebBeans :: Tomcat Sample</name>
+    <name>Tomcat Sample</name>
 
     <dependencies>
 

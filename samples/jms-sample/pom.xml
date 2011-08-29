@@ -29,7 +29,7 @@ under the License.
     <groupId>org.apache.openwebbeans.samples</groupId>
     <artifactId>jms-sample</artifactId>
     <packaging>war</packaging>
-    <name>Apache OpenWebBeans :: Sample Jms Injection Demo</name>
+    <name>Sample Jms Injection Demo</name>
     <description>Sample Jms Injection Demo</description>
 
     <build>

@@ -29,7 +29,7 @@ under the License.
     <groupId>org.apache.openwebbeans.samples</groupId>
     <artifactId>reservation</artifactId>
     <packaging>war</packaging>
-    <name>Apache OpenWebBeans :: Sample Hotel Reservation Application</name>
+    <name>Sample Hotel Reservation Application</name>
     <description>Simple hotel reservation application</description>
 
 
