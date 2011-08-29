@@ -31,7 +31,6 @@ import org.apache.webbeans.spi.api.ResourceReference;
  * This service is responsible for injecting 
  * the Java EE injectable resources. Please
  * see the Section 5 of the Java EE specification.
- * @version $Rev$ $Date$
  *
  */
 public interface ResourceInjectionService
@@ -68,7 +67,7 @@ public interface ResourceInjectionService
      * </p>
      * @param <T> resource type, @EJB, @Resource, @WebServiceRef, @PersistenceContext or @PersistenceUnit 
      * @param resourceReference
-     * @return
+     * @return resource for the given resource reference
      */
     public <X,T extends Annotation> X getResourceReference(ResourceReference<X,T> resourceReference); 
     

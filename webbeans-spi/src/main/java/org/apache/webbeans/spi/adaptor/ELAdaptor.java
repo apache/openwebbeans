@@ -21,6 +21,12 @@ package org.apache.webbeans.spi.adaptor;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 
+/**
+ * This SPI allows to separate ExpressionLanguage dependencies from OWB core.
+ * This is mainly needed to support different EL specification versions.
+ * We currently support EL-2.2 in openwebbeans-impl natively and also provide a
+ * pluggable implementation for EL-1.0 in our openwebbeans-el10 module.
+ */
 public interface ELAdaptor
 {
     public ELResolver getOwbELResolver();

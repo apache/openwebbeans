@@ -20,7 +20,7 @@ package org.apache.webbeans.spi.plugins;
 
 
 /**
- * <p>Interface which all OpenWebBeans plugins has to implement to 
+ * <p>Interface which all OpenWebBeans plugins have to implement to
  * extend the webbeans-core with additional IOC functionality.</p>
  * 
  * <p>There are 4 different types of functions for this interface:

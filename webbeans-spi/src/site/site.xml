@@ -41,6 +41,11 @@
             <item name="OWB-SPI" href="http://openwebbeans.apache.org/${project.version}/openwebbeans-spi"/>
         </breadcrumbs>
 
+        <menu name="Overview">
+            <item name="Introduction" href="index.html" />
+            <item name="Configuration" href="configuration.html" />
+        </menu>
+
         <menu ref="reports"/>
     </body>
 </project>

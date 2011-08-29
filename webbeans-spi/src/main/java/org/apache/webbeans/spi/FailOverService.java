@@ -37,40 +37,36 @@ public interface FailOverService
     /**
      * Used for tracking the origin of serialized bean instances. 
      * 
-     * @return
+     * @return an UUID which is unique for each installation. This might change on restarts.
      */
     public String getJVMId();
     
     /**
-     * The session attribute name used to store the bean instances bag
-     *    
-     * @return
+     * @return The session attribute name used to store the bean instances bag
      */
     public String getFailOverAttributeName();
     
     /**
-     * Whether or not to support failover.
-     * @return
+     * @return Whether or not the system supports failover
      */
     public boolean isSupportFailOver();
 
     /**
-     * Whether or not to support passivation.
-     * @return
+     * @return Whether or not the system support passivation
      */
     public boolean isSupportPassivation();
     
     /**
      * Enable failover support.
      * 
-     * @param flag
+     * @param flag <code>true</code> to enable failover support
      */
     public void enableFailOverSupport(boolean flag);
 
     /**
      * Enable passivation support.
      * 
-     * @param flag
+     * @param flag <code>true</code> to enable passivation support
      */
     public void enablePassivationSupport(boolean flag);
 
@@ -137,7 +133,7 @@ public interface FailOverService
      * @param in                The input object stream
      * @param out                The output object stream
      * 
-     * @return NOT_HANDLED if not handled by handler.
+     * @return {@link #NOT_HANDLED} if not handled by handler.
      */
     public Object handleResource(
             Bean<?> bean,

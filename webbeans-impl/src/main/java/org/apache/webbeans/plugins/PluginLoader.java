@@ -43,8 +43,6 @@ import org.apache.webbeans.spi.plugins.OpenWebBeansWebPlugin;
  * {@link http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider}.
  * A jar containing an OWB plugin has to expose itself in the file
  * <code>META-INF/services/org.apache.webbeans.plugins.OpenWebBeansPlugin</code></p> 
- *
- * TODO: what about ordering the plugins via an ordinal?
  */
 public class PluginLoader
 {

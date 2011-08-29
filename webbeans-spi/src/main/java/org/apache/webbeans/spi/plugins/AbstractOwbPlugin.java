@@ -36,23 +36,23 @@ public abstract class AbstractOwbPlugin implements OpenWebBeansPlugin
         
     }
 
-    /** @{inheritDoc} */
+    /** {@inheritDoc} */
     public void isManagedBean(Class<?> clazz)
     {
     }
     
-    /** @{inheritDoc} */
+    /** {@inheritDoc} */
     public boolean supportsJavaEeComponentInjections(Class<?> targetClass)
     {        
         return false;
     }
 
-    /** @{inheritDoc} */
+    /** {@inheritDoc} */
     public void shutDown()
     {
     }
 
-    /** @{inheritDoc} */
+    /** {@inheritDoc} */
     public void startUp()
     {
     }
