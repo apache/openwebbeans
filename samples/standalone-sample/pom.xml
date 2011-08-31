@@ -22,12 +22,12 @@ under the License.
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.1.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>standalone-sample</artifactId>
-    <version> 1.1.2-SNAPSHOT</version>
+    <version>1.1.1</version>
     <name>OpenWebBeans Java SE Sample</name>
     <packaging>jar</packaging>
     <description>Java SE Sample</description>
