@@ -28,7 +28,6 @@
     </parent>
 
     <artifactId>openwebbeans-jee5-ejb-resource</artifactId>
-    <version>1.1.1</version>
 
     <name>EE Resource plugin</name>
     <description>Apache OpenWebBeans EE 5 Resource Integration</description>

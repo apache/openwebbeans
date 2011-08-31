@@ -81,20 +81,30 @@ Release Notes - OpenWebBeans - Version 1.1.1
 
 Bug
 
+    * [OWB-406] - BaseEjbBean.removedStatefulInstance used by multiple instances/EjbBeanProxyHandlers
+    * [OWB-447] - unnecessary contextual/non-contextual distinction in OpenWebBeansEJBIntercpetor
+    * [OWB-449] - EJB interceptor has incorrect/unnecessary use of business method checks
+    * [OWB-483] - Problem with mulitple custom interceptors and passivation
+    * [OWB-512] - ApplicationContext and SingletonContext in WebContextsService
+    * [OWB-554] - DelegateHandler wraps Beans exceptions
+    * [OWB-558] - PassivationCapable bean id's for Producer Fields do not take into account generics
     * [OWB-561] - Multiple contexts with the same Scope are not handled properly -- causing tck failures
     * [OWB-563] - producers of passivating beans fail when the declared return type is not serializable but the actual return type is
     * [OWB-566] - ProcessInjectionTarget event gets fired too early
     * [OWB-571] - fix site build under maven3 and upgrade logo
     * [OWB-573] - Invalid checking of Interceptor serialization capabilities for non-Passivation capable EJBs
+    * [OWB-576] - FileNotFoundException on WebSphere
     * [OWB-577] - FileNotFoundException on WebSphere
     * [OWB-578] - Allow DI for OpenWebBeansConfiguration properties
     * [OWB-579] - check for non-proxyiable methods should exclude synthetic methods
     * [OWB-581] - Decorator interface check needs configurable exclusions
+    * [OWB-584] - check for declared name consistency for specializes beans is wrong
     * [OWB-585] - ProcessSessionBean doesn't deal with generic type quite right (CDITCK-215)
     * [OWB-586] - Interceptors added by portable extensions don't work
     * [OWB-587] - Use business interface for producer and disposer methods of Session beans
     * [OWB-588] - PrincipalBean is misspelled
     * [OWB-590] - Seam Persistence does not work with OWB - AfterBeanDiscovery.addBean will be ignored
+    * [OWB-591] - EJB @Specializes inheritance
     * [OWB-593] - Interceptor binding added on an interceptor class at ProcessAnnotatedType phase is not considered
     * [OWB-595] - Use case "Faces Request Generates Non-Faces Response" locks conversation forever (-> BusyConversationException)
     * [OWB-598] - InjectionResolver crashes with a NPE when injecting a method parameter
@@ -102,9 +112,11 @@ Bug
     * [OWB-600] - cache information about non intercepted methdos in ProxyHandlers
     * [OWB-601] - WebContextsService only works if ServletContext is given
     * [OWB-608] - openwebbeans-el10 plugin misses openwebbeans.properties
+    * [OWB-614] - add LICENSE and NOTICE files to all our samples
 
 Improvement
 
+    * [OWB-555] - ClassUtil methods contain spelling, camelcase, etc., type errors
     * [OWB-557] - #setAccessible(false) isn't needed
     * [OWB-560] - upgrade the TCK to 1.0.4.SP1
     * [OWB-564] - CdiTestOpenWebBeansContainer - check if a std.-context is active before destroying it
@@ -115,6 +127,11 @@ Improvement
     * [OWB-610] - upgrade to apache parent pom 10
     * [OWB-611] - adding ASF trademark documentation to our official site build
     * [OWB-612] - upgrade various maven plugins
+    * [OWB-613] - Exclude Samples WARs Publishing with Maven
+
+Task
+
+    * [OWB-592] - EJB Specialization utility method
 
 
 

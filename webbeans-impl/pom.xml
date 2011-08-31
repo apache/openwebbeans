@@ -25,7 +25,7 @@
         <version>1.1.1</version>
     </parent>
     <artifactId>openwebbeans-impl</artifactId>
-  <version> 1.1.1</version>
+  <version>1.1.1</version>
     <name>OpenWebBeans Core</name>
     <description>
         Apache OpenWebBeans Implementation core module

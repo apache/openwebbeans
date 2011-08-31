@@ -27,7 +27,7 @@ under the License.
     </parent>
 
     <artifactId>samples</artifactId>
-    <version> 1.1.1</version>
+    <version>1.1.1</version>
     <packaging>pom</packaging>
     <name>OWB Samples</name>
     <description>Apache OpenWebBeans Samples contains samples project for openwebbeans.</description>
@@ -38,6 +38,13 @@ under the License.
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip> <!-- we don't deploy our samples upstream -->
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -60,8 +67,8 @@ under the License.
                             <directory>.</directory>
                             <targetPath>META-INF</targetPath>
                             <includes>
-                                <include>LICENCE.txt</include>
-                                <include>NOTICE.txt</include>
+                                <include>LICENSE</include>
+                                <include>NOTICE</include>
                             </includes>
                         </resource>
                     </webResources>
