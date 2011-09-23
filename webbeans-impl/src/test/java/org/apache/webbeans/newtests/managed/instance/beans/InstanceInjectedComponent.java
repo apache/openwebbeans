@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.webbeans.test.component.inject;
+package org.apache.webbeans.newtests.managed.instance.beans;
 
 
 import javax.enterprise.context.RequestScoped;
