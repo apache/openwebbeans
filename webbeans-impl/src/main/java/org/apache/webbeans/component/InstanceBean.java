@@ -26,12 +26,11 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
-import javax.inject.Provider;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.inject.instance.InstanceFactory;
 
-public class InstanceBean<T> extends AbstractOwbBean<Provider<T>>
+public class InstanceBean<T> extends AbstractOwbBean<Instance<T>>
 {
     // TODO refactor. public static variables are uterly ugly
     public static ThreadLocal<InjectionPoint> local = new ThreadLocal<InjectionPoint>();
@@ -39,12 +38,12 @@ public class InstanceBean<T> extends AbstractOwbBean<Provider<T>>
     @SuppressWarnings("serial")
     public InstanceBean(WebBeansContext webBeansContext)
     {
-        super(WebBeansType.INSTANCE, new TypeLiteral<Provider<T>>(){}.getRawType(), webBeansContext);
+        super(WebBeansType.INSTANCE, new TypeLiteral<Instance<T>>(){}.getRawType(), webBeansContext);
     }
     
          
     @Override
-    protected Provider<T> createInstance(CreationalContext<Provider<T>> creationalContext)
+    protected Instance<T> createInstance(CreationalContext<Instance<T>> creationalContext)
     {
         try
         {
