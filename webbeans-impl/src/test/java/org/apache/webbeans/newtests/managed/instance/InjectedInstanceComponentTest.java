@@ -20,7 +20,6 @@
 package org.apache.webbeans.newtests.managed.instance;
 
 import junit.framework.Assert;
-import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.newtests.AbstractUnitTest;
 import org.apache.webbeans.newtests.managed.instance.beans.InstanceInjectedComponent;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
@@ -28,6 +27,7 @@ import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Instance;
@@ -71,6 +71,7 @@ public class InjectedInstanceComponentTest extends AbstractUnitTest {
         shutDownContainer();
     }
 
+    @Ignore
     @Test
     public void testManualInstanceBeanResolving() {
         Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
