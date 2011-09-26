@@ -103,7 +103,6 @@ public class NormalScopedBeanInterceptorHandler extends InterceptorHandler
     /**
      * {@inheritDoc}
      */
-    @Override
     public Object invoke(Object instance, Method method, Method proceed, Object[] arguments) throws Exception
     {
         if (method.getName() == FINALIZE &&   // Method.getName() is defined to return .intern() in the VM spec.

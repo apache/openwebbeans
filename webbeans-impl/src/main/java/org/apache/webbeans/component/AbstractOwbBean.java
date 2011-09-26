@@ -229,7 +229,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public T createNewInstance(CreationalContext<T> creationalContext)
     {
         return createInstance(creationalContext);
@@ -246,8 +245,13 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
             InjectionTargetWrapper<T> wrapper = getManager().getInjectionTargetWrapper(this);
             if(wrapper != null)
             {
-                wrapper.preDestroy(instance);
-                wrapper.dispose(instance);
+                // instance might be null if we only created a proxy
+                // but no actual contextual instance for this bean!
+                if (instance != null)
+                {
+                    wrapper.preDestroy(instance);
+                    wrapper.dispose(instance);
+                }
             }
             else
             {
@@ -279,7 +283,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void destroyCreatedInstance(T instance, CreationalContext<T> creationalContext)
     {
         destroyInstance(instance, creationalContext);
@@ -454,7 +457,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      * (non-Javadoc)
      * @see javax.webbeans.manager.Bean#getQualifiers()
      */
-    @Override
     public Set<Annotation> getQualifiers()
     {
         return this.implQualifiers;
@@ -464,7 +466,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
      * (non-Javadoc)
      * @see javax.webbeans.manager.Bean#getScope()
      */
-    @Override
     public Class<? extends Annotation> getScope()
     {
         return this.scopeClass;
@@ -489,7 +490,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void setNullable(boolean nullable)
     {
         this.nullable = nullable;
@@ -499,7 +499,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public void setSerializable(boolean serializable)
     {
         this.serializable = serializable;
@@ -509,7 +508,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean isNullable()
     {
         return this.nullable;
@@ -518,7 +516,6 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean isSerializable()
     {
         return this.serializable;
@@ -690,13 +687,11 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
         return logger;
     }
 
-    @Override
-    public boolean isDependent() 
+    public boolean isDependent()
     {
         return getScope().equals(Dependent.class);
     }
     
-    @Override
     public void validatePassivationDependencies()
     {
         if(isPassivationCapable() || (this instanceof AbstractProducerBean))
