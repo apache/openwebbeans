@@ -50,7 +50,8 @@ public class DisposerMethodBeanTest extends AbstractUnitTest
         bean.destroy(model, cc);
         
         Assert.assertTrue(DisposerMethodBean.OK);
-        
+
+        shutDownContainer();
     }
 
 }

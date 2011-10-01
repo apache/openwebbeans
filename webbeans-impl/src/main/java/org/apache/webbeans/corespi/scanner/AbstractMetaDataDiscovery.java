@@ -99,7 +99,6 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         }
     }
 
-    @Override
     public void release()
     {
         initAnnotationDB();
@@ -171,7 +170,6 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
         return annotationDB;
     }
 
-    @Override
     public Set<String> getAllAnnotations(String className)
     {
         return annotationDB.getAnnotationIndex().get(className);
@@ -194,7 +192,6 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     /* (non-Javadoc)
      * @see org.apache.webbeans.corespi.ScannerService#getBeanClasses()
      */
-    @Override
     public Set<Class<?>> getBeanClasses()
     {
         crossReferenceBeans();
@@ -240,19 +237,16 @@ public abstract class AbstractMetaDataDiscovery implements ScannerService
     /* (non-Javadoc)
     * @see org.apache.webbeans.corespi.ScannerService#getBeanXmls()
     */
-    @Override
     public Set<URL> getBeanXmls()
     {
         return Collections.unmodifiableSet(webBeansXmlLocations);
     }
 
-    @Override
     public BDABeansXmlScanner getBDABeansXmlScanner()
     {
         return bdaBeansXmlScanner;
     }
 
-    @Override
     public boolean isBDABeansXmlScanningEnabled()
     {
         return isBDAScannerEnabled;

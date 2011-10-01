@@ -1827,20 +1827,23 @@ public final class WebBeansUtil
 
                     if(!violationMessage.containsViolation())
                     {
-                        Constructor<?> cons = getNoArgConstructor(beanClass);
-
                         if (ClassUtil.isFinal(beanClass.getModifiers()))
                         {
                             violationMessage.addLine(beanClass.getName(), " is a final class! CDI doesn't allow that.");
                         }
+
                         Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(beanClass);
                         for (Method m : methods)
                         {
-                            if (ClassUtil.isFinal(m.getModifiers()) && !m.isSynthetic() && !m.isBridge())
+                            int modifiers = m.getModifiers();
+                            if (ClassUtil.isFinal(modifiers) && !Modifier.isPrivate(modifiers) &&
+                                !m.isSynthetic() && !m.isBridge())
                             {
                                 violationMessage.addLine(beanClass.getName(), " has final method "+ m + " CDI doesn't allow that.");
                             }
                         }
+
+                        Constructor<?> cons = getNoArgConstructor(beanClass);
                         if (cons == null)
                         {
                             violationMessage.addLine(beanClass.getName(), " has no explicit no-arg constructor!",
