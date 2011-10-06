@@ -350,6 +350,12 @@ public class BeansDeployer
            Stack<String> beanNames = new Stack<String>();
             for (Bean<?> bean : beans)
             {
+                if (bean instanceof OwbBean && !((OwbBean)bean).isEnabled())
+                {
+                    // we skip disabled beans
+                    continue;
+                }
+
                 String beanName = bean.getName();
                 if(beanName != null)
                 {
