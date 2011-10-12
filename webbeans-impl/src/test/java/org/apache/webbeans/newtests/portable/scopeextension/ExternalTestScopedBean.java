@@ -23,9 +23,9 @@ import java.io.Serializable;
 @ExternalTestScoped
 public class ExternalTestScopedBean implements Serializable{
 
-	private static final long serialVersionUID = -917790714891819356L;
-	
-	private int i = 0;
+    private static final long serialVersionUID = -917790714891819356L;
+
+    private int i = 0;
 
     public int getI() {
         return i;

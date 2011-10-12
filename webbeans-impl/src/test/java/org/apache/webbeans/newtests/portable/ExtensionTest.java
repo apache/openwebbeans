@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.newtests.portable;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -103,4 +102,5 @@ public class ExtensionTest extends AbstractUnitTest
             // this is expected!
         }
     }
+
 }

@@ -20,15 +20,21 @@ package org.apache.webbeans.newtests.portable.scopeextension;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
+
+import org.junit.Assert;
 
 
 public class ExternalTestScopeExtension implements Extension 
 {
 
-    public void addViewScoped(@Observes BeforeBeanDiscovery beforeBeanDiscovery)
+    public void addViewScoped(@Observes BeforeBeanDiscovery beforeBeanDiscovery, BeanManager beanManager)
     {
+        // see OWB-622 it's expected that the BeanManager already exists even in BeforeBeanDiscovery.
+        Assert.assertNotNull(beanManager);
+
         beforeBeanDiscovery.addScope(ExternalTestScoped.class, true, true);
     }
     
