@@ -178,5 +178,12 @@ public abstract class AbstractProducerBean<T> extends AbstractOwbBean<T> impleme
         }
         
         return false;
-    }    
+    }
+
+    public void validatePassivationDependencies()
+    {
+        // don't call super.validatePassivationDependencies()!
+        // the injection points of producers are the parameters of the producermethod.
+        // since CDI-1.1 we must not check those for is serializable anymore.
+    }
 }

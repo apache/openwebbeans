@@ -694,7 +694,7 @@ public abstract class AbstractOwbBean<T> implements OwbBean<T>
     
     public void validatePassivationDependencies()
     {
-        if(isPassivationCapable() || (this instanceof AbstractProducerBean))
+        if(isPassivationCapable())
         {
             Set<InjectionPoint> injectionPoints = getInjectionPoints();
             for(InjectionPoint injectionPoint : injectionPoints)
