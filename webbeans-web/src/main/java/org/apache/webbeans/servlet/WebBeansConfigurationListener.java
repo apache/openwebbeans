@@ -47,8 +47,11 @@ import javax.servlet.http.HttpSessionListener;
  *
  * This is the main entry point for starting the CDI container
  * for a servlet.
- * 
- * @version $Rev: 910075 $ $Date: 2010-02-14 23:17:23 +0200 (Sun, 14 Feb 2010) $
+ *
+ *
+ * If you have a container with &lt; Servlet-2.5 then use
+ * {@link WebBeansConfigurationFilter} and {@link WebBeansConfigurationHttpSessionListener}
+ * instead.
  */
 public class WebBeansConfigurationListener implements ServletContextListener, ServletRequestListener, HttpSessionListener
 {
